@@ -1073,7 +1073,7 @@ def patch_rom(world, rom):
         write_bits_to_save(0x0EEA, 0x20) # "Completed Shadow Trial"
     if world.skipped_trials['Light']:
         write_bits_to_save(0x0EEA, 0x80) # "Completed Light Trial"
-    if world.trials == '0':
+    if world.trials == 0:
         write_bits_to_save(0x0EED, 0x08) # "Dispelled Ganon's Tower Barrier"
 
     # open gerudo fortress
