@@ -40,6 +40,21 @@ class World(object):
             'Shadow': False,
             'Light': False
         }
+        # dungeon forms will be decided later
+        self.dungeon_mq = {
+            'DT': False,
+            'DC': False,
+            'JB': False,
+            'BW': False,
+            'IC': False,
+            'GTG': False,
+            'FoT': False,
+            'FiT': False,
+            'WT': False,
+            'SpT': False,
+            'ShT': False,
+            'GC': False
+}
 
         self.can_take_damage = True
         self.spoiler = Spoiler(self)
@@ -48,6 +63,7 @@ class World(object):
     def copy(self):
         ret = World(self.settings)
         ret.skipped_trials = copy.copy(self.skipped_trials)
+        ret.dungeon_mq = copy.copy(self.dungeon_mq)
         ret.can_take_damage = self.can_take_damage
         ret.id = self.id
         from Regions import create_regions

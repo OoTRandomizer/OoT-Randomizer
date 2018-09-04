@@ -12,7 +12,7 @@ from urllib.request import urlopen
 from GuiUtils import ToolTips, set_icon, BackgroundTask, BackgroundTaskProgress, Dialog
 from Main import main
 from Utils import is_bundled, local_path, default_output_path, open_file, check_version
-from Rom import get_tunic_color_options, get_navi_color_options
+from Patches import get_tunic_color_options, get_navi_color_options
 from Settings import Settings, setting_infos
 from version import __version__ as ESVersion
 import webbrowser

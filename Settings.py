@@ -5,7 +5,7 @@ import re
 import random
 import hashlib
 
-from Rom import get_tunic_color_options, get_navi_color_options
+from Patches import get_tunic_color_options, get_navi_color_options
 from version import __version__
 
 class ArgumentDefaultsHelpFormatter(argparse.RawTextHelpFormatter):
@@ -496,7 +496,7 @@ setting_infos = [
                     '''         
         },
         {
-            'text': 'Big Poe target count',
+            'text': 'Big Poe Target Count',
             'group': 'convenience',
             'widget': 'Combobox',
             'default': 'Random',
@@ -781,6 +781,40 @@ setting_infos = [
 
                       'All Tokens': Effectively adds 100
                       new locations for items to appear.
+                      '''
+        }),
+    Setting_Info('quest', str, 2, True, 
+        {
+            'default': 'vanilla',
+            'const': 'vanilla',
+            'nargs': '?',
+            'choices': ['vanilla', 'master', 'mixed'],
+            'help': '''\
+                    Select requirement to spawn the Rainbow Bridge to reach Ganon's Castle. (default: %(default)s)
+                    Vanilla:       Dungeons will be the original Ocarina of Time dungeons.
+                    Master:        Dungeons will be in the form of the Master Quest.
+                    Mixed:         Each dungeon will randomly be either standard or Master Quest.
+                    '''
+        },
+        {
+            'text': 'Dungeon Quest',
+            'group': 'logic',
+            'widget': 'Combobox',
+            'default': 'Vanilla',
+            'options': {
+                'Vanilla': 'vanilla',
+                'Master Quest': 'master',
+                'Mixed': 'mixed',
+            },
+            'tooltip':'''\
+                      'Vanilla': Dungeons will be in their
+                      default OoT form.
+
+                      'Master Quest': Dungeons will be in the
+                      form found in OoT: Master Quest.
+
+                      'Mixed': Each dungeon will have a
+                      random chance to be in either form.
                       '''
         }),
     Setting_Info('logic_skulltulas', int, 3, True, 

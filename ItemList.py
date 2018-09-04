@@ -29,9 +29,9 @@ alwaysitems = ([
     + ['Hylian Shield'] * 2
     + ['Progressive Strength Upgrade'] * 3
     + ['Progressive Scale'] * 2
-    + ['Recovery Heart'] * 11
+    + ['Recovery Heart'] * 9
     + ['Rupees (5)'] * 16
-    + ['Rupees (20)'] * 6
+    + ['Rupees (20)'] * 5
     + ['Rupees (50)'] * 7
     + ['Rupees (200)'] * 6
     + ['Bow'] * 3
@@ -50,6 +50,16 @@ alwaysitems = ([
     + ['Deku Stick Capacity'] * 2
     + ['Deku Nut Capacity'] * 2
     + ['Magic Meter'])
+
+DT_vanilla = (['Recovery Heart'] * 2)
+
+DT_MQ = (['Deku Shield'] * 2
+         + ['Rupees (50)'])
+
+DC_vanilla = (['Rupees (20)'])
+
+DC_MQ = (['Hylian Shield']
+         + ['Rupees (5)'])
 
 normal_bottles = [
     'Bottle',
@@ -114,10 +124,6 @@ skulltulla_locations = ([
     'GS Lost Woods Bean Patch Near Stage',
     'GS Lost Woods Above Stage',
     'GS Sacred Forest Meadow',
-    'GS Deku Tree Compass Room',
-    'GS Deku Tree Basement Vines',
-    'GS Deku Tree Basement Gate',
-    'GS Deku Tree Basement Back Room',
     'GS Hyrule Field near Kakariko',
     'GS Hyrule Field Near Gerudo Valley',
     'GS Castle Market Guard House',
@@ -144,11 +150,6 @@ skulltulla_locations = ([
     'GS Goron City Center Platform',
     'GS Death Mountain Crater Crate',
     'GS Mountain Crater Bean Patch',
-    'GS Dodongo\'s Cavern East Side Room',
-    'GS Dodongo\'s Cavern Vines Above Stairs',
-    'GS Dodongo\'s Cavern Back Room',
-    'GS Dodongo\'s Cavern Alcove Above Stairs',
-    'GS Dodongo\'s Cavern Scarecrow',
     'GS Zora River Ladder',
     'GS Zora River Tree',
     'GS Zora River Near Raised Grottos',
@@ -277,11 +278,37 @@ def get_pool_core(world):
         placed_items['Gift from Saria'] = 'Ocarina'
         placed_items['Ocarina of Time'] = 'Ocarina'
 
+    if world.dungeon_mq['DT']:
+        skulltulla_locations_final = skulltulla_locations + [
+            'GS Deku Tree MQ Lobby',
+            'GS Deku Tree MQ Compass Room',
+            'GS Deku Tree MQ Basement Ceiling',
+            'GS Deku Tree MQ Basement Back Room']
+    else:
+        skulltulla_locations_final = skulltulla_locations + [
+            'GS Deku Tree Compass Room',
+            'GS Deku Tree Basement Vines',
+            'GS Deku Tree Basement Gate',
+            'GS Deku Tree Basement Back Room']
+    if world.dungeon_mq['DC']:
+        skulltulla_locations_final.extend([
+            'GS Dodongo\'s Cavern MQ Scrub Room',
+            'GS Dodongo\'s Cavern MQ Song of Time Block Room',
+            'GS Dodongo\'s Cavern MQ Lizalfos Room',
+            'GS Dodongo\'s Cavern MQ Larva Room',
+            'GS Dodongo\'s Cavern MQ Back Area'])
+    else:
+        skulltulla_locations_final.extend([
+            'GS Dodongo\'s Cavern East Side Room',
+            'GS Dodongo\'s Cavern Vines Above Stairs',
+            'GS Dodongo\'s Cavern Back Room',
+            'GS Dodongo\'s Cavern Alcove Above Stairs',
+            'GS Dodongo\'s Cavern Scarecrow'])
     if world.tokensanity == 'off':
-        for location in skulltulla_locations:
+        for location in skulltulla_locations_final:
             placed_items[location] = 'Gold Skulltulla Token'
     elif world.tokensanity == 'dungeons':
-        for location in skulltulla_locations:
+        for location in skulltulla_locations_final:
             if world.get_location(location).scene >= 0x0A:
                 placed_items[location] = 'Gold Skulltulla Token'
             else:
@@ -341,6 +368,14 @@ def get_pool_core(world):
 
 
     pool.extend(alwaysitems)
+    if world.dungeon_mq['DT']:
+        pool.extend(DT_MQ)
+    else:
+        pool.extend(DT_vanilla)
+    if world.dungeon_mq['DC']:
+        pool.extend(DC_MQ)
+    else:
+        pool.extend(DC_vanilla)
     for _ in range(normal_bottle_count):
         bottle = random.choice(normal_bottles)
         pool.append(bottle)

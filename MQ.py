@@ -16,10 +16,11 @@
 # 
 # Rooms:
 # 
-# Object file initialization data will be patched over the existing object file data, bleeding
-# into the subsequent original actor spawn data, thus won't contribute to the room file size
+# Object file initialization data will be appended to the end of the room file.
+# The total size consumed by the object file data is NUM_OBJECTS * 0x02, aligned to
+# the nearest 0x04 bytes
 # 
-# Actor spawn data will be appended to the end of the room file.
+# Actor spawn data will be appended to the end of the room file, after the objects.
 # The total size consumed by the actor spawn data is NUM_ACTORS * 0x10
 # 
 # Finally:
@@ -49,7 +50,10 @@ class File(object):
             self.remap = int(self.remap, 16)
 
     def __repr__(self):
-        return "{0}: {1} {2}, remap {3}".format(self.name, self.start, self.end, self.remap)
+        remap = "None"
+        if self.remap is not None:
+            remap = "{0:x}".format(self.remap)
+        return "{0}: {1:x} {2:x}, remap {3}".format(self.name, self.start, self.end, remap)
 
     def relocate(self, rom:LocalRom):
         if self.remap is None:
@@ -93,12 +97,14 @@ class Scene(object):
             loop -= 1
 
             if code == 0x04: #rooms
-                room_list_offset = rom.read_int24(headcur+5)
+                room_list_offset = rom.read_int24(headcur + 5)
+
             elif code == 0x0D: #paths
-                path_offset = self.write_path_data(rom)
-                rom.write_int32(headcur+4, path_offset)
+                path_offset = self.append_path_data(rom)
+                rom.write_int32(headcur + 4, path_offset)
+
             elif code == 0x0E: #transition actors
-                t_offset = rom.read_int24(headcur+5)
+                t_offset = rom.read_int24(headcur + 5)
                 addr = self.file.start + t_offset
                 write_actor_data(rom, addr, self.transition_actors)
 
@@ -106,6 +112,7 @@ class Scene(object):
             code = rom.read_byte(headcur)
 
         # update file references
+        self.file.end = align16(self.file.end)
         update_dmadata(rom, self.file)
         update_scene_table(rom, self.id, self.file.start, self.file.end)
         
@@ -118,21 +125,10 @@ class Scene(object):
             rom.write_int32s(cur, [room.file.start, room.file.end])
             cur += 0x08
 
-            
-    def get_path_size(self, path):
-        return ((len(path)*6+3)//4) * 4
 
-
-    def get_path_data_filesize(self):
-        size = len(self.paths) * 8
-        for path in self.paths:
-            path_size = self.get_path_size(path)
-            size += path_size
-        return size
-
-
+    # appends path data to the end of the rom
     # returns segment address to path data
-    def write_path_data(self, rom:LocalRom):
+    def append_path_data(self, rom:LocalRom):
         start = self.file.start
         cur = self.file.end
         records = []
@@ -140,22 +136,22 @@ class Scene(object):
 
         for path in self.paths:
             nodes = len(path)
-            offset = get_segment_address(2, cur-start)
+            offset = get_segment_address(2, cur - start)
             records.append((nodes, offset))
 
             #flatten
-            points = [x for points in path for x in points ]
+            points = [x for points in path for x in points]
             rom.write_int16s(cur, points)
-            cur += self.get_path_size(path)
+            path_size = align4(len(path) * 6)
+            cur += path_size
 
-        records_offset = get_segment_address(2, cur-start) 
+        records_offset = get_segment_address(2, cur - start) 
         for node, offset in records:
             rom.write_byte(cur, node)
-            rom.write_int32(cur+4, offset)
+            rom.write_int32(cur + 4, offset)
             cur += 8
 
-        # self.file.end = ((cur + 0xF)//0x10) * 0x10
-
+        self.file.end = cur
         return records_offset
 
 
@@ -185,27 +181,41 @@ class Room(object):
 
                 rom.write_byte(headcur + 1, len(self.actors))
                 rom.write_int32(headcur + 4, get_segment_address(3, offset))
+
             elif code == 0x0B: # objects
-                offset = rom.read_int24(headcur+5)
-                addr = self.file.start + offset
+                offset = self.append_object_data(rom, self.objects)
 
                 rom.write_byte(headcur + 1, len(self.objects))
-                rom.write_int16s(addr, self.objects)
+                rom.write_int32(headcur + 4, get_segment_address(3, offset))
 
             headcur += 8
             code = rom.read_byte(headcur)
 
+        # update file reference
+        self.file.end = align16(self.file.end)
         update_dmadata(rom, self.file)
+        
+
+    def append_object_data(self, rom:LocalRom, objects):
+        offset = self.file.end - self.file.start
+        cur = self.file.end
+        rom.write_int16s(cur, objects)
+
+        objects_size = align4(len(objects) * 2)
+        self.file.end += objects_size
+        return offset
 
 
-def patch_files(rom:LocalRom):
-    patch_ice_cavern_scene_header(rom)
+def patch_files(world, rom:LocalRom):
+    #patch_ice_cavern_scene_header(rom)
 
     data = get_json()
     scenes = [Scene(x) for x in data]
 
-    for scene in scenes:
-        scene.write_data(rom)
+    if world.dungeon_mq['DT']:
+        scenes[0].write_data(rom)
+    if world.dungeon_mq['DC']:
+        scenes[1].write_data(rom)
 
     verify_dma(rom)
 
@@ -237,6 +247,25 @@ def get_dma_record(rom:LocalRom, cur):
     end = rom.read_int32(cur+0x04)
     size = end-start
     return start, end, size
+
+
+def verify_remap(scenes):
+    def test_remap(file:File):
+        if file.remap is not None:
+            if file.start < file.remap:
+                return False
+        return True
+    print("test code: verify remap won't corrupt data")
+
+    for scene in scenes:
+        file = scene.file
+        result = test_remap(file)
+        print("{0} - {1}".format(result, file))
+
+        for room in scene.rooms:
+            file = room.file
+            result = test_remap(file)
+            print("{0} - {1}".format(result, file))
 
 
 def verify_dma(rom:LocalRom):
@@ -295,3 +324,9 @@ def write_actor_data(rom:LocalRom, cur, actors):
     for actor in actors:
         rom.write_int16s(cur, actor)
         cur += 0x10
+
+def align4(value):
+    return ((value + 3) // 4) * 4
+
+def align16(value):
+    return ((value + 0xF) // 0x10) * 0x10

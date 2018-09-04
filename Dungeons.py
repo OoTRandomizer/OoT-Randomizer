@@ -11,18 +11,32 @@ def create_dungeons(world):
             world.get_region(region).dungeon = dungeon
         return dungeon
 
-    DT = make_dungeon(
-        'Deku Tree', 
-        ['Deku Tree Lobby', 'Deku Tree Slingshot Room', 'Deku Tree Boss Room'], 
-        None, [],
-       ItemFactory(['Map (Deku Tree)', 'Compass (Deku Tree)']))
+    if world.dungeon_mq['DT']:
+        DT = make_dungeon(
+            'Deku Tree', 
+            ['Deku Tree Lobby', 'Deku Tree Compass Room', 'Deku Tree Boss Room'], 
+            None, [],
+            ItemFactory(['Map (Deku Tree)', 'Compass (Deku Tree)']))
+    else:
+        DT = make_dungeon(
+            'Deku Tree', 
+            ['Deku Tree Lobby', 'Deku Tree Slingshot Room', 'Deku Tree Boss Room'], 
+            None, [],
+            ItemFactory(['Map (Deku Tree)', 'Compass (Deku Tree)']))
 
-    DC = make_dungeon(
-        'Dodongos Cavern', 
-        ['Dodongos Cavern Beginning', 'Dodongos Cavern Lobby', 'Dodongos Cavern Climb', 'Dodongos Cavern Far Bridge', 
-         'Dodongos Cavern Boss Area'], 
-        None, [], 
-        ItemFactory(['Map (Dodongos Cavern)', 'Compass (Dodongos Cavern)']))
+    if world.dungeon_mq['DC']:
+        DC = make_dungeon(
+            'Dodongos Cavern', 
+            ['Dodongos Cavern Beginning', 'Dodongos Cavern Lobby', 'Dodongos Cavern Boss Area'], 
+            None, [], 
+            ItemFactory(['Map (Dodongos Cavern)', 'Compass (Dodongos Cavern)']))
+    else:
+        DC = make_dungeon(
+            'Dodongos Cavern', 
+            ['Dodongos Cavern Beginning', 'Dodongos Cavern Lobby', 'Dodongos Cavern Climb', 'Dodongos Cavern Far Bridge', 
+             'Dodongos Cavern Boss Area'], 
+            None, [], 
+            ItemFactory(['Map (Dodongos Cavern)', 'Compass (Dodongos Cavern)']))
 
     JB = make_dungeon(
         'Jabu Jabus Belly', 
@@ -100,4 +114,3 @@ def create_dungeons(world):
         [])
 
     world.dungeons = [DT, DC, JB, FoT, BW, FiT, IC, WT, ShT, GTG, SpT, GC]
-    

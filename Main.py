@@ -11,7 +11,8 @@ import struct
 
 from BaseClasses import World, CollectionState, Item
 from EntranceShuffle import link_entrances
-from Rom import patch_rom, LocalRom
+from Rom import LocalRom
+from Patches import patch_rom
 from Regions import create_regions
 from Dungeons import create_dungeons
 from Rules import set_rules
@@ -62,6 +63,15 @@ def main(settings, window=dummy_window()):
 
         window.update_progress(0 + (((id + 1) / settings.world_count) * 1))
         logger.info('Creating Overworld')
+        if world.quest == 'master':
+            for dungeon in world.dungeon_mq:
+                world.dungeon_mq[dungeon] = True
+        elif world.quest == 'mixed':
+            for dungeon in world.dungeon_mq:
+                world.dungeon_mq[dungeon] = random.choice([True, False])
+        else:
+            for dungeon in world.dungeon_mq:
+                world.dungeon_mq[dungeon] = False
         create_regions(world)
 
         window.update_progress(0 + (((id + 1) / settings.world_count) * 2))

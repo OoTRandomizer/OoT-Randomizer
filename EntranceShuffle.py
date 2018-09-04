@@ -5,7 +5,18 @@ def link_entrances(world):
     # setup mandatory connections
     for exitname, regionname in mandatory_connections:
         connect_simple(world, exitname, regionname)
-
+    if world.dungeon_mq['DT']:
+        for exitname, regionname in DT_MQ_connections:
+            connect_simple(world, exitname, regionname)
+    else:
+        for exitname, regionname in DT_vanilla_connections:
+            connect_simple(world, exitname, regionname)
+    if world.dungeon_mq['DC']:
+        for exitname, regionname in DC_MQ_connections:
+            connect_simple(world, exitname, regionname)
+    else:
+        for exitname, regionname in DC_vanilla_connections:
+            connect_simple(world, exitname, regionname)
     # if we do not shuffle, set default connections
     if world.shuffle == 'vanilla':
         for exitname, regionname in default_connections:
@@ -154,18 +165,6 @@ mandatory_connections = [('Adult Forest Warp Pad', 'Forest Temple Entry Area'),
                          ('Zoras Fountain Adult Access', 'Outside Ice Cavern'),
                          ('Lon Lon Rance Entrance', 'Lon Lon Ranch'),
                          ('Lon Lon Exit', 'Hyrule Field'),
-                         ('Deku Tree Slingshot Passage', 'Deku Tree Slingshot Room'),
-                         ('Deku Tree Slingshot Exit', 'Deku Tree Lobby'),
-                         ('Deku Tree Basement Path', 'Deku Tree Boss Room'),
-                         ('Deku Tree Basement Vines', 'Deku Tree Lobby'),
-                         ('Dodongos Cavern Lobby', 'Dodongos Cavern Lobby'),
-                         ('Dodongos Cavern Retreat', 'Dodongos Cavern Beginning'),
-                         ('Dodongos Cavern Left Door', 'Dodongos Cavern Climb'),
-                         ('Dodongos Cavern Bridge Fall', 'Dodongos Cavern Lobby'),
-                         ('Dodongos Cavern Slingshot Target', 'Dodongos Cavern Far Bridge'),
-                         ('Dodongos Cavern Bridge Fall 2', 'Dodongos Cavern Lobby'),
-                         ('Dodongos Cavern Bomb Drop', 'Dodongos Cavern Boss Area'),
-                         ('Dodongos Cavern Exit Skull', 'Dodongos Cavern Lobby'),
                          ('Jabu Jabus Belly Ceiling Switch', 'Jabu Jabus Belly Main'),
                          ('Jabu Jabus Belly Retreat', 'Jabu Jabus Belly Beginning'),
                          ('Jabu Jabus Belly Tentacles', 'Jabu Jabus Belly Depths'),
@@ -224,6 +223,32 @@ mandatory_connections = [('Adult Forest Warp Pad', 'Forest Temple Entry Area'),
                          ('Ganons Castle Light Trial', 'Ganons Castle Light Trial'),
                          ('Ganons Castle Tower', 'Ganons Castle Tower')
                         ]
+
+DT_vanilla_connections = [('Deku Tree Slingshot Passage', 'Deku Tree Slingshot Room'),
+                          ('Deku Tree Slingshot Exit', 'Deku Tree Lobby'),
+                          ('Deku Tree Basement Path', 'Deku Tree Boss Room'),
+                          ('Deku Tree Basement Vines', 'Deku Tree Lobby')
+                         ]
+
+DT_MQ_connections = [('Deku Tree Compass Passage', 'Deku Tree Compass Room'),
+                     ('Deku Tree Compass Exit', 'Deku Tree Lobby'),
+                     ('Deku Tree Basement Path', 'Deku Tree Boss Room'),
+                     ('Deku Tree Basement Vines', 'Deku Tree Lobby')
+                    ]
+
+DC_vanilla_connections = [('Dodongos Cavern Lobby', 'Dodongos Cavern Lobby'),
+                          ('Dodongos Cavern Retreat', 'Dodongos Cavern Beginning'),
+                          ('Dodongos Cavern Left Door', 'Dodongos Cavern Climb'),
+                          ('Dodongos Cavern Bridge Fall', 'Dodongos Cavern Lobby'),
+                          ('Dodongos Cavern Slingshot Target', 'Dodongos Cavern Far Bridge'),
+                          ('Dodongos Cavern Bridge Fall 2', 'Dodongos Cavern Lobby'),
+                          ('Dodongos Cavern Bomb Drop', 'Dodongos Cavern Boss Area'),
+                          ('Dodongos Cavern Exit Skull', 'Dodongos Cavern Lobby')
+                         ]
+
+DC_MQ_connections = [('Dodongos Cavern Lobby', 'Dodongos Cavern Lobby'),
+                     ('Dodongos Cavern Bomb Drop', 'Dodongos Cavern Boss Area')
+                    ]
 
 # non-shuffled entrance links
 default_connections = [('Links House Exit', 'Kokiri Forest'),

@@ -35,20 +35,6 @@ def create_regions(world):
             'Kokiri Shop', 
             None, 
             ['Kokiri Shop Exit']),
-        create_dungeon_region(
-            'Deku Tree Lobby', 
-            ['Deku Tree Lobby Chest', 'Deku Tree Compass Chest', 'Deku Tree Compass Room Side Chest', 
-             'Deku Tree Basement Chest', 'GS Deku Tree Compass Room', 'GS Deku Tree Basement Vines', 
-             'GS Deku Tree Basement Gate'], 
-            ['Deku Tree Exit', 'Deku Tree Slingshot Passage', 'Deku Tree Basement Path']),
-        create_dungeon_region(
-            'Deku Tree Slingshot Room', 
-            ['Deku Tree Slingshot Chest', 'Deku Tree Slingshot Room Side Chest'], 
-            ['Deku Tree Slingshot Exit']),
-        create_dungeon_region(
-            'Deku Tree Boss Room', 
-            ['GS Deku Tree Basement Back Room', 'Queen Gohma Heart', 'Queen Gohma'], 
-            ['Deku Tree Basement Vines']),
         create_ow_region(
             'Lost Woods',
             ['Skull Kid', 'Ocarina Memory Game', 'Target in Woods', 'Deku Salesman Woods', 
@@ -335,28 +321,6 @@ def create_regions(world):
             'Crater Fairy', 
             ['Crater Fairy Reward']),
         create_interior_region('Mountain Summit Fairy', ['Mountain Summit Fairy Reward']),
-        create_dungeon_region(
-            'Dodongos Cavern Beginning', 
-            None, 
-            ['Dodongos Cavern Exit', 'Dodongos Cavern Lobby']),
-        create_dungeon_region(
-            'Dodongos Cavern Lobby', 
-            ['Dodongos Cavern Map Chest', 'Dodongos Cavern Compass Chest', 'GS Dodongo\'s Cavern East Side Room', 
-             'GS Dodongo\'s Cavern Scarecrow'], 
-            ['Dodongos Cavern Retreat', 'Dodongos Cavern Left Door']),
-        create_dungeon_region(
-            'Dodongos Cavern Climb', 
-            ['Dodongos Cavern Bomb Flower Platform', 'GS Dodongo\'s Cavern Vines Above Stairs'], 
-            ['Dodongos Cavern Bridge Fall', 'Dodongos Cavern Slingshot Target']),
-        create_dungeon_region(
-            'Dodongos Cavern Far Bridge', 
-            ['Dodongos Cavern Bomb Bag Chest', 'Dodongos Cavern End of Bridge Chest', 
-             'GS Dodongo\'s Cavern Alcove Above Stairs'], 
-            ['Dodongos Cavern Bomb Drop', 'Dodongos Cavern Bridge Fall 2']),
-        create_dungeon_region(
-            'Dodongos Cavern Boss Area', 
-            ['Chest Above King Dodongo', 'King Dodongo Heart', 'King Dodongo', 'GS Dodongo\'s Cavern Back Room'], 
-            ['Dodongos Cavern Exit Skull']),
         create_ow_region(
             'Zora River Front', 
             ['GS Zora River Tree'], 
@@ -545,6 +509,87 @@ def create_regions(world):
         create_grotto_region('Lake Hylia Grotto')
     ]
 
+    if world.dungeon_mq['DT']:
+        world.regions.extend([
+            create_dungeon_region(
+                'Deku Tree Lobby', 
+                ['Deku Tree MQ Lobby Chest', 'Deku Tree MQ Slingshot Chest', 'Deku Tree MQ Slingshot Room Back Chest', 
+                 'Deku Tree MQ Basement Chest', 'GS Deku Tree MQ Lobby'], 
+                ['Deku Tree Exit', 'Deku Tree Compass Passage', 'Deku Tree Basement Path']),
+            create_dungeon_region(
+                'Deku Tree Compass Room', 
+                ['Deku Tree MQ Compass Chest', 'GS Deku Tree MQ Compass Room'], 
+                ['Deku Tree Compass Exit']),
+            create_dungeon_region(
+                'Deku Tree Boss Room', 
+                ['Deku Tree MQ Before Spinning Log Chest', 'Deku Tree MQ After Spinning Log Chest', 
+                 'GS Deku Tree MQ Basement Ceiling', 'GS Deku Tree MQ Basement Back Room', 
+                 'Queen Gohma Heart', 'Queen Gohma'], 
+                ['Deku Tree Basement Vines'])
+        ])
+    else:
+        world.regions.extend([
+            create_dungeon_region(
+                'Deku Tree Lobby', 
+                ['Deku Tree Lobby Chest', 'Deku Tree Compass Chest', 'Deku Tree Compass Room Side Chest', 
+                 'Deku Tree Basement Chest', 'GS Deku Tree Compass Room', 'GS Deku Tree Basement Vines', 
+                 'GS Deku Tree Basement Gate'], 
+                ['Deku Tree Exit', 'Deku Tree Slingshot Passage', 'Deku Tree Basement Path']),
+            create_dungeon_region(
+                'Deku Tree Slingshot Room', 
+                ['Deku Tree Slingshot Chest', 'Deku Tree Slingshot Room Side Chest'], 
+                ['Deku Tree Slingshot Exit']),
+            create_dungeon_region(
+                'Deku Tree Boss Room', 
+                ['GS Deku Tree Basement Back Room', 'Queen Gohma Heart', 'Queen Gohma'], 
+                ['Deku Tree Basement Vines'])
+        ])
+
+    if world.dungeon_mq['DC']:
+        world.regions.extend([
+            create_dungeon_region(
+                'Dodongos Cavern Beginning', 
+                None, 
+                ['Dodongos Cavern Exit', 'Dodongos Cavern Lobby']),
+            create_dungeon_region(
+                'Dodongos Cavern Lobby', 
+                ['Dodongos Cavern MQ Map Chest', 'Dodongos Cavern MQ Compass Chest', 'Dodongos Cavern MQ Larva Room Chest', 
+                 'Dodongos Cavern MQ Torch Puzzle Room Chest', 'Dodongos Cavern MQ Bomb Bag Chest', 
+                 'GS Dodongo\'s Cavern MQ Song of Time Block Room', 'GS Dodongo\'s Cavern MQ Larva Room', 
+                 'GS Dodongo\'s Cavern MQ Lizalfos Room', 'GS Dodongo\'s Cavern MQ Scrub Room'], 
+                ['Dodongos Cavern Bomb Drop']),
+            create_dungeon_region(
+                'Dodongos Cavern Boss Area', 
+                ['Dodongos Cavern MQ Under Grave Chest', 'Chest Above King Dodongo', 'King Dodongo Heart', 
+                 'King Dodongo', 'GS Dodongo\'s Cavern MQ Back Area']),
+        ])
+    else:
+        world.regions.extend([
+            create_dungeon_region(
+                'Dodongos Cavern Beginning', 
+                None, 
+                ['Dodongos Cavern Exit', 'Dodongos Cavern Lobby']),
+            create_dungeon_region(
+                'Dodongos Cavern Lobby', 
+                ['Dodongos Cavern Map Chest', 'Dodongos Cavern Compass Chest', 'GS Dodongo\'s Cavern East Side Room', 
+                 'GS Dodongo\'s Cavern Scarecrow'], 
+                ['Dodongos Cavern Retreat', 'Dodongos Cavern Left Door']),
+            create_dungeon_region(
+                'Dodongos Cavern Climb', 
+                ['Dodongos Cavern Bomb Flower Platform', 'GS Dodongo\'s Cavern Vines Above Stairs'], 
+                ['Dodongos Cavern Bridge Fall', 'Dodongos Cavern Slingshot Target']),
+            create_dungeon_region(
+                'Dodongos Cavern Far Bridge', 
+                ['Dodongos Cavern Bomb Bag Chest', 'Dodongos Cavern End of Bridge Chest', 
+                 'GS Dodongo\'s Cavern Alcove Above Stairs'], 
+                ['Dodongos Cavern Bomb Drop', 'Dodongos Cavern Bridge Fall 2']),
+            create_dungeon_region(
+                'Dodongos Cavern Boss Area', 
+                ['Chest Above King Dodongo', 'King Dodongo Heart', 'King Dodongo', 'GS Dodongo\'s Cavern Back Room'], 
+                ['Dodongos Cavern Exit Skull'])
+        ])
+
+
     world.initialize_regions()
 
 def create_ow_region(name, locations=None, exits=None):
@@ -593,18 +638,6 @@ location_table = {
     'Haunted Wasteland Structure Chest': (0x21E20DE, None, 0x8AA0, 'Chest', 0x5E, 'Haunted Wasteland'),
     'Redead Grotto Chest': (0x26CF076, None, 0x7ACA, 'Chest', 0x3E, 'Kakariko Village'),
     'Wolfos Grotto Chest': (0x26EB076, None, 0x7AB1, 'Chest', 0x3E, 'Sacred Forest Meadow'),
-    'Deku Tree Lobby Chest': (0x24A7146, None, 0x0823, 'Chest', 0x00, 'Deku Tree'),
-    'Deku Tree Slingshot Chest': (0x24C20C6, None, 0x00A1, 'Chest', 0x00, 'Deku Tree'),
-    'Deku Tree Slingshot Room Side Chest': (0x24C20D6, None, 0x5905, 'Chest', 0x00, 'Deku Tree'),
-    'Deku Tree Compass Chest': (0x25040D6, None, 0x0802, 'Chest', 0x00, 'Deku Tree'),
-    'Deku Tree Compass Room Side Chest': (0x25040E6, None, 0x5906, 'Chest', 0x00, 'Deku Tree'),
-    'Deku Tree Basement Chest': (0x24C8166, None, 0x5904, 'Chest', 0x00, 'Deku Tree'),
-    'Dodongos Cavern Map Chest': (0x1F2819E, None, 0x0828, 'Chest', 0x01, 'Dodongo\'s Cavern'),
-    'Dodongos Cavern Compass Chest': (0x1FAF0AA, None, 0x0805, 'Chest', 0x01, 'Dodongo\'s Cavern'),
-    'Dodongos Cavern Bomb Flower Platform': (0x1F890DE, None, 0x59C6, 'Chest', 0x01, 'Dodongo\'s Cavern'),
-    'Dodongos Cavern Bomb Bag Chest': (0x1F890CE, None, 0x0644, 'Chest', 0x01, 'Dodongo\'s Cavern'),
-    'Dodongos Cavern End of Bridge Chest': (0x1F281CE, None, 0x552A, 'Chest', 0x01, 'Dodongo\'s Cavern'),
-    'Chest Above King Dodongo': (0x2EB00BA, None, 0x5020, 'Chest', 0x12, 'Dodongo\'s Cavern'),
     'Boomerang Chest': (0x278A0BA, None, 0x10C1, 'Chest', 0x02, 'Jabu Jabu\'s Belly'),
     'Jabu Jabus Belly Map Chest': (0x278E08A, None, 0x1822, 'Chest', 0x02, 'Jabu Jabu\'s Belly'),
     'Jabu Jabus Belly Compass Chest': (0x279608A, None, 0xB804, 'Chest', 0x02, 'Jabu Jabu\'s Belly'),
@@ -852,6 +885,38 @@ location_table = {
     'Ganons Castle Spirit Trial Clear': (None, None, None, 'Event', None, 'Ganon\'s Castle'),
     'Ganons Castle Light Trial Clear': (None, None, None, 'Event', None, 'Ganon\'s Castle'),
 
+    # Deku Tree vanilla
+    'Deku Tree Lobby Chest': (0x24A7146, None, 0x0823, 'Chest', 0x00, 'Deku Tree'),
+    'Deku Tree Slingshot Chest': (0x24C20C6, None, 0x00A1, 'Chest', 0x00, 'Deku Tree'),
+    'Deku Tree Slingshot Room Side Chest': (0x24C20D6, None, 0x5905, 'Chest', 0x00, 'Deku Tree'),
+    'Deku Tree Compass Chest': (0x25040D6, None, 0x0802, 'Chest', 0x00, 'Deku Tree'),
+    'Deku Tree Compass Room Side Chest': (0x25040E6, None, 0x5906, 'Chest', 0x00, 'Deku Tree'),
+    'Deku Tree Basement Chest': (0x24C8166, None, 0x5904, 'Chest', 0x00, 'Deku Tree'),
+    # Deku Tree MQ
+    'Deku Tree MQ Lobby Chest': (0, None, 0x0823, 'Chest', 0x00, 'Deku Tree'),
+    'Deku Tree MQ Compass Chest': (0, None, 0x0801, 'Chest', 0x00, 'Deku Tree'),
+    'Deku Tree MQ Slingshot Chest': (0, None, 0x10A6, 'Chest', 0x00, 'Deku Tree'),
+    'Deku Tree MQ Slingshot Room Back Chest': (0, None, 0x8522, 'Chest', 0x00, 'Deku Tree'),
+    'Deku Tree MQ Basement Chest': (0, None, 0x8524, 'Chest', 0x00, 'Deku Tree'),
+    'Deku Tree MQ Before Spinning Log Chest': (0, None, 0x5905, 'Chest', 0x00, 'Deku Tree'),
+    'Deku Tree MQ After Spinning Log Chest': (0, None, 0x5AA0, 'Chest', 0x00, 'Deku Tree'),
+
+    # Dodongo's Cavern shared
+    'Chest Above King Dodongo': (0x2EB00BA, None, 0x5020, 'Chest', 0x12, 'Dodongo\'s Cavern'),
+    # Dodongo's Cavern vanilla
+    'Dodongos Cavern Map Chest': (0x1F2819E, None, 0x0828, 'Chest', 0x01, 'Dodongo\'s Cavern'),
+    'Dodongos Cavern Compass Chest': (0x1FAF0AA, None, 0x0805, 'Chest', 0x01, 'Dodongo\'s Cavern'),
+    'Dodongos Cavern Bomb Flower Platform': (0x1F890DE, None, 0x59C6, 'Chest', 0x01, 'Dodongo\'s Cavern'),
+    'Dodongos Cavern Bomb Bag Chest': (0x1F890CE, None, 0x0644, 'Chest', 0x01, 'Dodongo\'s Cavern'),
+    'Dodongos Cavern End of Bridge Chest': (0x1F281CE, None, 0x552A, 'Chest', 0x01, 'Dodongo\'s Cavern'),
+    # Dodongo's Cavern MQ
+    'Dodongos Cavern MQ Map Chest': (0, None, 0x0820, 'Chest', 0x01, 'Dodongo\'s Cavern'),
+    'Dodongos Cavern MQ Bomb Bag Chest': (0, None, 0x0644, 'Chest', 0x01, 'Dodongo\'s Cavern'),
+    'Dodongos Cavern MQ Compass Chest': (0, None, 0x1805, 'Chest', 0x01, 'Dodongo\'s Cavern'),
+    'Dodongos Cavern MQ Larva Room Chest': (0, None, 0x7522, 'Chest', 0x01, 'Dodongo\'s Cavern'),
+    'Dodongos Cavern MQ Torch Puzzle Room Chest': (0, None, 0x59A3, 'Chest', 0x01, 'Dodongo\'s Cavern'),
+    'Dodongos Cavern MQ Under Grave Chest': (0, None, 0x5541, 'Chest', 0x01, 'Dodongo\'s Cavern'),
+
     # I don't think the addresses matter for Link's Pocket anymore, but they can't be None for some reason
     'Links Pocket': (0x34806FB, 0x34806FF, None, 'Boss', None, 'Link\'s Pocket'), 
     'Queen Gohma': (0xCA315F, 0x2079571, 0x6C, 'Boss', None, 'Deku Tree'),
@@ -871,11 +936,22 @@ location_table = {
     'GS Deku Tree Basement Vines': (None, None, 0x04, 'GS Token', 0x00, 'Deku Tree'),
     'GS Deku Tree Compass Room': (None, None, 0x08, 'GS Token', 0x00, 'Deku Tree'),
 
+    'GS Deku Tree MQ Lobby': (None, None, 0x02, 'GS Token', 0x00, 'Deku Tree'),
+    'GS Deku Tree MQ Compass Room': (None, None, 0x08, 'GS Token', 0x00, 'Deku Tree'),
+    'GS Deku Tree MQ Basement Ceiling': (None, None, 0x04, 'GS Token', 0x00, 'Deku Tree'),
+    'GS Deku Tree MQ Basement Back Room': (None, None, 0x01, 'GS Token', 0x00, 'Deku Tree'),
+
     'GS Dodongo\'s Cavern Vines Above Stairs': (None, None, 0x01, 'GS Token', 0x01, 'Dodongo\'s Cavern'),
     'GS Dodongo\'s Cavern Scarecrow': (None, None, 0x02, 'GS Token', 0x01, 'Dodongo\'s Cavern'),
     'GS Dodongo\'s Cavern Alcove Above Stairs': (None, None, 0x04, 'GS Token', 0x01, 'Dodongo\'s Cavern'),
     'GS Dodongo\'s Cavern Back Room': (None, None, 0x08, 'GS Token', 0x01, 'Dodongo\'s Cavern'),
     'GS Dodongo\'s Cavern East Side Room': (None, None, 0x10, 'GS Token', 0x01, 'Dodongo\'s Cavern'),
+
+    'GS Dodongo\'s Cavern MQ Scrub Room': (None, None, 0x02, 'GS Token', 0x01, 'Dodongo\'s Cavern'),
+    'GS Dodongo\'s Cavern MQ Song of Time Block Room': (None, None, 0x08, 'GS Token', 0x01, 'Dodongo\'s Cavern'),
+    'GS Dodongo\'s Cavern MQ Lizalfos Room': (None, None, 0x04, 'GS Token', 0x01, 'Dodongo\'s Cavern'),
+    'GS Dodongo\'s Cavern MQ Larva Room': (None, None, 0x10, 'GS Token', 0x01, 'Dodongo\'s Cavern'),
+    'GS Dodongo\'s Cavern MQ Back Area': (None, None, 0x01, 'GS Token', 0x01, 'Dodongo\'s Cavern'),
 
     'GS Jabu Jabu Lobby Basement Lower': (None, None, 0x01, 'GS Token', 0x02, 'Jabu Jabu\'s Belly'),
     'GS Jabu Jabu Lobby Basement Upper': (None, None, 0x02, 'GS Token', 0x02, 'Jabu Jabu\'s Belly'),
