@@ -1,0 +1,45 @@
+grotto data           scene  contents
+0x00 (0x00) (00000)   0x70   0x4D (5 rupees)    boulder west of market entrance
+0x02 (0x22) (00010)   0x72   0x4E (20 rupees)   boulder in trees near lake hylia
+0x03 (0x03) (00011)   0x73   0x4D (5 rupees)    outside lake hylia fences
+0x08 (0x28) (01000)   0x78   0x4E (20 rupees)   kak potion shop hole
+0x09 (0x29) (01001)   0x79   0x4D (5 rupees)    zora's domain high open hole
+0x0C (0x2C) (01100)   0x7C   0x4E (20 rupees)   kokiri forest gossip stone (SoS)
+0x14 (0x14) (10100)   0x84   0x4D (5 rupees)    lost woods boulder by goron city
+0x17 (0x57) (10111)   0x87   0x56 (200 rupees)  outside goron city (SoS)
+0x1A (0x7A) (11010)   0x8A   0x67 (20 bombs)    crater top entrance, rock circle
+
+
+
+item grottos:
+inside lake hylia fences      heart piece merchant
+lone tree by river            heart piece under water
+boulder near sacred meadow    nut capacity merchant
+front of sacred meadow        wolfos chest
+kakariko center               redead chest
+
+
+
+skull grottos:
+between market and kak        skull
+hyrule castle tree (SoS)      skull + hint stone
+outside gerudo valley         skull + hint stone + cow
+
+
+
+no-item grottos:
+death mountain steps          cow + free standing rupees
+gerudo valley silver rock     free standing rupees
+crater bottom entrance        ammo merchants
+goron city lava room          ammo merchants
+lake hylia under grave        ammo merchants
+lon lon ranch                 ammo merchants
+desert colossus silver rock   potion merchants
+behind carpenter tent (SoS)   potion merchants
+forest temple area (SoS)      potion merchants
+zora's domain rock circle     potion merchants
+zora's domain high boulder    fairies
+gerudo fortress boxes (SoS)   fairies
+bolder across river           fairies
+middle of sacred meadow       fairies
+zora's domain square island   fairies

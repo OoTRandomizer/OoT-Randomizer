@@ -3,93 +3,408 @@ import logging
 import random
 
 from Items import ItemFactory
-from Fill import FillError, fill_restrictive
 
 #This file sets the item pools for various modes. Timed modes and triforce hunt are enforced first, and then extra items are specified per mode to fill in the remaining space.
 #Some basic items that various modes require are placed here, including pendants and crystals. Medallion requirements for the two relevant entrances are also decided.
 
-alwaysitems = (['Kokiri Sword', 'Biggoron Sword', 'Boomerang', 'Lens of Truth', 'Hammer', 'Iron Boots', 'Goron Tunic', 'Zora Tunic', 'Hover Boots', 'Mirror Shield', 'Stone of Agony', 'Fire Arrows', 'Ice Arrows', 'Light Arrows', 'Dins Fire', 'Farores Wind', 'Nayrus Love', 'Rupee (1)'] + ['Progressive Hookshot'] * 2 + ['Deku Shield'] * 4 +  ['Hylian Shield'] * 2 + ['Ice Trap'] * 6 +
-              ['Progressive Strength Upgrade'] * 3 + ['Progressive Scale'] * 2 + ['Piece of Heart'] * 16 + ['Recovery Heart'] * 11 + ['Rupees (5)'] * 13 + ['Rupees (20)'] * 2 + ['Rupees (50)'] * 7 + ['Rupees (200)'] * 5 + ['Bow'] * 3 + ['Slingshot'] * 3 + ['Bomb Bag'] * 3 + ['Bottle'] * 2 + ['Bottle with Letter'] + ['Bottle with Milk'] +
-              ['Bombs (5)'] * 2 + ['Bombs (10)'] * 2 + ['Bombs (20)'] + ['Bombchus (5)'] + ['Bombchus (10)'] * 3 + ['Bombchus (20)'] + ['Arrows (5)'] + ['Arrows (10)'] * 6 + ['Arrows (30)'] * 6 + ['Deku Nuts (5)'] + ['Deku Nuts (10)'] + ['Progressive Wallet'] * 2 + ['Deku Stick Capacity'] * 2 + ['Deku Nut Capacity'] * 2)
-notmapcompass = ['Rupees (5)'] * 20
-rewardlist = ['Kokiri Emerald', 'Goron Ruby', 'Zora Sapphire', 'Forest Medallion', 'Fire Medallion', 'Water Medallion', 'Spirit Medallion', 'Shadow Medallion', 'Light Medallion']
-songlist = ['Zeldas Lullaby', 'Eponas Song', 'Suns Song', 'Sarias Song', 'Song of Time', 'Song of Storms', 'Minuet of Forest', 'Prelude of Light', 'Bolero of Fire', 'Serenade of Water', 'Nocturne of Shadow', 'Requiem of Spirit']
-skulltulla_locations = (['GS1', 'GS2', 'GS3', 'GS4', 'GS5', 'GS6', 'GS7', 'GS8', 'GS9', 'GS10', 'GS11', 'GS12', 'GS13', 'GS14', 'GS15', 'GS16', 'GS17', 'GS18', 'GS19', 'GS20'] +
-                       ['GS21', 'GS22', 'GS23', 'GS24', 'GS25', 'GS26', 'GS27', 'GS28', 'GS29', 'GS30', 'GS31', 'GS32', 'GS33', 'GS34', 'GS35', 'GS36', 'GS37', 'GS38', 'GS39', 'GS40'] +
-                       ['GS41', 'GS42', 'GS43', 'GS44', 'GS45', 'GS46', 'GS47', 'GS48', 'GS49', 'GS50', 'GS51', 'GS52', 'GS53', 'GS54', 'GS55', 'GS56', 'GS57', 'GS58', 'GS59', 'GS60'] +
-                       ['GS61', 'GS62', 'GS63', 'GS64', 'GS65', 'GS66', 'GS67', 'GS68', 'GS69', 'GS70', 'GS71', 'GS72', 'GS73', 'GS74', 'GS75', 'GS76', 'GS77', 'GS78', 'GS79', 'GS80'] +
-                       ['GS81', 'GS82', 'GS83', 'GS84', 'GS85', 'GS86', 'GS87', 'GS88', 'GS89', 'GS90', 'GS91', 'GS92', 'GS93', 'GS94', 'GS95', 'GS96', 'GS97', 'GS98', 'GS99', 'GS100'])
-tradeitems = ['Pocket Egg', 'Pocket Cucco', 'Cojiro', 'Odd Mushroom', 'Poachers Saw', 'Broken Sword', 'Prescription', 'Eyeball Frog', 'Eyedrops', 'Claim Check']
+alwaysitems = ([
+    'Biggoron Sword', 
+    'Boomerang', 
+    'Lens of Truth', 
+    'Hammer', 
+    'Iron Boots', 
+    'Goron Tunic', 
+    'Zora Tunic', 
+    'Hover Boots', 
+    'Mirror Shield', 
+    'Stone of Agony', 
+    'Fire Arrows', 
+    'Ice Arrows', 
+    'Light Arrows', 
+    'Dins Fire', 
+    'Farores Wind', 
+    'Rupee (1)'] 
+    + ['Progressive Hookshot'] * 2
+    + ['Deku Shield'] * 4
+    + ['Hylian Shield'] * 2
+    + ['Progressive Strength Upgrade'] * 3
+    + ['Progressive Scale'] * 2
+    + ['Recovery Heart'] * 9
+    + ['Rupees (5)'] * 16
+    + ['Rupees (20)'] * 5
+    + ['Rupees (50)'] * 7
+    + ['Rupees (200)'] * 6
+    + ['Bow'] * 3
+    + ['Slingshot'] * 3
+    + ['Bomb Bag'] * 3
+    + ['Bottle with Letter']
+    + ['Bombs (5)'] * 2
+    + ['Bombs (10)'] * 2
+    + ['Bombs (20)'] * 2
+    + ['Arrows (5)']
+    + ['Arrows (10)'] * 6
+    + ['Arrows (30)'] * 6
+    + ['Deku Nuts (5)']
+    + ['Deku Nuts (10)']
+    + ['Progressive Wallet'] * 2
+    + ['Deku Stick Capacity'] * 2
+    + ['Deku Nut Capacity'] * 2
+    + ['Magic Meter'])
+
+DT_vanilla = (['Recovery Heart'] * 2)
+
+DT_MQ = (['Deku Shield'] * 2
+         + ['Rupees (50)'])
+
+DC_vanilla = (['Rupees (20)'])
+
+DC_MQ = (['Hylian Shield']
+         + ['Rupees (5)'])
+
+normal_bottles = [
+    'Bottle',
+    'Bottle with Milk',
+    'Bottle with Red Potion',
+    'Bottle with Green Potion',
+    'Bottle with Blue Potion',
+    'Bottle with Fairy',
+    'Bottle with Fish',
+    'Bottle with Bugs',
+    'Bottle with Poe'] # 'Bottle with Blue Fire'
+
+normal_bottle_count = 3
+
+# 10 items get removed for hard+
+harditems = (
+    ['Bombs (5)'] * 2 
+    + ['Arrows (5)'] * 2 
+    + ['Deku Nuts (5)'] * 2 
+    + ['Rupees (5)'] * 3 
+    + ['Rupees (20)'])
+
+# 37 items get removed for very hard
+veryharditems = (
+    ['Bombs (5)'] * 8 
+    + ['Arrows (5)'] * 8 
+    + ['Deku Nuts (5)'] * 8 
+    + ['Rupees (5)'] * 10 
+    + ['Rupees (20)'] * 2 
+    + ['Rupees (50)'])
+
+rewardlist = [
+    'Kokiri Emerald',
+    'Goron Ruby', 
+    'Zora Sapphire', 
+    'Forest Medallion', 
+    'Fire Medallion', 
+    'Water Medallion', 
+    'Spirit Medallion', 
+    'Shadow Medallion', 
+    'Light Medallion']
+
+songlist = [
+    'Zeldas Lullaby', 
+    'Eponas Song', 
+    'Suns Song', 
+    'Sarias Song', 
+    'Song of Time', 
+    'Song of Storms', 
+    'Minuet of Forest', 
+    'Prelude of Light', 
+    'Bolero of Fire', 
+    'Serenade of Water', 
+    'Nocturne of Shadow', 
+    'Requiem of Spirit']
+
+skulltulla_locations = ([
+    'GS Kokiri Know It All House',
+    'GS Kokiri Bean Patch',
+    'GS Kokiri House of Twins',
+    'GS Lost Woods Bean Patch Near Bridge',
+    'GS Lost Woods Bean Patch Near Stage',
+    'GS Lost Woods Above Stage',
+    'GS Sacred Forest Meadow',
+    'GS Hyrule Field near Kakariko',
+    'GS Hyrule Field Near Gerudo Valley',
+    'GS Castle Market Guard House',
+    'GS Hyrule Castle Tree',
+    'GS Hyrule Castle Grotto',
+    'GS Outside Ganon\'s Castle',
+    'GS Lon Lon Ranch Tree',
+    'GS Lon Lon Ranch Rain Shed',
+    'GS Lon Lon Ranch House Window',
+    'GS Lon Lon Ranch Back Wall',
+    'GS Kakariko House Under Construction',
+    'GS Kakariko Skulltula House',
+    'GS Kakariko Guard\'s House',
+    'GS Kakariko Tree',
+    'GS Kakariko Watchtower',
+    'GS Kakariko Above Impa\'s House',
+    'GS Graveyard Wall',
+    'GS Graveyard Bean Patch',
+    'GS Mountain Trail Bean Patch',
+    'GS Mountain Trail Bomb Alcove',
+    'GS Mountain Trail Path to Crater',
+    'GS Mountain Trail Above Dodongo\'s Cavern',
+    'GS Goron City Boulder Maze',
+    'GS Goron City Center Platform',
+    'GS Death Mountain Crater Crate',
+    'GS Mountain Crater Bean Patch',
+    'GS Zora River Ladder',
+    'GS Zora River Tree',
+    'GS Zora River Near Raised Grottos',
+    'GS Zora River Above Bridge',
+    'GS Zora\'s Domain Frozen Waterfall',
+    'GS Zora\'s Fountain Tree',
+    'GS Zora\'s Fountain Above the Log',
+    'GS Zora\'s Fountain Hidden Cave',
+    'GS Jabu Jabu Water Switch Room',
+    'GS Jabu Jabu Lobby Basement Lower',
+    'GS Jabu Jabu Lobby Basement Upper',
+    'GS Jabu Jabu Near Boss',
+    'GS Lake Hylia Bean Patch',
+    'GS Lake Hylia Lab Wall',
+    'GS Lake Hylia Small Island',
+    'GS Lake Hylia Giant Tree',
+    'GS Lab Underwater Crate',
+    'GS Forest Temple First Room',
+    'GS Forest Temple Lobby',
+    'GS Forest Temple Outdoor East',
+    'GS Forest Temple Outdoor West',
+    'GS Forest Temple Basement',
+    'GS Fire Temple Song of Time Room',
+    'GS Fire Temple Unmarked Bomb Wall',
+    'GS Fire Temple East Tower Climb',
+    'GS Fire Temple East Tower Top',
+    'GS Fire Temple Basement',
+    'GS Ice Cavern Spinning Scythe Room',
+    'GS Ice Cavern Heart Piece Room',
+    'GS Ice Cavern Push Block Room',
+    'GS Water Temple South Basement',
+    'GS Water Temple Serpent River',
+    'GS Water Temple Falling Platform Room',
+    'GS Water Temple Central Room',
+    'GS Water Temple Near Boss Key Chest',
+    'GS Well West Inner Room',
+    'GS Well East Inner Room',
+    'GS Well Like Like Cage',
+    'GS Shadow Temple Like Like Room',
+    'GS Shadow Temple Crusher Room',
+    'GS Shadow Temple Single Giant Pot',
+    'GS Shadow Temple Near Ship',
+    'GS Shadow Temple Tripple Giant Pot',
+    'GS Gerudo Valley Small Bridge',
+    'GS Gerudo Valley Bean Patch',
+    'GS Gerudo Valley Behind Tent',
+    'GS Gerudo Valley Pillar',
+    'GS Gerudo Fortress Archery Range',
+    'GS Gerudo Fortress Top Floor',
+    'GS Wasteland Ruins',
+    'GS Desert Colossus Bean Patch',
+    'GS Desert Colossus Tree',
+    'GS Desert Colossus Hill',
+    'GS Spirit Temple Metal Fence',
+    'GS Spirit Temple Bomb for Light Room',
+    'GS Spirit Temple Hall to West Iron Knuckle',
+    'GS Spirit Temple Boulder Room',
+    'GS Spirit Temple Lobby'])
+    
+tradeitems = [
+    'Pocket Egg',
+    'Pocket Cucco', 
+    'Cojiro', 
+    'Odd Mushroom', 
+    'Poachers Saw', 
+    'Broken Sword', 
+    'Prescription', 
+    'Eyeball Frog', 
+    'Eyedrops', 
+    'Claim Check']
+
+
+eventlocations = {
+    'Ganon': 'Triforce',
+    'Zeldas Letter': 'Zeldas Letter',
+    'Magic Bean Salesman': 'Magic Bean',
+    'King Zora Moves': 'Bottle',
+    'Master Sword Pedestal': 'Master Sword',
+    'Epona': 'Epona',
+    'Gerudo Fortress Carpenter Rescue': 'Carpenter Rescue',
+    'Ganons Castle Forest Trial Clear': 'Forest Trial Clear',
+    'Ganons Castle Fire Trial Clear': 'Fire Trial Clear',
+    'Ganons Castle Water Trial Clear': 'Water Trial Clear',
+    'Ganons Castle Shadow Trial Clear': 'Shadow Trial Clear',
+    'Ganons Castle Spirit Trial Clear': 'Spirit Trial Clear',
+    'Ganons Castle Light Trial Clear': 'Light Trial Clear'
+}
 
 #total_items_to_place = 5
 
 def generate_itempool(world):
-
-    for location in skulltulla_locations:
-        world.push_item(location, ItemFactory('Gold Skulltulla Token'), False)
+    for location, item in eventlocations.items():
+        world.push_item(location, ItemFactory(item))
         world.get_location(location).event = True
-
-    world.push_item('Ganon', ItemFactory('Triforce'), False)
-    world.get_location('Ganon').event = True
-    world.push_item('Gift from Saria', ItemFactory('Fairy Ocarina'), False)
-    world.get_location('Gift from Saria').event = True
-    world.push_item('Zeldas Letter', ItemFactory('Zeldas Letter'), False)
-    world.get_location('Zeldas Letter').event = True
-    world.push_item('Mountain Summit Fairy Reward', ItemFactory('Magic Meter'), False)
-    world.get_location('Mountain Summit Fairy Reward').event = True
-    world.push_item('Crater Fairy Reward', ItemFactory('Magic Meter'), False)
-    world.get_location('Crater Fairy Reward').event = True
-    world.push_item('Magic Bean Salesman', ItemFactory('Magic Bean'), False)
-    world.get_location('Magic Bean Salesman').event = True
-    world.push_item('King Zora Moves', ItemFactory('Bottle'), False)
-    world.get_location('King Zora Moves').event = True
-    world.push_item('Ocarina of Time', ItemFactory('Ocarina of Time'), False)
-    world.get_location('Ocarina of Time').event = True
-    world.push_item('Master Sword Pedestal', ItemFactory('Master Sword'), False)
-    world.get_location('Master Sword Pedestal').event = True
-    world.push_item('Epona', ItemFactory('Epona'), False)
-    world.get_location('Epona').event = True
-    world.push_item('Gerudo Fortress Carpenter Rescue', ItemFactory('Gerudo Membership Card'), False)
-    world.get_location('Gerudo Fortress Carpenter Rescue').event = True
-    world.push_item('Ganons Castle Forest Trial Clear', ItemFactory('Forest Trial Clear'), False)
-    world.get_location('Ganons Castle Forest Trial Clear').event = True
-    world.push_item('Ganons Castle Fire Trial Clear', ItemFactory('Fire Trial Clear'), False)
-    world.get_location('Ganons Castle Fire Trial Clear').event = True
-    world.push_item('Ganons Castle Water Trial Clear', ItemFactory('Water Trial Clear'), False)
-    world.get_location('Ganons Castle Water Trial Clear').event = True
-    world.push_item('Ganons Castle Shadow Trial Clear', ItemFactory('Shadow Trial Clear'), False)
-    world.get_location('Ganons Castle Shadow Trial Clear').event = True
-    world.push_item('Ganons Castle Spirit Trial Clear', ItemFactory('Spirit Trial Clear'), False)
-    world.get_location('Ganons Castle Spirit Trial Clear').event = True
-    world.push_item('Ganons Castle Light Trial Clear', ItemFactory('Light Trial Clear'), False)
-    world.get_location('Ganons Castle Light Trial Clear').event = True
 
     # set up item pool
-    (pool, placed_items) = get_pool_core(world.place_dungeon_items)
+    (pool, placed_items) = get_pool_core(world)
     world.itempool = ItemFactory(pool)
-    for (location, item) in placed_items:
-        world.push_item(location, ItemFactory(item), False)
+    for (location, item) in placed_items.items():
+        world.push_item(location, ItemFactory(item))
         world.get_location(location).event = True
 
+    choose_trials(world)
     fill_bosses(world)
-    fill_songs(world)
 
-def get_pool_core(dungeon_items):
+    world.initialize_items()
+
+
+def get_pool_core(world):
     pool = []
-    placed_items = []
+    placed_items = {}
+        
+    if world.shuffle_kokiri_sword:
+        pool.append('Kokiri Sword')
+    else:
+        placed_items['Kokiri Sword Chest'] = 'Kokiri Sword'
 
-    if not dungeon_items:
-        pool.extend(notmapcompass)
+    if world.shuffle_weird_egg:
+        pool.append('Weird Egg')
+    else:
+        placed_items['Malon Egg'] = 'Weird Egg'
+
+    if world.shuffle_ocarinas:
+        pool.extend(['Ocarina'] * 2)
+    else:
+        placed_items['Gift from Saria'] = 'Ocarina'
+        placed_items['Ocarina of Time'] = 'Ocarina'
+
+    if world.dungeon_mq['DT']:
+        skulltulla_locations_final = skulltulla_locations + [
+            'GS Deku Tree MQ Lobby',
+            'GS Deku Tree MQ Compass Room',
+            'GS Deku Tree MQ Basement Ceiling',
+            'GS Deku Tree MQ Basement Back Room']
+    else:
+        skulltulla_locations_final = skulltulla_locations + [
+            'GS Deku Tree Compass Room',
+            'GS Deku Tree Basement Vines',
+            'GS Deku Tree Basement Gate',
+            'GS Deku Tree Basement Back Room']
+    if world.dungeon_mq['DC']:
+        skulltulla_locations_final.extend([
+            'GS Dodongo\'s Cavern MQ Scrub Room',
+            'GS Dodongo\'s Cavern MQ Song of Time Block Room',
+            'GS Dodongo\'s Cavern MQ Lizalfos Room',
+            'GS Dodongo\'s Cavern MQ Larva Room',
+            'GS Dodongo\'s Cavern MQ Back Area'])
+    else:
+        skulltulla_locations_final.extend([
+            'GS Dodongo\'s Cavern East Side Room',
+            'GS Dodongo\'s Cavern Vines Above Stairs',
+            'GS Dodongo\'s Cavern Back Room',
+            'GS Dodongo\'s Cavern Alcove Above Stairs',
+            'GS Dodongo\'s Cavern Scarecrow'])
+    if world.tokensanity == 'off':
+        for location in skulltulla_locations_final:
+            placed_items[location] = 'Gold Skulltulla Token'
+    elif world.tokensanity == 'dungeons':
+        for location in skulltulla_locations_final:
+            if world.get_location(location).scene >= 0x0A:
+                placed_items[location] = 'Gold Skulltulla Token'
+            else:
+                pool.append('Gold Skulltulla Token')
+    else:
+        pool.extend(['Gold Skulltulla Token'] * 100)
+
+    if world.bombchus_in_logic:
+        pool.extend(['Bombchus'] * 5)
+    else:
+        pool.extend(['Bombchus (5)'] + ['Bombchus (10)'] * 3 + ['Bombchus (20)'])
+
+    if world.difficulty == 'ohko':
+        pool.extend(['Recovery Heart'] * 6)
+    else:
+        pool.extend(['Ice Trap'] * 6)        
+
+    if world.difficulty == 'normal':
+        pool.extend(['Magic Meter', 'Double Defense'] + ['Heart Container'] * 8)
+    else:
+        pool.extend(harditems)
+
+    if world.difficulty == 'very_hard' or world.difficulty == 'ohko':
+        pool.extend(veryharditems)
+    else:
+        pool.extend(['Nayrus Love', 'Piece of Heart (Treasure Chest Game)'] + ['Piece of Heart'] * 35)
+
+    if world.gerudo_fortress == 'open':
+        placed_items['Gerudo Fortress North F1 Carpenter'] = 'Recovery Heart'
+        placed_items['Gerudo Fortress North F2 Carpenter'] = 'Recovery Heart'
+        placed_items['Gerudo Fortress South F1 Carpenter'] = 'Recovery Heart'
+        placed_items['Gerudo Fortress South F2 Carpenter'] = 'Recovery Heart'
+    elif world.keysanity:
+        if world.gerudo_fortress == 'fast':
+            pool.append('Small Key (Gerudo Fortress)')
+            placed_items['Gerudo Fortress North F2 Carpenter'] = 'Recovery Heart'
+            placed_items['Gerudo Fortress South F1 Carpenter'] = 'Recovery Heart'
+            placed_items['Gerudo Fortress South F2 Carpenter'] = 'Recovery Heart'
+        else:
+            pool.extend(['Small Key (Gerudo Fortress)'] * 4)
+    else:
+        if world.gerudo_fortress == 'fast':
+            placed_items['Gerudo Fortress North F1 Carpenter'] = 'Small Key (Gerudo Fortress)'
+            placed_items['Gerudo Fortress North F2 Carpenter'] = 'Recovery Heart'
+            placed_items['Gerudo Fortress South F1 Carpenter'] = 'Recovery Heart'
+            placed_items['Gerudo Fortress South F2 Carpenter'] = 'Recovery Heart'
+        else:
+            placed_items['Gerudo Fortress North F1 Carpenter'] = 'Small Key (Gerudo Fortress)'
+            placed_items['Gerudo Fortress North F2 Carpenter'] = 'Small Key (Gerudo Fortress)'
+            placed_items['Gerudo Fortress South F1 Carpenter'] = 'Small Key (Gerudo Fortress)'
+            placed_items['Gerudo Fortress South F2 Carpenter'] = 'Small Key (Gerudo Fortress)'
+
+    if world.shuffle_gerudo_card and world.gerudo_fortress != 'open':
+        pool.append('Gerudo Membership Card')
+    else:
+        placed_items['Gerudo Fortress Membership Card'] = 'Gerudo Membership Card'
+
+
     pool.extend(alwaysitems)
+    if world.dungeon_mq['DT']:
+        pool.extend(DT_MQ)
+    else:
+        pool.extend(DT_vanilla)
+    if world.dungeon_mq['DC']:
+        pool.extend(DC_MQ)
+    else:
+        pool.extend(DC_vanilla)
+    for _ in range(normal_bottle_count):
+        bottle = random.choice(normal_bottles)
+        pool.append(bottle)
     tradeitem = random.choice(tradeitems)
     pool.append(tradeitem)
+    pool.extend(songlist)
 
     return (pool, placed_items)
 
+def choose_trials(world):
+    num_trials = int(world.trials)
+    choosen_trials = random.sample(['Forest', 'Fire', 'Water', 'Spirit', 'Shadow', 'Light'], num_trials)
+    for trial in world.skipped_trials:
+        if trial not in choosen_trials:
+            world.skipped_trials[trial] = True
+
 def fill_bosses(world, bossCount=9):
     boss_rewards = ItemFactory(rewardlist)
-    boss_locations = [world.get_location('Queen Gohma'), world.get_location('King Dodongo'), world.get_location('Barinade'), world.get_location('Phantom Ganon'),
-                      world.get_location('Volvagia'), world.get_location('Morpha'), world.get_location('Bongo Bongo'), world.get_location('Twinrova'), world.get_location('Links Pocket')]
+    boss_locations = [
+        world.get_location('Queen Gohma'), 
+        world.get_location('King Dodongo'), 
+        world.get_location('Barinade'), 
+        world.get_location('Phantom Ganon'),
+        world.get_location('Volvagia'), 
+        world.get_location('Morpha'), 
+        world.get_location('Bongo Bongo'), 
+        world.get_location('Twinrova'), 
+        world.get_location('Links Pocket')]
+
     placed_prizes = [loc.item.name for loc in boss_locations if loc.item is not None]
     unplaced_prizes = [item for item in boss_rewards if item.name not in placed_prizes]
     empty_boss_locations = [loc for loc in boss_locations if loc.item is None]
@@ -102,29 +417,4 @@ def fill_bosses(world, bossCount=9):
         random.shuffle(prize_locs)
         item = prizepool.pop()
         loc = prize_locs.pop()
-        world.push_item(loc, item, False)
-        world.get_location(loc).event = True
-
-def fill_songs(world, attempts=15):
-    songs = ItemFactory(songlist)
-    song_locations = [world.get_location('Song from Composer Grave'), world.get_location('Impa at Castle'), world.get_location('Song from Malon'), world.get_location('Song from Saria'), world.get_location('Song from Ocarina of Time'), world.get_location('Song at Windmill'), world.get_location('Sheik Forest Song'), world.get_location('Sheik at Temple'), world.get_location('Sheik in Crater'), world.get_location('Sheik in Ice Cavern'), world.get_location('Sheik in Kakariko'), world.get_location('Sheik at Colossus')]
-    placed_prizes = [loc.item.name for loc in song_locations if loc.item is not None]
-    unplaced_prizes = [song for song in songs if song.name not in placed_prizes]
-    empty_song_locations = [loc for loc in song_locations if loc.item is None]
-
-    while attempts:
-        attempts -= 1
-        try:
-            prizepool = list(unplaced_prizes)
-            prize_locs = list(empty_song_locations)
-            random.shuffle(prizepool)
-            random.shuffle(prize_locs)
-            fill_restrictive(world, world.get_all_state(keys=True), prize_locs, prizepool) #TODO: Set keys to true once keys are properly implemented
-        except FillError:
-            logging.getLogger('').info("Failed to place songs. Will retry %s more times", attempts)
-            for location in empty_song_locations:
-                location.item = None
-            continue
-        break
-    else:
-        raise FillError('Unable to place songs')
+        world.push_item(loc, item)

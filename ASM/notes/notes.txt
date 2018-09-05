@@ -1,0 +1,40 @@
+0x8011A5D0 = save context
+   +0x1394 = grotto details
+             first 2 bytes: Entrance used to reach area we were in before the grotto
+             last byte: chest variable (contents + 5 bit chest flag)
+
+0x801C84A0 = global context
+   +0x00A4 = current scene number (2 bytes)
+
+0x801DAA30 = player instance
+   +0x0424 = item to be obtained (set negative by chests) (801DAE54)
+             gets written @ 0x80022CD0
+
+0x802190AC = Chest info as stored in ROM
+
+0x803A9E84 = item table (6 bytes per entry)
+
+SOLD OUT texture: 0x008A9C00 in ROM (0x400 long), gets DMA'd to 0x8036B8A0
+
+chest instance + 0x1C = contents
+
+Mido's house chest actor instances:
+top left:     0x801EAF80
+top right:    0x801EB1A0
+bottom left:  0x801EB3C0
+bottom right: 0x801EB5E0
+
+warp function? @ 0x8009CEEC
+  a0 = pointer to global context
+  a1 = target scene number
+  a2 = target entrance
+  a3 = entrance index
+
+Equipment (relative to save context):
+0xA1:                 0x30 = nuts    0x06 = sticks
+0xA2: 0xC0 = bullets  0x30 = wallet  0x06 = scale
+0xA3: 0xC0 = strength      0x18 = bombs   0x03 = quiver
+
+silver gauntlets warp: checks at 0x803A4BE0 (in player instance)
+  T6: Destination (e.g. 0x00A0)
+  T8: Cutscene index? (e.g. 0xFFF0)

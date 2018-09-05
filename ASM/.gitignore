@@ -1,0 +1,5 @@
+/inject
+/roms/*
+/temp/*
+armips*
+!.gitkeep
