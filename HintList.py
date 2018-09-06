@@ -44,7 +44,7 @@ hintTable = {'Hammer':                                                ("the drag
              'Farores Wind':                                          ("teleportation", 'item'),
              'Nayrus Love':                                           ("a safe space", 'item'),
              'Ice Arrows':                                            ("the frozen fletching", 'item'),
-             'Lens of Truth':                                         ("the illsory imager", 'item'),
+             'Lens of Truth':                                         ("the illusory imager", 'item'),
              'Dins Fire':                                             ("an inferno", 'item'),
              'Ocarina':                                               ("a flute", 'item'),
              'Fairy Ocarina':                                         ("a brown flute", 'item'),
