@@ -419,7 +419,7 @@ class CollectionState(object):
         return (self.has('Zora Tunic') or self.has('Buy Zora Tunic'))
 
     def can_leave_forest(self):
-        return (self.world.open_forest or (self.has_slingshot() and self.has('Kokiri Sword') and self.has('Buy Deku Shield')))
+        return (self.world.open_forest or (self.has_slingshot() and self.has('Kokiri Sword') and self.has('Buy Deku Shield') and (self.has_sticks() or (self.has('Dins Fire') and self.has('Magic Meter')))))
 
     def can_finish_adult_trades(self):
         zora_thawed = self.has_bottle() and (self.can_play('Zeldas Lullaby') or (self.has('Hover Boots') and self.world.logic_zora_with_hovers)) and (self.can_reach('Ice Cavern') or self.can_reach('Ganons Castle Water Trial') or self.has('Progressive Wallet', 2))
