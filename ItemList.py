@@ -564,9 +564,6 @@ def get_pool_core(world):
         for item in [item for dungeon in world.dungeons for item in dungeon.boss_key]:
             world.state.collect(item)
             pool.append(random.choice(harditems))
-    if not world.keysanity and not world.dungeon_mq['FiT']:
-        world.state.collect(ItemFactory('Small Key (Fire Temple)'))
-
 
     return (pool, placed_items)
 
