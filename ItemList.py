@@ -804,10 +804,17 @@ def get_pool_core(world):
     return (pool, placed_items)
 
 def choose_trials(world):
+    choosen_trials=[]
     if world.trials_random:
-        world.trials = random.randint(0, 6)
-    num_trials = int(world.trials)
-    choosen_trials = random.sample(['Forest', 'Fire', 'Water', 'Spirit', 'Shadow', 'Light'], num_trials)
+        for trial in ['Forest', 'Fire', 'Water', 'Spirit', 'Shadow', 'Light']:
+            flag = random.randint(0,1)
+            if flag==1:
+                choosen_trials.append(trial)
+
+        world.trials = len(choosen_trials)
+    else:
+        num_trials = int(world.trials)
+        choosen_trials = random.sample(['Forest', 'Fire', 'Water', 'Spirit', 'Shadow', 'Light'], num_trials)
     for trial in world.skipped_trials:
         if trial not in choosen_trials:
             world.skipped_trials[trial] = True
