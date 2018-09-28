@@ -460,7 +460,7 @@ def dung_rules_dcmq(world):
     set_rule(world.get_entrance('Dodongos Cavern Bomb Drop'), lambda state: state.has_explosives())
     set_rule(world.get_location('Dodongos Cavern MQ Compass Chest'), lambda state: state.is_adult() or state.can_child_attack() or state.has_nuts())
     set_rule(world.get_location('Dodongos Cavern MQ Torch Puzzle Room Chest'), lambda state: state.can_blast_or_smash() or state.has_sticks() or state.can_use('Dins Fire') or (state.is_adult() and (world.logic_dc_jump or state.has('Hover Boots') or state.has('Progressive Hookshot'))))
-    set_rule(world.get_location('Dodongos Cavern MQ Larva Room Chest'), lambda state: (state.has_sticks() and (state.has_explosives or state.has('Progressive Strength Upgrade'))) or state.has_fire_source())
+    set_rule(world.get_location('Dodongos Cavern MQ Larva Room Chest'), lambda state: (state.has_sticks() and (state.has_explosives() or state.has('Progressive Strength Upgrade'))) or state.has_fire_source())
     set_rule(world.get_location('Dodongos Cavern MQ Bomb Bag Chest'), lambda state: state.is_adult() or (state.has_slingshot() and (state.has_sticks() or state.can_use('Dins Fire') or state.has_explosives())))
     set_rule(world.get_location('DC MQ Deku Scrub Deku Sticks'), lambda state: state.can_stun_deku())
     set_rule(world.get_location('DC MQ Deku Scrub Deku Seeds'), lambda state: state.can_stun_deku())
@@ -529,7 +529,6 @@ def dung_rules_fotmq(world):
     set_rule(world.get_entrance('Forest Temple West Eye Switch'), lambda state: state.can_use('Bow'))
     set_rule(world.get_entrance('Forest Temple East Eye Switch'), lambda state: state.can_use('Bow'))
     set_rule(world.get_entrance('Forest Temple Block Puzzle Solve'), lambda state: (state.has_bombchus() and world.logic_tricks) or state.has('Progressive Strength Upgrade'))
-    set_rule(world.get_entrance('Forest Temple Block Puzzle Solve'), lambda state: (state.has_bombchus() and world.logic_tricks) or state.has('Progressive Strength Upgrade') or state.can_use('Hover Boots'))
     set_rule(world.get_entrance('Forest Temple Twisted Hall'), lambda state: state.has('Small Key (Forest Temple)', 4))
     set_rule(world.get_entrance('Forest Temple Well Connection'), lambda state: state.can_use('Iron Boots') or state.can_use('Longshot') or state.has('Progressive Scale', 2))
     set_rule(world.get_entrance('Forest Temple Webs'), lambda state: state.can_use('Fire Arrows'))
@@ -774,7 +773,6 @@ def dung_rules_shtmq(world):
 
     # GS
     set_rule(world.get_location('GS Shadow Temple MQ Crusher Room'), lambda state: state.has('Progressive Hookshot'))
-    set_rule(world.get_location('GS Shadow Temple MQ Near Boss'), lambda state: state.has_bow())
 
 
 # Bottom of the Well Vanilla
