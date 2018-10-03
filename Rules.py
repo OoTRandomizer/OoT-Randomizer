@@ -774,7 +774,6 @@ def dung_rules_shtmq(world):
 
     # GS
     set_rule(world.get_location('GS Shadow Temple MQ Crusher Room'), lambda state: state.has('Progressive Hookshot'))
-    set_rule(world.get_location('GS Shadow Temple MQ Near Boss'), lambda state: state.has_bow())
 
 
 # Bottom of the Well Vanilla
