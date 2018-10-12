@@ -422,6 +422,10 @@ def guiMain(settings=None):
     countLabel.pack(side=LEFT)
     countSpinbox.pack(side=LEFT, padx=2)
     playerNumFrame.pack(side=LEFT, anchor=N, padx=10, pady=(1,5))
+
+    guivars['generate_all'] = IntVar()
+    generateAllCheckbox = Checkbutton(multiworldFrame, text='Generate All', variable=guivars['generate_all'], justify=LEFT, wraplength=190)
+    generateAllCheckbox.pack(side=LEFT, anchor=N, padx=10, pady=(1,5))
     multiworldFrame.pack(side=TOP, anchor=W, padx=5, pady=(1,1))
 
 

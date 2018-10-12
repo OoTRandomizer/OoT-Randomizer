@@ -65,6 +65,7 @@ def main(settings, window=dummy_window()):
     window.update_status('Creating the Worlds')
     for id, world in enumerate(worlds):
         world.id = id
+        world.player_num = id
         logger.info('Generating World %d.' % id)
 
         window.update_progress(0 + (((id + 1) / settings.world_count) * 1))
@@ -112,56 +113,23 @@ def main(settings, window=dummy_window()):
     if settings.hints != 'none':
         window.update_status('Calculating Hint Data')
         CollectionState.update_required_items(worlds)
-        buildGossipHints(worlds[settings.player_num - 1])
+        if settings.generate_all:
+            for id, world in enumerate(worlds):
+                buildGossipHints(world)
+        else:
+            buildGossipHints(worlds[settings.player_num - 1])
         window.update_progress(55)
 
-    logger.info('Patching ROM.')
+    window.update_status('Creating Files')
 
-    if settings.world_count > 1:
-        outfilebase = 'OoT_%s_%s_W%dP%d' % (worlds[0].settings_string, worlds[0].seed, worlds[0].world_count, worlds[0].player_num)
+    if settings.generate_all:
+        for id, world in enumerate(worlds):
+            apply_patch_and_compress(settings, world, window, logger)
     else:
-        outfilebase = 'OoT_%s_%s' % (worlds[0].settings_string, worlds[0].seed)
-
-    output_dir = default_output_path(settings.output_dir)
-
-    if settings.compress_rom != 'None':
-        window.update_status('Patching ROM')
-        rom = LocalRom(settings)
-        patch_rom(worlds[settings.player_num - 1], rom)
-        window.update_progress(65)
-
-        rom_path = os.path.join(output_dir, '%s.z64' % outfilebase)
-
-        window.update_status('Saving Uncompressed ROM')
-        rom.write_to_file(rom_path)
-        if settings.compress_rom == 'True':
-            window.update_status('Compressing ROM')
-            logger.info('Compressing ROM.')
-
-            compressor_path = ""
-            if platform.system() == 'Windows':
-                if 8 * struct.calcsize("P") == 64:
-                    compressor_path = "Compress\\Compress.exe"
-                else:
-                    compressor_path = "Compress\\Compress32.exe"
-            elif platform.system() == 'Linux':
-                compressor_path = "Compress/Compress"
-            elif platform.system() == 'Darwin':
-                compressor_path = "Compress/Compress.out"
-            else:
-                logger.info('OS not supported for compression')
-
-            run_process(window, logger, [compressor_path, rom_path, os.path.join(output_dir, '%s-comp.z64' % outfilebase)])
-            os.remove(rom_path)
-            window.update_progress(95)
-
-
-    if settings.create_spoiler:
-        window.update_status('Creating Spoiler Log')
-        worlds[settings.player_num - 1].spoiler.to_file(os.path.join(output_dir, '%s_Spoiler.txt' % outfilebase))
+        apply_patch_and_compress(settings, worlds[settings.player_num - 1], window, logger)
 
     window.update_progress(100)
-    window.update_status('Success: Rom patched successfully')
+    window.update_status('Success: Files created')
     logger.info('Done. Enjoy.')
     logger.debug('Total Time: %s', time.clock() - start)
 
@@ -178,7 +146,6 @@ def run_process(window, logger, args):
                 files = int(line[:find_index].strip())
                 if filecount == None:
                     filecount = files
-                window.update_progress(65 + ((1 - (files / filecount)) * 30))
             logger.info(line.decode('utf-8').strip('\n'))
         else:
             break
@@ -252,3 +219,48 @@ def create_playthrough(worlds):
     for world in old_worlds:
         world.spoiler.playthrough = OrderedDict([(str(i + 1), {location: location.item for location in sphere}) for i, sphere in enumerate(collection_spheres)])
 
+def apply_patch_and_compress(settings, world, window, logger):
+    if settings.world_count > 1:
+        outfilebase = 'OoT_%s_%s_W%dP%d' % (world.settings_string, world.seed, world.world_count, (world.player_num + 1))
+    else:
+        outfilebase = 'OoT_%s_%s' % (world.settings_string, world.seed)
+
+    output_dir = default_output_path(settings.output_dir)
+
+    if settings.compress_rom != 'None':
+        logger.info('Patching ROM %d.' % world.id)
+        rom = LocalRom(settings)
+        patch_rom(world, rom)
+        window.update_progress(55 + (40 / settings.world_count) * (world.id + 1 / 4))
+
+        rom_path = os.path.join(output_dir, '%s.z64' % outfilebase)
+
+        logger.info('Saving Uncompressed ROM.')
+        rom.write_to_file(rom_path)
+        window.update_progress(55 + (40 / settings.world_count) * (world.id + 2 / 4))
+
+        if settings.compress_rom == 'True':
+            logger.info('Compressing ROM.')
+
+            compressor_path = ""
+            if platform.system() == 'Windows':
+                if 8 * struct.calcsize("P") == 64:
+                    compressor_path = "Compress\\Compress.exe"
+                else:
+                    compressor_path = "Compress\\Compress32.exe"
+            elif platform.system() == 'Linux':
+                compressor_path = "Compress/Compress"
+            elif platform.system() == 'Darwin':
+                compressor_path = "Compress/Compress.out"
+            else:
+                logger.info('OS not supported for compression')
+
+            run_process(window, logger, [compressor_path, rom_path, os.path.join(output_dir, '%s-comp.z64' % outfilebase)])
+            os.remove(rom_path)
+        window.update_progress(55 + (40 / settings.world_count) * (world.id + 3 / 4))
+
+
+    if settings.create_spoiler:
+        logger.info('Creating Spoiler Log.')
+        world.spoiler.to_file(os.path.join(output_dir, '%s_Spoiler.txt' % outfilebase))
+        window.update_progress(55 + (40 / settings.world_count) * (world.id + 4 / 4))
