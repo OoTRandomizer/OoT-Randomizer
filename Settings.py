@@ -227,6 +227,12 @@ setting_infos = [
                     Use to select world to generate when there are multiple worlds.
                     ''',
             'type': int}),
+    Setting_Info('generate_all', int, 0, False, {
+            'default': 0,
+            'help': '''\
+                    Use to generate all worlds when there are multiple worlds.
+                    ''',
+            'type': int}),
     Setting_Info('create_spoiler', bool, 1, True, 
         {
             'help': 'Output a Spoiler File',
