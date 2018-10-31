@@ -235,7 +235,7 @@ def buildGossipHints(world):
 # builds boss reward text that is displayed at the temple of time altar for child and adult, pull based off of item in a fixed order.
 def buildBossRewardHints(world, messages):
     bossRewardsSpiritualStones = ['Kokiri Emerald', 'Goron Ruby', 'Zora Sapphire']
-    bossRewardsMedallions = ['Forest Medallion', 'Fire Medallion', 'Water Medallion', 'Shadow Medallion', 'Spirit Medallion', 'Light Medallion']
+    bossRewardsMedallions = ['Forest Medallion', 'Fire Medallion', 'Water Medallion', 'Spirit Medallion', 'Shadow Medallion', 'Light Medallion']
 
     # text that appears at altar as a child.
     text = '\x08'
@@ -273,7 +273,7 @@ def buildBossString(reward, world):
 # alternates through color set commands in child and adult boss reward hint strings setting the colors at the start of the string to correspond with the reward found at the location.
 # skips over color commands at the end of stings to set color back to white.
 def setRewardColor(text):
-    rewardColors = ['\x42', '\x41', '\x43', '\x45', '\x46', '\x44']
+    rewardColors = ['\x42', '\x41', '\x43', '\x46', '\x45', '\x44']
 
     colorWhite = True
     for i, char in enumerate(text):
