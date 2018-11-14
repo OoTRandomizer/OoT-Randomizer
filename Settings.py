@@ -158,7 +158,9 @@ class Settings():
                     self.__dict__[info.name] = True if info.gui_params['default'] == 'checked' else False
                 if info.type == str:
                     if 'default' in info.args_params:
-                        self.__dict__[info.name] = info.gui_params['default'] or info.args_params['default']
+                        self.__dict__[info.name] = info.args_params['default']
+                    elif 'default' in info.gui_params:
+                        self.__dict__[info.name] = info.gui_params['default']
                     else:
                         self.__dict__[info.name] = ""
                 if info.type == int:
