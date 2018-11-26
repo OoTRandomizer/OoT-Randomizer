@@ -1230,6 +1230,8 @@ def patch_rom(world, rom):
         # song of time
         rom.write_int32(0xDB532C, 0x24050003)
 
+    # Scarecrow appears without playing song
+    rom.write_int32(0xEF4FA0, 0x00000000)
 
     # Set damage multiplier
     if world.damage_multiplier == 'half':

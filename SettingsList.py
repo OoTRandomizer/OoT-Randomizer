@@ -586,14 +586,15 @@ setting_infos = [
     Checkbutton(
             name           = 'free_scarecrow',
             args_help      = '''\
-                             Scarecrow song is not needed to summon Pierre.
+                             Start with Scarecrow's Song. You do not need
+                             to play it as child or adult at the scarecrow
+                             patch to be able to summon Pierre.
                              ''',
-            gui_text       = 'Free Scarecrow\'s Song',
+            gui_text       = 'Start with Scarecrow\'s Song',
             gui_group      = 'convenience',
             gui_tooltip    = '''\
-                             Pulling out the Ocarina near
-                             Pierre will summon him without
-                             learning the song.
+                             Skips needing to go to Lake Hylia as both
+                             child and adult to learn Scarecrow's Song.
                              ''',
             shared         = True,
             ),
