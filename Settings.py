@@ -48,6 +48,7 @@ def text_to_bit_string(text):
 class Settings():
 
     def get_settings_display(self):
+        settings = self.__dict__
         padding = 0
         for setting in filter(lambda s: s.shared, setting_infos):
             padding = max( len(setting.name), padding )
@@ -55,7 +56,8 @@ class Settings():
         output = ''
         for setting in filter(lambda s: s.shared, setting_infos):
             name = setting.name + ': ' + ' ' * (padding - len(setting.name))
-            val = str(self.__dict__[setting.name])
+            dep_function = setting.gui_params.get('dependency', lambda x: True)
+            val = str(settings[setting.name]) if dep_function(settings) != False else '(N/A)'
             output += name + val + '\n'
         return output
 

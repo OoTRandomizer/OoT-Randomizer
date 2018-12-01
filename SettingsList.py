@@ -208,7 +208,7 @@ setting_infos = [
             'type': int
         },
         {
-            'dependency': lambda guivar: guivar['compress_rom'].get() not in ['No Output', 'Patch File'],
+            'dependency': lambda state: state['compress_rom'] not in ['No Output', 'Patch File'],
         }),
     Checkbutton(
             name           = 'create_spoiler',
@@ -498,7 +498,7 @@ setting_infos = [
                              enabled, then there will be hints for which
                              trials need to be completed.
                              ''',
-            gui_dependency = lambda guivar: not guivar['trials_random'].get(),
+            gui_dependency = lambda state: not state['trials_random'],
             shared         = True,
             ),
     Checkbutton(
@@ -580,7 +580,7 @@ setting_infos = [
                              The Poe buyer will give a reward for turning
                              in the chosen number of Big Poes.
                              ''',
-            gui_dependency = lambda guivar: not guivar['big_poe_count_random'].get(),
+            gui_dependency = lambda state: not state['big_poe_count_random'],
             shared         = True,
             ),
     Checkbutton(
@@ -997,7 +997,7 @@ setting_infos = [
                              12: All dungeons will have
                              Master Quest redesigns.
                              ''',
-            gui_dependency = lambda guivar: not guivar['mq_dungeons_random'].get(),
+            gui_dependency = lambda state: not state['mq_dungeons_random'],
             shared         = True,
             ),
     Checkbutton(

@@ -170,8 +170,15 @@ def guiMain(settings=None):
 
 
     def check_dependency(name):
+        setting_state = {}
+        for key in list(guivars.keys()):
+            # This breaks with types other than string, int, double, or bool.
+            # We'll have to rework dependency handling if we need to allow for
+            # checking lists. Until then we shall just skip them.
+            if not (isinstance(guivars[key], list)):
+                setting_state[key] = guivars[key].get()
         if name in dependencies:
-            return dependencies[name](guivars)
+            return dependencies[name](setting_state)
         else:
             return True
 
