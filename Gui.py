@@ -214,7 +214,7 @@ def guiMain(settings=None):
         update_generation_type()
 
 
-    def update_logic_tricks(event=None):
+    def update_logic_tricks_children():
         for info in setting_infos:
             if info.gui_params \
             and info.gui_params.get('widget') == 'Checkbutton' \
@@ -223,7 +223,22 @@ def guiMain(settings=None):
                     widgets[info.name].select()
                 else:
                     widgets[info.name].deselect()
+        settings = guivars_to_settings(guivars)
+        settings_string_var.set(settings.get_settings_string())
 
+
+    def update_logic_tricks_parent():
+        are_all_enabled = True
+        for info in setting_infos:
+            if info.gui_params \
+            and info.gui_params.get('widget') == 'Checkbutton' \
+            and info.gui_params['group'] == 'tricks':
+                if guivars[info.name].get() == False:
+                    are_all_enabled = False
+        if are_all_enabled:
+            widgets['all_logic_tricks'].select()
+        else:
+            widgets['all_logic_tricks'].deselect()
         settings = guivars_to_settings(guivars)
         settings_string_var.set(settings.get_settings_string())
 
@@ -290,7 +305,7 @@ def guiMain(settings=None):
             variable=guivars['all_logic_tricks'],
             justify=LEFT,
             wraplength=190,
-            command=update_logic_tricks)
+            command=update_logic_tricks_children)
     widgets['all_logic_tricks'].pack(expand=False, anchor=W)
 
 
@@ -351,13 +366,18 @@ def guiMain(settings=None):
                 default_value = 1 if info.gui_params['default'] == "checked" else 0
                 # Link a variable to the widget's state
                 guivars[info.name] = IntVar(value=default_value)
+                if info.gui_params['group'] == 'tricks':
+                    c = update_logic_tricks_parent
+                else:
+                    c = show_settings
+
                 widgets[info.name] = Checkbutton(
                         frames[info.gui_params['group']],
                         text=info.gui_params['text'],
                         variable=guivars[info.name],
                         justify=LEFT,
                         wraplength=190,
-                        command=show_settings)
+                        command=c)
                 widgets[info.name].pack(expand=False, anchor=W)
 
             elif info.gui_params['widget'] == 'Combobox':
