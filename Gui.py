@@ -1,18 +1,11 @@
 #!/usr/bin/env python3
-from argparse import Namespace
-from glob import glob
 import json
-import random
 import re
 import os
-import shutil
-from tkinter import Scale, Checkbutton, OptionMenu, Toplevel, LabelFrame, \
-        Radiobutton, PhotoImage, Tk, BOTH, LEFT, RIGHT, BOTTOM, TOP, \
-        StringVar, IntVar, Frame, Label, W, E, X, N, S, NW, Entry, Spinbox, \
-        Button, filedialog, messagebox, simpledialog, ttk, HORIZONTAL, Toplevel, \
-        colorchooser, Listbox, ACTIVE, END, Scrollbar, VERTICAL, Y
-from urllib.parse import urlparse
-from urllib.request import urlopen
+import tkinter as tk
+import webbrowser
+
+from tkinter import ttk, colorchooser
 
 from GuiUtils import ToolTips, set_icon, BackgroundTask, BackgroundTaskProgress, Dialog, ValidatingEntry, SearchBox
 from Main import main, from_patch_file
@@ -20,7 +13,6 @@ from Utils import is_bundled, local_path, data_path, default_output_path, open_f
 from Settings import Settings
 from SettingsList import setting_infos
 from version import __version__ as ESVersion
-import webbrowser
 import WorldFile
 from LocationList import location_table
 
@@ -95,7 +87,7 @@ def guivars_to_settings(guivars):
     return Settings(result)
 
 def guiMain(settings=None):
-    mainWindow = Tk()
+    mainWindow = tk.Tk()
     mainWindow.wm_title("OoT Randomizer %s" % ESVersion)
     mainWindow.resizable(False, False)
     set_icon(mainWindow)
@@ -113,8 +105,8 @@ def guiMain(settings=None):
         frames[frame] = ttk.Frame(notebook)
         notebook.add(frames[frame], text=name)
 
-    frames['aesthetic_tab_left']  = Frame(frames['aesthetic_tab'])
-    frames['aesthetic_tab_right'] = Frame(frames['aesthetic_tab'])
+    frames['aesthetic_tab_left']  = tk.Frame(frames['aesthetic_tab'])
+    frames['aesthetic_tab_right'] = tk.Frame(frames['aesthetic_tab'])
 
     #######################
     # Randomizer controls #
@@ -155,7 +147,7 @@ def guiMain(settings=None):
 
     for tab in frame_hierarchy:
         for frame, label in frame_hierarchy[tab].items():
-            frames[frame] = LabelFrame(frames[tab], text=label, labelanchor=NW)
+            frames[frame] = tk.LabelFrame(frames[tab], text=label, labelanchor=tk.NW)
 
 
     # Shared
@@ -203,7 +195,7 @@ def guiMain(settings=None):
                 toggle_widget(widgets[info.name], dep_met)
 
             if info.type == list:
-                widgets[info.name].delete(0, END)
+                widgets[info.name].delete(0, tk.END)
                 widgets[info.name].insert(0, *guivars[info.name])
 
             if info.type != list and info.name in guivars and guivars[info.name].get() == 'Custom Color':
@@ -243,105 +235,106 @@ def guiMain(settings=None):
         settings_string_var.set(settings.get_settings_string())
 
 
-    fileDialogFrame = Frame(frames['rom_tab'])
+    fileDialogFrame = tk.Frame(frames['rom_tab'])
 
-    romDialogFrame = Frame(fileDialogFrame)
-    baseRomLabel = Label(romDialogFrame, text='Base ROM')
-    guivars['rom'] = StringVar(value='')
-    romEntry = Entry(romDialogFrame, textvariable=guivars['rom'], width=40)
+    romDialogFrame = tk.Frame(fileDialogFrame)
+    baseRomLabel = tk.Label(romDialogFrame, text='Base ROM')
+    guivars['rom'] = tk.StringVar(value='')
+    romEntry = tk.Entry(romDialogFrame, textvariable=guivars['rom'], width=40)
 
     def RomSelect():
-        rom = filedialog.askopenfilename(filetypes=[("ROM Files", (".z64", ".n64")), ("All Files", "*")])
+        rom = tk.filedialog.askopenfilename(filetypes=[("ROM Files", (".z64", ".n64")), ("All Files", "*")])
         if rom != '':
             guivars['rom'].set(rom)
-    romSelectButton = Button(romDialogFrame, text='Select ROM', command=RomSelect, width=10)
+    romSelectButton = tk.Button(romDialogFrame, text='Select ROM', command=RomSelect, width=10)
 
-    baseRomLabel.pack(side=LEFT, padx=(38,0))
-    romEntry.pack(side=LEFT, padx=3)
-    romSelectButton.pack(side=LEFT)
+    baseRomLabel.pack(side=tk.LEFT, padx=(38,0))
+    romEntry.pack(side=tk.LEFT, padx=3)
+    romSelectButton.pack(side=tk.LEFT)
 
     romDialogFrame.pack()
 
-    fileDialogFrame.pack(side=TOP, anchor=W, padx=5, pady=(5,1))
+    fileDialogFrame.pack(side=tk.TOP, anchor=tk.W, padx=5, pady=(5,1))
 
     def output_dir_select():
-        rom = filedialog.askdirectory(initialdir = default_output_path(guivars['output_dir'].get()))
+        rom = tk.filedialog.askdirectory(initialdir = default_output_path(guivars['output_dir'].get()))
         if rom != '':
             guivars['output_dir'].set(rom)
 
-    outputDialogFrame = Frame(frames['rom_tab'])
-    outputDirLabel = Label(outputDialogFrame, text='Output Directory')
-    guivars['output_dir'] = StringVar(value='')
-    outputDirEntry = Entry(outputDialogFrame, textvariable=guivars['output_dir'], width=40)
-    outputDirButton = Button(outputDialogFrame, text='Select Dir', command=output_dir_select, width=10)
-    outputDirLabel.pack(side=LEFT, padx=(3,0))
-    outputDirEntry.pack(side=LEFT, padx=3)
-    outputDirButton.pack(side=LEFT)
-    outputDialogFrame.pack(side=TOP, anchor=W, pady=3)
+    outputDialogFrame = tk.Frame(frames['rom_tab'])
+    outputDirLabel = tk.Label(outputDialogFrame, text='Output Directory')
+    guivars['output_dir'] = tk.StringVar(value='')
+    outputDirEntry = tk.Entry(outputDialogFrame, textvariable=guivars['output_dir'], width=40)
+    outputDirButton = tk.Button(outputDialogFrame, text='Select Dir', command=output_dir_select, width=10)
+    outputDirLabel.pack(side=tk.LEFT, padx=(3,0))
+    outputDirEntry.pack(side=tk.LEFT, padx=3)
+    outputDirButton.pack(side=tk.LEFT)
+    outputDialogFrame.pack(side=tk.TOP, anchor=tk.W, pady=3)
 
-    countDialogFrame = Frame(frames['rom_tab'])
-    countLabel = Label(countDialogFrame, text='Generation Count')
-    guivars['count'] = StringVar()
-    widgets['count'] = Spinbox(countDialogFrame, from_=1, to=100, textvariable=guivars['count'], width=3)
+    countDialogFrame = tk.Frame(frames['rom_tab'])
+    countLabel = tk.Label(countDialogFrame, text='Generation Count')
+    guivars['count'] = tk.StringVar()
+    widgets['count'] = tk.Spinbox(countDialogFrame, from_=1, to=100, textvariable=guivars['count'], width=3)
 
     if os.path.exists(local_path('README.html')):
         def open_readme():
             open_file(local_path('README.html'))
-        openReadmeButton = Button(countDialogFrame, text='Open Documentation', command=open_readme)
-        openReadmeButton.pack(side=RIGHT, padx=5)
+        openReadmeButton = tk.Button(countDialogFrame, text='Open Documentation', command=open_readme)
+        openReadmeButton.pack(side=tk.RIGHT, padx=5)
 
-    countLabel.pack(side=LEFT)
-    widgets['count'].pack(side=LEFT, padx=2)
-    countDialogFrame.pack(side=TOP, anchor=W, padx=5, pady=(1,1))
+    countLabel.pack(side=tk.LEFT)
+    widgets['count'].pack(side=tk.LEFT, padx=2)
+    countDialogFrame.pack(side=tk.TOP, anchor=tk.W, padx=5, pady=(1,1))
 
     # Build gui
     ############
 
     # Add special checkbox to toggle all logic tricks
-    guivars['all_logic_tricks'] = IntVar(value=0)
-    widgets['all_logic_tricks'] = Checkbutton(
+    guivars['all_logic_tricks'] = tk.IntVar(value=0)
+    widgets['all_logic_tricks'] = tk.Checkbutton(
             frames['tricks'],
             text="Enable All Tricks",
             variable=guivars['all_logic_tricks'],
-            justify=LEFT,
+            justify=tk.LEFT,
             wraplength=190,
             command=update_logic_tricks_children)
-    widgets['all_logic_tricks'].pack(expand=False, anchor=W)
+    widgets['all_logic_tricks'].pack(expand=False, anchor=tk.W)
 
 
     location_names = [name for name, (type, scene, default, hint, addresses) in location_table.items() if
         scene is not None and default is not None]
     widgets['disabled_location_entry'] = SearchBox(frames['rewards'], location_names, width=30)
-    widgets['disabled_location_entry'].pack(expand=False, side=TOP, anchor=W, padx=3, pady=3)
+    widgets['disabled_location_entry'].pack(expand=False, side=tk.TOP, anchor=tk.W, padx=3, pady=3)
 
-    location_frame = Frame(frames['rewards'])
-    scrollbar = Scrollbar(location_frame, orient=VERTICAL)
-    widgets['disabled_locations'] = Listbox(location_frame, width=30, yscrollcommand=scrollbar.set)
+    location_frame = tk.Frame(frames['rewards'])
+    scrollbar = tk.Scrollbar(location_frame, orient=tk.VERTICAL)
+    widgets['disabled_locations'] = tk.Listbox(location_frame, width=30, yscrollcommand=scrollbar.set)
     guivars['disabled_locations'] = []
     scrollbar.config(command=widgets['disabled_locations'].yview)
-    scrollbar.pack(side=RIGHT, fill=Y)
-    widgets['disabled_locations'].pack(side=LEFT)
-    location_frame.pack(expand=False, side=TOP, anchor=W, padx=3, pady=3)
+    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+    widgets['disabled_locations'].pack(side=tk.LEFT)
+    location_frame.pack(expand=False, side=tk.TOP, anchor=tk.W, padx=3, pady=3)
 
     def add_disabled_location():
         new_location = widgets['disabled_location_entry'].get()
-        if new_location in widgets['disabled_location_entry'].options and new_location not in widgets['disabled_locations'].get(0, END):
-            widgets['disabled_locations'].insert(END, new_location)
+        if new_location in widgets['disabled_location_entry'].options \
+                and new_location not in widgets['disabled_locations'].get(0, tk.END):
+            widgets['disabled_locations'].insert(tk.END, new_location)
             guivars['disabled_locations'].append(new_location)
         show_settings()
 
     def remove_disabled_location():
-        location = widgets['disabled_locations'].get(ACTIVE)
-        widgets['disabled_locations'].delete(ACTIVE)
+        location = widgets['disabled_locations'].get(tk.ACTIVE)
+        widgets['disabled_locations'].delete(tk.ACTIVE)
         guivars['disabled_locations'].remove(location)
         show_settings()
 
-    location_button_frame = Frame(frames['rewards'])
-    widgets['disabled_location_add'] = Button(location_button_frame, text='Add', command=add_disabled_location)
-    widgets['disabled_location_add'].pack(side=LEFT, anchor=N, padx=3, pady=3)
-    widgets['disabled_location_remove'] = Button(location_button_frame, text='Remove', command=remove_disabled_location)
-    widgets['disabled_location_remove'].pack(side=LEFT, anchor=N, padx=3, pady=3)
-    location_button_frame.pack(expand=False, side=TOP, padx=3, pady=3)
+    location_button_frame = tk.Frame(frames['rewards'])
+    widgets['disabled_location_add'] = tk.Button(location_button_frame, text='Add', command=add_disabled_location)
+    widgets['disabled_location_add'].pack(side=tk.LEFT, anchor=tk.N, padx=3, pady=3)
+    widgets['disabled_location_remove'] = tk.Button(location_button_frame, text='Remove', command=remove_disabled_location)
+    widgets['disabled_location_remove'].pack(side=tk.LEFT, anchor=tk.N, padx=3, pady=3)
+    location_button_frame.pack(expand=False, side=tk.TOP, padx=3, pady=3)
 
     disabled_location_tooltip = '''
         Prevent locations from being required. Major
@@ -365,26 +358,26 @@ def guiMain(settings=None):
             if info.gui_params['widget'] == 'Checkbutton':
                 default_value = 1 if info.gui_params['default'] == "checked" else 0
                 # Link a variable to the widget's state
-                guivars[info.name] = IntVar(value=default_value)
+                guivars[info.name] = tk.IntVar(value=default_value)
                 if info.gui_params['group'] == 'tricks':
                     c = update_logic_tricks_parent
                 else:
                     c = show_settings
 
-                widgets[info.name] = Checkbutton(
+                widgets[info.name] = tk.Checkbutton(
                         frames[info.gui_params['group']],
                         text=info.gui_params['text'],
                         variable=guivars[info.name],
-                        justify=LEFT,
+                        justify=tk.LEFT,
                         wraplength=190,
                         command=c)
-                widgets[info.name].pack(expand=False, anchor=W)
+                widgets[info.name].pack(expand=False, anchor=tk.W)
 
             elif info.gui_params['widget'] == 'Combobox':
                 # Link a variable to the widget's state
-                guivars[info.name] = StringVar(value=info.gui_params['default'])
+                guivars[info.name] = tk.StringVar(value=info.gui_params['default'])
                 # Create the option menu
-                widgets[info.name] = Frame(frames[info.gui_params['group']])
+                widgets[info.name] = tk.Frame(frames[info.gui_params['group']])
                 if isinstance(info.gui_params['options'], list):
                     info.gui_params['options'] = dict(zip(
                         info.gui_params['options'],
@@ -397,57 +390,57 @@ def guiMain(settings=None):
                         state='readonly',
                         width=30)
                 dropdown.bind("<<ComboboxSelected>>", show_settings)
-                dropdown.pack(side=BOTTOM, anchor=W)
+                dropdown.pack(side=tk.BOTTOM, anchor=tk.W)
 
                 if 'text' in info.gui_params:
-                    label = Label(widgets[info.name], text=info.gui_params['text'])
-                    label.pack(side=LEFT, anchor=W, padx=5)
+                    label = tk.Label(widgets[info.name], text=info.gui_params['text'])
+                    label.pack(side=tk.LEFT, anchor=tk.W, padx=5)
 
-                widgets[info.name].pack(expand=False, side=TOP, anchor=W, padx=3, pady=3)
+                widgets[info.name].pack(expand=False, side=tk.TOP, anchor=tk.W, padx=3, pady=3)
 
             elif info.gui_params['widget'] == 'Radiobutton':
                 # Link a variable to the widget's state
-                guivars[info.name] = StringVar(value=info.gui_params['default'])
+                guivars[info.name] = tk.StringVar(value=info.gui_params['default'])
                 # Create the option menu
-                widgets[info.name] = LabelFrame(
+                widgets[info.name] = tk.LabelFrame(
                         frames[info.gui_params['group']],
                         text=info.gui_params['text'],
-                        labelanchor=NW)
+                        labelanchor=tk.NW)
                 if isinstance(info.gui_params['options'], list):
                     info.gui_params['options'] = dict(zip(
                         info.gui_params['options'],
                         info.gui_params['options']))
 
                 # Set up orientation
-                side = TOP
-                anchor = W
+                side = tk.TOP
+                anchor = tk.W
                 if "horizontal" in info.gui_params and info.gui_params["horizontal"]:
-                    side = LEFT
-                    anchor = N
+                    side = tk.LEFT
+                    anchor = tk.N
 
                 for option in info.gui_params["options"]:
-                    radio_button = Radiobutton(
+                    radio_button = tk.Radiobutton(
                             widgets[info.name],
                             text=option,
                             value=option,
                             variable=guivars[info.name],
-                            justify=LEFT,
+                            justify=tk.LEFT,
                             wraplength=190,
                             indicatoron=False,
                             command=show_settings)
                     radio_button.pack(expand=True, side=side, anchor=anchor)
 
-                widgets[info.name].pack(expand=False, side=TOP, anchor=W, padx=3, pady=3)
+                widgets[info.name].pack(expand=False, side=tk.TOP, anchor=tk.W, padx=3, pady=3)
 
             elif info.gui_params['widget'] == 'Scale':
                 # Link a variable to the widget's state
-                guivars[info.name] = IntVar(value=info.gui_params['default'])
+                guivars[info.name] = tk.IntVar(value=info.gui_params['default'])
                 # Create the option menu
-                widgets[info.name] = Frame(frames[info.gui_params['group']])
+                widgets[info.name] = tk.Frame(frames[info.gui_params['group']])
                 minval  = 'min'  in info.gui_params and info.gui_params['min']  or 0
                 maxval  = 'max'  in info.gui_params and info.gui_params['max']  or 100
                 stepval = 'step' in info.gui_params and info.gui_params['step'] or 1
-                scale   = Scale(
+                scale   = tk.Scale(
                         widgets[info.name],
                         variable=guivars[info.name],
                         from_=minval,
@@ -455,23 +448,23 @@ def guiMain(settings=None):
                         tickinterval=stepval,
                         resolution=stepval,
                         showvalue=0,
-                        orient=HORIZONTAL,
+                        orient=tk.HORIZONTAL,
                         sliderlength=15,
                         length=200,
                         command=show_settings)
-                scale.pack(side=BOTTOM, anchor=W)
+                scale.pack(side=tk.BOTTOM, anchor=tk.W)
 
                 if 'text' in info.gui_params:
-                    label = Label(widgets[info.name], text=info.gui_params['text'])
-                    label.pack(side=LEFT, anchor=W, padx=5)
+                    label = tk.Label(widgets[info.name], text=info.gui_params['text'])
+                    label.pack(side=tk.LEFT, anchor=tk.W, padx=5)
 
-                widgets[info.name].pack(expand=False, side=TOP, anchor=W, padx=3, pady=3)
+                widgets[info.name].pack(expand=False, side=tk.TOP, anchor=tk.W, padx=3, pady=3)
 
             elif info.gui_params['widget'] == 'Entry':
                 # Link a variable to the widget's state
-                guivars[info.name] = StringVar(value=info.gui_params['default'])
+                guivars[info.name] = tk.StringVar(value=info.gui_params['default'])
                 # Create the option menu
-                widgets[info.name] = Frame(frames[info.gui_params['group']])
+                widgets[info.name] = tk.Frame(frames[info.gui_params['group']])
 
                 if 'validate' in info.gui_params:
                     entry = ValidatingEntry(
@@ -481,17 +474,17 @@ def guiMain(settings=None):
                             textvariable=guivars[info.name],
                             width=30)
                 else:
-                    entry = Entry(widgets[info.name],
+                    entry = tk.Entry(widgets[info.name],
                             textvariable=guivars[info.name],
                             width=30)
 
-                entry.pack(side=BOTTOM, anchor=W)
+                entry.pack(side=tk.BOTTOM, anchor=tk.W)
 
                 if 'text' in info.gui_params:
-                    label = Label(widgets[info.name], text=info.gui_params['text'])
-                    label.pack(side=LEFT, anchor=W, padx=5)
+                    label = tk.Label(widgets[info.name], text=info.gui_params['text'])
+                    label.pack(side=tk.LEFT, anchor=tk.W, padx=5)
 
-                widgets[info.name].pack(expand=False, side=TOP, anchor=W, padx=3, pady=3)
+                widgets[info.name].pack(expand=False, side=tk.TOP, anchor=tk.W, padx=3, pady=3)
 
             if 'tooltip' in info.gui_params:
                 ToolTips.register(widgets[info.name], info.gui_params['tooltip'])
@@ -499,67 +492,67 @@ def guiMain(settings=None):
 
     # Pack the hierarchy
 
-    frames['logic'].pack(               fill=BOTH, expand=True, anchor=N, side=RIGHT,  pady=(5,1))
-    frames['open'].pack(                fill=BOTH, expand=True, anchor=W, side=TOP,    pady=(5,1))
-    frames['world'].pack(               fill=BOTH, expand=True, anchor=W, side=BOTTOM, pady=(5,1))
+    frames['logic'].pack(               fill=tk.BOTH, expand=True, anchor=tk.N, side=tk.RIGHT,  pady=(5,1))
+    frames['open'].pack(                fill=tk.BOTH, expand=True, anchor=tk.W, side=tk.TOP,    pady=(5,1))
+    frames['world'].pack(               fill=tk.BOTH, expand=True, anchor=tk.W, side=tk.BOTTOM, pady=(5,1))
 
     # Logic tab
-    frames['rewards'].pack(             fill=BOTH, expand=True, anchor=N, side=LEFT,   pady=(5,1))
-    frames['tricks'].pack(              fill=BOTH, expand=True, anchor=N, side=LEFT,   pady=(5,1))
+    frames['rewards'].pack(             fill=tk.BOTH, expand=True, anchor=tk.N, side=tk.LEFT,   pady=(5,1))
+    frames['tricks'].pack(              fill=tk.BOTH, expand=True, anchor=tk.N, side=tk.LEFT,   pady=(5,1))
 
     # Other tab
-    frames['convenience'].pack(         fill=BOTH, expand=True, anchor=N, side=LEFT,   pady=(5,1))
-    frames['other'].pack(               fill=BOTH, expand=True, anchor=N, side=LEFT,   pady=(5,1))
+    frames['convenience'].pack(         fill=tk.BOTH, expand=True, anchor=tk.N, side=tk.LEFT,   pady=(5,1))
+    frames['other'].pack(               fill=tk.BOTH, expand=True, anchor=tk.N, side=tk.LEFT,   pady=(5,1))
 
     # Aesthetics tab
-    frames['cosmetics'].pack(           fill=BOTH, expand=True, anchor=W, side=TOP)
-    frames['aesthetic_tab_left'].pack(  fill=BOTH, expand=True, anchor=W, side=LEFT)
-    frames['aesthetic_tab_right'].pack( fill=BOTH, expand=True, anchor=W, side=RIGHT)
+    frames['cosmetics'].pack(           fill=tk.BOTH, expand=True, anchor=tk.W, side=tk.TOP)
+    frames['aesthetic_tab_left'].pack(  fill=tk.BOTH, expand=True, anchor=tk.W, side=tk.LEFT)
+    frames['aesthetic_tab_right'].pack( fill=tk.BOTH, expand=True, anchor=tk.W, side=tk.RIGHT)
 
     # Aesthetics tab - Left Side
-    frames['tunic_color'].pack(         fill=BOTH, expand=True, anchor=W, side=TOP,    pady=(5,1))
-    frames['lowhp'].pack(               fill=BOTH, expand=True, anchor=W, side=TOP,    pady=(5,1))
+    frames['tunic_color'].pack(         fill=tk.BOTH, expand=True, anchor=tk.W, side=tk.TOP,    pady=(5,1))
+    frames['lowhp'].pack(               fill=tk.BOTH, expand=True, anchor=tk.W, side=tk.TOP,    pady=(5,1))
 
     # Aesthetics tab - Right Side
-    frames['navi_color'].pack(          fill=BOTH, expand=True, anchor=W, side=TOP,    pady=(5,1))
-    frames['navihint'].pack(            fill=BOTH, expand=True, anchor=W, side=TOP,    pady=(5,1))
+    frames['navi_color'].pack(          fill=tk.BOTH, expand=True, anchor=tk.W, side=tk.TOP,    pady=(5,1))
+    frames['navihint'].pack(            fill=tk.BOTH, expand=True, anchor=tk.W, side=tk.TOP,    pady=(5,1))
 
-    notebook.pack(fill=BOTH, expand=True, padx=5, pady=5)
+    notebook.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
 
     # Multi-World
-    widgets['multiworld'] = LabelFrame(frames['rom_tab'], text='Multi-World Generation')
-    countLabel = Label(widgets['multiworld'], wraplength=350, justify=LEFT, text='This is used for co-op generations. Increasing Player Count will drastically increase the generation time. For more information see:')
-    hyperLabel = Label(widgets['multiworld'], wraplength=350, justify=LEFT, text='https://github.com/TestRunnerSRL/bizhawk-co-op', fg='blue', cursor='hand2')
+    widgets['multiworld'] = tk.LabelFrame(frames['rom_tab'], text='Multi-World Generation')
+    countLabel = tk.Label(widgets['multiworld'], wraplength=350, justify=tk.LEFT, text='This is used for co-op generations. Increasing Player Count will drastically increase the generation time. For more information see:')
+    hyperLabel = tk.Label(widgets['multiworld'], wraplength=350, justify=tk.LEFT, text='https://github.com/TestRunnerSRL/bizhawk-co-op', fg='blue', cursor='hand2')
     hyperLabel.bind("<Button-1>", lambda event: webbrowser.open_new(r"https://github.com/TestRunnerSRL/bizhawk-co-op"))
-    countLabel.pack(side=TOP, anchor=W, padx=5, pady=0)
-    hyperLabel.pack(side=TOP, anchor=W, padx=5, pady=0)
+    countLabel.pack(side=tk.TOP, anchor=tk.W, padx=5, pady=0)
+    hyperLabel.pack(side=tk.TOP, anchor=tk.W, padx=5, pady=0)
 
-    worldCountFrame = Frame(widgets['multiworld'])
-    countLabel = Label(worldCountFrame, text='Player Count')
-    guivars['world_count'] = StringVar()
-    widgets['world_count'] = Spinbox(worldCountFrame, from_=1, to=31, textvariable=guivars['world_count'], width=3)
+    worldCountFrame = tk.Frame(widgets['multiworld'])
+    countLabel = tk.Label(worldCountFrame, text='Player Count')
+    guivars['world_count'] = tk.StringVar()
+    widgets['world_count'] = tk.Spinbox(worldCountFrame, from_=1, to=31, textvariable=guivars['world_count'], width=3)
     guivars['world_count'].trace('w', show_settings)
-    countLabel.pack(side=LEFT)
-    widgets['world_count'].pack(side=LEFT, padx=2)
-    worldCountFrame.pack(side=LEFT, anchor=N, padx=10, pady=(1,5))
+    countLabel.pack(side=tk.LEFT)
+    widgets['world_count'].pack(side=tk.LEFT, padx=2)
+    worldCountFrame.pack(side=tk.LEFT, anchor=tk.N, padx=10, pady=(1,5))
 
-    playerNumFrame = Frame(widgets['multiworld'])
-    countLabel = Label(playerNumFrame, text='Player ID')
-    guivars['player_num'] = StringVar()
-    widgets['player_num'] = Spinbox(playerNumFrame, from_=1, to=31, textvariable=guivars['player_num'], width=3)
-    countLabel.pack(side=LEFT)
-    widgets['player_num'].pack(side=LEFT, padx=2)
+    playerNumFrame = tk.Frame(widgets['multiworld'])
+    countLabel = tk.Label(playerNumFrame, text='Player ID')
+    guivars['player_num'] = tk.StringVar()
+    widgets['player_num'] = tk.Spinbox(playerNumFrame, from_=1, to=31, textvariable=guivars['player_num'], width=3)
+    countLabel.pack(side=tk.LEFT)
+    widgets['player_num'].pack(side=tk.LEFT, padx=2)
     ToolTips.register(widgets['player_num'], 'Generate for specific Player.')
-    playerNumFrame.pack(side=LEFT, anchor=N, padx=10, pady=(1,5))
+    playerNumFrame.pack(side=tk.LEFT, anchor=tk.N, padx=10, pady=(1,5))
 
-    widgets['multiworld'].pack(side=TOP, anchor=W, padx=5, pady=(1,1))
+    widgets['multiworld'].pack(side=tk.TOP, anchor=tk.W, padx=5, pady=(1,1))
 
 
     # Settings Presets Functions
     def import_setting_preset():
         if guivars['settings_preset'].get() == '[New Preset]':
-            messagebox.showerror("Invalid Preset", "You must select an existing preset!")
+            tk.messagebox.showerror("Invalid Preset", "You must select an existing preset!")
             return
 
         # Get cosmetic settings
@@ -580,12 +573,12 @@ def guiMain(settings=None):
     def add_settings_preset():
         preset_name = guivars['settings_preset'].get()
         if preset_name == '[New Preset]':
-            preset_name = simpledialog.askstring("New Preset", "Enter a new preset name:")
+            preset_name = tk.simpledialog.askstring("New Preset", "Enter a new preset name:")
             if not preset_name or preset_name in presets or preset_name == '[New Preset]':
-                messagebox.showerror("Invalid Preset", "You must enter a new preset name!")
+                tk.messagebox.showerror("Invalid Preset", "You must enter a new preset name!")
                 return
         elif presets[preset_name].get('locked', False):
-            messagebox.showerror("Invalid Preset", "You cannot modify a locked preset!")
+            tk.messagebox.showerror("Invalid Preset", "You cannot modify a locked preset!")
             return
 
         settings = guivars_to_settings(guivars)
@@ -600,13 +593,13 @@ def guiMain(settings=None):
     def remove_setting_preset():
         preset_name = guivars['settings_preset'].get()
         if preset_name == '[New Preset]':
-            messagebox.showerror("Invalid Preset", "You must select an existing preset!")
+            tk.messagebox.showerror("Invalid Preset", "You must select an existing preset!")
             return
         elif presets[preset_name].get('locked', False):
-            messagebox.showerror("Invalid Preset", "You cannot modify a locked preset!")
+            tk.messagebox.showerror("Invalid Preset", "You cannot modify a locked preset!")
             return
 
-        confirm = messagebox.askquestion('Remove Setting Preset', 'Are you sure you want to remove the setting preset "%s"?' % preset_name)
+        confirm = tk.messagebox.askquestion('Remove Setting Preset', 'Are you sure you want to remove the setting preset "%s"?' % preset_name)
         if confirm != 'yes':
             return
 
@@ -620,28 +613,29 @@ def guiMain(settings=None):
 
 
     # Settings Presets
-    widgets['settings_presets'] = LabelFrame(frames['rom_tab'], text='Settings Presets')
-    countLabel = Label(widgets['settings_presets'], wraplength=350, justify=LEFT, text='Presets are settings that can be saved and loaded from. Loading a preset will overwrite all settings that affect the seed.')
-    countLabel.pack(side=TOP, anchor=W, padx=5, pady=0)
+    widgets['settings_presets'] = tk.LabelFrame(frames['rom_tab'], text='Settings Presets')
+    countLabel = tk.Label(widgets['settings_presets'], wraplength=350, justify=tk.LEFT, \
+            text='Presets are settings that can be saved and loaded from. Loading a preset will overwrite all settings that affect the seed.')
+    countLabel.pack(side=tk.TOP, anchor=tk.W, padx=5, pady=0)
 
-    selectPresetFrame = Frame(widgets['settings_presets'])
-    guivars['settings_preset'] = StringVar(value='[New Preset]')
+    selectPresetFrame = tk.Frame(widgets['settings_presets'])
+    guivars['settings_preset'] = tk.StringVar(value='[New Preset]')
     widgets['settings_preset'] = ttk.Combobox(selectPresetFrame, textvariable=guivars['settings_preset'], values=['[New Preset]'], state='readonly', width=35)
-    widgets['settings_preset'].pack(side=BOTTOM, anchor=W)
+    widgets['settings_preset'].pack(side=tk.BOTTOM, anchor=tk.W)
     ToolTips.register(widgets['settings_preset'], 'Select a setting preset to apply.')
-    widgets['settings_preset'].pack(side=LEFT, padx=(5, 0))
-    selectPresetFrame.pack(side=TOP, anchor=W, padx=5, pady=(1,5))
+    widgets['settings_preset'].pack(side=tk.LEFT, padx=(5, 0))
+    selectPresetFrame.pack(side=tk.TOP, anchor=tk.W, padx=5, pady=(1,5))
 
-    buttonPresetFrame = Frame(widgets['settings_presets'])
-    importPresetButton = Button(buttonPresetFrame, text='Load Preset', command=import_setting_preset)
-    addPresetButton = Button(buttonPresetFrame, text='Save Preset', command=add_settings_preset)
-    removePresetButton = Button(buttonPresetFrame, text='Remove Preset', command=remove_setting_preset)
-    importPresetButton.pack(side=LEFT, anchor=W, padx=5)
-    addPresetButton.pack(side=LEFT, anchor=W, padx=5)
-    removePresetButton.pack(side=LEFT, anchor=W, padx=5)
-    buttonPresetFrame.pack(side=TOP, anchor=W, padx=5, pady=(1,5))
+    buttonPresetFrame = tk.Frame(widgets['settings_presets'])
+    importPresetButton = tk.Button(buttonPresetFrame, text='Load Preset', command=import_setting_preset)
+    addPresetButton = tk.Button(buttonPresetFrame, text='Save Preset', command=add_settings_preset)
+    removePresetButton = tk.Button(buttonPresetFrame, text='Remove Preset', command=remove_setting_preset)
+    importPresetButton.pack(side=tk.LEFT, anchor=tk.W, padx=5)
+    addPresetButton.pack(side=tk.LEFT, anchor=tk.W, padx=5)
+    removePresetButton.pack(side=tk.LEFT, anchor=tk.W, padx=5)
+    buttonPresetFrame.pack(side=tk.TOP, anchor=tk.W, padx=5, pady=(1,5))
 
-    widgets['settings_presets'].pack(side=TOP, anchor=W, padx=5, pady=(1,1))
+    widgets['settings_presets'].pack(side=tk.TOP, anchor=tk.W, padx=5, pady=(1,1))
 
 
     # Create the generation menu
@@ -683,19 +677,19 @@ def guiMain(settings=None):
             settings_to_guivars(settings, guivars)
             show_settings()
         except Exception as e:
-            messagebox.showerror(title="Error", message="Invalid settings string")
+            tk.messagebox.showerror(title="Error", message="Invalid settings string")
 
-    settingsFrame = Frame(frames['gen_from_seed'])
-    settings_string_var = StringVar()
-    widgets['setting_string'] = Entry(settingsFrame, textvariable=settings_string_var, width=32)
+    settingsFrame = tk.Frame(frames['gen_from_seed'])
+    settings_string_var = tk.StringVar()
+    widgets['setting_string'] = tk.Entry(settingsFrame, textvariable=settings_string_var, width=32)
 
-    label = Label(settingsFrame, text="Settings String")
-    widgets['import_settings'] = Button(settingsFrame, text='Import Settings String', command=import_settings)
-    label.pack(side=LEFT, anchor=W, padx=5)
-    widgets['setting_string'].pack(side=LEFT, anchor=W)
-    widgets['import_settings'].pack(side=LEFT, anchor=W, padx=5)
+    label = tk.Label(settingsFrame, text="Settings String")
+    widgets['import_settings'] = tk.Button(settingsFrame, text='Import Settings String', command=import_settings)
+    label.pack(side=tk.LEFT, anchor=tk.W, padx=5)
+    widgets['setting_string'].pack(side=tk.LEFT, anchor=tk.W)
+    widgets['import_settings'].pack(side=tk.LEFT, anchor=tk.W, padx=5)
 
-    settingsFrame.pack(fill=BOTH, anchor=W, padx=5, pady=(10,0))
+    settingsFrame.pack(fill=tk.BOTH, anchor=tk.W, padx=5, pady=(10,0))
 
     def multiple_run(settings, window):
         orig_seed = settings.seed
@@ -711,48 +705,48 @@ def guiMain(settings=None):
         else:
             BackgroundTaskProgress(mainWindow, "Generating Seed %s..." % settings.seed, main, settings)
 
-    generateSeedFrame = Frame(frames['gen_from_seed'])
-    generateButton = Button(generateSeedFrame, text='Generate Patched ROM', command=generateRom)
+    generateSeedFrame = tk.Frame(frames['gen_from_seed'])
+    generateButton = tk.Button(generateSeedFrame, text='Generate Patched ROM', command=generateRom)
 
-    seedLabel = Label(generateSeedFrame, text='Seed')
-    guivars['seed'] = StringVar()
-    widgets['seed'] = Entry(generateSeedFrame, textvariable=guivars['seed'], width=32)
-    seedLabel.pack(side=LEFT, padx=(55, 5))
-    widgets['seed'].pack(side=LEFT)
-    generateButton.pack(side=LEFT, padx=(5, 0))
+    seedLabel = tk.Label(generateSeedFrame, text='Seed')
+    guivars['seed'] = tk.StringVar()
+    widgets['seed'] = tk.Entry(generateSeedFrame, textvariable=guivars['seed'], width=32)
+    seedLabel.pack(side=tk.LEFT, padx=(55, 5))
+    widgets['seed'].pack(side=tk.LEFT)
+    generateButton.pack(side=tk.LEFT, padx=(5, 0))
 
-    generateSeedFrame.pack(side=BOTTOM, anchor=W, padx=5, pady=10)
+    generateSeedFrame.pack(side=tk.BOTTOM, anchor=tk.W, padx=5, pady=10)
 
     # From file tab
-    patchDialogFrame = Frame(frames['gen_from_file'])
+    patchDialogFrame = tk.Frame(frames['gen_from_file'])
 
-    patchFileLabel = Label(patchDialogFrame, text='Patch File')
-    guivars['patch_file'] = StringVar(value='')
-    patchEntry = Entry(patchDialogFrame, textvariable=guivars['patch_file'], width=45)
+    patchFileLabel = tk.Label(patchDialogFrame, text='Patch File')
+    guivars['patch_file'] = tk.StringVar(value='')
+    patchEntry = tk.Entry(patchDialogFrame, textvariable=guivars['patch_file'], width=45)
 
     def PatchSelect():
-        patch_file = filedialog.askopenfilename(filetypes=[("Patch File Archive", "*.zpfz *.zpf"), ("All Files", "*")])
+        patch_file = tk.filedialog.askopenfilename(filetypes=[("Patch File Archive", "*.zpfz *.zpf"), ("All Files", "*")])
         if patch_file != '':
             guivars['patch_file'].set(patch_file)
-    patchSelectButton = Button(patchDialogFrame, text='Select File', command=PatchSelect, width=10)
+    patchSelectButton = tk.Button(patchDialogFrame, text='Select File', command=PatchSelect, width=10)
 
-    patchFileLabel.pack(side=LEFT, padx=(5,0))
-    patchEntry.pack(side=LEFT, padx=3)
-    patchSelectButton.pack(side=LEFT)
+    patchFileLabel.pack(side=tk.LEFT, padx=(5,0))
+    patchEntry.pack(side=tk.LEFT, padx=3)
+    patchSelectButton.pack(side=tk.LEFT)
 
-    patchDialogFrame.pack(side=TOP, anchor=W, padx=5, pady=(10,5))
+    patchDialogFrame.pack(side=tk.TOP, anchor=tk.W, padx=5, pady=(10,5))
 
     def generateFromFile():
         settings = guivars_to_settings(guivars)
         BackgroundTaskProgress(mainWindow, "Generating From File %s..." % os.path.basename(settings.patch_file), from_patch_file, settings)
 
-    generateFileButton = Button(frames['gen_from_file'], text='Generate Patched ROM', command=generateFromFile)
-    generateFileButton.pack(side=BOTTOM, anchor=E, pady=(0,10), padx=(0, 10))
+    generateFileButton = tk.Button(frames['gen_from_file'], text='Generate Patched ROM', command=generateFromFile)
+    generateFileButton.pack(side=tk.BOTTOM, anchor=tk.E, pady=(0,10), padx=(0, 10))
 
-    generation_notebook.pack(fill=BOTH, expand=True, padx=5, pady=5)
+    generation_notebook.pack(fill=tk.BOTH, expand=True, padx=5, pady=5)
 
 
-    guivars['checked_version'] = StringVar()
+    guivars['checked_version'] = tk.StringVar()
 
     if settings is not None:
         # Load values from commandline args
