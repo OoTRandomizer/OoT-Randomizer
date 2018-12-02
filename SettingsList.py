@@ -7,13 +7,20 @@ from LocationList import location_table
 # holds the info for a single setting
 class Setting_Info():
 
-    def __init__(self, name, type, bitwidth=0, shared=False, args_params={}, gui_params=None):
+    def __init__(self, name, type, bitwidth=0, shared=False, dependency=None,
+            args_params={}, gui_params=None):
         self.name = name # name of the setting, used as a key to retrieve the setting's value everywhere
         self.type = type # type of the setting's value, used to properly convert types in GUI code
         self.bitwidth = bitwidth # number of bits needed to store the setting, used in converting settings to a string
         self.shared = shared # whether or not the setting is one that should be shared, used in converting settings to a string
-        self.args_params = args_params # parameters that should be pased to the command line argument parser's add_argument() function
+        self.dependency = dependency # if dependency is not met, the setting is not to be used
+        self.args_params = args_params # parameters that should be passed to the command line argument parser's add_argument() function
         self.gui_params = gui_params # parameters that the gui uses to build the widget components
+
+        if self.gui_params is not None:
+            assert 'dependency' not in self.gui_params, \
+                    'Setting {}: dependency shouldn\'t be defined in '\
+                    'gui_params'.format(name)
 
         # create the choices parameters from the gui options if applicable
         if gui_params and 'options' in gui_params and 'choices' not in args_params \
@@ -27,7 +34,7 @@ class Setting_Info():
 class Setting_Widget(Setting_Info):
 
     def __init__(self, name, type, choices, default, args_params={},
-            gui_params=None, shared=False):
+            gui_params=None, shared=False, dependency=None):
 
         assert 'default' not in args_params and 'default' not in gui_params, \
                 'Setting {}: default shouldn\'t be defined in '\
@@ -47,7 +54,8 @@ class Setting_Widget(Setting_Info):
         gui_params['options']  = {v: k for k, v in choices.items()}
         gui_params['default']  = choices[default]
 
-        super().__init__(name, type, self.calc_bitwidth(choices), shared, args_params, gui_params)
+        super().__init__(name, type, self.calc_bitwidth(choices), shared,
+                dependency, args_params, gui_params)
 
 
     def calc_bitwidth(self, choices):
@@ -60,7 +68,7 @@ class Setting_Widget(Setting_Info):
 class Checkbutton(Setting_Widget):
 
     def __init__(self, name, args_help, gui_text, gui_group=None,
-            gui_tooltip=None, gui_dependency=None, default=False,
+            gui_tooltip=None, dependency=None, default=False,
             shared=False):
 
         choices = {
@@ -73,13 +81,12 @@ class Checkbutton(Setting_Widget):
                 }
         if gui_group      is not None: gui_params['group']      = gui_group
         if gui_tooltip    is not None: gui_params['tooltip']    = gui_tooltip
-        if gui_dependency is not None: gui_params['dependency'] = gui_dependency
         args_params = {
                 'help':    args_help,
                 }
 
         super().__init__(name, bool, choices, default, args_params, gui_params,
-                shared)
+                shared, dependency)
         self.args_params['type'] = Checkbutton.parse_bool
 
 
@@ -95,7 +102,7 @@ class Checkbutton(Setting_Widget):
 class Combobox(Setting_Widget):
 
     def __init__(self, name, choices, default, args_help, gui_text=None,
-            gui_group=None, gui_tooltip=None, gui_dependency=None,
+            gui_group=None, gui_tooltip=None, dependency=None,
             shared=False):
 
         type = str
@@ -105,20 +112,19 @@ class Combobox(Setting_Widget):
         if gui_text       is not None: gui_params['text']       = gui_text
         if gui_group      is not None: gui_params['group']      = gui_group
         if gui_tooltip    is not None: gui_params['tooltip']    = gui_tooltip
-        if gui_dependency is not None: gui_params['dependency'] = gui_dependency
         args_params = {
                 'help':    args_help,
                 }
 
         super().__init__(name, type, choices, default, args_params, gui_params,
-                shared)
+                shared, dependency)
 
 
 class Scale(Setting_Widget):
 
     def __init__(self, name, min, max, default, args_help, step=1,
             gui_text=None, gui_group=None, gui_tooltip=None,
-            gui_dependency=None, shared=False):
+            dependency=None, shared=False):
 
         type = int
         choices = {}
@@ -133,13 +139,12 @@ class Scale(Setting_Widget):
         if gui_text       is not None: gui_params['text']       = gui_text
         if gui_group      is not None: gui_params['group']      = gui_group
         if gui_tooltip    is not None: gui_params['tooltip']    = gui_tooltip
-        if gui_dependency is not None: gui_params['dependency'] = gui_dependency
         args_params = {
                 'help':    args_help,
                 }
 
         super().__init__(name, type, choices, default, args_params, gui_params,
-                shared)
+                shared, dependency)
 
 
 def parse_custom_tunic_color(s):
@@ -161,54 +166,94 @@ def parse_color(s, color_choices):
 
 # a list of the possible settings
 setting_infos = [
-    Setting_Info('check_version', bool, 0, False,
-    {
-        'help': '''\
-                Checks if you are on the latest version
-                ''',
-        'action': 'store_true'
-    }),
-    Setting_Info('checked_version', str, 0, False, {
+    Setting_Info(
+        name        = 'check_version',
+        type        = bool,
+        args_params = {
+            'help':   '''\
+                      Checks if you are on the latest version
+                      ''',
+            'action': 'store_true'
+            }
+        ),
+    Setting_Info(
+        name         = 'checked_version',
+        type         = str,
+        args_params  = {
             'default': '',
-            'help': 'Supress version warnings if checked_version is less than __version__.'}),
-    Setting_Info('rom', str, 0, False, {
+            'help':    'Supress version warnings if checked_version is less than __version__.'
+            }
+        ),
+    Setting_Info(
+        name         = 'rom',
+        type         = str,
+        args_params  = {
             'default': '',
-            'help': 'Path to an OoT 1.0 rom to use as a base.'}),
-    Setting_Info('output_dir', str, 0, False, {
+            'help':    'Path to an OoT 1.0 rom to use as a base.'
+            }
+        ),
+    Setting_Info(
+        name         = 'output_dir',
+        type         = str,
+        args_params  = {
             'default': '',
-            'help': 'Path to output directory for rom generation.'}),
-    Setting_Info('seed', str, 0, False, {
-            'help': 'Define seed number to generate.'}),
-    Setting_Info('patch_file', str, 0, False, {
+            'help':    'Path to output directory for rom generation.'
+            }
+        ),
+    Setting_Info(
+        name         = 'seed',
+        type         = str,
+        args_params  = {
+            'help':    'Define seed number to generate.'
+            }
+        ),
+    Setting_Info(
+        name         = 'patch_file',
+        type         = str,
+        args_params  = {
             'default': '',
-            'help': 'Path to a patch file.'}),
-    Setting_Info('count', int, 0, False, {
-            'help': '''\
-                    Use to batch generate multiple seeds with same settings.
-                    If --seed is provided, it will be used for the first seed, then
-                    used to derive the next seed (i.e. generating 10 seeds with
-                    --seed given will produce the same 10 (different) roms each
-                    time).
-                    ''',
-            'type': int}),
-    Setting_Info('world_count', int, 5, True, {
+            'help':    'Path to a patch file.'
+            }
+        ),
+    Setting_Info(
+        name         = 'count',
+        type         = int,
+        args_params  = {
+            'help':    '''\
+                       Use to batch generate multiple seeds with same settings.
+                       If --seed is provided, it will be used for the first seed, then
+                       used to derive the next seed (i.e. generating 10 seeds with
+                       --seed given will produce the same 10 (different) roms each
+                       time).
+                       ''',
+            'type':    int
+            }
+        ),
+    Setting_Info(
+        name         = 'world_count',
+        type         = int,
+        bitwidth     = 5,
+        shared       = True,
+        args_params  = {
             'default': 1,
-            'help': '''\
-                    Use to create a multi-world generation for co-op seeds.
-                    World count is the number of players. Warning: Increasing
-                    the world count will drastically increase generation time.
-                    ''',
-            'type': int}, {}),
-    Setting_Info('player_num', int, 0, False, 
-        {
-            'default': 1,
-            'help': '''\
-                    Use to select world to generate when there are multiple worlds.
-                    ''',
-            'type': int
-        },
-        {
-            'dependency': lambda state: state['compress_rom'] not in ['No Output', 'Patch File'],
+            'help':    '''\
+                       Use to create a multi-world generation for co-op seeds.
+                       World count is the number of players. Warning: Increasing
+                       the world count will drastically increase generation time.
+                       ''',
+            'type':    int
+            },
+        gui_params   = {}
+        ),
+    Setting_Info(
+        name         = 'player_num',
+        type         =  int,
+        args_params  = {
+            'default':  1,
+            'help':     '''\
+                        Use to select world to generate when there are multiple worlds.
+                        ''',
+            'type':     int
         }),
     Checkbutton(
             name           = 'create_spoiler',
@@ -498,7 +543,7 @@ setting_infos = [
                              enabled, then there will be hints for which
                              trials need to be completed.
                              ''',
-            gui_dependency = lambda state: not state['trials_random'],
+            dependency = lambda state: not state['trials_random'],
             shared         = True,
             ),
     Checkbutton(
@@ -580,7 +625,7 @@ setting_infos = [
                              The Poe buyer will give a reward for turning
                              in the chosen number of Big Poes.
                              ''',
-            gui_dependency = lambda state: not state['big_poe_count_random'],
+            dependency = lambda state: not state['big_poe_count_random'],
             shared         = True,
             ),
     Checkbutton(
@@ -997,7 +1042,7 @@ setting_infos = [
                              12: All dungeons will have
                              Master Quest redesigns.
                              ''',
-            gui_dependency = lambda state: not state['mq_dungeons_random'],
+            dependency = lambda state: not state['mq_dungeons_random'],
             shared         = True,
             ),
     Checkbutton(
@@ -1051,16 +1096,21 @@ setting_infos = [
                              ''',
             shared         = True,
             ),
-    Setting_Info('disabled_locations', list, math.ceil(math.log(len(location_table) + 2, 2)), True,
-        {
+    Setting_Info(
+        name         = 'disabled_locations',
+        type         = list,
+        bitwidth     = math.ceil(math.log(len(location_table) + 2, 2)),
+        shared       = True,
+        args_params  = {
             'default': [],
-            'help': '''\
-                    Choose a list of locations that will never be required to beat the game.
-                    '''
-        },
-        {
+            'help':    '''\
+                       Choose a list of locations that will never be required to beat the game.
+                       '''
+            },
+        gui_params  = {
             'options': list(location_table.keys()),
-        }),      
+            }
+        ),
     Combobox(
             name           = 'logic_latest_adult_trade',
             default        = 'claim_check',
@@ -1512,228 +1562,248 @@ setting_infos = [
                              ''',
             ),
 
-    Setting_Info('kokiri_color', str, 0, False,
-        {
+    Setting_Info(
+        name         = 'kokiri_color',
+        type         = str,
+        args_params  = {
             'default': 'Kokiri Green',
-            'type': parse_custom_tunic_color,
-            'help': '''\
-                    Choose the color for Link's Kokiri Tunic. (default: %(default)s)
-                    Color:              Make the Kokiri Tunic this color.
-                    Random Choice:      Choose a random color from this list of colors.
-                    Completely Random: Choose a random color from any color the N64 can draw.
-                    '''
+            'type':    parse_custom_tunic_color,
+            'help':    '''\
+                       Choose the color for Link's Kokiri Tunic. (default: %(default)s)
+                       Color:              Make the Kokiri Tunic this color.
+                       Random Choice:      Choose a random color from this list of colors.
+                       Completely Random: Choose a random color from any color the N64 can draw.
+                       '''
         },
-        {
-            'text': 'Kokiri Tunic Color',
-            'group': 'tunic_color',
-            'widget': 'Combobox',
+        gui_params   = {
+            'text':    'Kokiri Tunic Color',
+            'group':   'tunic_color',
+            'widget':  'Combobox',
             'default': 'Kokiri Green',
             'options': get_tunic_color_options(),
-            'tooltip':'''\
-                      'Random Choice': Choose a random
-                      color from this list of colors.
-                      'Completely Random': Choose a random
-                      color from any color the N64 can draw.
-                      '''
+            'tooltip': '''\
+                       'Random Choice': Choose a random
+                       color from this list of colors.
+                       'Completely Random': Choose a random
+                       color from any color the N64 can draw.
+                       '''
         }),
-    Setting_Info('goron_color', str, 0, False,
-        {
+    Setting_Info(
+        name         = 'goron_color',
+        type         = str,
+        args_params  = {
             'default': 'Goron Red',
-            'type': parse_custom_tunic_color,
-            'help': '''\
-                    Choose the color for Link's Goron Tunic. (default: %(default)s)
-                    Color:              Make the Goron Tunic this color.
-                    Random Choice:      Choose a random color from this list of colors.
-                    Completely Random: Choose a random color from any color the N64 can draw.
-                    '''
+            'type':    parse_custom_tunic_color,
+            'help':    '''\
+                       Choose the color for Link's Goron Tunic. (default: %(default)s)
+                       Color:              Make the Goron Tunic this color.
+                       Random Choice:      Choose a random color from this list of colors.
+                       Completely Random: Choose a random color from any color the N64 can draw.
+                       '''
         },
-        {
-            'text': 'Goron Tunic Color',
-            'group': 'tunic_color',
-            'widget': 'Combobox',
+        gui_params   = {
+            'text':    'Goron Tunic Color',
+            'group':   'tunic_color',
+            'widget':  'Combobox',
             'default': 'Goron Red',
             'options': get_tunic_color_options(),
-            'tooltip':'''\
-                      'Random Choice': Choose a random
-                      color from this list of colors.
-                      'Completely Random': Choose a random
-                      color from any color the N64 can draw.
-                      '''
+            'tooltip': '''\
+                       'Random Choice': Choose a random
+                       color from this list of colors.
+                       'Completely Random': Choose a random
+                       color from any color the N64 can draw.
+                       '''
         }),
-    Setting_Info('zora_color', str, 0, False,
-        {
+    Setting_Info(
+        name         = 'zora_color',
+        type         = str,
+        args_params  = {
             'default': 'Zora Blue',
-            'type': parse_custom_tunic_color,
-            'help': '''\
-                    Choose the color for Link's Zora Tunic. (default: %(default)s)
-                    Color:              Make the Zora Tunic this color.
-                    Random Choice:      Choose a random color from this list of colors.
-                    Completely Random: Choose a random color from any color the N64 can draw.
-                    '''
+            'type':    parse_custom_tunic_color,
+            'help':    '''\
+                       Choose the color for Link's Zora Tunic. (default: %(default)s)
+                       Color:              Make the Zora Tunic this color.
+                       Random Choice:      Choose a random color from this list of colors.
+                       Completely Random: Choose a random color from any color the N64 can draw.
+                       '''
         },
-        {
-            'text': 'Zora Tunic Color',
-            'group': 'tunic_color',
-            'widget': 'Combobox',
+        gui_params   = {
+            'text':    'Zora Tunic Color',
+            'group':   'tunic_color',
+            'widget':  'Combobox',
             'default': 'Zora Blue',
             'options': get_tunic_color_options(),
-            'tooltip':'''\
-                      'Random Choice': Choose a random
-                      color from this list of colors.
-                      'Completely Random': Choose a random
-                      color from any color the N64 can draw.
-                      '''
+            'tooltip': '''\
+                       'Random Choice': Choose a random
+                       color from this list of colors.
+                       'Completely Random': Choose a random
+                       color from any color the N64 can draw.
+                       '''
         }),
-    Setting_Info('navi_color_default', str, 0, False,
-        {
+    Setting_Info(
+        name         = 'navi_color_default',
+        type         = str,
+        args_params  = {
             'default': 'White',
-            'type': parse_custom_navi_color,
-            'help': '''\
-                    Choose the color for Navi when she is idle. (default: %(default)s)
-                    Color:             Make the Navi this color.
-                    Random Choice:     Choose a random color from this list of colors.
-                    Completely Random: Choose a random color from any color the N64 can draw.
-                    '''
+            'type':    parse_custom_navi_color,
+            'help':    '''\
+                       Choose the color for Navi when she is idle. (default: %(default)s)
+                       Color:             Make the Navi this color.
+                       Random Choice:     Choose a random color from this list of colors.
+                       Completely Random: Choose a random color from any color the N64 can draw.
+                       '''
         },
-        {
-            'text': 'Navi Idle',
-            'group': 'navi_color',
-            'widget': 'Combobox',
+        gui_params   = {
+            'text':    'Navi Idle',
+            'group':   'navi_color',
+            'widget':  'Combobox',
             'default': 'White',
             'options': get_navi_color_options(),
-            'tooltip':'''\
-                      'Random Choice': Choose a random
-                      color from this list of colors.
-                      'Completely Random': Choose a random
-                      color from any color the N64 can draw.
-                      '''
+            'tooltip': '''\
+                       'Random Choice': Choose a random
+                       color from this list of colors.
+                       'Completely Random': Choose a random
+                       color from any color the N64 can draw.
+                       '''
         }),
-    Setting_Info('navi_color_enemy', str, 0, False,
-        {
+    Setting_Info(
+        name         = 'navi_color_enemy',
+        type         = str,
+        args_params  = {
             'default': 'Yellow',
-            'type': parse_custom_navi_color,
-            'help': '''\
-                    Choose the color for Navi when she is targeting an enemy. (default: %(default)s)
-                    Color:             Make the Navi this color.
-                    Random Choice:     Choose a random color from this list of colors.
-                    Completely Random: Choose a random color from any color the N64 can draw.
-                    '''
+            'type':    parse_custom_navi_color,
+            'help':    '''\
+                       Choose the color for Navi when she is targeting an enemy. (default: %(default)s)
+                       Color:             Make the Navi this color.
+                       Random Choice:     Choose a random color from this list of colors.
+                       Completely Random: Choose a random color from any color the N64 can draw.
+                       '''
         },
-        {
-            'text': 'Navi Targeting Enemy',
-            'group': 'navi_color',
-            'widget': 'Combobox',
+        gui_params   = {
+            'text':    'Navi Targeting Enemy',
+            'group':   'navi_color',
+            'widget':  'Combobox',
             'default': 'Yellow',
             'options': get_navi_color_options(),
-            'tooltip':'''\
-                      'Random Choice': Choose a random
-                      color from this list of colors.
-                      'Completely Random': Choose a random
-                      color from any color the N64 can draw.
-                      '''
+            'tooltip': '''\
+                       'Random Choice': Choose a random
+                       color from this list of colors.
+                       'Completely Random': Choose a random
+                       color from any color the N64 can draw.
+                       '''
         }),
-    Setting_Info('navi_color_npc', str, 0, False,
-        {
+    Setting_Info(
+        name         = 'navi_color_npc',
+        type         = str,
+        args_params  = {
             'default': 'Light Blue',
-            'type': parse_custom_navi_color,
-            'help': '''\
-                    Choose the color for Navi when she is targeting an NPC. (default: %(default)s)
-                    Color:             Make the Navi this color.
-                    Random Choice:     Choose a random color from this list of colors.
-                    Completely Random: Choose a random color from any color the N64 can draw.
-                    '''
+            'type':    parse_custom_navi_color,
+            'help':    '''\
+                       Choose the color for Navi when she is targeting an NPC. (default: %(default)s)
+                       Color:             Make the Navi this color.
+                       Random Choice:     Choose a random color from this list of colors.
+                       Completely Random: Choose a random color from any color the N64 can draw.
+                       '''
         },
-        {
-            'text': 'Navi Targeting NPC',
-            'group': 'navi_color',
-            'widget': 'Combobox',
+        gui_params   = {
+            'text':    'Navi Targeting NPC',
+            'group':   'navi_color',
+            'widget':  'Combobox',
             'default': 'Light Blue',
             'options': get_navi_color_options(),
-            'tooltip':'''\
-                      'Random Choice': Choose a random
-                      color from this list of colors.
-                      'Completely Random': Choose a random
-                      color from any color the N64 can draw.
-                      '''
+            'tooltip': '''\
+                       'Random Choice': Choose a random
+                       color from this list of colors.
+                       'Completely Random': Choose a random
+                       color from any color the N64 can draw.
+                       '''
         }),
-    Setting_Info('navi_color_prop', str, 0, False,
-        {
+    Setting_Info(
+        name         = 'navi_color_prop',
+        type         = str,
+        args_params  = {
             'default': 'Green',
-            'type': parse_custom_navi_color,
-            'help': '''\
-                    Choose the color for Navi when she is targeting a prop. (default: %(default)s)
-                    Color:             Make the Navi this color.
-                    Random Choice:     Choose a random color from this list of colors.
-                    Completely Random: Choose a random color from any color the N64 can draw.
-                    '''
+            'type':    parse_custom_navi_color,
+            'help':    '''\
+                       Choose the color for Navi when she is targeting a prop. (default: %(default)s)
+                       Color:             Make the Navi this color.
+                       Random Choice:     Choose a random color from this list of colors.
+                       Completely Random: Choose a random color from any color the N64 can draw.
+                       '''
         },
-        {
-            'text': 'Navi Targeting Prop',
-            'group': 'navi_color',
-            'widget': 'Combobox',
+        gui_params   = {
+            'text':    'Navi Targeting Prop',
+            'group':   'navi_color',
+            'widget':  'Combobox',
             'default': 'Green',
             'options': get_navi_color_options(),
-            'tooltip':'''\
-                      'Random Choice': Choose a random
-                      color from this list of colors.
-                      'Completely Random': Choose a random
-                      color from any color the N64 can draw.
-                      '''
+            'tooltip': '''\
+                       'Random Choice': Choose a random
+                       color from this list of colors.
+                       'Completely Random': Choose a random
+                       color from any color the N64 can draw.
+                       '''
         }),
-    Setting_Info('navisfxoverworld', str, 0, False,
-        {
+    Setting_Info(
+        name         = 'navisfxoverworld',
+        type         = str,
+        args_params  = {
             'default': 'Default',
-            'help': '''\
-                    Select the sound effect that plays when Navi has a hint. (default: %(default)s)
-                    Sound:         Replace the sound effect with the chosen sound.
-                    Random Choice: Replace the sound effect with a random sound from this list.
-                    None:          Eliminate Navi hint sounds.
-                    '''
+            'help':    '''\
+                       Select the sound effect that plays when Navi has a hint. (default: %(default)s)
+                       Sound:         Replace the sound effect with the chosen sound.
+                       Random Choice: Replace the sound effect with a random sound from this list.
+                       None:          Eliminate Navi hint sounds.
+                       '''
         },
-        {
-            'text': 'Navi Hint',
-            'group': 'navihint',
-            'widget': 'Combobox',
+        gui_params   = {
+            'text':    'Navi Hint',
+            'group':   'navihint',
+            'widget':  'Combobox',
             'default': 'Default',
             'options': get_NaviSFX_options(),
         }),
-        Setting_Info('navisfxenemytarget', str, 0, False,
-        {
+    Setting_Info(
+        name         = 'navisfxenemytarget',
+        type         = str,
+        args_params  = {
             'default': 'Default',
-            'help': '''\
-                    Select the sound effect that plays when targeting an enemy. (default: %(default)s)
-                    Sound:         Replace the sound effect with the chosen sound.
-                    Random Choice: Replace the sound effect with a random sound from this list.
-                    None:          Eliminate Navi hint sounds.
-                    '''
+            'help':    '''\
+                       Select the sound effect that plays when targeting an enemy. (default: %(default)s)
+                       Sound:         Replace the sound effect with the chosen sound.
+                       Random Choice: Replace the sound effect with a random sound from this list.
+                       None:          Eliminate Navi hint sounds.
+                       '''
         },
-        {
-            'text': 'Navi Enemy Target',
-            'group': 'navihint',
-            'widget': 'Combobox',
+        gui_params   = {
+            'text':    'Navi Enemy Target',
+            'group':   'navihint',
+            'widget':  'Combobox',
             'default': 'Default',
             'options': get_NaviSFX_options(),
         }),
-    Setting_Info('healthSFX', str, 0, False,
-        {
+    Setting_Info(
+        name         = 'healthSFX',
+        type         = str,
+        args_params  = {
             'default': 'Default',
-            'help': '''\
-                    Select the sound effect that loops at low health. (default: %(default)s)
-                    Sound:         Replace the sound effect with the chosen sound.
-                    Random Choice: Replace the sound effect with a random sound from this list.
-                    None:          Eliminate heart beeps.
-                    '''
+            'help':    '''\
+                       Select the sound effect that loops at low health. (default: %(default)s)
+                       Sound:         Replace the sound effect with the chosen sound.
+                       Random Choice: Replace the sound effect with a random sound from this list.
+                       None:          Eliminate heart beeps.
+                       '''
         },
-        {
-            'text': 'Low Health SFX',
-            'group': 'lowhp',
-            'widget': 'Combobox',
+        gui_params   = {
+            'text':    'Low Health SFX',
+            'group':   'lowhp',
+            'widget':  'Combobox',
             'default': 'Default',
             'options': get_HealthSFX_options(),
-            'tooltip':'''\
-                      'Random Choice': Choose a random
-                      sound from this list.
-                      'Default': Beep. Beep. Beep.
-                      '''
+            'tooltip': '''\
+                       'Random Choice': Choose a random
+                       sound from this list.
+                       'Default': Beep. Beep. Beep.
+                       '''
         }),
 ]

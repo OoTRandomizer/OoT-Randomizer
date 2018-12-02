@@ -56,9 +56,12 @@ class Settings():
         output = ''
         for setting in filter(lambda s: s.shared, setting_infos):
             name = setting.name + ': ' + ' ' * (padding - len(setting.name))
-            dep_function = setting.gui_params.get('dependency', lambda x: True)
-            val = str(settings[setting.name]) if dep_function(settings) != False else '(N/A)'
-            output += name + val + '\n'
+            if setting.dependency is None \
+                    or setting.dependency(settings) == True:
+                value = str(settings[setting.name])
+            else:
+                value = '(N/A)'
+            output += name + value + '\n'
         return output
 
     def get_settings_string(self):

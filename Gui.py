@@ -351,8 +351,8 @@ def guiMain(settings=None):
     ToolTips.register(location_frame, disabled_location_tooltip)
 
     for info in setting_infos:
-        if info.gui_params and 'dependency' in info.gui_params:
-            dependencies[info.name] = info.gui_params['dependency']
+        if info.dependency is not None:
+            dependencies[info.name] = info.dependency
 
         if info.gui_params and 'group' in info.gui_params:
             if info.gui_params['widget'] == 'Checkbutton':
