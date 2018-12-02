@@ -54,6 +54,9 @@ class Setting_Widget(Setting_Info):
         gui_params['options']  = {v: k for k, v in choices.items()}
         gui_params['default']  = choices[default]
 
+        self.choices = choices
+        self.default = default
+
         super().__init__(name, type, calc_bitwidth(len(choices)), shared,
                 dependency, args_params, gui_params)
 
@@ -168,7 +171,7 @@ setting_infos = [
         type        = bool,
         args_params = {
             'help':   '''\
-                      Checks if you are on the latest version
+                      Checks if you are on the latest version.
                       ''',
             'action': 'store_true'
             }
@@ -179,6 +182,14 @@ setting_infos = [
         args_params  = {
             'default': '',
             'help':    'Supress version warnings if checked_version is less than __version__.'
+            }
+        ),
+    Setting_Info(
+        name         = 'inactive_settings',
+        type         = list,
+        args_params  = {
+            'default': [],
+            'help':    '(Internal) These settings will not impact the settings string.'
             }
         ),
     Setting_Info(
@@ -1804,3 +1815,8 @@ setting_infos = [
                        '''
         }),
 ]
+
+def get_setting_info(name):
+    for info in setting_infos:
+        if info.name == name:
+            return info

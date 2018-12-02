@@ -16,6 +16,7 @@ from version import __version__ as ESVersion
 import WorldFile
 from LocationList import location_table
 
+# Load settings into gui
 def settings_to_guivars(settings, guivars):
     for info in setting_infos:
         name = info.name
@@ -113,7 +114,9 @@ def guiMain(settings=None):
     #######################
 
     # Hold the results of the user's decisions here
-    guivars      = {}
+    guivars      = {
+            'inactive_settings': [],
+            }
     widgets      = {}
     dependencies = {}
     presets      = {}
@@ -178,15 +181,20 @@ def guiMain(settings=None):
                 setting_state[key] = guivars[key].get()
 
         if name in dependencies:
+            if name not in guivars['inactive_settings'] and \
+                    dependencies[name](setting_state) == False:
+                guivars['inactive_settings'].append(name)
+
+            if name in guivars['inactive_settings'] and \
+                    dependencies[name](setting_state) == True:
+                guivars['inactive_settings'].remove(name)
+
             return dependencies[name](setting_state)
         else:
             return True
 
 
     def show_settings(*event):
-        settings = guivars_to_settings(guivars)
-        settings_string_var.set(settings.get_settings_string())
-
         # Update any dependencies
         for info in setting_infos:
             dep_met = check_dependency(info.name)
@@ -194,7 +202,7 @@ def guiMain(settings=None):
             if info.name in widgets:
                 toggle_widget(widgets[info.name], dep_met)
 
-            if info.type == list:
+            if info.type == list and info.name in widgets:
                 widgets[info.name].delete(0, tk.END)
                 widgets[info.name].insert(0, *guivars[info.name])
 
@@ -203,6 +211,9 @@ def guiMain(settings=None):
                 if color == (None, None):
                     color = ((0,0,0),'#000000')
                 guivars[info.name].set('Custom (' + color[1] + ')')
+
+        settings = guivars_to_settings(guivars)
+        settings_string_var.set(settings.get_settings_string())
         update_generation_type()
 
 

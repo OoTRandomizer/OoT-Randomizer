@@ -8,7 +8,7 @@ import sys
 
 from version import __version__
 from Utils import random_choices
-from SettingsList import setting_infos
+from SettingsList import setting_infos, get_setting_info
 
 class ArgumentDefaultsHelpFormatter(argparse.RawTextHelpFormatter):
 
@@ -65,9 +65,19 @@ class Settings():
         return output
 
     def get_settings_string(self):
+        if self.__dict__['inactive_settings'] is not None:
+            inactive = self.__dict__['inactive_settings']
+        else:
+            inactive = []
+        shared_settings = filter(lambda s: s.shared and s.bitwidth > 0, setting_infos)
+
         bits = []
-        for setting in filter(lambda s: s.shared and s.bitwidth > 0, setting_infos):
-            value = self.__dict__[setting.name]
+        for setting in shared_settings:
+            if setting.name in inactive:
+                value = get_setting_info(setting.name).default
+            else:
+                value = self.__dict__[setting.name]
+
             i_bits = []
             if setting.type == bool:
                 i_bits = [ 1 if value else 0 ]
@@ -128,8 +138,12 @@ class Settings():
 
     def update_with_settings_string(self, text):
         bits = text_to_bit_string(text)
-
-        for setting in filter(lambda s: s.shared and s.bitwidth > 0, setting_infos):
+        inactive = self.__dict__['inactive_settings']
+        input_settings = filter(
+                lambda s: s.shared and s.bitwidth > 0 and s not in inactive,
+                setting_infos
+                )
+        for setting in input_settings:
             cur_bits = bits[:setting.bitwidth]
             bits = bits[setting.bitwidth:]
             value = None
@@ -243,7 +257,8 @@ class Settings():
 def get_settings_from_command_line_args():
     parser = argparse.ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
     for info in setting_infos:
-        parser.add_argument("--" + info.name, **info.args_params)
+        if info.name is not 'inactive_settings':
+            parser.add_argument("--" + info.name, **info.args_params)
 
     parser.add_argument('--gui', help='Launch the GUI', action='store_true')
     parser.add_argument('--loglevel', default='info', const='info', nargs='?', choices=['error', 'info', 'warning', 'debug'], help='Select level of logging for output.')
