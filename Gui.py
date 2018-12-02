@@ -5,7 +5,7 @@ import os
 import tkinter as tk
 import webbrowser
 
-from tkinter import ttk, colorchooser
+from tkinter import ttk, colorchooser, filedialog, messagebox
 
 from GuiUtils import ToolTips, set_icon, BackgroundTask, BackgroundTaskProgress, Dialog, ValidatingEntry, SearchBox
 from Main import main, from_patch_file
@@ -243,7 +243,7 @@ def guiMain(settings=None):
     romEntry = tk.Entry(romDialogFrame, textvariable=guivars['rom'], width=40)
 
     def RomSelect():
-        rom = tk.filedialog.askopenfilename(filetypes=[("ROM Files", (".z64", ".n64")), ("All Files", "*")])
+        rom = filedialog.askopenfilename(filetypes=[("ROM Files", (".z64", ".n64")), ("All Files", "*")])
         if rom != '':
             guivars['rom'].set(rom)
     romSelectButton = tk.Button(romDialogFrame, text='Select ROM', command=RomSelect, width=10)
@@ -257,7 +257,7 @@ def guiMain(settings=None):
     fileDialogFrame.pack(side=tk.TOP, anchor=tk.W, padx=5, pady=(5,1))
 
     def output_dir_select():
-        rom = tk.filedialog.askdirectory(initialdir = default_output_path(guivars['output_dir'].get()))
+        rom = filedialog.askdirectory(initialdir = default_output_path(guivars['output_dir'].get()))
         if rom != '':
             guivars['output_dir'].set(rom)
 
@@ -552,7 +552,7 @@ def guiMain(settings=None):
     # Settings Presets Functions
     def import_setting_preset():
         if guivars['settings_preset'].get() == '[New Preset]':
-            tk.messagebox.showerror("Invalid Preset", "You must select an existing preset!")
+            messagebox.showerror("Invalid Preset", "You must select an existing preset!")
             return
 
         # Get cosmetic settings
@@ -575,10 +575,10 @@ def guiMain(settings=None):
         if preset_name == '[New Preset]':
             preset_name = tk.simpledialog.askstring("New Preset", "Enter a new preset name:")
             if not preset_name or preset_name in presets or preset_name == '[New Preset]':
-                tk.messagebox.showerror("Invalid Preset", "You must enter a new preset name!")
+                messagebox.showerror("Invalid Preset", "You must enter a new preset name!")
                 return
         elif presets[preset_name].get('locked', False):
-            tk.messagebox.showerror("Invalid Preset", "You cannot modify a locked preset!")
+            messagebox.showerror("Invalid Preset", "You cannot modify a locked preset!")
             return
 
         settings = guivars_to_settings(guivars)
@@ -593,13 +593,13 @@ def guiMain(settings=None):
     def remove_setting_preset():
         preset_name = guivars['settings_preset'].get()
         if preset_name == '[New Preset]':
-            tk.messagebox.showerror("Invalid Preset", "You must select an existing preset!")
+            messagebox.showerror("Invalid Preset", "You must select an existing preset!")
             return
         elif presets[preset_name].get('locked', False):
-            tk.messagebox.showerror("Invalid Preset", "You cannot modify a locked preset!")
+            messagebox.showerror("Invalid Preset", "You cannot modify a locked preset!")
             return
 
-        confirm = tk.messagebox.askquestion('Remove Setting Preset', 'Are you sure you want to remove the setting preset "%s"?' % preset_name)
+        confirm = messagebox.askquestion('Remove Setting Preset', 'Are you sure you want to remove the setting preset "%s"?' % preset_name)
         if confirm != 'yes':
             return
 
@@ -677,7 +677,7 @@ def guiMain(settings=None):
             settings_to_guivars(settings, guivars)
             show_settings()
         except Exception as e:
-            tk.messagebox.showerror(title="Error", message="Invalid settings string")
+            messagebox.showerror(title="Error", message="Invalid settings string")
 
     settingsFrame = tk.Frame(frames['gen_from_seed'])
     settings_string_var = tk.StringVar()
@@ -725,7 +725,7 @@ def guiMain(settings=None):
     patchEntry = tk.Entry(patchDialogFrame, textvariable=guivars['patch_file'], width=45)
 
     def PatchSelect():
-        patch_file = tk.filedialog.askopenfilename(filetypes=[("Patch File Archive", "*.zpfz *.zpf"), ("All Files", "*")])
+        patch_file = filedialog.askopenfilename(filetypes=[("Patch File Archive", "*.zpfz *.zpf"), ("All Files", "*")])
         if patch_file != '':
             guivars['patch_file'].set(patch_file)
     patchSelectButton = tk.Button(patchDialogFrame, text='Select File', command=PatchSelect, width=10)
