@@ -54,15 +54,8 @@ class Setting_Widget(Setting_Info):
         gui_params['options']  = {v: k for k, v in choices.items()}
         gui_params['default']  = choices[default]
 
-        super().__init__(name, type, self.calc_bitwidth(choices), shared,
+        super().__init__(name, type, calc_bitwidth(len(choices)), shared,
                 dependency, args_params, gui_params)
-
-
-    def calc_bitwidth(self, choices):
-        count = len(choices)
-        if count > 0:
-            return math.ceil(math.log(count, 2))
-        return 0
 
 
 class Checkbutton(Setting_Widget):
@@ -146,6 +139,10 @@ class Scale(Setting_Widget):
         super().__init__(name, type, choices, default, args_params, gui_params,
                 shared, dependency)
 
+def calc_bitwidth(choice_count):
+    if choice_count > 0:
+        return math.ceil(math.log(choice_count, 2))
+    return 0
 
 def parse_custom_tunic_color(s):
     return parse_color(s, get_tunic_color_options())
@@ -1099,7 +1096,7 @@ setting_infos = [
     Setting_Info(
         name         = 'disabled_locations',
         type         = list,
-        bitwidth     = math.ceil(math.log(len(location_table) + 2, 2)),
+        bitwidth     = calc_bitwidth(len(location_table) + 2),
         shared       = True,
         args_params  = {
             'default': [],
