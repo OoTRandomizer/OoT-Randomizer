@@ -8,14 +8,17 @@ import Sounds as sfx
 # holds the info for a single setting
 class Setting_Info():
 
-    def __init__(self, name, type, bitwidth=0, shared=False, args_params={}, gui_params=None):
+    def __init__(self, name, type, bitwidth=0, shared=False, args_params={}, gui_params=None,exclude_random=False,affected="",max_rando=False):
         self.name = name # name of the setting, used as a key to retrieve the setting's value everywhere
         self.type = type # type of the setting's value, used to properly convert types in GUI code
         self.bitwidth = bitwidth # number of bits needed to store the setting, used in converting settings to a string
         self.shared = shared # whether or not the setting is one that should be shared, used in converting settings to a string
         self.args_params = args_params # parameters that should be pased to the command line argument parser's add_argument() function
         self.gui_params = gui_params # parameters that the gui uses to build the widget components
-
+        self.exclude_random = exclude_random # whether or not the setting is excluded by randomize settings buttons (only shared=true)
+        self.affected=affected;
+        self.max_rando=max_rando;
+        
         # create the choices parameters from the gui options if applicable
         if gui_params and 'options' in gui_params and 'choices' not in args_params \
                 and not ('type' in args_params and callable(args_params['type'])):
@@ -28,7 +31,7 @@ class Setting_Info():
 class Setting_Widget(Setting_Info):
 
     def __init__(self, name, type, choices, default, args_params={},
-            gui_params=None, shared=False):
+            gui_params=None, shared=False, exclude_random=False,affected="",max_rando=False):
 
         assert 'default' not in args_params and 'default' not in gui_params, \
                 'Setting {}: default shouldn\'t be defined in '\
@@ -48,7 +51,7 @@ class Setting_Widget(Setting_Info):
         gui_params['options']  = {v: k for k, v in choices.items()}
         gui_params['default']  = choices[default]
 
-        super().__init__(name, type, self.calc_bitwidth(choices), shared, args_params, gui_params)
+        super().__init__(name, type, self.calc_bitwidth(choices), shared, args_params, gui_params, exclude_random, affected,max_rando)
 
 
     def calc_bitwidth(self, choices):
@@ -62,7 +65,7 @@ class Checkbutton(Setting_Widget):
 
     def __init__(self, name, args_help, gui_text, gui_group=None,
             gui_tooltip=None, gui_dependency=None, default=False,
-            shared=False):
+            shared=False,exclude_random=False):
 
         choices = {
                 True:  'checked',
@@ -80,7 +83,7 @@ class Checkbutton(Setting_Widget):
                 }
 
         super().__init__(name, bool, choices, default, args_params, gui_params,
-                shared)
+                shared,exclude_random)
         self.args_params['type'] = Checkbutton.parse_bool
 
 
@@ -97,7 +100,7 @@ class Combobox(Setting_Widget):
 
     def __init__(self, name, choices, default, args_help, gui_text=None,
             gui_group=None, gui_tooltip=None, gui_dependency=None,
-            shared=False):
+            shared=False,exclude_random=False,affected="",max_rando=False):
 
         type = str
         gui_params = {
@@ -112,14 +115,14 @@ class Combobox(Setting_Widget):
                 }
 
         super().__init__(name, type, choices, default, args_params, gui_params,
-                shared)
+                shared,exclude_random,affected,max_rando)
 
 
 class Scale(Setting_Widget):
 
     def __init__(self, name, min, max, default, args_help, step=1,
             gui_text=None, gui_group=None, gui_tooltip=None,
-            gui_dependency=None, shared=False):
+            gui_dependency=None, shared=False,exclude_random=False):
 
         type = int
         choices = {}
@@ -140,7 +143,7 @@ class Scale(Setting_Widget):
                 }
 
         super().__init__(name, type, choices, default, args_params, gui_params,
-                shared)
+                shared,exclude_random)
 
 
 def parse_custom_tunic_color(s):
@@ -393,7 +396,7 @@ setting_infos = [
                     World count is the number of players. Warning: Increasing
                     the world count will drastically increase generation time.
                     ''',
-            'type': int}, {}),
+            'type': int}, {},True),
     Setting_Info('player_num', int, 0, False, 
         {
             'default': 1,
@@ -417,6 +420,7 @@ setting_infos = [
                              ''',
             default        = True,
             shared         = True,
+            exclude_random = True,
             ),
     Checkbutton(
         name='create_cosmetics_log',
@@ -601,6 +605,7 @@ setting_infos = [
                              be beatable.
                              ''',
             shared         = True,
+            exclude_random = True,
             ),
     Checkbutton(
             name           = 'all_reachable',
@@ -1573,6 +1578,7 @@ setting_infos = [
                              'Minimal': Most excess items are removed.
                              ''',
             shared         = True,
+            exclude_random = True,
             ),
     Combobox(
             name           = 'damage_multiplier',
@@ -1600,6 +1606,7 @@ setting_infos = [
                              'OHKO': Link dies in one hit.
                              ''',
             shared         = True,
+       
             ),
     Combobox(
             name           = 'default_targeting',
@@ -1873,5 +1880,82 @@ setting_infos = [
             gui_tooltip    = '''\
                              Change the sound of the ocarina.
                              ''',
+            ),
+    Combobox(
+            name           = 'text_shuffle_max',
+            default        = 'none',
+            choices        = {
+                'none':         'No Text Shuffled',
+                'except_hints': 'Shuffled except Hints and Keys',
+                'complete':     'All Text Shuffled',
+                },
+            args_help      = '''\
+                             Choose maximum shuffle the game's messages.
+                             none:          Default behavior
+                             except_hints:  All non-useful text is shuffled.
+                             complete:      All text is shuffled.
+                             ''',
+            gui_text       = 'Maximum Text Shuffle',
+            gui_group      = 'random_settings',
+            gui_tooltip    = '''\
+                             Choose maximum shuffle the game's messages.
+                             ''',
+            max_rando     = True,
+            affected      = 'text_shuffle',
+            ),
+    Combobox(
+            name           = 'damage_multiplier_max',
+            default        = 'normal',
+            choices        = {
+                'half':      'Half',
+                'normal':    'Normal',
+                'double':    'Double',
+                'quadruple': 'Quadruple',
+                'ohko':      'OHKO',
+                },
+            args_help      = '''\
+                             Change the amount of damage taken.
+                             half:           Half damage taken.
+                             normal:         Normal damage taken.
+                             double:         Double damage taken.
+                             quadruple:      Quadruple damage taken.
+                             ohko:           Link will die in one hit.
+                             ''',
+            gui_text       = 'Maximum Damage Multiplier',
+            gui_group      = 'random_settings',
+            gui_tooltip    = '''\
+                             Changes the maximum random multiplier
+                             ''',
+             max_rando     = True,
+            affected      = 'damage_multiplier',
+       
+            ),
+    Combobox(
+            name           = 'bridge_max',
+            default        = 'dungeons',
+            choices        = {
+                'open':       'Always Open',
+                'vanilla':    'Vanilla Requirements',
+                'stones':      'All Spiritual Stones',
+                'medallions': 'All Medallions',
+                'dungeons':   'All Dungeons',
+                'tokens':     '100 Gold Skulltula Tokens'
+                },
+            args_help      = '''\
+                             Select requirement to spawn the Rainbow Bridge to reach Ganon's Castle. (default: %(default)s)
+                             open:       The bridge will spawn without an item requirement.
+                             vanilla:    Collect only the Shadow and Spirit Medallions and possess the Light Arrows.
+                             stones:     Collect all three Spiritual Stones to create the bridge.
+                             medallions: Collect all six Medallions to create the bridge.
+                             dungeons:   Collect all Spiritual Stones and all Medallions to create the bridge.
+                             tokens:     Collect all 100 Gold Skulltula tokens.
+                             ''',
+            gui_text       = 'Rainbow Bridge Max Requirement',
+            gui_group      = 'random_settings',
+            gui_tooltip    = '''\
+                             Sets the maximum bridge requirement for random settings
+                             ''',
+            max_rando     = True,
+            affected      = 'bridge',
             ),
 ]

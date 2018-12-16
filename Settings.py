@@ -5,6 +5,7 @@ import re
 import hashlib
 import math
 import sys
+import random
 
 from version import __version__
 from Utils import random_choices
@@ -176,6 +177,71 @@ class Settings():
                         bits = bits[setting.bitwidth:]
                 else:
                     raise ValueError('Setting is list type, but missing parse parameters.')
+
+            self.__dict__[setting.name] = value
+
+        self.settings_string = self.get_settings_string()
+        self.numeric_seed = self.get_numeric_seed()
+
+    def random_settings(self):
+        max_rando={}
+        
+        for maxSetting in filter(lambda s: s.max_rando, setting_infos):
+            maxValue = self.__dict__[maxSetting.name]
+            print("maxSetting")
+            print(maxSetting.name)
+            print(maxValue)
+            if maxSetting.type == str:
+                if 'choices' in maxSetting.args_params:
+                    try:
+                        index = maxSetting.args_params['choices'].index(maxValue)
+                    except ValueError:
+                        index = maxSetting.args_params['choices'].index(maxSetting.args_params['default'])
+            max_rando[maxSetting.affected]=index
+        print(max_rando)
+        for setting in filter(lambda s: s.shared and s.bitwidth > 0, setting_infos):
+            value = None
+            rand = None
+            print(setting.name)
+            print(setting.type)
+            if setting.exclude_random == True:
+                print("excluded")
+                value = setting.args_params['default']
+                print(value)
+                self.__dict__[setting.name] = value
+                continue
+                
+            if setting.type == bool:
+                rand=random.randint(0, 1)
+                value = True if rand == 1 else False
+            if setting.type == str:
+                if 'choices' in setting.args_params:
+                    index = 0
+                    maxValue = len(setting.args_params['choices'])-1
+                    if setting.name in max_rando:
+                        print("en max rando")
+                        maxValue = max_rando[setting.name];
+                    print("maxValue")
+                    print(maxValue)
+                    if maxValue > 0:
+                        index = random.randint(0, maxValue)
+                    print("index")
+                    print(index)
+                    value = setting.args_params['choices'][index]
+                elif 'char_options' in setting.gui_params:
+                    continue
+                else:
+                    raise ValueError('Setting is string type, but missing parse parameters.')
+            if setting.type == int:
+                value = 0
+                minValue = setting.gui_params['min']
+                maxValue = setting.gui_params['max']
+                print(minValue)
+                print(maxValue)
+                value = random.randint(minValue, maxValue)
+                print(value)
+            if setting.type == list:
+                continue
 
             self.__dict__[setting.name] = value
 

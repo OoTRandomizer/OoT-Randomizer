@@ -124,6 +124,7 @@ def guiMain(settings=None):
     frames['logic_tab'] = ttk.Frame(notebook)
     frames['other_tab'] = ttk.Frame(notebook)
     frames['cosmetic_tab'] = ttk.Frame(notebook)
+    frames['random_settings_tab'] = ttk.Frame(notebook)
     frames['cosmetic_tab_left'] = Frame(frames['cosmetic_tab'])
     frames['cosmetic_tab_right'] = Frame(frames['cosmetic_tab'])
     notebook.add(frames['rom_tab'], text='ROM Options')
@@ -131,6 +132,7 @@ def guiMain(settings=None):
     notebook.add(frames['logic_tab'], text='Detailed Logic')
     notebook.add(frames['other_tab'], text='Other')
     notebook.add(frames['cosmetic_tab'], text='Cosmetic')
+    notebook.add(frames['random_settings_tab'], text='Random Settings')
 
     #######################
     # Randomizer controls #
@@ -162,6 +164,9 @@ def guiMain(settings=None):
     frames['cosmetic']    = LabelFrame(frames['cosmetic_tab'],       text='General',           labelanchor=NW)
     frames['colors']      = LabelFrame(frames['cosmetic_tab_right'], text='Colors',            labelanchor=NW)
     frames['sfx']         = LabelFrame(frames['cosmetic_tab_left'],  text='SFX',               labelanchor=NW)
+
+    #random tab
+    frames['random_settings']         = LabelFrame(frames['random_settings_tab'],  text='Random Settings',labelanchor=NW)
 
 
     # Shared
@@ -441,6 +446,8 @@ def guiMain(settings=None):
     # Cosmetics tab - Right Side
     frames['colors'].pack(fill=BOTH, expand=True, anchor=W, side=TOP, pady=(5,1))
 
+    frames['random_settings'].pack(fill=BOTH, expand=True, anchor=W, side=TOP)
+    
     notebook.pack(fill=BOTH, expand=True, padx=5, pady=5)
 
 
@@ -536,6 +543,14 @@ def guiMain(settings=None):
         update_preset_dropdown()
         save_presets()
 
+    def random_settings():
+        settings = guivars_to_settings(guivars)
+        settings.random_settings()
+        settings_to_guivars(settings, guivars)
+        show_settings()
+
+        guivars['settings_preset'].set('[New Preset]')
+        update_preset_dropdown()
 
     def update_preset_dropdown():
         widgets['settings_preset']['values'] = ['[New Preset]'] + list(presets.keys())
@@ -572,6 +587,10 @@ def guiMain(settings=None):
 
     widgets['settings_presets'].pack(side=TOP, anchor=W, padx=5, pady=(1,1))
 
+    # Random settings
+    
+    randomSettingsButton = Button(frames['random_settings'], text='Random Settings', command=random_settings)
+    randomSettingsButton.pack(side=LEFT, anchor=W, padx=5)
 
     # Create the generation menu
     def update_generation_type(event=None):
