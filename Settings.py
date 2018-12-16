@@ -188,26 +188,26 @@ class Settings():
         
         for maxSetting in filter(lambda s: s.max_rando, setting_infos):
             maxValue = self.__dict__[maxSetting.name]
-            print("maxSetting")
-            print(maxSetting.name)
-            print(maxValue)
             if maxSetting.type == str:
                 if 'choices' in maxSetting.args_params:
                     try:
                         index = maxSetting.args_params['choices'].index(maxValue)
                     except ValueError:
                         index = maxSetting.args_params['choices'].index(maxSetting.args_params['default'])
+            if maxSetting.type == bool:
+                for setting in filter(lambda s: s.shared and s.bitwidth > 0, setting_infos):
+                    if setting.name == maxSetting.affected:
+                        setting.exclude_random=self.__dict__[maxSetting.name]
+                        break
+                    
+                continue
             max_rando[maxSetting.affected]=index
-        print(max_rando)
+        
         for setting in filter(lambda s: s.shared and s.bitwidth > 0, setting_infos):
             value = None
             rand = None
-            print(setting.name)
-            print(setting.type)
             if setting.exclude_random == True:
-                print("excluded")
                 value = setting.args_params['default']
-                print(value)
                 self.__dict__[setting.name] = value
                 continue
                 
@@ -219,14 +219,9 @@ class Settings():
                     index = 0
                     maxValue = len(setting.args_params['choices'])-1
                     if setting.name in max_rando:
-                        print("en max rando")
                         maxValue = max_rando[setting.name];
-                    print("maxValue")
-                    print(maxValue)
                     if maxValue > 0:
                         index = random.randint(0, maxValue)
-                    print("index")
-                    print(index)
                     value = setting.args_params['choices'][index]
                 elif 'char_options' in setting.gui_params:
                     continue
@@ -236,12 +231,16 @@ class Settings():
                 value = 0
                 minValue = setting.gui_params['min']
                 maxValue = setting.gui_params['max']
-                print(minValue)
-                print(maxValue)
                 value = random.randint(minValue, maxValue)
-                print(value)
             if setting.type == list:
-                continue
+                if 'choices' in setting.args_params:
+                    value = []
+                    for item in setting.args_params['choices']:
+                        rand=random.randint(0, 1)
+                        if rand == 1:
+                            value.append(item)
+                else:
+                    raise ValueError('Setting is list type, but missing parse parameters.')
 
             self.__dict__[setting.name] = value
 

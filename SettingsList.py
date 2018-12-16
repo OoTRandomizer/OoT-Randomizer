@@ -65,7 +65,7 @@ class Checkbutton(Setting_Widget):
 
     def __init__(self, name, args_help, gui_text, gui_group=None,
             gui_tooltip=None, gui_dependency=None, default=False,
-            shared=False,exclude_random=False):
+            shared=False,exclude_random=False,affected="",max_rando=False):
 
         choices = {
                 True:  'checked',
@@ -83,7 +83,7 @@ class Checkbutton(Setting_Widget):
                 }
 
         super().__init__(name, bool, choices, default, args_params, gui_params,
-                shared,exclude_random)
+                shared,exclude_random,affected,max_rando)
         self.args_params['type'] = Checkbutton.parse_bool
 
 
@@ -1292,7 +1292,7 @@ setting_infos = [
                     then it will be ignored. So make sure to
                     disable both versions if that is the intent.
                 '''
-        }),
+        },True),
     Setting_Info('allowed_tricks', list, math.ceil(math.log(len(logic_tricks) + 2, 2)), True,
         {
             'default': [],
@@ -1957,5 +1957,63 @@ setting_infos = [
                              ''',
             max_rando     = True,
             affected      = 'bridge',
+            ),
+    Combobox(
+            name           = 'shuffle_scrubs_max',
+            default        = 'low',
+            choices        = {
+                'off':     'Off',
+                'low':     'On (Affordable)',
+                'regular': 'On (Expensive)',
+                'random':  'On (Random Prices)',
+                },
+            args_help      = '''\
+                             Deku Scrub Salesmen are randomized:
+                             off:        Only the 3 Scrubs that give one-time items
+                                         in the vanilla game will have random items.
+                             low:        All Scrubs will have random items and their
+                                         prices will be reduced to 10 rupees each.
+                             regular:    All Scrubs will have random items and each
+                                         of them will demand their vanilla prices.
+                             random:     All Scrubs will have random items and their
+                                         price will also be random between 10-99 rupees.
+                             ''',
+            gui_text       = 'Max Scrub Shuffle',
+            gui_group      = 'random_settings',
+            gui_tooltip    = '''\
+                             'Off': Only the 3 Scrubs that give one-time
+                             items in the vanilla game (PoH, Deku Nut
+                             capacity, and Deku Stick capacity) will
+                             have random items.
+        
+                             'Affordable': All Scrub prices will be
+                             reduced to 10 rupees each.
+        
+                             'Expensive': All Scrub prices will be
+                             their vanilla prices. This will require
+                             spending over 1000 rupees on Scrubs.
+        
+                             'Random Prices': All Scrub prices will be
+                             between 0-99 rupees. This will on average
+                             be very, very expensive overall.
+        
+                             The texts of the Scrubs are not updated.
+                             ''',
+            max_rando     = True,
+            affected      = 'shuffle_scrubs',
+            ),
+    Checkbutton(
+            name           = 'disallow_random_tricks',
+            default         = True,
+            args_help      = '''\
+                             If not selected random hints will be taken into account for logic
+                             ''',
+            gui_text       = 'Disallow tricks',
+            gui_group      = 'random_settings',
+            gui_tooltip    = '''\
+                             If not selected random hints will be taken into account for logic
+                             ''',
+            max_rando     = True,
+            affected      = 'allowed_tricks',
             ),
 ]

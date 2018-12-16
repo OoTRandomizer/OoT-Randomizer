@@ -17,3 +17,4 @@ ARCHIVE.bin
 
 # In order to keep this file tidy, please add any personal conventions to your
 # global git configuration.
+/.project

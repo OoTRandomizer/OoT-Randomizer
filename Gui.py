@@ -588,10 +588,11 @@ def guiMain(settings=None):
     widgets['settings_presets'].pack(side=TOP, anchor=W, padx=5, pady=(1,1))
 
     # Random settings
-    
+    randomLabel = Label(frames['random_settings'], wraplength=350, justify=LEFT, text='*This always set logic to glitchless and creates spoiler log')
+    randomLabel.pack(side=BOTTOM, anchor=W, padx=5)
     randomSettingsButton = Button(frames['random_settings'], text='Random Settings', command=random_settings)
-    randomSettingsButton.pack(side=LEFT, anchor=W, padx=5)
-
+    randomSettingsButton.pack(side=BOTTOM, anchor=W, padx=5)
+    
     # Create the generation menu
     def update_generation_type(event=None):
         if generation_notebook.tab(generation_notebook.select())['text'] == 'Generate From Seed':
