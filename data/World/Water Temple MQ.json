@@ -46,12 +46,7 @@
         "locations": {
             "Water Temple MQ Freestanding Key": "True",
             "GS Water Temple MQ South Basement": "can_use(Fire_Arrows)",
-            "GS Water Temple MQ North Basement": "
-                (Small_Key_Water_Temple, 2) or 
-                ((item_name(GS_Water_Temple_MQ_North_Basement) == Small_Key_Water_Temple or 
-                    not (keys_placed or 
-                        item_name(GS_Water_Temple_MQ_North_Basement) == Boss_Key_Water_Temple)) and 
-                Small_Key_Water_Temple)"
+            "GS Water Temple MQ North Basement": "(Small_Key_Water_Temple, 2)"
         }
     }
 ]

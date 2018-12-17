@@ -791,9 +791,9 @@ setting_infos = [
             gui_text       = 'Free Scarecrow\'s Song',
             gui_group      = 'convenience',
             gui_tooltip    = '''\
-                             Pulling out the Ocarina near
-                             Pierre will summon him without
-                             learning the song.
+                             Pulling out the Ocarina near a
+                             spot at which Pierre can spawn will
+                             do so, without needing the song.
                              ''',
             shared         = True,
             ),
@@ -805,9 +805,11 @@ setting_infos = [
             gui_text       = 'Start with Fast Travel',
             gui_group      = 'convenience',
             gui_tooltip    = '''\
-                             Start the game with knowledge of the Prelude of Light
-                             and Serenade of Water songs. Also start the game with
-                             Farore's Wind in inventory.
+                             Start the game with Prelude of Light,
+                             Serenade of Water, and Farore's Wind.
+                             
+                             Two song locations will give items,
+                             instead of Prelude and Serenade.
                              ''',
             shared         = True,
             ),            

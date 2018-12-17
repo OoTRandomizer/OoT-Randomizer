@@ -97,7 +97,7 @@ def check_version(checked_version):
                 version = re.search(".__version__ = '(.+)'", str(version)).group(1)
 
                 if compare_version(version, __version__) > 0:
-                    raise VersionError("You do not seem to be on the latest version!\nYou are on version " + __version__ + ", and the latest is version " + version + ".")
+                    raise VersionError("You are on version " + __version__ + ", and the latest is version " + version + ".")
         except (URLError, HTTPError) as e:
             logger = logging.getLogger('')
             logger.warning("Could not fetch latest version: " + str(e))

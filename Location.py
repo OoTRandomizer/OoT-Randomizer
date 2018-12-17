@@ -17,7 +17,6 @@ class Location(object):
         self.spot_type = 'Location'
         self.recursion_count = 0
         self.staleness_count = 0
-        self.always_allow = lambda item, state: False
         self.access_rule = lambda state: True
         self.item_rule = lambda location, item: True
         self.locked = False
@@ -34,7 +33,6 @@ class Location(object):
             new_location.item = self.item.copy(new_region.world)
             new_location.item.location = new_location
         new_location.spot_type = self.spot_type
-        new_location.always_allow = self.always_allow
         new_location.access_rule = self.access_rule
         new_location.item_rule = self.item_rule
         new_location.locked = self.locked
@@ -49,10 +47,8 @@ class Location(object):
             return False
         return (
             self.disabled != DisableType.DISABLED and 
-            self.parent_region.can_fill(item) and 
-            (self.always_allow(item, state) or 
-                (self.item_rule(self, item) and 
-                    (not check_access or state.can_reach(self)))))
+            self.can_fill_fast(item) and
+            (not check_access or state.can_reach(self)))
 
 
     def can_fill_fast(self, item):

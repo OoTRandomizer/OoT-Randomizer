@@ -39,6 +39,7 @@ typedef struct {
     override_value_t value;
 } override_t;
 
+override_t lookup_override_by_key(override_key_t key);
 override_t lookup_override(z64_actor_t *actor, uint8_t scene, uint8_t item_id);
 
 #endif

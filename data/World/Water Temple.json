@@ -17,13 +17,10 @@
                 has_bow and Iron_Boots and Progressive_Strength_Upgrade and 
                 can_play(Zeldas_Lullaby) and (Hover_Boots or can_use(Longshot))",
             "Water Temple Boss Key Chest": "
-                ((Small_Key_Water_Temple, 6) and Iron_Boots and 
+                (Small_Key_Water_Temple, 6) and Iron_Boots and 
                 (can_play(Zeldas_Lullaby) or keysanity) and 
                 ((has_explosives and Progressive_Strength_Upgrade) or Hover_Boots) and 
-                can_use(Longshot)) or ((Small_Key_Water_Temple, 5) and 
-                (item_name(Water_Temple_Boss_Key_Chest) == Small_Key_Water_Temple or 
-                not (keys_placed or item_name(Water_Temple_Boss_Key_Chest) == Boss_Key_Water_Temple)))",
-                #If key for key, this lets the logic reduce the small key reqs for every other locked door.
+                can_use(Longshot)",
             "Morpha Heart": "Boss_Key_Water_Temple and can_use(Longshot) and Iron_Boots",
             "Morpha": "Boss_Key_Water_Temple and can_use(Longshot)",
             "GS Water Temple South Basement": "has_explosives and can_play(Zeldas_Lullaby) and Iron_Boots",

@@ -2,7 +2,6 @@ from State import State
 from Region import Region
 from Entrance import Entrance
 from Location import Location, LocationFactory
-from RegionList import create_regions
 from DungeonList import create_dungeons
 from Rules import set_rules, set_shop_rules
 from Item import Item
@@ -62,7 +61,6 @@ class World(object):
         }
 
         self.can_take_damage = True
-        self.keys_placed = False
 
 
     def copy(self):
@@ -72,7 +70,6 @@ class World(object):
         new_world.big_poe_count = copy.copy(self.big_poe_count)
         new_world.can_take_damage = self.can_take_damage
         new_world.shop_prices = copy.copy(self.shop_prices)
-        new_world.keys_placed = self.keys_placed
         new_world.id = self.id
 
         new_world.regions = [region.copy(new_world) for region in self.regions]

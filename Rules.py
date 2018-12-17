@@ -59,10 +59,6 @@ def set_rule(spot, rule):
     spot.access_rule = rule
 
 
-def set_always_allow(spot, rule):
-    spot.always_allow = rule
-
-
 def add_rule(spot, rule, combine='and'):
     old_rule = spot.access_rule
     if combine == 'or':

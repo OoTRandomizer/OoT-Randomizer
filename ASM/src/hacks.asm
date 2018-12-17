@@ -216,9 +216,12 @@
 ;   jal     0x80013498 ; Piece of Heart draw function
 ;   nop
 .org 0xA88F78
-    ; disabled until model code is done
     jal     models_draw
     nop
+
+; Override constructor for En_Item00 (Piece of Heart / Small Key)
+.org 0xB5D6C0
+.word item00_constructor ; Replaces 80011B4C
 
 ;==================================================================================================
 ; File select hash
@@ -903,3 +906,13 @@ skip_GS_BGS_text:
 ;Replaces: addiu t5, r0, 0x0200
 .org 0xD4BE6C
 	jal		jabu_elevator
+
+;==================================================================================================
+; Quick Boots Display
+;==================================================================================================
+;
+; Replaces lw    s4, 0x0000(s6)
+;          lw    s1, 0x02B0(s4)
+.org 0xAEB68C ; In Memory: 0x8007572C
+	jal		qb_draw
+	nop

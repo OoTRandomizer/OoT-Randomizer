@@ -70,6 +70,9 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
     # Remove locked door to Boss Key Chest in Fire Temple
     if not world.keysanity and not world.dungeon_mq['Fire Temple']:
         rom.write_byte(0x22D82B7, 0x3F)
+    # Remove the unused locked door in water temple
+    if not world.dungeon_mq['Water Temple']:
+        rom.write_byte(0x25B8197, 0x3F)
 
     if world.bombchus_in_logic:
         rom.write_int32(rom.sym('BOMBCHUS_IN_LOGIC'), 1)

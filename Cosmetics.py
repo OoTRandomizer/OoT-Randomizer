@@ -146,6 +146,9 @@ def patch_cosmetics(settings, rom):
             if navi_option == 'Completely Random':
                 color = [random.getrandbits(8), random.getrandbits(8), random.getrandbits(8), 0xFF,
                          random.getrandbits(8), random.getrandbits(8), random.getrandbits(8), 0x00]
+                if navi_action not in log.navi_colors:
+                    log.navi_colors[navi_action] = list()
+                log.navi_colors[navi_action].append(dict(option=navi_option, color1=''.join(['{:02X}'.format(c) for c in color[0:3]]), color2=''.join(['{:02X}'.format(c) for c in color[4:7]])))
             # grab the color from the list
             elif navi_option in NaviColors:
                 color = NaviColors[navi_option]
@@ -157,7 +160,8 @@ def patch_cosmetics(settings, rom):
             rom.write_bytes(address, color)
         if custom_color:
             navi_option = 'Custom'
-        log.navi_colors[navi_action] = dict(option=navi_option, color1=''.join(['{:02X}'.format(c) for c in color[0:3]]), color2=''.join(['{:02X}'.format(c) for c in color[4:7]]))
+        if navi_action not in log.navi_colors:
+            log.navi_colors[navi_action] = [dict(option=navi_option, color1=''.join(['{:02X}'.format(c) for c in color[0:3]]), color2=''.join(['{:02X}'.format(c) for c in color[4:7]]))]
 
     # Configurable Sound Effects
     sfx_config = [
@@ -325,9 +329,12 @@ class CosmeticsLog(object):
         for tunic, options in self.tunic_colors.items():
             color_option_string = '{option} (#{color})'
             output += format_string.format(key=tunic+':', value=color_option_string.format(option=options['option'], color=options['color']), width=padding)
-        for navi_action, options in self.navi_colors.items():
-            color_option_string = '{option} (#{color1}, #{color2})'
-            output += format_string.format(key=navi_action+':', value=color_option_string.format(option=options['option'], color1=options['color1'], color2=options['color2']), width=padding)
+        for navi_action, list in self.navi_colors.items():
+            i = 0
+            for options in list:
+                color_option_string = '{option} (#{color1}, #{color2})'
+                output += format_string.format(key=(navi_action+':') if i == 0 else '', value=color_option_string.format(option=options['option'], color1=options['color1'], color2=options['color2']), width=padding)
+                i += 1
 
         output += '\n\nSFX:\n'
         for key, value in self.sfx.items():

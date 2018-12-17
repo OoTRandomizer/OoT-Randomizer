@@ -56,7 +56,6 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     # to create item rules for every location for whether they are a shop item
     # or not. This shouldn't have much affect on item bias.
     if shop_locations:
-        random.shuffle(shop_locations)
         fill_shops(window, worlds, shop_locations, shopitempool, itempool + songitempool + dungeon_items)
     # Update the shop item access rules
     for world in worlds:
@@ -66,15 +65,7 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     # we must place them first to make sure that there is always a location to
     # place them. This could probably be replaced for more intelligent item
     # placement, but will leave as is for now
-    random.shuffle(fill_locations)
     fill_dungeons_restrictive(window, worlds, fill_locations, dungeon_items, itempool + songitempool)
-    for world in worlds:
-        world.keys_placed = True
-
-    # I have no idea why the locations are reversed but this is how it was,
-    # so whatever. It can't hurt I guess
-    random.shuffle(fill_locations)
-    fill_locations.reverse()
 
     # places the songs into the world
     # Currently places songs only at song locations. if there's an option
@@ -95,20 +86,17 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     # Place all progression items. This will include keys in keysanity.
     # Items in this group will check for reachability and will be placed
     # such that the game is guaranteed beatable.
-    random.shuffle(fill_locations)
     fill_restrictive(window, worlds, [world.state for world in worlds], fill_locations, progitempool)
 
     # Place all priority items.
     # These items are items that only check if the item is allowed to be
     # placed in the location, not checking reachability. This is important
     # for things like Ice Traps that can't be found at some locations
-    random.shuffle(fill_locations)
     fill_restrictive_fast(window, worlds, fill_locations, prioitempool)
 
     # Place the rest of the items.
     # No restrictions at all. Places them completely randomly. Since they
     # cannot affect the beatability, we don't need to check them
-    random.shuffle(fill_locations)
     fast_fill(window, fill_locations, restitempool)
 
     # Log unplaced item/location warnings
@@ -190,7 +178,6 @@ def fill_dungeon_unique_item(window, worlds, fill_locations, itempool):
         all_dungeon_locations.extend(dungeon_locations)
 
         # place 1 item into the dungeon
-        random.shuffle(dungeon_locations)
         fill_restrictive(window, worlds, all_other_item_state, dungeon_locations, major_items, 1)
 
         # update the location and item pool, removing any placed items and filled locations
@@ -219,7 +206,6 @@ def fill_shops(window, worlds, locations, shoppool, itempool, attempts=15):
             prizepool = list(shoppool)
             prize_locs = list(locations)
             random.shuffle(prizepool)
-            random.shuffle(prize_locs)
             fill_restrictive(window, worlds, all_state_base_list, prize_locs, prizepool)
             logging.getLogger('').info("Shop items placed")
         except FillError as e:
@@ -262,7 +248,6 @@ def fill_songs(window, worlds, locations, songpool, itempool, attempts=15):
                 prizepool = list(prizepool_dict[world.id])
                 prize_locs = list(prize_locs_dict[world.id])
                 random.shuffle(prizepool)
-                random.shuffle(prize_locs)
                 fill_restrictive(window, worlds, all_state_base_list, prize_locs, prizepool)
                 
                 logging.getLogger('').info("Songs placed for world %s", (world.id+1))
@@ -306,6 +291,7 @@ def fill_restrictive(window, worlds, base_state_list, locations, itempool, count
 
         # get and item and remove it from the itempool
         item_to_place = itempool.pop()
+        random.shuffle(locations)
 
         # generate the max states that include every remaining item
         # this will allow us to place this item in a reachable location
@@ -393,6 +379,7 @@ def fill_restrictive(window, worlds, base_state_list, locations, itempool, count
 def fill_restrictive_fast(window, worlds, locations, itempool):
     while itempool and locations:
         item_to_place = itempool.pop()
+        random.shuffle(locations)
 
         # get location that allows this item
         spot_to_fill = None
@@ -420,6 +407,7 @@ def fill_restrictive_fast(window, worlds, locations, itempool):
 # fill_locations. There is no checks for validity since
 # there should be none for these remaining items
 def fast_fill(window, locations, itempool):
+    random.shuffle(locations)
     while itempool and locations:
         spot_to_fill = locations.pop()
         item_to_place = itempool.pop()

@@ -14,7 +14,6 @@ import hashlib
 from World import World
 from State import State
 from Spoiler import Spoiler
-from EntranceList import link_entrances
 from Rom import LocalRom
 from Patches import patch_rom
 from Cosmetics import patch_cosmetics

@@ -23,9 +23,7 @@ void before_game_state_update() {
 }
 
 void after_game_state_update() {
-    z64_disp_buf_t *db = &(z64_ctxt.gfx->overlay);
-    draw_dungeon_info(db);
-    draw_quickboots(db);
+    draw_dungeon_info(&(z64_ctxt.gfx->overlay));
 }
 
 void after_scene_init() {

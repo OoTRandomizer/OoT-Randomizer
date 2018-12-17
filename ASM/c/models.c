@@ -96,15 +96,30 @@ void models_draw(z64_actor_t *heart_piece_actor, z64_game_t *game) {
         graphic_id = item_row->graphic_id;
     }
 
-    if (object_id == 0x00BD && graphic_id == 0x14) {
-        default_heart_draw(heart_piece_actor, game);
-        return;
-    }
-
     loaded_object_t *object = get_object(object_id);
     pre_draw_1(heart_piece_actor, game, 0);
     pre_draw_2(heart_piece_actor, game, 0);
     set_object_segment(object);
-    scale_matrix(*matrix_stack_pointer, 16.0);
+    scale_matrix(*matrix_stack_pointer, 24.0);
     draw_model(game, graphic_id - 1);
+}
+
+typedef void (*actor_constructor_fn)(z64_actor_t *actor, z64_game_t *game);
+#define default_item00_constructor ((actor_constructor_fn)0x80011B4C)
+
+void item00_constructor(z64_actor_t *actor, z64_game_t *game) {
+    uint16_t var = actor->variable;
+    if ((var & 0x00FF) == 0x11) {
+        // Free standing small key
+        override_key_t key = { 0 };
+        key.scene = game->scene_index;
+        key.type = OVR_COLLECTABLE;
+        key.flag = var >> 8;
+        override_t override = lookup_override_by_key(key);
+        if (override.key.all != 0) {
+            // Construct a piece of heart instead
+            actor->variable = (var & 0xFF00) | 0x06;
+        }
+    }
+    default_item00_constructor(actor, game);
 }

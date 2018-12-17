@@ -21,7 +21,6 @@ from Settings import Settings
 from SettingsList import setting_infos
 from version import __version__ as ESVersion
 import webbrowser
-import WorldFile
 from LocationList import location_table
 
 
@@ -217,20 +216,23 @@ def guiMain(settings=None):
         update_generation_type()
 
 
+    versionCheckFrame = Frame(frames['rom_tab'])
+    versionCheckFrame.pack(side=BOTTOM, anchor=NW, fill=X)
+
     fileDialogFrame = Frame(frames['rom_tab'])
 
     romDialogFrame = Frame(fileDialogFrame)
     baseRomLabel = Label(romDialogFrame, text='Base ROM')
     guivars['rom'] = StringVar(value='')
-    romEntry = Entry(romDialogFrame, textvariable=guivars['rom'], width=40)
+    romEntry = Entry(romDialogFrame, textvariable=guivars['rom'], width=46)
 
     def RomSelect():
         rom = filedialog.askopenfilename(filetypes=[("ROM Files", (".z64", ".n64")), ("All Files", "*")])
         if rom != '':
             guivars['rom'].set(rom)
-    romSelectButton = Button(romDialogFrame, text='Select ROM', command=RomSelect, width=10)
+    romSelectButton = Button(romDialogFrame, text='Browse', command=RomSelect, width=10)
 
-    baseRomLabel.pack(side=LEFT, padx=(38,0))
+    baseRomLabel.pack(side=LEFT, padx=(40,0))
     romEntry.pack(side=LEFT, padx=3)
     romSelectButton.pack(side=LEFT)
 
@@ -246,8 +248,8 @@ def guiMain(settings=None):
     outputDialogFrame = Frame(frames['rom_tab'])
     outputDirLabel = Label(outputDialogFrame, text='Output Directory')
     guivars['output_dir'] = StringVar(value='')
-    outputDirEntry = Entry(outputDialogFrame, textvariable=guivars['output_dir'], width=40)
-    outputDirButton = Button(outputDialogFrame, text='Select Dir', command=output_dir_select, width=10)
+    outputDirEntry = Entry(outputDialogFrame, textvariable=guivars['output_dir'], width=46)
+    outputDirButton = Button(outputDialogFrame, text='Browse', command=output_dir_select, width=10)
     outputDirLabel.pack(side=LEFT, padx=(3,0))
     outputDirEntry.pack(side=LEFT, padx=3)
     outputDirButton.pack(side=LEFT)
@@ -453,8 +455,17 @@ def guiMain(settings=None):
 
     #Multi-World
     widgets['multiworld'] = LabelFrame(frames['rom_tab'], text='Multi-World Generation')
-    countLabel = Label(widgets['multiworld'], wraplength=350, justify=LEFT, text='This is used for co-op generations. Increasing Player Count will drastically increase the generation time. For more information see:')
-    hyperLabel = Label(widgets['multiworld'], wraplength=350, justify=LEFT, text='https://github.com/TestRunnerSRL/bizhawk-co-op', fg='blue', cursor='hand2')
+    countLabel = Label(
+            widgets['multiworld'],
+            wraplength=250,
+            justify=LEFT,
+            text='''This is used for co-op generations. \
+                    Increasing Player Count will drastically \
+                    increase the generation time. \
+                    \nFor more information, see: \
+                 '''
+            )
+    hyperLabel = Label(widgets['multiworld'], wraplength=250, justify=LEFT, text='https://github.com/TestRunnerSRL/\nbizhawk-co-op\n', fg='blue', cursor='hand2')
     hyperLabel.bind("<Button-1>", lambda event: webbrowser.open_new(r"https://github.com/TestRunnerSRL/bizhawk-co-op"))
     countLabel.pack(side=TOP, anchor=W, padx=5, pady=0)
     hyperLabel.pack(side=TOP, anchor=W, padx=5, pady=0)
@@ -477,7 +488,7 @@ def guiMain(settings=None):
     ToolTips.register(widgets['player_num'], 'Generate for specific Player.')
     playerNumFrame.pack(side=LEFT, anchor=N, padx=10, pady=(1,5))
 
-    widgets['multiworld'].pack(side=TOP, anchor=W, padx=5, pady=(1,1))
+    widgets['multiworld'].pack(side=LEFT, fill=BOTH, anchor=NW, padx=5, pady=5)
 
 
     # Settings Presets Functions
@@ -565,27 +576,37 @@ def guiMain(settings=None):
 
     # Settings Presets
     widgets['settings_presets'] = LabelFrame(frames['rom_tab'], text='Settings Presets')
-    countLabel = Label(widgets['settings_presets'], wraplength=350, justify=LEFT, text='Presets are settings that can be saved and loaded from. Loading a preset will overwrite all settings that affect the seed.')
+    countLabel = Label(
+            widgets['settings_presets'],
+            wraplength=250,
+            justify=LEFT,
+            text='''Presets are settings that can be saved\
+                    and loaded from. Loading a preset\
+                    will overwrite all settings that affect\
+                    the seed.\
+                    \n\
+                 '''
+            )
     countLabel.pack(side=TOP, anchor=W, padx=5, pady=0)
 
     selectPresetFrame = Frame(widgets['settings_presets'])
     guivars['settings_preset'] = StringVar(value='[New Preset]')
-    widgets['settings_preset'] = ttk.Combobox(selectPresetFrame, textvariable=guivars['settings_preset'], values=['[New Preset]'], state='readonly', width=35)
+    widgets['settings_preset'] = ttk.Combobox(selectPresetFrame, textvariable=guivars['settings_preset'], values=['[New Preset]'], state='readonly', width=33)
     widgets['settings_preset'].pack(side=BOTTOM, anchor=W)
     ToolTips.register(widgets['settings_preset'], 'Select a setting preset to apply.')
     widgets['settings_preset'].pack(side=LEFT, padx=(5, 0))
     selectPresetFrame.pack(side=TOP, anchor=W, padx=5, pady=(1,5))
 
     buttonPresetFrame = Frame(widgets['settings_presets'])
-    importPresetButton = Button(buttonPresetFrame, text='Load Preset', command=import_setting_preset)
-    addPresetButton = Button(buttonPresetFrame, text='Save Preset', command=add_settings_preset)
-    removePresetButton = Button(buttonPresetFrame, text='Remove Preset', command=remove_setting_preset)
-    importPresetButton.pack(side=LEFT, anchor=W, padx=5)
-    addPresetButton.pack(side=LEFT, anchor=W, padx=5)
-    removePresetButton.pack(side=LEFT, anchor=W, padx=5)
+    importPresetButton = Button(buttonPresetFrame, text='Load', width=9, command=import_setting_preset)
+    addPresetButton = Button(buttonPresetFrame, text='Save', width=9, command=add_settings_preset)
+    removePresetButton = Button(buttonPresetFrame, text='Remove', width=9, command=remove_setting_preset)
+    importPresetButton.pack(side=LEFT, anchor=W, padx=2)
+    addPresetButton.pack(side=LEFT, anchor=W, padx=2)
+    removePresetButton.pack(side=LEFT, anchor=W, padx=2)
     buttonPresetFrame.pack(side=TOP, anchor=W, padx=5, pady=(1,5))
 
-    widgets['settings_presets'].pack(side=TOP, anchor=W, padx=5, pady=(1,1))
+    widgets['settings_presets'].pack(side=RIGHT, fill=BOTH, anchor=NW, padx=5, pady=5)
 
     # Random settings
     randomLabel = Label(frames['random_settings'], wraplength=350, justify=LEFT, text='*This always set logic to glitchless and creates spoiler log')
@@ -636,15 +657,23 @@ def guiMain(settings=None):
         except Exception as e:
             messagebox.showerror(title="Error", message="Invalid settings string")
 
+    def copy_settings(event=None):
+        mainWindow.clipboard_clear()
+        new_clip = settings_string_var.get().upper()
+        mainWindow.clipboard_append(new_clip)
+        mainWindow.update()
+
     settingsFrame = Frame(frames['gen_from_seed'])
     settings_string_var = StringVar()
-    widgets['setting_string'] = Entry(settingsFrame, textvariable=settings_string_var, width=32)
+    widgets['setting_string'] = Entry(settingsFrame, textvariable=settings_string_var, width=44)
 
-    label = Label(settingsFrame, text="Settings String")
-    widgets['import_settings'] = Button(settingsFrame, text='Import Settings String', command=import_settings)
+    label = Label(settingsFrame, text="Settings String", width=13, anchor=E)
+    widgets['copy_settings'] = Button(settingsFrame, text='Copy', width=5, command=copy_settings)
+    widgets['import_settings'] = Button(settingsFrame, text='Import', width=7, command=import_settings)
     label.pack(side=LEFT, anchor=W, padx=5)
     widgets['setting_string'].pack(side=LEFT, anchor=W)
-    widgets['import_settings'].pack(side=LEFT, anchor=W, padx=5)
+    widgets['copy_settings'].pack(side=LEFT, anchor=W, padx=(5, 0))
+    widgets['import_settings'].pack(side=LEFT, anchor=W)
 
     settingsFrame.pack(fill=BOTH, anchor=W, padx=5, pady=(10,0))
 
@@ -663,12 +692,11 @@ def guiMain(settings=None):
             BackgroundTaskProgress(mainWindow, "Generating Seed %s..." % settings.seed, main, settings)
 
     generateSeedFrame = Frame(frames['gen_from_seed'])
-    generateButton = Button(generateSeedFrame, text='Generate Patched ROM', command=generateRom)
-
-    seedLabel = Label(generateSeedFrame, text='Seed')
+    seedLabel = Label(generateSeedFrame, text='Seed', width=13, anchor=E)
+    generateButton = Button(generateSeedFrame, text='Generate!', width=14, command=generateRom)
     guivars['seed'] = StringVar()
-    widgets['seed'] = Entry(generateSeedFrame, textvariable=guivars['seed'], width=32)
-    seedLabel.pack(side=LEFT, padx=(55, 5))
+    widgets['seed'] = Entry(generateSeedFrame, textvariable=guivars['seed'], width=44)
+    seedLabel.pack(side=LEFT, padx=5)
     widgets['seed'].pack(side=LEFT)
     generateButton.pack(side=LEFT, padx=(5, 0))
 
@@ -742,9 +770,13 @@ def guiMain(settings=None):
             mainWindow.update()
 
         if task.status:
-            dialog = Dialog(mainWindow, title="Version Error", question=task.status, oktext='Don\'t show again', canceltext='OK')
-            if dialog.result:
-                guivars['checked_version'].set(ESVersion)
+            versionCheckLabel = LabelFrame(versionCheckFrame, text="New Version Available!")
+            versionCheckText = Label(versionCheckLabel, justify=LEFT, text=task.status[(task.status.find(' ')+1):])
+            versionCheckLink = Label(versionCheckLabel, justify=LEFT, text='Click here and download the current version.', fg='blue', cursor='hand2')
+            versionCheckLink.bind("<Button-1>", lambda event: webbrowser.open_new(r"https://github.com/TestRunnerSRL/OoT-Randomizer/tree/Dev"))
+            versionCheckText.pack(anchor=NW, padx=5, pady=0)
+            versionCheckLink.pack(anchor=NW, padx=5, pady=0)
+            versionCheckLabel.pack(anchor=NW, fill=X, expand="yes", padx=5, pady=5)
 
     mainWindow.after(1000, gui_check_version)
     mainWindow.mainloop()
