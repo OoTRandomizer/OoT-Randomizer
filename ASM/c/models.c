@@ -8,6 +8,8 @@
 #define slot_count 8
 #define object_size 0x1E70
 
+extern uint8_t SHOW_CORRECT_FREESTANDING_MODELS;
+
 typedef struct {
     uint16_t object_id;
     uint8_t *buf;
@@ -95,13 +97,18 @@ void models_draw(z64_actor_t *heart_piece_actor, z64_game_t *game) {
         object_id = item_row->object_id;
         graphic_id = item_row->graphic_id;
     }
-
+    if(SHOW_CORRECT_FREESTANDING_MODELS==0){
+        default_heart_draw(heart_piece_actor, game);
+        return;
+    }
     loaded_object_t *object = get_object(object_id);
     pre_draw_1(heart_piece_actor, game, 0);
     pre_draw_2(heart_piece_actor, game, 0);
     set_object_segment(object);
     scale_matrix(*matrix_stack_pointer, 24.0);
-    draw_model(game, graphic_id - 1);
+    if (SHOW_CORRECT_FREESTANDING_MODELS) {
+        draw_model(game, graphic_id - 1);       
+    }
 }
 
 typedef void (*actor_constructor_fn)(z64_actor_t *actor, z64_game_t *game);

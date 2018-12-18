@@ -840,6 +840,19 @@ setting_infos = [
             shared         = True,
             ),
     Checkbutton(
+            name           = 'enable_correct_freestanding_models',
+            args_help      = '''\
+                             Displays the correct item for freestanding models
+                             ''',
+            gui_text       = 'Display Correct Freestanding Models',
+            gui_group      = 'convenience',
+            gui_tooltip    = '''\
+                             Displays the correct item for freestanding models
+                             ''',
+            shared         = True,
+            default        = True,
+            ),
+    Checkbutton(
             name           = 'big_poe_count_random',
             args_help      = '''\
                              Sets a random number of Big Poes to receive an item from the buyer.
