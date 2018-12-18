@@ -16,8 +16,8 @@ class Setting_Info():
         self.args_params = args_params # parameters that should be pased to the command line argument parser's add_argument() function
         self.gui_params = gui_params # parameters that the gui uses to build the widget components
         self.exclude_random = exclude_random # whether or not the setting is excluded by randomize settings buttons (only shared=true)
-        self.affected=affected;
-        self.max_rando=max_rando;
+        self.max_rando=max_rando; # Boolean indicating if the setting is a limiter to the random settings function
+        self.affected=affected; # String indicating which original setting the limiter affects.
         
         # create the choices parameters from the gui options if applicable
         if gui_params and 'options' in gui_params and 'choices' not in args_params \
@@ -2008,6 +2008,29 @@ setting_infos = [
                              ''',
             max_rando     = True,
             affected      = 'shuffle_scrubs',
+            ),
+    Combobox(
+            name           = 'tokensanity_max',
+            default        = 'off',
+            choices        = {
+                'off':      'Off',
+                'dungeons': 'Dungeons Only',
+                'all':      'All Tokens',
+                },
+            args_help      = '''\
+                             Gold Skulltula Tokens will be shuffled into the pool,
+                             and Gold Skulltula locations can have any item.
+                             off:        Don't use this feature
+                             dungeons:   Only dungeon Skulltulas will be shuffled
+                             all:        All Gold Skulltulas will be shuffled
+                             ''',
+            gui_text       = 'Max Tokensanity Setting',
+            gui_group      = 'random_settings',
+            gui_tooltip    = '''\
+                             Maximum setting for tokensanity
+                             ''',
+            max_rando     = True,
+            affected      = 'tokensanity',
             ),
     Checkbutton(
             name           = 'disallow_random_tricks',
