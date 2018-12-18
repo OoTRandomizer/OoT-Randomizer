@@ -28,12 +28,10 @@
                 (Small_Key_Bottom_of_the_Well, 3) and can_see_with_lens",
             "GS Well West Inner Room": "
                 Boomerang and can_see_with_lens and 
-                ((Small_Key_Bottom_of_the_Well, 3) or 
-                    item_name(GS_Well_West_Inner_Room) == Small_Key_Bottom_of_the_Well)",
+                (Small_Key_Bottom_of_the_Well, 3)",
             "GS Well East Inner Room": "
                 Boomerang and can_see_with_lens and 
-                ((Small_Key_Bottom_of_the_Well, 3) or 
-                    item_name(GS_Well_East_Inner_Room) == Small_Key_Bottom_of_the_Well)",
+                (Small_Key_Bottom_of_the_Well, 3)",
             "GS Well Like Like Cage": "
                 (Small_Key_Bottom_of_the_Well, 3) and Boomerang and can_see_with_lens",
             "Bottom of the Well Stick Pot": "True"

@@ -23,10 +23,7 @@
             "Gerudo Training Grounds Maze Path First Chest": "(Small_Key_Gerudo_Training_Grounds, 4)",
             "Gerudo Training Grounds Maze Path Second Chest": "(Small_Key_Gerudo_Training_Grounds, 6)",
             "Gerudo Training Grounds Maze Path Third Chest": "(Small_Key_Gerudo_Training_Grounds, 7)",
-            "Gerudo Training Grounds Maze Path Final Chest": "
-                ((Small_Key_Gerudo_Training_Grounds, 9)) or 
-                (item_name(Gerudo_Training_Grounds_Maze_Path_Final_Chest) == Small_Key_Gerudo_Training_Grounds and 
-                (Small_Key_Gerudo_Training_Grounds, 8))" #Allow key for key
+            "Gerudo Training Grounds Maze Path Final Chest": "(Small_Key_Gerudo_Training_Grounds, 9)"
         },
         "exits": {
             "Gerudo Training Grounds Central Maze Right": "(Small_Key_Gerudo_Training_Grounds, 9)"

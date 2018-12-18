@@ -7,7 +7,7 @@ import textwrap
 import sys
 
 from Gui import guiMain
-from Main import main, from_patch_file
+from Main import main, from_patch_file, cosmetic_patch
 from Utils import is_bundled, close_console, check_version, VersionError
 from Settings import get_settings_from_command_line_args
 
@@ -49,6 +49,8 @@ def start():
 
     if gui:
         guiMain(settings)
+    elif settings.cosmetics_only:
+        cosmetic_patch(settings)
     elif settings.patch_file != '':
         from_patch_file(settings)
     elif settings.count is not None:

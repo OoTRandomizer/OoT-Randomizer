@@ -380,6 +380,11 @@ setting_infos = [
     Setting_Info('patch_file', str, 0, False, {
             'default': '',
             'help': 'Path to a patch file.'}),
+    Setting_Info('cosmetics_only', bool, 0, False, 
+    {
+            'help': 'Patched file will only have cosmetics applied.',
+            'action': 'store_true',
+    }),
     Setting_Info('count', int, 0, False, {
             'help': '''\
                     Use to batch generate multiple seeds with same settings.

@@ -68,9 +68,7 @@
             "Gerudo Training Grounds MQ Maze Right Central Chest": "True",
             "Gerudo Training Grounds MQ Maze Right Side Chest": "True",
             "Gerudo Training Grounds MQ Ice Arrows Chest": "
-                (Small_Key_Gerudo_Training_Grounds, 3) or 
-                (item_name(Gerudo_Training_Grounds_MQ_Ice_Arrows_Chest) == Small_Key_Gerudo_Training_Grounds and 
-                    Small_Key_Gerudo_Training_Grounds)"
+                (Small_Key_Gerudo_Training_Grounds, 3)"
         }
     }
 ]

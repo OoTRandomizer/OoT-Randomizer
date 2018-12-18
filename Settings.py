@@ -6,9 +6,11 @@ import hashlib
 import math
 import sys
 import random
+import json
+
 
 from version import __version__
-from Utils import random_choices
+from Utils import random_choices, local_path
 from SettingsList import setting_infos
 
 class ArgumentDefaultsHelpFormatter(argparse.RawTextHelpFormatter):
@@ -310,20 +312,28 @@ class Settings():
 # gets the randomizer settings, whether to open the gui, and the logger level from command line arguments
 def get_settings_from_command_line_args():
     parser = argparse.ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
-    for info in setting_infos:
-        parser.add_argument("--" + info.name, **info.args_params)
 
     parser.add_argument('--gui', help='Launch the GUI', action='store_true')
     parser.add_argument('--loglevel', default='info', const='info', nargs='?', choices=['error', 'info', 'warning', 'debug'], help='Select level of logging for output.')
     parser.add_argument('--settings_string', help='Provide sharable settings using a settings string. This will override all flags that it specifies.')
     parser.add_argument('--convert_settings', help='Only convert the specified settings to a settings string. If a settings string is specified output the used settings instead.', action='store_true')
+    parser.add_argument('--settings', help='Use the specified settings file to use for generation')
 
     args = parser.parse_args()
 
-    result = {}
-    for info in setting_infos:
-        result[info.name] = vars(args)[info.name]
-    settings = Settings(result)
+    if args.settings is None:
+        settingsFile = local_path('settings.sav')
+    else:
+        settingsFile = local_path(args.settings)
+
+    try:
+        with open(settingsFile) as f:
+            settings = Settings(json.load(f))
+    except Exception as ex:
+        if args.settings is None:
+            settings = Settings({})
+        else:
+            raise ex
 
     if args.settings_string is not None:
         settings.update_with_settings_string(args.settings_string)
