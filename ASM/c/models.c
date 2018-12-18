@@ -106,9 +106,7 @@ void models_draw(z64_actor_t *heart_piece_actor, z64_game_t *game) {
     pre_draw_2(heart_piece_actor, game, 0);
     set_object_segment(object);
     scale_matrix(*matrix_stack_pointer, 24.0);
-    if (SHOW_CORRECT_FREESTANDING_MODELS) {
-        draw_model(game, graphic_id - 1);       
-    }
+    draw_model(game, graphic_id - 1);       
 }
 
 typedef void (*actor_constructor_fn)(z64_actor_t *actor, z64_game_t *game);
