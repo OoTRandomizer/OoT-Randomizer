@@ -186,40 +186,48 @@ class Settings():
         self.numeric_seed = self.get_numeric_seed()
 
     def random_settings(self):
+        #Object that will contain all options that are going to be limited
         max_rando={}
         
         for maxSetting in filter(lambda s: s.max_rando, setting_infos):
             maxValue = self.__dict__[maxSetting.name]
+            #the limiter is a combobox
             if maxSetting.type == str:
+                #Looks for the index of the selected option
                 if 'choices' in maxSetting.args_params:
                     try:
                         index = maxSetting.args_params['choices'].index(maxValue)
                     except ValueError:
                         index = maxSetting.args_params['choices'].index(maxSetting.args_params['default'])
+            #the limiter is a checkbox, this removes the option from the randomization.            
             if maxSetting.type == bool:
                 for setting in filter(lambda s: s.shared and s.bitwidth > 0, setting_infos):
                     if setting.name == maxSetting.affected:
                         setting.exclude_random=self.__dict__[maxSetting.name]
+                        #option found we don't need to continue
                         break
-                    
+                #We don't need to store anything on the limiter the exclusion is stored in the own setting   
                 continue
             max_rando[maxSetting.affected]=index
         
         for setting in filter(lambda s: s.shared and s.bitwidth > 0, setting_infos):
             value = None
             rand = None
+            #If option is not affected by the randomization, the setting will receive its default value
             if setting.exclude_random == True:
                 value = setting.args_params['default']
                 self.__dict__[setting.name] = value
                 continue
-                
+            #Setting is a combobox, randomize checked or not checked    
             if setting.type == bool:
                 rand=random.randint(0, 1)
                 value = True if rand == 1 else False
+            #Setting is a selector
             if setting.type == str:
                 if 'choices' in setting.args_params:
                     index = 0
                     maxValue = len(setting.args_params['choices'])-1
+                    #If setting is limited, the max value changes to the one specified by the limiter
                     if setting.name in max_rando:
                         maxValue = max_rando[setting.name];
                     if maxValue > 0:
@@ -229,14 +237,17 @@ class Settings():
                     continue
                 else:
                     raise ValueError('Setting is string type, but missing parse parameters.')
+            #Setting is a scale, randomizer between it's min value and its max value    
             if setting.type == int:
                 value = 0
                 minValue = setting.gui_params['min']
                 maxValue = setting.gui_params['max']
                 value = random.randint(minValue, maxValue)
+            #Setting is a list
             if setting.type == list:
                 if 'choices' in setting.args_params:
                     value = []
+                    #for each value of the list, decide if it's added or not
                     for item in setting.args_params['choices']:
                         rand=random.randint(0, 1)
                         if rand == 1:
