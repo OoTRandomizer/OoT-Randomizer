@@ -48,6 +48,7 @@
 .include "potion_shop.asm"
 .include "jabu_elevator.asm"
 .include "quickboots.asm"
+.include "chests.asm"
 .include "debug.asm"
 .importobj "../build/bundle.o"
 FONT_TEXTURE:

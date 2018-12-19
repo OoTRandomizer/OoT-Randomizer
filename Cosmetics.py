@@ -165,20 +165,32 @@ def patch_cosmetics(settings, rom):
 
     # Configurable Sound Effects
     sfx_config = [
-          ('Navi - Hint', settings.sfx_navi_overworld, sfx.SoundHooks.NAVI_OVERWORLD),
-          ('Navi - Enemy', settings.sfx_navi_enemy,     sfx.SoundHooks.NAVI_ENEMY),
-          ('Low HP', settings.sfx_low_hp,         sfx.SoundHooks.HP_LOW),
+          (settings.sfx_hover_boots,    sfx.SoundHooks.BOOTS_HOVER),
+          (settings.sfx_menu_select,    sfx.SoundHooks.MENU_SELECT),
+          (settings.sfx_menu_cursor,    sfx.SoundHooks.MENU_CURSOR),
+          (settings.sfx_horse_neigh,    sfx.SoundHooks.HORSE_NEIGH),
+          (settings.sfx_navi,           sfx.SoundHooks.NAVI),
+          (settings.sfx_low_hp,         sfx.SoundHooks.HP_LOW),
+          (settings.sfx_nightfall,      sfx.SoundHooks.NIGHTFALL),
     ]
     sound_dict = sfx.get_patch_dict()
 
-    for action, selection, hook in sfx_config:
-        if selection != 'default':
-            if selection == 'random':
+    for selection, hook in sfx_config:
+        if selection == 'default':
+            for loc in hook.value.locations:
+                sound_id = int.from_bytes((rom.original[loc:loc+2]), byteorder='big', signed=False)
+                rom.write_int16(loc, sound_id)
+        else:
+            if selection == 'random-choice':
                 selection = random.choice(sfx.get_hook_pool(hook)).value.keyword
+            elif selection == 'random-ear-safe':
+                selection = random.choice(sfx.no_painful).value.keyword
+            elif selection == 'completely-random':
+                selection = random.choice(sfx.standard).value.keyword
             sound_id  = sound_dict[selection]
             for loc in hook.value.locations:
                 rom.write_int16(loc, sound_id)
-        log.sfx[action] = selection
+        log.sfx[hook.value.name] = selection
 
     # Player Instrument
     instruments = {
