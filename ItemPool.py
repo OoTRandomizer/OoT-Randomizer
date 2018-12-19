@@ -922,6 +922,11 @@ def get_pool_core(world):
     for item,max in item_difficulty_max[world.item_pool_value].items():
         replace_max_item(pool, item, max)
 
+    if world.start_with_wallet:
+        replace_max_item(pool, 'Progressive Wallet', 0)
+        for i in [1, 2, 3]: # collect wallets
+            world.state.collect(ItemFactory('Progressive Wallet'))
+
     return (pool, placed_items)
 
 

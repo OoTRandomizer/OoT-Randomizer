@@ -833,7 +833,14 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
         write_bits_to_save(0x00B1, 0x06) # "Ice Map/Compass"
 
     if world.start_with_rupees:
-        write_byte_to_save(0x0035, 0x63) # start with 99 rupees
+        if world.start_with_wallet:
+            write_byte_to_save(0x0034, 0x03) # start with 999 rupees if tycoon, first byte
+            write_byte_to_save(0x0035, 0xE7) # second byte
+        else:
+            write_byte_to_save(0x0035, 0x63) # start with 99 rupees
+
+    if world.start_with_wallet:
+        write_bits_to_save(0x00A2, 0x30) # tycoon's wallet
 
     if world.start_with_deku_equipment:
         if world.shopsanity == "off":
@@ -1249,7 +1256,8 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
 
     # Update chest type sizes
     if world.correct_chest_sizes:
-        update_chest_sizes(rom, override_table)
+        symbol = rom.sym('CHEST_SIZE_MATCH_CONTENTS')
+        rom.write_int32(symbol, 0x00000001)
         # Move Ganon's Castle's Zelda's Lullaby Chest back so is reachable if large
         if not world.dungeon_mq['Ganons Castle']:
             rom.write_int16(0x321B176, 0xFC40) # original 0xFC48
@@ -1516,32 +1524,6 @@ def get_override_itemid(override_table, scene, type, flags):
         if entry[0] == scene and (entry[1] & 0x07) == type and entry[2] == flags:
             return entry[4]
     return None
-
-
-def update_chest_sizes(rom, override_table):
-    def get_chest(rom, actor_id, actor, scene):
-        if actor_id == 0x000A: #Chest Actor
-            actor_var = rom.read_int16(actor + 14)
-            return [scene, actor_var & 0x001F]
-
-    chest_list = get_actor_list(rom, get_chest)
-    for actor, [scene, flags] in chest_list.items():
-        item_id = get_override_itemid(override_table, scene, 1, flags)
-
-        if None in [actor, scene, flags, item_id]:
-            continue
-        # Do not change the size of the chest under the grave in Dodongo's Cavern MQ.
-        if scene == 1 and flags == 1:
-            continue
-
-        rom_item = read_rom_item(rom, item_id)
-        itemType = int(not rom_item['fast_chest'])
-
-        default = rom.read_int16(actor + 14)
-        chestType = default & 0xF000
-        newChestType = chestTypeMap[chestType][itemType]
-        default = (default & 0x0FFF) | newChestType
-        rom.write_int16(actor + 14, default)
 
 
 def set_grotto_id_data(rom):
