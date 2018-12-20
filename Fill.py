@@ -123,6 +123,40 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     if not State.can_beat_game(world_states, True):
         raise FillError('Cannot beat game!')
 
+    # Obscure freestanding models.
+    freestanding_poh_locations = ["Impa House Freestanding PoH", "Tektite Grotto Freestanding PoH", "Windmill Freestanding PoH", "Dampe Race Freestanding PoH",
+                                  "Lon Lon Tower Freestanding PoH", "Graveyard Freestanding PoH", "Gravedigging Tour", "Zora River Lower Freestanding PoH",
+                                  "Zora River Upper Freestanding PoH", "Lake Hylia Freestanding PoH", "Zoras Fountain Iceberg Freestanding PoH",
+                                  "Zoras Fountain Bottom Freestanding PoH", "Gerudo Valley Waterfall Freestanding PoH", "Gerudo Valley Crate Freestanding PoH",
+                                  "Colossus Freestanding PoH", "DM Trail Freestanding PoH", "DM Crater Wall Freestanding PoH", "DM Crater Volcano Freestanding PoH",
+                                  "Goron City Pot Freestanding PoH", "Ice Cavern Freestanding PoH", "Ice Cavern MQ Freestanding PoH", "Treasure Chest Game",
+                                  "Bombchu Bowling Piece of Heart"]
+    freestanding_key_locations = ["Gerudo Fortress North F1 Carpenter", "Gerudo Fortress North F2 Carpenter", "Gerudo Fortress South F1 Carpenter", "Gerudo Fortress South F2 Carpenter",
+                                  "Fire Temple MQ Freestanding Key", "Water Temple MQ Freestanding Key", "Shadow Temple Freestanding Key", "Shadow Temple MQ Freestanding Key",
+                                  "Bottom of the Well Freestanding Key", "Bottom of the Well MQ Dead Hand Freestanding Key", "Bottom of the Well MQ East Inner Room Freestanding Key",
+                                  "Gerudo Training Grounds Freestanding Key", "Ganons Castle MQ Forest Trial Freestanding Key"]
+    other_freestanding_locations = ["Underwater Bottle", "Lake Hylia Sun", "Bombchu Bowling Bomb Bag", "Ocarina of Time"]
+
+    freestanding_locations = [location for world in worlds if world.obscure_freestanding_models for location in world.get_filled_locations()
+                              if location.type in ["BossHeart", "GS Token"] or location.name in freestanding_poh_locations + freestanding_key_locations + other_freestanding_locations]
+    for location in freestanding_locations:
+        if location.name in freestanding_poh_locations:
+            location.item.looks_like_item_id = 0x3E
+        if location.name in freestanding_key_locations:
+            location.item.looks_like_item_id = 0x42
+        if location.type == "BossHeart":
+            location.item.looks_like_item_id = 0x4F
+        if location.type == "GS Token":
+            location.item.looks_like_item_id = 0x5B
+        if location.name == "Lake Hylia Sun":
+            location.item.looks_like_item_id = 0x58
+        if location.name == "Underwater Bottle":
+            location.item.looks_like_item_id = 0x15
+        if location.name == "Bombchu Bowling Bomb Bag":
+            location.item.looks_like_item_id = 0x82
+        if location.name == "Ocarina of Time":
+            location.item.looks_like_item_id = 0x0C
+
     # Get Light Arrow location for later usage.
     for world in worlds:
         for location in world.get_filled_locations():
