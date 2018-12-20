@@ -49,6 +49,15 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     prioitempool = [item for item in itempool if not item.advancement and item.priority]
     restitempool = [item for item in itempool if not item.advancement and not item.priority]
 
+    # set ice traps to have the appearance of other random items in the item pool
+    ice_traps = [item for item in itempool if item.name == 'Ice Trap']
+    fake_items = []
+    while len(ice_traps) > len(fake_items):
+        # if there are more ice traps than major items, then double up on major items
+        fake_items.extend([item for item in itempool if item.majoritem])
+    for random_item in random.sample(fake_items, len(ice_traps)):
+        ice_trap = ice_traps.pop(0)
+        ice_trap.looks_like_item = random_item
 
     # We place all the shop items first. Like songs, they have a more limited
     # set of locations that they can be placed in, so placing them first will

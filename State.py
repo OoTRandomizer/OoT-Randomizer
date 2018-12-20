@@ -286,6 +286,19 @@ class State(object):
         return True
 
 
+    def had_night_start(self):
+        stod = self.world.starting_tod
+        # These are all between 6:30 and 18:00
+        if (stod == 'evening' or        # 18
+            stod == 'dusk' or           # 21
+            stod == 'midnight' or       # 00
+            stod == 'witching-hour' or  # 03
+            stod == 'early-morning'):   # 06
+            return True
+        else:
+            return False
+
+
     def can_finish_GerudoFortress(self):
         if self.world.gerudo_fortress == 'normal':
             return self.has('Small Key (Gerudo Fortress)', 4) and (self.can_use('Bow') or self.can_use('Hookshot') or self.can_use('Hover Boots') or self.world.logic_gerudo_kitchen)

@@ -212,16 +212,23 @@
 ; Freestanding models
 ;==================================================================================================
 
+; Override constructor for En_Item00 (Piece of Heart / Small Key)
+.org 0xB5D6C0
+.word item00_constructor ; Replaces 80011B4C
+
 ; Replaces:
 ;   jal     0x80013498 ; Piece of Heart draw function
 ;   nop
 .org 0xA88F78
-    jal     models_draw
+    jal     heart_piece_draw
     nop
 
-; Override constructor for En_Item00 (Piece of Heart / Small Key)
-.org 0xB5D6C0
-.word item00_constructor ; Replaces 80011B4C
+; Replaces:
+;   addiu   sp, sp, -0x48
+;   sw      ra, 0x1C (sp)
+.org 0xCA6DC0
+    j       heart_container_draw
+    nop
 
 ;==================================================================================================
 ; File select hash
@@ -925,7 +932,7 @@ skip_GS_BGS_text:
     jal     GET_CHEST_OVERRIDE_SIZE_WRAPPER
 .org 0xC06E5C
     jal     GET_CHEST_OVERRIDE_SIZE_WRAPPER
-.org 0xC07494 
+.org 0xC07494
     jal     GET_CHEST_OVERRIDE_SIZE_WRAPPER
 
 ; Replaces sw    t8,8(t6)
@@ -933,3 +940,9 @@ skip_GS_BGS_text:
 .org 0xC0722C
     jal     GET_CHEST_OVERRIDE_SIZE_WRAPPER
     sw      t8,8(t6)
+
+; Replaces lbu   t9,0x01E9(s0)
+.org 0xC075A8
+    jal     GET_CHEST_OVERRIDE_SIZE_WRAPPER_T9
+.org 0xC07648
+    jal     GET_CHEST_OVERRIDE_SIZE_WRAPPER_T9

@@ -152,8 +152,8 @@ def guiMain(settings=None):
     frames['shuffle']     = LabelFrame(frames['rules_tab'],          text='Shuffle',           labelanchor=NW)
 
     # Logic tab
-    frames['checks']      = LabelFrame(frames['logic_tab'],          text='Exclude Locations', labelanchor=NW)
-    frames['tricks']      = LabelFrame(frames['logic_tab'],          text='Expected Tricks',   labelanchor=NW)
+    frames['checks']      = LabelFrame(frames['logic_tab'],          text='Adult Trade Sequence', labelanchor=NW)
+    frames['tricks']      = LabelFrame(frames['logic_tab'],          text='Lens of Truth',   labelanchor=NW)
 
     #Other Tab
     frames['convenience'] = LabelFrame(frames['other_tab'],          text='Timesavers',        labelanchor=NW)
@@ -359,12 +359,12 @@ def guiMain(settings=None):
                 if isinstance(info.gui_params['options'], list):
                     info.gui_params['options'] = dict(zip(info.gui_params['options'], info.gui_params['options']))
 
-                widgets[info.name + '_entry'] = SearchBox(search_frame, list(info.gui_params['options'].keys()), width=34)
+                widgets[info.name + '_entry'] = SearchBox(search_frame, list(info.gui_params['options'].keys()), width=78)
                 widgets[info.name + '_entry'].pack(expand=False, side=TOP, anchor=W, padx=3, pady=3)
 
                 list_frame = Frame(search_frame)
                 scrollbar = Scrollbar(list_frame, orient=VERTICAL)
-                widgets[info.name] = Listbox(list_frame, width=34, yscrollcommand=scrollbar.set)
+                widgets[info.name] = Listbox(list_frame, width=78, height=7, yscrollcommand=scrollbar.set)
                 guivars[info.name] = []
                 scrollbar.config(command=widgets[info.name].yview)
                 scrollbar.pack(side=RIGHT, fill=Y)
@@ -404,14 +404,14 @@ def guiMain(settings=None):
                     show_settings()
 
                 list_button_frame = Frame(search_frame)
-                list_add = Button(list_button_frame, text='Add', command=get_lambda(add_list_selected, info.name))
+                list_add = Button(list_button_frame, width=10, text='Add', command=get_lambda(add_list_selected, info.name))
                 list_add.pack(side=LEFT, anchor=N, padx=3, pady=3)
-                list_remove = Button(list_button_frame, text='Remove', command=get_lambda(remove_list_selected, info.name))
+                list_remove = Button(list_button_frame, width=10, text='Remove', command=get_lambda(remove_list_selected, info.name))
                 list_remove.pack(side=LEFT, anchor=N, padx=3, pady=3)
 
-                list_add = Button(list_button_frame, text='All', command=get_lambda(add_list_all, info.name))
+                list_add = Button(list_button_frame, width=10, text='All', command=get_lambda(add_list_all, info.name))
                 list_add.pack(side=LEFT, anchor=N, padx=3, pady=3)
-                list_remove = Button(list_button_frame, text='None', command=get_lambda(remove_list_all, info.name))
+                list_remove = Button(list_button_frame, width=10, text='None', command=get_lambda(remove_list_all, info.name))
                 list_remove.pack(side=LEFT, anchor=N, padx=3, pady=3)
 
                 list_button_frame.pack(expand=False, side=TOP, padx=3, pady=3)

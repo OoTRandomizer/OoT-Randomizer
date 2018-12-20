@@ -726,25 +726,27 @@ struct z64_actor_s
   float           min_vel_y;        /* 0x0070 */
   void           *unk_08_;          /* 0x0074 */
   z64_col_poly_t *floor_poly;       /* 0x0078 */
-  char            unk_0A_[0x001C];  /* 0x007C */
+  char            unk_0A_[0x000C];  /* 0x007C */
+  uint16_t        unk_flags_00;     /* 0x0088 */
+  char            unk_0B_[0x000E];  /* 0x0090 */
   void           *damage_table;     /* 0x0098 */
   z64_xyzf_t      vel_2;            /* 0x009C */
-  char            unk_0B_[0x0006];  /* 0x00A8 */
+  char            unk_0C_[0x0006];  /* 0x00A8 */
   int16_t         health;           /* 0x00AE */
-  char            unk_0C_;          /* 0x00B0 */
+  char            unk_0D_;          /* 0x00B0 */
   uint8_t         damage_effect;    /* 0x00B1 */
-  char            unk_0D_[0x0002];  /* 0x00B2 */
+  char            unk_0E_[0x0002];  /* 0x00B2 */
   z64_rot_t       rot_2;            /* 0x00B4 */
-  char            unk_0E_[0x0046];  /* 0x00BA */
+  char            unk_0F_[0x0046];  /* 0x00BA */
   z64_xyzf_t      pos_4;            /* 0x0100 */
-  uint16_t        unk_0F_;          /* 0x010C */
+  uint16_t        unk_10_;          /* 0x010C */
   uint16_t        text_id;          /* 0x010E */
   int16_t         frozen;           /* 0x0110 */
-  char            unk_10_[0x0003];  /* 0x0112 */
+  char            unk_11_[0x0003];  /* 0x0112 */
   uint8_t         active;           /* 0x0115 */
-  char            unk_11_[0x0002];  /* 0x0116 */
-  z64_actor_t    *unk_12_;          /* 0x0118 */
-  char            unk_13_[0x0004];  /* 0x011C */
+  char            unk_12_[0x0002];  /* 0x0116 */
+  z64_actor_t    *unk_13_;          /* 0x0118 */
+  char            unk_14_[0x0004];  /* 0x011C */
   z64_actor_t    *prev;             /* 0x0120 */
   z64_actor_t    *next;             /* 0x0124 */
   void           *ctor;             /* 0x0128 */
@@ -1121,6 +1123,7 @@ typedef struct
 #define z64_link_addr                           0x801DAA30
 #define z64_state_ovl_tab_addr                  0x800F1340
 #define z64_event_state_1_addr                  0x800EF1B0
+#define z64_LinkDamage_addr                     0x8038E6A8
 
 /* rom addresses */
 #define z64_icon_item_static_vaddr              0x007BD000
@@ -1162,6 +1165,9 @@ typedef void (*z64_SceneConfig_proc)      (z64_game_t *game);
 typedef void (*z64_DisplayTextbox_proc)   (z64_game_t *game, uint16_t text_id,
                                            int unknown_);
 typedef void (*z64_GiveItem_proc)         (z64_game_t *game, uint8_t item);
+
+typedef void(*z64_LinkDamage_proc)        (z64_game_t *ctxt, z64_link_t *link, uint8_t damage_type, float unk_00, uint32_t unk_01, uint16_t damage_amount);
+
 
 /* data */
 #define z64_file_mq             (*(OSMesgQueue*)      z64_file_mq_addr)
@@ -1211,6 +1217,6 @@ typedef void (*z64_GiveItem_proc)         (z64_game_t *game, uint8_t item);
                                                       z64_DisplayTextbox_addr)
 #define z64_GiveItem            ((z64_GiveItem_proc)  z64_GiveItem_addr)
 
-
+#define z64_LinkDamage          ((z64_LinkDamage_proc)z64_LinkDamage_addr)
 
 #endif

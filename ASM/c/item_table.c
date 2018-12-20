@@ -161,7 +161,7 @@ item_row_t item_table[] = {
     [0x79] = ITEM_ROW(0x53, 1, 0x9A, 0x00A7, 0x00BB, 0x12, no_upgrade, no_effect, -1, -1), // Deku Nut Upgrade (30)
     [0x7A] = ITEM_ROW(0x53, 1, 0x9B, 0x00A8, 0x00BB, 0x12, no_upgrade, no_effect, -1, -1), // Deku Nut Upgrade (40)
     [0x7B] = ITEM_ROW(0x53, 0, 0x49, 0x006C, 0x017B, 0x73, no_upgrade, no_effect, -1, -1), // Bullet Bag (50)
-    [0x7C] = ITEM_ROW(0x7C, 0, 0xFF, 0x0000, 0x0000, 0x00, no_upgrade, no_effect, -1, -1), // Ice Trap
+    [0x7C] = ITEM_ROW(0x53, 0, 0x41, 0x00C8, 0x0158, 0x61, no_upgrade, ice_trap_effect, -1, -1), // Ice Trap
 
     [0x80] = ITEM_ROW(  -1, 0,   -1,     -1, 0x00DD, 0x2D, hookshot_upgrade,  no_effect, -1, -1), // Progressive Hookshot
     [0x81] = ITEM_ROW(  -1, 0,   -1,     -1, 0x0147, 0x58, strength_upgrade,  no_effect, -1, -1), // Progressive Strength

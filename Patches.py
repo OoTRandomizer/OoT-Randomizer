@@ -856,6 +856,20 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
         write_bits_to_save(0x00A6, 0x09) # start with Prelude of Light & Serenade of Water
         write_byte_to_save(0x007F, 0x0D) # Farore's Wind in 12th inventory slot
 
+    # Set starting time of day
+    if world.starting_tod != 'default':
+        tod = {
+                'midnight':      0x00,
+                'witching-hour': 0x20,
+                'early-morning': 0x40,
+                'morning':       0x60,
+                'noon':          0x80,
+                'afternoon':     0xA0,
+                'evening':       0xC0,
+                'dusk':          0xE0,
+                }
+        write_bytes_to_save(0x000C, [tod[world.starting_tod], 0x00])
+
     # Revert change that Skips the Epona Race
     if not world.no_epona_race:
         rom.write_int32(0xA9E838, 0x03E00008)
@@ -1385,7 +1399,7 @@ def get_override_table(world):
     return list(filter(lambda val: val != None, map(get_override_entry, world.get_filled_locations())))
 
 
-override_struct = struct.Struct('>xBBBxBH') # match override_t in get_items.c
+override_struct = struct.Struct('>xBBBHBB') # match override_t in get_items.c
 def get_override_table_bytes(override_table):
     return b''.join(sorted(itertools.starmap(override_struct.pack, override_table)))
 
@@ -1398,6 +1412,10 @@ def get_override_entry(location):
         return None
 
     player_id = location.item.world.id + 1
+    if location.item.looks_like_item is not None:
+        looks_like_item_id = location.item.looks_like_item.index
+    else:
+        looks_like_item_id = 0
 
     if location.type in ['NPC', 'BossHeart']:
         type = 0
@@ -1417,7 +1435,7 @@ def get_override_entry(location):
     else:
         return None
 
-    return (scene, type, default, player_id, item_id)
+    return (scene, type, default, item_id, player_id, looks_like_item_id)
 
 
 chestTypeMap = {
@@ -1575,6 +1593,16 @@ def get_locked_doors(rom, world):
     return get_actor_list(rom, locked_door)
 
 
+def create_fake_name(name):
+    vowels = 'aeiou'
+    list_name = list(name)
+    vowel_indexes = [i for i,c in enumerate(list_name) if c in vowels]
+    for i in random.sample(vowel_indexes, min(2, len(vowel_indexes))):
+        c = list_name[i]
+        list_name[i] = random.choice([v for v in vowels if v != c])
+    return ''.join(list_name)
+
+
 def place_shop_items(rom, world, shop_items, messages, locations, init_shop_id=False):
     if init_shop_id:
         place_shop_items.shop_id = 0x32
@@ -1586,7 +1614,12 @@ def place_shop_items(rom, world, shop_items, messages, locations, init_shop_id=F
             shop_objs.add(location.item.special['object'])
             rom.write_int16(location.address, location.item.index)
         else:
-            rom_item = read_rom_item(rom, location.item.index)
+            if location.item.looks_like_item is not None:
+                item_display = location.item.looks_like_item
+            else:
+                item_display = location.item
+
+            rom_item = read_rom_item(rom, item_display.index)
             shop_objs.add(rom_item['object_id'])
             shop_id = place_shop_items.shop_id
             rom.write_int16(location.address, shop_id)
@@ -1610,15 +1643,21 @@ def place_shop_items(rom, world, shop_items, messages, locations, init_shop_id=F
                 [shop_item.description_message, shop_item.purchase_message])
 
             if location.item.dungeonitem or location.item.type == 'FortressSmallKey':
-                split_item_name = location.item.name.split('(')
+                split_item_name = item_display.name.split('(')
                 split_item_name[1] = '(' + split_item_name[1]
+
+                if location.item.name == 'Ice Trap':
+                    split_item_name[0] = create_fake_name(split_item_name[0])
+
                 if world.world_count > 1:
                     description_text = '\x08\x05\x41%s  %d Rupees\x01%s\x01\x05\x42Player %d\x05\x40\x01Special deal! ONE LEFT!\x09\x0A\x02' % (split_item_name[0], location.price, split_item_name[1], location.item.world.id + 1)
                 else:
                     description_text = '\x08\x05\x41%s  %d Rupees\x01%s\x01\x05\x40Special deal! ONE LEFT!\x01Get it while it lasts!\x09\x0A\x02' % (split_item_name[0], location.price, split_item_name[1])
                 purchase_text = '\x08%s  %d Rupees\x09\x01%s\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02' % (split_item_name[0], location.price, split_item_name[1])
             else:
-                shop_item_name = getSimpleHintNoPrefix(location.item)
+                shop_item_name = getSimpleHintNoPrefix(item_display)
+                if location.item.name == 'Ice Trap':
+                    shop_item_name = create_fake_name(shop_item_name)
 
                 if world.world_count > 1:
                     description_text = '\x08\x05\x41%s  %d Rupees\x01\x05\x42Player %d\x05\x40\x01Special deal! ONE LEFT!\x09\x0A\x02' % (shop_item_name, location.price, location.item.world.id + 1)

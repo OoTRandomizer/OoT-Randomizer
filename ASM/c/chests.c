@@ -17,6 +17,11 @@ uint8_t get_chest_override_size(z64_actor_t *actor) {
 		return ((uint8_t*)actor)[0x01E9]; // Chest type
 	}
 
+	if (override.value.item_id >= 0x95 && override.value.item_id <= 0x9A) {
+		// gold chest for big key
+		return 2;	
+	}
+
 	item_row_t *item_row = get_item_row(override.value.item_id);
 	if (item_row->fast_chest) {
 		// Small chest

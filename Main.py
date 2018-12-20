@@ -129,6 +129,7 @@ def main(settings, window=dummy_window()):
         window.update_status('Calculating Hint Data')
         State.update_required_items(spoiler)
         for world in worlds:
+            world.update_useless_areas()
             buildGossipHints(spoiler, world)
         window.update_progress(55)
     spoiler.build_file_hash()

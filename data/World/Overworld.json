@@ -4,7 +4,7 @@
         "locations": {
             "Kokiri Sword Chest": "True",
             "GS Kokiri Know It All House": "
-                nighttime and (can_leave_forest or can_play(Suns_Song)) and 
+                nighttime and (had_night_start or can_leave_forest or can_play(Suns_Song)) and 
                 can_child_attack",
             "GS Kokiri Bean Patch": "
                 has_bottle and can_child_attack and 

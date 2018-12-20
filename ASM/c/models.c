@@ -10,6 +10,11 @@
 
 typedef struct {
     uint16_t object_id;
+    int8_t graphic_id;
+} model_t;
+
+typedef struct {
+    uint16_t object_id;
     uint8_t *buf;
 } loaded_object_t;
 
@@ -82,26 +87,44 @@ typedef void (*draw_fn)(z64_game_t *game, uint32_t gi_id_minus_1);
 
 #define matrix_stack_pointer ((float **)0x80121204)
 
-void models_draw(z64_actor_t *heart_piece_actor, z64_game_t *game) {
-    override_t override = lookup_override(heart_piece_actor, game->scene_index, 0x3E);
-    uint16_t object_id;
-    int8_t graphic_id;
-    if (override.key.all == 0) {
-        object_id = 0x00BD;
-        graphic_id = 0x14;
-    } else {
-        uint16_t item_id = resolve_upgrades(override.value.item_id);
-        item_row_t *item_row = get_item_row(item_id);
-        object_id = item_row->object_id;
-        graphic_id = item_row->graphic_id;
+model_t lookup_model(model_t *model, z64_game_t *game, z64_actor_t *actor, uint16_t base_item_id) {
+    override_t override = lookup_override(actor, game->scene_index, base_item_id);
+    if (override.key.all != 0) {
+        uint16_t item_id = override.value.looks_like_item_id ?
+            override.value.looks_like_item_id :
+            override.value.item_id;
+        uint16_t resolved_item_id = resolve_upgrades(item_id);
+        item_row_t *item_row = get_item_row(resolved_item_id);
+        model->object_id = item_row->object_id;
+        model->graphic_id = item_row->graphic_id;
     }
+}
 
-    loaded_object_t *object = get_object(object_id);
+void heart_piece_draw(z64_actor_t *heart_piece_actor, z64_game_t *game) {
+    model_t model = {
+        .object_id = 0x00BD,
+        .graphic_id = 0x14,
+    };
+    lookup_model(&model, game, heart_piece_actor, 0x3E);
+    loaded_object_t *object = get_object(model.object_id);
+
     pre_draw_1(heart_piece_actor, game, 0);
     pre_draw_2(heart_piece_actor, game, 0);
     set_object_segment(object);
     scale_matrix(*matrix_stack_pointer, 24.0);
-    draw_model(game, graphic_id - 1);
+    draw_model(game, model.graphic_id - 1);
+}
+
+void heart_container_draw(z64_actor_t *heart_container_actor, z64_game_t *game) {
+    model_t model = {
+        .object_id = 0x00BD,
+        .graphic_id = 0x13,
+    };
+    lookup_model(&model, game, heart_container_actor, 0x4F);
+    loaded_object_t *object = get_object(model.object_id);
+
+    set_object_segment(object);
+    draw_model(game, model.graphic_id - 1);
 }
 
 typedef void (*actor_constructor_fn)(z64_actor_t *actor, z64_game_t *game);

@@ -84,9 +84,7 @@ normal_items = (
 
 
 item_difficulty_max = {
-    'plentiful': {
-        'Ice Trap': 0,
-    },
+    'plentiful': {},
     'balanced': {},
     'scarce': {
         'Bombchu': 3,
@@ -516,6 +514,12 @@ def replace_max_item(items, item, max):
 
 
 def generate_itempool(world):
+    if world.junk_ice_traps == 'on': 
+        junk_pool.append(('Ice Trap',10))
+    elif world.junk_ice_traps == 'mayhem':
+        junk_pool[:] = []
+        junk_pool.append(('Ice Trap',1))
+
     for location, item in eventlocations.items():
         world.push_item(location, ItemFactory(item, world))
         world.get_location(location).locked = True

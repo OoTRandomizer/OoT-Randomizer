@@ -113,6 +113,10 @@ class Spoiler(object):
                 output += header_player_string.format(header="Way of the Hero", player=world.id+1)
                 output += '\n'.join(['{:{width}} {}'.format(location_string.format(location=location.name, world=location.world.id+1), item_string.format(item=location.item.name, player=location.item.world.id+1, cost=' [Costs %d Rupees]' % location.item.price if location.item.price is not None else ''), width=location_padding) for location in self.required_locations[world.id]])
 
+            for world in self.worlds:
+                output += header_player_string.format(header="Barren of Treasure", player=world.id+1)
+                output += '\n'.join(world.empty_areas)
+
             gossip_padding = len(max([stone.name for stone in gossipLocations.values()], key=len)) + extra_padding
             for world in self.worlds:
                 hint_ids = sorted(list(self.hints[world.id].keys()), key=lambda id: gossipLocations[id].name)

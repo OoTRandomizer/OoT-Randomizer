@@ -149,6 +149,7 @@ hintTable = {
     'Gold Skulltula Token':                                  (["proof of destruction", "an arachnid chip", "spider remains", "one percent of a curse"], "a Gold Skulltula Token", 'item'),
 
     '10 Big Poes':                                           (["#Big Poes# leads to", "#ghost hunters# will be rewarded with"], None, 'alwaysLocation'),
+    'Deku Theater Skull Mask':                               ("the #Skull Mask# yields", None, 'location'),
     'Deku Theater Mask of Truth':                            ("the #Mask of Truth# yields", None, 'alwaysLocation'),
     '20 Gold Skulltula Reward':                              ("slaying #20 Gold Skulltulas# reveals", None, 'location'),
     '30 Gold Skulltula Reward':                              ("slaying #30 Gold Skulltulas# reveals", None, 'alwaysLocation'),
@@ -157,7 +158,7 @@ hintTable = {
     'Ocarina of Time':                                       ("the #treasure thrown by Princess Zelda# is", None, 'alwaysLocation'),
     'Song from Ocarina of Time':                             ("the #Ocarina of Time# teaches", None, 'alwaysLocation'),
     'Biggoron':                                              ("#Biggoron# crafts", None, 'alwaysLocation'),
-    'Frog Ocarina Game':                                     (["the #Frogs of Zora River# hold", "the #musical amphibians# have found"], None, 'alwaysLocation'),
+    'Frog Ocarina Game':                                     (["an #amphibian feast# yields", "the #croaking choir's magnum opus# awards", "the #froggy finale# yields"], "the #Frogs of Zora River# final reward is", 'alwaysLocation'),
     'Child Fishing':                                         ("#fishing in youth# bestows", None, 'location'),
     'Adult Fishing':                                         ("#fishing in maturity# bestows", None, 'location'),
     'Treasure Chest Game':                                   (["#gambling# grants", "there is a #1/32 chance# to win"], "the #treasure chest game# grants", 'location'),

@@ -251,6 +251,7 @@ def get_setting_choices(sound_hook):
         'completely-random': 'Completely Random',
         'random-ear-safe':   'Completely Random (Ear-Safe)',
         'random-choice':     'Random Choice',
+        'none':              'None',
         **choices,
         }
     return result

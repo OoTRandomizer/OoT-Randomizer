@@ -19,7 +19,7 @@ void c_init() {
 }
 
 void before_game_state_update() {
-    give_pending_item();
+    handle_pending_items();
     handle_quickboots();
 }
 

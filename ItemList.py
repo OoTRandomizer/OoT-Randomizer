@@ -76,7 +76,7 @@ item_table = {
     'Bombchus (20)':                    ('Item',     True,  0x6B, None),
     'Rupee (Treasure Chest Game)':      ('Item',     None,  0x72, None),
     'Piece of Heart (Treasure Chest Game)': ('Item', None,  0x76, None),
-    'Ice Trap':                         ('Item',     False, 0x7C, None),
+    'Ice Trap':                         ('Item',     None, 0x7C,  None),
     'Progressive Hookshot':             ('Item',     True,  0x80, None),
     'Progressive Strength Upgrade':     ('Item',     True,  0x81, None),
     'Bomb Bag':                         ('Item',     True,  0x82, None),

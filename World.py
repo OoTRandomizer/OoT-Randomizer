@@ -6,6 +6,7 @@ from DungeonList import create_dungeons
 from Rules import set_rules, set_shop_rules
 from Item import Item
 from RuleParser import parse_rule_string
+from SettingsList import get_setting_info
 import logging
 import copy
 import io
@@ -32,6 +33,11 @@ class World(object):
         # this gives the world an attribute for every setting listed in Settings.py
         self.settings = settings
         self.__dict__.update(settings.__dict__)
+        # evaluate settings (important for logic, nice for spoiler)
+        if self.starting_tod == 'random':
+            setting_info = get_setting_info('starting_tod')
+            choices = [ch for ch in setting_info.choices.values() if ch not in ['default', 'random']]
+            self.starting_tod = random.choice(choices)
         # rename a few attributes...
         self.keysanity = self.shuffle_smallkeys != 'dungeon'
         self.check_beatable_only = not self.all_reachable
@@ -291,3 +297,27 @@ class World(object):
     def has_beaten_game(self, state):
         return state.has('Triforce')
 
+
+    def update_useless_areas(self):
+        areas = {}
+        excluded_areas = [None, "Link's Pocket", "Ganon's Tower"]
+        for location in self.get_locations():
+            if location.hint in excluded_areas or \
+               location.locked or \
+               location.item is None or \
+               location.item.type == "Event":
+                continue
+            if location.hint in areas:
+                areas[location.hint].append(location)
+            else:
+                areas[location.hint] = [location]
+
+        self.empty_areas = []
+        for area,locations in areas.items():
+            useless_area = True
+            for location in locations:
+                if location.item.majoritem:
+                    useless_area = False
+                    break
+            if useless_area:
+                self.empty_areas.append(area)
