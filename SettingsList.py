@@ -1459,6 +1459,19 @@ setting_infos = [
             shared         = True,
             ),
     Checkbutton(
+            name           = 'obscure_freestanding_models',
+            args_help      = '''\
+                             Overrides items placed in freestanding locations with the original item for that spot.
+                             ''',
+            gui_text       = 'Obscure Freestanding Models',
+            gui_group      = 'other',
+            gui_tooltip    = '''\
+                             Freestanding item models will display the model
+                             of the item that is there in the vanilla game.
+                             ''',
+            shared         = True,
+            ),
+    Checkbutton(
             name           = 'clearer_hints',
             args_help      = '''\
                              The hints provided by Gossip Stones are
