@@ -7,8 +7,7 @@
             "Water Temple MQ Central Pillar Chest": "
                 has_ZoraTunic and Iron_Boots and 
                 (can_use(Fire_Arrows) or (can_use(Dins_Fire) and can_play(Song_of_Time)))",
-            "Morpha Heart": "
-                Boss_Key_Water_Temple and can_use(Longshot) and Iron_Boots",
+            "Morpha Heart": "Boss_Key_Water_Temple and can_use(Longshot)",
             "Morpha": "Boss_Key_Water_Temple and can_use(Longshot)"
         },
         "exits": {
