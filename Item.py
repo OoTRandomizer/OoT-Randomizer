@@ -41,22 +41,17 @@ class Item(object):
 
     @property
     def key(self):
-        return self.type == 'SmallKey' or self.type == 'BossKey'
+        return self.smallkey or self.bosskey
 
 
     @property
     def smallkey(self):
-        return self.type == 'SmallKey'
+        return self.type == 'SmallKey' or self.type == 'FortressSmallKey'
 
 
     @property
     def bosskey(self):
         return self.type == 'BossKey'
-
-
-    @property
-    def crystal(self):
-        return self.type == 'Crystal'
 
 
     @property
@@ -71,7 +66,7 @@ class Item(object):
 
     @property
     def dungeonitem(self):
-        return self.type == 'SmallKey' or self.type == 'BossKey' or self.type == 'Map' or self.type == 'Compass'
+        return self.smallkey or self.bosskey or self.map or self.compass
 
 
     @property

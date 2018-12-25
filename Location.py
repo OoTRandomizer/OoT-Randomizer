@@ -46,7 +46,7 @@ class Location(object):
         if self.minor_only and item.majoritem:
             return False
         return (
-            self.disabled != DisableType.DISABLED and 
+            not self.is_disabled() and 
             self.can_fill_fast(item) and
             (not check_access or state.can_reach(self)))
 
@@ -56,11 +56,15 @@ class Location(object):
 
 
     def can_reach(self, state):
-        if self.disabled != DisableType.DISABLED and \
+        if not self.is_disabled() and \
            self.access_rule(state) and \
            state.can_reach(self.parent_region):
             return True
         return False
+
+    def is_disabled(self):
+        return (self.disabled == DisableType.DISABLED) or \
+               (self.disabled == DisableType.PENDING and self.locked)
 
 
     def __str__(self):

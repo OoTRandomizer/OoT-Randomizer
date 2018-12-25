@@ -241,7 +241,7 @@
     {
         "region_name": "Fishing Hole",
         "locations": {
-            "Child Fishing": "Kokiri_Sword",
+            "Child Fishing": "True",
             "Adult Fishing": "
                 (can_use(Scarecrow) or can_use(Magic_Bean) or can_reach(Morpha, Location))"
         }
@@ -459,7 +459,7 @@
         "locations": {
             "10 Big Poes": "
                 is_adult and 
-                ((can_use(Bow) and Epona and has_bottle and guarantee_hint) or 
+                ((can_use(Bow) and Epona and has_bottle and (big_poe_count <= 3 or guarantee_hint)) or 
                     (Bottle_with_Big_Poe, big_poe_count))",
             "GS Castle Market Guard House": "True"
         }

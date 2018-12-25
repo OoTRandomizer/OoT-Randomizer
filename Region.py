@@ -58,7 +58,7 @@ class Region(object):
         is_dungeon_restricted = False
         if item.map or item.compass:
             is_dungeon_restricted = self.world.shuffle_mapcompass == 'dungeon'
-        elif item.smallkey:
+        elif item.smallkey and item.type != 'FortressSmallKey':
             is_dungeon_restricted = self.world.shuffle_smallkeys == 'dungeon'
         elif item.bosskey:
             is_dungeon_restricted = self.world.shuffle_bosskeys == 'dungeon'

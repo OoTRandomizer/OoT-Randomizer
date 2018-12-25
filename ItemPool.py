@@ -487,7 +487,7 @@ eventlocations = {
 }
 
 
-junk_pool = [
+junk_pool_base = [
     ('Bombs (5)',       8),
     ('Bombs (10)',      2),
     ('Arrows (5)',      8),
@@ -499,6 +499,7 @@ junk_pool = [
     ('Rupees (20)',     4),
     ('Rupees (50)',     1),
 ]
+junk_pool = []
 def get_junk_item(count=1):
     junk_items, junk_weights = zip(*junk_pool)
     return random_choices(junk_items, weights=junk_weights, k=count)
@@ -514,11 +515,11 @@ def replace_max_item(items, item, max):
 
 
 def generate_itempool(world):
+    junk_pool[:] = list(junk_pool_base)
     if world.junk_ice_traps == 'on': 
-        junk_pool.append(('Ice Trap',10))
-    elif world.junk_ice_traps == 'mayhem':
-        junk_pool[:] = []
-        junk_pool.append(('Ice Trap',1))
+        junk_pool.append(('Ice Trap', 10))
+    elif world.junk_ice_traps in ['mayhem', 'onslaught']:
+        junk_pool[:] = [('Ice Trap', 1)]
 
     for location, item in eventlocations.items():
         world.push_item(location, ItemFactory(item, world))
@@ -769,7 +770,7 @@ def get_pool_core(world):
         pool.extend(normal_rupees)
 
     else:
-        remain_shop_items = [item for _,item in vanilla_shop_items.items()]
+        remain_shop_items = list(vanilla_shop_items.values())
         pool.extend(min_shop_items)
         for item in min_shop_items:
             remain_shop_items.remove(item)
@@ -831,10 +832,6 @@ def get_pool_core(world):
         placed_items.update(vanilla_deku_scrubs)
 
     pool.extend(alwaysitems)
-    if world.start_with_fast_travel:
-        pool.remove('Farores Wind')
-        world.state.collect(ItemFactory('Farores Wind'))
-        pool.extend(get_junk_item())
     
     if world.dungeon_mq['Deku Tree']:
         pool.extend(DT_MQ)
@@ -879,10 +876,6 @@ def get_pool_core(world):
         bottle = random.choice(normal_bottles)
         pool.append(bottle)
 
-    if world.big_poe_count_random:
-        world.big_poe_count = random.randint(1, 10)
-
-    tradeitem = random.choice(tradeitems)
     earliest_trade = tradeitemoptions.index(world.logic_earliest_adult_trade)
     latest_trade = tradeitemoptions.index(world.logic_latest_adult_trade)
     if earliest_trade > latest_trade:
@@ -893,11 +886,12 @@ def get_pool_core(world):
     pool.extend(songlist)
     if world.start_with_fast_travel:
         pool.remove('Prelude of Light')
-        world.state.collect(ItemFactory('Prelude of Light'))
-        pool.extend(get_junk_item())
         pool.remove('Serenade of Water')
+        pool.remove('Farores Wind')
+        world.state.collect(ItemFactory('Prelude of Light'))
         world.state.collect(ItemFactory('Serenade of Water'))
-        pool.extend(get_junk_item())
+        world.state.collect(ItemFactory('Farores Wind'))
+        pool.extend(get_junk_item(3))
 
     if world.shuffle_mapcompass == 'remove' or world.shuffle_mapcompass == 'startwith':
         for item in [item for dungeon in world.dungeons for item in dungeon.dungeon_items]:
@@ -917,11 +911,18 @@ def get_pool_core(world):
         world.state.collect(ItemFactory('Small Key (Water Temple)'))
 
     if world.item_pool_value == 'plentiful':
-        if not world.shuffle_kokiri_sword:
-            replace_max_item(easy_items, 'Kokiri Sword', 0)
         pool.extend(easy_items)
     else:
         pool.extend(normal_items)
+
+    if not world.shuffle_kokiri_sword:
+        replace_max_item(pool, 'Kokiri Sword', 0)
+
+    if world.junk_ice_traps == 'off': 
+        replace_max_item(pool, 'Ice Trap', 0)
+    elif world.junk_ice_traps == 'onslaught':
+        for item, weight in junk_pool_base:
+            replace_max_item(pool, item, 0)
 
     for item,max in item_difficulty_max[world.item_pool_value].items():
         replace_max_item(pool, item, max)

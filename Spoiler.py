@@ -93,11 +93,13 @@ class Spoiler(object):
             header_world_string = '\n\n{header} [World {world}]:\n\n'
             header_player_string = '\n\n{header} [Player {player}]:\n\n'
             location_string = '{location} [W{world}]:'
+            area_string = '{area} [W{world}]'
             item_string = '{item} [Player {player}]{cost}'
         else:
             header_world_string = '\n\n{header}:\n\n'
             header_player_string = '\n\n{header}:\n\n'
             location_string = '{location}:'
+            area_string = '{area}'
             item_string = '{item}{cost}'
 
         location_padding = len(max(self.locations[0].keys(), key=len)) + extra_padding
@@ -115,7 +117,8 @@ class Spoiler(object):
 
             for world in self.worlds:
                 output += header_player_string.format(header="Barren of Treasure", player=world.id+1)
-                output += '\n'.join(world.empty_areas)
+                output += '\n'.join([area_string.format(area=area, world=world.id+1) for area in world.empty_areas])
+
 
             gossip_padding = len(max([stone.name for stone in gossipLocations.values()], key=len)) + extra_padding
             for world in self.worlds:

@@ -33,14 +33,19 @@ class World(object):
         # this gives the world an attribute for every setting listed in Settings.py
         self.settings = settings
         self.__dict__.update(settings.__dict__)
+
         # evaluate settings (important for logic, nice for spoiler)
+        if self.big_poe_count_random:
+            self.big_poe_count = random.randint(1, 10)
         if self.starting_tod == 'random':
             setting_info = get_setting_info('starting_tod')
-            choices = [ch for ch in setting_info.choices.values() if ch not in ['default', 'random']]
+            choices = [ch for ch in setting_info.args_params['choices'] if ch not in ['default', 'random']]
             self.starting_tod = random.choice(choices)
+
         # rename a few attributes...
         self.keysanity = self.shuffle_smallkeys != 'dungeon'
         self.check_beatable_only = not self.all_reachable
+
         # trials that can be skipped will be decided later
         self.skipped_trials = {
             'Forest': False,
@@ -50,6 +55,7 @@ class World(object):
             'Shadow': False,
             'Light': False
         }
+
         # dungeon forms will be decided later
         self.dungeon_mq = {
             'Deku Tree': False,
@@ -297,27 +303,114 @@ class World(object):
     def has_beaten_game(self, state):
         return state.has('Triforce')
 
-
-    def update_useless_areas(self):
+    # Useless areas are areas that have contain no items that could ever
+    # be used to complete the seed. Unfortunately this is very difficult
+    # to calculate since that involves trying every possible path and item
+    # set collected to know this. To simplify this we instead just get areas
+    # that don't have any items that could ever be required in any seed.
+    # We further cull this list with woth info. This is an overestimate of
+    # the true list of possible useless areas, but this will generate a 
+    # reasonably sized list of areas that fit this property.
+    def update_useless_areas(self, spoiler):
         areas = {}
-        excluded_areas = [None, "Link's Pocket", "Ganon's Tower"]
+        # Link's Pocket and None are not real areas
+        excluded_areas = [None, "Link's Pocket"]
         for location in self.get_locations():
+            # We exclude event and locked locations. This means that medallions
+            # and stones are not considered here. This is not really an accurate
+            # way of doing this, but it's the only way to allow dungeons to appear.
+            # So barren hints do not include these dungeon rewards.
             if location.hint in excluded_areas or \
                location.locked or \
                location.item is None or \
                location.item.type == "Event":
                 continue
-            if location.hint in areas:
-                areas[location.hint].append(location)
-            else:
-                areas[location.hint] = [location]
 
-        self.empty_areas = []
-        for area,locations in areas.items():
+            # We should consider GT and GC as the same area or it's confusing.
+            # You can get a hint GC is barren and a player might think that
+            # GT is also barren when it is not. They are separate scenes in
+            # the rom data, but one dungeon logically.
+            if location.hint == "Ganon's Tower":
+                area = "Ganon's Castle"
+            else:
+                area = location.hint
+
+            # Build the area list and their items
+            if area not in areas:
+                areas[area] = {
+                    'locations': [],
+                }
+            areas[area]['locations'].append(location)
+
+        # Generate area list meta data
+        for area,area_info in areas.items():
+            # whether an area is a dungeon is calculated to prevent too many
+            # dungeon barren hints since they are quite powerful. The area
+            # names don't quite match the internal dungeon names so we need to
+            # check if any location in the area has a dungeon.
+            area_info['dungeon'] = False
+            for location in area_info['locations']:
+                if location.parent_region.dungeon is not None:
+                    area_info['dungeon'] = True
+                    break
+            # Weight the area's chance of being chosen based on its size.
+            # Small areas are more likely to barren, so we apply this weight
+            # to make all areas have a more uniform chance of being chosen
+            area_info['weight'] = len(area_info['locations'])
+
+        # these are items that can never be required but are still considered major items
+        exclude_item_list = [
+            'Double Defense',
+            'Ice Arrows',
+            'Serenade of Water',
+            'Prelude of Light'
+        ]
+        if self.damage_multiplier != 'ohko' and self.damage_multiplier != 'quadruple':
+            # nayru's love may be required to prevent forced damage
+            exclude_item_list.append('Nayrus Love')
+
+        # The idea here is that if an item shows up in woth, then the only way
+        # that another copy of that major item could ever be required is if it
+        # is a progressive item. Normally this applies to things like bows, bombs
+        # bombchus, bottles, slingshot, magic and ocarina. However if plentiful
+        # item pool is enabled this could be applied to any item.
+        duplicate_item_woth = {}
+        woth_loc = [location for world_woth in spoiler.required_locations.values() for location in world_woth]
+        for world in spoiler.worlds:
+            duplicate_item_woth[world.id] = {}
+        for location in woth_loc:
+            if not location.item.name.startswith('Progressive'):
+                # Progressive items may need multiple copies to make progression
+                # so we can't make this culling for those kinds of items.
+                duplicate_item_woth[location.item.world.id][location.item.name] = location
+            if 'Bottle' in location.item.name and \
+                location.item.name not in ['Bottle with Letter', 'Bottle with Big Poe']:
+                    # Bottles can have many names but they are all generally the same in logic
+                    # The problem is that Ruto's Letter and Big Poe might not be usuable as a 
+                    # Bottle immediately, so they might need to use a regular bottle in
+                    # addition to that one. Conversely finding a bottle might mean you still
+                    # need ruto's letter or big poe. So to work with this, we ignore those
+                    # two special bottles as being bottles
+                    duplicate_item_woth[location.item.world.id]['Bottle'] = location
+
+        # generate the empty area list
+        self.empty_areas = {}
+        for area,area_info in areas.items():
             useless_area = True
-            for location in locations:
+            for location in area_info['locations']:
                 if location.item.majoritem:
+                    if (location.item.name in exclude_item_list):
+                        continue
+
+                    if 'Bottle' in location.item.name and location.item.name not in ['Bottle with Letter', 'Bottle with Big Poe']:
+                        dupe_location = duplicate_item_woth[location.item.world.id].get('Bottle', location)
+                    else:
+                        dupe_location = duplicate_item_woth[location.item.world.id].get(location.item.name, location)
+
+                    if (dupe_location.world.id != location.world.id or dupe_location.name != location.name):
+                        continue
+
                     useless_area = False
                     break
             if useless_area:
-                self.empty_areas.append(area)
+                self.empty_areas[area] = area_info

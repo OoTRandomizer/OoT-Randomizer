@@ -203,7 +203,7 @@ def patch_cosmetics(settings, rom):
             'flute':           0x06,
            #'another_ocarina': 0x07,
             }
-    if settings.sfx_ocarina is not 'random':
+    if settings.sfx_ocarina != 'random':
         choice = settings.sfx_ocarina
     else:
         choice = random.choice(list(instruments.keys()))

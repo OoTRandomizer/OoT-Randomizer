@@ -6,5 +6,6 @@
 #include "z64.h"
 
 uint8_t get_chest_override_size(z64_actor_t *actor);
+uint8_t get_chest_override_color(z64_actor_t *actor);
 
 #endif

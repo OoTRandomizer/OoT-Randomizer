@@ -14,8 +14,8 @@ jabu_elevator:
 	addiu	t0, 0xAA30
 
 	lwc1	f2, 0x28(t0) ; links y
-	lui		t0, 0xC493 
-	mtc1	t0, f3 ; f3 = -1176
+	lui		t0, 0xC496
+	mtc1	t0, f3 ; f3 = -1200
 	c.lt.s	f2, f3
 	bc1t	@@bottom
 	nop
@@ -24,7 +24,7 @@ jabu_elevator:
 	nop
 
 @@bottom:
-	li		t5, 0x100
+	li		t5, 0xC0
 
 @@return:
 	

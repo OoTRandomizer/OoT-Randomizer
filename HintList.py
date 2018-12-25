@@ -32,6 +32,11 @@ def getHintGroup(group, world):
     ret = []
     for name in hintTable:
         hint = getHint(name, world.clearer_hints)
+
+        # 10 Big Poes does not require hint if 3 or less required.
+        if name == '10 Big Poes' and world.big_poe_count <= 3:
+            hint.type = 'location'
+
         if hint.type == group and not (name in hintExclusions(world)):
             ret.append(hint)
     return ret
@@ -307,53 +312,28 @@ hintTable = {
 
 # This specifies which hints will never appear due to either having known or known useless contents or due to the locations not existing.
 
-def hintExclusions(world):
-    exclusions = []
-        
-    exclusions.extend(world.disabled_locations)
+def hintExclusions(world, clear_cache=False):
+    if not clear_cache and hintExclusions.exclusions is not None:
+        return hintExclusions.exclusions
 
-    if not world.shuffle_ocarinas:
-        exclusions.append('Ocarina of Time')
-    if world.tokensanity != 'all':
-        exclusions.append('GS Hyrule Castle Grotto')
-        exclusions.append('GS Hyrule Field Near Gerudo Valley')
-        exclusions.append('GS Zora\'s Fountain Hidden Cave')
-    if not world.dungeon_mq['Deku Tree']:
-        exclusions.append('Deku Tree MQ After Spinning Log Chest')
-    if world.tokensanity == 'off' or not world.dungeon_mq['Jabu Jabus Belly']:
-        exclusions.append('GS Jabu Jabu MQ Invisible Enemies Room')
-    if world.dungeon_mq['Forest Temple']:
-        exclusions.append('Forest Temple Floormaster Chest')
-    if world.dungeon_mq['Fire Temple']:
-        exclusions.append('Fire Temple Scarecrow Chest')
-        exclusions.append('Fire Temple Megaton Hammer Chest')
-    else:
-        exclusions.append('Fire Temple MQ West Tower Top Chest')
-    if world.dungeon_mq['Water Temple']:
-        exclusions.append('Water Temple River Chest')
-        exclusions.append('Water Temple Boss Key Chest')
-    else:
-        exclusions.append('Water Temple MQ Boss Key Chest')
-        exclusions.append('Water Temple MQ Freestanding Key')
-    if world.tokensanity == 'off' or not world.dungeon_mq['Water Temple']:
-        exclusions.append('GS Water Temple MQ North Basement')
-    if world.dungeon_mq['Gerudo Training Grounds']:
-        exclusions.append('Gerudo Training Grounds Underwater Silver Rupee Chest')
-        exclusions.append('Gerudo Training Grounds Maze Path Final Chest')
-    else:
-        exclusions.append('Gerudo Training Grounds MQ Underwater Silver Rupee Chest')
-        exclusions.append('Gerudo Training Grounds MQ Ice Arrows Chest')
-    if world.dungeon_mq['Bottom of the Well']:
-        exclusions.append('Bottom of the Well Defeat Boss')
-    else:
-        exclusions.append('Bottom of the Well MQ Compass Chest')
-    if not world.dungeon_mq['Spirit Temple']:
-        exclusions.append('Spirit Temple MQ Child Center Chest')
-        exclusions.append('Spirit Temple MQ Lower Adult Right Chest')
-    if world.tokensanity == 'off' or not world.dungeon_mq['Spirit Temple']:
-        exclusions.append('GS Spirit Temple MQ Lower Adult Right')
-    if world.dungeon_mq['Shadow Temple']:
-        exclusions.append('Shadow Temple Hidden Floormaster Chest')
-    else:
-        exclusions.append('Shadow Temple MQ Bomb Flower Chest')
-    return exclusions
+    hintExclusions.exclusions = []
+    hintExclusions.exclusions.extend(world.disabled_locations)
+
+    for location in world.get_locations():
+        if location.locked:
+            hintExclusions.exclusions.append(location.name)
+
+    world_location_names = [location.name for location in world.get_locations()]
+
+    location_hints = []
+    for name in hintTable:
+        hint = getHint(name, world.clearer_hints)
+        if hint.type in ['location', 'alwaysLocation']:
+            location_hints.append(hint)
+
+    for hint in location_hints:
+        if hint.name not in world_location_names:
+            hintExclusions.exclusions.append(hint.name)
+
+    return hintExclusions.exclusions
+hintExclusions.exclusions = None

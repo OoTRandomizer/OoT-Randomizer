@@ -206,28 +206,45 @@ def fill_dungeon_unique_item(window, worlds, fill_locations, itempool):
 
 # Places the shop items into the world at the Shop locations
 def fill_shops(window, worlds, locations, shoppool, itempool, attempts=15):
-    # List of states with all items
-    all_state_base_list = State.get_states_with_items([world.state for world in worlds], itempool)
+    # get the shop locations for each world
 
-    while attempts:
-        attempts -= 1
-        try:
-            prizepool = list(shoppool)
-            prize_locs = list(locations)
-            random.shuffle(prizepool)
-            fill_restrictive(window, worlds, all_state_base_list, prize_locs, prizepool)
-            logging.getLogger('').info("Shop items placed")
-        except FillError as e:
-            logging.getLogger('').info("Failed to place shop items. Will retry %s more times", attempts)
-            for location in locations:
-                location.item = None
-                if location.disabled == DisableType.DISABLED:
-                    location.disabled = DisableType.PENDING
-            logging.getLogger('').info('\t%s' % str(e))
-            continue
-        break
-    else:
-        raise FillError('Unable to place shops')
+    # look for preplaced items
+    placed_prizes = [loc.item.name for loc in locations if loc.item is not None]
+    unplaced_prizes = [item for item in shoppool if item.name not in placed_prizes]
+    empty_shop_locations = [loc for loc in locations if loc.item is None]
+
+    prizepool_dict = {world.id: [item for item in unplaced_prizes if item.world.id == world.id] for world in worlds}
+    prize_locs_dict = {world.id: [loc for loc in empty_shop_locations if loc.world.id == world.id] for world in worlds}
+
+    # Shop item being sent in to this method are tied to their own world.
+    # Therefore, let's do this one world at a time. We do this to help
+    # increase the chances of successfully placing songs
+    for world in worlds:
+        # List of states with all items
+        unplaced_prizes = [item for item in unplaced_prizes if item not in prizepool_dict[world.id]]
+        all_state_base_list = State.get_states_with_items([world.state for world in worlds], itempool + unplaced_prizes)
+
+        world_attempts = attempts
+        while world_attempts:
+            world_attempts -= 1
+            try:
+                prizepool = list(prizepool_dict[world.id])
+                prize_locs = list(prize_locs_dict[world.id])
+                random.shuffle(prizepool)
+                fill_restrictive(window, worlds, all_state_base_list, prize_locs, prizepool)
+                
+                logging.getLogger('').info("Shop items placed for world %s", (world.id+1))
+            except FillError as e:
+                logging.getLogger('').info("Failed to place shop items for world %s. Will retry %s more times", (world.id+1), world_attempts)
+                for location in prize_locs_dict[world.id]:
+                    location.item = None
+                    if location.disabled == DisableType.DISABLED:
+                        location.disabled = DisableType.PENDING
+                logging.getLogger('').info('\t%s' % str(e))
+                continue
+            break
+        else:
+            raise FillError('Unable to place shop items in world %d' % (world.id+1))
 
 
 # Places the songs into the world at the Song locations

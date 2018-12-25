@@ -34,7 +34,6 @@ location_table = {
     "Mountain Storms Grotto Chest":                    ("Chest",       0x3E,  0x17, "Death Mountain Trail",   None),
     "Top of Crater Grotto Chest":                      ("Chest",       0x3E,  0x1A, "Death Mountain Crater",  None),
     "Treasure Chest Game":                             ("Chest",       0x10,  0x0A, "the Market",             None),
-    "Lake Hylia Sun":                                  ("Chest",       0x57,  0x08, "Lake Hylia",             None),
 
     "Zelda":                                           ("Cutscene",    0xFF,  0x01, "Temple of Time",         None),
     "Gift from Saria":                                 ("Cutscene",    0xFF,  0x02, "the Lost Woods",         None),
@@ -94,6 +93,7 @@ location_table = {
     "10 Big Poes":                                     ("NPC",         0x4D,  0x0F, "the Market",             None),
     "Rolling Goron as Child":                          ("NPC",         0x62,  0x34, "Goron City",             None),
     "Underwater Bottle":                               ("NPC",         0x57,  0x15, "Lake Hylia",             None),
+    "Lake Hylia Sun":                                  ("NPC",         0x57,  0x58, "Lake Hylia",             None),
     "Gerudo Fortress Membership Card":                 ("NPC",         0x0C,  0x3A, "Gerudo Fortress",        None),
     "Ocarina of Time":                                 ("NPC",         0x51,  0x0C, "Hyrule Field",           None),
 

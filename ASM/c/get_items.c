@@ -120,7 +120,7 @@ void activate_override(override_t override) {
     active_item_text_id = item_row->text_id;
     active_item_object_id = item_row->object_id;
     active_item_graphic_id = item_row->graphic_id;
-    active_item_fast_chest = item_row->fast_chest;
+    active_item_fast_chest = item_row->chest_type & 0x01;
     PLAYER_NAME_ID = override.value.player;
 }
 
@@ -178,11 +178,22 @@ void pop_pending_item() {
     pending_item_queue[2].value.all = 0;
 }
 
-void check_coop_item_received(override_key_t key) {
+void after_key_received(override_key_t key) {
     if (key.type == OVR_DELAYED && key.flag == 0xFF) {
         INCOMING_ITEM = 0;
         uint16_t *received_item_counter = (uint16_t *)(z64_file_addr + 0x90);
         (*received_item_counter)++;
+        return;
+    }
+
+    override_key_t fire_arrow_key = {
+        .scene = 0x57, // Lake hylia
+        .type = OVR_BASE_ITEM,
+        .flag = 0x58, // Fire arrows item ID
+    };
+    if (key.all == fire_arrow_key.all) {
+        // Mark fire arrow location as obtained
+        z64_game.chest_flags |= 0x1;
     }
 }
 
@@ -192,7 +203,7 @@ void pop_ice_trap() {
     if (value.item_id == 0x7C && value.player == PLAYER_ID) {
         push_pending_ice_trap();
         pop_pending_item();
-        check_coop_item_received(key);
+        after_key_received(key);
     }
 }
 
@@ -208,9 +219,8 @@ void after_item_received() {
 
     if (key.all == pending_item_queue[0].key.all) {
         pop_pending_item();
-        check_coop_item_received(key);
     }
-
+    after_key_received(key);
     clear_override();
 }
 

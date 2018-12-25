@@ -17,7 +17,7 @@ GET_CHEST_OVERRIDE_SIZE_WRAPPER:
     addiu   sp, sp, 0x10
 
 
-GET_CHEST_OVERRIDE_SIZE_WRAPPER_T9:
+GET_CHEST_OVERRIDE_COLOR_WRAPPER:
     addiu   sp, sp, -0x20
     sw      ra, 0x04 (sp)
     sw      at, 0x08 (sp)
@@ -25,7 +25,7 @@ GET_CHEST_OVERRIDE_SIZE_WRAPPER_T9:
     sw      v1, 0x10 (sp)
     sw      t4, 0x14 (sp)
 
-    jal     get_chest_override_size
+    jal     get_chest_override_color
     move    a0, t8
     move    t9, v0
 

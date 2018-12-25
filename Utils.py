@@ -76,8 +76,8 @@ def compare_version(a, b):
     elif not a and b:
         return -1
 
-    sa = a.replace(' ', '.').split('.')
-    sb = b.replace(' ', '.').split('.')
+    sa = a.replace('v', '').replace(' ', '.').split('.')
+    sb = b.replace('v', '').replace(' ', '.').split('.')
 
     for i in range(0,3):
         if int(sa[i]) > int(sb[i]):

@@ -85,7 +85,7 @@ class Sounds(Enum):
     GUAY               = Sound(0x38B6, 'guay',                  'Guay',                      [Tags.BRIEF])
     GUNSHOT            = Sound(0x4835, 'gunshot',               'Gunshot',                   [])
     HAMMER_BONK        = Sound(0x180A, 'hammer-bonk',           'Hammer Bonk',               [])
-    HORSE_NEIGH        = Sound(0x2805, 'horse-neigh',           'Horse Neigh',               [])
+    HORSE_NEIGH        = Sound(0x2805, 'horse-neigh',           'Horse Neigh',               [Tags.PAINFUL])
     HORSE_TROT         = Sound(0x2804, 'horse-trot',            'Horse Trot',                [])
     HP_LOW             = Sound(0x481B, 'low-health',            'Low Health',                [Tags.INC_NE])
     HP_RECOVER         = Sound(0x480B, 'recover-health',        'Recover Health',            [])
@@ -171,6 +171,7 @@ hp_low = [
         Sounds.SHABOM_BOUNCE,
         Sounds.CARROT_REFILL,
         Sounds.MOBLIN_CLUB_GROUND,
+        Sounds.ZORA_KING,
         ]
 hover_boots = [
         Sounds.BARK,

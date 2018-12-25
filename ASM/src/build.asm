@@ -42,6 +42,7 @@
 .include "initial_save.asm"
 .include "textbox.asm"
 .include "fishing.asm"
+.include "bgs_fix.asm"
 .include "chus_in_logic.asm"
 .include "rainbow_bridge.asm"
 .include "gossip_hints.asm"

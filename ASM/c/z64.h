@@ -1123,6 +1123,7 @@ typedef struct
 #define z64_link_addr                           0x801DAA30
 #define z64_state_ovl_tab_addr                  0x800F1340
 #define z64_event_state_1_addr                  0x800EF1B0
+#define z64_LinkInvincibility_addr              0x8038E578
 #define z64_LinkDamage_addr                     0x8038E6A8
 
 /* rom addresses */
@@ -1166,8 +1167,10 @@ typedef void (*z64_DisplayTextbox_proc)   (z64_game_t *game, uint16_t text_id,
                                            int unknown_);
 typedef void (*z64_GiveItem_proc)         (z64_game_t *game, uint8_t item);
 
-typedef void(*z64_LinkDamage_proc)        (z64_game_t *ctxt, z64_link_t *link, uint8_t damage_type, float unk_00, uint32_t unk_01, uint16_t damage_amount);
-
+typedef void(*z64_LinkDamage_proc)        (z64_game_t *ctxt, z64_link_t *link,
+                                           uint8_t damage_type, float unk_00, uint32_t unk_01,
+                                           uint16_t unk_02);
+typedef void(*z64_LinkInvincibility_proc) (z64_link_t *link, uint8_t frames);
 
 /* data */
 #define z64_file_mq             (*(OSMesgQueue*)      z64_file_mq_addr)
@@ -1218,5 +1221,7 @@ typedef void(*z64_LinkDamage_proc)        (z64_game_t *ctxt, z64_link_t *link, u
 #define z64_GiveItem            ((z64_GiveItem_proc)  z64_GiveItem_addr)
 
 #define z64_LinkDamage          ((z64_LinkDamage_proc)z64_LinkDamage_addr)
+#define z64_LinkInvincibility   ((z64_LinkInvincibility_proc)                 \
+                                                      z64_LinkInvincibility_addr)
 
 #endif

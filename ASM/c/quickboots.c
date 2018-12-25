@@ -38,7 +38,7 @@ void handle_quickboots() {
             z64_playsfx(0x835, (z64_xyzf_t*)0x80104394, 0x04, (float*)0x801043A0, (float*)0x801043A0, (float*)0x801043A8);
         }
     }
-    if (pad_pressed & DPAD_D) {
+    if (pad_pressed & DPAD_D && DISPLAY_QUICKBOOTS) {
         display_active = !display_active;
         uint16_t sfx = 0x4814;
         if (display_active) sfx = 0x4813;

@@ -178,7 +178,7 @@ ITEM_MESSAGES = {
     0x00C5: "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01You've completed another Heart\x01Container!",
     0x00C6: "\x08\x13\x72You got a \x05\x41Heart Container\x05\x40!\x01Your maximum life energy is \x01increased by one heart.",
     0x00C7: "\x08\x13\x74You got the \x05\x41Boss Key\x05\x40!\x01Now you can get inside the \x01chamber where the Boss lurks.",
-	0x00C8: "\x08You are a \x05\x43FOOL\x05\x40!",
+	0x9002: "\x08You are a \x05\x43FOOL\x05\x40!",
     0x00CC: "\x08You got a \x05\x43Blue Rupee\x05\x40!\x01That's \x05\x43five Rupees\x05\x40!",
     0x00CD: "\x08\x13\x53You got the \x05\x43Silver Scale\x05\x40!\x01You can dive deeper than you\x01could before.",
     0x00CE: "\x08\x13\x54You got the \x05\x43Golden Scale\x05\x40!\x01Now you can dive much\x01deeper than you could before!",
@@ -456,8 +456,11 @@ class Message():
             elif speed_up_text and code.code in slows_text:
                 pass
             elif speed_up_text and code.code in box_breaks:
-                offset = Text_Code(0x04, 0).write(rom, offset) # un-delayed break
-                offset = Text_Code(0x08, 0).write(rom, offset) # allow instant
+                if self.id == 0x605A: #special case for twinrova text
+                    offset = code.write(rom, offset)
+                else:
+                    offset = Text_Code(0x04, 0).write(rom, offset) # un-delayed break
+                    offset = Text_Code(0x08, 0).write(rom, offset) # allow instant
             else:
                 offset = code.write(rom, offset)
 

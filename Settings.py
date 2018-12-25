@@ -329,6 +329,7 @@ def get_settings_from_command_line_args():
     parser.add_argument('--settings_string', help='Provide sharable settings using a settings string. This will override all flags that it specifies.')
     parser.add_argument('--convert_settings', help='Only convert the specified settings to a settings string. If a settings string is specified output the used settings instead.', action='store_true')
     parser.add_argument('--settings', help='Use the specified settings file to use for generation')
+    parser.add_argument('--seed', help='Generate the specified seed.')
 
     args = parser.parse_args()
 
@@ -348,6 +349,9 @@ def get_settings_from_command_line_args():
 
     if args.settings_string is not None:
         settings.update_with_settings_string(args.settings_string)
+
+    if args.seed is not None:
+        settings.update_seed(args.seed)
 
     if args.convert_settings:
         if args.settings_string is not None:

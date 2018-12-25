@@ -230,6 +230,66 @@
     j       heart_container_draw
     nop
 
+; Replaces:
+;   lw      a0, 0x001C (sp)
+;   jal     0x800570C0
+;   lh      a1, 0x0140 (t6)
+.org 0xDE1034
+    lw      a0, 0x18 (sp)
+    jal     item_etcetera_draw
+    lw      a1, 0x1C (sp)
+
+; Replaces:
+;   lw      a0, 0x001C (sp)
+;   jal     0x800570C0
+;   lh      a1, 0x0140 (t6)
+.org 0xDE1084
+    lw      a0, 0x18 (sp)
+    jal     item_etcetera_draw
+    lw      a1, 0x1C (sp)
+
+; Replaces:
+;   lw      a0, 0x001C (sp)
+;   jal     0x800570C0
+;   lh      a1, 0x0146 (a3)
+.org 0xE59EB0
+    lw      a0, 0x18 (sp)
+    jal     bowling_bomb_bag_draw
+    lw      a1, 0x1C (sp)
+
+; Replaces:
+;   lw      a1, 0x001C (sp)
+;   jal     0x80022554
+;   or      a2, r0, r0
+;   lw      a0, 0x001C (sp)
+;   jal     0x800570C0
+;   addiu   a1, r0, 0x0013
+.org 0xE59ED8
+    sw      a0, 0x18 (sp)
+    jal     0x80022554
+    or      a2, r0, r0
+    lw      a0, 0x18 (sp)
+    jal     bowling_heart_piece_draw
+    lw      a1, 0x1C (sp)
+
+; Replaces:
+;   lw      a0, 0x001C (sp)
+;   jal     0x800570C0
+;   addiu   a1, r0, 0x0074
+.org 0xEC6B40
+    lw      a0, 0x18 (sp)
+    jal     skull_token_draw
+    lw      a1, 0x1C (sp)
+
+; Replaces:
+;   lw      a0, 0x001C (sp)
+;   jal     0x800570C0
+;   addiu   a1, r0, 0x002E
+.org 0xDB5418
+    lw      a0, 0x18 (sp)
+    jal     ocarina_of_time_draw
+    lw      a1, 0x1C (sp)
+
 ;==================================================================================================
 ; File select hash
 ;==================================================================================================
@@ -529,28 +589,17 @@ nop
     jal override_song_of_time
 
 ;==================================================================================================
-; Fire Arrow Chest
+; Fire Arrow location spawn condition
 ;==================================================================================================
 
-; Don't require water temple
-;   bne     t9,at,+0x0024
-.org 0xE9E1D8
-    li      t1, 0x4000
-
-; Load chest contents
-;   li      t0, 0x0007
-.org 0xE9E1F0
-    li      t0, 0x5B08
-
-; Load actor type
-;   li      a2, 0x010f
-.org 0xE9E200
-    li      a2, 0x000A
-
-; Set rotation
-;   sw      zero, 0x1C (sp)
-.org 0xE9E20C
-    sw      t1, 0x1C (sp)
+; Replaces a check for whether fire arrows are in the inventory
+; The item spawns if t9 == at
+.org 0xE9E1B8
+.area 6 * 4, 0
+    lw      t9, (GLOBAL_CONTEXT + 0x1D38) ; Chest flags
+    andi    t9, t9, 0x1
+    ori     at, r0, 0
+.endarea
 
 ;==================================================================================================
 ; Epona Check Override
@@ -943,6 +992,38 @@ skip_GS_BGS_text:
 
 ; Replaces lbu   t9,0x01E9(s0)
 .org 0xC075A8
-    jal     GET_CHEST_OVERRIDE_SIZE_WRAPPER_T9
+    jal     GET_CHEST_OVERRIDE_COLOR_WRAPPER
 .org 0xC07648
-    jal     GET_CHEST_OVERRIDE_SIZE_WRAPPER_T9
+    jal     GET_CHEST_OVERRIDE_COLOR_WRAPPER
+
+;==================================================================================================
+; Cast Fishing Rod without B Item
+;==================================================================================================
+
+.orga 0xBCF914 ; 8038A904
+    jal     keep_fishing_rod_equipped
+    nop
+
+.orga 0xBCF73C ; 8038A72C
+    sw      ra, 0x0000(sp)
+    jal     cast_fishing_rod_if_equipped
+    nop
+    lw      ra, 0x0000(sp)
+
+;==================================================================================================
+; Big Goron Fix
+;==================================================================================================
+;
+;Replaces: beq     $zero, $zero, lbl_80B5AD64 
+
+.org 0xED645C
+    jal     bgs_fix
+    nop
+
+;==================================================================================================
+; Warp song speedup
+;==================================================================================================
+;
+.org 0xBEA044
+   jal      warp_speedup
+   nop
