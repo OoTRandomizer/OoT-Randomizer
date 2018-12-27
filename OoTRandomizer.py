@@ -8,7 +8,7 @@ import sys
 
 from Gui import guiMain
 from Main import main, from_patch_file, cosmetic_patch
-from Utils import is_bundled, close_console, check_version, VersionError
+from Utils import is_bundled, close_console, check_version, VersionError, check_python_version
 from Settings import get_settings_from_command_line_args
 
 
@@ -62,4 +62,5 @@ def start():
         main(settings)
 
 if __name__ == '__main__':
+    check_python_version()
     start()

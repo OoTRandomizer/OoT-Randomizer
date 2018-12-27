@@ -156,3 +156,9 @@ def subprocess_args(include_stdout=True):
                 'startupinfo': si,
                 'env': env })
     return ret
+
+
+def check_python_version():
+    python_version = '.'.join([str(num) for num in sys.version_info[0:3]])
+    if compare_version(python_version, '3.6.0') < 0:
+        raise Exception('Randomizer requires at least version 3.6 and you are using %s' % python_version)

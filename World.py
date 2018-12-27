@@ -365,7 +365,7 @@ class World(object):
             'Serenade of Water',
             'Prelude of Light'
         ]
-        if self.damage_multiplier != 'ohko' and self.damage_multiplier != 'quadruple':
+        if self.damage_multiplier != 'ohko' and self.damage_multiplier != 'quadruple' and self.shuffle_scrubs == 'off':
             # nayru's love may be required to prevent forced damage
             exclude_item_list.append('Nayrus Love')
 

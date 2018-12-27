@@ -83,7 +83,7 @@ class Spoiler(object):
         output += '\n'.join(['    %s' % HASH_ICONS[icon] for icon in self.file_hash])
         output += '\n\n'
 
-        output += 'Settings (%s):\n%s' % (self.settings.get_settings_string(), self.settings.get_settings_display())
+        output += 'Settings (%s):\n%s' % (self.settings.settings_string, self.settings.get_settings_display())
         return output
 
     def spoiler_output(self):

@@ -114,7 +114,7 @@ hintTable = {
     'Deku Stick (1)':                                        ("a breakable branch", 'a Deku Stick', 'item'),
     'Rupee (1)':                                             (["a unique coin", "a penny", "a green gem"], "a Green Rupee", 'item'),
     'Rupees (5)':                                            (["a common coin", "a blue gem"], "a Blue Rupee", 'item'),
-    'Rupees (20)':                                           (["couch cash", "a red gem"], "a Red Rupees", 'item'),
+    'Rupees (20)':                                           (["couch cash", "a red gem"], "a Red Rupee", 'item'),
     'Rupees (50)':                                           (["big bucks", "a purple gem", "wealth"], "a Purple Rupee", 'item'),
     'Rupees (200)':                                          (["a juicy jackpot", "a yellow gem", "a giant gem", "great wealth"], "a Huge Rupee", 'item'),
     'Weird Egg':                                             (["a chicken dilemma"], "the Weird Egg", 'item'),

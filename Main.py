@@ -135,11 +135,11 @@ def main(settings, window=dummy_window()):
 
     logger.info('Patching ROM.')
 
-    settings_string_hash = hashlib.sha1(worlds[0].settings_string.encode('utf-8')).hexdigest().upper()[:5]
+    settings_string_hash = hashlib.sha1(settings.settings_string.encode('utf-8')).hexdigest().upper()[:5]
     if settings.world_count > 1:
-        outfilebase = 'OoT_%s_%s_W%d' % (settings_string_hash, worlds[0].seed, settings.world_count)
+        outfilebase = 'OoT_%s_%s_W%d' % (settings_string_hash, setting.seed, settings.world_count)
     else:
-        outfilebase = 'OoT_%s_%s' % (settings_string_hash, worlds[0].seed)
+        outfilebase = 'OoT_%s_%s' % (settings_string_hash, settings.seed)
 
     output_dir = default_output_path(settings.output_dir)
 
@@ -156,8 +156,8 @@ def main(settings, window=dummy_window()):
                 patchfilename = '%s.zpf' % outfilebase
 
             random.setstate(rng_state)
-            settings.cosmetics_only
-            patch_rom(spoiler, world, rom)
+            if not settings.cosmetics_only:
+                patch_rom(spoiler, world, rom)
             patch_cosmetics(settings, rom)
             window.update_progress(65 + 20*(world.id + 1)/settings.world_count)
 

@@ -16,7 +16,7 @@ from urllib.request import urlopen
 
 from GuiUtils import ToolTips, set_icon, BackgroundTask, BackgroundTaskProgress, Dialog, ValidatingEntry, SearchBox
 from Main import main, from_patch_file
-from Utils import is_bundled, local_path, data_path, default_output_path, open_file, check_version
+from Utils import is_bundled, local_path, data_path, default_output_path, open_file, check_version, check_python_version
 from Settings import Settings
 from SettingsList import setting_infos
 from version import __version__ as ESVersion
@@ -797,5 +797,10 @@ def guiMain(settings=None):
 
 
 if __name__ == '__main__':
+    try:
+        check_python_version()
+    except Exception as ex:
+        messagebox.showerror(title="Unsupported Python Version", message=str(ex))
+        exit()
     guiMain()
 
