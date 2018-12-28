@@ -137,25 +137,27 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
                                   "Gerudo Training Grounds Freestanding Key", "Ganons Castle MQ Forest Trial Freestanding Key"]
     other_freestanding_locations = ["Underwater Bottle", "Lake Hylia Sun", "Bombchu Bowling Bomb Bag", "Ocarina of Time"]
 
+    looks_like_dict = {world.id: {item.name: item for item in ItemFactory(['Heart Container'], world) + world.get_items()} for world in worlds}
     freestanding_locations = [location for world in worlds if world.obscure_freestanding_models for location in world.get_filled_locations()
                               if location.type in ["BossHeart", "GS Token"] or location.name in freestanding_poh_locations + freestanding_key_locations + other_freestanding_locations]
     for location in freestanding_locations:
+        item = location.item
         if location.name in freestanding_poh_locations:
-            location.item.looks_like_item_id = 0x3E
+            item.looks_like_item = looks_like_dict[item.world.id]['Piece of Heart (Treasure Chest Game)']
         if location.name in freestanding_key_locations:
-            location.item.looks_like_item_id = 0x42
+            item.looks_like_item = looks_like_dict[item.world.id]['Small Key (Gerudo Fortress)']
         if location.type == "BossHeart":
-            location.item.looks_like_item_id = 0x4F
+            item.looks_like_item = looks_like_dict[item.world.id]['Heart Container']
         if location.type == "GS Token":
-            location.item.looks_like_item_id = 0x5B
+            item.looks_like_item = looks_like_dict[item.world.id]['Gold Skulltula Token']
         if location.name == "Lake Hylia Sun":
-            location.item.looks_like_item_id = 0x58
+            item.looks_like_item = looks_like_dict[item.world.id]['Fire Arrows']
         if location.name == "Underwater Bottle":
-            location.item.looks_like_item_id = 0x15
+            item.looks_like_item = looks_like_dict[item.world.id]['Bottle with Letter']
         if location.name == "Bombchu Bowling Bomb Bag":
-            location.item.looks_like_item_id = 0x82
+            item.looks_like_item = looks_like_dict[item.world.id]['Bomb Bag']
         if location.name == "Ocarina of Time":
-            location.item.looks_like_item_id = 0x0C
+            item.looks_like_item = looks_like_dict[item.world.id]['Ocarina']
 
     # Get Light Arrow location for later usage.
     for world in worlds:
