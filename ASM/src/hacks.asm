@@ -376,6 +376,14 @@
 .org 0x89E800
 .fill 0x400, 0
 
+; Don't display hover boots in the bullet bag/quiver slot if you haven't gotten a slingshot before becoming adult
+; Replaces:
+;   lbu     t4, 0x0000 (t7)
+;   and     t6, v1, t5
+.org 0xBB6CF0
+    jal     equipment_menu_fix
+    nop
+
 ; Use a blank item description texture if the cursor is on an empty slot
 ; Replaces:
 ;   sll     t4, v1, 10
