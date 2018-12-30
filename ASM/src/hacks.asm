@@ -408,7 +408,7 @@
 ; Replaces:
 ;   beqz    t3, 0x8038D9FC
 ;   nop
-.org 0xBB5FD4 ; In memory: 0x8038D95C
+.org 0xBB5FDC ; In memory: 0x8038D95C
 nop
 nop
 
