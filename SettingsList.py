@@ -523,6 +523,19 @@ setting_infos = [
                              ''',
             shared         = True,
             ),
+    Checkbutton(
+            name           = 'open_fountain',
+            args_help      = '''\
+                             King Zora is moved from the beginning of the game.
+                             ''',
+            gui_text       = 'Open Fountain',
+            gui_group      = 'open',
+            gui_tooltip    = '''\
+                             King Zora starts out as moved. This also removes
+                             Ruto's Letter from the item pool.
+                             ''',
+            shared         = True,
+            ),
     Combobox(
             name           = 'gerudo_fortress',
             default        = 'normal',
