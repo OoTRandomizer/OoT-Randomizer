@@ -70,25 +70,25 @@ menu_use_blank_description:
 
 equipment_menu_slot_filled:
     addiu   sp, sp, -0x10
-	sw      ra, 0x00 (sp)
-	sw      v1, 0x04 (sp)
-	sw      a0, 0x08 (sp)
+    sw      ra, 0x00 (sp)
+    sw      v1, 0x04 (sp)
+    sw      a0, 0x08 (sp)
 
-	jal c_equipment_menu_slot_filled
-	nop
+    jal c_equipment_menu_slot_filled
+    nop
 
-	lw      ra, 0x00 (sp)
-	lw      v1, 0x04 (sp)
-	lw      a0, 0x08 (sp)
+    lw      ra, 0x00 (sp)
+    lw      v1, 0x04 (sp)
+    lw      a0, 0x08 (sp)
     jr      ra
     addiu   sp, sp, 0x10
 
 equipment_menu_fix:
-	and     t6, v1, t5
-	bnez    t6, @@return
+    and     t6, v1, t5
+    bnez    t6, @@return
     lbu     t4, 0x0000 (t7) ; displaced
-	addiu   ra, ra, 0x003C
+    addiu   ra, ra, 0x003C
 
 @@return:
     jr      ra
-	nop
+    nop
