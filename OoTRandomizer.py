@@ -7,9 +7,8 @@ import textwrap
 import sys
 
 from Gui import guiMain
-from Main import main
-from Utils import is_bundled, close_console, check_version, VersionError
-from Patches import get_tunic_color_options, get_navi_color_options
+from Main import main, from_patch_file, cosmetic_patch
+from Utils import is_bundled, close_console, check_version, VersionError, check_python_version
 from Settings import get_settings_from_command_line_args
 
 
@@ -50,6 +49,10 @@ def start():
 
     if gui:
         guiMain(settings)
+    elif settings.cosmetics_only:
+        cosmetic_patch(settings)
+    elif settings.patch_file != '':
+        from_patch_file(settings)
     elif settings.count is not None:
         orig_seed = settings.seed
         for i in range(settings.count):
@@ -59,4 +62,5 @@ def start():
         main(settings)
 
 if __name__ == '__main__':
+    check_python_version()
     start()

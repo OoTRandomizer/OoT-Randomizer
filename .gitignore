@@ -1,13 +1,19 @@
-.*.sw*
 .sw*
-*.pyc
 /.vs
-settings.sav
+/.vscode
+/.idea
+/Output
+/build
+/dist
 ARCHIVE.bin
-output/*
-*.z64
-*.z64.bak
+
+*.[nz]64
+*.[nz]64.bak
+*.pyc
 *.pyo
+*.sav
 *.spec
-dist/
-build/
+.*.sw*
+
+# In order to keep this file tidy, please add any personal conventions to your
+# global git configuration.

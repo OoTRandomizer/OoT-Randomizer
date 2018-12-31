@@ -1,877 +1,328 @@
-from collections import namedtuple
-import logging
-import random
+# Progressive: True  -> Advancement
+#              False -> Priority
+#              None  -> Normal
+#    Item:                            (type, Progessive, GetItemID, special),
+item_table = {
+    'Bombs (5)':                        ('Item',     None,  0x01, None),
+    'Deku Nuts (5)':                    ('Item',     None,  0x02, None),
+    'Bombchus (10)':                    ('Item',     True,  0x03, None),
+    'Boomerang':                        ('Item',     True,  0x06, None),
+    'Deku Stick (1)':                   ('Item',     None,  0x07, None),
+    'Lens of Truth':                    ('Item',     True,  0x0A, None),
+    'Hammer':                           ('Item',     True,  0x0D, None),
+    'Cojiro':                           ('Item',     True,  0x0E, None),
+    'Bottle':                           ('Item',     True,  0x0F, None),
+    'Bottle with Milk':                 ('Item',     True,  0x14, None),
+    'Bottle with Letter':               ('Item',     True,  0x15, None),
+    'Magic Bean':                       ('Item',     True,  0x16, None),
+    'Skull Mask':                       ('Item',     None,  0x17, None),
+    'Spooky Mask':                      ('Item',     None,  0x18, None),
+    'Keaton Mask':                      ('Item',     None,  0x1A, None),
+    'Bunny Hood':                       ('Item',     None,  0x1B, None),
+    'Mask of Truth':                    ('Item',     None,  0x1C, None),
+    'Pocket Egg':                       ('Item',     True,  0x1D, None),
+    'Pocket Cucco':                     ('Item',     True,  0x1E, None),
+    'Odd Mushroom':                     ('Item',     True,  0x1F, None),
+    'Odd Potion':                       ('Item',     True,  0x20, None),
+    'Poachers Saw':                     ('Item',     True,  0x21, None),
+    'Broken Sword':                     ('Item',     True,  0x22, None),
+    'Prescription':                     ('Item',     True,  0x23, None),
+    'Eyeball Frog':                     ('Item',     True,  0x24, None),
+    'Eyedrops':                         ('Item',     True,  0x25, None),
+    'Claim Check':                      ('Item',     True,  0x26, None),
+    'Kokiri Sword':                     ('Item',     True,  0x27, None),
+    'Deku Shield':                      ('Item',     None,  0x29, None),
+    'Hylian Shield':                    ('Item',     None,  0x2A, None),
+    'Mirror Shield':                    ('Item',     True,  0x2B, None),
+    'Goron Tunic':                      ('Item',     True,  0x2C, None),
+    'Zora Tunic':                       ('Item',     True,  0x2D, None),
+    'Iron Boots':                       ('Item',     True,  0x2E, None),
+    'Hover Boots':                      ('Item',     True,  0x2F, None),
+    'Stone of Agony':                   ('Item',     True,  0x39, None),
+    'Gerudo Membership Card':           ('Item',     True,  0x3A, None),
+    'Heart Container':                  ('Item',     None,  0x3D, None),
+    'Piece of Heart':                   ('Item',     None,  0x3E, None),
+    'Boss Key':                         ('BossKey',  True,  0x3F, None),
+    'Compass':                          ('Compass',  None,  0x40, None),
+    'Map':                              ('Map',      None,  0x41, None),
+    'Small Key':                        ('SmallKey', True,  0x42, None),
+    'Weird Egg':                        ('Item',     True,  0x47, None),
+    'Recovery Heart':                   ('Item',     None,  0x48, None),
+    'Arrows (5)':                       ('Item',     None,  0x49, None),
+    'Arrows (10)':                      ('Item',     None,  0x4A, None),
+    'Arrows (30)':                      ('Item',     None,  0x4B, None),
+    'Rupee (1)':                        ('Item',     None,  0x4C, None),
+    'Rupees (5)':                       ('Item',     None,  0x4D, None),
+    'Rupees (20)':                      ('Item',     None,  0x4E, None),
+    'Heart Container (Boss)':           ('Item',     None,  0x4F, None),
+    'Goron Mask':                       ('Item',     None,  0x51, None),
+    'Zora Mask':                        ('Item',     None,  0x52, None),
+    'Gerudo Mask':                      ('Item',     None,  0x53, None),
+    'Rupees (50)':                      ('Item',     None,  0x55, None),
+    'Rupees (200)':                     ('Item',     None,  0x56, None),
+    'Biggoron Sword':                   ('Item',     True,  0x57, None),
+    'Fire Arrows':                      ('Item',     True,  0x58, None),
+    'Ice Arrows':                       ('Item',     True,  0x59, None),
+    'Light Arrows':                     ('Item',     True,  0x5A, None),
+    'Gold Skulltula Token':             ('Token',    True,  0x5B, None),
+    'Dins Fire':                        ('Item',     True,  0x5C, None),
+    'Nayrus Love':                      ('Item',     True,  0x5E, None),
+    'Farores Wind':                     ('Item',     True,  0x5D, None),
+    'Deku Nuts (10)':                   ('Item',     None,  0x64, None),
+    'Bombs (10)':                       ('Item',     None,  0x66, None),
+    'Bombs (20)':                       ('Item',     None,  0x67, None),
+    'Deku Seeds (30)':                  ('Item',     None,  0x69, None),
+    'Bombchus (5)':                     ('Item',     True,  0x6A, None),
+    'Bombchus (20)':                    ('Item',     True,  0x6B, None),
+    'Rupee (Treasure Chest Game)':      ('Item',     None,  0x72, None),
+    'Piece of Heart (Treasure Chest Game)': ('Item', None,  0x76, None),
+    'Ice Trap':                         ('Item',     None, 0x7C,  None),
+    'Progressive Hookshot':             ('Item',     True,  0x80, None),
+    'Progressive Strength Upgrade':     ('Item',     True,  0x81, None),
+    'Bomb Bag':                         ('Item',     True,  0x82, None),
+    'Bow':                              ('Item',     True,  0x83, None),
+    'Slingshot':                        ('Item',     True,  0x84, None),
+    'Progressive Wallet':               ('Item',     True,  0x85, None),
+    'Progressive Scale':                ('Item',     True,  0x86, None),
+    'Deku Nut Capacity':                ('Item',     None,  0x87, None),
+    'Deku Stick Capacity':              ('Item',     None,  0x88, None),
+    'Bombchus':                         ('Item',     True,  0x89, None),
+    'Magic Meter':                      ('Item',     True,  0x8A, None),
+    'Ocarina':                          ('Item',     True,  0x8B, None),
+    'Bottle with Red Potion':           ('Item',     True,  0x8C, {'shop_object': 0x0F}),
+    'Bottle with Green Potion':         ('Item',     True,  0x8D, {'shop_object': 0x0F}),
+    'Bottle with Blue Potion':          ('Item',     True,  0x8E, {'shop_object': 0x0F}),
+    'Bottle with Fairy':                ('Item',     True,  0x8F, {'shop_object': 0x0F}),
+    'Bottle with Fish':                 ('Item',     True,  0x90, {'shop_object': 0x0F}),
+    'Bottle with Blue Fire':            ('Item',     True,  0x91, {'shop_object': 0x0F}),
+    'Bottle with Bugs':                 ('Item',     True,  0x92, {'shop_object': 0x0F}),
+    'Bottle with Big Poe':              ('Item',     True,  0x93, {'shop_object': 0x0F}),
+    'Bottle with Poe':                  ('Item',     True,  0x94, {'shop_object': 0x0F}),
+    'Boss Key (Forest Temple)':         ('BossKey',  True,  0x95, None),
+    'Boss Key (Fire Temple)':           ('BossKey',  True,  0x96, None),
+    'Boss Key (Water Temple)':          ('BossKey',  True,  0x97, None),
+    'Boss Key (Spirit Temple)':         ('BossKey',  True,  0x98, None),
+    'Boss Key (Shadow Temple)':         ('BossKey',  True,  0x99, None),
+    'Boss Key (Ganons Castle)':         ('BossKey',  True,  0x9A, None),
+    'Compass (Deku Tree)':              ('Compass',  None,  0x9B, None),
+    'Compass (Dodongos Cavern)':        ('Compass',  None,  0x9C, None),
+    'Compass (Jabu Jabus Belly)':       ('Compass',  None,  0x9D, None),
+    'Compass (Forest Temple)':          ('Compass',  None,  0x9E, None),
+    'Compass (Fire Temple)':            ('Compass',  None,  0x9F, None),
+    'Compass (Water Temple)':           ('Compass',  None,  0xA0, None),
+    'Compass (Spirit Temple)':          ('Compass',  None,  0xA1, None),
+    'Compass (Shadow Temple)':          ('Compass',  None,  0xA2, None),
+    'Compass (Bottom of the Well)':     ('Compass',  None,  0xA3, None),
+    'Compass (Ice Cavern)':             ('Compass',  None,  0xA4, None),
+    'Map (Deku Tree)':                  ('Map',      None,  0xA5, None),
+    'Map (Dodongos Cavern)':            ('Map',      None,  0xA6, None),
+    'Map (Jabu Jabus Belly)':           ('Map',      None,  0xA7, None),
+    'Map (Forest Temple)':              ('Map',      None,  0xA8, None),
+    'Map (Fire Temple)':                ('Map',      None,  0xA9, None),
+    'Map (Water Temple)':               ('Map',      None,  0xAA, None),
+    'Map (Spirit Temple)':              ('Map',      None,  0xAB, None),
+    'Map (Shadow Temple)':              ('Map',      None,  0xAC, None),
+    'Map (Bottom of the Well)':         ('Map',      None,  0xAD, None),
+    'Map (Ice Cavern)':                 ('Map',      None,  0xAE, None),
+    'Small Key (Forest Temple)':        ('SmallKey', True,  0xAF, None),
+    'Small Key (Fire Temple)':          ('SmallKey', True,  0xB0, None),
+    'Small Key (Water Temple)':         ('SmallKey', True,  0xB1, None),
+    'Small Key (Spirit Temple)':        ('SmallKey', True,  0xB2, None),
+    'Small Key (Shadow Temple)':        ('SmallKey', True,  0xB3, None),
+    'Small Key (Bottom of the Well)':   ('SmallKey', True,  0xB4, None),
+    'Small Key (Gerudo Training Grounds)':('SmallKey',True, 0xB5, None),
+    'Small Key (Gerudo Fortress)':('FortressSmallKey',True, 0xB6, None),
+    'Small Key (Ganons Castle)':        ('SmallKey', True,  0xB7, None),
+    'Double Defense':                   ('Item',     True,  0xB8, None),
+    'Zeldas Letter':                    ('Item',     True,  None, None),
+    'Master Sword':                     ('Item',     True,  None, None),
+    'Epona':                            ('Event',    True,  None, None),
+    'Deku Stick Drop':                  ('Event',    True,  None, None),
+    'Deku Nut Drop':                    ('Event',    True,  None, None),
+    'Carpenter Rescue':                 ('Event',    True,  None, None),
+    'Forest Trial Clear':               ('Event',    True,  None, None),
+    'Fire Trial Clear':                 ('Event',    True,  None, None),
+    'Water Trial Clear':                ('Event',    True,  None, None),
+    'Shadow Trial Clear':               ('Event',    True,  None, None),
+    'Spirit Trial Clear':               ('Event',    True,  None, None),
+    'Light Trial Clear':                ('Event',    True,  None, None),
+    'Triforce':                         ('Event',    True,  None, None),
 
-from Items import ItemFactory
+    'Minuet of Forest':                 ('Song',     True,  0xBB,
+                                            {
+                                                'text_id': 0x73,
+                                                'song_id': 0x02,
+                                                'item_id': 0x5A,
+                                            }),
+    'Bolero of Fire':                   ('Song',     True,  0xBC,
+                                            {
+                                                'text_id': 0x74,
+                                                'song_id': 0x03,
+                                                'item_id': 0x5B,
+                                            }),
+    'Serenade of Water':                ('Song',     True,  0xBD,
+                                            {
+                                                'text_id': 0x75,
+                                                'song_id': 0x04,
+                                                'item_id': 0x5C,
+                                            }),
+    'Requiem of Spirit':                ('Song',     True,  0xBE,
+                                            {
+                                                'text_id': 0x76,
+                                                'song_id': 0x05,
+                                                'item_id': 0x5D,
+                                            }),
+    'Nocturne of Shadow':               ('Song',     True,  0xBF,
+                                            {
+                                                'text_id': 0x77,
+                                                'song_id': 0x06,
+                                                'item_id': 0x5E,
+                                            }),
+    'Prelude of Light':                 ('Song',     True,  0xC0,
+                                            {
+                                                'text_id': 0x78,
+                                                'song_id': 0x07,
+                                                'item_id': 0x5F,
+                                            }),
+    'Zeldas Lullaby':                   ('Song',     True,  0xC1,
+                                            {
+                                                'text_id': 0xD4,
+                                                'song_id': 0x0A,
+                                                'item_id': 0x60,
+                                            }),
+    'Eponas Song':                      ('Song',     True,  0xC2,
+                                            {
+                                                'text_id': 0xD2,
+                                                'song_id': 0x09,
+                                                'item_id': 0x61,
+                                            }),
+    'Sarias Song':                      ('Song',     True,  0xC3,
+                                            {
+                                                'text_id': 0xD1,
+                                                'song_id': 0x08,
+                                                'item_id': 0x62,
+                                            }),
+    'Suns Song':                        ('Song',     True,  0xC4,
+                                            {
+                                                'text_id': 0xD3,
+                                                'song_id': 0x0B,
+                                                'item_id': 0x63,
+                                            }),
+    'Song of Time':                     ('Song',     True,  0xC5,
+                                            {
+                                                'text_id': 0xD5,
+                                                'song_id': 0x0C,
+                                                'item_id': 0x64,
+                                            }),
+    'Song of Storms':                   ('Song',     True,  0xC6,
+                                            {
+                                                'text_id': 0xD6,
+                                                'song_id': 0x0D,
+                                                'item_id': 0x65,
+                                            }),
 
-#This file sets the item pools for various modes. Timed modes and triforce hunt are enforced first, and then extra items are specified per mode to fill in the remaining space.
-#Some basic items that various modes require are placed here, including pendants and crystals. Medallion requirements for the two relevant entrances are also decided.
+    'Buy Deku Nut (5)':                 ('Shop',     True,  0x00, {'object': 0x00BB, 'price': 15}),
+    'Buy Arrows (30)':                  ('Shop',     False, 0x01, {'object': 0x00D8, 'price': 60}),
+    'Buy Arrows (50)':                  ('Shop',     False, 0x02, {'object': 0x00D8, 'price': 90}),
+    'Buy Bombs (5) [25]':               ('Shop',     False, 0x03, {'object': 0x00CE, 'price': 25}),
+    'Buy Deku Nut (10)':                ('Shop',     True,  0x04, {'object': 0x00BB, 'price': 30}),
+    'Buy Deku Stick (1)':               ('Shop',     True,  0x05, {'object': 0x00C7, 'price': 10}),
+    'Buy Bombs (10)':                   ('Shop',     False, 0x06, {'object': 0x00CE, 'price': 50}),
+    'Buy Fish':                         ('Shop',     False, 0x07, {'object': 0x00F4, 'price': 200}),
+    'Buy Red Potion [30]':              ('Shop',     False, 0x08, {'object': 0x00EB, 'price': 30}),
+    'Buy Green Potion':                 ('Shop',     False, 0x09, {'object': 0x00EB, 'price': 30}),
+    'Buy Blue Potion':                  ('Shop',     False, 0x0A, {'object': 0x00EB, 'price': 100}),
+    'Buy Hylian Shield':                ('Shop',     False, 0x0C, {'object': 0x00DC, 'price': 80}),
+    'Buy Deku Shield':                  ('Shop',     True,  0x0D, {'object': 0x00CB, 'price': 40}),
+    'Buy Goron Tunic':                  ('Shop',     True,  0x0E, {'object': 0x00F2, 'price': 200}),
+    'Buy Zora Tunic':                   ('Shop',     True,  0x0F, {'object': 0x00F2, 'price': 300}),
+    'Buy Heart':                        ('Shop',     False, 0x10, {'object': 0x00B7, 'price': 10}),
+    'Buy Bombchu (10)':                 ('Shop',     True,  0x15, {'object': 0x00D9, 'price': 99}),
+    'Buy Bombchu (20)':                 ('Shop',     True,  0x16, {'object': 0x00D9, 'price': 180}),
+    'Buy Bombchu (5)':                  ('Shop',     True,  0x18, {'object': 0x00D9, 'price': 60}),
+    'Buy Deku Seeds (30)':              ('Shop',     False, 0x1D, {'object': 0x0119, 'price': 30}),
+    'Sold Out':                         ('Shop',     False, 0x26, {'object': 0x0148}),
+    'Buy Blue Fire':                    ('Shop',     True,  0x27, {'object': 0x0173, 'price': 300}),
+    'Buy Bottle Bug':                   ('Shop',     True,  0x28, {'object': 0x0174, 'price': 50}),
+    'Buy Poe':                          ('Shop',     False, 0x2A, {'object': 0x0176, 'price': 30}),
+    'Buy Fairy\'s Spirit':              ('Shop',     False, 0x2B, {'object': 0x0177, 'price': 50}),
+    'Buy Arrows (10)':                  ('Shop',     False, 0x2C, {'object': 0x00D8, 'price': 20}),
+    'Buy Bombs (20)':                   ('Shop',     False, 0x2D, {'object': 0x00CE, 'price': 80}),
+    'Buy Bombs (30)':                   ('Shop',     False, 0x2E, {'object': 0x00CE, 'price': 120}),
+    'Buy Bombs (5) [35]':               ('Shop',     False, 0x2F, {'object': 0x00CE, 'price': 35}),
+    'Buy Red Potion [40]':              ('Shop',     False, 0x30, {'object': 0x00EB, 'price': 40}),
+    'Buy Red Potion [50]':              ('Shop',     False, 0x31, {'object': 0x00EB, 'price': 50}),
 
-alwaysitems = ([
-    'Biggoron Sword', 
-    'Boomerang', 
-    'Lens of Truth', 
-    'Hammer', 
-    'Iron Boots', 
-    'Goron Tunic', 
-    'Zora Tunic', 
-    'Hover Boots', 
-    'Mirror Shield', 
-    'Stone of Agony', 
-    'Fire Arrows', 
-    'Ice Arrows', 
-    'Light Arrows', 
-    'Dins Fire', 
-    'Farores Wind', 
-    'Rupee (1)'] 
-    + ['Progressive Hookshot'] * 2
-    + ['Deku Shield']
-    + ['Hylian Shield']
-    + ['Progressive Strength Upgrade'] * 3
-    + ['Progressive Scale'] * 2
-    + ['Recovery Heart'] * 6
-    + ['Bow']
-    + ['Slingshot']
-    + ['Bomb Bag']
-    + ['Bottle with Letter']
-    + ['Bombs (5)'] * 2
-    + ['Bombs (10)']
-    + ['Bombs (20)']
-    + ['Arrows (5)']
-    + ['Arrows (10)'] * 5
-    + ['Progressive Wallet'] * 2
-    + ['Magic Meter']
-    + ['Piece of Heart (Treasure Chest Game)'])
-
-DT_vanilla = (['Recovery Heart'] * 2)
-
-DT_MQ = (['Deku Shield'] * 2
-         + ['Rupees (50)'])
-
-DC_vanilla = (['Rupees (20)'])
-
-DC_MQ = (['Hylian Shield']
-         + ['Rupees (5)'])
-
-JB_MQ = (['Deku Nuts (5)'] * 4
-         + ['Recovery Heart']
-         + ['Deku Shield']
-         + ['Deku Stick (1)'])
-
-FoT_vanilla = (['Recovery Heart']
-               + ['Arrows (10)']
-               + ['Arrows (30)'])
-
-FoT_MQ = (['Arrows (5)'])
-
-FiT_vanilla = (['Rupees (200)'])
-
-FiT_MQ = (['Bombs (20)']
-          + ['Hylian Shield'])
-
-SpT_vanilla = (['Deku Shield'] * 2
-               + ['Recovery Heart']
-               + ['Bombs (20)'])
-
-SpT_MQ = (['Rupees (50)'] * 2
-          + ['Arrows (30)'])
-
-ShT_vanilla = (['Arrows (30)'])
-
-ShT_MQ = (['Arrows (5)'] * 2
-          + ['Rupees (20)'])
-
-BW_vanilla = (['Recovery Heart']
-               + ['Bombs (10)']
-               + ['Rupees (200)']
-               + ['Deku Nuts (5)']
-               + ['Deku Nuts (10)']
-               + ['Deku Shield']
-               + ['Hylian Shield'])
-
-GTG_vanilla = (['Arrows (30)'] * 3
-               + ['Rupees (200)'])
-
-GTG_MQ = (['Rupee (Treasure Chest Game)'] * 2
-          + ['Arrows (10)']
-          + ['Rupee (1)']
-          + ['Rupees (50)'])
-
-GC_vanilla = (['Rupees (5)'] * 3
-               + ['Arrows (30)'])
-
-GC_MQ = (['Arrows (10)'] * 2
-         + ['Bombs (5)']
-         + ['Rupees (20)']
-         + ['Recovery Heart'])
-
-normal_bottles = [
-    'Bottle',
-    'Bottle with Milk',
-    'Bottle with Red Potion',
-    'Bottle with Green Potion',
-    'Bottle with Blue Potion',
-    'Bottle with Fairy',
-    'Bottle with Fish',
-    'Bottle with Bugs',
-    'Bottle with Poe',
-    'Bottle with Big Poe',
-    'Bottle with Blue Fire']
-
-normal_bottle_count = 3
-
-normal_rupees = (
-    ['Rupees (5)'] * 13
-    + ['Rupees (20)'] * 5
-    + ['Rupees (50)'] * 7
-    + ['Rupees (200)'] * 3)
-
-shopsanity_rupees = (
-    ['Rupees (5)'] * 2
-    + ['Rupees (20)'] * 10
-    + ['Rupees (50)'] * 10
-    + ['Rupees (200)'] * 5
-    + ['Progressive Wallet'])
-
-vanilla_shop_items = {
-    'Kokiri Shop Item 1': 'Buy Deku Shield',
-    'Kokiri Shop Item 2': 'Buy Deku Nut (5)',
-    'Kokiri Shop Item 3': 'Buy Deku Nut (10)',
-    'Kokiri Shop Item 4': 'Buy Deku Stick (1)',
-    'Kokiri Shop Item 5': 'Buy Deku Seeds (30)',
-    'Kokiri Shop Item 6': 'Buy Arrows (10)',
-    'Kokiri Shop Item 7': 'Buy Arrows (30)',
-    'Kokiri Shop Item 8': 'Buy Heart',
-    'Kakariko Potion Shop Item 1': 'Buy Deku Nut (5)',
-    'Kakariko Potion Shop Item 2': 'Buy Fish',
-    'Kakariko Potion Shop Item 3': 'Buy Red Potion [30]',
-    'Kakariko Potion Shop Item 4': 'Buy Green Potion',
-    'Kakariko Potion Shop Item 5': 'Buy Blue Fire',
-    'Kakariko Potion Shop Item 6': 'Buy Bottle Bug',
-    'Kakariko Potion Shop Item 7': 'Buy Poe',
-    'Kakariko Potion Shop Item 8': 'Buy Fairy\'s Spirit',
-    'Bombchu Shop Item 1': 'Buy Bombchu (5)',
-    'Bombchu Shop Item 2': 'Buy Bombchu (10)',
-    'Bombchu Shop Item 3': 'Buy Bombchu (10)',
-    'Bombchu Shop Item 4': 'Buy Bombchu (10)',
-    'Bombchu Shop Item 5': 'Buy Bombchu (20)',
-    'Bombchu Shop Item 6': 'Buy Bombchu (20)',
-    'Bombchu Shop Item 7': 'Buy Bombchu (20)',
-    'Bombchu Shop Item 8': 'Buy Bombchu (20)',
-    'Castle Town Potion Shop Item 1': 'Buy Green Potion',
-    'Castle Town Potion Shop Item 2': 'Buy Blue Fire',
-    'Castle Town Potion Shop Item 3': 'Buy Red Potion [30]',
-    'Castle Town Potion Shop Item 4': 'Buy Fairy\'s Spirit',
-    'Castle Town Potion Shop Item 5': 'Buy Deku Nut (5)',
-    'Castle Town Potion Shop Item 6': 'Buy Bottle Bug',
-    'Castle Town Potion Shop Item 7': 'Buy Poe',
-    'Castle Town Potion Shop Item 8': 'Buy Fish',
-    'Castle Town Bazaar Item 1': 'Buy Hylian Shield',
-    'Castle Town Bazaar Item 2': 'Buy Bombs (5) [35]',
-    'Castle Town Bazaar Item 3': 'Buy Deku Nut (5)',
-    'Castle Town Bazaar Item 4': 'Buy Heart',
-    'Castle Town Bazaar Item 5': 'Buy Arrows (10)',
-    'Castle Town Bazaar Item 6': 'Buy Arrows (50)',
-    'Castle Town Bazaar Item 7': 'Buy Deku Stick (1)',
-    'Castle Town Bazaar Item 8': 'Buy Arrows (30)',
-    'Kakariko Bazaar Item 1': 'Buy Hylian Shield',
-    'Kakariko Bazaar Item 2': 'Buy Bombs (5) [35]',
-    'Kakariko Bazaar Item 3': 'Buy Deku Nut (5)',
-    'Kakariko Bazaar Item 4': 'Buy Heart',
-    'Kakariko Bazaar Item 5': 'Buy Arrows (10)',
-    'Kakariko Bazaar Item 6': 'Buy Arrows (50)',
-    'Kakariko Bazaar Item 7': 'Buy Deku Stick (1)',
-    'Kakariko Bazaar Item 8': 'Buy Arrows (30)',
-    'Zora Shop Item 1': 'Buy Zora Tunic',
-    'Zora Shop Item 2': 'Buy Arrows (10)',
-    'Zora Shop Item 3': 'Buy Heart',
-    'Zora Shop Item 4': 'Buy Arrows (30)',
-    'Zora Shop Item 5': 'Buy Deku Nut (5)',
-    'Zora Shop Item 6': 'Buy Arrows (50)',
-    'Zora Shop Item 7': 'Buy Fish',
-    'Zora Shop Item 8': 'Buy Red Potion [50]',
-    'Goron Shop Item 1': 'Buy Bombs (5) [25]',
-    'Goron Shop Item 2': 'Buy Bombs (10)',
-    'Goron Shop Item 3': 'Buy Bombs (20)',
-    'Goron Shop Item 4': 'Buy Bombs (30)',
-    'Goron Shop Item 5': 'Buy Goron Tunic',
-    'Goron Shop Item 6': 'Buy Heart',
-    'Goron Shop Item 7': 'Buy Red Potion [40]',
-    'Goron Shop Item 8': 'Buy Heart',    
+    'Kokiri Emerald':                   ('Event',    True,  None,
+                                            {
+                                                'save_byte':  0xA5,
+                                                'save_bit':   0x04,
+                                                'addr2_data': 0x80,
+                                                'bit_mask':   0x00040000,
+                                                'item_id':    0x6C,
+                                            }),
+    'Goron Ruby':                       ('Event',    True,  None,
+                                            {
+                                                'save_byte':  0xA5,
+                                                'save_bit':   0x08,
+                                                'addr2_data': 0x81,
+                                                'bit_mask':   0x00080000,
+                                                'item_id':    0x6D,
+                                            }),
+    'Zora Sapphire':                    ('Event',    True,  None,
+                                            {
+                                                'save_byte':  0xA5,
+                                                'save_bit':   0x10,
+                                                'addr2_data': 0x82,
+                                                'bit_mask':   0x00100000,
+                                                'item_id':    0x6E,
+                                            }),
+    'Forest Medallion':                 ('Event',    True,  None,
+                                            {
+                                                'save_byte':  0xA7,
+                                                'save_bit':   0x01,
+                                                'addr2_data': 0x3E,
+                                                'bit_mask':   0x00000001,
+                                                'item_id':    0x66,
+                                            }),
+    'Fire Medallion':                   ('Event',    True,  None,
+                                            {
+                                                'save_byte':  0xA7,
+                                                'save_bit':   0x02,
+                                                'addr2_data': 0x3C,
+                                                'bit_mask':   0x00000002,
+                                                'item_id':    0x67,
+                                            }),
+    'Water Medallion':                  ('Event',    True,  None,
+                                            {
+                                                'save_byte':  0xA7,
+                                                'save_bit':   0x04,
+                                                'addr2_data': 0x3D,
+                                                'bit_mask':   0x00000004,
+                                                'item_id':    0x68,
+                                            }),
+    'Spirit Medallion':                 ('Event',    True,  None,
+                                            {
+                                                'save_byte':  0xA7,
+                                                'save_bit':   0x08,
+                                                'addr2_data': 0x3F,
+                                                'bit_mask':   0x00000008,
+                                                'item_id':    0x69,
+                                            }),
+    'Shadow Medallion':                 ('Event',    True,  None,
+                                            {
+                                                'save_byte':  0xA7,
+                                                'save_bit':   0x10,
+                                                'addr2_data': 0x41,
+                                                'bit_mask':   0x00000010,
+                                                'item_id':    0x6A,
+                                            }),
+    'Light Medallion':                  ('Event',    True,  None,
+                                            {
+                                                'save_byte':  0xA7,
+                                                'save_bit':   0x20,
+                                                'addr2_data': 0x40,
+                                                'bit_mask':   0x00000020,
+                                                'item_id':    0x6B,
+                                            }),
 }
-
-min_shop_items = (
-      ['Buy Deku Shield'] 
-    + ['Buy Hylian Shield'] 
-    + ['Buy Goron Tunic'] 
-    + ['Buy Zora Tunic'] 
-    + ['Buy Deku Nut (5)'] * 2 + ['Buy Deku Nut (10)']
-    + ['Buy Deku Stick (1)'] * 2 
-    + ['Buy Deku Seeds (30)']
-    + ['Buy Arrows (10)'] * 2 + ['Buy Arrows (30)'] + ['Buy Arrows (50)']
-    + ['Buy Bombchu (5)'] + ['Buy Bombchu (10)'] * 2 + ['Buy Bombchu (20)']
-    + ['Buy Bombs (5) [25]'] + ['Buy Bombs (5) [35]'] + ['Buy Bombs (10)'] + ['Buy Bombs (20)'] 
-    + ['Buy Green Potion']
-    + ['Buy Red Potion [30]']
-    + ['Buy Blue Fire']
-    + ['Buy Fairy\'s Spirit']
-    + ['Buy Bottle Bug']
-    + ['Buy Fish'])
-
-vanilla_deku_scrubs = {
-    'ZR Grotto Deku Scrub Red Potion': 'Buy Red Potion [30]',
-    'ZR Grotto Deku Scrub Green Potion': 'Buy Green Potion',
-    'SFM Grotto Deku Scrub Red Potion': 'Buy Red Potion [30]',
-    'SFM Grotto Deku Scrub Green Potion': 'Buy Green Potion',
-    'LH Grotto Deku Scrub Deku Nuts': 'Buy Deku Nut (5)',
-    'LH Grotto Deku Scrub Bombs': 'Buy Bombs (5) [35]',
-    'LH Grotto Deku Scrub Arrows': 'Buy Arrows (30)',
-    'Valley Grotto Deku Scrub Red Potion': 'Buy Red Potion [30]',
-    'Valley Grotto Deku Scrub Green Potion': 'Buy Green Potion',
-    'LW Deku Scrub Deku Nuts': 'Buy Deku Nut (5)',
-    'LW Deku Scrub Deku Sticks': 'Buy Deku Stick (1)',
-    'LW Grotto Deku Scrub Arrows': 'Buy Arrows (30)',
-    'Desert Grotto Deku Scrub Red Potion': 'Buy Red Potion [30]',
-    'Desert Grotto Deku Scrub Green Potion': 'Buy Green Potion',
-    'DMC Deku Scrub Bombs': 'Buy Bombs (5) [35]',
-    'DMC Grotto Deku Scrub Deku Nuts': 'Buy Deku Nut (5)',
-    'DMC Grotto Deku Scrub Bombs': 'Buy Bombs (5) [35]',
-    'DMC Grotto Deku Scrub Arrows': 'Buy Arrows (30)',
-    'Goron Grotto Deku Scrub Deku Nuts': 'Buy Deku Nut (5)',
-    'Goron Grotto Deku Scrub Bombs': 'Buy Bombs (5) [35]',
-    'Goron Grotto Deku Scrub Arrows': 'Buy Arrows (30)',
-    'LLR Grotto Deku Scrub Deku Nuts': 'Buy Deku Nut (5)',
-    'LLR Grotto Deku Scrub Bombs': 'Buy Bombs (5) [35]',
-    'LLR Grotto Deku Scrub Arrows': 'Buy Arrows (30)',
-}
-
-deku_scrubs_items = (
-      ['Deku Nuts (5)'] * 5
-    + ['Deku Stick (1)']
-    + ['Bombs (5)'] * 5
-    + ['Recovery Heart'] * 4
-    + ['Rupees (5)'] * 4 # ['Green Potion']
-)
-
-rewardlist = [
-    'Kokiri Emerald',
-    'Goron Ruby', 
-    'Zora Sapphire', 
-    'Forest Medallion', 
-    'Fire Medallion', 
-    'Water Medallion', 
-    'Spirit Medallion', 
-    'Shadow Medallion', 
-    'Light Medallion']
-
-songlist = [
-    'Zeldas Lullaby', 
-    'Eponas Song', 
-    'Suns Song', 
-    'Sarias Song', 
-    'Song of Time', 
-    'Song of Storms', 
-    'Minuet of Forest', 
-    'Prelude of Light', 
-    'Bolero of Fire', 
-    'Serenade of Water', 
-    'Nocturne of Shadow', 
-    'Requiem of Spirit']
-
-skulltula_locations = ([
-    'GS Kokiri Know It All House',
-    'GS Kokiri Bean Patch',
-    'GS Kokiri House of Twins',
-    'GS Lost Woods Bean Patch Near Bridge',
-    'GS Lost Woods Bean Patch Near Stage',
-    'GS Lost Woods Above Stage',
-    'GS Sacred Forest Meadow',
-    'GS Hyrule Field near Kakariko',
-    'GS Hyrule Field Near Gerudo Valley',
-    'GS Castle Market Guard House',
-    'GS Hyrule Castle Tree',
-    'GS Hyrule Castle Grotto',
-    'GS Outside Ganon\'s Castle',
-    'GS Lon Lon Ranch Tree',
-    'GS Lon Lon Ranch Rain Shed',
-    'GS Lon Lon Ranch House Window',
-    'GS Lon Lon Ranch Back Wall',
-    'GS Kakariko House Under Construction',
-    'GS Kakariko Skulltula House',
-    'GS Kakariko Guard\'s House',
-    'GS Kakariko Tree',
-    'GS Kakariko Watchtower',
-    'GS Kakariko Above Impa\'s House',
-    'GS Graveyard Wall',
-    'GS Graveyard Bean Patch',
-    'GS Mountain Trail Bean Patch',
-    'GS Mountain Trail Bomb Alcove',
-    'GS Mountain Trail Path to Crater',
-    'GS Mountain Trail Above Dodongo\'s Cavern',
-    'GS Goron City Boulder Maze',
-    'GS Goron City Center Platform',
-    'GS Death Mountain Crater Crate',
-    'GS Mountain Crater Bean Patch',
-    'GS Zora River Ladder',
-    'GS Zora River Tree',
-    'GS Zora River Near Raised Grottos',
-    'GS Zora River Above Bridge',
-    'GS Zora\'s Domain Frozen Waterfall',
-    'GS Zora\'s Fountain Tree',
-    'GS Zora\'s Fountain Above the Log',
-    'GS Zora\'s Fountain Hidden Cave',
-    'GS Lake Hylia Bean Patch',
-    'GS Lake Hylia Lab Wall',
-    'GS Lake Hylia Small Island',
-    'GS Lake Hylia Giant Tree',
-    'GS Lab Underwater Crate',
-    'GS Gerudo Valley Small Bridge',
-    'GS Gerudo Valley Bean Patch',
-    'GS Gerudo Valley Behind Tent',
-    'GS Gerudo Valley Pillar',
-    'GS Gerudo Fortress Archery Range',
-    'GS Gerudo Fortress Top Floor',
-    'GS Wasteland Ruins',
-    'GS Desert Colossus Bean Patch',
-    'GS Desert Colossus Tree',
-    'GS Desert Colossus Hill'])
-    
-tradeitems = (
-    'Pocket Egg',
-    'Pocket Cucco', 
-    'Cojiro', 
-    'Odd Mushroom', 
-    'Poachers Saw', 
-    'Broken Sword', 
-    'Prescription', 
-    'Eyeball Frog', 
-    'Eyedrops', 
-    'Claim Check')
-
-tradeitemoptions = (
-    'pocket_egg',
-    'pocket_cucco', 
-    'cojiro', 
-    'odd_mushroom', 
-    'poachers_saw', 
-    'broken_sword', 
-    'prescription', 
-    'eyeball_frog', 
-    'eyedrops', 
-    'claim_check')
-
-
-eventlocations = {
-    'Ganon': 'Triforce',
-    'Zeldas Letter': 'Zeldas Letter',
-    'Magic Bean Salesman': 'Magic Bean',
-    'King Zora Moves': 'Bottle',
-    'Master Sword Pedestal': 'Master Sword',
-    'Epona': 'Epona',
-    'Deku Baba Sticks': 'Deku Stick Drop',
-    'Goron City Stick Pot': 'Deku Stick Drop',
-    'Zoras Domain Stick Pot': 'Deku Stick Drop',
-    'Deku Baba Nuts': 'Deku Nut Drop',
-    'Zoras Domain Nut Pot': 'Deku Nut Drop',
-    'Gerudo Fortress Carpenter Rescue': 'Carpenter Rescue',
-    'Ganons Castle Forest Trial Clear': 'Forest Trial Clear',
-    'Ganons Castle Fire Trial Clear': 'Fire Trial Clear',
-    'Ganons Castle Water Trial Clear': 'Water Trial Clear',
-    'Ganons Castle Shadow Trial Clear': 'Shadow Trial Clear',
-    'Ganons Castle Spirit Trial Clear': 'Spirit Trial Clear',
-    'Ganons Castle Light Trial Clear': 'Light Trial Clear'
-}
-
-junk_pool = (
-    8 *  ['Bombs (5)'] +
-    2 *  ['Bombs (10)'] +
-    8 *  ['Arrows (5)'] +
-    2 *  ['Arrows (10)'] +
-    5 *  ['Deku Stick (1)'] + 
-    5 *  ['Deku Nuts (5)'] + 
-    5 *  ['Deku Seeds (30)'] +
-    10 * ['Rupees (5)'] +
-    4 *  ['Rupees (20)'] + 
-    1 *  ['Rupees (50)'])
-def get_junk_item(count=1):
-    ret_junk = []
-    for _ in range(count):
-        ret_junk.append(random.choice(junk_pool))
-
-    return ret_junk
-
-
-def generate_itempool(world):
-    for location, item in eventlocations.items():
-        world.push_item(location, ItemFactory(item, world))
-        world.get_location(location).locked = True
-
-    # set up item pool
-    (pool, placed_items) = get_pool_core(world)
-    world.itempool = ItemFactory(pool, world)
-    for (location, item) in placed_items.items():
-        world.push_item(location, ItemFactory(item, world))
-        world.get_location(location).locked = True
-
-    choose_trials(world)
-    fill_bosses(world)
-
-    world.initialize_items()
-
-
-def get_pool_core(world):
-    pool = []
-    placed_items = {}
-        
-    if world.shuffle_kokiri_sword:
-        pool.append('Kokiri Sword')
-    else:
-         placed_items['Kokiri Sword Chest'] = 'Kokiri Sword'
-
-    if world.shuffle_weird_egg:
-        pool.append('Weird Egg')
-    else:
-        placed_items['Malon Egg'] = 'Weird Egg'
-
-    if world.shuffle_ocarinas:
-        pool.extend(['Ocarina'] * 2)
-    else:
-        placed_items['Gift from Saria'] = 'Ocarina'
-        placed_items['Ocarina of Time'] = 'Ocarina'
-
-    if world.dungeon_mq['DT']:
-        skulltula_locations_final = skulltula_locations + [
-            'GS Deku Tree MQ Lobby',
-            'GS Deku Tree MQ Compass Room',
-            'GS Deku Tree MQ Basement Ceiling',
-            'GS Deku Tree MQ Basement Back Room']
-    else:
-        skulltula_locations_final = skulltula_locations + [
-            'GS Deku Tree Compass Room',
-            'GS Deku Tree Basement Vines',
-            'GS Deku Tree Basement Gate',
-            'GS Deku Tree Basement Back Room']
-    if world.dungeon_mq['DC']:
-        skulltula_locations_final.extend([
-            'GS Dodongo\'s Cavern MQ Scrub Room',
-            'GS Dodongo\'s Cavern MQ Song of Time Block Room',
-            'GS Dodongo\'s Cavern MQ Lizalfos Room',
-            'GS Dodongo\'s Cavern MQ Larva Room',
-            'GS Dodongo\'s Cavern MQ Back Area'])
-    else:
-        skulltula_locations_final.extend([
-            'GS Dodongo\'s Cavern East Side Room',
-            'GS Dodongo\'s Cavern Vines Above Stairs',
-            'GS Dodongo\'s Cavern Back Room',
-            'GS Dodongo\'s Cavern Alcove Above Stairs',
-            'GS Dodongo\'s Cavern Scarecrow'])
-    if world.dungeon_mq['JB']:
-        skulltula_locations_final.extend([
-            'GS Jabu Jabu MQ Tailpasaran Room',
-            'GS Jabu Jabu MQ Invisible Enemies Room',
-            'GS Jabu Jabu MQ Boomerang Room',
-            'GS Jabu Jabu MQ Near Boss'])
-    else:
-        skulltula_locations_final.extend([
-            'GS Jabu Jabu Water Switch Room',
-            'GS Jabu Jabu Lobby Basement Lower',
-            'GS Jabu Jabu Lobby Basement Upper',
-            'GS Jabu Jabu Near Boss'])
-    if world.dungeon_mq['FoT']:
-        skulltula_locations_final.extend([
-            'GS Forest Temple MQ First Hallway',
-            'GS Forest Temple MQ Block Push Room',
-            'GS Forest Temple MQ Outdoor East',
-            'GS Forest Temple MQ Outdoor West',
-            'GS Forest Temple MQ Well'])
-    else:
-        skulltula_locations_final.extend([
-            'GS Forest Temple First Room',
-            'GS Forest Temple Lobby',
-            'GS Forest Temple Outdoor East',
-            'GS Forest Temple Outdoor West',
-            'GS Forest Temple Basement'])
-    if world.dungeon_mq['FiT']:
-        skulltula_locations_final.extend([
-            'GS Fire Temple MQ Above Fire Wall Maze',
-            'GS Fire Temple MQ Fire Wall Maze Center',
-            'GS Fire Temple MQ Big Lava Room',
-            'GS Fire Temple MQ Fire Wall Maze Side Room',
-            'GS Fire Temple MQ East Tower Top'])
-    else:
-        skulltula_locations_final.extend([
-            'GS Fire Temple Song of Time Room',
-            'GS Fire Temple Unmarked Bomb Wall',
-            'GS Fire Temple East Tower Climb',
-            'GS Fire Temple East Tower Top',
-            'GS Fire Temple Basement'])
-    if world.dungeon_mq['WT']:
-        skulltula_locations_final.extend([
-            'GS Water Temple MQ Before Upper Water Switch',
-            'GS Water Temple MQ North Basement',
-            'GS Water Temple MQ Lizalfos Hallway',
-            'GS Water Temple MQ Serpent River',
-            'GS Water Temple MQ South Basement'])
-    else:
-        skulltula_locations_final.extend([
-            'GS Water Temple South Basement',
-            'GS Water Temple Serpent River',
-            'GS Water Temple Falling Platform Room',
-            'GS Water Temple Central Room',
-            'GS Water Temple Near Boss Key Chest'])
-    if world.dungeon_mq['SpT']:
-        skulltula_locations_final.extend([
-            'GS Spirit Temple MQ Lower Adult Right',
-            'GS Spirit Temple MQ Lower Adult Left',
-            'GS Spirit Temple MQ Iron Knuckle West',
-            'GS Spirit Temple MQ Iron Knuckle North',
-            'GS Spirit Temple MQ Sun Block Room'])
-    else:
-        skulltula_locations_final.extend([
-            'GS Spirit Temple Metal Fence',
-            'GS Spirit Temple Bomb for Light Room',
-            'GS Spirit Temple Hall to West Iron Knuckle',
-            'GS Spirit Temple Boulder Room',
-            'GS Spirit Temple Lobby'])
-    if world.dungeon_mq['ShT']:
-        skulltula_locations_final.extend([
-            'GS Shadow Temple MQ Crusher Room',
-            'GS Shadow Temple MQ Wind Hint Room',
-            'GS Shadow Temple MQ After Wind',
-            'GS Shadow Temple MQ After Ship',
-            'GS Shadow Temple MQ Near Boss'])
-    else:
-        skulltula_locations_final.extend([
-            'GS Shadow Temple Like Like Room',
-            'GS Shadow Temple Crusher Room',
-            'GS Shadow Temple Single Giant Pot',
-            'GS Shadow Temple Near Ship',
-            'GS Shadow Temple Triple Giant Pot'])
-    if world.dungeon_mq['BW']:
-        skulltula_locations_final.extend([
-            'GS Well MQ Basement',
-            'GS Well MQ Coffin Room',
-            'GS Well MQ West Inner Room'])
-    else:
-        skulltula_locations_final.extend([
-            'GS Well West Inner Room',
-            'GS Well East Inner Room',
-            'GS Well Like Like Cage'])
-    if world.dungeon_mq['IC']:
-        skulltula_locations_final.extend([
-            'GS Ice Cavern MQ Scarecrow',
-            'GS Ice Cavern MQ Ice Block',
-            'GS Ice Cavern MQ Red Ice'])
-    else:
-        skulltula_locations_final.extend([
-            'GS Ice Cavern Spinning Scythe Room',
-            'GS Ice Cavern Heart Piece Room',
-            'GS Ice Cavern Push Block Room'])
-    if world.tokensanity == 'off':
-        for location in skulltula_locations_final:
-            placed_items[location] = 'Gold Skulltula Token'
-    elif world.tokensanity == 'dungeons':
-        for location in skulltula_locations_final:
-            if world.get_location(location).scene >= 0x0A:
-                placed_items[location] = 'Gold Skulltula Token'
-            else:
-                pool.append('Gold Skulltula Token')
-    else:
-        pool.extend(['Gold Skulltula Token'] * 100)
-
-    if world.bombchus_in_logic:
-        pool.extend(['Bombchus'])
-        if world.difficulty == 'normal':
-            pool.extend(['Bombchus'] * 3)
-        elif world.difficulty == 'hard':
-            pool.extend(['Bombchus'] * 2)
-            pool.extend(get_junk_item(1))
-        else:
-            pool.extend(get_junk_item(3))
-        if world.dungeon_mq['JB']:
-            if world.difficulty == 'normal':
-                pool.extend(['Bombchus'])
-            else:
-                pool.extend(get_junk_item(1))
-        if world.dungeon_mq['SpT']:
-            if world.difficulty == 'normal':
-                pool.extend(['Bombchus'] * 2)
-            else:
-                pool.extend(get_junk_item(2))
-        if not world.dungeon_mq['BW']:
-            if world.difficulty == 'normal':
-                pool.extend(['Bombchus'])
-            else:
-                pool.extend(get_junk_item(1))
-        if world.dungeon_mq['GTG']:
-            if world.difficulty == 'normal':
-                pool.extend(['Bombchus'])
-            else:
-                pool.extend(get_junk_item(1))
-    else:
-        pool.extend(['Bombchus (5)'])
-        if world.difficulty == 'very_hard' or world.difficulty == 'ohko':
-            pool.extend(get_junk_item(2))
-        else:
-            pool.extend(['Bombchus (10)'] * 2)
-        if world.dungeon_mq['JB']:
-            if world.difficulty == 'normal':
-                pool.extend(['Bombchus (10)'])
-            else:
-                pool.extend(get_junk_item(1))
-        if world.dungeon_mq['SpT']:
-            if world.difficulty == 'normal':
-                pool.extend(['Bombchus (10)'] * 2)
-            else:
-                pool.extend(get_junk_item(2))
-        if not world.dungeon_mq['BW']:
-            if world.difficulty == 'normal':
-                pool.extend(['Bombchus (10)'])
-            else:
-                pool.extend(get_junk_item(1))
-        if world.dungeon_mq['GTG']:
-            if world.difficulty == 'normal':
-                pool.extend(['Bombchus (10)'])
-            else:
-                pool.extend(get_junk_item(1))
-        if world.difficulty == 'normal':
-            if world.dungeon_mq['GC']:
-                pool.extend(['Bombchus (10)'])
-            else:
-                pool.extend(['Bombchus (20)'])
-        else:
-            pool.extend(get_junk_item(1))
-
-    if world.difficulty == 'ohko':
-        pool.extend(['Recovery Heart'])
-        if not world.dungeon_mq['GTG']:
-            pool.extend(['Recovery Heart'])
-        if not world.dungeon_mq['GC']:
-            pool.extend(['Recovery Heart'] * 4)
-    else:
-        pool.extend(['Ice Trap'])
-        if not world.dungeon_mq['GTG']:
-            pool.extend(['Ice Trap'])
-        if not world.dungeon_mq['GC']:
-            pool.extend(['Ice Trap'] * 4)
-
-    if world.difficulty == 'normal':
-        pool.extend(['Magic Meter', 'Double Defense', 'Deku Stick Capacity', 'Deku Nut Capacity', 'Bow', 'Slingshot', 'Bomb Bag'] + ['Heart Container'] * 8)
-    else:
-        pool.extend(get_junk_item(15))
-
-    if world.difficulty == 'very_hard' or world.difficulty == 'ohko':
-        pool.extend(get_junk_item(41))
-    else:
-        pool.extend(['Nayrus Love', 'Deku Stick Capacity', 'Deku Nut Capacity', 'Bow', 'Slingshot', 'Bomb Bag'] + ['Piece of Heart'] * 35)
-
-    if world.gerudo_fortress == 'open':
-        placed_items['Gerudo Fortress North F1 Carpenter'] = 'Recovery Heart'
-        placed_items['Gerudo Fortress North F2 Carpenter'] = 'Recovery Heart'
-        placed_items['Gerudo Fortress South F1 Carpenter'] = 'Recovery Heart'
-        placed_items['Gerudo Fortress South F2 Carpenter'] = 'Recovery Heart'
-    elif world.shuffle_smallkeys == 'keysanity':
-        if world.gerudo_fortress == 'fast':
-            pool.append('Small Key (Gerudo Fortress)')
-            placed_items['Gerudo Fortress North F2 Carpenter'] = 'Recovery Heart'
-            placed_items['Gerudo Fortress South F1 Carpenter'] = 'Recovery Heart'
-            placed_items['Gerudo Fortress South F2 Carpenter'] = 'Recovery Heart'
-        else:
-            pool.extend(['Small Key (Gerudo Fortress)'] * 4)
-    else:
-        if world.gerudo_fortress == 'fast':
-            placed_items['Gerudo Fortress North F1 Carpenter'] = 'Small Key (Gerudo Fortress)'
-            placed_items['Gerudo Fortress North F2 Carpenter'] = 'Recovery Heart'
-            placed_items['Gerudo Fortress South F1 Carpenter'] = 'Recovery Heart'
-            placed_items['Gerudo Fortress South F2 Carpenter'] = 'Recovery Heart'
-        else:
-            placed_items['Gerudo Fortress North F1 Carpenter'] = 'Small Key (Gerudo Fortress)'
-            placed_items['Gerudo Fortress North F2 Carpenter'] = 'Small Key (Gerudo Fortress)'
-            placed_items['Gerudo Fortress South F1 Carpenter'] = 'Small Key (Gerudo Fortress)'
-            placed_items['Gerudo Fortress South F2 Carpenter'] = 'Small Key (Gerudo Fortress)'
-
-    if world.shuffle_gerudo_card and world.gerudo_fortress != 'open':
-        pool.append('Gerudo Membership Card')
-    else:
-        placed_items['Gerudo Fortress Membership Card'] = 'Gerudo Membership Card'
-
-    if world.shopsanity == 'off':
-        placed_items.update(vanilla_shop_items)
-        if world.bombchus_in_logic:
-            placed_items['Kokiri Shop Item 8'] = 'Buy Bombchu (5)'
-            placed_items['Castle Town Bazaar Item 4'] = 'Buy Bombchu (5)'
-            placed_items['Kakariko Bazaar Item 4'] = 'Buy Bombchu (5)'
-        pool.extend(normal_rupees)
-
-    else:
-        remain_shop_items = [item for _,item in vanilla_shop_items.items()]
-        pool.extend(min_shop_items)
-        for item in min_shop_items:
-            remain_shop_items.remove(item)
-
-        shop_slots_count = len(remain_shop_items)
-        shop_nonitem_count = len(world.shop_prices)
-        shop_item_count = shop_slots_count - shop_nonitem_count
-
-        pool.extend(random.sample(remain_shop_items, shop_item_count))
-        pool.extend(get_junk_item(shop_nonitem_count))
-        if world.shopsanity == '0':
-            pool.extend(normal_rupees)
-        else:
-            pool.extend(shopsanity_rupees)
-
-    if world.shuffle_scrubs != 'off':
-        if world.dungeon_mq['DT']:
-            pool.append('Deku Shield')
-        if world.dungeon_mq['DC']:
-            pool.extend(['Deku Stick (1)', 'Deku Shield', 'Recovery Heart'])
-        else:
-            pool.extend(['Deku Nuts (5)', 'Deku Stick (1)', 'Deku Shield'])
-        if not world.dungeon_mq['JB']:
-            pool.append('Deku Nuts (5)')
-        if world.dungeon_mq['GC']:
-            pool.extend(['Bombs (5)', 'Recovery Heart', 'Rupees (5)', 'Deku Nuts (5)'])
-        else:
-            pool.extend(['Bombs (5)', 'Recovery Heart', 'Rupees (5)'])
-        pool.extend(deku_scrubs_items)
-        for _ in range(7):
-            pool.append('Arrows (30)' if random.randint(0,3) > 0 else 'Deku Seeds (30)')
-
-    else:        
-        if world.dungeon_mq['DT']:
-            placed_items['DT MQ Deku Scrub Deku Shield'] = 'Buy Deku Shield'
-        if world.dungeon_mq['DC']:
-            placed_items['DC MQ Deku Scrub Deku Sticks'] = 'Buy Deku Stick (1)'
-            placed_items['DC MQ Deku Scrub Deku Seeds'] = 'Buy Deku Seeds (30)'
-            placed_items['DC MQ Deku Scrub Deku Shield'] = 'Buy Deku Shield'
-            placed_items['DC MQ Deku Scrub Red Potion'] = 'Buy Red Potion [30]'
-        else:
-            placed_items['DC Deku Scrub Deku Nuts'] = 'Buy Deku Nut (5)'
-            placed_items['DC Deku Scrub Deku Sticks'] = 'Buy Deku Stick (1)'
-            placed_items['DC Deku Scrub Deku Seeds'] = 'Buy Deku Seeds (30)'
-            placed_items['DC Deku Scrub Deku Shield'] = 'Buy Deku Shield'
-        if not world.dungeon_mq['JB']:
-            placed_items['Jabu Deku Scrub Deku Nuts'] = 'Buy Deku Nut (5)'
-        if world.dungeon_mq['GC']:
-            placed_items['GC MQ Deku Scrub Deku Nuts'] = 'Buy Deku Nut (5)'
-            placed_items['GC MQ Deku Scrub Bombs'] = 'Buy Bombs (5) [35]'
-            placed_items['GC MQ Deku Scrub Arrows'] = 'Buy Arrows (30)'
-            placed_items['GC MQ Deku Scrub Red Potion'] = 'Buy Red Potion [30]'
-            placed_items['GC MQ Deku Scrub Green Potion'] = 'Buy Green Potion'
-        else:
-            placed_items['GC Deku Scrub Bombs'] = 'Buy Bombs (5) [35]'
-            placed_items['GC Deku Scrub Arrows'] = 'Buy Arrows (30)'
-            placed_items['GC Deku Scrub Red Potion'] = 'Buy Red Potion [30]'
-            placed_items['GC Deku Scrub Green Potion'] = 'Buy Green Potion'
-        placed_items.update(vanilla_deku_scrubs)
-
-    pool.extend(alwaysitems)
-    if world.dungeon_mq['DT']:
-        pool.extend(DT_MQ)
-    else:
-        pool.extend(DT_vanilla)
-    if world.dungeon_mq['DC']:
-        pool.extend(DC_MQ)
-    else:
-        pool.extend(DC_vanilla)
-    if world.dungeon_mq['JB']:
-        pool.extend(JB_MQ)
-    if world.dungeon_mq['FoT']:
-        pool.extend(FoT_MQ)
-    else:
-        pool.extend(FoT_vanilla)
-    if world.dungeon_mq['FiT']:
-        pool.extend(FiT_MQ)
-    else:
-        pool.extend(FiT_vanilla)
-    if world.dungeon_mq['SpT']:
-        pool.extend(SpT_MQ)
-    else:
-        placed_items['Spirit Temple Nut Crate'] = 'Deku Nut Drop'
-        pool.extend(SpT_vanilla)
-    if world.dungeon_mq['ShT']:
-        pool.extend(ShT_MQ)
-    else:
-        pool.extend(ShT_vanilla)
-    if not world.dungeon_mq['BW']:
-        placed_items['Bottom of the Well Stick Pot'] = 'Deku Stick Drop'
-        pool.extend(BW_vanilla)
-    if world.dungeon_mq['GTG']:
-        pool.extend(GTG_MQ)
-    else:
-        pool.extend(GTG_vanilla)
-    if world.dungeon_mq['GC']:
-        pool.extend(GC_MQ)
-    else:
-        pool.extend(GC_vanilla)
-
-    for _ in range(normal_bottle_count):
-        bottle = random.choice(normal_bottles)
-        pool.append(bottle)
-
-    if world.big_poe_count_random:
-        world.big_poe_count = random.randint(1, 10)
-
-    tradeitem = random.choice(tradeitems)
-    earliest_trade = tradeitemoptions.index(world.logic_earliest_adult_trade)
-    latest_trade = tradeitemoptions.index(world.logic_latest_adult_trade)
-    if earliest_trade > latest_trade:
-        earliest_trade, latest_trade = latest_trade, earliest_trade
-    tradeitem = random.choice(tradeitems[earliest_trade:latest_trade+1])
-    pool.append(tradeitem)
-    
-    pool.extend(songlist)
-
-    if world.shuffle_mapcompass == 'remove' or world.shuffle_mapcompass == 'startwith':
-        for item in [item for dungeon in world.dungeons for item in dungeon.dungeon_items]:
-            world.state.collect(item)
-            pool.extend(get_junk_item())
-    if world.shuffle_smallkeys == 'remove':
-        for item in [item for dungeon in world.dungeons for item in dungeon.small_keys]:
-            world.state.collect(item)
-            pool.extend(get_junk_item())
-    if world.shuffle_bosskeys == 'remove':
-        for item in [item for dungeon in world.dungeons for item in dungeon.boss_key]:
-            world.state.collect(item)
-            pool.extend(get_junk_item())
-    if not world.keysanity and not world.dungeon_mq['FiT']:
-        world.state.collect(ItemFactory('Small Key (Fire Temple)'))
-
-
-    return (pool, placed_items)
-
-def choose_trials(world):
-    if world.trials_random:
-        world.trials = random.randint(0, 6)
-    num_trials = int(world.trials)
-    choosen_trials = random.sample(['Forest', 'Fire', 'Water', 'Spirit', 'Shadow', 'Light'], num_trials)
-    for trial in world.skipped_trials:
-        if trial not in choosen_trials:
-            world.skipped_trials[trial] = True
-
-def fill_bosses(world, bossCount=9):
-    boss_rewards = ItemFactory(rewardlist, world)
-    boss_locations = [
-        world.get_location('Queen Gohma'), 
-        world.get_location('King Dodongo'), 
-        world.get_location('Barinade'), 
-        world.get_location('Phantom Ganon'),
-        world.get_location('Volvagia'), 
-        world.get_location('Morpha'), 
-        world.get_location('Bongo Bongo'), 
-        world.get_location('Twinrova'), 
-        world.get_location('Links Pocket')]
-
-    placed_prizes = [loc.item.name for loc in boss_locations if loc.item is not None]
-    unplaced_prizes = [item for item in boss_rewards if item.name not in placed_prizes]
-    empty_boss_locations = [loc for loc in boss_locations if loc.item is None]
-    prizepool = list(unplaced_prizes)
-    prize_locs = list(empty_boss_locations)
-
-    while bossCount:
-        bossCount -= 1
-        random.shuffle(prizepool)
-        random.shuffle(prize_locs)
-        item = prizepool.pop()
-        loc = prize_locs.pop()
-        world.push_item(loc, item)

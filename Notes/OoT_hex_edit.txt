@@ -62,7 +62,7 @@ ANDI t2, t2, 0x0000 [314A0000]
 
 LUI t3, 0x8012 [3C0B8012] # I don't know why I have to point an extra unit forward, but somehow this makes it work.
 
-LBU t3, 0xA64D (t3) [916BA64D] 
+LBU t3, 0xA64D (t3) [916BA64D]
 
 ADDIU t2, t2, 0xFF [254A00FF]
 
@@ -290,7 +290,7 @@ ANDI t2, t2, 0x0000 [314A0000]
 
 LUI t3, 0x8012 [3C0B8012] # I don't know why I have to point an extra unit forward, but somehow this makes it work.
 
-LBU t3, 0xA64D (t3) [916BA64D] 
+LBU t3, 0xA64D (t3) [916BA64D]
 
 ADDIU t2, t2, 0xFF [254A00FF]
 
@@ -514,7 +514,7 @@ ANDI t2, t2, 0x0000 [314A0000]
 
 LUI t3, 0x8012 [3C0B8012]
 
-LBU t3, 0xA64D (t3) [916BA64D] 
+LBU t3, 0xA64D (t3) [916BA64D]
 
 ADDIU t2, t2, 0xFF [254A00FF]
 
@@ -879,7 +879,7 @@ ANDI t2, t2, 0x0000 [314A0000]
 
 LUI a0, 0x8012 [3C048012]
 
-LBU a0, 0xA64D (a0) [9084A64D] 
+LBU a0, 0xA64D (a0) [9084A64D]
 
 ADDIU t2, t2, 0xFF [254A00FF]
 

@@ -19,11 +19,7 @@ class Hint(object):
 
 
 def getHint(name, clearer_hint=False):
-    hint = name
-    if name not in hintTable:
-        hint = 'KeyError'
-
-    textOptions, clearText, type = hintTable[hint]
+    textOptions, clearText, type = hintTable[name]
     if clearer_hint:
         if clearText == None:
             return Hint(name, textOptions, type, 0)
@@ -36,6 +32,11 @@ def getHintGroup(group, world):
     ret = []
     for name in hintTable:
         hint = getHint(name, world.clearer_hints)
+
+        # 10 Big Poes does not require hint if 3 or less required.
+        if name == '10 Big Poes' and world.big_poe_count <= 3:
+            hint.type = 'location'
+
         if hint.type == group and not (name in hintExclusions(world)):
             ret.append(hint)
     return ret
@@ -73,8 +74,6 @@ hintTable = {
     'Light Arrows':                                          (["the shining shot", "the luminous launcher", "Ganondorf's bane", "the lighting bolts"], "the Light Arrows", 'item'),
     'Lens of Truth':                                         (["a lie detector", "a ghost tracker", "true sight", "a detective's tool"], "the Lens of Truth", 'item'),
     'Ocarina':                                               (["a flute", "a music maker"], "an Ocarina", 'item'),
-    'Fairy Ocarina':                                         (["a brown flute", "a forest instrument"], "the Fairy Ocarina", 'item'),
-    'Ocarina of Time':                                       (["a blue flute", "a royal instrument"], "the Ocarina of Time", 'item'),
     'Goron Tunic':                                           (["ruby robes", "fireproof fabric", "cooking clothes"], "a Goron Tunic", 'item'),
     'Zora Tunic':                                            (["a sapphire suit", "scuba gear", "a swimsuit"], "a Zora Tunic", 'item'),
     'Epona':                                                 (["a horse", "a four legged friend"], "Epona", 'item'),
@@ -115,7 +114,7 @@ hintTable = {
     'Deku Stick (1)':                                        ("a breakable branch", 'a Deku Stick', 'item'),
     'Rupee (1)':                                             (["a unique coin", "a penny", "a green gem"], "a Green Rupee", 'item'),
     'Rupees (5)':                                            (["a common coin", "a blue gem"], "a Blue Rupee", 'item'),
-    'Rupees (20)':                                           (["couch cash", "a red gem"], "a Red Rupees", 'item'),
+    'Rupees (20)':                                           (["couch cash", "a red gem"], "a Red Rupee", 'item'),
     'Rupees (50)':                                           (["big bucks", "a purple gem", "wealth"], "a Purple Rupee", 'item'),
     'Rupees (200)':                                          (["a juicy jackpot", "a yellow gem", "a giant gem", "great wealth"], "a Huge Rupee", 'item'),
     'Weird Egg':                                             (["a chicken dilemma"], "the Weird Egg", 'item'),
@@ -151,23 +150,24 @@ hintTable = {
     'Bombchus (20)':                                         (["plenty of mice bombs", "plenty of proximity mice", "plenty of wall crawlers", "plenty of trail blazers"], "Bombchus (20 pieces)", 'item'),
     'Deku Nuts (5)':                                         (["some nuts", "some flashbangs", "some scrub spit"], "Deku Nuts (5 pieces)", 'item'),
     'Deku Nuts (10)':                                        (["lots-o-nuts", "plenty of flashbangs", "plenty of scrub spit"], "Deku Nuts (10 pieces)", 'item'),
-    'Deku Seeds (30)':                                       (["catapult ammo", "lots-o-seeds"], "Deku Seeds (30 pieces)", 'item'),                                                                                                            
+    'Deku Seeds (30)':                                       (["catapult ammo", "lots-o-seeds"], "Deku Seeds (30 pieces)", 'item'),
     'Gold Skulltula Token':                                  (["proof of destruction", "an arachnid chip", "spider remains", "one percent of a curse"], "a Gold Skulltula Token", 'item'),
 
     '10 Big Poes':                                           (["#Big Poes# leads to", "#ghost hunters# will be rewarded with"], None, 'alwaysLocation'),
+    'Deku Theater Skull Mask':                               ("the #Skull Mask# yields", None, 'location'),
     'Deku Theater Mask of Truth':                            ("the #Mask of Truth# yields", None, 'alwaysLocation'),
     '20 Gold Skulltula Reward':                              ("slaying #20 Gold Skulltulas# reveals", None, 'location'),
     '30 Gold Skulltula Reward':                              ("slaying #30 Gold Skulltulas# reveals", None, 'alwaysLocation'),
     '40 Gold Skulltula Reward':                              ("slaying #40 Gold Skulltulas# reveals", None, 'alwaysLocation'),
     '50 Gold Skulltula Reward':                              ("slaying #50 Gold Skulltulas# reveals", None, 'alwaysLocation'),
-    'Ocarina of Time':                                       ("They say the #treasure thrown by Princess Zelda# is", None, 'alwaysLocation'),
+    'Ocarina of Time':                                       ("the #treasure thrown by Princess Zelda# is", None, 'alwaysLocation'),
     'Song from Ocarina of Time':                             ("the #Ocarina of Time# teaches", None, 'alwaysLocation'),
     'Biggoron':                                              ("#Biggoron# crafts", None, 'alwaysLocation'),
+    'Frog Ocarina Game':                                     (["an #amphibian feast# yields", "the #croaking choir's magnum opus# awards", "the #froggy finale# yields"], "the #Frogs of Zora River# final reward is", 'alwaysLocation'),
     'Child Fishing':                                         ("#fishing in youth# bestows", None, 'location'),
     'Adult Fishing':                                         ("#fishing in maturity# bestows", None, 'location'),
     'Treasure Chest Game':                                   (["#gambling# grants", "there is a #1/32 chance# to win"], "the #treasure chest game# grants", 'location'),
     'Darunias Joy':                                          ("#Darunia's dance# leads to", None, 'location'),
-    'Frog Ocarina Game':                                     (["The #Frogs of Zora River# hold", "the #musical amphibians# have found"], None, 'location'),
     'Horseback Archery 1500 Points':                         ("mastery of #horseback archery# grants", "scoring 1500 in #horseback archery# grants", 'location'),
     'Lake Hylia Sun':                                        ("staring into #the sun# grants", "shooting #the sun# grants", 'location'),
     'Heart Piece Grave Chest':                               ("playing #Sun's Song# in a grave spawns", None, 'location'),
@@ -255,7 +255,7 @@ hintTable = {
     '1044':                                                  ("They say all toasters toast toast.", None, 'junkHint'),
     '1045':                                                  ("They say that Okami is the best Zelda game.", None, 'junkHint'),
     '1046':                                                  ("They say that quest guidance can be found at a talking rock.", None, 'junkHint'),
-    '1047':                                                  ("They say that the final item you're looking for can be found somewhere in Hyrule", None, 'junkHint'),
+    '1047':                                                  ("They say that the final item you're looking for can be found somewhere in Hyrule.", None, 'junkHint'),
     '1048':                                                  ("Mweep.^Mweep.^Mweep.^Mweep.^Mweep.^Mweep.^Mweep.^Mweep.^Mweep.^Mweep.^Mweep.^Mweep.", None, 'junkHint'),
     '1049':                                                  ("They say that Barinade fears Deku Nuts.", None, 'junkHint'),
     '1050':                                                  ("They say that Flare Dancers do not fear Goron-crafted blades.", None, 'junkHint'),
@@ -280,7 +280,7 @@ hintTable = {
     'Bottom of the Well':                                    ("a shadow\'s prison", "Bottom of the Well", 'dungeon'),
     'Gerudo Training Grounds':                               ("the test of thieves", "Gerudo Training Grounds", 'dungeon'),
     'Ganons Castle':                                         ("a conquered citadel", "Ganon's Castle", 'dungeon'),
-                                                             #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx handy marker for how long one line should be in a text box             
+                                                             #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx handy marker for how long one line should be in a text box
     'Queen Gohma':                                           ("One inside an #ancient tree#...^", "One in the #Deku Tree#...^", 'boss'),
     'King Dodongo':                                          ("One within an #immense cavern#...^", "One in #Dodongo's Cavern#...^", 'boss'),
     'Barinade':                                              ("One in the #belly of a deity#...^", "One in #Jabu Jabu's Belly#...^", 'boss'),
@@ -291,12 +291,13 @@ hintTable = {
     'Twinrova':                                              ("One inside a #goddess of the sand#...^", "One in the #Spirit Temple#...^", 'boss'),
     'Links Pocket':                                          ("One in #@'s pocket#...^", "One #@ already has#...^", 'boss'),
     'Spiritual Stone Text Start':                            ("Ye who owns 3 Spiritual Stones...^", None, 'boss'),
-    'Spiritual Stone Text End':                              ("Stand with the Ocarina of Time&and play the Song of Time.", None, 'boss'),
-    'Medallion Text End':                                    ("Together with the Hero of Time,&the awakened ones will bind the&evil and return the light of peace&to the world.", None, 'boss'),
+    'Spiritual Stone Text End':                              ("\x13\x08Stand with the Ocarina of Time&and play the Song of Time.", None, 'boss'),
+    'Medallion Text Start':                                  ("When evil rules all, an awakening&voice from the Sacred Realm will&call those destined to be Sages,&who dwell in the \x05\x41five temples\x05\x40.^", None, 'boss'),
+    'Medallion Text End':                                    ("\x13\x12Together with the Hero of Time,&the awakened ones will bind&the evil and return the light&of peace to the world.", None, 'boss'),
                                                             #xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx handy marker for how long one line should be in a text box
     'Validation Line':                                       ("Hmph... Since you made it this far,&I'll let you know what glorious&prize of Ganon's you likely&missed out on in my tower.^Behold...^", None, 'validation line'),
     'Light Arrow Location':                                  ("Ha ha ha... You'll never beat me by&reflecting my lightning bolts&and unleashing the arrows from&", None, 'Light Arrow Location'),
-    '2001':                                                  ("Oh! It's @.&I was expecting someone called&Sheik. Do you know what&happened to them?", None, 'ganonLine'), 
+    '2001':                                                  ("Oh! It's @.&I was expecting someone called&Sheik. Do you know what&happened to them?", None, 'ganonLine'),
     '2002':                                                  ("I knew I shouldn't have put the key&on the other side of my door.", None, 'ganonLine'),
     '2003':                                                  ("Looks like it's time for a&round of tennis.", None, 'ganonLine'),
     '2004':                                                  ("You'll never deflect my bolts of&energy with your sword,&then shoot me with those Light&Arrows you happen to have.", None, 'ganonLine'),
@@ -311,73 +312,28 @@ hintTable = {
 
 # This specifies which hints will never appear due to either having known or known useless contents or due to the locations not existing.
 
-def hintExclusions(world):
-    expected_skulltulas = world.logic_skulltulas
-    exclusions = []
-    if world.logic_no_trade_skull_mask:
-        exclusions.append('Deku Theater Skull Mask')
-    if world.logic_no_trade_mask_of_truth:
-        exclusions.append('Deku Theater Mask of Truth')
-    if world.logic_no_trade_biggoron:
-        exclusions.append('Biggoron')
-    if world.logic_no_child_fishing:
-        exclusions.append('Child Fishing')
-    if world.logic_no_adult_fishing:
-        exclusions.append('Adult Fishing')
-    if world.logic_no_big_poes:
-        exclusions.append('10 Big Poes')
-    if expected_skulltulas < 50:
-        exclusions.append('50 Gold Skulltula Reward')
-    if expected_skulltulas < 40:
-        exclusions.append('40 Gold Skulltula Reward')
-    if expected_skulltulas < 30:
-        exclusions.append('30 Gold Skulltula Reward')
-    if expected_skulltulas < 20:
-        exclusions.append('20 Gold Skulltula Reward')
-    if expected_skulltulas < 10:
-        exclusions.append('10 Gold Skulltula Reward')
-    if not world.shuffle_ocarinas:
-        exclusions.append('Ocarina of Time')
-    if world.tokensanity != 'all':
-        exclusions.append('GS Hyrule Castle Grotto')
-        exclusions.append('GS Hyrule Field Near Gerudo Valley')
-        exclusions.append('GS Zora\'s Fountain Hidden Cave')
-    if not world.dungeon_mq['DT']:
-        exclusions.append('Deku Tree MQ After Spinning Log Chest')
-    if world.tokensanity == 'off' or not world.dungeon_mq['JB']:
-        exclusions.append('GS Jabu Jabu MQ Invisible Enemies Room')
-    if world.dungeon_mq['FoT']:
-        exclusions.append('Forest Temple Floormaster Chest')
-    if world.dungeon_mq['FiT']:
-        exclusions.append('Fire Temple Scarecrow Chest')
-        exclusions.append('Fire Temple Megaton Hammer Chest')
-    else:
-        exclusions.append('Fire Temple MQ West Tower Top Chest')
-    if world.dungeon_mq['WT']:
-        exclusions.append('Water Temple River Chest')
-        exclusions.append('Water Temple Boss Key Chest')
-    else:
-        exclusions.append('Water Temple MQ Boss Key Chest')
-        exclusions.append('Water Temple MQ Freestanding Key')
-    if world.tokensanity == 'off' or not world.dungeon_mq['WT']:
-        exclusions.append('GS Water Temple MQ North Basement')
-    if world.dungeon_mq['GTG']:
-        exclusions.append('Gerudo Training Grounds Underwater Silver Rupee Chest')
-        exclusions.append('Gerudo Training Grounds Maze Path Final Chest')
-    else:
-        exclusions.append('Gerudo Training Grounds MQ Underwater Silver Rupee Chest')
-        exclusions.append('Gerudo Training Grounds MQ Ice Arrows Chest')
-    if world.dungeon_mq['BW']:
-        exclusions.append('Bottom of the Well Defeat Boss')
-    else:
-        exclusions.append('Bottom of the Well MQ Compass Chest')
-    if not world.dungeon_mq['SpT']:
-        exclusions.append('Spirit Temple MQ Child Center Chest')
-        exclusions.append('Spirit Temple MQ Lower Adult Right Chest')
-    if world.tokensanity == 'off' or not world.dungeon_mq['SpT']:
-        exclusions.append('GS Spirit Temple MQ Lower Adult Right')
-    if world.dungeon_mq['ShT']:
-        exclusions.append('Shadow Temple Hidden Floormaster Chest')
-    else:
-        exclusions.append('Shadow Temple MQ Bomb Flower Chest')
-    return exclusions
+def hintExclusions(world, clear_cache=False):
+    if not clear_cache and hintExclusions.exclusions is not None:
+        return hintExclusions.exclusions
+
+    hintExclusions.exclusions = []
+    hintExclusions.exclusions.extend(world.disabled_locations)
+
+    for location in world.get_locations():
+        if location.locked:
+            hintExclusions.exclusions.append(location.name)
+
+    world_location_names = [location.name for location in world.get_locations()]
+
+    location_hints = []
+    for name in hintTable:
+        hint = getHint(name, world.clearer_hints)
+        if hint.type in ['location', 'alwaysLocation']:
+            location_hints.append(hint)
+
+    for hint in location_hints:
+        if hint.name not in world_location_names:
+            hintExclusions.exclusions.append(hint.name)
+
+    return hintExclusions.exclusions
+hintExclusions.exclusions = None

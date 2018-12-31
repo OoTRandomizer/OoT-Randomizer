@@ -16,7 +16,7 @@ equipment_menu_prevent_empty_equip:
     sw      v0, 0x10 (sp)
     sw      ra, 0x14 (sp)
 
-    jal equipment_menu_slot_filled
+    jal     equipment_menu_slot_filled
     nop
 
     bnez    v0, @@return

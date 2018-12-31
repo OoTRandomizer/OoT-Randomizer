@@ -16,7 +16,6 @@ void *heap_alloc(int bytes) {
     return result;
 }
 
-
 void file_init(file_t *file) {
     file->buf = heap_alloc(file->size);
     read_file(file->buf, file->vrom_start, file->size);

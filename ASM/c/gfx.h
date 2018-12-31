@@ -20,6 +20,7 @@ sprite_t medals_sprite;
 sprite_t items_sprite;
 sprite_t quest_items_sprite;
 sprite_t font_sprite;
+sprite_t dpad_sprite;
 
 void disp_buf_init(z64_disp_buf_t *db, Gfx *buf, int size);
 void gfx_init();

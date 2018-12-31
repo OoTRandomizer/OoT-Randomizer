@@ -1,2 +1,2 @@
 *.bin binary
-/build/* binary
+/build/* binary linguist-generated=true

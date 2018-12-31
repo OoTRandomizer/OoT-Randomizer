@@ -1,0 +1,43 @@
+[    
+	{
+        "region_name": "Bottom of the Well",
+        "dungeon": "Bottom of the Well",
+        "locations": {
+            "Bottom of the Well Front Left Hidden Wall": "can_see_with_lens",
+            "Bottom of the Well Front Center Bombable": "has_explosives",
+            "Bottom of the Well Right Bottom Hidden Wall": "can_see_with_lens",
+            "Bottom of the Well Center Large Chest": "can_see_with_lens",
+            "Bottom of the Well Center Small Chest": "can_see_with_lens",
+            "Bottom of the Well Back Left Bombable": "has_explosives",
+            "Bottom of the Well Freestanding Key": "has_sticks or can_use(Dins_Fire)",
+            "Bottom of the Well Defeat Boss": "
+                can_play(Zeldas_Lullaby) and 
+                (Kokiri_Sword or (has_sticks and logic_child_deadhand))", 
+                #Sword not strictly necessary but frankly being forced to do this with sticks isn't fair
+            "Bottom of the Well Invisible Chest": "can_play(Zeldas_Lullaby) and can_see_with_lens",
+            "Bottom of the Well Underwater Front Chest": "can_play(Zeldas_Lullaby)",
+            "Bottom of the Well Underwater Left Chest": "can_play(Zeldas_Lullaby)",
+            "Bottom of the Well Basement Chest": "
+                has_explosives or 
+                ((((Small_Key_Bottom_of_the_Well, 3) and can_see_with_lens) or 
+                    can_use(Dins_Fire) or (logic_botw_basement and has_sticks)) and 
+                Progressive_Strength_Upgrade)",
+            "Bottom of the Well Locked Pits": "
+                (Small_Key_Bottom_of_the_Well, 3) and can_see_with_lens", #These pits are really unfair.
+            "Bottom of the Well Behind Right Grate": "
+                (Small_Key_Bottom_of_the_Well, 3) and can_see_with_lens",
+            "GS Well West Inner Room": "
+                Boomerang and can_see_with_lens and 
+                (Small_Key_Bottom_of_the_Well, 3)",
+            "GS Well East Inner Room": "
+                Boomerang and can_see_with_lens and 
+                (Small_Key_Bottom_of_the_Well, 3)",
+            "GS Well Like Like Cage": "
+                (Small_Key_Bottom_of_the_Well, 3) and Boomerang and can_see_with_lens",
+            "Bottom of the Well Stick Pot": "True"
+        },
+        "exits": {
+            "Kakariko Village": "True"
+        }
+    }
+]

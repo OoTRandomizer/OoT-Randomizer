@@ -28,7 +28,7 @@ def subsong(song1, song2):
 def fast_playback(activation):
     playback = []
     for note_index, note in enumerate(activation):
-        playback.append( {'note': note, 'duration': 0x03, 'volume': 0x57} )
+        playback.append( {'note': note, 'duration': 0x04, 'volume': 0x57} )
     return playback
 
 # give random durations and volumes to the notes
@@ -265,7 +265,7 @@ def get_random_song():
 
 
 # create a list of 12 songs, none of which are sub-strings of any other song
-def generate_song_list(scarecrow_song=None):
+def generate_song_list():
     songs = []
 
     for _ in range(12):
@@ -275,7 +275,7 @@ def generate_song_list(scarecrow_song=None):
             # test the song against all existing songs
             is_good = True
 
-            for other_song in songs + [scarecrow_song] if scarecrow_song else songs:
+            for other_song in songs:
                 if subsong(song, other_song):
                     is_good = False
             if is_good:
@@ -289,8 +289,8 @@ def generate_song_list(scarecrow_song=None):
 
 
 # replace the playback and activation requirements for the ocarina songs
-def replace_songs(rom, scarecrow_song=None):
-    songs = generate_song_list(scarecrow_song)
+def replace_songs(rom):
+    songs = generate_song_list()
 
     #print('\n\n'.join(map(str, songs)))
 
@@ -338,42 +338,4 @@ original_songs = [
     'LRRALRD',
     'URURLU'
 ]
-    
-note_map = {
-    'A': 0,
-    'D': 1,
-    'R': 2,
-    'L': 3,
-    'U': 4
-}
 
-def verify_scarecrow_song_str(scarecrow_song_str:str, randomize_ocarina_songs:bool):
-
-    if len(scarecrow_song_str) != 8:
-        raise Exception('Scarecrow Song must be 8 notes long')
-
-    if len(set(scarecrow_song_str.upper())) == 1:
-        raise Exception('Scarecrow Song must contain at least two different notes')
-
-    scarecrow_song = str_to_song(scarecrow_song_str)
-
-    if not randomize_ocarina_songs:
-        for original_song in original_songs:
-            song_notes = []
-            for c in original_song:
-                song_notes.append(note_map[c])
-            song = Song(activation=song_notes)
-
-            if subsong(scarecrow_song, song):
-                raise Exception('You may not have the Scarecrow Song contain an existing song')
-
-    return scarecrow_song
-
-def str_to_song(song:str):
-    notes = []
-    for c in song.upper():
-        if c not in note_map:
-            raise Exception('Invalid note %s. Valid notes are A, D, R, L, U' % c)
-
-        notes.append(note_map[c])
-    return Song(activation=notes)

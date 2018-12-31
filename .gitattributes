@@ -1,2 +1,17 @@
-/data/rom_patch.txt binary
-/data/symbols.json binary
+* text=auto
+
+*.txt  text
+*.json text
+*.c    text
+*.h    text
+*.py   text
+*.md   text
+*.html text
+*.asm  text
+
+*.bin  binary
+*.o    binary
+
+/data/generated/*  binary linguist-generated=true
+/Decompress/* binary
+/Compress/*   binary

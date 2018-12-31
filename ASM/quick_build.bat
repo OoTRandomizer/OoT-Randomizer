@@ -1,2 +1,2 @@
-python scripts/build.py 
+python scripts/build.py
 pause

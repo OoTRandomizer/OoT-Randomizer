@@ -1,0 +1,19 @@
+[    
+	{
+        "region_name": "Ice Cavern",
+        "dungeon": "Ice Cavern",
+        "locations": {
+            "Ice Cavern Map Chest": "has_bottle",
+            "Ice Cavern Compass Chest": "has_bottle",
+            "Ice Cavern Iron Boots Chest": "has_bottle",
+            "Ice Cavern Freestanding PoH": "has_bottle",
+            "Sheik in Ice Cavern": "has_bottle and is_adult",
+            "GS Ice Cavern Spinning Scythe Room": "can_use(Hookshot)",
+            "GS Ice Cavern Heart Piece Room": "can_use(Hookshot) and has_bottle",
+            "GS Ice Cavern Push Block Room": "can_use(Hookshot) and has_bottle"
+        },
+        "exits": {
+            "Outside Ice Cavern": "True"
+        }
+    }
+]

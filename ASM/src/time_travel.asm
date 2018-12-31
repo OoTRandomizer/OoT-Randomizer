@@ -1,3 +1,10 @@
+TIME_TRAVEL_SAVED_EQUIPS:
+.word 0x00000000 ; B and C buttons
+.word 0x00000000 ; C button indexes
+.halfword 0x0000 ; Equipment
+.halfword 0x0000 ; Owned equipment
+.align 4
+
 give_master_sword:          ; Puts MS in Equipment Only
     li      t0, SAVE_CONTEXT
     lh      t1, 0x9C(t0)    ; Equipment

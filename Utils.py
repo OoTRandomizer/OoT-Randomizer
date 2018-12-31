@@ -76,8 +76,8 @@ def compare_version(a, b):
     elif not a and b:
         return -1
 
-    sa = a.replace(' ', '.').split('.')
-    sb = b.replace(' ', '.').split('.')
+    sa = a.replace('v', '').replace(' ', '.').split('.')
+    sb = b.replace('v', '').replace(' ', '.').split('.')
 
     for i in range(0,3):
         if int(sa[i]) > int(sb[i]):
@@ -97,7 +97,7 @@ def check_version(checked_version):
                 version = re.search(".__version__ = '(.+)'", str(version)).group(1)
 
                 if compare_version(version, __version__) > 0:
-                    raise VersionError("You do not seem to be on the latest version!\nYou are on version " + __version__ + ", and the latest is version " + version + ".")
+                    raise VersionError("You are on version " + __version__ + ", and the latest is version " + version + ".")
         except (URLError, HTTPError) as e:
             logger = logging.getLogger('')
             logger.warning("Could not fetch latest version: " + str(e))
@@ -156,3 +156,9 @@ def subprocess_args(include_stdout=True):
                 'startupinfo': si,
                 'env': env })
     return ret
+
+
+def check_python_version():
+    python_version = '.'.join([str(num) for num in sys.version_info[0:3]])
+    if compare_version(python_version, '3.6.0') < 0:
+        raise Exception('Randomizer requires at least version 3.6 and you are using %s' % python_version)

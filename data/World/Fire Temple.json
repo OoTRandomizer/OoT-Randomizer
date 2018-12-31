@@ -1,0 +1,69 @@
+[    
+	{
+        "region_name": "Fire Temple Lower",
+        "dungeon": "Fire Temple",
+        "locations": {
+            "Fire Temple Chest Near Boss": "True",
+            "Fire Temple Fire Dancer Chest": "
+                ((Small_Key_Fire_Temple, 8) or not keysanity) and can_use(Hammer)",
+            "Fire Temple Boss Key Chest": "
+                ((Small_Key_Fire_Temple, 8) or not keysanity) and can_use(Hammer)",
+            "Fire Temple Big Lava Room Bombable Chest": "
+                (Small_Key_Fire_Temple, 2) and has_explosives",
+            "Fire Temple Big Lava Room Open Chest": "(Small_Key_Fire_Temple, 2)",
+            "Volvagia Heart": "
+                has_GoronTunic and can_use(Hammer) and Boss_Key_Fire_Temple and 
+                (Hover_Boots or (can_reach(Fire_Temple_Upper) and 
+                    (can_play(Song_of_Time) or has_explosives)))",
+            "Volvagia": "
+                has_GoronTunic and can_use(Hammer) and Boss_Key_Fire_Temple and 
+                (Hover_Boots or (can_reach(Fire_Temple_Upper) and 
+                    (can_play(Song_of_Time) or has_explosives)))",
+            "GS Fire Temple Song of Time Room": "
+                (Small_Key_Fire_Temple, 2) and can_play(Song_of_Time)",
+            "GS Fire Temple Basement": "
+                ((Small_Key_Fire_Temple, 8) or not keysanity) and can_use(Hammer)"
+        },
+        "exits": {
+            "Death Mountain Crater Central": "True",
+            "Fire Temple Middle": "
+                has_GoronTunic and (Small_Key_Fire_Temple, 4) and Progressive_Strength_Upgrade and 
+                (has_explosives or ((has_bow or Progressive_Hookshot) and is_adult))"
+        }
+    },
+    {
+        "region_name": "Fire Temple Middle",
+        "dungeon": "Fire Temple",
+        "locations": {
+            "Fire Temple Boulder Maze Lower Chest": "True",
+            "Fire Temple Boulder Maze Upper Chest": "(Small_Key_Fire_Temple, 6)",
+            "Fire Temple Boulder Maze Side Room": "True",
+            "Fire Temple Boulder Maze Bombable Pit": "
+                (Small_Key_Fire_Temple, 6) and has_explosives",
+            "Fire Temple Scarecrow Chest": "
+                (Small_Key_Fire_Temple, 6) and can_use(Scarecrow)",
+            "Fire Temple Map Chest": "
+                (Small_Key_Fire_Temple, 6) or ((Small_Key_Fire_Temple, 5) and can_use(Bow))",
+            "Fire Temple Compass Chest": "(Small_Key_Fire_Temple, 7)",
+            "GS Fire Temple Unmarked Bomb Wall": "(Small_Key_Fire_Temple, 4) and has_explosives",
+            "GS Fire Temple East Tower Climb": "(Small_Key_Fire_Temple, 6) and can_use(Scarecrow)",
+            "GS Fire Temple East Tower Top": "(Small_Key_Fire_Temple, 6) and can_use(Scarecrow)"
+        },
+        "exits": {
+            "Fire Temple Upper": "
+                (Small_Key_Fire_Temple, 8) or 
+                ((Small_Key_Fire_Temple, 7) and can_use(Hover_Boots) and can_use(Hammer))"
+        }
+    },
+    {
+        "region_name": "Fire Temple Upper",
+        "dungeon": "Fire Temple",
+        "locations": {
+            "Fire Temple Highest Goron Chest": "
+                can_use(Hammer) and 
+                (can_play(Song_of_Time) or (logic_fire_highest_goron and 
+                    (can_use(Hover_Boots) or has_explosives)))",
+            "Fire Temple Megaton Hammer Chest": "has_explosives"
+        }
+    }
+]

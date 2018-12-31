@@ -1,0 +1,50 @@
+[
+    {
+        "region_name": "Jabu Jabus Belly Beginning",
+        "dungeon": "Jabu Jabus Belly",
+        "exits": {
+            "Zoras Fountain": "True",
+            "Jabu Jabus Belly Main": "
+                has_slingshot or has_explosives or Boomerang"
+        }
+    },
+    {
+        "region_name": "Jabu Jabus Belly Main",
+        "dungeon": "Jabu Jabus Belly",
+        "locations": {
+            "Boomerang Chest": "True",
+            "GS Jabu Jabu Water Switch Room": "True",
+            "Jabu Deku Scrub Deku Nuts": "True"
+        },
+        "exits": {
+            "Jabu Jabus Belly Beginning": "True",
+            "Jabu Jabus Belly Depths": "Boomerang"
+        }
+    },
+    {
+        "region_name": "Jabu Jabus Belly Depths",
+        "dungeon": "Jabu Jabus Belly",
+        "locations": {
+            "Jabu Jabus Belly Map Chest": "True",
+            "Jabu Jabus Belly Compass Chest": "True",
+            "GS Jabu Jabu Lobby Basement Lower": "True",
+            "GS Jabu Jabu Lobby Basement Upper": "True"
+        },
+        "exits": {
+            "Jabu Jabus Belly Main": "True",
+            "Jabu Jabus Belly Boss Area": "has_sticks or Kokiri_Sword"
+        }
+    },
+    {
+        "region_name": "Jabu Jabus Belly Boss Area",
+        "dungeon": "Jabu Jabus Belly",
+        "locations": {
+            "Barinade Heart": "True",
+            "Barinade": "True",
+            "GS Jabu Jabu Near Boss": "True"
+        },
+        "exits": {
+            "Jabu Jabus Belly Main": "True"
+        }
+    }
+]

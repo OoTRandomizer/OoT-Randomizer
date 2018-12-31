@@ -1,0 +1,47 @@
+[
+    {
+        "region_name": "Deku Tree Lobby",
+        "dungeon": "Deku Tree",
+        "locations": {
+            "Deku Tree Lobby Chest": "True",
+            "Deku Tree Compass Chest": "True",
+            "Deku Tree Compass Room Side Chest": "True",
+            "Deku Tree Basement Chest": "can_child_attack or has_nuts",
+            "GS Deku Tree Compass Room": "can_child_attack",
+            "GS Deku Tree Basement Vines": "
+                has_slingshot or Boomerang or has_explosives or can_use(Dins_Fire) or 
+                (logic_deku_basement_gs and (has_sticks or Kokiri_Sword))",
+            "GS Deku Tree Basement Gate": "can_child_attack",
+            "Deku Tree Gossip Stone (Left)": "True",
+            "Deku Tree Gossip Stone (Right)": "True"
+        },
+        "exits": {
+            "Kokiri Forest": "True",
+            "Deku Tree Slingshot Room": "Buy_Deku_Shield",
+            "Deku Tree Boss Room": "has_slingshot and (has_sticks or can_use(Dins_Fire))"
+        }
+    },
+    {
+        "region_name": "Deku Tree Slingshot Room",
+        "dungeon": "Deku Tree",
+        "locations": {
+            "Deku Tree Slingshot Chest": "True",
+            "Deku Tree Slingshot Room Side Chest": "True"
+        },
+        "exits": {
+            "Deku Tree Lobby": "True"
+        }
+    },
+    {
+        "region_name": "Deku Tree Boss Room",
+        "dungeon": "Deku Tree",
+        "locations": {
+            "GS Deku Tree Basement Back Room": "Boomerang and (has_explosives)",
+            "Queen Gohma Heart": "Buy_Deku_Shield and (Kokiri_Sword or has_sticks)",
+            "Queen Gohma": "Buy_Deku_Shield and (Kokiri_Sword or has_sticks)"
+        },
+        "exits": {
+            "Deku Tree Lobby": "True"
+        }
+    }
+]

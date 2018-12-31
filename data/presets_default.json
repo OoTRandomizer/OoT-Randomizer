@@ -1,0 +1,60 @@
+{
+    "Default": {
+        "locked": true
+    },
+    "Accessible Weekly 2018-12-10": {
+        "world_count": 1,
+        "create_spoiler": true,
+        "open_forest": true,
+        "open_kakariko": true,
+        "open_door_of_time": true,
+        "gerudo_fortress": "normal",
+        "bridge": "medallions",
+        "logic_rules": "glitchless",
+        "all_reachable": true,
+        "bombchus_in_logic": false,
+        "one_item_per_dungeon": false,
+        "trials_random": false,
+        "trials": 0,
+        "no_escape_sequence": true,
+        "no_guard_stealth": false,
+        "no_epona_race": true,
+        "fast_chests": true,
+        "big_poe_count_random": false,
+        "big_poe_count": 1,
+        "free_scarecrow": false,
+        "shuffle_kokiri_sword": true,
+        "shuffle_weird_egg": false,
+        "shuffle_ocarinas": false,
+        "shuffle_song_items": false,
+        "shuffle_gerudo_card": false,
+        "shuffle_scrubs": "off",
+        "shopsanity": "off",
+        "shuffle_mapcompass": "startwith",
+        "shuffle_smallkeys": "dungeon",
+        "shuffle_bosskeys": "dungeon",
+        "enhance_map_compass": false,
+        "unlocked_ganondorf": true,
+        "tokensanity": "off",
+        "mq_dungeons_random": false,
+        "mq_dungeons": 0,
+        "logic_no_night_tokens_without_suns_song": false,
+        "logic_earliest_adult_trade": "prescription",
+        "disabled_locations": [
+            "Deku Theater Mask of Truth"
+        ],
+        "allowed_tricks": [
+            "logic_fewer_tunic_requirements"
+        ],        
+        "logic_latest_adult_trade": "claim_check",
+        "logic_lens": "all",
+        "ocarina_songs": false,
+        "correct_chest_sizes": false,
+        "clearer_hints": true,
+        "hints": "agony",
+        "hint_dist": "balanced",
+        "text_shuffle": "none",
+        "item_pool_value": "balanced",
+        "damage_multiplier": "normal"
+    }
+}

@@ -1,0 +1,75 @@
+[    
+	{
+        "region_name": "Shadow Temple Beginning",
+        "dungeon": "Shadow Temple",
+        "locations": {
+            "Shadow Temple Map Chest": "True",
+            "Shadow Temple Hover Boots Chest": "True"
+        },
+        "exits": {
+            "Shadow Temple Warp Region": "True",
+            "Shadow Temple First Beamos": "Hover_Boots"
+        }
+    },
+    {
+        "region_name": "Shadow Temple First Beamos",
+        "dungeon": "Shadow Temple",
+        "locations": {
+            "Shadow Temple Compass Chest": "True",
+            "Shadow Temple Early Silver Rupee Chest": "True"
+        },
+        "exits": {
+            "Shadow Temple Huge Pit": "has_explosives and (Small_Key_Shadow_Temple, 1)"
+        }
+    },
+    {
+        "region_name": "Shadow Temple Huge Pit",
+        "dungeon": "Shadow Temple",
+        "locations": {
+            "Shadow Temple Invisible Blades Visible Chest": "True",
+            "Shadow Temple Invisible Blades Invisible Chest": "True",
+            "Shadow Temple Falling Spikes Lower Chest": "True",
+            "Shadow Temple Falling Spikes Upper Chest": "Progressive_Strength_Upgrade",
+            "Shadow Temple Falling Spikes Switch Chest": "Progressive_Strength_Upgrade",
+            "Shadow Temple Invisible Spikes Chest": "(Small_Key_Shadow_Temple, 2)",
+            "Shadow Temple Freestanding Key": "
+                (Small_Key_Shadow_Temple, 2) and Progressive_Hookshot and 
+                (has_bombs or Progressive_Strength_Upgrade)",
+            "GS Shadow Temple Like Like Room": "Progressive_Hookshot",
+            "GS Shadow Temple Crusher Room": "Progressive_Hookshot",
+            "GS Shadow Temple Single Giant Pot": "(Small_Key_Shadow_Temple, 2) and Progressive_Hookshot"
+        },
+        "exits": {
+            "Shadow Temple Wind Tunnel": "Progressive_Hookshot and (Small_Key_Shadow_Temple, 3)"
+        }
+    },
+    {
+        "region_name": "Shadow Temple Wind Tunnel",
+        "dungeon": "Shadow Temple",
+        "locations": {
+            "Shadow Temple Wind Hint Chest": "True",
+            "Shadow Temple After Wind Enemy Chest": "True",
+            "Shadow Temple After Wind Hidden Chest": "True",
+            "GS Shadow Temple Near Ship": "can_use(Longshot) and (Small_Key_Shadow_Temple, 4)"
+        },
+        "exits": {
+            "Shadow Temple Beyond Boat": "can_play(Zeldas_Lullaby) and (Small_Key_Shadow_Temple, 4)"
+        }
+    },
+    {
+        "region_name": "Shadow Temple Beyond Boat",
+        "dungeon": "Shadow Temple",
+        "locations": {
+            "Shadow Temple Spike Walls Left Chest": "True",
+            "Shadow Temple Boss Key Chest": "True",
+            "Shadow Temple Hidden Floormaster Chest": "True",
+            "Bongo Bongo Heart": "
+                (Small_Key_Shadow_Temple, 5) and 
+                (Bow or can_use(Distant_Scarecrow)) and Boss_Key_Shadow_Temple",
+            "Bongo Bongo": "
+                (Small_Key_Shadow_Temple, 5) and 
+                (Bow or can_use(Distant_Scarecrow)) and Boss_Key_Shadow_Temple",
+            "GS Shadow Temple Triple Giant Pot": "True"
+        }
+    }
+]

@@ -40,7 +40,7 @@
     bnez t2,@@return_false      ; Malon does not spawn at Ranch at night
     nop
     bne  t0,t1,@@return_false   ; make sure Talon has fled and Item has been given
-    li   v0,1                    
+    li   v0,1
     jr   ra                     ; return true
     nop
 
@@ -124,29 +124,29 @@ return_from_the_other_function:
 ev0_return:
 
 
-; 
+;
 ; ; Replaces:
 ; ;   addiu v0,v0,0xa5d0
 ; .org 0xD7E760
 ;     lw    t8,68(sp)         ; t8 = global context
-; 
+;
 ; ; Replaces:
 ; ;   lhu   t8,3798(v0)
 ; .org 0xD7E76C
 ;     lh    t8,0xA4(t8)       ; t8 = current scene number
-; 
+;
 ; ; Replaces:
 ; ;   andi  t9,t8,0x10
 ; ;   beqz  t9,ev_egg
 ; .org 0xD7E778
 ;     li    t9,0x5f           ; t9 = 0x5f (Hyrule Castle)
 ;     beq   t8,t9,ev_egg      ; jump if the scene is Hyrule Castle
-; 
+;
 ; ; Replace:
 ; ;   lw  t1,164(v0)
-; .org 0xD7E788 
+; .org 0xD7E788
 ;     lw  t1,0xA674(v0)       ; t1 = quest status
-; 
+;
 ; .org 0xD7E7A0
 ; ev_egg:
 
@@ -177,18 +177,18 @@ ev0_return:
 
 .org 0xD7E76C
     lw      t8,68(sp)           ; t8 = global context
-    lui     t3,0x809f              
+    lui     t3,0x809f
     lui     t0,0x8010
     lh      t8,0xA4(t8)         ; t8 = current scene number
-    
-    lb      t1,0x0EDE(v0)       
+
+    lb      t1,0x0EDE(v0)
     ;lw      t1,164(v0)          ; t1 = quest status
-    
+
     addiu   t3,t3,4392          ; t3 = 0x809f1128 ( ev0 )
-    
-    li      t0,0x01             
+
+    li      t0,0x01
     ;lw      t0,-29660(t0)       ; t0 = malon's song mask
-    
+
     move    a0,s0               ; a0 = actor pointer to set up function call
     lui     t4,0x809f
     addiu   t4,t4,4840          ; t4 = 0x809f12e8 ( ev1 )
@@ -204,7 +204,7 @@ set_ev1:
 
 
 ; Replaces
-; lw  t6,-29660(t6)   
+; lw  t6,-29660(t6)
 ; lw  t7,164(v1)
 .org 0xD7E140
     li  t6,0x01

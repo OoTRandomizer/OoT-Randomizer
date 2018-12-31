@@ -2,13 +2,13 @@
 ; Writes extra data to the initial save file
 ;===========================================
 write_initial_save:
-	sb      a1, 33(s1)  ; this was the instruction we replaced to make room for the jump to this function
-						; it is writing the Z at the end of ZELDAZ in the save file
-	; s1 = pointer to the start of the save file
-	; the only registers I have some confidence can be overridden here are:
-	; a0, a1, a3, t2, t7, t8, t9, v0, v1, s0
+    sb      a1, 33(s1)  ; this was the instruction we replaced to make room for the jump to this function
+                        ; it is writing the Z at the end of ZELDAZ in the save file
+    ; s1 = pointer to the start of the save file
+    ; the only registers I have some confidence can be overridden here are:
+    ; a0, a1, a3, t2, t7, t8, t9, v0, v1, s0
 
-	; loop over the save data table
+    ; loop over the save data table
     li      s0, (INITIAL_SAVE_DATA - 0x04)
 
 @@save_data_loop:

@@ -1,0 +1,115 @@
+[    
+	{
+        "region_name": "Forest Temple Lobby",
+        "dungeon": "Forest Temple",
+        "locations": {
+            "Forest Temple First Chest": "True",
+            "Forest Temple Chest Behind Lobby": "True",
+            "GS Forest Temple First Room": "can_use(Hookshot) or can_use(Bow) or can_use(Dins_Fire)",
+            "GS Forest Temple Lobby": "can_use(Hookshot)"
+        },
+        "exits": {
+            "Forest Temple Entry Area": "True",
+            "Forest Temple NW Outdoors": "can_play(Song_of_Time)",
+            "Forest Temple NE Outdoors": "can_use(Bow)",
+            "Forest Temple Block Push Room": "(Small_Key_Forest_Temple, 1)"
+        }
+    },
+    {
+        "region_name": "Forest Temple NW Outdoors",
+        "dungeon": "Forest Temple",
+        "locations": {
+            "Forest Temple Well Chest": "True",
+            "Forest Temple Map Chest": "True",
+            "GS Forest Temple Outdoor West": "
+                can_use(Longshot) or 
+                (can_use(Hookshot) and can_reach(Forest_Temple_Outside_Upper_Ledge))"
+        },
+        "exits": {
+            "Forest Temple NE Outdoors": "True"
+        }
+    },
+    {
+        "region_name": "Forest Temple NE Outdoors",
+        "dungeon": "Forest Temple",
+        "locations": {
+            "Forest Temple Outside Hookshot Chest": "True",
+            "GS Forest Temple Outdoor East": "can_use(Hookshot)"
+        },
+        "exits": {
+            "Forest Temple NW Outdoors": "
+                can_use(Iron_Boots) or can_use(Longshot) or (Progressive_Scale, 2) or 
+                (logic_forest_vines and can_use(Hookshot))", #Longshot can grab some very high up vines to drain the well.
+            "Forest Temple Lobby": "True",
+            "Forest Temple Falling Room": "False" #For some reason you can't actually activate this from below. Cool game.
+        }
+    },
+    {
+        "region_name": "Forest Temple Falling Room",
+        "dungeon": "Forest Temple",
+        "locations": {
+            "Forest Temple Falling Room Chest": "True"
+        },
+        "exits": {
+            "Forest Temple NE Outdoors": "True",
+            "Forest Temple Boss Region": "can_use(Bow)"
+        }
+    },
+    {
+        "region_name": "Forest Temple Block Push Room",
+        "dungeon": "Forest Temple",
+        "locations": {
+            "Forest Temple Block Push Chest": "Progressive_Strength_Upgrade and can_use(Bow)"
+        },
+        "exits": {
+            "Forest Temple Outside Upper Ledge": "can_use(Hover_Boots)",
+            "Forest Temple Bow Region": "
+                Progressive_Strength_Upgrade and (Small_Key_Forest_Temple, 3)",
+            "Forest Temple Straightened Hall": "
+                Progressive_Strength_Upgrade and (Small_Key_Forest_Temple, 2) and can_use(Bow)"
+        }
+    },
+    {
+        "region_name": "Forest Temple Straightened Hall",
+        "dungeon": "Forest Temple",
+        "locations": {
+            "Forest Temple Boss Key Chest": "True"
+        },
+        "exits": {
+            "Forest Temple Outside Upper Ledge": "True"
+        }
+    },
+    {
+        "region_name": "Forest Temple Outside Upper Ledge",
+        "dungeon": "Forest Temple",
+        "locations": {
+            "Forest Temple Floormaster Chest": "True"
+        },
+        "exits": {
+            "Forest Temple NW Outdoors": "True"
+        }
+    },
+    {
+        "region_name": "Forest Temple Bow Region",
+        "dungeon": "Forest Temple",
+        "locations": {
+            "Forest Temple Bow Chest": "True",
+            "Forest Temple Red Poe Chest": "can_use(Bow)",
+            "Forest Temple Blue Poe Chest": "can_use(Bow)"
+        },
+        "exits": {
+            "Forest Temple Falling Room": "
+            (Small_Key_Forest_Temple, 5) and (Bow or can_use(Dins_Fire))"
+        }
+    },
+    {
+        "region_name": "Forest Temple Boss Region",
+        "dungeon": "Forest Temple",
+        "locations": {
+            "Forest Temple Near Boss Chest": "True",
+            "Phantom Ganon Heart": "Boss_Key_Forest_Temple",
+            "Phantom Ganon": "Boss_Key_Forest_Temple",
+            "GS Forest Temple Basement": "can_use(Hookshot)"
+        }
+    }
+]

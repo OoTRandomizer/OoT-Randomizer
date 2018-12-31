@@ -1,0 +1,78 @@
+[
+    {
+        "region_name": "Dodongos Cavern Beginning",
+        "dungeon": "Dodongos Cavern",
+        "exits": {
+            "Dodongos Cavern Entryway": "True",
+            "Dodongos Cavern Lobby": "can_blast_or_smash or Progressive_Strength_Upgrade"
+        }
+    },
+    {
+        "region_name": "Dodongos Cavern Lobby",
+        "dungeon": "Dodongos Cavern",
+        "locations": {
+            "Dodongos Cavern MQ Map Chest": "True",
+            "Dodongos Cavern MQ Compass Chest": "is_adult or can_child_attack or has_nuts",
+            "Dodongos Cavern MQ Larva Room Chest": "
+                (has_sticks and (has_explosives or Progressive_Strength_Upgrade)) or 
+                has_fire_source",
+            "Dodongos Cavern MQ Torch Puzzle Room Chest": "
+                can_blast_or_smash or has_sticks or can_use(Dins_Fire) or 
+                (is_adult and (logic_dc_jump or Hover_Boots or Progressive_Hookshot))",
+            "Dodongos Cavern MQ Bomb Bag Chest": "
+                is_adult or 
+                (has_slingshot and 
+                    (has_explosives or 
+                        ((has_sticks or can_use(Dins_Fire)) and 
+                            (damage_multiplier != 'ohko' or has_bottle or can_use(Nayrus_Love)))))",
+            "GS Dodongo's Cavern MQ Song of Time Block Room": "
+                can_play(Song_of_Time) and (can_child_attack or is_adult)",
+            "GS Dodongo's Cavern MQ Larva Room": "
+                (has_sticks and (has_explosives or Progressive_Strength_Upgrade)) or has_fire_source",
+            "GS Dodongo's Cavern MQ Lizalfos Room": "can_blast_or_smash",
+            "GS Dodongo's Cavern MQ Scrub Room": "
+                (Boomerang and (has_slingshot or (is_adult and has_explosives)) and 
+                    (has_explosives or (Progressive_Strength_Upgrade and 
+                        (can_use(Hammer) or 
+                            ((has_sticks or can_use(Dins_Fire) or 
+                                (is_adult and (logic_dc_jump or Hover_Boots))) and 
+                            (damage_multiplier != 'ohko' or has_bottle or can_use(Nayrus_Love))))))) or 
+                (can_use(Hookshot) and (has_explosives or Progressive_Strength_Upgrade or 
+                    has_bow or can_use(Dins_Fire)))",
+            "DC MQ Deku Scrub Deku Sticks": "can_stun_deku",
+            "DC MQ Deku Scrub Deku Seeds": "can_stun_deku",
+            "DC MQ Deku Scrub Deku Shield": "can_stun_deku",
+            "DC MQ Deku Scrub Red Potion": "
+                is_adult or has_explosives or 
+                ((has_sticks or can_use(Dins_Fire)) and 
+                    (damage_multiplier != 'ohko' or has_bottle or can_use(Nayrus_Love)))"
+        },
+        "exits": {
+            "Dodongos Cavern Boss Area": "has_explosives",
+            "Dodongos Gossip Stone": "
+                hints != 'mask' or has_explosives or Progressive_Strength_Upgrade"
+        }
+    },
+    {
+        "region_name": "Dodongos Gossip Stone",
+        "dungeon": "Dodongos Cavern",
+        "locations": {
+            "Dodongos Cavern Gossip Stone": "True"
+        }
+    },
+    {
+        "region_name": "Dodongos Cavern Boss Area",
+        "dungeon": "Dodongos Cavern",
+        "locations": {
+            "Dodongos Cavern MQ Under Grave Chest": "True",
+            "Chest Above King Dodongo": "True",
+            "King Dodongo Heart": "
+                (has_bombs or Progressive_Strength_Upgrade) and 
+                (is_adult or has_sticks or Kokiri_Sword)",
+            "King Dodongo": "
+                (has_bombs or Progressive_Strength_Upgrade) and 
+                (is_adult or has_sticks or Kokiri_Sword)",
+            "GS Dodongo's Cavern MQ Back Area": "True"
+        }
+    }
+]

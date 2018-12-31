@@ -55,7 +55,7 @@ reset_player_name_id:
    lw    s8,56(sp)
 
    li    t0, PLAYER_NAME_ID
-   sb    zero, 0x00 (t0)   
+   sb    zero, 0x00 (t0)
 
    jr    ra
    nop

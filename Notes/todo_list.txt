@@ -1,9 +1,0 @@
-Todo List:
-
--Update Compressor to properly handle all rando ROMs. Grant Man is already working on this.
--Integrate and finish the work for randomizing Great Fairies and shortening their cutscenes. Junglechief has a lot of work done here already.
--Fix the Deku Sticks on B issue by preventing the swordless flag from ever being removed. Target areas are when equipping swords and when mounting a horse without the Bow.
--Randomize Biggoron Sword. Right now the plan is to make one of the get item entries obsoleted by the progressive item code into a second Giant's Knife/Biggoron Sword, randomize that new item into the world, and use a hook similar to the hook that lets NPCs give shields at both NPC and shield point to set the Biggoron Sword flag when that item is found. This will allow Medigoron to still sell Giant's Knife and for a randomized Biggoron Sword to exist.
--Randomize trading sequence entry point. First I need to do substantial mechanical testing with how every trading quest item in chests works. Also need to look into what it takes to randomize Anju's item and handle that.
--Allow Great Fairies and Zelda to have progressive items. This will involve finding a new place to hook the progressive code and possibly duplicating the item part of it into the 0xA00 block of the rando code block.
--Fix more bugs as they're inevitably found, of course.

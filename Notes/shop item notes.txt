@@ -58,56 +58,56 @@ scene shop item object loads
 
 .org 0xC022CC
 scene shop item table
-0	Deku Nut, x5, 15		00BB	0011	80022554	000F	0005	00B2	007F	00000063	80862FDC	80863B4C	80863FB4
-1	Arrows (2), x30, 60		00D8	0025	80022438	003C	001E	00C1	009B	0000004A	80862E8C	80863A64	80863FB4
-2	Arrows (3), x50, 90		00D8	0026	80022438	005A	0032	00B0	007D	0000004B	80862E8C	80863A64	80863FB4
-3	Bombs, x5, 25			00CE	001F	80022438	0019	0005	00A3	008B	00000001	80862F3C	80863AAC	80863FB4
-4	Deku Nut, x10, 30		00BB	0011	80022554	001E	000A	00A2	0087	00000064	80862FDC	80863B4C	80863FB4
-5	Deku Stick, x1, 10		00C7	001A	00000000	000A	0001	00A1	0088	00000007	80863094	80863BBC	80863FB4
-6	Bombs, x10, 50			00CE	001F	80022438	0032	000A	00B1	007C	00000066	80862F3C	80863AAC	80863FB4
-7	Fish, x1, 200			00F4	003E	80022554	00C8	0001	00B3	007E	0000006C	8086314C	00000000	80863FB4
-8	Red Potion, x1, 30		00EB	0037	80022438	001E	0001	00A5	008E	00000010	808631C4	80863E84	80863FB4
-9	Green Potion, x1, 30	00EB	0036	80022438	001E	0001	00A6	008F	00000011	8086323C	80863E84	80863FB4
-10	Blue Potion, x1, 60		00EB	0038	80022438	003C	0001	00A7	0090	00000012	808632B4	80863E84	80863FB4
-11	Giant's Knife, x1, 		00F8	0042	80022438	03E8	0001	00A8	0091	00000028	8086332C	80863BF8	80863FB4
-12	Hylian Shield, x1, 80	00DC	002B	80022438	0050	0001	00A9	0092	0000002A	808633C0	80863C40	80863FB4
-13	Deku Shield, x1, 40		00CB	001C	80022438	0028	0001	009F	0089	00000029	80863440	80863C7C	80863FB4
-14	Goron Tunic, x1, 200	00F2	003B	00000000	00C8	0001	00AA	0093	0000002C	808634C0	80863CB8	80864054
-15	Zora Tunic, x1, 300		00F2	003C	00000000	012C	0001	00AB	0094	0000002D	80863568	80863CF4	80864084
-16	Heart, x16, 10			00B7	0008	00000000	000A	0010	00AC	0095	00000048	80863610	80863D30	80863FB4
-17	Milk Bottle (U)			00DF	002F	808648CC	0064	0001	00AD	0097	00000014	8086365C	80863D70	80863FB4
-18	Weird Egg (U)			00DA	0028	80022438	0064	0001	00AE	0099	00000047	808636B8	80863DAC	80863FB4
-19	Milk Bottle (U)			00DF	002F	808648CC	2710	0001	00B4	0085	00000000	80863714	80863DE8	80863FB4
-20	Weird Egg (U)			00DA	0028	80022438	2710	0001	00B5	0085	00000000	80863728	80863E18	80863FB4
-21	Bombchu, x10, 100		00D9	0027	80022438	0064	000A	00BC	008C	00000003	8086373C	00000000	808640B4
-22	Bombchu, x20, 180		00D9	0027	80022438	00B4	0014	0061	002A	0000006B	8086373C	00000000	808640B4
-23	Bombchu, x20, 180		00D9	0027	80022438	00B4	0014	0061	002A	0000006B	8086373C	00000000	808640B4
-24	Bombchu, x10, 100		00D9	0027	80022438	0064	000A	00BC	008C	00000003	8086373C	00000000	808640B4
-25	Bombchu, x10, 100		00D9	0027	80022438	0064	000A	00BC	008C	00000003	8086373C	00000000	808640B4
-26	Bombchu, x20, 180		00D9	0027	80022438	00B4	0014	0061	002A	0000006B	8086373C	00000000	808640B4
-27	Bombchu, x20, 180		00D9	0027	80022438	00B4	0014	0061	002A	0000006B	8086373C	00000000	808640B4
-28	Bombchu, x10, 100		00D9	0027	80022438	0064	000A	00BC	008C	00000003	8086373C	00000000	808640B4
-29	Deku Seeds, x30, 30		0119	0047	80022438	001E	001E	00DF	00DE	00000069	808637C0	80863E48	80863FB4
-30	Keaton Mask, x1, 0		0134	0030	80022438	0000	0001	70B2	70BE	0000001A	808637C0	80863E48	80863FB4
-31	Spooky Mask, x1, 0		0135	0031	80022438	0000	0001	70B1	70BD	00000018	808637C0	80863E48	80863FB4
-32	Skull Mask, x1, 0		0136	004E	80022438	0000	0001	70B0	70BC	00000017	808637C0	80863E48	80863FB4
-33	Bunny Hood, x1, 0		0137	004F	80022438	0000	0001	70B3	70BF	0000001B	808637C0	80863E48	80863FB4
-34	Mask of Truth, x1, 0	0138	0050	808648CC	0000	0001	70AF	70C3	0000001C	808637C0	80863E48	80863FB4
-35	Zora Mask, x1, 0		0151	005B	00000000	0000	0001	70B9	70C1	00000052	808637C0	80863E48	80863FB4
-36	Goron Mask, x1, 0		0150	005A	00000000	0000	0001	70B8	70C0	00000051	808637C0	80863E48	80863FB4
-37	Gerudo Mask, x1, 0		0152	005C	00000000	0000	0001	70BA	70C2	00000053	808637C0	80863E48	80863FB4
-38	Sold Out, x0, 0			0148	0058	80022438	0000	0000	00BD	70C2	00000053	80863870	00000000	00000000
-39	Blue Fire, x1, 300		0173	0066	80022438	012C	0001	00B9	00B8	0000006E	80863884	80863E84	80863FB4
-40	Bottle Bug, x1, 50		0174	0067	808648CC	0032	0001	00BB	00BA	0000006D	808638FC	80863E84	80863FB4
-41	Big Poe (U), x1, 50		0176	006F	808648CC	0032	0001	506F	5070	00000070	80863974	80863E84	80863FB4
-42	Poe, x1, 30				0176	0069	808648CC	001E	0001	506D	506E	0000006F	80863974	80863E84	80863FB4
-43	Fairy's Spirit, x1, 50	0177	006A	808648CC	0032	0001	00B7	00B6	00000013	808639EC	80863E84	80863FB4
-44	Arrow (1), x10, 20		00D8	0024	80022438	0014	000A	00A0	008A	00000049	80862E8C	80863A64	80863FB4
-45	Bombs, x20, 80			00CE	001F	80022438	0050	0014	001C	0006	00000067	80862F3C	80863AAC	80863FB4
-46	Bombs, x30, 120			00CE	001F	80022438	0078	001E	001D	001E	00000068	80862F3C	80863AAC	80863FB4
-47	Bombs, x5, 35			00CE	001F	80022438	0023	0005	00CB	00CA	00000001	80862F3C	80863AAC	80863FB4
-48	Red Potion, x1, 40		00EB	0037	80022438	0028	0001	0064	0062	00000010	808631C4	80863E84	80863FB4
-49	Red Potion, x1, 50		00EB	0037	80022438	0032	0001	0065	0063	00000010	808631C4	80863E84	80863FB4
+0   Deku Nut, x5, 15        00BB    0011    80022554    000F    0005    00B2    007F    00000063    80862FDC    80863B4C    80863FB4
+1   Arrows (2), x30, 60     00D8    0025    80022438    003C    001E    00C1    009B    0000004A    80862E8C    80863A64    80863FB4
+2   Arrows (3), x50, 90     00D8    0026    80022438    005A    0032    00B0    007D    0000004B    80862E8C    80863A64    80863FB4
+3   Bombs, x5, 25           00CE    001F    80022438    0019    0005    00A3    008B    00000001    80862F3C    80863AAC    80863FB4
+4   Deku Nut, x10, 30       00BB    0011    80022554    001E    000A    00A2    0087    00000064    80862FDC    80863B4C    80863FB4
+5   Deku Stick, x1, 10      00C7    001A    00000000    000A    0001    00A1    0088    00000007    80863094    80863BBC    80863FB4
+6   Bombs, x10, 50          00CE    001F    80022438    0032    000A    00B1    007C    00000066    80862F3C    80863AAC    80863FB4
+7   Fish, x1, 200           00F4    003E    80022554    00C8    0001    00B3    007E    0000006C    8086314C    00000000    80863FB4
+8   Red Potion, x1, 30      00EB    0037    80022438    001E    0001    00A5    008E    00000010    808631C4    80863E84    80863FB4
+9   Green Potion, x1, 30    00EB    0036    80022438    001E    0001    00A6    008F    00000011    8086323C    80863E84    80863FB4
+10  Blue Potion, x1, 60     00EB    0038    80022438    003C    0001    00A7    0090    00000012    808632B4    80863E84    80863FB4
+11  Giant's Knife, x1,      00F8    0042    80022438    03E8    0001    00A8    0091    00000028    8086332C    80863BF8    80863FB4
+12  Hylian Shield, x1, 80   00DC    002B    80022438    0050    0001    00A9    0092    0000002A    808633C0    80863C40    80863FB4
+13  Deku Shield, x1, 40     00CB    001C    80022438    0028    0001    009F    0089    00000029    80863440    80863C7C    80863FB4
+14  Goron Tunic, x1, 200    00F2    003B    00000000    00C8    0001    00AA    0093    0000002C    808634C0    80863CB8    80864054
+15  Zora Tunic, x1, 300     00F2    003C    00000000    012C    0001    00AB    0094    0000002D    80863568    80863CF4    80864084
+16  Heart, x16, 10          00B7    0008    00000000    000A    0010    00AC    0095    00000048    80863610    80863D30    80863FB4
+17  Milk Bottle (U)         00DF    002F    808648CC    0064    0001    00AD    0097    00000014    8086365C    80863D70    80863FB4
+18  Weird Egg (U)           00DA    0028    80022438    0064    0001    00AE    0099    00000047    808636B8    80863DAC    80863FB4
+19  Milk Bottle (U)         00DF    002F    808648CC    2710    0001    00B4    0085    00000000    80863714    80863DE8    80863FB4
+20  Weird Egg (U)           00DA    0028    80022438    2710    0001    00B5    0085    00000000    80863728    80863E18    80863FB4
+21  Bombchu, x10, 100       00D9    0027    80022438    0064    000A    00BC    008C    00000003    8086373C    00000000    808640B4
+22  Bombchu, x20, 180       00D9    0027    80022438    00B4    0014    0061    002A    0000006B    8086373C    00000000    808640B4
+23  Bombchu, x20, 180       00D9    0027    80022438    00B4    0014    0061    002A    0000006B    8086373C    00000000    808640B4
+24  Bombchu, x10, 100       00D9    0027    80022438    0064    000A    00BC    008C    00000003    8086373C    00000000    808640B4
+25  Bombchu, x10, 100       00D9    0027    80022438    0064    000A    00BC    008C    00000003    8086373C    00000000    808640B4
+26  Bombchu, x20, 180       00D9    0027    80022438    00B4    0014    0061    002A    0000006B    8086373C    00000000    808640B4
+27  Bombchu, x20, 180       00D9    0027    80022438    00B4    0014    0061    002A    0000006B    8086373C    00000000    808640B4
+28  Bombchu, x10, 100       00D9    0027    80022438    0064    000A    00BC    008C    00000003    8086373C    00000000    808640B4
+29  Deku Seeds, x30, 30     0119    0047    80022438    001E    001E    00DF    00DE    00000069    808637C0    80863E48    80863FB4
+30  Keaton Mask, x1, 0      0134    0030    80022438    0000    0001    70B2    70BE    0000001A    808637C0    80863E48    80863FB4
+31  Spooky Mask, x1, 0      0135    0031    80022438    0000    0001    70B1    70BD    00000018    808637C0    80863E48    80863FB4
+32  Skull Mask, x1, 0       0136    004E    80022438    0000    0001    70B0    70BC    00000017    808637C0    80863E48    80863FB4
+33  Bunny Hood, x1, 0       0137    004F    80022438    0000    0001    70B3    70BF    0000001B    808637C0    80863E48    80863FB4
+34  Mask of Truth, x1, 0    0138    0050    808648CC    0000    0001    70AF    70C3    0000001C    808637C0    80863E48    80863FB4
+35  Zora Mask, x1, 0        0151    005B    00000000    0000    0001    70B9    70C1    00000052    808637C0    80863E48    80863FB4
+36  Goron Mask, x1, 0       0150    005A    00000000    0000    0001    70B8    70C0    00000051    808637C0    80863E48    80863FB4
+37  Gerudo Mask, x1, 0      0152    005C    00000000    0000    0001    70BA    70C2    00000053    808637C0    80863E48    80863FB4
+38  Sold Out, x0, 0         0148    0058    80022438    0000    0000    00BD    70C2    00000053    80863870    00000000    00000000
+39  Blue Fire, x1, 300      0173    0066    80022438    012C    0001    00B9    00B8    0000006E    80863884    80863E84    80863FB4
+40  Bottle Bug, x1, 50      0174    0067    808648CC    0032    0001    00BB    00BA    0000006D    808638FC    80863E84    80863FB4
+41  Big Poe (U), x1, 50     0176    006F    808648CC    0032    0001    506F    5070    00000070    80863974    80863E84    80863FB4
+42  Poe, x1, 30             0176    0069    808648CC    001E    0001    506D    506E    0000006F    80863974    80863E84    80863FB4
+43  Fairy's Spirit, x1, 50  0177    006A    808648CC    0032    0001    00B7    00B6    00000013    808639EC    80863E84    80863FB4
+44  Arrow (1), x10, 20      00D8    0024    80022438    0014    000A    00A0    008A    00000049    80862E8C    80863A64    80863FB4
+45  Bombs, x20, 80          00CE    001F    80022438    0050    0014    001C    0006    00000067    80862F3C    80863AAC    80863FB4
+46  Bombs, x30, 120         00CE    001F    80022438    0078    001E    001D    001E    00000068    80862F3C    80863AAC    80863FB4
+47  Bombs, x5, 35           00CE    001F    80022438    0023    0005    00CB    00CA    00000001    80862F3C    80863AAC    80863FB4
+48  Red Potion, x1, 40      00EB    0037    80022438    0028    0001    0064    0062    00000010    808631C4    80863E84    80863FB4
+49  Red Potion, x1, 50      00EB    0037    80022438    0032    0001    0065    0063    00000010    808631C4    80863E84    80863FB4
 
 
 00BB 0011 80022554 000F 0005 80B2807F 00000063 801EEEAC 801EFA1C 801EFE84
@@ -126,87 +126,87 @@ scene shop item table
 
 
 [0x11, 0x12, 0x13, 0x14, 0x17, 0x19, 0x1A, 0x1B, 0x1C, 0x29, 0x2A, 0x2F, 0x30, 0x31]
-									   Function_1, Function_2, Function_3, Function_4
-									   ----------------------------------------------
-	["Deku Nut, x5, 15             ", 0x00A984B4, 0x00C008BC, 0x00C0142C, 0x00C01894], 
-	["Arrows (2), x30, 60          ", 0x00A98398, 0x00C0076C, 0x00C01344, 0x00C01894], 
-	["Arrows (3), x50, 90          ", 0x00A98398, 0x00C0076C, 0x00C01344, 0x00C01894], X
-	["Bombs, x5, 25                ", 0x00A98398, 0x00C0081C, 0x00C0138C, 0x00C01894], 
-	["Deku Nut, x10, 30            ", 0x00A984B4, 0x00C008BC, 0x00C0142C, 0x00C01894],
-	["Deku Stick, x1, 10           ",           , 0x00C00974, 0x00C0149C, 0x00C01894], 
-	["Bombs, x10, 50               ", 0x00A98398, 0x00C0081C, 0x00C0138C, 0x00C01894], 
-	["Fish, x1, 200                ", 0x00A984B4, 0x00C00A2C,           , 0x00C01894], X
-	["Red Potion, x1, 30           ", 0x00A98398, 0x00C00AA4, 0x00C01764, 0x00C01894], 
-	["Green Potion, x1, 30         ", 0x00A98398, 0x00C00B1C, 0x00C01764, 0x00C01894], 
-	["Blue Potion, x1, 60          ", 0x00A98398, 0x00C00B94, 0x00C01764, 0x00C01894], 
-	["Giant's Knife, x1,           ", 0x00A98398, 0x00C00C0C, 0x00C014D8, 0x00C01894], X
-	["Hylian Shield, x1, 80        ", 0x00A98398, 0x00C00CA0, 0x00C01520, 0x00C01894], 
-	["Deku Shield, x1, 40          ", 0x00A98398, 0x00C00D20, 0x00C0155C, 0x00C01894], 
-	["Goron Tunic, x1, 200         ",           , 0x00C00DA0, 0x00C01598, 0x00C01934], 
-	["Zora Tunic, x1, 300          ",           , 0x00C00E48, 0x00C015D4, 0x00C01964], 
-	["Heart, x16, 10               ",           , 0x00C00EF0, 0x00C01610, 0x00C01894], 
-	["Milk Bottle (U)              ", 0x00C021AC, 0x00C00F3C, 0x00C01650, 0x00C01894], X
-	["Weird Egg (U)                ", 0x00A98398, 0x00C00F98, 0x00C0168C, 0x00C01894], X
-	["Milk Bottle (U)              ", 0x00C021AC, 0x00C00FF4, 0x00C016C8, 0x00C01894], X
-	["Weird Egg (U)                ", 0x00A98398, 0x00C01008, 0x00C016F8, 0x00C01894], X
-	["Bombchu, x10, 100            ", 0x00A98398, 0x00C0101C,           , 0x00C01994], 
-	["Bombchu, x20, 180            ", 0x00A98398, 0x00C0101C,           , 0x00C01994], 
-	["Bombchu, x20, 180            ", 0x00A98398, 0x00C0101C,           , 0x00C01994],
-	["Bombchu, x10, 100            ", 0x00A98398, 0x00C0101C,           , 0x00C01994], X
-	["Bombchu, x10, 100            ", 0x00A98398, 0x00C0101C,           , 0x00C01994], X
-	["Bombchu, x20, 180            ", 0x00A98398, 0x00C0101C,           , 0x00C01994], X
-	["Bombchu, x20, 180            ", 0x00A98398, 0x00C0101C,           , 0x00C01994], X
-	["Bombchu, x10, 100            ", 0x00A98398, 0x00C0101C,           , 0x00C01994], X
-	["Deku Seeds, x30, 30          ", 0x00A98398, 0x00C010A0, 0x00C01728, 0x00C01894], 
-	["Keaton Mask, x1, 0           ", 0x00A98398, 0x00C010A0, 0x00C01728, 0x00C01894], 
-	["Spooky Mask, x1, 0           ", 0x00A98398, 0x00C010A0, 0x00C01728, 0x00C01894], 
-	["Skull Mask, x1, 0            ", 0x00A98398, 0x00C010A0, 0x00C01728, 0x00C01894], 
-	["Bunny Hood, x1, 0            ", 0x00A98398, 0x00C010A0, 0x00C01728, 0x00C01894], 
-	["Mask of Truth, x1, 0         ", 0x00C021AC, 0x00C010A0, 0x00C01728, 0x00C01894], 
-	["Zora Mask, x1, 0             ",           , 0x00C010A0, 0x00C01728, 0x00C01894], 
-	["Goron Mask, x1, 0            ",           , 0x00C010A0, 0x00C01728, 0x00C01894], 
-	["Gerudo Mask, x1, 0           ",           , 0x00C010A0, 0x00C01728, 0x00C01894], 
-	["Sold Out, x0, 0              ", 0x00A98398, 0x00C01150,           ,           ], 
-	["Blue Fire, x1, 300           ", 0x00A98398, 0x00C01164, 0x00C01764, 0x00C01894], 
-	["Bottle Bug, x1, 50           ", 0x00C021AC, 0x00C011DC, 0x00C01764, 0x00C01894],
-	["Big Poe (U), x1, 50          ", 0x00C021AC, 0x00C01254, 0x00C01764, 0x00C01894], X
-	["Poe, x1, 30                  ", 0x00C021AC, 0x00C01254, 0x00C01764, 0x00C01894], X
-	["Fairy's Spirit, x1, 50       ", 0x00C021AC, 0x00C012CC, 0x00C01764, 0x00C01894], 
-	["Arrow (1), x10, 20           ", 0x00A98398, 0x00C0076C, 0x00C01344, 0x00C01894],
-	["Bombs, x20, 80               ", 0x00A98398, 0x00C0081C, 0x00C0138C, 0x00C01894], 
-	["Bombs, x30, 120              ", 0x00A98398, 0x00C0081C, 0x00C0138C, 0x00C01894], X
-	["Bombs, x5, 35                ", 0x00A98398, 0x00C0081C, 0x00C0138C, 0x00C01894], X
-	["Red Potion, x1, 40           ", 0x00A98398, 0x00C00AA4, 0x00C01764, 0x00C01894], X
-	["Red Potion, x1, 50           ", 0x00A98398, 0x00C00AA4, 0x00C01764, 0x00C01894], X
+                                       Function_1, Function_2, Function_3, Function_4
+                                       ----------------------------------------------
+    ["Deku Nut, x5, 15             ", 0x00A984B4, 0x00C008BC, 0x00C0142C, 0x00C01894],
+    ["Arrows (2), x30, 60          ", 0x00A98398, 0x00C0076C, 0x00C01344, 0x00C01894],
+    ["Arrows (3), x50, 90          ", 0x00A98398, 0x00C0076C, 0x00C01344, 0x00C01894], X
+    ["Bombs, x5, 25                ", 0x00A98398, 0x00C0081C, 0x00C0138C, 0x00C01894],
+    ["Deku Nut, x10, 30            ", 0x00A984B4, 0x00C008BC, 0x00C0142C, 0x00C01894],
+    ["Deku Stick, x1, 10           ",           , 0x00C00974, 0x00C0149C, 0x00C01894],
+    ["Bombs, x10, 50               ", 0x00A98398, 0x00C0081C, 0x00C0138C, 0x00C01894],
+    ["Fish, x1, 200                ", 0x00A984B4, 0x00C00A2C,           , 0x00C01894], X
+    ["Red Potion, x1, 30           ", 0x00A98398, 0x00C00AA4, 0x00C01764, 0x00C01894],
+    ["Green Potion, x1, 30         ", 0x00A98398, 0x00C00B1C, 0x00C01764, 0x00C01894],
+    ["Blue Potion, x1, 60          ", 0x00A98398, 0x00C00B94, 0x00C01764, 0x00C01894],
+    ["Giant's Knife, x1,           ", 0x00A98398, 0x00C00C0C, 0x00C014D8, 0x00C01894], X
+    ["Hylian Shield, x1, 80        ", 0x00A98398, 0x00C00CA0, 0x00C01520, 0x00C01894],
+    ["Deku Shield, x1, 40          ", 0x00A98398, 0x00C00D20, 0x00C0155C, 0x00C01894],
+    ["Goron Tunic, x1, 200         ",           , 0x00C00DA0, 0x00C01598, 0x00C01934],
+    ["Zora Tunic, x1, 300          ",           , 0x00C00E48, 0x00C015D4, 0x00C01964],
+    ["Heart, x16, 10               ",           , 0x00C00EF0, 0x00C01610, 0x00C01894],
+    ["Milk Bottle (U)              ", 0x00C021AC, 0x00C00F3C, 0x00C01650, 0x00C01894], X
+    ["Weird Egg (U)                ", 0x00A98398, 0x00C00F98, 0x00C0168C, 0x00C01894], X
+    ["Milk Bottle (U)              ", 0x00C021AC, 0x00C00FF4, 0x00C016C8, 0x00C01894], X
+    ["Weird Egg (U)                ", 0x00A98398, 0x00C01008, 0x00C016F8, 0x00C01894], X
+    ["Bombchu, x10, 100            ", 0x00A98398, 0x00C0101C,           , 0x00C01994],
+    ["Bombchu, x20, 180            ", 0x00A98398, 0x00C0101C,           , 0x00C01994],
+    ["Bombchu, x20, 180            ", 0x00A98398, 0x00C0101C,           , 0x00C01994],
+    ["Bombchu, x10, 100            ", 0x00A98398, 0x00C0101C,           , 0x00C01994], X
+    ["Bombchu, x10, 100            ", 0x00A98398, 0x00C0101C,           , 0x00C01994], X
+    ["Bombchu, x20, 180            ", 0x00A98398, 0x00C0101C,           , 0x00C01994], X
+    ["Bombchu, x20, 180            ", 0x00A98398, 0x00C0101C,           , 0x00C01994], X
+    ["Bombchu, x10, 100            ", 0x00A98398, 0x00C0101C,           , 0x00C01994], X
+    ["Deku Seeds, x30, 30          ", 0x00A98398, 0x00C010A0, 0x00C01728, 0x00C01894],
+    ["Keaton Mask, x1, 0           ", 0x00A98398, 0x00C010A0, 0x00C01728, 0x00C01894],
+    ["Spooky Mask, x1, 0           ", 0x00A98398, 0x00C010A0, 0x00C01728, 0x00C01894],
+    ["Skull Mask, x1, 0            ", 0x00A98398, 0x00C010A0, 0x00C01728, 0x00C01894],
+    ["Bunny Hood, x1, 0            ", 0x00A98398, 0x00C010A0, 0x00C01728, 0x00C01894],
+    ["Mask of Truth, x1, 0         ", 0x00C021AC, 0x00C010A0, 0x00C01728, 0x00C01894],
+    ["Zora Mask, x1, 0             ",           , 0x00C010A0, 0x00C01728, 0x00C01894],
+    ["Goron Mask, x1, 0            ",           , 0x00C010A0, 0x00C01728, 0x00C01894],
+    ["Gerudo Mask, x1, 0           ",           , 0x00C010A0, 0x00C01728, 0x00C01894],
+    ["Sold Out, x0, 0              ", 0x00A98398, 0x00C01150,           ,           ],
+    ["Blue Fire, x1, 300           ", 0x00A98398, 0x00C01164, 0x00C01764, 0x00C01894],
+    ["Bottle Bug, x1, 50           ", 0x00C021AC, 0x00C011DC, 0x00C01764, 0x00C01894],
+    ["Big Poe (U), x1, 50          ", 0x00C021AC, 0x00C01254, 0x00C01764, 0x00C01894], X
+    ["Poe, x1, 30                  ", 0x00C021AC, 0x00C01254, 0x00C01764, 0x00C01894], X
+    ["Fairy's Spirit, x1, 50       ", 0x00C021AC, 0x00C012CC, 0x00C01764, 0x00C01894],
+    ["Arrow (1), x10, 20           ", 0x00A98398, 0x00C0076C, 0x00C01344, 0x00C01894],
+    ["Bombs, x20, 80               ", 0x00A98398, 0x00C0081C, 0x00C0138C, 0x00C01894],
+    ["Bombs, x30, 120              ", 0x00A98398, 0x00C0081C, 0x00C0138C, 0x00C01894], X
+    ["Bombs, x5, 35                ", 0x00A98398, 0x00C0081C, 0x00C0138C, 0x00C01894], X
+    ["Red Potion, x1, 40           ", 0x00A98398, 0x00C00AA4, 0x00C01764, 0x00C01894], X
+    ["Red Potion, x1, 50           ", 0x00A98398, 0x00C00AA4, 0x00C01764, 0x00C01894], X
 
 
 shop actor item list [shop item id, X, Y ,Z] * 8
 .org 0xC71ED0
 -----------------------------------RIGHT SIDE-------------------------------------  ---------------------------------LEFT SIDE----------------------------------------
-bottom left          top left             bottom right         top right            bottom right         top right            bottom left          top left             
-000D 0032 0034 FFEC, 0000 0032 004C FFEC, 0004 0050 0034 FFFD, 0005 0050 004C FFFD, 001D FFCE 0034 FFEC, 002C FFCE 004C FFEC, 0001 FFB0 0034 FFFD, 0010 FFB0 004C FFFD, 
-0009 0032 0034 FFEC, 0027 0032 004C FFEC, 0008 0050 0034 FFFD, 002B 0050 004C FFFD, 0000 FFCE 0034 FFEC, 0028 FFCE 004C FFEC, 002A FFB0 0034 FFFD, 0007 FFB0 004C FFFD, 
-0018 0032 0034 FFEC, 001C 0032 004C FFEC, 0019 0050 0034 FFFD, 0015 0050 004C FFFD, 001A FFCE 0034 FFEC, 0016 FFCE 004C FFEC, 001B FFB0 0034 FFFD, 0017 FFB0 004C FFFD, 
-0009 0032 0034 FFEC, 0027 0032 004C FFEC, 0008 0050 0034 FFFD, 002B 0050 004C FFFD, 0000 FFCE 0034 FFEC, 0028 FFCE 004C FFEC, 002A FFB0 0034 FFFD, 0007 FFB0 004C FFFD, 
-000C 0032 0034 FFEC, 002F 0032 004C FFEC, 0000 0050 0034 FFFD, 0010 0050 004C FFFD, 002C FFCE 0034 FFEC, 0002 FFCE 004C FFEC, 0005 FFB0 0034 FFFD, 0001 FFB0 004C FFFD, 
-000C 0032 0034 FFEC, 0003 0032 004C FFEC, 0000 0050 0034 FFFD, 0010 0050 004C FFFD, 002C FFCE 0034 FFEC, 0002 FFCE 004C FFEC, 0005 FFB0 0034 FFFD, 0001 FFB0 004C FFFD, 
-0011 0032 0034 FFEC, 0000 0032 004C FFEC, 0004 0050 0034 FFFD, 0010 0050 004C FFFD, 0012 FFCE 0034 FFEC, 0005 FFCE 004C FFEC, 0010 FFB0 0034 FFFD, 0010 FFB0 004C FFFD, 
-000F 0032 0034 FFEC, 002C 0032 004C FFEC, 0010 0050 0034 FFFD, 0001 0050 004C FFFD, 0000 FFCE 0034 FFEC, 0002 FFCE 004C FFEC, 0007 FFB0 0034 FFFD, 0031 FFB0 004C FFFD, 
-0003 0032 0034 FFEC, 0006 0032 004C FFEC, 002D 0050 0034 FFFD, 002E 0050 004C FFFD, 000E FFCE 0034 FFEC, 0010 FFCE 004C FFEC, 0030 FFB0 0034 FFFD, 0010 FFB0 004C FFFD, 
-0013 0032 0034 FFEC, 0013 0032 004C FFEC, 0013 0050 0034 FFFD, 0013 0050 004C FFFD, 0014 FFCE 0034 FFEC, 0014 FFCE 004C FFEC, 0014 FFB0 0034 FFFD, 0014 FFB0 004C FFFD, 
+bottom left          top left             bottom right         top right            bottom right         top right            bottom left          top left
+000D 0032 0034 FFEC, 0000 0032 004C FFEC, 0004 0050 0034 FFFD, 0005 0050 004C FFFD, 001D FFCE 0034 FFEC, 002C FFCE 004C FFEC, 0001 FFB0 0034 FFFD, 0010 FFB0 004C FFFD,
+0009 0032 0034 FFEC, 0027 0032 004C FFEC, 0008 0050 0034 FFFD, 002B 0050 004C FFFD, 0000 FFCE 0034 FFEC, 0028 FFCE 004C FFEC, 002A FFB0 0034 FFFD, 0007 FFB0 004C FFFD,
+0018 0032 0034 FFEC, 001C 0032 004C FFEC, 0019 0050 0034 FFFD, 0015 0050 004C FFFD, 001A FFCE 0034 FFEC, 0016 FFCE 004C FFEC, 001B FFB0 0034 FFFD, 0017 FFB0 004C FFFD,
+0009 0032 0034 FFEC, 0027 0032 004C FFEC, 0008 0050 0034 FFFD, 002B 0050 004C FFFD, 0000 FFCE 0034 FFEC, 0028 FFCE 004C FFEC, 002A FFB0 0034 FFFD, 0007 FFB0 004C FFFD,
+000C 0032 0034 FFEC, 002F 0032 004C FFEC, 0000 0050 0034 FFFD, 0010 0050 004C FFFD, 002C FFCE 0034 FFEC, 0002 FFCE 004C FFEC, 0005 FFB0 0034 FFFD, 0001 FFB0 004C FFFD,
+000C 0032 0034 FFEC, 0003 0032 004C FFEC, 0000 0050 0034 FFFD, 0010 0050 004C FFFD, 002C FFCE 0034 FFEC, 0002 FFCE 004C FFEC, 0005 FFB0 0034 FFFD, 0001 FFB0 004C FFFD,
+0011 0032 0034 FFEC, 0000 0032 004C FFEC, 0004 0050 0034 FFFD, 0010 0050 004C FFFD, 0012 FFCE 0034 FFEC, 0005 FFCE 004C FFEC, 0010 FFB0 0034 FFFD, 0010 FFB0 004C FFFD,
+000F 0032 0034 FFEC, 002C 0032 004C FFEC, 0010 0050 0034 FFFD, 0001 0050 004C FFFD, 0000 FFCE 0034 FFEC, 0002 FFCE 004C FFEC, 0007 FFB0 0034 FFFD, 0031 FFB0 004C FFFD,
+0003 0032 0034 FFEC, 0006 0032 004C FFEC, 002D 0050 0034 FFFD, 002E 0050 004C FFFD, 000E FFCE 0034 FFEC, 0010 FFCE 004C FFEC, 0030 FFB0 0034 FFFD, 0010 FFB0 004C FFFD,
+0013 0032 0034 FFEC, 0013 0032 004C FFEC, 0013 0050 0034 FFFD, 0013 0050 004C FFFD, 0014 FFCE 0034 FFEC, 0014 FFCE 004C FFEC, 0014 FFB0 0034 FFFD, 0014 FFB0 004C FFFD,
 0025 0032 0034 FFEC, 0023 0032 004C FFEC, 0022 0050 0034 FFFD, 0024 0050 004C FFFD, 0020 FFCE 0034 FFEC, 001E FFCE 004C FFEC, 0021 FFB0 0034 FFFD, 001F FFB0 004C FFFD,
 
 
 
 
-init = 808649B0 = 
-id 0004 
-type 06 
-room 00 
-flags 00000019 
-objectid 0001 
-0000 
-size 000001C4 
+init = 808649B0 =
+id 0004
+type 06
+room 00
+flags 00000019
+objectid 0001
+0000
+size 000001C4
 init 80862E28 - C00708
 0x00000000: addiu $sp, $sp, -0x18
 0x00000004: sw $ra, 0x14($sp)
@@ -215,37 +215,37 @@ init 80862E28 - C00708
 0x00000010: jal 0x862c0c ; c004ec
 0x00000014: lw $a0, 0x18($sp)
 0x00000018: lw $a0, 0x18($sp)
-0x0000001c: jal 0x862d84 ; 
+0x0000001c: jal 0x862d84 ;
 0x00000020: lw $a1, 0x1c($sp)
 0x00000024: lw $ra, 0x14($sp)
 0x00000028: addiu $sp, $sp, 0x18
 0x0000002c: jr $ra
-0x00000030: nop 
+0x00000030: nop
 
-	.word data_80A3A780
-	.word data_80A3A8C4
-	.word data_80A3A8C4
-	.word data_80A3A8C4
-	.word data_80A3A858
-	.word data_80A3A87C
-	.word data_80A3A8A0
-	.word data_80A3A7A4
-	.word data_80A3A7C8
-	.word data_80A3A7EC
-	.word data_80A3A810
-	.word data_80A3A834
+    .word data_80A3A780
+    .word data_80A3A8C4
+    .word data_80A3A8C4
+    .word data_80A3A8C4
+    .word data_80A3A858
+    .word data_80A3A87C
+    .word data_80A3A8A0
+    .word data_80A3A7A4
+    .word data_80A3A7C8
+    .word data_80A3A7EC
+    .word data_80A3A810
+    .word data_80A3A834
 
 func_0x862c0c_C004EC:
 0x00000000: lh $t6, 0x1c($a0)      ; t6 = var
 0x00000004: addiu $t7, $t6, -0x11  ; t7 = var - 0x11
-0x00000008: sltiu $at, $t7, 0xc    
+0x00000008: sltiu $at, $t7, 0xc
 0x0000000c: beqz $at, 0x16c        ; if not 0x11 < var < 0x1D, return
 0x00000010: sll $t7, $t7, 2        ; t7 = t7 << 2
 0x00000014: lui $at, 0x8086
 0x00000018: addu $at, $at, $t7
 0x0000001c: lw $t7, 0x5040($at)    ; t7 = (?? + t7)
 0x00000020: jr $t7
-0x00000024: nop 
+0x00000024: nop
 
 0x00000028: lui $t8, 0x8012
 0x0000002c: lhu $t8, -0x4b40($t8)
@@ -339,7 +339,7 @@ func_0x862c0c_C004EC:
 
 0x0000016c: move $v0, $zero
 0x00000170: jr $ra
-0x00000174: nop 
+0x00000174: nop
 
 
 func_0x862d84_c00664:
@@ -349,17 +349,17 @@ func_0x862d84_c00664:
 0x0000000c: move $a3, $a1
 0x00000010: lh $v1, 0x1c($a2)   ; v1 = variable
 0x00000014: lui $a1, 0x8086
-0x00000018: slti $at, $v1, 0x32 
-0x0000001c: bnez $at, 0x3c      
+0x00000018: slti $at, $v1, 0x32
+0x0000001c: bnez $at, 0x3c
 0x00000020: sll $t6, $v1, 5     ; t6 = variable << 5 (row offset)
 0x00000024: bgezl $v1, 0x40     ; if variable not between 0-0x32
 0x00000028: lui $at, 1
 
-	; shop item id not valid range
-	0x0000002c: jal 0x20eb4
-	0x00000030: move $a0, $a2
-	0x00000034: b 0x98
-	0x00000038: lw $ra, 0x14($sp)
+    ; shop item id not valid range
+    0x0000002c: jal 0x20eb4
+    0x00000030: move $a0, $a2
+    0x00000034: b 0x98
+    0x00000038: lw $ra, 0x14($sp)
 
 ; shop item id valid range
 0x0000003c: lui $at, 1
@@ -390,7 +390,7 @@ func_0x862d84_c00664:
 0x00000094: lw $ra, 0x14($sp)
 0x00000098: addiu $sp, $sp, 0x20
 0x0000009c: jr $ra
-0x000000a0: nop 
+0x000000a0: nop
 
 
 dest 80862E5C_c0073c
@@ -405,20 +405,20 @@ dest 80862E5C_c0073c
 0x00000020: lw $ra, 0x14($sp)
 0x00000024: addiu $sp, $sp, 0x18
 0x00000028: jr $ra
-0x0000002c: nop 
+0x0000002c: nop
 
 main 808648A8 - C02188
 0x00000000: addiu $sp, $sp, -0x18
 0x00000004: sw $ra, 0x14($sp)
 0x00000008: lw $t9, 0x188($a0)
 0x0000000c: jalr $t9
-0x00000010: nop 
+0x00000010: nop
 0x00000014: lw $ra, 0x14($sp)
 0x00000018: addiu $sp, $sp, 0x18
 0x0000001c: jr $ra
-0x00000020: nop 
+0x00000020: nop
 
-draw 00000000 
+draw 00000000
 
 
 
@@ -451,12 +451,12 @@ func_0x00A984B4:
 0x0000003c: swc1 $f6, 0x48($sp)
 0x00000040: lb $t7, 0xa4f($v0)
 0x00000044: mtc1 $t7, $f8
-0x00000048: nop 
+0x00000048: nop
 0x0000004c: cvt.s.w $f10, $f8
 0x00000050: swc1 $f10, 0x4c($sp)
 0x00000054: lb $t8, 0xa50($v0)
 0x00000058: mtc1 $t8, $f16
-0x0000005c: nop 
+0x0000005c: nop
 0x00000060: cvt.s.w $f18, $f16
 0x00000064: swc1 $f18, 0x50($sp)
 0x00000068: jal 0x22400
@@ -525,12 +525,12 @@ func_0x00A98398:
 0x0000003c: swc1 $f6, 0x48($sp)
 0x00000040: lb $t7, 0xa4f($v0)
 0x00000044: mtc1 $t7, $f8
-0x00000048: nop 
+0x00000048: nop
 0x0000004c: cvt.s.w $f10, $f8
 0x00000050: swc1 $f10, 0x4c($sp)
 0x00000054: lb $t8, 0xa50($v0)
 0x00000058: mtc1 $t8, $f16
-0x0000005c: nop 
+0x0000005c: nop
 0x00000060: cvt.s.w $f18, $f16
 0x00000064: swc1 $f18, 0x50($sp)
 0x00000068: jal 0x223c8
@@ -577,7 +577,7 @@ func_0x00A98398:
 0x0000010c: lw $s0, 0x18($sp)
 0x00000110: addiu $sp, $sp, 0x58
 0x00000114: jr $ra
-0x00000118: nop 
+0x00000118: nop
 
 
 func_0x00C021AC:
@@ -597,7 +597,7 @@ func_0x00C021AC:
 0x00000034: lw $ra, 0x14($sp)
 0x00000038: addiu $sp, $sp, 0x18
 0x0000003c: jr $ra
-0x00000040: nop 
+0x00000040: nop
 
 
 
@@ -624,120 +624,120 @@ ext_func_0x71420_AE7370:
 0x00000020: sll $a1, $v1, 0x10
 0x00000024: bnez $at, 0x44          ; if item id < 0x8A
 0x00000028: sra $a1, $a1, 0x10      ; a1 = v1 & 0x0000FFFF
-	0x0000002c: sll $t7, $v0, 1         ; t7 = item id << 1
-	0x00000030: lui $t8, 0x800f
-	0x00000034: addu $t8, $t8, $t7      
-	0x00000038: lh $t8, 0x7400($t8)     ; t8 = *(??? + item id)
-	0x0000003c: addu $t9, $a2, $t8      ; t9 = a2 + t8
-	0x00000040: lbu $a1, ($t9)          ; a1 = (t9)
+    0x0000002c: sll $t7, $v0, 1         ; t7 = item id << 1
+    0x00000030: lui $t8, 0x800f
+    0x00000034: addu $t8, $t8, $t7
+    0x00000038: lh $t8, 0x7400($t8)     ; t8 = *(??? + item id)
+    0x0000003c: addu $t9, $a2, $t8      ; t9 = a2 + t8
+    0x00000040: lbu $a1, ($t9)          ; a1 = (t9)
 
-0x00000044: slti $at, $v0, 0x66      
+0x00000044: slti $at, $v0, 0x66
 0x00000048: bnez $at, 0x60          ; if item id >= 0x66
 0x0000004c: slti $at, $v0, 0x6c
 0x00000050: beql $at, $zero, 0x64   ; if item id < 0x6C
 0x00000054: slti $at, $v0, 0x6c
-	0x00000058: jr $ra
-	0x0000005c: addiu $v0, $zero, 0xff ; return FF if medallion
+    0x00000058: jr $ra
+    0x0000005c: addiu $v0, $zero, 0xff ; return FF if medallion
 
 0x00000060: slti $at, $v0, 0x6c
 0x00000064: bnez $at, 0x7c          ; if item id >= 0x6C
-0x00000068: slti $at, $v0, 0x72  
+0x00000068: slti $at, $v0, 0x72
 0x0000006c: beql $at, $zero, 0x80   ; if item id < 0x80
 0x00000070: slti $at, $v0, 0x3b
-	0x00000074: jr $ra
-	0x00000078: addiu $v0, $zero, 0xff ; return if more junk...
+    0x00000074: jr $ra
+    0x00000078: addiu $v0, $zero, 0xff ; return if more junk...
 
 0x0000007c: slti $at, $v0, 0x3b
 0x00000080: bnez $at, 0xdc          ; if item id >= 0x3B
 0x00000084: slti $at, $v0, 0x3e
 0x00000088: beqz $at, 0xdc          ; if item id < 0x3E
 0x0000008c: addiu $at, $zero, 0x3d
-	0x00000090: bne $v0, $at, 0xa0  ; if item id == 0x3D
-	0x00000094: sll $t0, $v0, 2     ; t0 = item id << 2
-		0x00000098: jr $ra
-		0x0000009c: addiu $v0, $zero, 0xff ; return FF if biggoron sword
-	; if swords
-	0x000000a0: lui $t1, 0x8010
-	0x000000a4: addu $t1, $t1, $t0
-	0x000000a8: lui $t2, 0x8010
-	0x000000ac: lbu $t2, -0x7340($t2); t2 = ???
-	0x000000b0: lw $t1, -0x74fc($t1) ; t1 = (??? + item id)
-	0x000000b4: lui $t4, 0x8012
-	0x000000b8: lhu $t4, -0x5994($t4); t4 = ???
-	0x000000bc: sllv $t3, $t1, $t2   ; t3 = t1 << t2
-	0x000000c0: and $t5, $t3, $t4    ; t5 = t3 & t4
-	0x000000c4: beqz $t5, 0xd4       ; if t5 is found
-	0x000000c8: nop 
-		0x000000cc: jr $ra
-		0x000000d0: move $v0, $a0  ; return item if found
-	0x000000d4: jr $ra
-	0x000000d8: addiu $v0, $zero, 0xff ; return ff
+    0x00000090: bne $v0, $at, 0xa0  ; if item id == 0x3D
+    0x00000094: sll $t0, $v0, 2     ; t0 = item id << 2
+        0x00000098: jr $ra
+        0x0000009c: addiu $v0, $zero, 0xff ; return FF if biggoron sword
+    ; if swords
+    0x000000a0: lui $t1, 0x8010
+    0x000000a4: addu $t1, $t1, $t0
+    0x000000a8: lui $t2, 0x8010
+    0x000000ac: lbu $t2, -0x7340($t2); t2 = ???
+    0x000000b0: lw $t1, -0x74fc($t1) ; t1 = (??? + item id)
+    0x000000b4: lui $t4, 0x8012
+    0x000000b8: lhu $t4, -0x5994($t4); t4 = ???
+    0x000000bc: sllv $t3, $t1, $t2   ; t3 = t1 << t2
+    0x000000c0: and $t5, $t3, $t4    ; t5 = t3 & t4
+    0x000000c4: beqz $t5, 0xd4       ; if t5 is found
+    0x000000c8: nop
+        0x000000cc: jr $ra
+        0x000000d0: move $v0, $a0  ; return item if found
+    0x000000d4: jr $ra
+    0x000000d8: addiu $v0, $zero, 0xff ; return ff
 
 0x000000dc: slti $at, $v0, 0x3e
 0x000000e0: bnez $at, 0x12c        ; if item id >= 0x3E
 0x000000e4: slti $at, $v0, 0x41
 0x000000e8: beqz $at, 0x12c        ; if item id < 0x41
 0x000000ec: sll $t6, $v0, 2
-	; if shields
-	0x000000f0: lui $t7, 0x8010
-	0x000000f4: addu $t7, $t7, $t6
-	0x000000f8: lui $t8, 0x8010
-	0x000000fc: lbu $t8, -0x733f($t8)
-	0x00000100: lw $t7, -0x7508($t7)
-	0x00000104: lui $t0, 0x8012
-	0x00000108: lhu $t0, -0x5994($t0)
-	0x0000010c: sllv $t9, $t7, $t8
-	0x00000110: and $t1, $t9, $t0
-	0x00000114: beqz $t1, 0x124
-	0x00000118: nop 
-	0x0000011c: jr $ra
-	0x00000120: move $v0, $a0
-	0x00000124: jr $ra
-	0x00000128: addiu $v0, $zero, 0xff
+    ; if shields
+    0x000000f0: lui $t7, 0x8010
+    0x000000f4: addu $t7, $t7, $t6
+    0x000000f8: lui $t8, 0x8010
+    0x000000fc: lbu $t8, -0x733f($t8)
+    0x00000100: lw $t7, -0x7508($t7)
+    0x00000104: lui $t0, 0x8012
+    0x00000108: lhu $t0, -0x5994($t0)
+    0x0000010c: sllv $t9, $t7, $t8
+    0x00000110: and $t1, $t9, $t0
+    0x00000114: beqz $t1, 0x124
+    0x00000118: nop
+    0x0000011c: jr $ra
+    0x00000120: move $v0, $a0
+    0x00000124: jr $ra
+    0x00000128: addiu $v0, $zero, 0xff
 
-0x0000012c: slti $at, $v0, 0x41  
+0x0000012c: slti $at, $v0, 0x41
 0x00000130: bnez $at, 0x17c       ; if item id >= 0x41
 0x00000134: slti $at, $v0, 0x44
 0x00000138: beqz $at, 0x17c       ; if item id < 0x44
 0x0000013c: sll $t2, $v0, 2
-	; tunics
-	0x00000140: lui $t3, 0x8010
-	0x00000144: addu $t3, $t3, $t2
-	0x00000148: lui $t4, 0x8010
-	0x0000014c: lbu $t4, -0x733e($t4)
-	0x00000150: lw $t3, -0x7514($t3)
-	0x00000154: lui $t6, 0x8012
-	0x00000158: lhu $t6, -0x5994($t6)
-	0x0000015c: sllv $t5, $t3, $t4
-	0x00000160: and $t7, $t5, $t6
-	0x00000164: beqz $t7, 0x174
-	0x00000168: nop 
-	0x0000016c: jr $ra
-	0x00000170: move $v0, $a0
-	0x00000174: jr $ra
-	0x00000178: addiu $v0, $zero, 0xff
+    ; tunics
+    0x00000140: lui $t3, 0x8010
+    0x00000144: addu $t3, $t3, $t2
+    0x00000148: lui $t4, 0x8010
+    0x0000014c: lbu $t4, -0x733e($t4)
+    0x00000150: lw $t3, -0x7514($t3)
+    0x00000154: lui $t6, 0x8012
+    0x00000158: lhu $t6, -0x5994($t6)
+    0x0000015c: sllv $t5, $t3, $t4
+    0x00000160: and $t7, $t5, $t6
+    0x00000164: beqz $t7, 0x174
+    0x00000168: nop
+    0x0000016c: jr $ra
+    0x00000170: move $v0, $a0
+    0x00000174: jr $ra
+    0x00000178: addiu $v0, $zero, 0xff
 
 0x0000017c: slti $at, $v0, 0x44
 0x00000180: bnez $at, 0x1cc      ; if item id >= 0x44
 0x00000184: slti $at, $v0, 0x47
 0x00000188: beqz $at, 0x1cc      ; if item id < 0x47
 0x0000018c: sll $t8, $v0, 2
-	; if boots
-	0x00000190: lui $t9, 0x8010
-	0x00000194: addu $t9, $t9, $t8
-	0x00000198: lui $t0, 0x8010
-	0x0000019c: lbu $t0, -0x733d($t0)
-	0x000001a0: lw $t9, -0x7520($t9)
-	0x000001a4: lui $t2, 0x8012
-	0x000001a8: lhu $t2, -0x5994($t2)
-	0x000001ac: sllv $t1, $t9, $t0
-	0x000001b0: and $t3, $t1, $t2
-	0x000001b4: beqz $t3, 0x1c4
-	0x000001b8: nop 
-	0x000001bc: jr $ra
-	0x000001c0: move $v0, $a0
-	0x000001c4: jr $ra
-	0x000001c8: addiu $v0, $zero, 0xff
+    ; if boots
+    0x00000190: lui $t9, 0x8010
+    0x00000194: addu $t9, $t9, $t8
+    0x00000198: lui $t0, 0x8010
+    0x0000019c: lbu $t0, -0x733d($t0)
+    0x000001a0: lw $t9, -0x7520($t9)
+    0x000001a4: lui $t2, 0x8012
+    0x000001a8: lhu $t2, -0x5994($t2)
+    0x000001ac: sllv $t1, $t9, $t0
+    0x000001b0: and $t3, $t1, $t2
+    0x000001b4: beqz $t3, 0x1c4
+    0x000001b8: nop
+    0x000001bc: jr $ra
+    0x000001c0: move $v0, $a0
+    0x000001c4: jr $ra
+    0x000001c8: addiu $v0, $zero, 0xff
 
 0x000001cc: addiu $at, $zero, 0x74
 0x000001d0: beq $v0, $at, 0x1e8      ; if item id == 0x74 ;boss key
@@ -746,110 +746,110 @@ ext_func_0x71420_AE7370:
 0x000001dc: addiu $at, $zero, 0x76
 0x000001e0: bnel $v0, $at, 0x1f4     ; if item id == 0x76 ;map
 0x000001e4: addiu $at, $zero, 0x77
-	0x000001e8: jr $ra
-	0x000001ec: addiu $v0, $zero, 0xff ; return ff
+    0x000001e8: jr $ra
+    0x000001ec: addiu $v0, $zero, 0xff ; return ff
 
 0x000001f0: addiu $at, $zero, 0x77
 0x000001f4: bnel $v0, $at, 0x208      ; if item id == 0x77 ;key
 0x000001f8: slti $at, $v0, 6
-	0x000001fc: jr $ra
-	0x00000200: addiu $v0, $zero, 0xff ; return ff
+    0x000001fc: jr $ra
+    0x00000200: addiu $v0, $zero, 0xff ; return ff
 
 0x00000204: slti $at, $v0, 6
 0x00000208: bnez $at, 0x220         ; if item id >= 0x06
 0x0000020c: slti $at, $v0, 0xa
 0x00000210: beql $at, $zero, 0x224  ; if item id < 0x0A
 0x00000214: addiu $at, $zero, 0x96
-	; slingshot, ocarina, bombchu, hookshot = FF
-	0x00000218: jr $ra
-	0x0000021c: addiu $v0, $zero, 0xff
+    ; slingshot, ocarina, bombchu, hookshot = FF
+    0x00000218: jr $ra
+    0x0000021c: addiu $v0, $zero, 0xff
 
 0x00000220: addiu $at, $zero, 0x96
 0x00000224: beq $v0, $at, 0x234     ; if item id == 0x96 ; bombchu 5
 0x00000228: addiu $at, $zero, 0x97
 0x0000022c: bnel $v0, $at, 0x240    ; if item id == 0x97 ; bombchu 20
 0x00000230: addiu $at, $zero, 0x4a
-	; bombchus (5/20) = FF
-	0x00000234: jr $ra
-	0x00000238: addiu $v0, $zero, 0xff
+    ; bombchus (5/20) = FF
+    0x00000234: jr $ra
+    0x00000238: addiu $v0, $zero, 0xff
 
 0x0000023c: addiu $at, $zero, 0x4a
 0x00000240: beq $v0, $at, 0x250     ; if item id == 0x4A ; quiver 30
 0x00000244: lui $t4, 0x8012
 0x00000248: addiu $at, $zero, 3
 0x0000024c: bne $v0, $at, 0x284     ; if item id == 0x03 ; bow
-	0x00000250: lui $t5, 0x8010
-	0x00000254: lw $t5, -0x7380($t5)
-	0x00000258: lw $t4, -0x5990($t4)
-	0x0000025c: lui $t7, 0x8010
-	0x00000260: lbu $t7, -0x733c($t7)
-	0x00000264: and $t6, $t4, $t5
-	0x00000268: srav $t8, $t6, $t7
-	0x0000026c: bnez $t8, 0x27c
-	0x00000270: nop 
-	0x00000274: jr $ra
-	0x00000278: addiu $v0, $zero, 0xff ; if no bow, return FF
-	0x0000027c: jr $ra
-	0x00000280: move $v0, $zero        ; if bow, return 0
+    0x00000250: lui $t5, 0x8010
+    0x00000254: lw $t5, -0x7380($t5)
+    0x00000258: lw $t4, -0x5990($t4)
+    0x0000025c: lui $t7, 0x8010
+    0x00000260: lbu $t7, -0x733c($t7)
+    0x00000264: and $t6, $t4, $t5
+    0x00000268: srav $t8, $t6, $t7
+    0x0000026c: bnez $t8, 0x27c
+    0x00000270: nop
+    0x00000274: jr $ra
+    0x00000278: addiu $v0, $zero, 0xff ; if no bow, return FF
+    0x0000027c: jr $ra
+    0x00000280: move $v0, $zero        ; if bow, return 0
 
 0x00000284: addiu $at, $zero, 0x4b
 0x00000288: beq $v0, $at, 0x298     ; if item id == 0x4B ; quiver 40
 0x0000028c: addiu $at, $zero, 0x4c
 0x00000290: bnel $v0, $at, 0x2a4    ; if item id == 0x4C ; quiver 50
 0x00000294: addiu $at, $zero, 0x48
-	0x00000298: jr $ra
-	0x0000029c: addiu $v0, $zero, 0xff ; return FF
+    0x00000298: jr $ra
+    0x0000029c: addiu $v0, $zero, 0xff ; return FF
 
 0x000002a0: addiu $at, $zero, 0x48
 0x000002a4: beq $v0, $at, 0x2b4     ; if item id == 0x48 ; bullet bag 40
 0x000002a8: addiu $at, $zero, 0x49
 0x000002ac: bnel $v0, $at, 0x2c0    ; if item id == 0x49 ; bullet bag 50
 0x000002b0: addiu $at, $zero, 0x4d
-	0x000002b4: jr $ra
-	0x000002b8: addiu $v0, $zero, 0xff ; return ff
+    0x000002b4: jr $ra
+    0x000002b8: addiu $v0, $zero, 0xff ; return ff
 
 0x000002bc: addiu $at, $zero, 0x4d
 0x000002c0: beq $v0, $at, 0x2d0     ; if item id == 0x4D ; bomb bag 20
 0x000002c4: lui $t9, 0x8012
 0x000002c8: addiu $at, $zero, 2
 0x000002cc: bne $v0, $at, 0x304     ; if item id == 0x02 ; bombs
-	0x000002d0: lui $t0, 0x8010
-	0x000002d4: lw $t0, -0x737c($t0)
-	0x000002d8: lw $t9, -0x5990($t9)
-	0x000002dc: lui $t2, 0x8010
-	0x000002e0: lbu $t2, -0x733b($t2)
-	0x000002e4: and $t1, $t9, $t0
-	0x000002e8: srav $t3, $t1, $t2
-	0x000002ec: bnez $t3, 0x2fc
-	0x000002f0: nop 
-	0x000002f4: jr $ra
-	0x000002f8: addiu $v0, $zero, 0xff ; if no bomb, return ff
-	0x000002fc: jr $ra
-	0x00000300: move $v0, $zero        ; if bomb, return 0
+    0x000002d0: lui $t0, 0x8010
+    0x000002d4: lw $t0, -0x737c($t0)
+    0x000002d8: lw $t9, -0x5990($t9)
+    0x000002dc: lui $t2, 0x8010
+    0x000002e0: lbu $t2, -0x733b($t2)
+    0x000002e4: and $t1, $t9, $t0
+    0x000002e8: srav $t3, $t1, $t2
+    0x000002ec: bnez $t3, 0x2fc
+    0x000002f0: nop
+    0x000002f4: jr $ra
+    0x000002f8: addiu $v0, $zero, 0xff ; if no bomb, return ff
+    0x000002fc: jr $ra
+    0x00000300: move $v0, $zero        ; if bomb, return 0
 
 0x00000304: slti $at, $v0, 0x98
 0x00000308: bnez $at, 0x320         ; if item id >= 0x98
 0x0000030c: slti $at, $v0, 0x9c
 0x00000310: beql $at, $zero, 0x324  ; if item id < 0x9C
 0x00000314: slti $at, $v0, 0x4e
-	; stick and nut capacity upgrades = FF
-	0x00000318: jr $ra
-	0x0000031c: addiu $v0, $zero, 0xff
+    ; stick and nut capacity upgrades = FF
+    0x00000318: jr $ra
+    0x0000031c: addiu $v0, $zero, 0xff
 
 0x00000320: slti $at, $v0, 0x4e
 0x00000324: bnez $at, 0x33c         ; if item id >= 0x4E
 0x00000328: slti $at, $v0, 0x58
 0x0000032c: beql $at, $zero, 0x340  ; if item id < 0x58
-	; bomb bag 30/40, bracelets, scales, wallets = FF
-	0x00000330: addiu $at, $zero, 0xb
-	0x00000334: jr $ra
-	0x00000338: addiu $v0, $zero, 0xff
+    ; bomb bag 30/40, bracelets, scales, wallets = FF
+    0x00000330: addiu $at, $zero, 0xb
+    0x00000334: jr $ra
+    0x00000338: addiu $v0, $zero, 0xff
 
 0x0000033c: addiu $at, $zero, 0xb
 0x00000340: bnel $v0, $at, 0x354    ; if item id == 0x0B ; longshot
 0x00000344: addiu $at, $zero, 0x58
-	0x00000348: jr $ra
-	0x0000034c: addiu $v0, $zero, 0xff ; return FF
+    0x00000348: jr $ra
+    0x0000034c: addiu $v0, $zero, 0xff ; return FF
 
 0x00000350: addiu $at, $zero, 0x58
 0x00000354: beq $v0, $at, 0x368     ; if item id == 0x58 ; deku seeds 5
@@ -857,40 +857,40 @@ ext_func_0x71420_AE7370:
 0x0000035c: addiu $at, $zero, 0x95
 0x00000360: bnel $v0, $at, 0x38c    ; if item id == 0x95 ; deku seeds 30
 0x00000364: addiu $at, $zero, 0x10
-	0x00000368: lhu $t4, -0x4b3e($t4)
-	0x0000036c: andi $t5, $t4, 8
-	0x00000370: bnez $t5, 0x380
-	0x00000374: nop 
-	0x00000378: jr $ra
-	0x0000037c: addiu $v0, $zero, 0xff ; if no seed bag, return ff
-	0x00000380: jr $ra
-	0x00000384: addiu $v0, $zero, 0x58 ; if seed bag, return 58
+    0x00000368: lhu $t4, -0x4b3e($t4)
+    0x0000036c: andi $t5, $t4, 8
+    0x00000370: bnez $t5, 0x380
+    0x00000374: nop
+    0x00000378: jr $ra
+    0x0000037c: addiu $v0, $zero, 0xff ; if no seed bag, return ff
+    0x00000380: jr $ra
+    0x00000384: addiu $v0, $zero, 0x58 ; if seed bag, return 58
 
 0x00000388: addiu $at, $zero, 0x10
 0x0000038c: bnel $v0, $at, 0x3a0    ; if item id == 0x10 ; magic bean
 0x00000390: addiu $at, $zero, 0x7a
-	0x00000394: jr $ra
-	0x00000398: addiu $v0, $zero, 0xff ; return FF
+    0x00000394: jr $ra
+    0x00000398: addiu $v0, $zero, 0xff ; return FF
 
 0x0000039c: addiu $at, $zero, 0x7a
 0x000003a0: beq $v0, $at, 0x3b0     ; if item id == 0x7A ; heart piece
 0x000003a4: addiu $at, $zero, 0x73
 0x000003a8: bnel $v0, $at, 0x3bc    ; if item id == 0x73 ; heart piece
 0x000003ac: addiu $at, $zero, 0x72
-	0x000003b0: jr $ra
-	0x000003b4: addiu $v0, $zero, 0xff ; return FF
+    0x000003b0: jr $ra
+    0x000003b4: addiu $v0, $zero, 0xff ; return FF
 
 0x000003b8: addiu $at, $zero, 0x72
 0x000003bc: bnel $v0, $at, 0x3d0    ; if item id == 0x72 ; heart container
 0x000003c0: addiu $at, $zero, 0x83
-	0x000003c4: jr $ra
-	0x000003c8: addiu $v0, $zero, 0xff ; return FF
+    0x000003c4: jr $ra
+    0x000003c8: addiu $v0, $zero, 0xff ; return FF
 
 0x000003cc: addiu $at, $zero, 0x83
 0x000003d0: bnel $v0, $at, 0x3e4    ; if item id == 0x83 ; recovery heart
 0x000003d4: addiu $at, $zero, 0x78
-	0x000003d8: jr $ra
-	0x000003dc: addiu $v0, $zero, 0x83 ; return 83
+    0x000003d8: jr $ra
+    0x000003dc: addiu $v0, $zero, 0x83 ; return 83
 
 0x000003e0: addiu $at, $zero, 0x78
 0x000003e4: beq $v0, $at, 0x3f8    ; if item id == 0x78 ; small magic refill
@@ -898,100 +898,100 @@ ext_func_0x71420_AE7370:
 0x000003ec: addiu $at, $zero, 0x79
 0x000003f0: bnel $v0, $at, 0x41c   ; if item id == 0x79 ; large magic refill
 0x000003f4: slti $at, $v0, 0x84
-	0x000003f8: lhu $t6, -0x4b06($t6)
-	0x000003fc: andi $t7, $t6, 0x100
-	0x00000400: bnez $t7, 0x410
-	0x00000404: nop 
-	0x00000408: jr $ra
-	0x0000040c: addiu $v0, $zero, 0xff ; no magic = return ff
-	0x00000410: jr $ra
-	0x00000414: move $v0, $a0 ; magic = return item id
+    0x000003f8: lhu $t6, -0x4b06($t6)
+    0x000003fc: andi $t7, $t6, 0x100
+    0x00000400: bnez $t7, 0x410
+    0x00000404: nop
+    0x00000408: jr $ra
+    0x0000040c: addiu $v0, $zero, 0xff ; no magic = return ff
+    0x00000410: jr $ra
+    0x00000414: move $v0, $a0 ; magic = return item id
 
 0x00000418: slti $at, $v0, 0x84
 0x0000041c: bnez $at, 0x438        ; if item id >= 0x84
 0x00000420: addiu $a2, $zero, 0x14
 0x00000424: slti $at, $v0, 0x8a
 0x00000428: beqz $at, 0x438        ; if item id < 0x8A
-0x0000042c: nop 
-	; rupee 1/5/20/50/200 = FF
-	0x00000430: jr $ra
-	0x00000434: addiu $v0, $zero, 0xff
+0x0000042c: nop
+    ; rupee 1/5/20/50/200 = FF
+    0x00000430: jr $ra
+    0x00000434: addiu $v0, $zero, 0xff
 
 0x00000438: bne $a2, $v0, 0x448   ; if item id == 0x14 ; bottle
 0x0000043c: slti $at, $v0, 0x15
-	0x00000440: jr $ra
-	0x00000444: addiu $v0, $zero, 0xff ; return FF
+    0x00000440: jr $ra
+    0x00000444: addiu $v0, $zero, 0xff ; return FF
 
 0x00000448: bnez $at, 0x454       ; if item id >= 0x15
 0x0000044c: slti $at, $v0, 0x21
 0x00000450: bnez $at, 0x45c       ; if item id < 0x21
 0x00000454: addiu $at, $zero, 0x82
 0x00000458: bne $v0, $at, 0x510   ; if item id == 0x82 ; milk
-	; if item is bottled item
-	0x0000045c: sll $a0, $v1, 0x10 
-	0x00000460: addiu $at, $zero, 0x1a
-	0x00000464: beq $v0, $at, 0x4c8
-	0x00000468: sra $a0, $a0, 0x10       ; a0 = v1 & 0x0000FFFF
-	0x0000046c: addiu $at, $zero, 0x1b
-	0x00000470: beq $v0, $at, 0x4c8      ; if item id == 0x1B ; ruto's letter
-	0x00000474: lui $t8, 0x8012
-	0x00000478: addiu $at, $zero, 0x82
-	0x0000047c: bne $v0, $at, 0x48c      ; if item id == 0x82 ; milk
-	0x00000480: addiu $t8, $t8, -0x5a30  ; t8 = inventory
-		0x00000484: lui $a0, 0x8010
-		0x00000488: lbu $a0, -0x70b2($a0) ; a0 = ??
-	0x0000048c: move $v0, $zero          ; v0 = 0
-	0x00000490: addu $v1, $a0, $t8       ; v1 = inventory item slot
-	0x00000494: addu $t9, $v1, $v0       ; t9 = inventory item slot
+    ; if item is bottled item
+    0x0000045c: sll $a0, $v1, 0x10
+    0x00000460: addiu $at, $zero, 0x1a
+    0x00000464: beq $v0, $at, 0x4c8
+    0x00000468: sra $a0, $a0, 0x10       ; a0 = v1 & 0x0000FFFF
+    0x0000046c: addiu $at, $zero, 0x1b
+    0x00000470: beq $v0, $at, 0x4c8      ; if item id == 0x1B ; ruto's letter
+    0x00000474: lui $t8, 0x8012
+    0x00000478: addiu $at, $zero, 0x82
+    0x0000047c: bne $v0, $at, 0x48c      ; if item id == 0x82 ; milk
+    0x00000480: addiu $t8, $t8, -0x5a30  ; t8 = inventory
+        0x00000484: lui $a0, 0x8010
+        0x00000488: lbu $a0, -0x70b2($a0) ; a0 = ??
+    0x0000048c: move $v0, $zero          ; v0 = 0
+    0x00000490: addu $v1, $a0, $t8       ; v1 = inventory item slot
+    0x00000494: addu $t9, $v1, $v0       ; t9 = inventory item slot
 
-	0x00000498: lbu $t0, 0x74($t9)       ; t0 = inventory item
-	0x0000049c: addiu $v0, $v0, 1        ; v0++
-	0x000004a0: sll $v0, $v0, 0x10
-	0x000004a4: bne $a2, $t0, 0x4b4      ; if inventory item == item id
-	0x000004a8: sra $v0, $v0, 0x10       ; v0 = v0 & 0x0000FFFF ?
-		0x000004ac: jr $ra
-		0x000004b0: addiu $v0, $zero, 0xff ; return FF
-	0x000004b4: slti $at, $v0, 4
-	0x000004b8: bnezl $at, 0x498         ; if v0 < 4, loop
-	0x000004bc: addu $t9, $v1, $v0       ; t9 = inventory item slot
-	0x000004c0: b 0x52c                  ; return ??
-	0x000004c4: nop 
+    0x00000498: lbu $t0, 0x74($t9)       ; t0 = inventory item
+    0x0000049c: addiu $v0, $v0, 1        ; v0++
+    0x000004a0: sll $v0, $v0, 0x10
+    0x000004a4: bne $a2, $t0, 0x4b4      ; if inventory item == item id
+    0x000004a8: sra $v0, $v0, 0x10       ; v0 = v0 & 0x0000FFFF ?
+        0x000004ac: jr $ra
+        0x000004b0: addiu $v0, $zero, 0xff ; return FF
+    0x000004b4: slti $at, $v0, 4
+    0x000004b8: bnezl $at, 0x498         ; if v0 < 4, loop
+    0x000004bc: addu $t9, $v1, $v0       ; t9 = inventory item slot
+    0x000004c0: b 0x52c                  ; return ??
+    0x000004c4: nop
 
-	; ruto's letter
-	0x000004c8: lui $t1, 0x8012
-	0x000004cc: addiu $t1, $t1, -0x5a30  ; t1 = inventory
-	0x000004d0: addu $v1, $a0, $t1       ; v1 = inventory item slot
-	0x000004d4: addiu $a0, $zero, 0xff   ; a0 = FF
-	0x000004d8: move $v0, $zero          ; v0 = 0
-	0x000004dc: addu $t2, $v1, $v0       ; t2 = inventory item slot
+    ; ruto's letter
+    0x000004c8: lui $t1, 0x8012
+    0x000004cc: addiu $t1, $t1, -0x5a30  ; t1 = inventory
+    0x000004d0: addu $v1, $a0, $t1       ; v1 = inventory item slot
+    0x000004d4: addiu $a0, $zero, 0xff   ; a0 = FF
+    0x000004d8: move $v0, $zero          ; v0 = 0
+    0x000004dc: addu $t2, $v1, $v0       ; t2 = inventory item slot
 
-	0x000004e0: lbu $t3, 0x74($t2)       ; t3 = inventory item
-	0x000004e4: addiu $v0, $v0, 1        ; v0++
-	0x000004e8: sll $v0, $v0, 0x10       
-	0x000004ec: bne $a0, $t3, 0x4fc      ; if inventory item == FF
-	0x000004f0: sra $v0, $v0, 0x10       ; v0 = v0 & 0x0000FFFF ?
-		0x000004f4: jr $ra
-		0x000004f8: addiu $v0, $zero, 0xff ; return FF
-	0x000004fc: slti $at, $v0, 4
-	0x00000500: bnezl $at, 0x4e0         ; if v0 < 4, loop
-	0x00000504: addu $t2, $v1, $v0       ; t2 = inventory item slot
-	0x00000508: b 0x52c                  ; return ??
-	0x0000050c: nop 
+    0x000004e0: lbu $t3, 0x74($t2)       ; t3 = inventory item
+    0x000004e4: addiu $v0, $v0, 1        ; v0++
+    0x000004e8: sll $v0, $v0, 0x10
+    0x000004ec: bne $a0, $t3, 0x4fc      ; if inventory item == FF
+    0x000004f0: sra $v0, $v0, 0x10       ; v0 = v0 & 0x0000FFFF ?
+        0x000004f4: jr $ra
+        0x000004f8: addiu $v0, $zero, 0xff ; return FF
+    0x000004fc: slti $at, $v0, 4
+    0x00000500: bnezl $at, 0x4e0         ; if v0 < 4, loop
+    0x00000504: addu $t2, $v1, $v0       ; t2 = inventory item slot
+    0x00000508: b 0x52c                  ; return ??
+    0x0000050c: nop
 
 0x00000510: slti $at, $v0, 0x21
 0x00000514: bnez $at, 0x52c      ; if item id >= 0x21
 0x00000518: slti $at, $v0, 0x38
 0x0000051c: beqz $at, 0x52c      ; if item id >= 0x38
-0x00000520: nop 
-	; child/adult trade items
-	0x00000524: jr $ra
-	0x00000528: addiu $v0, $zero, 0xff ; return FF
+0x00000520: nop
+    ; child/adult trade items
+    0x00000524: jr $ra
+    0x00000528: addiu $v0, $zero, 0xff ; return FF
 
 0x0000052c: lui $v0, 0x8012
 0x00000530: addu $v0, $v0, $a1
 0x00000534: lbu $v0, -0x59bc($v0) ; return ???
 0x00000538: jr $ra
-0x0000053c: nop 
+0x0000053c: nop
 
 
 
@@ -1017,7 +1017,7 @@ ext_func_0x71420_AE7370:
 ;a0 = ???
 ;a1 = actor
 ;--------
-;v0 = 0 = already have one 
+;v0 = 0 = already have one
 ;     1 = can buy!
 ;     2 = can't hold any more/already own
 ;     3 = no empty bottle
@@ -1035,7 +1035,7 @@ func_0x00C0076C:
 0x0000001c: bne v0, at, 0x2c       ; if has bow
 0x00000020: lw ra, 0x14(sp)
 0x00000024: b 0xa8
-0x00000028: addiu v0, zero, 5		; if v0 == 0xFF, return v0 = 5
+0x00000028: addiu v0, zero, 5       ; if v0 == 0xFF, return v0 = 5
 
 0x0000002c: lui v0, 0x8012
 0x00000030: addiu v0, v0, -0x5a30 ; v0 = save context
@@ -1067,7 +1067,7 @@ func_0x00C0076C:
 0x00000090: addiu v0, zero, 1     ; v0 = 1
 0x00000094: slt at, t6, t9       ; at = rupees < cost
 0x00000098: beqz at, 0xa8          ; if rupees < cost, return v0 = 1
-0x0000009c: nop 
+0x0000009c: nop
 0x000000a0: b 0xa8
 0x000000a4: addiu v0, zero, 4     ; return v0 = 4
 0x000000a8: jr ra
@@ -1109,11 +1109,11 @@ func_0x00C0081C:
 0x00000080: addiu v0, zero, 1
 0x00000084: slt at, t9, t0
 0x00000088: beqz at, 0x98
-0x0000008c: nop 
+0x0000008c: nop
 0x00000090: jr ra
 0x00000094: addiu v0, zero, 4
 0x00000098: jr ra
-0x0000009c: nop 
+0x0000009c: nop
 
 
 func_0x00C008BC:
@@ -1148,7 +1148,7 @@ func_0x00C008BC:
 0x00000070: lh t6, 0x1b8(a1)
 0x00000074: slt at, t5, t6
 0x00000078: beqz at, 0x88
-0x0000007c: nop 
+0x0000007c: nop
 0x00000080: b 0xa8
 0x00000084: addiu v0, zero, 4
 0x00000088: jal 0x71420
@@ -1162,7 +1162,7 @@ func_0x00C008BC:
 0x000000a8: lw ra, 0x14(sp)
 0x000000ac: addiu sp, sp, 0x18
 0x000000b0: jr ra
-0x000000b4: nop 
+0x000000b4: nop
 
 
 func_0x00C00974:
@@ -1197,7 +1197,7 @@ func_0x00C00974:
 0x00000070: lh t6, 0x1b8(a1)
 0x00000074: slt at, t5, t6
 0x00000078: beqz at, 0x88
-0x0000007c: nop 
+0x0000007c: nop
 0x00000080: b 0xa8
 0x00000084: addiu v0, zero, 4
 0x00000088: jal 0x71420
@@ -1211,7 +1211,7 @@ func_0x00C00974:
 0x000000a8: lw ra, 0x14(sp)
 0x000000ac: addiu sp, sp, 0x18
 0x000000b0: jr ra
-0x000000b4: nop 
+0x000000b4: nop
 
 
 func_0x00C00A2C:
@@ -1220,7 +1220,7 @@ func_0x00C00A2C:
 0x00000008: sw a0, 0x18(sp)
 0x0000000c: sw a1, 0x1c(sp)
 0x00000010: jal 0x71a94
-0x00000014: nop 
+0x00000014: nop
 0x00000018: bnez v0, 0x28
 0x0000001c: lw t7, 0x1c(sp)
 0x00000020: b 0x68
@@ -1230,7 +1230,7 @@ func_0x00C00A2C:
 0x00000030: lh t8, 0x1b8(t7)
 0x00000034: slt at, t6, t8
 0x00000038: beqz at, 0x48
-0x0000003c: nop 
+0x0000003c: nop
 0x00000040: b 0x68
 0x00000044: addiu v0, zero, 4
 0x00000048: jal 0x71420
@@ -1253,7 +1253,7 @@ func_0x00C00AA4:
 0x00000008: sw a0, 0x18(sp)
 0x0000000c: sw a1, 0x1c(sp)
 0x00000010: jal 0x71a94
-0x00000014: nop 
+0x00000014: nop
 0x00000018: bnez v0, 0x28
 0x0000001c: lw t7, 0x1c(sp)
 0x00000020: b 0x68
@@ -1263,7 +1263,7 @@ func_0x00C00AA4:
 0x00000030: lh t8, 0x1b8(t7)
 0x00000034: slt at, t6, t8
 0x00000038: beqz at, 0x48
-0x0000003c: nop 
+0x0000003c: nop
 0x00000040: b 0x68
 0x00000044: addiu v0, zero, 4
 0x00000048: jal 0x71420
@@ -1277,7 +1277,7 @@ func_0x00C00AA4:
 0x00000068: lw ra, 0x14(sp)
 0x0000006c: addiu sp, sp, 0x18
 0x00000070: jr ra
-0x00000074: nop 
+0x00000074: nop
 
 
 func_0x00C00B1C:
@@ -1286,7 +1286,7 @@ func_0x00C00B1C:
 0x00000008: sw a0, 0x18(sp)
 0x0000000c: sw a1, 0x1c(sp)
 0x00000010: jal 0x71a94
-0x00000014: nop 
+0x00000014: nop
 0x00000018: bnez v0, 0x28
 0x0000001c: lw t7, 0x1c(sp)
 0x00000020: b 0x68
@@ -1296,7 +1296,7 @@ func_0x00C00B1C:
 0x00000030: lh t8, 0x1b8(t7)
 0x00000034: slt at, t6, t8
 0x00000038: beqz at, 0x48
-0x0000003c: nop 
+0x0000003c: nop
 0x00000040: b 0x68
 0x00000044: addiu v0, zero, 4
 0x00000048: jal 0x71420
@@ -1310,7 +1310,7 @@ func_0x00C00B1C:
 0x00000068: lw ra, 0x14(sp)
 0x0000006c: addiu sp, sp, 0x18
 0x00000070: jr ra
-0x00000074: nop 
+0x00000074: nop
 
 
 func_0x00C00B94:
@@ -1319,7 +1319,7 @@ func_0x00C00B94:
 0x00000008: sw a0, 0x18(sp)
 0x0000000c: sw a1, 0x1c(sp)
 0x00000010: jal 0x71a94
-0x00000014: nop 
+0x00000014: nop
 0x00000018: bnez v0, 0x28
 0x0000001c: lw t7, 0x1c(sp)
 0x00000020: b 0x68
@@ -1329,7 +1329,7 @@ func_0x00C00B94:
 0x00000030: lh t8, 0x1b8(t7)
 0x00000034: slt at, t6, t8
 0x00000038: beqz at, 0x48
-0x0000003c: nop 
+0x0000003c: nop
 0x00000040: b 0x68
 0x00000044: addiu v0, zero, 4
 0x00000048: jal 0x71420
@@ -1343,7 +1343,7 @@ func_0x00C00B94:
 0x00000068: lw ra, 0x14(sp)
 0x0000006c: addiu sp, sp, 0x18
 0x00000070: jr ra
-0x00000074: nop 
+0x00000074: nop
 
 
 func_0x00C00C0C:
@@ -1369,7 +1369,7 @@ func_0x00C00C0C:
 0x0000004c: lh t1, 0x1b8(a1)
 0x00000050: slt at, t0, t1
 0x00000054: beqz at, 0x64
-0x00000058: nop 
+0x00000058: nop
 0x0000005c: b 0x84
 0x00000060: addiu v0, zero, 4
 0x00000064: jal 0x71420
@@ -1383,7 +1383,7 @@ func_0x00C00C0C:
 0x00000084: lw ra, 0x14(sp)
 0x00000088: addiu sp, sp, 0x18
 0x0000008c: jr ra
-0x00000090: nop 
+0x00000090: nop
 
 
 func_0x00C00CA0:
@@ -1404,7 +1404,7 @@ func_0x00C00CA0:
 0x00000038: lh t0, 0x1b8(a1)
 0x0000003c: slt at, t9, t0
 0x00000040: beqz at, 0x50
-0x00000044: nop 
+0x00000044: nop
 0x00000048: b 0x70
 0x0000004c: addiu v0, zero, 4
 0x00000050: jal 0x71420
@@ -1418,7 +1418,7 @@ func_0x00C00CA0:
 0x00000070: lw ra, 0x14(sp)
 0x00000074: addiu sp, sp, 0x18
 0x00000078: jr ra
-0x0000007c: nop 
+0x0000007c: nop
 
 
 func_0x00C00D20:
@@ -1439,7 +1439,7 @@ func_0x00C00D20:
 0x00000038: lh t0, 0x1b8(a1)
 0x0000003c: slt at, t9, t0
 0x00000040: beqz at, 0x50
-0x00000044: nop 
+0x00000044: nop
 0x00000048: b 0x70
 0x0000004c: addiu v0, zero, 4
 0x00000050: jal 0x71420
@@ -1453,7 +1453,7 @@ func_0x00C00D20:
 0x00000070: lw ra, 0x14(sp)
 0x00000074: addiu sp, sp, 0x18
 0x00000078: jr ra
-0x0000007c: nop 
+0x0000007c: nop
 
 
 func_0x00C00DA0:
@@ -1466,12 +1466,12 @@ func_0x00C00DA0:
 0x00000018: addiu at, zero, 5     ; at = 5
 0x0000001c: addiu v0, zero, 0x11  ; v0 = 0x11
 0x00000020: beqz t6, 0x30         ; if adult
-0x00000024: lui t7, 0x8010       
+0x00000024: lui t7, 0x8010
 0x00000028: b 0x30                ; if child, return v0 = 5
-0x0000002c: addiu v0, zero, 5     
+0x0000002c: addiu v0, zero, 5
 
 0x00000030: bne v0, at, 0x40      ; if 5 != 11???????
-0x00000034: nop 
+0x00000034: nop
 0x00000038: b 0x98
 0x0000003c: addiu v0, zero, 2     ; this is unreachable
 
@@ -1488,7 +1488,7 @@ func_0x00C00DA0:
 0x00000060: lh t1, 0x1b8(a1)      ; t1 = cost
 0x00000064: slt at, t0, t1        ; at = rupees < cost
 0x00000068: beqz at, 0x78
-0x0000006c: nop 
+0x0000006c: nop
 0x00000070: b 0x98
 0x00000074: addiu v0, zero, 4
 0x00000078: jal 0x71420
@@ -1502,7 +1502,7 @@ func_0x00C00DA0:
 0x00000098: lw ra, 0x14(sp)
 0x0000009c: addiu sp, sp, 0x18
 0x000000a0: jr ra
-0x000000a4: nop 
+0x000000a4: nop
 
 
 func_0x00C00E48:
@@ -1519,7 +1519,7 @@ func_0x00C00E48:
 0x00000028: b 0x30
 0x0000002c: addiu v0, zero, 5
 0x00000030: bne v0, at, 0x40
-0x00000034: nop 
+0x00000034: nop
 0x00000038: b 0x98
 0x0000003c: addiu v0, zero, 2
 0x00000040: lw t7, -0x73e8(t7)
@@ -1533,7 +1533,7 @@ func_0x00C00E48:
 0x00000060: lh t1, 0x1b8(a1)
 0x00000064: slt at, t0, t1
 0x00000068: beqz at, 0x78
-0x0000006c: nop 
+0x0000006c: nop
 0x00000070: b 0x98
 0x00000074: addiu v0, zero, 4
 0x00000078: jal 0x71420
@@ -1547,7 +1547,7 @@ func_0x00C00E48:
 0x00000098: lw ra, 0x14(sp)
 0x0000009c: addiu sp, sp, 0x18
 0x000000a0: jr ra
-0x000000a4: nop 
+0x000000a4: nop
 
 
 func_0x00C00EF0:
@@ -1565,11 +1565,11 @@ func_0x00C00EF0:
 0x0000002c: addiu v0, zero, 1
 0x00000030: slt at, t8, t9
 0x00000034: beqz at, 0x44
-0x00000038: nop 
+0x00000038: nop
 0x0000003c: jr ra
 0x00000040: addiu v0, zero, 4
 0x00000044: jr ra
-0x00000048: nop 
+0x00000048: nop
 
 ------------------------------------------------------------------------------------------------------------
 func_0x00C00F3C:
@@ -1581,7 +1581,7 @@ func_0x00C00F3C:
 0x00000014: lh t7, 0x1b8(a1)
 0x00000018: slt at, t6, t7
 0x0000001c: beqz at, 0x2c
-0x00000020: nop 
+0x00000020: nop
 0x00000024: b 0x4c
 0x00000028: addiu v0, zero, 4
 0x0000002c: jal 0x71420
@@ -1595,7 +1595,7 @@ func_0x00C00F3C:
 0x0000004c: lw ra, 0x14(sp)
 0x00000050: addiu sp, sp, 0x18
 0x00000054: jr ra
-0x00000058: nop 
+0x00000058: nop
 
 
 func_0x00C00F98:
@@ -1607,7 +1607,7 @@ func_0x00C00F98:
 0x00000014: lh t7, 0x1b8(a1)
 0x00000018: slt at, t6, t7
 0x0000001c: beqz at, 0x2c
-0x00000020: nop 
+0x00000020: nop
 0x00000024: b 0x4c
 0x00000028: addiu v0, zero, 4
 0x0000002c: jal 0x71420
@@ -1621,7 +1621,7 @@ func_0x00C00F98:
 0x0000004c: lw ra, 0x14(sp)
 0x00000050: addiu sp, sp, 0x18
 0x00000054: jr ra
-0x00000058: nop 
+0x00000058: nop
 
 
 func_0x00C00FF4:
@@ -1629,7 +1629,7 @@ func_0x00C00FF4:
 0x00000004: sw a1, 4(sp)
 0x00000008: addiu v0, zero, 4
 0x0000000c: jr ra
-0x00000010: nop 
+0x00000010: nop
 
 
 func_0x00C01008:
@@ -1637,7 +1637,7 @@ func_0x00C01008:
 0x00000004: sw a1, 4(sp)
 0x00000008: addiu v0, zero, 4
 0x0000000c: jr ra
-0x00000010: nop 
+0x00000010: nop
 
 
 func_0x00C0101C:
@@ -1650,10 +1650,10 @@ func_0x00C0101C:
 0x00000018: lbu t6, -0x70c3(t6) ; t6 = bombchu slot id
 0x0000001c: addu t7, v0, t6     ; t7 = save + bomchu slot id
 0x00000020: lb t8, 0x8c(t7)     ; t8 = bombchu count
-0x00000024: slti at, t8, 0x32   
+0x00000024: slti at, t8, 0x32
 0x00000028: bnezl at, 0x3c      ; if bombchu count < 50
 0x0000002c: lh t9, 0x34(v0)     ; t9 = rupees
-0x00000030: b 0x74      
+0x00000030: b 0x74
 0x00000034: addiu v0, zero, 2   ; if bombchu count >= 50, return v0 = 2
 
 0x00000038: lh t9, 0x34(v0) ; unreachable
@@ -1661,7 +1661,7 @@ func_0x00C0101C:
 0x0000003c: lh t0, 0x1b8(a1)    ; t0 = cost
 0x00000040: slt at, t9, t0
 0x00000044: beqz at, 0x54       ; if rupees < cost
-0x00000048: nop 
+0x00000048: nop
 0x0000004c: b 0x74
 0x00000050: addiu v0, zero, 4   ; if rupees < cost return v0 = 4
 
@@ -1678,7 +1678,7 @@ func_0x00C0101C:
 0x00000074: lw ra, 0x14(sp)
 0x00000078: addiu sp, sp, 0x18
 0x0000007c: jr ra
-0x00000080: nop 
+0x00000080: nop
 
 
 func_0x00C010A0:
@@ -1698,35 +1698,35 @@ func_0x00C010A0:
 0x00000034: srav t3, t1, t2       ; t3 = t1 >> t2
 0x00000038: sll t4, t3, 1         ; t4 = t3 << 1
 0x0000003c: lui t5, 0x8010
-0x00000040: addu t5, t5, t4   
+0x00000040: addu t5, t5, t4
 0x00000044: addu t7, v0, t6       ; t7 = save + ??
 0x00000048: lb t8, 0x8c(t7)       ; t8 = ammo
 0x0000004c: lhu t5, -0x730c(t5)   ; t5 = max_ammo
-0x00000050: slt at, t8, t5        
+0x00000050: slt at, t8, t5
 0x00000054: bnezl at, 0x68        ; if ammo < max_ammo
 0x00000058: lh t6, 0x34(v0)       ; t6 = rupees
-	0x0000005c: b 0xa0
-	0x00000060: addiu v0, zero, 2 ; return 2
+    0x0000005c: b 0xa0
+    0x00000060: addiu v0, zero, 2 ; return 2
 0x00000064: lh t6, 0x34(v0) ; unreachable
 
 0x00000068: lh t7, 0x1b8(a1)      ; t7 = cost
 0x0000006c: slt at, t6, t7
 0x00000070: beqz at, 0x80         ; if rupee < cost
-0x00000074: nop 
-	0x00000078: b 0xa0
-	0x0000007c: addiu v0, zero, 4 ; return 4
+0x00000074: nop
+    0x00000078: b 0xa0
+    0x0000007c: addiu v0, zero, 4 ; return 4
 0x00000080: jal 0x71420           ; v0 = item in deku seed slot
 0x00000084: addiu a0, zero, 0x58  ; a0 = deku seeds
-0x00000088: addiu at, zero, 0xff  
+0x00000088: addiu at, zero, 0xff
 0x0000008c: bnel v0, at, 0xa0     ; if no item
 0x00000090: addiu v0, zero, 1
-	0x00000094: b 0xa0
-	0x00000098: move v0, zero     ; return 0
+    0x00000094: b 0xa0
+    0x00000098: move v0, zero     ; return 0
 0x0000009c: addiu v0, zero, 1     ; return 1
 0x000000a0: lw ra, 0x14(sp)
 0x000000a4: addiu sp, sp, 0x18
 0x000000a8: jr ra
-0x000000ac: nop 
+0x000000ac: nop
 
 
 func_0x00C01150:
@@ -1734,7 +1734,7 @@ func_0x00C01150:
 0x00000004: sw a1, 4(sp)
 0x00000008: addiu v0, zero, 5
 0x0000000c: jr ra
-0x00000010: nop 
+0x00000010: nop
 
 
 func_0x00C01164:
@@ -1743,7 +1743,7 @@ func_0x00C01164:
 0x00000008: sw a0, 0x18(sp)
 0x0000000c: sw a1, 0x1c(sp)
 0x00000010: jal 0x71a94
-0x00000014: nop 
+0x00000014: nop
 0x00000018: bnez v0, 0x28
 0x0000001c: lw t7, 0x1c(sp)
 0x00000020: b 0x68
@@ -1753,7 +1753,7 @@ func_0x00C01164:
 0x00000030: lh t8, 0x1b8(t7)
 0x00000034: slt at, t6, t8
 0x00000038: beqz at, 0x48
-0x0000003c: nop 
+0x0000003c: nop
 0x00000040: b 0x68
 0x00000044: addiu v0, zero, 4
 0x00000048: jal 0x71420
@@ -1767,7 +1767,7 @@ func_0x00C01164:
 0x00000068: lw ra, 0x14(sp)
 0x0000006c: addiu sp, sp, 0x18
 0x00000070: jr ra
-0x00000074: nop 
+0x00000074: nop
 
 
 func_0x00C011DC:
@@ -1776,7 +1776,7 @@ func_0x00C011DC:
 0x00000008: sw a0, 0x18(sp)
 0x0000000c: sw a1, 0x1c(sp)
 0x00000010: jal 0x71a94
-0x00000014: nop 
+0x00000014: nop
 0x00000018: bnez v0, 0x28
 0x0000001c: lw t7, 0x1c(sp)
 0x00000020: b 0x68
@@ -1786,7 +1786,7 @@ func_0x00C011DC:
 0x00000030: lh t8, 0x1b8(t7)
 0x00000034: slt at, t6, t8
 0x00000038: beqz at, 0x48
-0x0000003c: nop 
+0x0000003c: nop
 0x00000040: b 0x68
 0x00000044: addiu v0, zero, 4
 0x00000048: jal 0x71420
@@ -1800,7 +1800,7 @@ func_0x00C011DC:
 0x00000068: lw ra, 0x14(sp)
 0x0000006c: addiu sp, sp, 0x18
 0x00000070: jr ra
-0x00000074: nop 
+0x00000074: nop
 
 
 func_0x00C01254:
@@ -1809,7 +1809,7 @@ func_0x00C01254:
 0x00000008: sw a0, 0x18(sp)
 0x0000000c: sw a1, 0x1c(sp)
 0x00000010: jal 0x71a94
-0x00000014: nop 
+0x00000014: nop
 0x00000018: bnez v0, 0x28
 0x0000001c: lw t7, 0x1c(sp)
 0x00000020: b 0x68
@@ -1819,7 +1819,7 @@ func_0x00C01254:
 0x00000030: lh t8, 0x1b8(t7)
 0x00000034: slt at, t6, t8
 0x00000038: beqz at, 0x48
-0x0000003c: nop 
+0x0000003c: nop
 0x00000040: b 0x68
 0x00000044: addiu v0, zero, 4
 0x00000048: jal 0x71420
@@ -1833,7 +1833,7 @@ func_0x00C01254:
 0x00000068: lw ra, 0x14(sp)
 0x0000006c: addiu sp, sp, 0x18
 0x00000070: jr ra
-0x00000074: nop 
+0x00000074: nop
 
 
 func_0x00C012CC:
@@ -1842,7 +1842,7 @@ func_0x00C012CC:
 0x00000008: sw a0, 0x18(sp)
 0x0000000c: sw a1, 0x1c(sp)
 0x00000010: jal 0x71a94
-0x00000014: nop 
+0x00000014: nop
 0x00000018: bnez v0, 0x28
 0x0000001c: lw t7, 0x1c(sp)
 0x00000020: b 0x68
@@ -1852,7 +1852,7 @@ func_0x00C012CC:
 0x00000030: lh t8, 0x1b8(t7)
 0x00000034: slt at, t6, t8
 0x00000038: beqz at, 0x48
-0x0000003c: nop 
+0x0000003c: nop
 0x00000040: b 0x68
 0x00000044: addiu v0, zero, 4
 0x00000048: jal 0x71420
@@ -1866,7 +1866,7 @@ func_0x00C012CC:
 0x00000068: lw ra, 0x14(sp)
 0x0000006c: addiu sp, sp, 0x18
 0x00000070: jr ra
-0x00000074: nop 
+0x00000074: nop
 
 
 
@@ -1900,14 +1900,14 @@ func_0x00C01344:
 ; subtract money
 0x00000020: lw $t7, 0x1c($sp)      ; t7 = actor
 0x00000024: lh $a0, 0x1b8($t7)     ; a0 = cost
-0x00000028: negu $a0, $a0          ; 
+0x00000028: negu $a0, $a0          ;
 0x0000002c: sll $a0, $a0, 0x10
-0x00000030: jal 0x721cc          
+0x00000030: jal 0x721cc
 0x00000034: sra $a0, $a0, 0x10     ; a0 = -cost
 0x00000038: lw $ra, 0x14($sp)
 0x0000003c: addiu $sp, $sp, 0x18
 0x00000040: jr $ra
-0x00000044: nop 
+0x00000044: nop
 
 
 func_0x00C0138C:
@@ -1924,7 +1924,7 @@ func_0x00C0138C:
 0x00000028: beq $v0, $at, 0x60    ; if count = 15
 0x0000002c: addiu $at, $zero, 0x1e
 0x00000030: beq $v0, $at, 0x70    ; if count = 20
-0x00000034: nop 
+0x00000034: nop
 0x00000038: b 0x7c ; else give nothing
 0x0000003c: lw $t7, 0x1c($sp)
 ; give bombs
@@ -1955,7 +1955,7 @@ func_0x00C0138C:
 0x00000090: lw $ra, 0x14($sp)
 0x00000094: addiu $sp, $sp, 0x18
 0x00000098: jr $ra
-0x0000009c: nop 
+0x0000009c: nop
 
 
 func_0x00C0142C:
@@ -1968,7 +1968,7 @@ func_0x00C0142C:
 0x00000018: beq $v0, $at, 0x30
 0x0000001c: addiu $at, $zero, 0xa
 0x00000020: beq $v0, $at, 0x40
-0x00000024: nop 
+0x00000024: nop
 0x00000028: b 0x4c
 0x0000002c: lw $t7, 0x1c($sp)
 0x00000030: jal 0x6fdcc
@@ -1986,7 +1986,7 @@ func_0x00C0142C:
 0x00000060: lw $ra, 0x14($sp)
 0x00000064: addiu $sp, $sp, 0x18
 0x00000068: jr $ra
-0x0000006c: nop 
+0x0000006c: nop
 
 
 func_0x00C0149C:
@@ -2004,7 +2004,7 @@ func_0x00C0149C:
 0x0000002c: lw $ra, 0x14($sp)
 0x00000030: addiu $sp, $sp, 0x18
 0x00000034: jr $ra
-0x00000038: nop 
+0x00000038: nop
 
 
 func_0x00C014D8:
@@ -2012,7 +2012,7 @@ func_0x00C014D8:
 0x00000004: sw $ra, 0x14($sp)
 0x00000008: sw $a1, 0x1c($sp)
 0x0000000c: jal 0x6fad0
-0x00000010: nop 
+0x00000010: nop
 0x00000014: lw $t7, 0x1c($sp)
 0x00000018: addiu $t6, $zero, 8
 0x0000001c: lui $at, 0x8012
@@ -2025,7 +2025,7 @@ func_0x00C014D8:
 0x00000038: lw $ra, 0x14($sp)
 0x0000003c: addiu $sp, $sp, 0x18
 0x00000040: jr $ra
-0x00000044: nop 
+0x00000044: nop
 
 
 func_0x00C01520:
@@ -2043,7 +2043,7 @@ func_0x00C01520:
 0x0000002c: lw $ra, 0x14($sp)
 0x00000030: addiu $sp, $sp, 0x18
 0x00000034: jr $ra
-0x00000038: nop 
+0x00000038: nop
 
 
 func_0x00C0155C:
@@ -2061,7 +2061,7 @@ func_0x00C0155C:
 0x0000002c: lw $ra, 0x14($sp)
 0x00000030: addiu $sp, $sp, 0x18
 0x00000034: jr $ra
-0x00000038: nop 
+0x00000038: nop
 
 
 func_0x00C01598:
@@ -2080,7 +2080,7 @@ func_0x00C01598:
 0x0000002c: lw $ra, 0x14($sp)
 0x00000030: addiu $sp, $sp, 0x18
 0x00000034: jr $ra
-0x00000038: nop 
+0x00000038: nop
 
 
 func_0x00C015D4:
@@ -2098,7 +2098,7 @@ func_0x00C015D4:
 0x0000002c: lw $ra, 0x14($sp)
 0x00000030: addiu $sp, $sp, 0x18
 0x00000034: jr $ra
-0x00000038: nop 
+0x00000038: nop
 
 
 func_0x00C01610:
@@ -2117,7 +2117,7 @@ func_0x00C01610:
 0x00000030: lw $ra, 0x14($sp)
 0x00000034: addiu $sp, $sp, 0x18
 0x00000038: jr $ra
-0x0000003c: nop 
+0x0000003c: nop
 
 
 func_0x00C01650:
@@ -2135,7 +2135,7 @@ func_0x00C01650:
 0x0000002c: lw $ra, 0x14($sp)
 0x00000030: addiu $sp, $sp, 0x18
 0x00000034: jr $ra
-0x00000038: nop 
+0x00000038: nop
 
 
 func_0x00C0168C:
@@ -2153,7 +2153,7 @@ func_0x00C0168C:
 0x0000002c: lw $ra, 0x14($sp)
 0x00000030: addiu $sp, $sp, 0x18
 0x00000034: jr $ra
-0x00000038: nop 
+0x00000038: nop
 
 
 func_0x00C016C8:
@@ -2168,7 +2168,7 @@ func_0x00C016C8:
 0x00000020: lw $ra, 0x14($sp)
 0x00000024: addiu $sp, $sp, 0x18
 0x00000028: jr $ra
-0x0000002c: nop 
+0x0000002c: nop
 
 
 func_0x00C016F8:
@@ -2183,10 +2183,10 @@ func_0x00C016F8:
 0x00000020: lw $ra, 0x14($sp)
 0x00000024: addiu $sp, $sp, 0x18
 0x00000028: jr $ra
-0x0000002c: nop 
+0x0000002c: nop
 
 
-func_0x00C01728: 
+func_0x00C01728:
 0x00000000: addiu $sp, $sp, -0x18
 0x00000004: sw $ra, 0x14($sp)
 0x00000008: sw $a1, 0x1c($sp)
@@ -2201,7 +2201,7 @@ func_0x00C01728:
 0x0000002c: lw $ra, 0x14($sp)
 0x00000030: addiu $sp, $sp, 0x18
 0x00000034: jr $ra
-0x00000038: nop 
+0x00000038: nop
 
 
 func_0x00C01764:
@@ -2222,10 +2222,10 @@ func_0x00C01764:
 0x00000038: addu $at, $at, $t7
 0x0000003c: lw $t7, 0x5070($at)
 0x00000040: jr $t7
-0x00000044: nop 
+0x00000044: nop
 0x00000048: addiu $at, $zero, 0xa
 0x0000004c: beq $v0, $at, 0xb0
-0x00000050: nop 
+0x00000050: nop
 0x00000054: b 0x10c
 0x00000058: lw $t8, 0x1c($sp)
 0x0000005c: addiu $at, $zero, 7
@@ -2234,7 +2234,7 @@ func_0x00C01764:
 0x00000068: beq $v0, $at, 0x90
 0x0000006c: addiu $at, $zero, 9
 0x00000070: beq $v0, $at, 0xa0
-0x00000074: nop 
+0x00000074: nop
 0x00000078: b 0x10c
 0x0000007c: lw $t8, 0x1c($sp)
 ; give item
@@ -2282,7 +2282,7 @@ func_0x00C01764:
 0x00000120: lw $ra, 0x14($sp)
 0x00000124: addiu $sp, $sp, 0x18
 0x00000128: jr $ra
-0x0000012c: nop 
+0x0000012c: nop
 
 
 
@@ -2321,16 +2321,16 @@ func_0x00C01894:
 0x00000004: sw ra, 0x14(sp)
 0x00000008: sw a0, 0x18(sp)
 0x0000000c: lh t6, 0x1c(a1)      ; t6 = actor variable
-0x00000010: addiu at, zero, 0xc  ; at = 0xc 
-0x00000014: lui t7, 0x8012       
+0x00000010: addiu at, zero, 0xc  ; at = 0xc
+0x00000014: lui t7, 0x8012
 0x00000018: bnel t6, at, 0x80    ; if var != 0xC Hylian Shield
 0x0000001c: lh a0, 0x1b8(a1)     ; a0 = cost
 
 0x00000020: lhu t7, -0x4b2a(t7)  ; t7 = ???
 0x00000024: lui at, 0x8086
 0x00000028: andi t8, t7, 0x40    ; t8 = t7 & 0x40
-0x0000002c: beql t8, zero, 0x80  ; if not t8flag 
-0x00000030: lh a0, 0x1b8(a1)     
+0x0000002c: beql t8, zero, 0x80  ; if not t8flag
+0x00000030: lh a0, 0x1b8(a1)
 
 ; hylian shield discount?
 0x00000034: lwc1 f12, 0x5084(at) ; f12 = ???
@@ -2361,10 +2361,10 @@ func_0x00C01894:
 0x00000090: lw ra, 0x14(sp)
 0x00000094: addiu sp, sp, 0x18
 0x00000098: jr ra
-0x0000009c: nop 
+0x0000009c: nop
 
 func_0x00C01934:
-0x00000000: addiu sp, sp, -0x1b 
+0x00000000: addiu sp, sp, -0x1b
 0x00000004: sw ra, 0x14(sp)
 0x00000008: sw a0, 0x18(sp)
 0x0000000c: lh a0, 0x1b8(a1)   ; a0 = *(a1 + 0x1B8)
@@ -2375,7 +2375,7 @@ func_0x00C01934:
 0x00000020: lw ra, 0x14(sp)
 0x00000024: addiu sp, sp, 0x18
 0x00000028: jr ra
-0x0000002c: nop 
+0x0000002c: nop
 
 func_0x00C01964:
 0x00000000: addiu sp, sp, -0x18
@@ -2389,7 +2389,7 @@ func_0x00C01964:
 0x00000020: lw ra, 0x14(sp)
 0x00000024: addiu sp, sp, 0x18
 0x00000028: jr ra
-0x0000002c: nop 
+0x0000002c: nop
 
 func_0x00C01994:
 0x00000000: addiu sp, sp, -0x18
@@ -2397,21 +2397,21 @@ func_0x00C01994:
 0x00000008: sw a0, 0x18(sp)
 0x0000000c: lh t6, 0x1c(a1)      ; t6 = actor variable
 0x00000010: addiu t7, t6, -0x15  ; t7 = t6 - 0x15 (bombchu index)
-0x00000014: sltiu at, t7, 8      ; at = t7 < 8 
+0x00000014: sltiu at, t7, 8      ; at = t7 < 8
 0x00000018: beqz at, 0xf0        ; if 0 >= bombchu index > 8 (not bombchu panic handler)
 0x0000001c: sll t7, t7, 2        ; t7 = bombchu index << 2
-0x00000020: lui at, 0x8086       
+0x00000020: lui at, 0x8086
 0x00000024: addu at, at, t7
 0x00000028: lw t7, 0x5088(at)    ; t7 = (??? + bombchu index)
 0x0000002c: jr t7                ; jump to t7
-0x00000030: nop 
+0x00000030: nop
 
 0x00000034: lui v0, 0x8012
 0x00000038: addiu v0, v0, -0x5a30 ; v0 = save context
 0x0000003c: lhu t8, 0xef0(v0)     ; t8 = item_get_flags
 0x00000040: ori t9, t8, 0x40      ; t9 = t8 | bombchu_shot_slot_flag
-0x00000044: b 0xf0                
-0x00000048: sh t9, 0xef0(v0)      ; 
+0x00000044: b 0xf0
+0x00000048: sh t9, 0xef0(v0)      ;
 
 0x0000004c: lui v0, 0x8012
 0x00000050: addiu v0, v0, -0x5a30
@@ -2470,7 +2470,7 @@ func_0x00C01994:
 0x00000104: lw ra, 0x14(sp)
 0x00000108: addiu sp, sp, 0x18
 0x0000010c: jr ra
-0x00000110: nop 
+0x00000110: nop
 
 
 ext_func_0x721cc: ; add money

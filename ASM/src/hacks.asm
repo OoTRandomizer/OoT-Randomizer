@@ -8,11 +8,10 @@
 ; Time Travel
 ;==================================================================================================
 
-
 ; Replaces:
 ;   jal     8006FDCC ; Give Item
 .org 0xCB6874 ; Bg_Toki_Swd addr 809190F4 in func_8091902C
-    jal	    give_master_sword
+    jal     give_master_sword
 
 ; Replaces:
 ;   lui/addiu a1, 0x8011A5D0
@@ -27,21 +26,32 @@
     j       after_time_travel
 
 ;==================================================================================================
+; Door of Time Fix
+;==================================================================================================
+
+.org 0xAC8608; 800526A8
+    or      a0, s0
+    lh      t6, 0x00A4(a0)
+    li      at, 67
+    nop
+    nop
+
+;==================================================================================================
 ; Item Overrides
 ;==================================================================================================
 
 ; Patch NPCs to give override-compatible items
 .org 0xDB13D3 :: .byte 0x76 ; Frog Ocarina Game
-.org 0xDF264F :: .byte 0x76 ; Ocarina memory game
+.org 0xDF2647 :: .byte 0x76 ; Ocarina memory game
 .org 0xE2F093 :: .byte 0x34 ; Bombchu Bowling Bomb Bag
 .org 0xEC9CE7 :: .byte 0x7A ; Deku Theater Mask of Truth
 
-; Runs when storing the pending item to the player instance
+; Runs when storing an incoming item to the player instance
 ; Replaces:
 ;   sb      a2, 0x0424 (a3)
 ;   sw      a0, 0x0428 (a3)
 .org 0xA98C30 ; In memory: 0x80022CD0
-    jal     store_item_data_hook
+    jal     get_item_hook
     sw      a0, 0x0428 (a3)
 
 ; Override object ID (NPCs)
@@ -85,6 +95,22 @@
     nop
     nop
 
+; Override chest speed
+; Replaces:
+;   lb      t2, 0x0002 (t1)
+;   bltz    t2, @@after_chest_speed_check
+;   nop
+;   jal     0x80071420
+;   nop
+.org 0xBDA2E8 ; In memory: 0x803952D8
+    jal     override_chest_speed
+    lb      t2, 0x0002 (t1)
+    bltz    t3, @@after_chest_speed_check
+    nop
+    nop
+.skip 4 * 22
+@@after_chest_speed_check:
+
 ; Override text ID
 ; Replaces:
 ;   lbu     a1, 0x03 (v0)
@@ -101,9 +127,9 @@
 ;   lbu     a1, 0x0000 (v0)
 .org 0xBE9AD8 ; In memory: 0x803A4AC8
     jal     override_action
-    lw      a0, 0x0028 (sp)
+    lw      v0, 0x0024 (sp)
 .skip 4
-    nop
+    lw      a0, 0x0028 (sp)
 
 ; Inventory check
 ; Replaces:
@@ -119,57 +145,150 @@
 .org 0xBE9BDC ; In memory: 0x803A4BCC
     addiu   at, r0, 0x8383 ; Make branch impossible
 
-
-
 ; Change Skulltula Token to give a different item
 ; Replaces
-;    move    a0,s1
-;    jal     0x0006fdcc                              ; call ex_06fdcc(ctx, 0x0071); VROM: 0xAE5D2C
-;    li      a1,113
-;    lw      t5,44(sp)                               ; t5 = what was *(ctx + 0x1c44) at the start of the function
-;    li      t4,10                                   ; t4 = 0x0a
-;    move    a0,s1
-;    li      a1,180                                  ; at = 0x00b4 ("You destoryed a Gold Skulltula...")
-;    move    a2,zero
-;    jal     0x000dce14                              ; call ex_0dce14(ctx, 0x00b4, 0)
-;    sh      t4,272(t5)                              ; *(t5 + 0x110) = 0x000a
+;    move    a0, s1
+;    jal     0x0006FDCC        ; call ex_06fdcc(ctx, 0x0071); VROM: 0xAE5D2C
+;    li      a1, 0x71
+;    lw      t5, 0x2C (sp)     ; t5 = what was *(ctx + 0x1c44) at the start of the function
+;    li      t4, 0x0A
+;    move    a0, s1
+;    li      a1, 0xB4          ; a1 = 0x00b4 ("You destoryed a Gold Skulltula...")
+;    move    a2, zero
+;    jal     0x000DCE14        ; call ex_0dce14(ctx, 0x00b4, 0)
+;    sh      t4, 0x110 (t5)    ; *(t5 + 0x110) = 0x000a
 .org 0xEC68BC
 .area 0x28, 0
-    lw      t5,44(sp)                    ; original code
-    li      t4,10                        ; original code
-    sh      t4,272(t5)                   ; original code
-    jal     override_skulltula_token     ; call override_skulltula_token(_, actor)
-    move    a1,s0
+    lw      t5, 0x2C (sp)                ; original code
+    li      t4, 0x0A                     ; original code
+    sh      t4, 0x110 (t5)               ; original code
+    jal     get_skulltula_token          ; call override_skulltula_token(actor)
+    move    a0, s0
 .endarea
 
 .org 0xEC69AC
 .area 0x28, 0
-    lw      t5,44(sp)                    ; original code
-    li      t4,10                        ; original code
-    sh      t4,272(t5)                   ; original code
-    jal     override_skulltula_token     ; call override_skulltula_token(_, actor)
-    move    a1,s0
+    lw      t5, 0x2C (sp)                ; original code
+    li      t4, 0x0A                     ; original code
+    sh      t4, 0x110 (t5)               ; original code
+    jal     get_skulltula_token          ; call override_skulltula_token(actor)
+    move    a0, s0
 .endarea
 
 ;==================================================================================================
 ; Every frame hooks
 ;==================================================================================================
 
-; Runs before the game state updates
+; Runs before the game state update function
 ; Replaces:
-;   lw      t9, 0x0004 (s0)
-;   or      a0, s0, r0
-.org 0xB16B50 ; In memory: 0x800A0BF0
-    jal     before_game_state_update
+;   lw      t6, 0x0018 (sp)
+;   lui     at, 0x8010
+.org 0xB12A34 ; In memory: 0x8009CAD4
+    jal     before_game_state_update_hook
     nop
 
-; Runs after the game state updates
+; Runs after the game state update function
 ; Replaces:
-;   lui     t6, 0x8012
-;   lbu     t6, 0x1212 (t6)
-.org 0xB16B60 ; In memory: 0x800A0C00
-    jal     after_game_state_update
+;   jr      ra
+;   nop
+.org 0xB12A60 ; In memory: 0x8009CB00
+    j       after_game_state_update
     nop
+
+;==================================================================================================
+; Scene init hook
+;==================================================================================================
+
+; Runs after scene init
+; Replaces:
+;   jr      ra
+;   nop
+.org 0xB12E44 ; In memory: 0x8009CEE4
+    j       after_scene_init
+    nop
+
+
+;==================================================================================================
+; Freestanding models
+;==================================================================================================
+
+; Override constructor for En_Item00 (Piece of Heart / Small Key)
+.org 0xB5D6C0
+.word item00_constructor ; Replaces 80011B4C
+
+; Replaces:
+;   jal     0x80013498 ; Piece of Heart draw function
+;   nop
+.org 0xA88F78
+    jal     heart_piece_draw
+    nop
+
+; Replaces:
+;   addiu   sp, sp, -0x48
+;   sw      ra, 0x1C (sp)
+.org 0xCA6DC0
+    j       heart_container_draw
+    nop
+
+; Replaces:
+;   lw      a0, 0x001C (sp)
+;   jal     0x800570C0
+;   lh      a1, 0x0140 (t6)
+.org 0xDE1034
+    lw      a0, 0x18 (sp)
+    jal     item_etcetera_draw
+    lw      a1, 0x1C (sp)
+
+; Replaces:
+;   lw      a0, 0x001C (sp)
+;   jal     0x800570C0
+;   lh      a1, 0x0140 (t6)
+.org 0xDE1084
+    lw      a0, 0x18 (sp)
+    jal     item_etcetera_draw
+    lw      a1, 0x1C (sp)
+
+; Replaces:
+;   lw      a0, 0x001C (sp)
+;   jal     0x800570C0
+;   lh      a1, 0x0146 (a3)
+.org 0xE59EB0
+    lw      a0, 0x18 (sp)
+    jal     bowling_bomb_bag_draw
+    lw      a1, 0x1C (sp)
+
+; Replaces:
+;   lw      a1, 0x001C (sp)
+;   jal     0x80022554
+;   or      a2, r0, r0
+;   lw      a0, 0x001C (sp)
+;   jal     0x800570C0
+;   addiu   a1, r0, 0x0013
+.org 0xE59ED8
+    sw      a0, 0x18 (sp)
+    jal     0x80022554
+    or      a2, r0, r0
+    lw      a0, 0x18 (sp)
+    jal     bowling_heart_piece_draw
+    lw      a1, 0x1C (sp)
+
+; Replaces:
+;   lw      a0, 0x001C (sp)
+;   jal     0x800570C0
+;   addiu   a1, r0, 0x0074
+.org 0xEC6B40
+    lw      a0, 0x18 (sp)
+    jal     skull_token_draw
+    lw      a1, 0x1C (sp)
+
+; Replaces:
+;   lw      a0, 0x001C (sp)
+;   jal     0x800570C0
+;   addiu   a1, r0, 0x002E
+.org 0xDB5418
+    lw      a0, 0x18 (sp)
+    jal     ocarina_of_time_draw
+    lw      a1, 0x1C (sp)
 
 ;==================================================================================================
 ; File select hash
@@ -200,8 +319,8 @@
 ;   b       0x80056F84
 ;   sw      t9, 0x0008 (s0)
 .org 0xACCE88 ; In memory: 0x80056F28
-    jal     override_light_arrow_cutscene
-    nop
+    jal     push_delayed_item
+    li      a0, DELAYED_LIGHT_ARROWS
     nop
     nop
     nop
@@ -398,9 +517,9 @@ nop
 ;==================================================================================================
 
 ; Replaces:
-;   beq t1, at, 0x801E51E0
-.org 0xD74964     ; In memory: 0x801E51B4
-    b skip_steal_tunic  ; disable like-like stealing tunic
+;   beq     t1, at, 0x801E51E0
+.org 0xD74964 ; In memory: 0x801E51B4
+    b       skip_steal_tunic  ; disable like-like stealing tunic
 .org 0xD74990
     skip_steal_tunic:
 
@@ -408,26 +527,25 @@ nop
 ; Ocarina Song Cutscene Overrides
 ;==================================================================================================
 
-; Replaces
-;   addu    t8,t0,t7
-;   sb      t6,0x74(t8)  ; store to fairy ocarina slot
-.org 0xAE6E48
-    jal     override_fairy_ocarina_cutscene
-    addu    t8,t0,t7
+; Replaces:
+;   jal     0x800288B4
+.org 0xACCDE0 ; In memory: 0x80056E80
+    jal     give_sarias_gift
 
 ; a3 = item ID
-; Replaces
-; li v0,0xFF
-.org 0xAE5DF8
+; Replaces:
+;   li      v0, 0xFF
+;   ... (2 instructions)
+;   sw      t7, 0xA4 (t0)
+.org 0xAE5DF8 ; In memory: 0x8006FE98
     jal     override_ocarina_songs
-; sw $t7, 0xa4($t0)
-.org 0xAE5E04
+.skip 0x8
     nop
 
 ; Replaces
-;lui  at,0x1
-;addu at,at,s0
-.org 0xAC9ABC
+;   lui     at, 0x1
+;   addu    at, at, s0
+.org 0xAC9ABC ; In memory: 0x80053B5C
     jal     override_requiem_song
     nop
 
@@ -471,32 +589,22 @@ nop
     jal override_song_of_time
 
 ;==================================================================================================
-; Fire Arrow Chest
+; Fire Arrow location spawn condition
 ;==================================================================================================
 
-; Don't require water temple
-;   bne     t9,at,+0x0024
-.org 0xE9E1D8
-    li      t1, 0x4000
-
-; Load chest contents
-;   li      t0, 0x0007
-.org 0xE9E1F0
-    li      t0, 0x5B08
-
-; Load actor type
-;   li      a2, 0x010f
-.org 0xE9E200
-    li      a2, 0x000A
-
-; Set rotation
-;   sw      zero, 0x1C (sp)
-.org 0xE9E20C
-    sw      t1, 0x1C (sp)
+; Replaces a check for whether fire arrows are in the inventory
+; The item spawns if t9 == at
+.org 0xE9E1B8
+.area 6 * 4, 0
+    lw      t9, (GLOBAL_CONTEXT + 0x1D38) ; Chest flags
+    andi    t9, t9, 0x1
+    ori     at, r0, 0
+.endarea
 
 ;==================================================================================================
 ; Epona Check Override
 ;==================================================================================================
+
 .org 0xA9E838
     j       Check_Has_Epona_Song
 
@@ -609,3 +717,313 @@ nop
     b       skip_GS_BGS_text
 .org 0xB529A0
 skip_GS_BGS_text:
+
+;==================================================================================================
+; Empty bomb fix
+;==================================================================================================
+
+; Replaces:
+;   lw      a1, 0x0018 (sp) ; bomb ovl+134
+;   lw      a0, 0x001C (sp)
+.org 0xC0E404
+    jal     empty_bomb_fix
+    lw      a1, 0x0018 (sp)
+
+;==================================================================================================
+; Damage Multiplier
+;==================================================================================================
+
+; Replaces:
+;   lbu     t7, 0x3d(a1)
+;   beql    t7, zero, 0x20
+;   lh      t8, 0x30(a1)
+;   bgezl   s0, 0x20
+;   lh      t8, 0x30(a1)
+;   sra     s0, s0, 1    ; double defense
+;   sll     s0, s0, 0x10
+;   sra     s0, s0, 0x10 ; s0 = damage
+
+.org 0xAE807C
+    bgez    s0, @@continue ; check if damage is negative
+    lh      t8, 0x30(a1)   ; load hp for later
+    lbu     t7, 0x3d(a1)   ; check if has double defense
+    beq     t7, zero, @@continue
+    sll     s0, s0, 0      ; damage multiplier (delay slot)
+.skip 4
+.skip 4
+.skip 4
+.skip 4
+@@continue:
+
+;==================================================================================================
+; Skip Scarecrow Song
+;==================================================================================================
+
+; Replaces:
+;   lhu     t0, 0x04C6 (t0)
+;   li      at, 0x0B
+.org 0xEF4F98
+    jal adapt_scarecrow
+    nop
+
+;==================================================================================================
+; Talon Cutscene Skip
+;==================================================================================================
+
+; Replaces: lui    a1, 0x801F @ovl+0x1080
+
+.org 0xCC0020
+    jal     talon_break_free
+    lui     a1, 0x801F
+
+;==================================================================================================
+; Patches.py imports
+;==================================================================================================
+
+; Remove intro cutscene
+.org 0xB06BB8
+    li      t9, 0
+
+; Change Bombchu Shop to be always open
+.org 0xC6CEDC
+    li      t3, 1
+
+; Fix child shooting gallery reward to be static
+.org 0xD35EFC
+    nop
+
+; Change Bazaar check to Bomb Bag
+.org 0xC00828
+    nop
+    li      t6, 0x18
+    lw      t7, 0x00A0(v0)
+
+; Change ? check to Bomb Bag (Adult?)
+.org 0xDF7A8C
+    nop
+    li      t6, 0x18
+    lw      t7, 0x00A0(v0)
+
+; Change Goron Shop check to Bomb Bag
+.org 0xC6ED84
+    lhu     t7, 0x00A2(v1)
+    andi    t8, t7, 0x0018
+
+; Fix Link the Goron to always work
+.org 0xED2FAC
+    lb      t6, 0x0F18(v1)
+
+.org 0xED2FEC
+    li      t2, 0
+
+.org 0xAE74D8
+    li      t6, 0
+
+
+; Fix King Zora Thawed to always work
+.org 0xE55C4C
+    li t4, 0
+
+.org 0xE56290
+    nop
+    li t3, 0x401F
+    nop
+
+; Fix target in woods reward to be static
+.org 0xE59CD4
+    nop
+    nop
+
+; Fix adult shooting gallery reward to be static
+.org 0xD35F54
+    b       0xD35F78
+
+
+; Learning Serenade tied to opening chest in room
+.org 0xC7BCF0
+    lw      t9, 0x1D38(a1) ; Chest Flags
+    li      t0, 0x0004     ; flag mask
+    lw      v0, 0x1C44(a1) ; needed for following code
+    nop
+    nop
+    nop
+    nop
+
+; Dampe Chest spawn condition looks at chest flag instead of having obtained hookshot
+.org 0xDFEC3C
+    lw      t8, (SAVE_CONTEXT + 0xD4 + (0x48 * 0x1C)) ; Scene flags
+    addiu   a1, sp, 0x24
+    andi    t9, t8, 0x0001
+    nop
+
+; Darunia sets an event flag and checks for it
+; TODO: Figure out what is this for. Also rewrite to make things cleaner
+.org 0xCF1AB8
+    nop
+    lw      t1, lo(SAVE_CONTEXT + 0xED8)(t8)
+    andi    t0, t1, 0x0040
+    ori     t9, t1, 0x0040
+    sw      t9, lo(SAVE_CONTEXT + 0xED8)(t8)
+    li      t1, 6
+
+;==================================================================================================
+; Easier Fishing
+;==================================================================================================
+
+; Make fishing less obnoxious
+.org 0xDBF428
+    jal     easier_fishing
+    lui     at, 0x4282
+    mtc1    at, f8
+    mtc1    t8, f18
+    swc1    f18, 0x019C(s2)
+
+.org 0xDBF484
+    nop
+
+.org 0xDBF4A8
+    nop
+
+; set adult fish size requirement
+.org 0xDCBEA8
+    lui     at, 0x4248
+
+.org 0xDCBF24
+    lui     at, 0x4248
+
+; set child fish size requirements
+.org 0xDCBF30
+    lui     at, 0x4230
+
+.org 0xDCBF9C
+    lui     at, 0x4230
+
+;==================================================================================================
+; Bombchus In Logic Hooks
+;==================================================================================================
+
+.org 0xE2D714
+    jal     logic_chus__bowling_lady_1
+    lui     t9, 0x8012
+    li      t1, 0xBF
+    nop
+
+.org 0xE2D890
+    jal     logic_chus__bowling_lady_2
+    nop
+
+.org 0xC01078
+    jal     logic_chus__shopkeeper
+    nop
+    nop
+    nop
+    nop
+    nop
+
+;==================================================================================================
+; Rainbow Bridge
+;==================================================================================================
+
+.org 0xE2B434
+	jal		rainbow_bridge
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+	nop
+
+;==================================================================================================
+; Gossip Stone Hints
+;==================================================================================================
+
+.org 0xEE7B84
+    jal     gossip_hints
+    lw      a0, 0x002C(sp) ; global context
+    nop
+
+;==================================================================================================
+; Potion Shop Fix
+;==================================================================================================
+
+.org 0xE2C03C
+    jal     potion_shop_fix
+	addiu   v0, v0, 0xA5D0 ; displaced
+
+;==================================================================================================
+; Jabu Jabu Elevator
+;==================================================================================================
+
+;Replaces: addiu t5, r0, 0x0200
+.org 0xD4BE6C
+	jal		jabu_elevator
+
+;==================================================================================================
+; Quick Boots Display
+;==================================================================================================
+;
+; Replaces lw    s4, 0x0000(s6)
+;          lw    s1, 0x02B0(s4)
+.org 0xAEB68C ; In Memory: 0x8007572C
+	jal		qb_draw
+	nop
+
+;==================================================================================================
+; Correct Chest Sizes
+;==================================================================================================
+; Replaces lbu   v0,0x01E9(s0)
+.org 0xC064BC
+    jal     GET_CHEST_OVERRIDE_SIZE_WRAPPER
+.org 0xC06E5C
+    jal     GET_CHEST_OVERRIDE_SIZE_WRAPPER
+.org 0xC07494
+    jal     GET_CHEST_OVERRIDE_SIZE_WRAPPER
+
+; Replaces sw    t8,8(t6)
+;          lbu   v0,489(s0)
+.org 0xC0722C
+    jal     GET_CHEST_OVERRIDE_SIZE_WRAPPER
+    sw      t8,8(t6)
+
+; Replaces lbu   t9,0x01E9(s0)
+.org 0xC075A8
+    jal     GET_CHEST_OVERRIDE_COLOR_WRAPPER
+.org 0xC07648
+    jal     GET_CHEST_OVERRIDE_COLOR_WRAPPER
+
+;==================================================================================================
+; Cast Fishing Rod without B Item
+;==================================================================================================
+
+.orga 0xBCF914 ; 8038A904
+    jal     keep_fishing_rod_equipped
+    nop
+
+.orga 0xBCF73C ; 8038A72C
+    sw      ra, 0x0000(sp)
+    jal     cast_fishing_rod_if_equipped
+    nop
+    lw      ra, 0x0000(sp)
+
+;==================================================================================================
+; Big Goron Fix
+;==================================================================================================
+;
+;Replaces: beq     $zero, $zero, lbl_80B5AD64 
+
+.org 0xED645C
+    jal     bgs_fix
+    nop
+
+;==================================================================================================
+; Warp song speedup
+;==================================================================================================
+;
+.org 0xBEA044
+   jal      warp_speedup
+   nop

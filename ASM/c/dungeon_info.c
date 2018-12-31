@@ -61,7 +61,14 @@ int8_t cfg_dungeon_rewards[] = { 0, 1, 2, 3, 4, 5, 6, 7, -1, -1, -1, -1, -1, -1 
 uint8_t cfg_dungeon_is_mq[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
 void draw_dungeon_info(z64_disp_buf_t *db) {
-    if (!cfg_dungeon_info_enable) return;
+    int draw = cfg_dungeon_info_enable &&
+        z64_game.pause_state == 6 &&
+        z64_game.pause_screen == 0 &&
+        !z64_game.pause_screen_changing &&
+        z64_ctxt.input[0].raw.a;
+    if (!draw) {
+        return;
+    }
 
     db->p = db->buf;
 

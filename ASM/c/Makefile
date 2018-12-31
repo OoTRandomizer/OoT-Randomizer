@@ -3,8 +3,7 @@ LD = mips64-ld
 OBJDUMP = mips64-objdump
 
 CFLAGS = -march=vr4300 -mtune=vr4300 -mabi=32 -mno-gpopt -mdivide-breaks \
-	 -O1 -fno-reorder-blocks \
-	 -DZ64_VERSION=Z64_OOT10
+	-O1 -fno-reorder-blocks
 
 OBJECTS = $(patsubst %.c,%.o,$(wildcard *.c))
 HEADERS = $(wildcard *.h)
@@ -22,7 +21,7 @@ bundle: $(OBJECTS)
 	$(LD) -o $(OUTDIR)/bundle.o -i -L. $(patsubst %.o,-l:%.o,$(OBJECTS))
 
 symbols: bundle
-	$(OBJDUMP) -t $(OUTDIR)/bundle.o > $(OUTDIR)/c_symbols.txt
+	$(OBJDUMP) -t $(OUTDIR)/bundle.o | tr -d '\015' > $(OUTDIR)/c_symbols.txt
 
 clean:
 	rm -f *.o

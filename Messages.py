@@ -6,7 +6,9 @@ TABLE_START = 0xB849EC
 TEXT_START = 0x92D000
 
 TABLE_SIZE_LIMIT = 0x43A8
-TEXT_SIZE_LIMIT = 0x38130
+ENG_TEXT_SIZE_LIMIT = 0x38130
+JPN_TEXT_SIZE_LIMIT = 0x3A150
+
 
 # name of type, followed by number of additional bytes to read, follwed by a function that prints the code
 CONTROL_CODES = {
@@ -64,8 +66,10 @@ LIGHT_ARROW_HINT = [0x70CC] # ganondorf's light arrow hint line
 GS_TOKEN_MESSAGES = [0x00B4, 0x00B5] # Get Gold Skulltula Token messages
 
 # messages for shorter item messages
+# ids are in the space freed up by move_shop_item_messages()
 ITEM_MESSAGES = {
-    0x0001: "\x08\x13\x2DYou borrowed a \x05\x41Pocket Egg\x05\x40!\x01A Pocket Cucco will hatch from\x01it overnight. Be sure to give it\x01back when you are done with it.",
+    0x0001: "\x08\x06\x30\x05\x41TEXT ID ERROR!\x05\x40",
+    0x9001: "\x08\x13\x2DYou borrowed a \x05\x41Pocket Egg\x05\x40!\x01A Pocket Cucco will hatch from\x01it overnight. Be sure to give it\x01back when you are done with it.",
     0x0002: "\x08\x13\x2FYou returned the Pocket Cucco\x01and got \x05\x41Cojiro\x05\x40 in return!\x01Unlike other Cuccos, Cojiro\x01rarely crows.",
     0x0003: "\x08\x13\x30You got an \x05\x41Odd Mushroom\x05\x40!\x01A fresh mushroom like this is\x01sure to spoil quickly! Take it to\x01the Kakariko Potion Shop, quickly!",
     0x0004: "\x08\x13\x31You received an \x05\x41Odd Potion\x05\x40!\x01It may be useful for something...\x01Hurry to the Lost Woods!",
@@ -166,7 +170,7 @@ ITEM_MESSAGES = {
     0x00AD: "\x08\x13\x05You got \x05\x41Din's Fire\x05\x40!\x01Its fireball engulfs everything!",
     0x00AE: "\x08\x13\x0DYou got \x05\x42Farore's Wind\x05\x40!\x01This is warp magic you can use!",
     0x00AF: "\x08\x13\x13You got \x05\x43Nayru's Love\x05\x40!\x01Cast this to create a powerful\x01protective barrier.",
-    0x00B4: "\x08You destroyed a \x05\x41Gold Skulltula\x05\x40.\x01You got a token proving you \x01destroyed it!",
+    0x00B4: "\x08You got a \x05\x41Gold Skulltula Token\x05\x40!\x01You've collected \x05\x41\x19\x05\x40 in total.",
     0x00B5: "\x08You destroyed a \x05\x41Gold Skulltula\x05\x40.\x01You got a token proving you \x01destroyed it!", #Unused
     0x00C2: "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01Collect four pieces total to get\x01another Heart Container.",
     0x00C3: "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01So far, you've collected two \x01pieces.",
@@ -174,6 +178,7 @@ ITEM_MESSAGES = {
     0x00C5: "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01You've completed another Heart\x01Container!",
     0x00C6: "\x08\x13\x72You got a \x05\x41Heart Container\x05\x40!\x01Your maximum life energy is \x01increased by one heart.",
     0x00C7: "\x08\x13\x74You got the \x05\x41Boss Key\x05\x40!\x01Now you can get inside the \x01chamber where the Boss lurks.",
+	0x9002: "\x08You are a \x05\x43FOOL\x05\x40!",
     0x00CC: "\x08You got a \x05\x43Blue Rupee\x05\x40!\x01That's \x05\x43five Rupees\x05\x40!",
     0x00CD: "\x08\x13\x53You got the \x05\x43Silver Scale\x05\x40!\x01You can dive deeper than you\x01could before.",
     0x00CE: "\x08\x13\x54You got the \x05\x43Golden Scale\x05\x40!\x01Now you can dive much\x01deeper than you could before!",
@@ -196,64 +201,43 @@ ITEM_MESSAGES = {
     0x00F9: "\x08\x13\x1EYou put a \x05\x41Big Poe \x05\x40in a bottle!\x01Let's sell it at the \x05\x41Ghost Shop\x05\x40!\x01Something good might happen!",
 }
 
-
-# messages for keysanity item pickup
-# ids are in the space freed up by move_shop_item_messages()
 KEYSANITY_MESSAGES = {
-    0x06: '\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x42Forest Temple\x05\x40!\x09',
-    0x1c: '\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x41Fire Temple\x05\x40!\x09',
-    0x1d: '\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x43Water Temple\x05\x40!\x09',
-    0x1e: '\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x46Spirit Temple\x05\x40!\x09',
-    0x2a: '\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09',
-    0x61: '\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for \x05\x41Ganon\'s Castle\x05\x40!\x09',
-    0x62: '\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x42Deku Tree\x05\x40!\x09',
-    0x63: '\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for \x05\x41Dodongo\'s Cavern\x05\x40!\x09',
-    0x64: '\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for \x05\x43Jabu Jabu\'s Belly\x05\x40!\x09',
-    0x65: '\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x42Forest Temple\x05\x40!\x09',
-    0x7c: '\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x41Fire Temple\x05\x40!\x09',
-    0x7d: '\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x43Water Temple\x05\x40!\x09',
-    0x7e: '\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x46Spirit Temple\x05\x40!\x09',
-    0x7f: '\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09',
-    0xa2: '\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09',
-    0x87: '\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x44Ice Cavern\x05\x40!\x09',
-    0x88: '\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x42Deku Tree\x05\x40!\x09',
-    0x89: '\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for \x05\x41Dodongo\'s Cavern\x05\x40!\x09',
-    0x8a: '\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for \x05\x43Jabu Jabu\'s Belly\x05\x40!\x09',
-    0x8b: '\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x42Forest Temple\x05\x40!\x09',
-    0x8c: '\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x41Fire Temple\x05\x40!\x09',
-    0x8e: '\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x43Water Temple\x05\x40!\x09',
-    0x8f: '\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x46Spirit Temple\x05\x40!\x09',
-    0xa3: '\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09',
-    0xa5: '\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09',
-    0x92: '\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x44Ice Cavern\x05\x40!\x09',
-    0x93: '\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x42Forest Temple\x05\x40!\x09',
-    0x94: '\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x41Fire Temple\x05\x40!\x09',
-    0x95: '\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x43Water Temple\x05\x40!\x09',
-    0xa6: '\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Spirit Temple\x05\x40!\x09',
-    0xa9: '\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09',
-    0x9b: '\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09',
-    0x9f: '\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Gerudo Training\x01Grounds\x05\x40!\x09',
-    0xa0: '\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Gerudo Fortress\x05\x40!\x09',
-    0xa1: '\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for \x05\x41Ganon\'s Castle\x05\x40!\x09',
+    0x001C: "\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x41Fire Temple\x05\x40!\x09",
+    0x0006: "\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x42Forest Temple\x05\x40!\x09",
+    0x001D: "\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x43Water Temple\x05\x40!\x09",
+    0x001E: "\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x46Spirit Temple\x05\x40!\x09",
+    0x002A: "\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09",
+    0x0061: "\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for \x05\x41Ganon's Castle\x05\x40!\x09",
+    0x0062: "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x42Deku Tree\x05\x40!\x09",
+    0x0063: "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for \x05\x41Dodongo's Cavern\x05\x40!\x09",
+    0x0064: "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for \x05\x43Jabu Jabu's Belly\x05\x40!\x09",
+    0x0065: "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x42Forest Temple\x05\x40!\x09",
+    0x007C: "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x41Fire Temple\x05\x40!\x09",
+    0x007D: "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x43Water Temple\x05\x40!\x09",
+    0x007E: "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x46Spirit Temple\x05\x40!\x09",
+    0x007F: "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09",
+    0x0087: "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x44Ice Cavern\x05\x40!\x09",
+    0x0088: "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x42Deku Tree\x05\x40!\x09",
+    0x0089: "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for \x05\x41Dodongo's Cavern\x05\x40!\x09",
+    0x008A: "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for \x05\x43Jabu Jabu's Belly\x05\x40!\x09",
+    0x008B: "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x42Forest Temple\x05\x40!\x09",
+    0x008C: "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x41Fire Temple\x05\x40!\x09",
+    0x008E: "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x43Water Temple\x05\x40!\x09",
+    0x008F: "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x46Spirit Temple\x05\x40!\x09",
+    0x0092: "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x44Ice Cavern\x05\x40!\x09",
+    0x0093: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x42Forest Temple\x05\x40!\x09",
+    0x0094: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x41Fire Temple\x05\x40!\x09",
+    0x0095: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x43Water Temple\x05\x40!\x09",
+    0x009B: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09",
+    0x009F: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Gerudo Training\x01Grounds\x05\x40!\x09",
+    0x00A0: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Gerudo Fortress\x05\x40!\x09",
+    0x00A1: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for \x05\x41Ganon's Castle\x05\x40!\x09",
+    0x00A2: "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09",
+    0x00A3: "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09",
+    0x00A5: "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09",
+    0x00A6: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Spirit Temple\x05\x40!\x09",
+    0x00A9: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09",
 }
-
-
-# messages for song items
-SONG_MESSAGES = {
-    0x00B0: "\x08\x06\x28You have learned the\x01\x06\x2F\x05\x42Minuet of Forest\x05\x40!",
-    0x00B1: "\x08\x06\x28You have learned the\x01\x06\x37\x05\x41Bolero of Fire\x05\x40!",
-    0x00B2: "\x08\x06\x28You have learned the\x01\x06\x29\x05\x43Serenade of Water\x05\x40!",
-    0x00B3: "\x08\x06\x28You have learned the\x01\x06\x2D\x05\x46Requiem of Spirit\x05\x40!",
-    0x00B6: "\x08\x06\x28You have learned the\x01\x06\x28\x05\x45Nocturne of Shadow\x05\x40!",
-    0x00B7: "\x08\x06\x28You have learned the\x01\x06\x32\x05\x44Prelude of Light\x05\x40!",
-    0x00B8: "\x08\x06\x15You've learned \x05\x43Zelda's Lullaby\x05\x40!",
-    0x00B9: "\x08\x06\x11You've learned \x05\x41Epona's Song\x05\x40!",
-    0x00BA: "\x08\x06\x14You've learned \x05\x42Saria's Song\x05\x40!",
-    0x00BB: "\x08\x06\x0BYou've learned the \x05\x46Sun's Song\x05\x40!",
-    0x00BC: "\x08\x06\x05You've learned the \x05\x44Song of Time\x05\x40!",
-    0x00BD: "\x08You've learned the \x05\x45Song of Storms\x05\x40!",    
-}
-
 
 # convert byte array to an integer
 def bytes_to_int(bytes, signed=False):
@@ -297,6 +281,13 @@ class Text_Code():
             return '?'
         else:
             return chr(self.code)
+
+    # writes the code to the given offset, and returns the offset of the next byte
+    def size(self):
+        size = 1
+        if self.code in CONTROL_CODES:
+            size += CONTROL_CODES[self.code][1]
+        return size
 
     # writes the code to the given offset, and returns the offset of the next byte
     def write(self, rom, offset):
@@ -390,14 +381,57 @@ class Message():
     def is_basic(self):
         return not (self.has_goto or self.has_keep_open or self.has_event or self.has_fade or self.has_ocarina or self.has_two_choice or self.has_three_choice)
 
+
     # writes a Message back into the rom, using the given index and offset to update the table
     # returns the offset of the next message
-    def write(self, rom, index, offset, replace_ending=False, ending=None, always_allow_skip=True, speed_up_text=True):
+    def size(self, replace_ending=False, ending=None, always_allow_skip=True, speed_up_text=True):
+        size = 0
+
+        ending_codes = [0x02, 0x07, 0x0A, 0x0B, 0x0E, 0x10]
+        box_breaks = [0x04, 0x0C]
+        slows_text = [0x08, 0x09, 0x14]
+
+        # # speed the text
+        if speed_up_text:
+            size += 1
+
+        # write the message
+        for code in self.text_codes:
+            # ignore ending codes if it's going to be replaced
+            if replace_ending and code.code in ending_codes:
+                pass
+            # ignore the "make unskippable flag"
+            elif always_allow_skip and code.code == 0x1A:
+                pass
+            # ignore anything that slows down text
+            elif speed_up_text and code.code in slows_text:
+                pass
+            elif speed_up_text and code.code in box_breaks:
+                size += 2
+            else:
+                size += code.size()
+
+        if replace_ending:
+            if ending:
+                if speed_up_text and ending.code == 0x10: # ocarina
+                    size += 1
+                size += ending.size() # write special ending
+            size += 1
+
+        while size % 4 > 0:
+            size += 1
+
+        return size
+
+
+    # writes a Message back into the rom, using the given index and offset to update the table
+    # returns the offset of the next message
+    def write(self, rom, index, offset, replace_ending=False, ending=None, always_allow_skip=True, speed_up_text=True, bank=0x07):
 
         # construct the table entry
         id_bytes = int_to_bytes(self.id, 2)
         offset_bytes = int_to_bytes(offset, 3)
-        entry = id_bytes + bytes([self.opts, 0x00, 0x07]) + offset_bytes
+        entry = id_bytes + bytes([self.opts, 0x00, bank]) + offset_bytes
         # write it back
         entry_offset = TABLE_START + 8 * index
         rom.write_bytes(entry_offset, entry)
@@ -422,8 +456,11 @@ class Message():
             elif speed_up_text and code.code in slows_text:
                 pass
             elif speed_up_text and code.code in box_breaks:
-                offset = Text_Code(0x04, 0).write(rom, offset) # un-delayed break
-                offset = Text_Code(0x08, 0).write(rom, offset) # allow instant
+                if self.id == 0x605A: #special case for twinrova text
+                    offset = code.write(rom, offset)
+                else:
+                    offset = Text_Code(0x04, 0).write(rom, offset) # un-delayed break
+                    offset = Text_Code(0x08, 0).write(rom, offset) # allow instant
             else:
                 offset = code.write(rom, offset)
 
@@ -668,39 +705,23 @@ def make_player_message(text):
     return new_text
 
 
-
-
-# add the keysanity messages
+# reduce item message sizes and add new item messages
 # make sure to call this AFTER move_shop_item_messages()
-def add_keysanity_messages(messages, world):
-    for id, text in KEYSANITY_MESSAGES.items():
-        if world.world_count > 1:
-            update_message_by_id(messages, id, make_player_message(text), 0x23)
-        else:
-            update_message_by_id(messages, id, text, 0x23)
-
-# add the song messages
-# make sure to call this AFTER move_shop_item_messages()
-def add_song_messages(messages, world):
-    for id, text in SONG_MESSAGES.items():
-        if world.world_count > 1:
-            update_message_by_id(messages, id, make_player_message(text), 0x23)
-        else:
-            update_message_by_id(messages, id, text, 0x23)
-
-# reduce item message sizes
 def update_item_messages(messages, world):
-    for id, text in ITEM_MESSAGES.items():
+    new_item_messages = dict(ITEM_MESSAGES)
+    new_item_messages.update(KEYSANITY_MESSAGES)
+    for id, text in new_item_messages.items():
         if world.world_count > 1:
             update_message_by_id(messages, id, make_player_message(text), 0x23)
-
         else:
-            update_message_by_id(messages, id, text)
+            update_message_by_id(messages, id, text, 0x23)
+
 
 # run all keysanity related patching to add messages for dungeon specific items
-def message_patch_for_dungeon_items(messages, shop_items, world):
+def add_item_messages(messages, shop_items, world):
     move_shop_item_messages(messages, shop_items)
-    add_keysanity_messages(messages, world)
+    update_item_messages(messages, world)
+
 
 # reads each of the game's messages into a list of Message objects
 def read_messages(rom):
@@ -733,16 +754,33 @@ def repack_messages(rom, messages, permutation=None, always_allow_skip=True, spe
 
     # repack messages
     offset = 0
+    text_size_limit = ENG_TEXT_SIZE_LIMIT
+    text_bank = 0x07
+
     for old_index, new_index in enumerate(permutation):
         old_message = messages[old_index]
         new_message = messages[new_index]
-        remember_id = new_message.id 
+        remember_id = new_message.id
         new_message.id = old_message.id
-        offset = new_message.write(rom, old_index, offset, True, old_message.ending, always_allow_skip, speed_up_text)
+
+        # check if there is space to write the message
+        message_size = new_message.size(True, old_message.ending, always_allow_skip, speed_up_text)
+        if message_size + offset > text_size_limit:
+            # if there is no room then switch banks
+            if text_bank == 0x07:
+                text_size_limit = JPN_TEXT_SIZE_LIMIT
+                text_bank = 0x08
+                offset = 0
+
+        # actually write the message
+        offset = new_message.write(rom, old_index, offset, True, old_message.ending, always_allow_skip, speed_up_text, text_bank)
+
         new_message.id = remember_id
 
-    if offset > TEXT_SIZE_LIMIT:
-        raise(TypeError("Message Text table is too large: 0x" + "{:x}".format(offset) + " written / 0x" + "{:x}".format(TEXT_SIZE_LIMIT) + " allowed."))
+    # raise an exception if too much is written
+    # we raise it at the end so that we know how much overflow there is
+    if offset > text_size_limit:
+        raise(TypeError("Message Text table is too large: 0x" + "{:x}".format(ENG_TEXT_SIZE_LIMIT + offset) + " written / 0x" + "{:x}".format(ENG_TEXT_SIZE_LIMIT + JPN_TEXT_SIZE_LIMIT) + " allowed."))
 
     # end the table
     table_index = len(messages)
@@ -766,7 +804,7 @@ def shuffle_messages(rom, except_hints=True, always_allow_skip=True):
         exempt_as_id = m.is_id_message()
         exempt_as_hint = ( except_hints and m.id in (GOSSIP_STONE_MESSAGES + TEMPLE_HINTS_MESSAGES + LIGHT_ARROW_HINT + list(KEYSANITY_MESSAGES.keys()) + shuffle_messages.shop_item_messages ) )
         return not ( exempt_as_id or exempt_as_hint )
-    
+
     have_goto =         list( filter( lambda m: is_not_exempt(m) and m.has_goto, messages) )
     have_keep_open =    list( filter( lambda m: is_not_exempt(m) and m.has_keep_open, messages) )
     have_event =        list( filter( lambda m: is_not_exempt(m) and m.has_event, messages) )

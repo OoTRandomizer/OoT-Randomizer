@@ -35,6 +35,11 @@ sprite_t font_sprite = {
     G_IM_FMT_IA, G_IM_SIZ_8b, 1
 };
 
+sprite_t dpad_sprite = {
+    NULL, 32, 32, 1,
+    G_IM_FMT_IA, G_IM_SIZ_16b, 2
+};  
+
 int sprite_bytes_per_tile(sprite_t *sprite) {
     return sprite->tile_w * sprite->tile_h * sprite->bytes_per_texel;
 }
@@ -100,7 +105,9 @@ void draw_setup(z64_disp_buf_t *db) {
 }
 
 extern char FONT_TEXTURE;
+extern char DPAD_TEXTURE;
 #define font_texture_raw ((uint8_t *)&FONT_TEXTURE)
+#define dpad_texture_raw ((uint8_t *)&DPAD_TEXTURE)
 
 void gfx_init() {
     file_t title_static = {
@@ -122,6 +129,7 @@ void gfx_init() {
     medals_sprite.buf = title_static.buf + 0x2980;
     items_sprite.buf = icon_item_static.buf;
     quest_items_sprite.buf = icon_item_24_static.buf;
+    dpad_sprite.buf = dpad_texture_raw;
 
     int font_bytes = sprite_bytes(&font_sprite);
     font_sprite.buf = heap_alloc(font_bytes);
