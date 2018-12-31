@@ -663,6 +663,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
     # or just use the following functions to add an entry to the table
     initial_save_table = []
 
+
     # will set the bits of value to the offset in the save (or'ing them with what is already there)
     def write_bits_to_save(offset, value, filter=None):
         nonlocal initial_save_table
