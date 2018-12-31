@@ -410,7 +410,7 @@ setting_infos = [
             'type': int
         },
         {
-            'dependency': lambda guivar: guivar['compress_rom'].get() not in ['No Output', 'Patch File'],
+            'dependency': lambda settings: 1 if settings.compress_rom in ['None', 'Patch'] else None,
         }),
     Checkbutton(
             name           = 'create_spoiler',
@@ -432,7 +432,7 @@ setting_infos = [
                          ''',
         gui_text='Create Cosmetics Log',
         gui_group='rom_tab',
-        gui_dependency=lambda guivar: guivar['compress_rom'].get() not in ['No Output', 'Patch File'],
+        gui_dependency=lambda settings: False if settings.compress_rom in ['None', 'Patch'] else None,
         default=True,
         shared=False,
     ),
@@ -726,7 +726,7 @@ setting_infos = [
                              enabled, then there will be hints for which
                              trials need to be completed.
                              ''',
-            gui_dependency = lambda guivar: not guivar['trials_random'].get(),
+            gui_dependency = lambda settings: 0 if settings.trials_random else None,
             shared         = True,
             ),
     Checkbutton(
@@ -892,7 +892,7 @@ setting_infos = [
                              The Poe buyer will give a reward for turning
                              in the chosen number of Big Poes.
                              ''',
-            gui_dependency = lambda guivar: not guivar['big_poe_count_random'].get(),
+            gui_dependency = lambda settings: 1 if settings.big_poe_count_random else None,
             shared         = True,
             ),
     Checkbutton(
@@ -1302,7 +1302,7 @@ setting_infos = [
                              12: All dungeons will have
                              Master Quest redesigns.
                              ''',
-            gui_dependency = lambda guivar: not guivar['mq_dungeons_random'].get(),
+            gui_dependency = lambda settings: 0 if settings.mq_dungeons_random else None,
             shared         = True,
             ),
     Setting_Info('disabled_locations', list, math.ceil(math.log(len(location_table) + 2, 2)), True,

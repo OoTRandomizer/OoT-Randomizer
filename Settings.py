@@ -9,7 +9,7 @@ import json
 
 from version import __version__
 from Utils import random_choices, local_path
-from SettingsList import setting_infos
+from SettingsList import setting_infos, get_setting_info
 
 class ArgumentDefaultsHelpFormatter(argparse.RawTextHelpFormatter):
 
@@ -200,6 +200,21 @@ class Settings():
     def update(self):
         self.settings_string = self.get_settings_string()
         self.numeric_seed = self.get_numeric_seed()
+
+    def check_dependency(self, setting_name):
+        info = get_setting_info(setting_name)
+        if info.gui_params is not None and 'dependency' in info.gui_params:
+            return info.gui_params['dependency'](self) == None
+        else:
+            return True
+
+    def remove_disabled(self):
+        for info in setting_infos:
+            if info.gui_params is not None and 'dependency' in info.gui_params:
+                new_value = info.gui_params['dependency'](self)
+                if new_value != None:
+                    self.__dict__[info.name] = new_value
+        self.settings_string = self.get_settings_string()
 
     # add the settings as fields, and calculate information based on them
     def __init__(self, settings_dict):
