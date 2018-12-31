@@ -1914,11 +1914,11 @@ setting_infos = [
         }),
     Setting_Info('sword_trail_color', str, 0, False,
         {
-            'default': 'Red',
+            'default': 'White',
             'type': parse_custom_sword_color,
             'help': '''\
-                    Choose the color for Navi when she is targeting a prop. (default: %(default)s)
-                    Color:             Make the Navi this color.
+                    Choose the color for your sword trail when you swing it (default: %(default)s)
+                    Color:             Make the sword trail this color.
                     Random Choice:     Choose a random color from this list of colors.
                     Completely Random: Choose a random color from any color the N64 can draw.
                     '''
@@ -1927,7 +1927,7 @@ setting_infos = [
             'text': 'Sword Trail Color',
             'group': 'colors',
             'widget': 'Combobox',
-            'default': 'Red',
+            'default': 'White',
             'options': get_sword_color_options(),
             'tooltip':'''\
                       'Random Choice': Choose a random
