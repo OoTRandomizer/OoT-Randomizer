@@ -528,7 +528,7 @@ setting_infos = [
             args_help      = '''\
                              King Zora is moved from the beginning of the game.
                              ''',
-            gui_text       = 'Open Fountain',
+            gui_text       = 'Open Zora\'s Fountain',
             gui_group      = 'open',
             gui_tooltip    = '''\
                              King Zora starts out as moved. This also removes
