@@ -62,6 +62,14 @@ NaviColors = {
     "Phantom Zelda":     [0x97, 0x7A, 0x6C, 0xFF, 0x6F, 0x46, 0x67, 0x00],
 }
 
+sword_colors = {
+    "Custom Color":      [0x00, 0x00, 0x00, 0xB0, 0x00, 0x00, 0x00, 0xB0,
+                          0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x10, 0x08],
+    "White":             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x40,
+                          0xFF, 0xFF, 0xFF, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0x04],
+    "Red":               [0xFF, 0x00, 0x00, 0xB0, 0xFF, 0x00, 0x00, 0xB0,
+                          0xFF, 0x00, 0x00, 0x20, 0xFF, 0x00, 0x00, 0x10, 0x08],
+}
 
 def get_tunic_colors():
     return list(tunic_colors.keys())
@@ -70,7 +78,6 @@ def get_tunic_colors():
 def get_tunic_color_options():
     return ["Random Choice", "Completely Random"] + get_tunic_colors()
 
-
 def get_navi_colors():
     return list(NaviColors.keys())
 
@@ -78,6 +85,12 @@ def get_navi_colors():
 def get_navi_color_options():
     return ["Random Choice", "Completely Random"] + get_navi_colors()
 
+def get_sword_colors():
+    return list(sword_colors.keys())
+
+
+def get_sword_color_options():
+    return ["Random Choice", "Completely Random"] + get_sword_colors()
 
 def patch_cosmetics(settings, rom):
     log = CosmeticsLog(settings)
@@ -162,6 +175,33 @@ def patch_cosmetics(settings, rom):
             navi_option = 'Custom'
         if navi_action not in log.navi_colors:
             log.navi_colors[navi_action] = [dict(option=navi_option, color1=''.join(['{:02X}'.format(c) for c in color[0:3]]), color2=''.join(['{:02X}'.format(c) for c in color[4:7]]))]
+    
+    # patch sword trail colors (no for loop needed since there's one option)
+    sword_trails = ('Sword Trail Color', settings.sword_trail_color)
+    sword_color_list = get_sword_colors()
+
+    sword_trail, sword_trail_option = sword_trails
+    
+    # handle random
+    if sword_trail_option == 'Random Choice':
+        sword_trail_option = random.choice(sword_color_list)
+    # handle completely random
+    if sword_trail_option == 'Completely Random':
+        color = [random.getrandbits(8), random.getrandbits(8), random.getrandbits(8), 0xB0,
+                 random.getrandbits(8), random.getrandbits(8), random.getrandbits(8), 0xB0,
+                 random.getrandbits(8), random.getrandbits(8), random.getrandbits(8), 0x20,
+                 random.getrandbits(8), random.getrandbits(8), random.getrandbits(8), 0x10,
+                 0x08]
+    # grab the color from the list
+    elif sword_trail_option in sword_colors:
+        color = sword_colors[sword_trail_option]
+    # build color from hex code
+    else:
+        color = list(int(sword_trail_option[i:i+2], 16) for i in (0, 2 ,4))
+        color = color + [0xB0] + color + [0xB0] + color + [0x20] + color + [0x10] + [0x08]
+        sword_trail_option = 'Custom'
+    rom.write_bytes(0x00BEFF7C, color)
+    log.sword_colors[sword_trail] = dict(option=sword_trail_option, color1=''.join(['{:02X}'.format(c) for c in color[0:3]]), color2=''.join(['{:02X}'.format(c) for c in color[4:7]]), color3=''.join(['{:02X}'.format(c) for c in color[8:11]]), color4=''.join(['{:02X}'.format(c) for c in color[12:15]]))
 
     # Configurable Sound Effects
     sfx_config = [
@@ -316,6 +356,7 @@ class CosmeticsLog(object):
         self.settings = settings
         self.tunic_colors = {}
         self.navi_colors = {}
+        self.sword_colors = {}
         self.sfx = {}
         self.bgm = {}
 
@@ -347,6 +388,9 @@ class CosmeticsLog(object):
                 color_option_string = '{option} (#{color1}, #{color2})'
                 output += format_string.format(key=(navi_action+':') if i == 0 else '', value=color_option_string.format(option=options['option'], color1=options['color1'], color2=options['color2']), width=padding)
                 i += 1
+        for sword_trail, options in self.sword_colors.items():
+            color_option_string = '{option} (#{color1}, #{color2}, #{color3}, #{color4})'
+            output += format_string.format(key=sword_trail+':', value=color_option_string.format(option=options['option'], color1=options['color1'], color2=options['color2'], color3=options['color3'], color4=options['color4']), width=padding)
 
         output += '\n\nSFX:\n'
         for key, value in self.sfx.items():

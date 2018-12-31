@@ -1,7 +1,7 @@
 import argparse
 import re
 import math
-from Cosmetics import get_tunic_color_options, get_navi_color_options
+from Cosmetics import get_tunic_color_options, get_navi_color_options, get_sword_color_options
 from LocationList import location_table
 import Sounds as sfx
 
@@ -150,6 +150,9 @@ def parse_custom_tunic_color(s):
 
 def parse_custom_navi_color(s):
     return parse_color(s, get_navi_color_options())
+    
+def parse_custom_sword_color(s):
+    return parse_color(s, get_sword_color_options())
 
 def parse_color(s, color_choices):
     if s == 'Custom Color':
@@ -1902,6 +1905,30 @@ setting_infos = [
             'widget': 'Combobox',
             'default': 'Green',
             'options': get_navi_color_options(),
+            'tooltip':'''\
+                      'Random Choice': Choose a random
+                      color from this list of colors.
+                      'Completely Random': Choose a random
+                      color from any color the N64 can draw.
+                      '''
+        }),
+    Setting_Info('sword_trail_color', str, 0, False,
+        {
+            'default': 'Red',
+            'type': parse_custom_sword_color,
+            'help': '''\
+                    Choose the color for Navi when she is targeting a prop. (default: %(default)s)
+                    Color:             Make the Navi this color.
+                    Random Choice:     Choose a random color from this list of colors.
+                    Completely Random: Choose a random color from any color the N64 can draw.
+                    '''
+        },
+        {
+            'text': 'Sword Trail Color',
+            'group': 'colors',
+            'widget': 'Combobox',
+            'default': 'Red',
+            'options': get_sword_color_options(),
             'tooltip':'''\
                       'Random Choice': Choose a random
                       color from this list of colors.
