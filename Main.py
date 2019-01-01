@@ -69,7 +69,8 @@ def main(settings, window=dummy_window()):
         else:
             settings.player_num = 1
 
-    settings.update()
+    settings.remove_disabled()
+
     logger.info('OoT Randomizer Version %s  -  Seed: %s\n\n', __version__, settings.seed)
     random.seed(settings.numeric_seed)
     for i in range(0, settings.world_count):
@@ -137,7 +138,7 @@ def main(settings, window=dummy_window()):
 
     settings_string_hash = hashlib.sha1(settings.settings_string.encode('utf-8')).hexdigest().upper()[:5]
     if settings.world_count > 1:
-        outfilebase = 'OoT_%s_%s_W%d' % (settings_string_hash, setting.seed, settings.world_count)
+        outfilebase = 'OoT_%s_%s_W%d' % (settings_string_hash, settings.seed, settings.world_count)
     else:
         outfilebase = 'OoT_%s_%s' % (settings_string_hash, settings.seed)
 

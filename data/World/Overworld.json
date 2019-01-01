@@ -986,7 +986,7 @@
         "exits": {
             "Zora River Child": "True",
             "Lake Hylia": "can_dive",
-            "Zoras Fountain": "Bottle_with_Letter",
+            "Zoras Fountain": "Bottle_with_Letter or open_fountain",
             "Zora Shop": "True",
             "Zoras Domain Gossip Stone": "True"
         }

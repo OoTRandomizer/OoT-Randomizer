@@ -89,7 +89,7 @@ def LocationFactory(locations, world=None):
             address, address2 = addresses
             ret.append(Location(location, address, address2, default, type, scene, hint, ret))
         else:
-            raise KeyError('Unknown Location: %s', item)
+            raise KeyError('Unknown Location: %s', location)
 
     if singleton:
         return ret[0]

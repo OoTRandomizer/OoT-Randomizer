@@ -774,6 +774,9 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
     if not world.open_kakariko:
         rom.write_int32(0xDD3538, 0x34190000) # li t9, 0
 
+    if world.open_fountain:
+        write_bits_to_save(0x0EDB, 0x08) #Move king zora
+
     # Make all chest opening animations fast
     rom.write_byte(rom.sym('FAST_CHESTS'), int(world.fast_chests))
 
@@ -1622,7 +1625,7 @@ def create_fake_name(name):
     # keeping the game E...
     new_name = ''.join(list_name)
     censor = ['dike', 'cunt', 'cum', 'puss', 'shit', 'penis']
-    new_name_az = re.sub(r'[^a-zA-Z]', '', name.lower(), re.UNICODE)
+    new_name_az = re.sub(r'[^a-zA-Z]', '', new_name.lower(), re.UNICODE)
     for cuss in censor:
         if cuss in new_name_az:
             return create_fake_name(name)

@@ -69,23 +69,26 @@ menu_use_blank_description:
 ;==================================================================================================
 
 equipment_menu_slot_filled:
-    addiu   sp, sp, -0x18
-    sw      s0, 0x10 (sp)
-    sw      s1, 0x14 (sp)
+    addiu   sp, sp, -0x10
+    sw      ra, 0x00 (sp)
+    sw      v1, 0x04 (sp)
+    sw      a0, 0x08 (sp)
 
-    li      v0, SAVE_CONTEXT
-    lhu     v0, 0x9C (v0) ; v0 = obtained equipment
-    li      s0, SUBSCREEN_CONTEXT
-    lhu     s1, 0x232 (s0) ; s1 = cursor vertical position
-    sll     s1, s1, 2 ; s1 = s1 * 4
-    srlv    v0, v0, s1 ; shift flags for this row to least significant 4 bits
-    lhu     s1, 0x228 (s0) ; s1 = cursor horizontal position
-    addiu   s1, s1, -1
-    li      s0, 1
-    sllv    s1, s0, s1 ; s1 = mask for this equipment column
-    and     v0, v0, s1
+    jal c_equipment_menu_slot_filled
+    nop
 
-    lw      s0, 0x10 (sp)
-    lw      s1, 0x14 (sp)
+    lw      ra, 0x00 (sp)
+    lw      v1, 0x04 (sp)
+    lw      a0, 0x08 (sp)
     jr      ra
-    addiu   sp, sp, 0x18
+    addiu   sp, sp, 0x10
+
+equipment_menu_fix:
+    and     t6, v1, t5
+    bnez    t6, @@return
+    lbu     t4, 0x0000 (t7) ; displaced
+    addiu   ra, ra, 0x003C
+
+@@return:
+    jr      ra
+    nop

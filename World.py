@@ -379,7 +379,7 @@ class World(object):
         for world in spoiler.worlds:
             duplicate_item_woth[world.id] = {}
         for location in woth_loc:
-            if not location.item.name.startswith('Progressive'):
+            if not location.item.special.get('progressive', False):
                 # Progressive items may need multiple copies to make progression
                 # so we can't make this culling for those kinds of items.
                 duplicate_item_woth[location.item.world.id][location.item.name] = location

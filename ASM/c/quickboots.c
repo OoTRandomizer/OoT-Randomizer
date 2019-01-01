@@ -40,8 +40,8 @@ void handle_quickboots() {
     }
     if (pad_pressed & DPAD_D && DISPLAY_QUICKBOOTS) {
         display_active = !display_active;
-        uint16_t sfx = 0x4814;
-        if (display_active) sfx = 0x4813;
+        uint16_t sfx = 0x4813;
+        if (display_active) sfx = 0x4814;
         z64_playsfx(sfx, (z64_xyzf_t*)0x80104394, 0x04, (float*)0x801043A0, (float*)0x801043A0, (float*)0x801043A8);
     }
 }
@@ -57,34 +57,25 @@ void draw_quickboots() {
         gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, alpha);
 
         sprite_load(db, &dpad_sprite, 0, 1);
-        sprite_draw(db, &dpad_sprite, 0, 269, 60, 8, 8);
-
-        sprite_load(db, &dpad_sprite, 1, 1);
-        sprite_draw(db, &dpad_sprite, 0, 277, 60, 8, 8);
-
-        sprite_load(db, &dpad_sprite, 2, 1);
-        sprite_draw(db, &dpad_sprite, 0, 269, 68, 8, 8);
-
-        sprite_load(db, &dpad_sprite, 3, 1);
-        sprite_draw(db, &dpad_sprite, 0, 277, 68, 8, 8);
+        sprite_draw(db, &dpad_sprite, 0, 271, 64, 16, 16);
 
         if (z64_file.iron_boots) {
             sprite_load(db, &items_sprite, 69, 1);
             if (z64_file.equip_boots == 2) {
-                sprite_draw(db, &items_sprite, 0, 257, 61, 12, 12);
+                sprite_draw(db, &items_sprite, 0, 258, 64, 16, 16);
             }
             else {
-                sprite_draw(db, &items_sprite, 0, 258, 62, 10, 10);
+                sprite_draw(db, &items_sprite, 0, 260, 66, 12, 12);
             }
         }
 
         if (z64_file.hover_boots) {
             sprite_load(db, &items_sprite, 70, 1);
             if (z64_file.equip_boots == 3) {
-                sprite_draw(db, &items_sprite, 0, 287, 61, 12, 12);
+                sprite_draw(db, &items_sprite, 0, 283, 64, 16, 16);
             }
             else {
-                sprite_draw(db, &items_sprite, 0, 286, 62, 10, 10);
+                sprite_draw(db, &items_sprite, 0, 285, 66, 12, 12);
             }
         }
     }
