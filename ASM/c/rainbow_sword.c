@@ -3,11 +3,13 @@
 #include "z64.h"
 #include "rainbow_sword.h"
 
+// Massive thanks to Krimtonz for the coding help, and MZX for the tweening function!~
+
 uint32_t frames = 0;
 
 const uint32_t CYCLE_FRAMES = 0x30;
 
-extern uint8_t RAINBOW_SWORD_ENABLED;
+extern uint32_t RAINBOW_SWORD_ENABLED;
 
 typedef struct
 {
@@ -28,7 +30,7 @@ colorRGB_t colors[] =
     { 0xE0, 0x10, 0x10 }, //red
 };
 
-colorRGB_t get_color(int index, int f)
+colorRGB_t set_sword_trail_color(int index, int f)
 {
     float tweenA, tweenB;
 

@@ -206,11 +206,14 @@ def patch_cosmetics(settings, rom):
                     transparency = 0x00
             color = color + [transparency]
             rom.write_bytes(sword_trail_address, color)
-            log.sword_colors[sword_trail] = dict(option=sword_trail_option, color1=''.join(['{:02X}'.format(c) for c in color[0:3]]), color2=''.join(['{:02X}'.format(c) for c in color[4:7]]), color3=''.join(['{:02X}'.format(c) for c in color[8:11]]), color4=''.join(['{:02X}'.format(c) for c in color[12:15]]))
-    else:
+            log.sword_colors[sword_trail] = dict(option=sword_trail_option, color=''.join(['{:02X}'.format(c) for c in color]))
+    else: 
+        rom.write_bytes(0x00BEFF7C, [0x00, 0x00, 0x00, 0xB0,
+                                     0x00, 0x00, 0x00, 0xB0,
+                                     0x00, 0x00, 0x00, 0x20,
+                                     0x00, 0x00, 0x00, 0x10])
         symbol = rom.sym('RAINBOW_SWORD_ENABLED')
-        rom.write_byte(symbol, 0x01)
-        print(rom.seek_address(symbol))
+        rom.write_int32(symbol, 0x00000001)
     rom.write_byte(0x00BEFF8C, settings.sword_trail_duration)
         
     # Configurable Sound Effects
@@ -398,9 +401,12 @@ class CosmeticsLog(object):
                 color_option_string = '{option} (#{color1}, #{color2})'
                 output += format_string.format(key=(navi_action+':') if i == 0 else '', value=color_option_string.format(option=options['option'], color1=options['color1'], color2=options['color2']), width=padding)
                 i += 1
-        for sword_trail, options in self.sword_colors.items():
-            color_option_string = '{option} (#{color1}, #{color2}, #{color3}, #{color4})'
-            output += format_string.format(key=sword_trail+':', value=color_option_string.format(option=options['option'], color1=options['color1'], color2=options['color2'], color3=options['color3'], color4=options['color4']), width=padding)
+        if not self.settings.rainbow_sword_trail:
+            for sword_trail, options in self.sword_colors.items():
+                color_option_string = '{option} (#{color})'
+                output += format_string.format(key=sword_trail+':', value=color_option_string.format(option=options['option'], color=options['color']), width=padding)
+        output += format_string.format(key="Rainbow Sword Trails:", value=self.settings.rainbow_sword_trail, width=padding)
+        output += format_string.format(key='Sword Trail Duration:', value=self.settings.sword_trail_duration, width=padding)
 
         output += '\n\nSFX:\n'
         for key, value in self.sfx.items():
