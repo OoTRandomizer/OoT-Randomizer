@@ -18,7 +18,7 @@
 ;   jal     8006FDCC ; Give Item
 .org 0xCB6874 ; Bg_Toki_Swd addr 809190F4 in func_8091902C
     jal     give_master_sword
-	
+
 ; Replaces:
 ;   lui/addiu a1, 0x8011A5D0
 .org 0xAE5764
