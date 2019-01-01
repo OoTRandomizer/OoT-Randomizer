@@ -2219,12 +2219,21 @@ setting_infos = [
             gui_group      = 'npc_sfx',
             ),
     Combobox(
-            name           = 'sfx_navi',
+            name           = 'sfx_navi_overworld',
             default        = 'default',
-            choices        = sfx.get_setting_choices(sfx.SoundHooks.NAVI),
+            choices        = sfx.get_setting_choices(sfx.SoundHooks.NAVI_OVERWORLD),
             args_help      = '''\
                              ''',
-            gui_text       = 'Navi',
+            gui_text       = 'Navi - Overworld',
+            gui_group      = 'npc_sfx',
+            ),
+    Combobox(
+            name           = 'sfx_navi_enemy',
+            default        = 'default',
+            choices        = sfx.get_setting_choices(sfx.SoundHooks.NAVI_ENEMY),
+            args_help      = '''\
+                             ''',
+            gui_text       = 'Navi - Enemy',
             gui_group      = 'npc_sfx',
             ),
 ]
