@@ -63,22 +63,9 @@ NaviColors = {
 }
 
 sword_colors = {
-    "Custom Color":      [0x00, 0x00, 0x00, 0xB0, 0x00, 0x00, 0x00, 0xB0,
-                          0x00, 0x00, 0x00, 0x20, 0x00, 0x00, 0x00, 0x10, 0x08],
-    "White":             [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x40,
-                          0xFF, 0xFF, 0xFF, 0x00, 0xFF, 0xFF, 0xFF, 0x00, 0x04],
-    "Red":               [0xEE, 0x00, 0x00, 0xB0, 0xEE, 0x00, 0x00, 0xB0,
-                          0xEE, 0x00, 0x00, 0x20, 0xEE, 0x00, 0x00, 0x10, 0x08],
-    "Blue":              [0x00, 0x00, 0xEE, 0xB0, 0x00, 0x00, 0xEE, 0xB0,
-                          0x00, 0x00, 0xEE, 0x20, 0x00, 0x00, 0xEE, 0x10, 0x08],
-    "Green":             [0x00, 0xEE, 0x00, 0xB0, 0x00, 0xEE, 0x00, 0xB0,
-                          0x00, 0xEE, 0x00, 0x20, 0x00, 0xEE, 0x00, 0x10, 0x08],
-    "Yellow":            [0xEE, 0xEE, 0x00, 0xB0, 0xEE, 0xEE, 0x00, 0xB0,
-                          0xEE, 0xEE, 0x00, 0x20, 0xEE, 0xEE, 0x00, 0x10, 0x08],
-    "Purple":            [0x66, 0x00, 0xCC, 0xB0, 0x66, 0x00, 0xCC, 0xB0,
-                          0x66, 0x00, 0xCC, 0x20, 0x66, 0x00, 0xCC, 0x10, 0x08],
-    "Magenta":           [0xEE, 0x00, 0xEE, 0xB0, 0xEE, 0x00, 0xEE, 0xB0,
-                          0xEE, 0x00, 0xEE, 0x20, 0xEE, 0x00, 0xEE, 0x10, 0x08]
+    "Custom Color":      [0x00, 0x00, 0x00],
+    "White":             [0xFF, 0xFF, 0xFF],
+    "Red":               [0xFF, 0x00, 0x00],
 }
 
 def get_tunic_colors():
@@ -186,33 +173,46 @@ def patch_cosmetics(settings, rom):
         if navi_action not in log.navi_colors:
             log.navi_colors[navi_action] = [dict(option=navi_option, color1=''.join(['{:02X}'.format(c) for c in color[0:3]]), color2=''.join(['{:02X}'.format(c) for c in color[4:7]]))]
     
-    # patch sword trail colors (no for loop needed since there's one option)
-    sword_trails = ('Sword Trail Color', settings.sword_trail_color)
+    # patch sword trail colors
+    sword_trails = [
+        ('Inner Initial Sword Trail', settings.sword_trail_color_inner1, 0x00BEFF7C, 0xB0),
+        ('Outer Initial Sword Trail', settings.sword_trail_color_outer1,  0x00BEFF80, 0xB0),
+        ('Inner Fade Sword Trail', settings.sword_trail_color_inner2,   0x00BEFF84, 0x20),
+        ('Outer Fade Sword Trail', settings.sword_trail_color_outer2, 0x00BEFF88, 0x10)
+    ]
     sword_color_list = get_sword_colors()
-
-    sword_trail, sword_trail_option = sword_trails
     
-    # handle random
-    if sword_trail_option == 'Random Choice':
-        sword_trail_option = random.choice(sword_color_list)
-    # handle completely random
-    if sword_trail_option == 'Completely Random':
-        color = [random.getrandbits(8), random.getrandbits(8), random.getrandbits(8), 0xB0,
-                 random.getrandbits(8), random.getrandbits(8), random.getrandbits(8), 0xB0,
-                 random.getrandbits(8), random.getrandbits(8), random.getrandbits(8), 0x20,
-                 random.getrandbits(8), random.getrandbits(8), random.getrandbits(8), 0x10,
-                 0x08]
-    # grab the color from the list
-    elif sword_trail_option in sword_colors:
-        color = sword_colors[sword_trail_option]
-    # build color from hex code
+    if not settings.rainbow_sword_trail:
+        for index, item in enumerate(sword_trails):
+            sword_trail, sword_trail_option, sword_trail_address, transparency = item
+            # handle random
+            if sword_trail_option == 'Random Choice':
+                sword_trail_option = random.choice(sword_color_list)
+            # handle completely random
+            if sword_trail_option == 'Completely Random':
+                color = [random.getrandbits(8), random.getrandbits(8), random.getrandbits(8)]
+            elif sword_trail_option in sword_colors:
+                color = sword_colors[sword_trail_option]
+            # build color from hex code
+            else:
+                color = list(int(sword_trail_option[i:i+2], 16) for i in (0, 2 ,4))
+                sword_trail_option = 'Custom'
+            if sword_trail_option == 'White':
+                if index < 2:
+                    transparency = 0xFF
+                if index == 2:
+                    transparency = 0x40
+                if index == 3:
+                    transparency = 0x00
+            color = color + [transparency]
+            rom.write_bytes(sword_trail_address, color)
+            log.sword_colors[sword_trail] = dict(option=sword_trail_option, color1=''.join(['{:02X}'.format(c) for c in color[0:3]]), color2=''.join(['{:02X}'.format(c) for c in color[4:7]]), color3=''.join(['{:02X}'.format(c) for c in color[8:11]]), color4=''.join(['{:02X}'.format(c) for c in color[12:15]]))
     else:
-        color = list(int(sword_trail_option[i:i+2], 16) for i in (0, 2 ,4))
-        color = color + [0xB0] + color + [0xB0] + color + [0x20] + color + [0x10] + [0x08]
-        sword_trail_option = 'Custom'
-    rom.write_bytes(0x00BEFF7C, color)
-    log.sword_colors[sword_trail] = dict(option=sword_trail_option, color1=''.join(['{:02X}'.format(c) for c in color[0:3]]), color2=''.join(['{:02X}'.format(c) for c in color[4:7]]), color3=''.join(['{:02X}'.format(c) for c in color[8:11]]), color4=''.join(['{:02X}'.format(c) for c in color[12:15]]))
-
+        symbol = rom.sym('RAINBOW_SWORD_ENABLED')
+        rom.write_byte(symbol, 0x01)
+        print(rom.seek_address(symbol))
+    rom.write_byte(0x00BEFF8C, settings.sword_trail_duration)
+        
     # Configurable Sound Effects
     sfx_config = [
           (settings.sfx_hover_boots,    sfx.SoundHooks.BOOTS_HOVER),

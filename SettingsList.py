@@ -2009,33 +2009,33 @@ setting_infos = [
                       '''
         }),
     Checkbutton(
-            name           = 'Rainbow Sword Trail',
+            name           = 'rainbow_sword_trail',
             args_help      = '''\
-                             Sets a random number of Big Poes to receive an item from the buyer.
+                             Enables rainbow sword trails
                              ''',
             gui_text       = 'Rainbow Sword Trail',
             gui_group      = 'cosmetic',
             gui_tooltip    = '''\
-                             The Poe buyer will give a reward for turning
-                             in a random number of Big Poes.
+                             Enables rainbow sword trails, which
+                             show whenever you swing your sword.
                              ''',
             ),
     Scale(
-            name           = 'Sword Trail Duration',
+            name           = 'sword_trail_duration',
             default        = '4',
             min            = 4,
             max            = 20,
             args_help      = '''\
-                             Select the number of Big Poes to receive an item from the buyer.
+                             Select the duration of the sword trail
                              ''',
             gui_text       = 'Sword Trail Duration',
             gui_group      = 'cosmetic',
             gui_tooltip    = '''\
-                             The Poe buyer will give a reward for turning
-                             in the chosen number of Big Poes.
+                             Select the duration for sword trails.
+                             The higher the number, the longer it lasts.
                              '''
             ),
-    Setting_Info('sword_trail_color', str, 0, False,
+    Setting_Info('sword_trail_color_inner1', str, 0, False,
         {
             'default': 'White',
             'type': parse_custom_sword_color,
@@ -2050,7 +2050,7 @@ setting_infos = [
             'text': 'Initial Color',
             'group': 'sword_outside',
             'widget': 'Combobox',
-            'default': 'Red',
+            'default': 'White',
             'options': get_sword_color_options(),
             'tooltip':'''\
                       'Random Choice': Choose a random
@@ -2059,7 +2059,7 @@ setting_infos = [
                       color from any color the N64 can draw.
                       '''
         }),
-    Setting_Info('sword_trail_color1', str, 0, False,
+    Setting_Info('sword_trail_color_outer1', str, 0, False,
         {
             'default': 'White',
             'type': parse_custom_sword_color,
@@ -2074,7 +2074,7 @@ setting_infos = [
             'text': 'Fade Color',
             'group': 'sword_outside',
             'widget': 'Combobox',
-            'default': 'Red',
+            'default': 'White',
             'options': get_sword_color_options(),
             'tooltip':'''\
                       'Random Choice': Choose a random
@@ -2083,7 +2083,7 @@ setting_infos = [
                       color from any color the N64 can draw.
                       '''
         }),
-    Setting_Info('sword_trail_color3', str, 0, False,
+    Setting_Info('sword_trail_color_inner2', str, 0, False,
         {
             'default': 'White',
             'type': parse_custom_sword_color,
@@ -2098,7 +2098,7 @@ setting_infos = [
             'text': 'Initial Color',
             'group': 'sword_inside',
             'widget': 'Combobox',
-            'default': 'Red',
+            'default': 'White',
             'options': get_sword_color_options(),
             'tooltip':'''\
                       'Random Choice': Choose a random
@@ -2107,7 +2107,7 @@ setting_infos = [
                       color from any color the N64 can draw.
                       '''
         }),
-    Setting_Info('sword_trail_color2', str, 0, False,
+    Setting_Info('sword_trail_color_outer2', str, 0, False,
         {
             'default': 'White',
             'type': parse_custom_sword_color,
@@ -2122,7 +2122,7 @@ setting_infos = [
             'text': 'Fade Color',
             'group': 'sword_inside',
             'widget': 'Combobox',
-            'default': 'Red',
+            'default': 'White',
             'options': get_sword_color_options(),
             'tooltip':'''\
                       'Random Choice': Choose a random
