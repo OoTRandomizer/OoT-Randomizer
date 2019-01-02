@@ -224,7 +224,7 @@ def patch_cosmetics(settings, rom):
                     transparency = 0x00
             color = color + [transparency]
             rom.write_bytes(sword_trail_address, color)
-            log.sword_colors[sword_trail] = dict(option=sword_trail_option, color=''.join(['{:02X}'.format(c) for c in color]))
+            log.sword_colors[sword_trail] = dict(option=sword_trail_option, color=''.join(['{:02X}'.format(c) for c in color[0:3]]))
     else: 
         rom.write_bytes(0x00BEFF7C, [0x00, 0x00, 0x00, 0xB0,
                                      0x00, 0x00, 0x00, 0xB0,
