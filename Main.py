@@ -69,7 +69,8 @@ def main(settings, window=dummy_window()):
         else:
             settings.player_num = 1
 
-    settings.update()
+    settings.remove_disabled()
+
     logger.info('OoT Randomizer Version %s  -  Seed: %s\n\n', __version__, settings.seed)
     random.seed(settings.numeric_seed)
     for i in range(0, settings.world_count):

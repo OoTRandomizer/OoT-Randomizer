@@ -856,6 +856,52 @@ typedef struct
 
 typedef struct
 {
+    char              unk_00_[0x0128];          /* 0x0000 */
+    void             *icon_item;                /* 0x0128 */
+    void             *icon_item_24;             /* 0x012C */
+    void             *icon_item_s;              /* 0x0130 */
+    void             *icon_item_lang;           /* 0x0134 */
+    void             *name_texture;             /* 0x0138 */
+    void             *p13C;                     /* 0x013C */
+    char              unk_01_[0x0094];          /* 0x0140 */
+    uint16_t          state;                    /* 0x01D4 */
+    char              unk_02_[0x000E];          /* 0x01D6 */
+    uint16_t          changing;                 /* 0x01E4 */
+    uint16_t          screen_prev_idx;          /* 0x01E6 */
+    uint16_t          screen_idx;               /* 0x01E8 */
+    char              unk_03_[0x002E];          /* 0x01EA */
+    int16_t           item_cursor;              /* 0x0218 */
+    char              unk_04_[0x0002];          /* 0x021A */
+    int16_t           quest_cursor;             /* 0x021C */
+    int16_t           equip_cursor;             /* 0x021E */
+    int16_t           map_cursor;               /* 0x0220 */
+    int16_t           item_x;                   /* 0x0222 */
+    char              unk_05_[0x0004];          /* 0x0224 */
+    int16_t           equipment_x;              /* 0x0228 */
+    char              unk_06_[0x0002];          /* 0x022A */
+    int16_t           item_y;                   /* 0x022C */
+    char              unk_07_[0x0004];          /* 0x022E */
+    int16_t           equipment_y;              /* 0x0232 */
+    char              unk_08_[0x0004];          /* 0x0234 */
+    int16_t           cursor_pos;               /* 0x0238 */
+    char              unk_09_[0x0002];          /* 0x023A */
+    int16_t           item_id;                  /* 0x023C */
+    int16_t           item_item;                /* 0x023E */
+    int16_t           map_item;                 /* 0x0240 */
+    int16_t           quest_item;               /* 0x0242 */
+    int16_t           equip_item;               /* 0x0244 */
+    char              unk_0A_[0x0004];          /* 0x0246 */
+    int16_t           quest_hilite;             /* 0x024A */
+    char              unk_0B_[0x0018];          /* 0x024C */
+    int16_t           quest_song;               /* 0x0264 */
+    char              unk_0C_[0x0016];          /* 0x0266 */
+                                                /* unknown structure */
+    char              s27C[0x0038];             /* 0x027C */
+                                                /* 0x02B4 */
+} z64_pause_ctxt_t;
+
+typedef struct
+{
   uint32_t vrom_start;
   uint32_t vrom_end;
 } z64_object_table_t;
@@ -917,149 +963,120 @@ typedef void (*z64_light_handler_t)(z64_gbi_lights_t*, z64_lightn_t*,
 /* game context */
 typedef struct
 {
-  z64_ctxt_t      common;                 /* 0x00000 */
-  uint16_t        scene_index;            /* 0x000A4 */
-  char            unk_00_[0x001A];        /* 0x000A6 */
-  uint32_t        screen_top;             /* 0x000C0 */
-  uint32_t        screen_bottom;          /* 0x000C4 */
-  uint32_t        screen_left;            /* 0x000C8 */
-  uint32_t        screen_right;           /* 0x000CC */
-  float           camera_distance;        /* 0x000D0 */
-  float           fog_distance;           /* 0x000D4 */
-  float           z_distance;             /* 0x000D8 */
-  float           unk_01_;                /* 0x000DC */
-  char            unk_02_[0x0190];        /* 0x000E0 */
-  z64_actor_t    *camera_focus;           /* 0x00270 */
-  char            unk_03_[0x00AE];        /* 0x00274 */
-  uint16_t        camera_mode;            /* 0x00322 */
-  char            unk_04_[0x001A];        /* 0x00324 */
-  uint16_t        camera_flag_1;          /* 0x0033E */
-  char            unk_05_[0x016C];        /* 0x00340 */
-  int16_t         event_flag;             /* 0x004AC */
-  char            unk_06_[0x02E6];        /* 0x004AE */
-  uint32_t        camera_2;               /* 0x00794 */
-  char            unk_07_[0x0010];        /* 0x00798 */
-  z64_lighting_t  lighting;               /* 0x007A8 */
-  char            unk_08_[0x0008];        /* 0x007B8 */
-  z64_col_hdr_t  *col_hdr;                /* 0x007C0 */
-  char            unk_09_[0x1460];        /* 0x007C4 */
-  char            actor_ctxt[0x0008];     /* 0x01C24 */
-  uint8_t         n_actors_loaded;        /* 0x01C2C */
-  char            unk_0A_[0x0003];        /* 0x01C2D */
+  z64_ctxt_t       common;                 /* 0x00000 */
+  uint16_t         scene_index;            /* 0x000A4 */
+  char             unk_00_[0x001A];        /* 0x000A6 */
+  uint32_t         screen_top;             /* 0x000C0 */
+  uint32_t         screen_bottom;          /* 0x000C4 */
+  uint32_t         screen_left;            /* 0x000C8 */
+  uint32_t         screen_right;           /* 0x000CC */
+  float            camera_distance;        /* 0x000D0 */
+  float            fog_distance;           /* 0x000D4 */
+  float            z_distance;             /* 0x000D8 */
+  float            unk_01_;                /* 0x000DC */
+  char             unk_02_[0x0190];        /* 0x000E0 */
+  z64_actor_t     *camera_focus;           /* 0x00270 */
+  char             unk_03_[0x00AE];        /* 0x00274 */
+  uint16_t         camera_mode;            /* 0x00322 */
+  char             unk_04_[0x001A];        /* 0x00324 */
+  uint16_t         camera_flag_1;          /* 0x0033E */
+  char             unk_05_[0x016C];        /* 0x00340 */
+  int16_t          event_flag;             /* 0x004AC */
+  char             unk_06_[0x02E6];        /* 0x004AE */
+  uint32_t         camera_2;               /* 0x00794 */
+  char             unk_07_[0x0010];        /* 0x00798 */
+  z64_lighting_t   lighting;               /* 0x007A8 */
+  char             unk_08_[0x0008];        /* 0x007B8 */
+  z64_col_hdr_t   *col_hdr;                /* 0x007C0 */
+  char             unk_09_[0x1460];        /* 0x007C4 */
+  char             actor_ctxt[0x0008];     /* 0x01C24 */
+  uint8_t          n_actors_loaded;        /* 0x01C2C */
+  char             unk_0A_[0x0003];        /* 0x01C2D */
   struct
   {
-    uint32_t      length;
-    z64_actor_t  *first;
-  }               actor_list[12];         /* 0x01C30 */
-  char            unk_0B_[0x0038];        /* 0x01C90 */
-  z64_actor_t    *arrow_actor;            /* 0x01CC8 */
-  z64_actor_t    *target_actor;           /* 0x01CCC */
-  char            unk_0C_[0x0058];        /* 0x01CD0 */
-  uint32_t        swch_flags;             /* 0x01D28 */
-  uint32_t        temp_swch_flags;        /* 0x01D2C */
-  uint32_t        unk_flags_0;            /* 0x01D30 */
-  uint32_t        unk_flags_1;            /* 0x01D34 */
-  uint32_t        chest_flags;            /* 0x01D38 */
-  uint32_t        clear_flags;            /* 0x01D3C */
-  uint32_t        temp_clear_flags;       /* 0x01D40 */
-  uint32_t        collect_flags;          /* 0x01D44 */
-  uint32_t        temp_collect_flags;     /* 0x01D48 */
-  void           *title_card_texture;     /* 0x01D4C */
-  char            unk_0D_[0x0007];        /* 0x01D50 */
-  uint8_t         title_card_delay;       /* 0x01D57 */
-  char            unk_0E_[0x0010];        /* 0x01D58 */
-  void           *cutscene_ptr;           /* 0x01D68 */
-  int8_t          cutscene_state;         /* 0x01D6C */
-  char            unk_0F_[0xE66F];        /* 0x01D6D */
-  uint8_t         textbox_state_1;        /* 0x103DC */
-  char            unk_10_[0x00DF];        /* 0x103DD */
-  uint8_t         textbox_state_2;        /* 0x104BC */
-  char            unk_11_[0x0002];        /* 0x104BD */
-  uint8_t         textbox_state_3;        /* 0x104BF */
-  char            unk_12_[0x0272];        /* 0x104C0 */
+    uint32_t       length;
+    z64_actor_t   *first;
+  }                actor_list[12];         /* 0x01C30 */
+  char             unk_0B_[0x0038];        /* 0x01C90 */
+  z64_actor_t     *arrow_actor;            /* 0x01CC8 */
+  z64_actor_t     *target_actor;           /* 0x01CCC */
+  char             unk_0C_[0x0058];        /* 0x01CD0 */
+  uint32_t         swch_flags;             /* 0x01D28 */
+  uint32_t         temp_swch_flags;        /* 0x01D2C */
+  uint32_t         unk_flags_0;            /* 0x01D30 */
+  uint32_t         unk_flags_1;            /* 0x01D34 */
+  uint32_t         chest_flags;            /* 0x01D38 */
+  uint32_t         clear_flags;            /* 0x01D3C */
+  uint32_t         temp_clear_flags;       /* 0x01D40 */
+  uint32_t         collect_flags;          /* 0x01D44 */
+  uint32_t         temp_collect_flags;     /* 0x01D48 */
+  void            *title_card_texture;     /* 0x01D4C */
+  char             unk_0D_[0x0007];        /* 0x01D50 */
+  uint8_t          title_card_delay;       /* 0x01D57 */
+  char             unk_0E_[0x0010];        /* 0x01D58 */
+  void            *cutscene_ptr;           /* 0x01D68 */
+  int8_t           cutscene_state;         /* 0x01D6C */
+  char             unk_0F_[0xE66F];        /* 0x01D6D */
+  uint8_t          textbox_state_1;        /* 0x103DC */
+  char             unk_10_[0x00DF];        /* 0x103DD */
+  uint8_t          textbox_state_2;        /* 0x104BC */
+  char             unk_11_[0x0002];        /* 0x104BD */
+  uint8_t          textbox_state_3;        /* 0x104BF */
+  char             unk_12_[0x0272];        /* 0x104C0 */
   struct {
-    uint16_t      unk_00_;
-    uint16_t      fadeout;
-    uint16_t      a_button_carots;
-    uint16_t      b_button;
-    uint16_t      cl_button;
-    uint16_t      cd_button;
-    uint16_t      cr_button;
-    uint16_t      hearts_navi;
-    uint16_t      rupees_keys_magic;
-    uint16_t      minimap;
-  }               hud_alpha_channels;    /* 0x10732 */
-  char            unk_13_[0x000C];       /* 0x10746 */
+    uint16_t       unk_00_;
+    uint16_t       fadeout;
+    uint16_t       a_button_carots;
+    uint16_t       b_button;
+    uint16_t       cl_button;
+    uint16_t       cd_button;
+    uint16_t       cr_button;
+    uint16_t       hearts_navi;
+    uint16_t       rupees_keys_magic;
+    uint16_t       minimap;
+  }                hud_alpha_channels;    /* 0x10732 */
+  char             unk_13_[0x000C];       /* 0x10746 */
   struct
   {
-    uint8_t       unk_00_;
-    uint8_t       b_button;
-    uint8_t       unk_01_;
-    uint8_t       bottles;
-    uint8_t       trade_items;
-    uint8_t       hookshot;
-    uint8_t       ocarina;
-    uint8_t       warp_songs;
-    uint8_t       suns_song;
-    uint8_t       farores_wind;
-    uint8_t       dfnl;
-    uint8_t       all;
-  }               restriction_flags;      /* 0x10752 */
-  char            unk_14_[0x01D6];        /* 0x1075E */
-  uint16_t        pause_state;            /* 0x10934 */
-  char            unk_15_[0x000E];        /* 0x10936 */
-  uint16_t        pause_screen_changing;  /* 0x10944 */
-  uint16_t        pause_screen_prev;      /* 0x10946 */
-  uint16_t        pause_screen;           /* 0x10948 */
-  char            unk_16_[0x002E];        /* 0x1094A */
-  int16_t         item_screen_cursor;     /* 0x10978 */
-  char            unk_17_[0x0002];        /* 0x1097A */
-  int16_t         quest_screen_cursor;    /* 0x1097C */
-  int16_t         equip_screen_cursor;    /* 0x1097E */
-  int16_t         map_screen_cursor;      /* 0x10980 */
-  int16_t         item_screen_x;          /* 0x10982 */
-  char            unk_18_[0x0004];        /* 0x10984 */
-  int16_t         equipment_screen_x;     /* 0x10988 */
-  char            unk_19_[0x0002];        /* 0x1098A */
-  int16_t         item_screen_y;          /* 0x1098C */
-  char            unk_1A_[0x0004];        /* 0x1099E */
-  int16_t         equipment_screen_y;     /* 0x10992 */
-  char            unk_1B_[0x0004];        /* 0x10994 */
-  int16_t         pause_screen_cursor;    /* 0x10998 */
-  char            unk_1C_[0x0002];        /* 0x1099A */
-  int16_t         pause_screen_item;      /* 0x1099C */
-  int16_t         item_screen_item;       /* 0x1099E */
-  int16_t         map_screen_item;        /* 0x109A0 */
-  int16_t         quest_screen_item;      /* 0x109A2 */
-  int16_t         equip_screen_item;      /* 0x109A4 */
-  char            unk_1D_[0x0004];        /* 0x109A6 */
-  int16_t         quest_screen_hilite;    /* 0x109AA */
-  char            unk_1E_[0x0018];        /* 0x109AC */
-  int16_t         quest_screen_song;      /* 0x109C4 */
-  char            unk_1F_[0x0DDE];        /* 0x109C6 */
-  z64_obj_ctxt_t  obj_ctxt;               /* 0x117A4 */
-  int8_t          room_index;             /* 0x11CBC */
-  char            unk_20_[0x000B];        /* 0x11CBD */
-  void           *room_ptr;               /* 0x11CC8 */
-  char            unk_21_[0x0118];        /* 0x11CCC */
-  uint32_t        gameplay_frames;        /* 0x11DE4 */
-  uint8_t         link_age;               /* 0x11DE8 */
-  char            unk_22_;                /* 0x11DE9 */
-  uint8_t         spawn_index;            /* 0x11DEA */
-  uint8_t         n_map_actors;           /* 0x11DEB */
-  uint8_t         n_rooms;                /* 0x11DEC */
-  char            unk_23_[0x000B];        /* 0x11DED */
-  void           *map_actor_list;         /* 0x11DF8 */
-  char            unk_24_[0x0008];        /* 0x11DFC */
-  void           *scene_exit_list;        /* 0x11E04 */
-  char            unk_25_[0x000C];        /* 0x11E08 */
-  uint8_t         skybox_type;            /* 0x11E14 */
-  int8_t          scene_load_flag;        /* 0x11E15 */
-  char            unk_26_[0x0004];        /* 0x11E16 */
-  int16_t         entrance_index;         /* 0x11E1A */
-  char            unk_27_[0x0042];        /* 0x11E1C */
-  uint8_t         fadeout_transition;     /* 0x11E5E */
-                                          /* 0x11E5F */
+    uint8_t        unk_00_;
+    uint8_t        b_button;
+    uint8_t        unk_01_;
+    uint8_t        bottles;
+    uint8_t        trade_items;
+    uint8_t        hookshot;
+    uint8_t        ocarina;
+    uint8_t        warp_songs;
+    uint8_t        suns_song;
+    uint8_t        farores_wind;
+    uint8_t        dfnl;
+    uint8_t        all;
+  }                restriction_flags;      /* 0x10752 */
+  char             unk_14_[0x0002];        /* 0x1075E */
+  z64_pause_ctxt_t pause_ctxt;             /* 0x10760 */
+  char             unk_15_[0x0D90];        /* 0x10A14 */
+  z64_obj_ctxt_t   obj_ctxt;               /* 0x117A4 */
+  int8_t           room_index;             /* 0x11CBC */
+  char             unk_16_[0x000B];        /* 0x11CBD */
+  void            *room_ptr;               /* 0x11CC8 */
+  char             unk_17_[0x0118];        /* 0x11CCC */
+  uint32_t         gameplay_frames;        /* 0x11DE4 */
+  uint8_t          link_age;               /* 0x11DE8 */
+  char             unk_18_;                /* 0x11DE9 */
+  uint8_t          spawn_index;            /* 0x11DEA */
+  uint8_t          n_map_actors;           /* 0x11DEB */
+  uint8_t          n_rooms;                /* 0x11DEC */
+  char             unk_19_[0x000B];        /* 0x11DED */
+  void            *map_actor_list;         /* 0x11DF8 */
+  char             unk_20_[0x0008];        /* 0x11DFC */
+  void            *scene_exit_list;        /* 0x11E04 */
+  char             unk_21_[0x000C];        /* 0x11E08 */
+  uint8_t          skybox_type;            /* 0x11E14 */
+  int8_t           scene_load_flag;        /* 0x11E15 */
+  char             unk_22_[0x0004];        /* 0x11E16 */
+  int16_t          entrance_index;         /* 0x11E1A */
+  char             unk_23_[0x0042];        /* 0x11E1C */
+  uint8_t          fadeout_transition;     /* 0x11E5E */
+                                           /* 0x11E5F */
 } z64_game_t;
 
 typedef struct

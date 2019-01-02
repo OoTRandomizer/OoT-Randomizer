@@ -36,7 +36,6 @@ alwaysitems = ([
     + ['Bow'] * 3
     + ['Slingshot'] * 3
     + ['Bomb Bag'] * 3
-    + ['Bottle with Letter']
     + ['Bombs (5)'] * 2
     + ['Bombs (10)']
     + ['Bombs (20)']
@@ -546,6 +545,12 @@ def get_pool_core(world):
         pool.append('Kokiri Sword')
     else:
         placed_items['Kokiri Sword Chest'] = 'Kokiri Sword'
+
+    if world.open_fountain:
+        bottle = random.choice(normal_bottles)
+        pool.append(bottle)
+    else:
+        pool.append('Bottle with Letter')
 
     if world.shuffle_weird_egg:
         pool.append('Weird Egg')
