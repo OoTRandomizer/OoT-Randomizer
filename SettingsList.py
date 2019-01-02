@@ -2049,7 +2049,7 @@ setting_infos = [
         },
         {
             'text': 'Initial Color',
-            'group': 'sword_outside',
+            'group': 'sword_inside',
             'widget': 'Combobox',
             'default': 'White',
             'options': get_sword_color_options(),
@@ -2072,7 +2072,7 @@ setting_infos = [
                     '''
         },
         {
-            'text': 'Fade Color',
+            'text': 'Initial Color',
             'group': 'sword_outside',
             'widget': 'Combobox',
             'default': 'White',
@@ -2096,7 +2096,7 @@ setting_infos = [
                     '''
         },
         {
-            'text': 'Initial Color',
+            'text': 'Fade Color',
             'group': 'sword_inside',
             'widget': 'Combobox',
             'default': 'White',
@@ -2121,7 +2121,7 @@ setting_infos = [
         },
         {
             'text': 'Fade Color',
-            'group': 'sword_inside',
+            'group': 'sword_outside',
             'widget': 'Combobox',
             'default': 'White',
             'options': get_sword_color_options(),
