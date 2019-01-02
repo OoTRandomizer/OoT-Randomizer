@@ -62,7 +62,7 @@ void update_color()
         int index = frames / CYCLE_FRAMES;
         int f = frames % CYCLE_FRAMES;
     
-        colorRGB_t color = get_color(index, f);
+        colorRGB_t color = set_sword_trail_color(index, f);
         uint8_t *sword_trail = (uint8_t*)0x80115DCE;
         for (int i = 0; i < 16 ; i+=4) {
             sword_trail[i] = color.r;

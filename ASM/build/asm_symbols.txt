@@ -1,5 +1,5 @@
 00000000 0
-00000000 .byt:4000000
+00000000 .byt:2000000
 00000010 .dbl:0008
 000005B4 Shop_Item_Save_Offset
 0000D1B0 .dbl:0010
@@ -303,7 +303,7 @@
 804039F4 push_pending_ice_trap,00000014
 80403A08 ice_trap_is_pending,00000010
 80403A18 try_ice_trap,00000124
-80403B3C get_color,00000188
+80403B3C set_sword_trail_color,00000188
 80403CC4 update_color,000000C4
 80403D88 get_chest_override_size,00000084
 80403E0C get_chest_override_color,0000007C
