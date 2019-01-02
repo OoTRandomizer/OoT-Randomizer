@@ -2168,6 +2168,32 @@ setting_infos = [
             max_rando     = True,
             affected      = 'tokensanity',
             ),
+     Combobox(
+            name           = 'junk_ice_traps_max',
+            default        = 'normal',
+            choices        = {
+                'off':       'No Ice Traps',
+                'normal':    'Normal Ice Traps',
+                'on':        'Extra Ice Traps',
+                'mayhem':    'Ice Trap Mayhem',
+                'onslaught': 'Ice Trap Onslaught',
+                },
+            args_help      = '''\
+                             Choose how Ice Traps will be placed in the junk item pool
+                             off:       Ice traps are removed.
+                             normal:    Default behavior; no ice traps in the junk item pool.
+                             on:        Ice Traps will be placed in the junk item pool.
+                             mayhem:    All added junk items will be ice traps.
+                             onslaught: All junk items will be ice traps, even those in the base item pool.
+                             ''',
+            gui_text       = 'Max Ice Traps',
+            gui_group      = 'random_settings',
+            gui_tooltip    = '''\
+                             Maximum setting for ice traps
+                             ''',
+             max_rando     = True,
+            affected      = 'junk_ice_traps',
+            ),
     Checkbutton(
             name           = 'disallow_random_tricks',
             default         = True,
