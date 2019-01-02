@@ -195,8 +195,8 @@ def patch_cosmetics(settings, rom):
     sword_trails = [
         ('Inner Initial Sword Trail', settings.sword_trail_color_inner1, 0x00BEFF7C, 0xB0),
         ('Outer Initial Sword Trail', settings.sword_trail_color_outer1,  0x00BEFF80, 0xB0),
-        ('Inner Fade Sword Trail', settings.sword_trail_color_inner2,   0x00BEFF84, 0x20),
-        ('Outer Fade Sword Trail', settings.sword_trail_color_outer2, 0x00BEFF88, 0x10)
+        ('Inner Fade Sword Trail', settings.sword_trail_color_inner2,   0x00BEFF88, 0x20),
+        ('Outer Fade Sword Trail', settings.sword_trail_color_outer2, 0x00BEFF84, 0x10)
     ]
     sword_color_list = get_sword_colors()
     
