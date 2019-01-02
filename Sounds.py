@@ -149,7 +149,7 @@ looping    = [s for s in Sounds if Tags.LOOPED in s.value.tags]
 no_painful = [s for s in standard if Tags.PAINFUL not in s.value.tags]
 
 # Selected by hand (very much a WIP)
-navi_overworld = [
+navi_hint = [
         Sounds.SPIT_NUT,
         Sounds.CURSED_SCREAM,
         Sounds.TALON_CRY,
@@ -243,8 +243,8 @@ class SoundHooks(Enum):
                         0xC18832, 0xC18C32, 0xC19A7E, 0xC19CBE, 0xC1A1F2, 0xC1A3B6, 0xC1B08A,
                         0xC1B556, 0xC1C28A, 0xC1CC36, 0xC1EB4A, 0xC1F18E, 0xC6B136, 0xC6BBA2])
 #   # Unmerged them because more space!
-    NAVI_OVERWORLD  = SoundHook('Navi - Overworld', navi_overworld,   [0xAE7EF2, 0xC26C7E])
-    NAVI_ENEMY      = SoundHook('Navi - Enemy',     navi_enemy,       [0xAE7EC6])
+    NAVI_HINT       = SoundHook('Navi Hint', navi_hint,   [0xAE7EF2, 0xC26C7E])
+    NAVI_ENEMY      = SoundHook('Navi Enemy Target',     navi_enemy,       [0xAE7EC6])
 #   # Redeads have a different cutting sound, making this a bit weird
 #   SWORD_SLASH     = SoundHook('Sword Slash',      standard,         [0xAC2942])
 

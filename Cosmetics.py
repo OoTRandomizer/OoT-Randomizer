@@ -240,7 +240,7 @@ def patch_cosmetics(settings, rom):
           (settings.sfx_menu_select,    sfx.SoundHooks.MENU_SELECT),
           (settings.sfx_menu_cursor,    sfx.SoundHooks.MENU_CURSOR),
           (settings.sfx_horse_neigh,    sfx.SoundHooks.HORSE_NEIGH),
-          (settings.sfx_navi_overworld, sfx.SoundHooks.NAVI_OVERWORLD),
+          (settings.sfx_navi_hint, sfx.SoundHooks.NAVI_HINT),
           (settings.sfx_navi_enemy,     sfx.SoundHooks.NAVI_ENEMY),
           (settings.sfx_low_hp,         sfx.SoundHooks.HP_LOW),
           (settings.sfx_nightfall,      sfx.SoundHooks.NIGHTFALL),
