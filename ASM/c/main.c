@@ -8,7 +8,7 @@
 #include "quickboots.h"
 #include "z64.h"
 #include "chests.h"
-
+#include "rainbow_sword.h"
 void c_init() {
     heap_init();
     gfx_init();
@@ -21,6 +21,7 @@ void c_init() {
 void before_game_state_update() {
     handle_pending_items();
     handle_quickboots();
+    update_color();
 }
 
 void after_game_state_update() {

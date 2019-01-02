@@ -125,11 +125,13 @@ def guiMain(settings=None):
     frames['cosmetic_tab'] = ttk.Frame(notebook)
     frames['cosmetic_tab_left'] = Frame(frames['cosmetic_tab'])
     frames['cosmetic_tab_right'] = Frame(frames['cosmetic_tab'])
+    frames['SFX_tab'] = ttk.Frame(notebook)
     notebook.add(frames['rom_tab'], text='ROM Options')
     notebook.add(frames['rules_tab'], text='Main Rules')
     notebook.add(frames['logic_tab'], text='Detailed Logic')
     notebook.add(frames['other_tab'], text='Other')
     notebook.add(frames['cosmetic_tab'], text='Cosmetic')
+    notebook.add(frames['SFX_tab'], text='SFX')
 
     #######################
     # Randomizer controls #
@@ -158,9 +160,17 @@ def guiMain(settings=None):
     frames['other']       = LabelFrame(frames['other_tab'],          text='Misc',              labelanchor=NW)
 
     #Cosmetic tab
-    frames['cosmetic']    = LabelFrame(frames['cosmetic_tab'],       text='General',           labelanchor=NW)
-    frames['colors']      = LabelFrame(frames['cosmetic_tab_right'], text='Colors',            labelanchor=NW)
-    frames['sfx']         = LabelFrame(frames['cosmetic_tab_left'],  text='SFX',               labelanchor=NW)
+    frames['cosmetic']    = LabelFrame(frames['cosmetic_tab_left'],       text='General',           labelanchor=NW)
+    frames['sword_outside'] = LabelFrame(frames['cosmetic_tab_left'],        text='Outside Sword Trail Colors',          labelanchor=NW)
+    frames['sword_inside'] = LabelFrame(frames['cosmetic_tab_right'],        text='Inside Sword Trail Colors',          labelanchor=NW)
+    frames['tunic_colors']      = LabelFrame(frames['cosmetic_tab_right'], text='Tunics',            labelanchor=NW)
+    frames['navi_core_colors']         = LabelFrame(frames['cosmetic_tab_left'],  text='Navi Core Colors',               labelanchor=NW)
+    frames['navi_outside_colors']         = LabelFrame(frames['cosmetic_tab_right'],  text='Navi Outside Colors',               labelanchor=NW)
+
+    #Cosmetic tab
+    frames['sfx']    = LabelFrame(frames['SFX_tab'],       text='General',           labelanchor=NW)
+    frames['menu_sfx']      = LabelFrame(frames['SFX_tab'], text='Menu',            labelanchor=NW)
+    frames['npc_sfx']         = LabelFrame(frames['SFX_tab'],  text='NPC',               labelanchor=NW)
 
 
     # Shared
@@ -438,10 +448,18 @@ def guiMain(settings=None):
     frames['cosmetic_tab_right'].pack(fill=BOTH, expand=True, anchor=W, side=RIGHT)
 
     # Cosmetics tab - Left Side
-    frames['sfx'].pack(fill=BOTH, expand=True, anchor=W, side=TOP, pady=(5,1))
+    frames['sword_outside'].pack(fill=BOTH, expand=True, anchor=W, side=TOP, pady=(5,1))
+    frames['navi_core_colors'].pack(fill=BOTH, expand=True, anchor=W, side=TOP, pady=(5,1))
 
     # Cosmetics tab - Right Side
-    frames['colors'].pack(fill=BOTH, expand=True, anchor=W, side=TOP, pady=(5,1))
+    frames['tunic_colors'].pack(fill=BOTH, expand=True, anchor=N, side=TOP)
+    frames['sword_inside'].pack(fill=BOTH, expand=True, anchor=W, side=TOP, pady=(5,1))
+    frames['navi_outside_colors'].pack(fill=BOTH, expand=True, anchor=W, side=TOP, pady=(5,1))
+
+    #SFX tab
+    frames['sfx'].pack(          fill=BOTH, expand=True, anchor=N, side=LEFT, pady=(5,1))
+    frames['menu_sfx'].pack( fill=BOTH, expand=False, anchor=W, side=TOP, pady=(5,1))
+    frames['npc_sfx'].pack(fill=BOTH, expand=True, anchor=W, side=BOTTOM, pady=(5,1))
 
     notebook.pack(fill=BOTH, expand=True, padx=5, pady=5)
 

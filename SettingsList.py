@@ -1,7 +1,7 @@
 import argparse
 import re
 import math
-from Cosmetics import get_tunic_color_options, get_navi_color_options
+from Cosmetics import get_tunic_color_options, get_navi_color_options, get_sword_color_options
 from LocationList import location_table
 import Sounds as sfx
 
@@ -150,6 +150,9 @@ def parse_custom_tunic_color(s):
 
 def parse_custom_navi_color(s):
     return parse_color(s, get_navi_color_options())
+    
+def parse_custom_sword_color(s):
+    return parse_color(s, get_sword_color_options())
 
 def parse_color(s, color_choices):
     if s == 'Custom Color':
@@ -1731,7 +1734,7 @@ setting_infos = [
                              random:      Areas play random background music
                              ''',
             gui_text       = 'Background Music',
-            gui_group      = 'cosmetic',
+            gui_group      = 'sfx',
             gui_tooltip    = '''\
                               'No Music': No background music.
                               is played.
@@ -1754,7 +1757,7 @@ setting_infos = [
         },
         {
             'text': 'Kokiri Tunic',
-            'group': 'colors',
+            'group': 'tunic_colors',
             'widget': 'Combobox',
             'default': 'Kokiri Green',
             'options': get_tunic_color_options(),
@@ -1778,7 +1781,7 @@ setting_infos = [
         },
         {
             'text': 'Goron Tunic',
-            'group': 'colors',
+            'group': 'tunic_colors',
             'widget': 'Combobox',
             'default': 'Goron Red',
             'options': get_tunic_color_options(),
@@ -1802,7 +1805,7 @@ setting_infos = [
         },
         {
             'text': 'Zora Tunic',
-            'group': 'colors',
+            'group': 'tunic_colors',
             'widget': 'Combobox',
             'default': 'Zora Blue',
             'options': get_tunic_color_options(),
@@ -1826,7 +1829,7 @@ setting_infos = [
         },
         {
             'text': 'Navi Idle',
-            'group': 'colors',
+            'group': 'navi_core_colors',
             'widget': 'Combobox',
             'default': 'White',
             'options': get_navi_color_options(),
@@ -1850,7 +1853,7 @@ setting_infos = [
         },
         {
             'text': 'Navi Targeting Enemy',
-            'group': 'colors',
+            'group': 'navi_core_colors',
             'widget': 'Combobox',
             'default': 'Yellow',
             'options': get_navi_color_options(),
@@ -1874,7 +1877,7 @@ setting_infos = [
         },
         {
             'text': 'Navi Targeting NPC',
-            'group': 'colors',
+            'group': 'navi_core_colors',
             'widget': 'Combobox',
             'default': 'Light Blue',
             'options': get_navi_color_options(),
@@ -1898,7 +1901,7 @@ setting_infos = [
         },
         {
             'text': 'Navi Targeting Prop',
-            'group': 'colors',
+            'group': 'navi_core_colors',
             'widget': 'Combobox',
             'default': 'Green',
             'options': get_navi_color_options(),
@@ -1909,61 +1912,227 @@ setting_infos = [
                       color from any color the N64 can draw.
                       '''
         }),
-    Combobox(
-            name           = 'sfx_nightfall',
-            default        = 'default',
-            choices        = sfx.get_setting_choices(sfx.SoundHooks.NIGHTFALL),
+    Setting_Info('navi_color_default_outside', str, 0, False,
+        {
+            'default': 'White',
+            'type': parse_custom_navi_color,
+            'help': '''\
+                    Choose the color for Navi when she is idle. (default: %(default)s)
+                    Color:             Make the Navi this color.
+                    Random Choice:     Choose a random color from this list of colors.
+                    Completely Random: Choose a random color from any color the N64 can draw.
+                    '''
+        },
+        {
+            'text': 'Navi Idle',
+            'group': 'navi_outside_colors',
+            'widget': 'Combobox',
+            'default': 'White',
+            'options': get_navi_color_options(),
+            'tooltip':'''\
+                      'Random Choice': Choose a random
+                      color from this list of colors.
+                      'Completely Random': Choose a random
+                      color from any color the N64 can draw.
+                      '''
+        }),
+    Setting_Info('navi_color_enemy_outside', str, 0, False,
+        {
+            'default': 'Yellow',
+            'type': parse_custom_navi_color,
+            'help': '''\
+                    Choose the color for Navi when she is targeting an enemy. (default: %(default)s)
+                    Color:             Make the Navi this color.
+                    Random Choice:     Choose a random color from this list of colors.
+                    Completely Random: Choose a random color from any color the N64 can draw.
+                    '''
+        },
+        {
+            'text': 'Navi Targeting Enemy',
+            'group': 'navi_outside_colors',
+            'widget': 'Combobox',
+            'default': 'Yellow',
+            'options': get_navi_color_options(),
+            'tooltip':'''\
+                      'Random Choice': Choose a random
+                      color from this list of colors.
+                      'Completely Random': Choose a random
+                      color from any color the N64 can draw.
+                      '''
+        }),
+    Setting_Info('navi_color_npc_outside', str, 0, False,
+        {
+            'default': 'Light Blue',
+            'type': parse_custom_navi_color,
+            'help': '''\
+                    Choose the color for Navi when she is targeting an NPC. (default: %(default)s)
+                    Color:             Make the Navi this color.
+                    Random Choice:     Choose a random color from this list of colors.
+                    Completely Random: Choose a random color from any color the N64 can draw.
+                    '''
+        },
+        {
+            'text': 'Navi Targeting NPC',
+            'group': 'navi_outside_colors',
+            'widget': 'Combobox',
+            'default': 'Light Blue',
+            'options': get_navi_color_options(),
+            'tooltip':'''\
+                      'Random Choice': Choose a random
+                      color from this list of colors.
+                      'Completely Random': Choose a random
+                      color from any color the N64 can draw.
+                      '''
+        }),
+    Setting_Info('navi_color_prop_outside', str, 0, False,
+        {
+            'default': 'Green',
+            'type': parse_custom_navi_color,
+            'help': '''\
+                    Choose the color for Navi when she is targeting a prop. (default: %(default)s)
+                    Color:             Make the Navi this color.
+                    Random Choice:     Choose a random color from this list of colors.
+                    Completely Random: Choose a random color from any color the N64 can draw.
+                    '''
+        },
+        {
+            'text': 'Navi Targeting Prop',
+            'group': 'navi_outside_colors',
+            'widget': 'Combobox',
+            'default': 'Green',
+            'options': get_navi_color_options(),
+            'tooltip':'''\
+                      'Random Choice': Choose a random
+                      color from this list of colors.
+                      'Completely Random': Choose a random
+                      color from any color the N64 can draw.
+                      '''
+        }),
+    Checkbutton(
+            name           = 'rainbow_sword_trail',
             args_help      = '''\
+                             Enables rainbow sword trails
                              ''',
-            gui_text       = 'Nightfall',
-            gui_group      = 'sfx',
+            gui_text       = 'Rainbow Sword Trail',
+            gui_group      = 'cosmetic',
+            gui_tooltip    = '''\
+                             Enables rainbow sword trails, which
+                             show whenever you swing your sword.
+                             ''',
             ),
-    Combobox(
-            name           = 'sfx_hover_boots',
-            default        = 'default',
-            choices        = sfx.get_setting_choices(sfx.SoundHooks.BOOTS_HOVER),
+    Scale(
+            name           = 'sword_trail_duration',
+            default        = '4',
+            min            = 4,
+            max            = 20,
             args_help      = '''\
+                             Select the duration of the sword trail
                              ''',
-            gui_text       = 'Hover Boots',
-            gui_group      = 'sfx',
+            gui_text       = 'Sword Trail Duration',
+            gui_group      = 'cosmetic',
+            gui_tooltip    = '''\
+                             Select the duration for sword trails.
+                             The higher the number, the longer it lasts.
+                             Default: 4
+                             '''
             ),
-    Combobox(
-            name           = 'sfx_menu_select',
-            default        = 'default',
-            choices        = sfx.get_setting_choices(sfx.SoundHooks.MENU_SELECT),
-            args_help      = '''\
-                             ''',
-            gui_text       = 'Menu Select',
-            gui_group      = 'sfx',
-            ),
-    Combobox(
-            name           = 'sfx_menu_cursor',
-            default        = 'default',
-            choices        = sfx.get_setting_choices(sfx.SoundHooks.MENU_CURSOR),
-            args_help      = '''\
-                             ''',
-            gui_text       = 'Menu Cursor',
-            gui_group      = 'sfx',
-            ),
-    Combobox(
-            name           = 'sfx_horse_neigh',
-            default        = 'default',
-            choices        = sfx.get_setting_choices(sfx.SoundHooks.HORSE_NEIGH),
-            args_help      = '''\
-                             ''',
-            gui_text       = 'Horse',
-            gui_group      = 'sfx',
-            ),
-    Combobox(
-            name           = 'sfx_navi',
-            default        = 'default',
-            choices        = sfx.get_setting_choices(sfx.SoundHooks.NAVI),
-            args_help      = '''\
-                             ''',
-            gui_text       = 'Navi',
-            gui_group      = 'sfx',
-            ),
-    Combobox(
+    Setting_Info('sword_trail_color_inner1', str, 0, False,
+        {
+            'default': 'White',
+            'type': parse_custom_sword_color,
+            'help': '''\
+                    Choose the color for your sword trail when you swing. This controls the inner initial color. (default: %(default)s)
+                    Color:             Make your sword trail this color.
+                    Random Choice:     Choose a random color from this list of colors.
+                    Completely Random: Choose a random color from any color the N64 can draw.
+                    '''
+        },
+        {
+            'text': 'Initial Color',
+            'group': 'sword_inside',
+            'widget': 'Combobox',
+            'default': 'White',
+            'options': get_sword_color_options(),
+            'tooltip':'''\
+                      'Random Choice': Choose a random
+                      color from this list of colors.
+                      'Completely Random': Choose a random
+                      color from any color the N64 can draw.
+                      '''
+        }),
+    Setting_Info('sword_trail_color_outer1', str, 0, False,
+        {
+            'default': 'White',
+            'type': parse_custom_sword_color,
+            'help': '''\
+                    Choose the color for your sword trail when you swing. This controls the outer initial color. (default: %(default)s)
+                    Color:             Make your sword trail this color.
+                    Random Choice:     Choose a random color from this list of colors.
+                    Completely Random: Choose a random color from any color the N64 can draw.
+                    '''
+        },
+        {
+            'text': 'Initial Color',
+            'group': 'sword_outside',
+            'widget': 'Combobox',
+            'default': 'White',
+            'options': get_sword_color_options(),
+            'tooltip':'''\
+                      'Random Choice': Choose a random
+                      color from this list of colors.
+                      'Completely Random': Choose a random
+                      color from any color the N64 can draw.
+                      '''
+        }),
+    Setting_Info('sword_trail_color_inner2', str, 0, False,
+        {
+            'default': 'White',
+            'type': parse_custom_sword_color,
+            'help': '''\
+                    Choose the color for your sword trail when you swing. This controls the inner fade color. (default: %(default)s)
+                    Color:             Make your sword trail this color.
+                    Random Choice:     Choose a random color from this list of colors.
+                    Completely Random: Choose a random color from any color the N64 can draw.
+                    '''
+        },
+        {
+            'text': 'Fade Color',
+            'group': 'sword_inside',
+            'widget': 'Combobox',
+            'default': 'White',
+            'options': get_sword_color_options(),
+            'tooltip':'''\
+                      'Random Choice': Choose a random
+                      color from this list of colors.
+                      'Completely Random': Choose a random
+                      color from any color the N64 can draw.
+                      '''
+        }),
+    Setting_Info('sword_trail_color_outer2', str, 0, False,
+        {
+            'default': 'White',
+            'type': parse_custom_sword_color,
+            'help': '''\
+                    Choose the color for your sword trail when you swing. This controls the outer initial color. (default: %(default)s)
+                    Color:             Make your sword trail this color.
+                    Random Choice:     Choose a random color from this list of colors.
+                    Completely Random: Choose a random color from any color the N64 can draw.
+                    '''
+        },
+        {
+            'text': 'Fade Color',
+            'group': 'sword_outside',
+            'widget': 'Combobox',
+            'default': 'White',
+            'options': get_sword_color_options(),
+            'tooltip':'''\
+                      'Random Choice': Choose a random
+                      color from this list of colors.
+                      'Completely Random': Choose a random
+                      color from any color the N64 can draw.
+                      '''
+        }),
+            Combobox(
             name           = 'sfx_low_hp',
             default        = 'default',
             choices        = sfx.get_setting_choices(sfx.SoundHooks.HP_LOW),
@@ -2003,6 +2172,69 @@ setting_infos = [
             gui_tooltip    = '''\
                              Change the sound of the ocarina.
                              ''',
+            ),
+    Combobox(
+            name           = 'sfx_nightfall',
+            default        = 'default',
+            choices        = sfx.get_setting_choices(sfx.SoundHooks.NIGHTFALL),
+            args_help      = '''\
+                             ''',
+            gui_text       = 'Nightfall',
+            gui_group      = 'sfx',
+            ),
+    Combobox(
+            name           = 'sfx_hover_boots',
+            default        = 'default',
+            choices        = sfx.get_setting_choices(sfx.SoundHooks.BOOTS_HOVER),
+            args_help      = '''\
+                             ''',
+            gui_text       = 'Hover Boots',
+            gui_group      = 'sfx',
+            ),
+    Combobox(
+            name           = 'sfx_menu_select',
+            default        = 'default',
+            choices        = sfx.get_setting_choices(sfx.SoundHooks.MENU_SELECT),
+            args_help      = '''\
+                             ''',
+            gui_text       = 'Menu Select',
+            gui_group      = 'menu_sfx',
+            ),
+    Combobox(
+            name           = 'sfx_menu_cursor',
+            default        = 'default',
+            choices        = sfx.get_setting_choices(sfx.SoundHooks.MENU_CURSOR),
+            args_help      = '''\
+                             ''',
+            gui_text       = 'Menu Cursor',
+            gui_group      = 'menu_sfx',
+            ),
+    Combobox(
+            name           = 'sfx_horse_neigh',
+            default        = 'default',
+            choices        = sfx.get_setting_choices(sfx.SoundHooks.HORSE_NEIGH),
+            args_help      = '''\
+                             ''',
+            gui_text       = 'Horse',
+            gui_group      = 'npc_sfx',
+            ),
+    Combobox(
+            name           = 'sfx_navi_hint',
+            default        = 'default',
+            choices        = sfx.get_setting_choices(sfx.SoundHooks.NAVI_HINT),
+            args_help      = '''\
+                             ''',
+            gui_text       = 'Navi Hint',
+            gui_group      = 'npc_sfx',
+            ),
+    Combobox(
+            name           = 'sfx_navi_enemy',
+            default        = 'default',
+            choices        = sfx.get_setting_choices(sfx.SoundHooks.NAVI_ENEMY),
+            args_help      = '''\
+                             ''',
+            gui_text       = 'Navi Enemy Target',
+            gui_group      = 'npc_sfx',
             ),
 ]
 

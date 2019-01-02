@@ -1,0 +1,1 @@
+void update_color();

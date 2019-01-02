@@ -149,7 +149,20 @@ looping    = [s for s in Sounds if Tags.LOOPED in s.value.tags]
 no_painful = [s for s in standard if Tags.PAINFUL not in s.value.tags]
 
 # Selected by hand (very much a WIP)
-navi = [
+navi_hint = [
+        Sounds.SPIT_NUT,
+        Sounds.CURSED_SCREAM,
+        Sounds.TALON_CRY,
+        Sounds.BOW_TWANG,
+        Sounds.BOTTLE_CORK,
+        Sounds.GANON_TENNIS,
+        Sounds.STALCHILD_ATTACK,
+        Sounds.FANFARE_SMALL,
+        Sounds.STALCHILD_ATTACK,
+        Sounds.INGO_KAAH,
+        Sounds.HORSE_NEIGH,
+        ]
+navi_enemy = [
         Sounds.SPIT_NUT,
         Sounds.CURSED_SCREAM,
         Sounds.TALON_CRY,
@@ -215,7 +228,7 @@ horse_neigh = [
 
 SoundHook = namedtuple('SoundHook', 'name pool locations')
 class SoundHooks(Enum):
-    NAVI            = SoundHook('Navi',        navi,        [0xAE7EF2, 0xC26C7E, 0xAE7EC6])
+#   NAVI            = SoundHook('Navi', navi, [0xAE7EC6, 0xAE7EF2, 0xC26C7E])
     HP_LOW          = SoundHook('Low Health',  hp_low,      [0xADBA1A])
     BOOTS_HOVER     = SoundHook('Hover Boots', hover_boots, [0xBDBD8A])
     NIGHTFALL       = SoundHook('Nightfall',   nightfall,   [0xAD3466, 0xAD7A2E])
@@ -229,9 +242,9 @@ class SoundHooks(Enum):
     HORSE_NEIGH     = SoundHook('Horse Neigh', horse_neigh, [
                         0xC18832, 0xC18C32, 0xC19A7E, 0xC19CBE, 0xC1A1F2, 0xC1A3B6, 0xC1B08A,
                         0xC1B556, 0xC1C28A, 0xC1CC36, 0xC1EB4A, 0xC1F18E, 0xC6B136, 0xC6BBA2])
-#   # Merged these into one
-#   NAVI_OVERWORLD  = SoundHook('Navi - Overworld', navi_overworld,   [0xAE7EF2, 0xC26C7E])
-#   NAVI_ENEMY      = SoundHook('Navi - Enemy',     navi_enemy,       [0xAE7EC6])
+#   # Unmerged them because more space!
+    NAVI_HINT       = SoundHook('Navi Hint', navi_hint,   [0xAE7EF2, 0xC26C7E])
+    NAVI_ENEMY      = SoundHook('Navi Enemy Target',     navi_enemy,       [0xAE7EC6])
 #   # Redeads have a different cutting sound, making this a bit weird
 #   SWORD_SLASH     = SoundHook('Sword Slash',      standard,         [0xAC2942])
 
