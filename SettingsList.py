@@ -2035,7 +2035,7 @@ setting_infos = [
             ),
     Scale(
             name           = 'sword_trail_duration',
-            default        = '4',
+            default        = 4,
             min            = 4,
             max            = 20,
             args_help      = '''\
