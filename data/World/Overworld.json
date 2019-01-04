@@ -755,7 +755,7 @@
             "Goron City Pot Freestanding PoH": "
                 (has_bombs or Progressive_Strength_Upgrade) and 
                 ((can_play(Zeldas_Lullaby) and has_sticks) or can_use(Dins_Fire))",
-            "Rolling Goron as Child": "Bomb_Bag and has_explosives",
+            "Rolling Goron as Child": "has_explosives or (Progressive_Strength_Upgrade and logic_child_rolling_with_strength)",
             "Link the Goron": "
                 is_adult and 
                 (Progressive_Strength_Upgrade or has_explosives or has_bow)",
