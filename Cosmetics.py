@@ -202,8 +202,10 @@ def patch_cosmetics(settings, rom):
         ('Outer Fade Sword Trail', settings.sword_trail_color_outer2, 0x00BEFF84, 0x10)
     ]
     sword_color_list = get_sword_colors()
-    
+    symbol = rom.sym('RAINBOW_SWORD_ENABLED')
+
     if not settings.rainbow_sword_trail:
+        rom.write_byte(symbol, 0x00)
         for index, item in enumerate(sword_trails):
             sword_trail, sword_trail_option, sword_trail_address, transparency = item
             # handle random
@@ -229,7 +231,6 @@ def patch_cosmetics(settings, rom):
             rom.write_bytes(sword_trail_address, color)
             log.sword_colors[sword_trail] = dict(option=sword_trail_option, color=''.join(['{:02X}'.format(c) for c in color[0:3]]))
     else:
-        symbol = rom.sym('RAINBOW_SWORD_ENABLED')
         rom.write_byte(symbol, 0x01)
     rom.write_byte(0x00BEFF8C, settings.sword_trail_duration)
     # Configurable Sound Effects
