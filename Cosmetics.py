@@ -228,13 +228,9 @@ def patch_cosmetics(settings, rom):
             color = color + [transparency]
             rom.write_bytes(sword_trail_address, color)
             log.sword_colors[sword_trail] = dict(option=sword_trail_option, color=''.join(['{:02X}'.format(c) for c in color[0:3]]))
-    else: 
-        rom.write_bytes(0x00BEFF7C, [0x00, 0x00, 0x00, 0xB0,
-                                     0x00, 0x00, 0x00, 0xB0,
-                                     0x00, 0x00, 0x00, 0x20,
-                                     0x00, 0x00, 0x00, 0x10])
+    else:
         symbol = rom.sym('RAINBOW_SWORD_ENABLED')
-        rom.write_int32(symbol, 0x00000001)
+        rom.write_byte(symbol, 0x01)
     rom.write_byte(0x00BEFF8C, settings.sword_trail_duration)
     # Configurable Sound Effects
     sfx_config = [

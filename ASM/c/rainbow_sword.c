@@ -9,7 +9,7 @@ uint32_t frames = 0;
 
 const uint32_t CYCLE_FRAMES = 0x30;
 
-extern uint32_t RAINBOW_SWORD_ENABLED;
+extern uint8_t RAINBOW_SWORD_ENABLED;
 
 typedef struct
 {
