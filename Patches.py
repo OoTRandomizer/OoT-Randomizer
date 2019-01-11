@@ -1293,6 +1293,17 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
         if not world.dungeon_mq['Ganons Castle']:
             rom.write_int16(0x321B176, 0xFC40) # original 0xFC48
 
+        #Move spirit temple compass chest if it is a small chest so it is reachable with hookshot 
+        spirit_compass_item = [l for l in world.get_locations() if 'Spirit Temple' in l.name and 'Compass Chest' in l.name][0].item
+        if 'Small Key' in spirit_compass_item.name or not spirit_compass_item.advancement:
+            if not world.dungeon_mq['Spirit Temple']:
+                chest_address = 0x2B6B07C
+            else:
+                chest_address = 0x2B6FCDC
+
+            rom.write_int16(chest_address + 2, 0x0190) #X pos
+            rom.write_int16(chest_address + 6, 0xFABC) #Z pos
+
     # give dungeon items the correct messages
     add_item_messages(messages, shop_items, world)
     if world.enhance_map_compass:
