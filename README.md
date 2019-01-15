@@ -2,15 +2,19 @@
 
 This is a randomizer for _The Legend of Zelda: Ocarina of Time_ for the Nintendo 64.
 
-### Installation
+* [Installation](#installation)
+* [General Description](#general-description)
+  * [Getting Stuck](#getting-stuck)
+  * [Settings](#settings)
+  * [Known Issues](#known-issues)
 
-It is strongly suggested users get the latest release from here:  
-  
-https://github.com/AmazingAmpharos/OoT-Randomizer/releases  
-  
-Simply download the .msi installer and run it. We support  Windows, Mac, and Linux machines.
+## Installation
 
-If you have an incompatible OS or you simply wish to run the script raw, clone this repository and either run ```Gui.py``` for a
+It is strongly suggested users use the web generator from here:
+
+https://ootrandomizer.com
+
+If you wish to run the script raw, clone this repository and either run ```Gui.py``` for a
 graphical interface or ```OoTRandomizer.py``` for the command line version. Both require Python 3.6+. This will be fully featured,
 but the seeds you generate will have different random factors than the bundled release.
 
@@ -24,7 +28,7 @@ too. If you want to play on Project 64 for whatever reason, you can but you will
 cheat code ```8109C58A 0000``` to partially fix Project 64's tragically poor handling of OoT's pause menu. Project 64 also has one particular crash that only
 happens for some unknown settings configurations; we cannot support this. I cannot emphasize enough that it is a discouraged emulator to use.
 
-### General Description
+## General Description
 
 This program takes _The Legend of Zelda: Ocarina of Time_ and randomizes the locations of the items for a new, more dynamic play experience.
 Proper logic is used to ensure every seed is possible to complete without the use of glitches and will be safe from the possibility of softlocks with any possible usage of keys in dungeons.
@@ -39,22 +43,22 @@ As a service to the player in this very long game, many cutscenes have been grea
 
 ### Getting Stuck
 
-With a game the size of _Ocarina of Time_, it's quite easy for new Randomizer players to get stuck in certain situations with no apparent path to progressing. Before reporting an issue, please make sure to check out our **_new FAQ section_** [found here](../../wiki/FAQ---Broken-Seed).
+With a game the size of _Ocarina of Time_, it's quite easy for new Randomizer players to get stuck in certain situations with no apparent path to progressing. Before reporting an issue, please make sure to check out [our Logic wiki page](https://wiki.ootrandomizer.com/index.php?title=Logic).
 
 ### Settings
 
 The OoT Randomizer offers many different settings to customize your play experience.
-A comprehensive list can be found [here](../../wiki/Setting-Information).
+A comprehensive list can be found [here](https://wiki.ootrandomizer.com/index.php?title=Readme).
 
 ### Known issues
 
 Sadly a few known issues exist. These will hopefully be addressed in future versions.
 
-* The fishing minigame sometimes refuses to allow you to catch fish when playing specifically on Bizhawk. Save and quit (NOT savestate) and return to fix the issue.
+* The fishing minigame sometimes refuses to allow you to catch fish when playing specifically on Bizhawk. Save and Hard Reset (NOT savestate) and return to fix the
+issue. You should always Hard Reset to avoid this issue entirely.
 * Draining the Bottom of the Well with Song of Storms sometimes crashes on specific configurations of Project 64. We aren't sure of the exact story, but this bug is
 easily avoided by playing on a different emulator and probably also avoidable by changing your settings and maybe graphics plug-in.
-* Executing the collection delay glitch on various NPCs may have unpredictable and undesirable consequences. In particular this can be devastating with Biggoron;
-it is strongly suggested the player save before turning in the Claim Check.
+* Executing the collection delay glitch on various NPCs may have unpredictable and undesirable consequences.
 * Saving and quitting on the very first frame after becomming an adult when you would trigger the Light Arrow cutscene can have undesired consequences. Just don't
 do that.
 * This randomizer is based on the 1.0 version of Ocarina of Time so some of its specific bugs remain. Some of these like "empty bomb" can be disadvantagous to the
