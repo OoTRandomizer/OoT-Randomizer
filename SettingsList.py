@@ -317,8 +317,9 @@ logic_tricks = {
                     and Longshot, the chest can be reached with no additional
                     items aside from Small Keys. Stand on the blue switch
                     with the Iron Boots, wait for the water to rise all the
-                    way up, and then quickly swim up to the exit. You will
-                    grab the ledge as you surface.
+                    way up, and then swim straight to the exit. You should
+                    grab the ledge as you surface. It works best if you don't
+                    mash B.
                     '''},
     'Adult Kokiri Forest GS with Hover Boots': {
         'name'    : 'logic_adult_kokiri_gs',
