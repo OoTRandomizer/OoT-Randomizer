@@ -17,7 +17,9 @@ z64_actor_t *dummy_actor = NULL;
 extern uint8_t PLAYER_ID;
 extern uint8_t PLAYER_NAME_ID;
 extern uint16_t INCOMING_ITEM;
-extern override_t OUTGOING_OVERRIDE;
+extern override_key_t OUTGOING_KEY;
+extern uint16_t OUTGOING_ITEM;
+extern uint16_t OUTGOING_PLAYER;
 
 override_t active_override = { 0 };
 int active_override_is_outgoing = 0;
@@ -44,8 +46,11 @@ void item_overrides_init() {
 override_key_t get_override_search_key(z64_actor_t *actor, uint8_t scene, uint8_t item_id) {
     if (actor->actor_id == 0x0A) {
         // Don't override WINNER purple rupee in the chest minigame scene
-        if (scene == 0x10 && item_id == 0x75) {
-            return (override_key_t){ .all = 0 };
+        if (scene == 0x10) {
+            int chest_item_id = (actor->variable >> 5) & 0x7F;
+            if (chest_item_id == 0x75) {
+                return (override_key_t){ .all = 0 };
+            }
         }
 
         return (override_key_t){
@@ -55,7 +60,8 @@ override_key_t get_override_search_key(z64_actor_t *actor, uint8_t scene, uint8_
         };
     } else if (actor->actor_id == 0x15) {
         // Only override heart pieces and keys
-        if (item_id != 0x3E && item_id != 0x42) {
+        int collectable_type = actor->variable & 0xFF;
+        if (collectable_type != 0x06 && collectable_type != 0x11) {
             return (override_key_t){ .all = 0 };
         }
 
@@ -137,6 +143,12 @@ void clear_override() {
     active_item_fast_chest = 0;
 }
 
+void set_outgoing_override(override_t *override) {
+    OUTGOING_KEY = override->key;
+    OUTGOING_ITEM = override->value.item_id;
+    OUTGOING_PLAYER = override->value.player;
+}
+
 void push_pending_item(override_t override) {
     for (int i = 0; i < array_size(pending_item_queue); i++) {
         if (pending_item_queue[i].key.all == 0) {
@@ -216,7 +228,7 @@ void after_item_received() {
     }
 
     if (active_override_is_outgoing) {
-        OUTGOING_OVERRIDE = active_override;
+        set_outgoing_override(&active_override);
     }
 
     if (key.all == pending_item_queue[0].key.all) {
@@ -322,7 +334,7 @@ void get_skulltula_token(z64_actor_t *token_actor) {
     z64_DisplayTextbox(&z64_game, item_row->text_id, 0);
 
     if (player != PLAYER_ID) {
-        OUTGOING_OVERRIDE = override;
+        set_outgoing_override(&override);
     } else {
         z64_GiveItem(&z64_game, item_row->action_id);
         call_effect_function(item_row);

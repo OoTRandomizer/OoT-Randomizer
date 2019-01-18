@@ -1,7 +1,7 @@
 import argparse
 import re
 import math
-from Cosmetics import get_tunic_color_options, get_navi_color_options, get_sword_color_options
+from Cosmetics import get_tunic_color_options, get_navi_color_options, get_sword_color_options, get_gauntlet_color_options
 from LocationList import location_table
 import Sounds as sfx
 
@@ -153,6 +153,9 @@ def parse_custom_navi_color(s):
 
 def parse_custom_sword_color(s):
     return parse_color(s, get_sword_color_options())
+
+def parse_custom_gauntlet_color(s):
+    return parse_color(s, get_gauntlet_color_options())
 
 def parse_color(s, color_choices):
     if s == 'Custom Color':
@@ -2029,6 +2032,54 @@ setting_infos = [
                              'Default': Beep. Beep. Beep.
                              ''',
             ),
+    Setting_Info('silver_gauntlets_color', str, 0, False,
+        {
+            'default': 'Silver',
+            'type': parse_custom_gauntlet_color,
+            'help': '''\
+                    Choose the color for Link's Silver Gauntlets. (default: %(default)s)
+                    Color:              Make the Silver Gauntlets this color.
+                    Random Choice:      Choose a random color from this list of colors.
+                    Completely Random: Choose a random color from any color the N64 can draw.
+                    '''
+        },
+        {
+            'text': 'Silver Gauntlets',
+            'group': 'gauntlet_colors',
+            'widget': 'Combobox',
+            'default': 'Silver',
+            'options': get_gauntlet_color_options(),
+            'tooltip':'''\
+                      'Random Choice': Choose a random
+                      color from this list of colors.
+                      'Completely Random': Choose a random
+                      color from any color the N64 can draw.
+                      '''
+        }),
+    Setting_Info('golden_gauntlets_color', str, 0, False,
+        {
+            'default': 'Gold',
+            'type': parse_custom_gauntlet_color,
+            'help': '''\
+                    Choose the color for Link's Golden Gauntlets. (default: %(default)s)
+                    Color:              Make the Golden Gauntlets this color.
+                    Random Choice:      Choose a random color from this list of colors.
+                    Completely Random: Choose a random color from any color the N64 can draw.
+                    '''
+        },
+        {
+            'text': 'Golden Gauntlets',
+            'group': 'gauntlet_colors',
+            'widget': 'Combobox',
+            'default': 'Gold',
+            'options': get_gauntlet_color_options(),
+            'tooltip':'''\
+                      'Random Choice': Choose a random
+                      color from this list of colors.
+                      'Completely Random': Choose a random
+                      color from any color the N64 can draw.
+                      '''
+        }),
     Combobox(
             name           = 'sfx_navi_overworld',
             default        = 'default',

@@ -55,21 +55,55 @@ void set_object_segment(loaded_object_t *object) {
     gSPSegment(opa->p++, 6, (uint32_t)(object->buf));
 }
 
-typedef void (*draw_fn)(z64_game_t *game, uint32_t graphic_id_minus_1);
-#define base_draw_gi_model ((draw_fn)0x800570C0)
+float scale_factor(int8_t graphic_id, z64_actor_t *actor) {
+    // By default, normalize model sizes to the scale that ruto's letter / fire arrows
+    // are usually drawn
+    float base = 0.5 / actor->scale.x;
 
-void draw_model(model_t model, z64_game_t *game) {
-    loaded_object_t *object = get_object(model.object_id);
-    set_object_segment(object);
-    base_draw_gi_model(game, model.graphic_id - 1);
+    if (graphic_id == 0x63) {
+        // Draw skull tokens at half size so they match vanilla
+        return base * 0.5;
+    }
+    if (graphic_id == 0x2F || graphic_id == 0x46) {
+        // Draw ocarinas smaller so they don't look ridiculous
+        return base * 0.75;
+    }
+    if (actor->actor_id == 0x15 && (actor->variable & 0xFF) == 0x11) {
+        // Draw small key actors smaller so they don't stick out of places
+        return base * 0.75;
+    }
+
+    return base;
 }
 
-void scale_matrix(float *matrix, float scale_factor) {
+void scale_top_matrix(float scale_factor) {
+    float *matrix = z64_GetMatrixStackTop();
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             matrix[4*i + j] *= scale_factor;
         }
     }
+}
+
+typedef void (*pre_draw_fn)(z64_actor_t *actor, z64_game_t *game, uint32_t unknown);
+typedef void (*gi_draw_fn)(z64_game_t *game, uint32_t graphic_id_minus_1);
+typedef void (*actor_draw_fn)(z64_actor_t *actor, z64_game_t *game);
+#define pre_draw_1 ((pre_draw_fn)0x80022438)
+#define pre_draw_2 ((pre_draw_fn)0x80022554)
+#define base_draw_gi_model ((gi_draw_fn)0x800570C0)
+#define base_collectable_draw ((actor_draw_fn)0x80013268)
+
+void draw_model_by_id(int8_t graphic_id, z64_actor_t *actor, z64_game_t *game) {
+    scale_top_matrix(scale_factor(graphic_id, actor));
+    pre_draw_1(actor, game, 0);
+    pre_draw_2(actor, game, 0);
+    base_draw_gi_model(game, graphic_id - 1);
+}
+
+void draw_model(model_t model, z64_actor_t *actor, z64_game_t *game) {
+    loaded_object_t *object = get_object(model.object_id);
+    set_object_segment(object);
+    draw_model_by_id(model.graphic_id, actor, game);
 }
 
 void models_init() {
@@ -97,68 +131,66 @@ void lookup_model_by_override(model_t *model, override_t override) {
     }
 }
 
-void lookup_model(model_t *model, z64_game_t *game, z64_actor_t *actor, uint16_t base_item_id) {
+void lookup_model(model_t *model, z64_actor_t *actor, z64_game_t *game, uint16_t base_item_id) {
     override_t override = lookup_override(actor, game->scene_index, base_item_id);
     lookup_model_by_override(model, override);
 }
 
-typedef void (*default_draw_fn)(z64_actor_t *actor, z64_game_t *game);
-typedef void (*pre_draw_fn)(z64_actor_t *actor, z64_game_t *game, uint32_t unknown);
-
-#define default_heart_draw ((default_draw_fn)0x80013498)
-#define pre_draw_1 ((pre_draw_fn)0x80022438)
-#define pre_draw_2 ((pre_draw_fn)0x80022554)
-#define matrix_stack_pointer ((float **)0x80121204)
-
-void heart_piece_draw(z64_actor_t *heart_piece_actor, z64_game_t *game) {
-    pre_draw_1(heart_piece_actor, game, 0);
-    pre_draw_2(heart_piece_actor, game, 0);
-    scale_matrix(*matrix_stack_pointer, 24.0);
-
+void heart_piece_draw(z64_actor_t *actor, z64_game_t *game) {
     model_t model = {
         .object_id = 0x00BD,
         .graphic_id = 0x14,
     };
-    lookup_model(&model, game, heart_piece_actor, 0x3E);
-    draw_model(model, game);
+    lookup_model(&model, actor, game, 0);
+    draw_model(model, actor, game);
 }
 
-void heart_container_draw(z64_actor_t *heart_container_actor, z64_game_t *game) {
+void small_key_draw(z64_actor_t *actor, z64_game_t *game) {
+    model_t model = { 0 };
+    lookup_model(&model, actor, game, 0);
+    if (model.graphic_id == 0 || model.graphic_id == 0x02) {
+        base_collectable_draw(actor, game);
+    } else {
+        draw_model(model, actor, game);
+    }
+}
+
+void heart_container_draw(z64_actor_t *actor, z64_game_t *game) {
     model_t model = {
         .object_id = 0x00BD,
         .graphic_id = 0x13,
     };
-    lookup_model(&model, game, heart_container_actor, 0x4F);
-    draw_model(model, game);
+    lookup_model(&model, actor, game, 0x4F);
+    draw_model(model, actor, game);
 }
 
-void skull_token_draw(z64_actor_t *token_actor, z64_game_t *game) {
+void skull_token_draw(z64_actor_t *actor, z64_game_t *game) {
     model_t model = {
         .object_id = 0x015C,
         .graphic_id = 0x63,
     };
-    lookup_model(&model, game, token_actor, 0x5B);
-    draw_model(model, game);
+    lookup_model(&model, actor, game, 0);
+    draw_model(model, actor, game);
 }
 
-void ocarina_of_time_draw(z64_actor_t *ocarina_actor, z64_game_t *game) {
+void ocarina_of_time_draw(z64_actor_t *actor, z64_game_t *game) {
     model_t model = {
         .object_id = 0x00DE,
         .graphic_id = 0x2F,
     };
-    lookup_model(&model, game, ocarina_actor, 0x0C);
-    draw_model(model, game);
+    lookup_model(&model, actor, game, 0x0C);
+    draw_model(model, actor, game);
 }
 
-void item_etcetera_draw(z64_actor_t *item_actor, z64_game_t *game) {
+void item_etcetera_draw(z64_actor_t *actor, z64_game_t *game) {
     override_t override = { 0 };
-    if (item_actor->variable == 0x01) {
+    if (actor->variable == 0x01) {
         // Ruto's letter
-        override = lookup_override(item_actor, game->scene_index, 0x15);
-    } else if (item_actor->variable == 0x07) {
+        override = lookup_override(actor, game->scene_index, 0x15);
+    } else if (actor->variable == 0x07) {
         // Fire Arrow
-        override = lookup_override(item_actor, game->scene_index, 0x58);
-    } else if (item_actor->variable == 0x0A0C) {
+        override = lookup_override(actor, game->scene_index, 0x58);
+    } else if (actor->variable == 0x0A0C) {
         // Treasure chest game heart piece inside chest
         override_key_t key = {
             .scene = 0x10,
@@ -171,55 +203,34 @@ void item_etcetera_draw(z64_actor_t *item_actor, z64_game_t *game) {
     model_t model = { 0 };
     lookup_model_by_override(&model, override);
     if (model.object_id != 0) {
-        draw_model(model, game);
+        draw_model(model, actor, game);
     } else {
-        uint8_t default_graphic_id = *(((uint8_t *)item_actor) + 0x141);
-        base_draw_gi_model(game, default_graphic_id);
+        uint8_t default_graphic_id = *(((uint8_t *)actor) + 0x141);
+        draw_model_by_id(default_graphic_id, actor, game);
     }
 }
 
-void bowling_bomb_bag_draw(z64_actor_t *prize_actor, z64_game_t *game) {
+void bowling_bomb_bag_draw(z64_actor_t *actor, z64_game_t *game) {
     override_t override = { 0 };
-    if (prize_actor->variable == 0x00 || prize_actor->variable == 0x05) {
-        override = lookup_override(prize_actor, game->scene_index, 0x34);
+    if (actor->variable == 0x00 || actor->variable == 0x05) {
+        override = lookup_override(actor, game->scene_index, 0x34);
     }
 
     model_t model = { 0 };
     lookup_model_by_override(&model, override);
     if (model.object_id != 0) {
-        draw_model(model, game);
+        draw_model(model, actor, game);
     } else {
-        uint8_t default_graphic_id = *(((uint8_t *)prize_actor) + 0x147);
-        base_draw_gi_model(game, default_graphic_id);
+        uint8_t default_graphic_id = *(((uint8_t *)actor) + 0x147);
+        draw_model_by_id(default_graphic_id, actor, game);
     }
 }
 
-void bowling_heart_piece_draw(z64_actor_t *prize_actor, z64_game_t *game) {
+void bowling_heart_piece_draw(z64_actor_t *actor, z64_game_t *game) {
     model_t model = {
         .object_id = 0x00BD,
         .graphic_id = 0x14,
     };
-    lookup_model(&model, game, prize_actor, 0x3E);
-    draw_model(model, game);
-}
-
-typedef void (*actor_constructor_fn)(z64_actor_t *actor, z64_game_t *game);
-#define default_item00_constructor ((actor_constructor_fn)0x80011B4C)
-
-void item00_constructor(z64_actor_t *actor, z64_game_t *game) {
-    // Constructor for En_Item00 (free standing heart piece / key)
-    uint16_t var = actor->variable;
-    if ((var & 0x00FF) == 0x11) {
-        // Free standing small key
-        override_key_t key = { 0 };
-        key.scene = game->scene_index;
-        key.type = OVR_COLLECTABLE;
-        key.flag = var >> 8;
-        override_t override = lookup_override_by_key(key);
-        if (override.key.all != 0) {
-            // Construct a piece of heart instead
-            actor->variable = (var & 0xFF00) | 0x06;
-        }
-    }
-    default_item00_constructor(actor, game);
+    lookup_model(&model, actor, game, 0x3E);
+    draw_model(model, actor, game);
 }
