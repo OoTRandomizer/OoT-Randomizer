@@ -40,7 +40,7 @@
             "Shadow Temple MQ Falling Spikes Switch Chest": "Progressive_Strength_Upgrade",
             "Shadow Temple MQ Invisible Spikes Chest": "Hover_Boots and (Small_Key_Shadow_Temple, 3)",
             "Shadow Temple MQ Stalfos Room Chest": "
-                Hover_Boots and (Small_Key_Shadow_Temple, 3) and can_use(Longshot)",
+                Hover_Boots and (Small_Key_Shadow_Temple, 3) and Progressive_Hookshot",
             "GS Shadow Temple MQ Crusher Room": "Progressive_Hookshot"
         },
         "exits": {

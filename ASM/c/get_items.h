@@ -5,7 +5,7 @@
 
 void item_overrides_init();
 void handle_pending_items();
-
+void pop_pending_item();
 enum override_type {
     OVR_BASE_ITEM = 0,
     OVR_CHEST = 1,

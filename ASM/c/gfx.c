@@ -3,12 +3,30 @@
 #include "util.h"
 #include "z64.h"
 
-void disp_buf_init(z64_disp_buf_t *db, Gfx *buf, int size) {
-    db->size = size;
-    db->buf = buf;
-    db->p = buf;
-    db->d = (Gfx *)((char *)buf + size);
-}
+extern char FONT_TEXTURE;
+extern char DPAD_TEXTURE;
+#define font_texture_raw ((uint8_t *)&FONT_TEXTURE)
+#define dpad_texture_raw ((uint8_t *)&DPAD_TEXTURE)
+
+Gfx setup_db[] =
+{
+    gsDPPipeSync(),
+
+    gsSPLoadGeometryMode(0),
+    gsDPSetScissor(G_SC_NON_INTERLACE,
+                  0, 0, Z64_SCREEN_WIDTH, Z64_SCREEN_HEIGHT),
+
+    gsDPSetOtherMode(G_AD_DISABLE | G_CD_DISABLE |
+        G_CK_NONE | G_TC_FILT |
+        G_TD_CLAMP | G_TP_NONE |
+        G_TL_TILE | G_TT_NONE |
+        G_PM_NPRIMITIVE | G_CYC_1CYCLE |
+        G_TF_BILERP, // HI
+        G_AC_NONE | G_ZS_PRIM |
+        G_RM_XLU_SURF | G_RM_XLU_SURF2), // LO
+
+    gsSPEndDisplayList()
+};
 
 sprite_t stones_sprite = {
     NULL, 16, 16, 3,
@@ -77,38 +95,6 @@ void sprite_draw(z64_disp_buf_t *db, sprite_t *sprite, int tile_index,
             width_factor, height_factor);
 }
 
-z64_disp_buf_t setup_db = {};
-
-void draw_setup(z64_disp_buf_t *db) {
-    gDPPipeSync(db->p++);
-
-    gSPLoadGeometryMode(db->p++, 0);
-    gDPSetScissor(db->p++, G_SC_NON_INTERLACE,
-                  0, 0, Z64_SCREEN_WIDTH, Z64_SCREEN_HEIGHT);
-    gDPSetAlphaDither(db->p++, G_AD_DISABLE);
-    gDPSetColorDither(db->p++, G_CD_DISABLE);
-    gDPSetAlphaCompare(db->p++, G_AC_NONE);
-    gDPSetDepthSource(db->p++, G_ZS_PRIM);
-    gDPSetCombineKey(db->p++, G_CK_NONE);
-    gDPSetTextureConvert(db->p++, G_TC_FILT);
-    gDPSetTextureDetail(db->p++, G_TD_CLAMP);
-    gDPSetTexturePersp(db->p++, G_TP_NONE);
-    gDPSetTextureLOD(db->p++, G_TL_TILE);
-    gDPSetTextureLUT(db->p++, G_TT_NONE);
-    gDPPipelineMode(db->p++, G_PM_NPRIMITIVE);
-
-    gDPSetCycleType(db->p++, G_CYC_1CYCLE);
-    gDPSetRenderMode(db->p++, G_RM_XLU_SURF, G_RM_XLU_SURF2);
-    gDPSetTextureFilter(db->p++, G_TF_BILERP);
-
-    gSPEndDisplayList(db->p++);
-}
-
-extern char FONT_TEXTURE;
-extern char DPAD_TEXTURE;
-#define font_texture_raw ((uint8_t *)&FONT_TEXTURE)
-#define dpad_texture_raw ((uint8_t *)&DPAD_TEXTURE)
-
 void gfx_init() {
     file_t title_static = {
         NULL, z64_file_select_static_vaddr, z64_file_select_static_vsize
@@ -137,9 +123,4 @@ void gfx_init() {
         font_sprite.buf[2*i] = (font_texture_raw[i] >> 4) | 0xF0;
         font_sprite.buf[2*i + 1] = font_texture_raw[i] | 0xF0;
     }
-
-    int setup_size = 32 * sizeof(Gfx);
-    Gfx *setup_buf = heap_alloc(setup_size);
-    disp_buf_init(&setup_db, setup_buf, setup_size);
-    draw_setup(&setup_db);
 }

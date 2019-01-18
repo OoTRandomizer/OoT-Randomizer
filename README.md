@@ -2,15 +2,27 @@
 
 This is a randomizer for _The Legend of Zelda: Ocarina of Time_ for the Nintendo 64.
 
-### Installation
+* [Installation](#installation)
+* [General Description](#general-description)
+  * [Getting Stuck](#getting-stuck)
+  * [Settings](#settings)
+  * [Known Issues](#known-issues)
+* [Changelog](#changelog)
+  * [New Features](#new-features)
+  * [New Options](#new-options)
+  * [Updated Features](#updated-features)
+  * [Updated Options](#updated-options)
+  * [Bug Fixes](#bug-fixes)
+  * [Multiworld Changes](#multiworld-changes)
+  * [Development Version Changes](#development-version-changes)
 
-It is strongly suggested users get the latest release from here:  
-  
-https://github.com/AmazingAmpharos/OoT-Randomizer/releases  
-  
-Simply download the .msi installer and run it. We support  Windows, Mac, and Linux machines.
+## Installation
 
-If you have an incompatible OS or you simply wish to run the script raw, clone this repository and either run ```Gui.py``` for a
+It is strongly suggested users use the web generator from here:
+
+https://ootrandomizer.com
+
+If you wish to run the script raw, clone this repository and either run ```Gui.py``` for a
 graphical interface or ```OoTRandomizer.py``` for the command line version. Both require Python 3.6+. This will be fully featured,
 but the seeds you generate will have different random factors than the bundled release.
 
@@ -24,7 +36,7 @@ too. If you want to play on Project 64 for whatever reason, you can but you will
 cheat code ```8109C58A 0000``` to partially fix Project 64's tragically poor handling of OoT's pause menu. Project 64 also has one particular crash that only
 happens for some unknown settings configurations; we cannot support this. I cannot emphasize enough that it is a discouraged emulator to use.
 
-### General Description
+## General Description
 
 This program takes _The Legend of Zelda: Ocarina of Time_ and randomizes the locations of the items for a new, more dynamic play experience.
 Proper logic is used to ensure every seed is possible to complete without the use of glitches and will be safe from the possibility of softlocks with any possible usage of keys in dungeons.
@@ -39,23 +51,180 @@ As a service to the player in this very long game, many cutscenes have been grea
 
 ### Getting Stuck
 
-With a game the size of _Ocarina of Time_, it's quite easy for new Randomizer players to get stuck in certain situations with no apparent path to progressing. Before reporting an issue, please make sure to check out our **_new FAQ section_** [found here](../../wiki/FAQ---Broken-Seed).
+With a game the size of _Ocarina of Time_, it's quite easy for new Randomizer players to get stuck in certain situations with no apparent path to progressing. Before reporting an issue, please make sure to check out [our Logic wiki page](https://wiki.ootrandomizer.com/index.php?title=Logic).
 
 ### Settings
 
 The OoT Randomizer offers many different settings to customize your play experience.
-A comprehensive list can be found [here](../../wiki/Setting-Information).
+A comprehensive list can be found [here](https://wiki.ootrandomizer.com/index.php?title=Readme).
 
 ### Known issues
 
 Sadly a few known issues exist. These will hopefully be addressed in future versions.
 
-* The fishing minigame sometimes refuses to allow you to catch fish when playing specifically on Bizhawk. Save and quit (NOT savestate) and return to fix the issue.
+* The fishing minigame sometimes refuses to allow you to catch fish when playing specifically on Bizhawk. Save and Hard Reset (NOT savestate) and return to fix the
+issue. You should always Hard Reset to avoid this issue entirely.
 * Draining the Bottom of the Well with Song of Storms sometimes crashes on specific configurations of Project 64. We aren't sure of the exact story, but this bug is
 easily avoided by playing on a different emulator and probably also avoidable by changing your settings and maybe graphics plug-in.
-* Executing the collection delay glitch on various NPCs may have unpredictable and undesirable consequences. In particular this can be devastating with Biggoron;
-it is strongly suggested the player save before turning in the Claim Check.
+* Executing the collection delay glitch on various NPCs may have unpredictable and undesirable consequences.
 * Saving and quitting on the very first frame after becomming an adult when you would trigger the Light Arrow cutscene can have undesired consequences. Just don't
 do that.
 * This randomizer is based on the 1.0 version of Ocarina of Time so some of its specific bugs remain. Some of these like "empty bomb" can be disadvantagous to the
 player.
+
+## Changelog
+
+### 4.0
+
+#### New Features
+
+* Quick boot equips
+  * Use D-pad left to equip Iron Boots if they're in the inventory, or D-pad right to equip Hover Boots if they're in the inventory.
+  * Press the button again to equip Kokiri Boots.
+* Freestanding models
+  * All freestanding item locations now display the model of the item you will receive.
+* Ice traps now work from any location
+  * Display as other items when in a freestanding location.
+  * Display as other items with a hint in shops.
+* Various speedups
+  * No Talon cutscene when he runs away.
+  * Skip "Caught By Gerudo" cutscene.
+  * Shorten cutscene when getting Bullet Bag from the Deku Scrub in Lost Woods.
+  * Fast pushing and pulling.
+    * All types of blocks.
+    * Spinnable mirrors in Spirit Temple.
+    * Truth spinner in Shadow Temple.
+    * Puzzle in basement of Forest Temple.
+  * Ocarina minigame shortened to the first round.
+    * 5 notes instead of 8.
+  * Jabu-Jabu's Belly elevator spawns in a more convenient position
+  * Kakariko carpenter position is offset so he is no longer in your way during the cucco route.
+  * Warp songs now have a normal transition with no cutscene.
+* Gold Skulltula textbox displays current number obtained
+* Poe salesman tells point limit without needing to sell
+
+#### New Options
+
+* Master Quest dungeon slider
+  * Selects a number of Master Quest dungeons to appear in the game.
+    * Ex: 0 - All dungeons will have their default designs.
+    * Ex: 6 - Half of all dungeons will have Master Quest redesigns.
+    * Ex: 12 - All dungeons will have Master Quest redesigns.
+* Damage multiplier
+  * Changes the amount of damage taken.
+  * OHKO: Link dies in one hit.
+* Item pool
+  * Replaces difficulty.
+  * Changes the number of bonus items that are available in the game.
+    * Plentiful: Extra major items are added.
+    * Balanced: The original item pool.
+    * Scarce: Some excess items are removed, including health upgrades.
+    * Minimal: Most excess items are removed.
+* Start with max rupees
+  * The player begins the game with 99 rupees.
+* Start with Deku equipment
+  * The player begins the game with 10 Deku sticks and 20 Deku nuts.
+  * If playing without shopsanity, the player begins with a Deku shield equipped.
+* Start with fast travel
+  * The player begins the game with the Prelude of Light and Serenade of Water songs learned and the Farore's Wind spell in the inventory
+  * These three items increase Link's mobility around the map, but don't actually unlock any new items or areas.
+* Start with Tycoon wallet
+* Open Zora's Fountain
+  * King Zora is moved to the side from the start of the game.
+  * Ruto's Letter is removed from the item pool and replaced with an Empty Bottle.
+* Randomize starting time of day
+* Ice traps setting
+    * Off: All ice traps are removed.
+    * Normal: Only ice traps from base pool are placed.
+    * Extra ice traps: Chance to add extra ice traps when junk items are added to the item pool
+    * Ice trap mayhem: All junk items added will be ice traps.
+    * Ice trap onslaught: All junk items will be ice traps, including ones in the base pool.
+
+#### Updated Features
+
+* Hints distribution.
+    * Changes how many useful hints are available in the game.
+    * Useless: Has nothing but junk hints.
+    * Balanced: Gives you a mix of useless and useful hints. Hints will not be repeated.
+    * Strong: Has some duplicate hints and no junk hints.
+    * Very Strong: Has only very useful hints.
+    * Tournament: Similar to strong but has no variation in hint types.
+* Frogs Ocarina Game added to always hints.
+* Hints are only in logic once you are able to reach the location of the gossip stone by logic
+* Hints ignore logic if inaccessible.
+* Barren of treasure hint added.
+* Big Poes location does not require a hint if count set to 3 or less.
+* Add medallion icons to the Temple of Time altar hint.
+* Addd a hint for 0/6 trials if trial count is random.
+
+#### Updated Options
+
+* Chest size matches contents updated
+  * Boss keys will be in gold chests
+  * Small keys appear in small gold chests
+* Free Scarecrow's Song changes
+  * Pulling out ocarina near a spot where Pierre can spawn will do so.
+* Bridge changes
+  * Stones added as bridge requirement
+  * 100 Gold Skulltula tokens added as bridge requirement
+* Any location can now be excluded from being required
+* Various advanced tricks has been split into individual tricks to be selected
+* Choose sound effects ocarina uses when played
+
+#### Bug Fixes
+
+* Deku and Hylian shields from chests no longer become blue rupees.
+* Force game language to be English even if a Japanese rom is supplied.
+* Door of Time now opens when entering Temple of Time from all spawns.
+* Fix empty bomb glitch.
+* Move item cost to after Player in the spoiler log.
+* Add Wasteland Bombchu Salesman to spoiler log when required for first Bombchus.
+* Fix message text table is too long error when using settings that add a lot of text to the ROM.
+* Kokiri Sword no longer required for fishing as child.
+* Fix Biggoron Sword collection delay.
+* Twinrova phase 2 textbox fix.
+* Switches in Forest and Fire Temple lowered by 1 unit to make it easier to press them.
+* Equipment menu will now show the name of the item you have in the first column.
+* Hover Boots will no longer show up as adult in the first equipment menu slot if a slingshot was not gotten before becoming adult.
+* Fix typo in red rupee hint/shop text.
+* Ammo items now use the correct item fanfare.
+* Fix chest size matches contents to work for all chests.
+* Removed key for key logic.
+* Removed unused locked door in Water Temple.
+* Scarecrow's Song should no longer cause softlocks when played in laggy areas.
+* Text error messages no longer display the Pocket Egg text.
+* Ice traps added back to OHKO as the softlock appears fixed.
+* Ganon now says "my castle" instead of "Ganon's Castle" for light arrow hint.
+* Various logic fixes.
+
+#### Multiworld Changes
+
+* Maximum player count increased from 31 to 255.
+* Ice traps can now be sent to other worlds.
+* Ganon now tells you the location of your Light Arrows, not the location of some Light Arrows that may exist in your world.
+* Item placement rebalanced so that an item for another player can only be placed on a location that both players can reach in logic. 
+
+#### Development Version Changes
+
+* Output patch file
+  * Creates a binary patch file instead of a ROM. Allows sharing a seed without sharing copyright protected material.
+* Patch ROM from file
+  * Applies a generated patch file to the base ROM and creates a randomizer ROM. Allows sharing a seed without sharing copyright protected material.
+* Settings presets
+  * Adds a functionality to save settings strings for future use.
+  * Several presets are already provided.
+* Create settings log if spoiler log is disabled
+* File names no longer include a settings string
+  * Instead display a shortened SHA-1 hash of the settings string.
+* Add option for converting settings to a string and back
+  * Only convert the specified settings to a settings string.
+  * If a settings string is specified output the used settings instead.
+* Python 3.5 is no longer supported
+  * You must have Python 3.6 or higher installed to run the randomizer code.
+* Add option to only apply cosmetic patch without generating world data
+* CLI uses a specified settings file instead of taking in each option
+  * Uses settings.sav as default if it exists
+  * Uses default settings if no settings file is provided and no settings.sav exists.
+* Version check is no longer a dialog
+  * Appears in a frame in the main randomizer window.
+* Copy settings string button

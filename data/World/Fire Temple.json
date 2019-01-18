@@ -61,7 +61,7 @@
         "locations": {
             "Fire Temple Highest Goron Chest": "
                 can_use(Hammer) and 
-                (can_play(Song_of_Time) or (logic_fire_highest_goron and 
+                (can_play(Song_of_Time) or (logic_rusted_switches and 
                     (can_use(Hover_Boots) or has_explosives)))",
             "Fire Temple Megaton Hammer Chest": "has_explosives"
         }

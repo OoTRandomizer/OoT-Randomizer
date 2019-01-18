@@ -1,0 +1,64 @@
+ZPFZ patch format
+-----------------
+
+zlib archive of ZPF files. The ZPF files have the same base name as the ZPFZ file with `_P#` appended to the end.
+
+
+
+ZPF patch format
+----------------
+
+File is compressed using zlib. All data is big endian
+
+Header:
+	First for bytes should be 'ZPFv'
+	Next bye is a version number, which currently should only allow '1'
+
+	[4 bytes] DMA Table start.
+	[4 bytes] Key address range min
+	[4 bytes] key address range max
+	[4 bytes] Key address
+
+DMA Updates:
+	List changes to the DMA Table. This is mostly for detecting if a file is moved or copied.
+
+	The list is terminated with 0xFFFF [2 byte]
+
+	DMA Update Entry:
+		[2 bytes] DMA Index
+		[4 bytes] From File Address
+		[4 bytes] File Start Adress
+		[3 bytes] File Size
+
+	For each entry it should write to the DMA Index of the DMA table the new file start ends, assuming uncompressed. So [Start, End, Start, 0]
+
+	If the From File Address is not 0xFFFFFFFF, copy the data from that address to the new File Start. Pad 0 if the new file is bigger.
+	If the From File Address is 0xFFFFFFFF, then pad the new file with 0
+
+XOR Data:
+	This is a list of byte updates and makes up the majority of the ZFP file generally.
+
+	The data in this section follows a XOR key to avoid any possibility of the ZFP containing either vanilla data or the new data.
+	The key works as follows, using the initial Key address in the header, when writing a byte, read a byte at that address from the source rom. If the value is 0, then read the following value. Bound the key address in the header's key address range, using wrap. Using the byte read with the key, XOR it with the patch byte to obtain the new value to write.
+
+	The list of XOR writes is terminated with EOF
+
+	XOR Data Entry:
+		There are two types of entries, which are identified by the first byte. If it starts with 0xFF then it's a Continue block, otherwise it's a Start block.
+
+		Start Block:
+			[4 bytes] Address
+			[2 bytes] data size
+			[data size bytes] data block
+
+		Continue Block:
+			[1 bytes] 0xFF
+			[1 bytes] Key skip count
+			[2 bytes] data size
+			[data size bytes] data block
+
+			Increment the key by key skip count times. Skipping 0s still.
+
+		For every byte in the data block:
+			If the value is 0, then write 0
+			Otherwise get the next key byte, xor it with the value, and write that.

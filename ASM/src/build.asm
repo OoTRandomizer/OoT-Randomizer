@@ -48,10 +48,12 @@
 .include "gossip_hints.asm"
 .include "potion_shop.asm"
 .include "jabu_elevator.asm"
-.include "quickboots.asm"
+.include "dampe.asm"
+.include "dpad.asm"
 .include "chests.asm"
 .include "debug.asm"
 .importobj "../build/bundle.o"
+.align 8
 FONT_TEXTURE:
 .incbin("../resources/font.bin")
 DPAD_TEXTURE:

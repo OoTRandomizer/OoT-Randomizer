@@ -926,7 +926,7 @@ def get_pool_core(world):
     if world.junk_ice_traps == 'off': 
         replace_max_item(pool, 'Ice Trap', 0)
     elif world.junk_ice_traps == 'onslaught':
-        for item, weight in junk_pool_base:
+        for item in [item for item, weight in junk_pool_base] + ['Recovery Heart', 'Bombs (20)', 'Arrows (30)']:
             replace_max_item(pool, item, 0)
 
     for item,max in item_difficulty_max[world.item_pool_value].items():

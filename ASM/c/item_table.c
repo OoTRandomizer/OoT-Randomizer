@@ -161,7 +161,7 @@ item_row_t item_table[] = {
     [0x79] = ITEM_ROW(0x53, 1, 0x9A, 0x00A7, 0x00BB, 0x12, no_upgrade, no_effect, -1, -1), // Deku Nut Upgrade (30)
     [0x7A] = ITEM_ROW(0x53, 1, 0x9B, 0x00A8, 0x00BB, 0x12, no_upgrade, no_effect, -1, -1), // Deku Nut Upgrade (40)
     [0x7B] = ITEM_ROW(0x53, 0, 0x49, 0x006C, 0x017B, 0x73, no_upgrade, no_effect, -1, -1), // Bullet Bag (50)
-    [0x7C] = ITEM_ROW(0x53, 0, 0x41, 0x9002, 0x0158, 0x61, no_upgrade, ice_trap_effect, -1, -1), // Ice Trap
+    [0x7C] = ITEM_ROW(0x53, 0, 0x41, 0x9002, 0x0000, 0x00, no_upgrade, ice_trap_effect, -1, -1), // Ice Trap
 
     [0x80] = ITEM_ROW(  -1, 0,   -1,     -1, 0x00DD, 0x2D, hookshot_upgrade,  no_effect, -1, -1), // Progressive Hookshot
     [0x81] = ITEM_ROW(  -1, 0,   -1,     -1, 0x0147, 0x58, strength_upgrade,  no_effect, -1, -1), // Progressive Strength
@@ -225,7 +225,7 @@ item_row_t item_table[] = {
     [0xB6] = ITEM_ROW(0x53, 3, 0x41, 0x00A0, 0x00AA, 0x02, no_upgrade, give_small_key, FORT_ID,   -1), // Gerudo Fortress Small Key
     [0xB7] = ITEM_ROW(0x53, 3, 0x41, 0x00A1, 0x00AA, 0x02, no_upgrade, give_small_key, CASTLE_ID, -1), // Ganon's Castle Small Key
 
-    [0xB8] = ITEM_ROW(0x53, 1, 0x41, 0x00E9, 0x00BD, 0x13, no_upgrade, give_defense,      -1, -1), // Double Defense
+    [0xB8] = ITEM_ROW(0x53, 0, 0x41, 0x00E9, 0x00BD, 0x13, no_upgrade, give_defense,      -1, -1), // Double Defense
     [0xB9] = ITEM_ROW(0x53, 0, 0x41, 0x00E4, 0x00CD, 0x1E, no_upgrade, give_magic,        -1, -1), // Magic Meter
     [0xBA] = ITEM_ROW(0x53, 0, 0x41, 0x00E8, 0x00CD, 0x1F, no_upgrade, give_double_magic, -1, -1), // Double Magic
 

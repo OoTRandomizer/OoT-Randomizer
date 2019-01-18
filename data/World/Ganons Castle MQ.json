@@ -78,9 +78,9 @@
         "region_name": "Ganons Castle Spirit Trial",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Castle MQ Spirit Trial First Chest": "(has_bow or logic_ganon_mq_spirit_trial) and Hammer",
+            "Ganons Castle MQ Spirit Trial First Chest": "(has_bow or logic_rusted_switches) and Hammer",
             "Ganons Castle MQ Spirit Trial Second Chest": "
-                (has_bow or logic_ganon_mq_spirit_trial) and Hammer and 
+                (has_bow or logic_rusted_switches) and Hammer and 
                 has_bombchus and can_see_with_lens",
             "Ganons Castle MQ Spirit Trial Sun Front Left Chest": "
                 Hammer and has_bombchus and 

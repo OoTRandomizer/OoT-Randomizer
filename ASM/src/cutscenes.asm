@@ -216,7 +216,7 @@ set_dungeon_knowledge:
 talon_break_free:
 
     ;displaced code
-    lui    a2, 0x801F
+    addiu    t1, r0, 0x0041
 
     ;preserve registers (t0, t1, t2, t4)
     addiu    sp, sp, -0x20

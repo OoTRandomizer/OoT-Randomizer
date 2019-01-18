@@ -3,7 +3,7 @@
 
 #include "z64.h"
 
-z64_disp_buf_t setup_db;
+extern Gfx setup_db[];
 
 typedef struct {
     uint8_t *buf;
@@ -22,7 +22,6 @@ sprite_t quest_items_sprite;
 sprite_t font_sprite;
 sprite_t dpad_sprite;
 
-void disp_buf_init(z64_disp_buf_t *db, Gfx *buf, int size);
 void gfx_init();
 
 void sprite_load(z64_disp_buf_t *db, sprite_t *sprite,
