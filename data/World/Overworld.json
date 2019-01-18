@@ -39,7 +39,8 @@
     {
         "region_name": "Links House",
         "locations": {
-            "Links Pocket": "True"
+            "Links Pocket": "True",
+            "Links House Cow": "Epona"
         },
         "exits": {
             "Kokiri Forest": "True",
@@ -253,7 +254,8 @@
             "Gerudo Valley Crate Freestanding PoH": "True",
             "GS Gerudo Valley Small Bridge": "Boomerang and nighttime",
             "GS Gerudo Valley Bean Patch": "has_bottle and can_child_attack",
-            "Gerudo Valley Gossip Stone": "True"
+            "Gerudo Valley Gossip Stone": "True",
+            "Gerudo Valley Cow": "can_play(Eponas_Song)"
         },
         "exits": {
             "Hyrule Field": "True",
@@ -597,7 +599,8 @@
     {
         "region_name": "Impas House Back",
         "locations": {
-            "Impa House Freestanding PoH": "True"
+            "Impa House Freestanding PoH": "True",
+            "Impas House Cow": "can_play(Eponas_Song)"
         }
     },
     {
@@ -1082,12 +1085,18 @@
         }
     },
     {
-        "region_name": "Ingo Barn"
+        "region_name": "Ingo Barn",
+		"locations": {
+            "LLR Stables Left Cow": "can_play(Eponas_Song)",
+            "LLR Stables Right Cow": "can_play(Eponas_Song)"
+        }
     },
     {
         "region_name": "Lon Lon Corner Tower",
         "locations": {
-            "Lon Lon Tower Freestanding PoH": "True"
+            "Lon Lon Tower Freestanding PoH": "True",
+            "LLR Tower Left Cow": "can_play(Eponas_Song)",
+            "LLR Tower Right Cow": "can_play(Eponas_Song)"
         }
     },
     {
@@ -1190,7 +1199,8 @@
         "locations": {
             "GS Hyrule Field Near Gerudo Valley": "
                 (Hammer and has_fire_source and can_use(Hookshot)) or 
-                (Boomerang and has_explosives and can_use(Dins_Fire))"
+                (Boomerang and has_explosives and can_use(Dins_Fire))",
+             "HF Grotto Cow": "can_play(Eponas_Song) and has_fire_source"
         },
         "exits": {
             "Field Valley Grotto Gossip Stone": "
@@ -1255,7 +1265,10 @@
         }
     },
     {
-        "region_name": "Mountain Bombable Grotto"
+        "region_name": "Mountain Bombable Grotto",
+		 "locations": {
+            "DMT Grotto Cow": "can_play(Eponas_Song)"
+        }
     },
     {
         "region_name": "Mountain Storms Grotto",

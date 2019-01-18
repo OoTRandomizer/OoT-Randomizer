@@ -736,6 +736,16 @@ location_table = {
     "LLR Grotto Deku Scrub Bombs":                     ("GrottoNPC",   0x0A,  0x37, "Lon Lon Ranch",          None),
     "LLR Grotto Deku Scrub Arrows":                    ("GrottoNPC",   0x0A,  0x33, "Lon Lon Ranch",          None),
 
+    "LLR Stables Left Cow":                            ("NPC",         0x36,  0x15, "Lon Lon Ranch",          None),
+    "LLR Stables Right Cow":                           ("NPC",         0x36,  0x16, "Lon Lon Ranch",          None),
+    "LLR Tower Left Cow":                              ("NPC",         0x4C,  0x15, "Lon Lon Ranch",          None),
+    "LLR Tower Right Cow":                             ("NPC",         0x4C,  0x16, "Lon Lon Ranch",          None),
+    "Links House Cow":                                 ("NPC",         0x34,  0x15, "Links House",            None),
+    "Impas House Cow":                                 ("NPC",         0x37,  0x15, "Kakariko",               None),
+    "Gerudo Valley Cow":                               ("NPC",         0x5A,  0x15, "Gerudo Valley",          None),
+    "DMT Grotto Cow":                                  ("NPC",         0x3E,  0x15, "Death Mountain Trail",   None),
+    "HF Grotto Cow":                                   ("NPC",         0x3E,  0x16, "Hyrule Field",           None),
+
     # These are not actual locations, but are filler spots used for hint reachability
     "Death Mountain Crater Gossip Stone":              ("GossipStone", None,  None, None,                     None),
     "Death Mountain Trail Gossip Stone":               ("GossipStone", None,  None, None,                     None),

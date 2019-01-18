@@ -40,7 +40,7 @@ alwaysitems = ([
     + ['Bombs (10)']
     + ['Bombs (20)']
     + ['Arrows (5)']
-    + ['Arrows (10)'] * 5
+    + ['Arrows (10)'] * (5 + 9) #TODO Change
     + ['Progressive Wallet'] * 2
     + ['Magic Meter'] * 2
     + ['Double Defense']
