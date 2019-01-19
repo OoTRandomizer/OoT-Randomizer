@@ -1200,7 +1200,9 @@
             "GS Hyrule Field Near Gerudo Valley": "
                 (Hammer and has_fire_source and can_use(Hookshot)) or 
                 (Boomerang and has_explosives and can_use(Dins_Fire))",
-             "HF Grotto Cow": "can_play(Eponas_Song) and has_fire_source"
+             "HF Grotto Cow":
+           "can_use(Hammer) and has_fire_source or
+              has_explosives and can_use(Dins_Fire)"
         },
         "exits": {
             "Field Valley Grotto Gossip Stone": "
