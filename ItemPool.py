@@ -40,7 +40,7 @@ alwaysitems = ([
     + ['Bombs (10)']
     + ['Bombs (20)']
     + ['Arrows (5)']
-    + ['Arrows (10)'] * (5 + 9) #TODO Change
+    + ['Arrows (10)'] * 5
     + ['Progressive Wallet'] * 2
     + ['Magic Meter'] * 2
     + ['Double Defense']
@@ -562,6 +562,19 @@ def get_pool_core(world):
     else:
         placed_items['Gift from Saria'] = 'Ocarina'
         placed_items['Ocarina of Time'] = 'Ocarina'
+
+    if world.shuffle_cows:
+        pool.extend(get_junk_item(9))
+    else:
+        placed_items['LLR Stables Left Cow'] = 'Milk'
+        placed_items['LLR Stables Right Cow'] = 'Milk'
+        placed_items['LLR Tower Left Cow'] = 'Milk'
+        placed_items['LLR Tower Right Cow'] = 'Milk'
+        placed_items['Links House Cow'] = 'Milk'
+        placed_items['Impas House Cow'] = 'Milk'
+        placed_items['Gerudo Valley Cow'] = 'Milk'
+        placed_items['DMT Grotto Cow'] = 'Milk'
+        placed_items['HF Grotto Cow'] = 'Milk'
 
     if world.dungeon_mq['Deku Tree']:
         skulltula_locations_final = skulltula_locations + [

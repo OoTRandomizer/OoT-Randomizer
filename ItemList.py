@@ -55,6 +55,7 @@ item_table = {
     'Rupees (5)':                       ('Item',     None,  0x4D, None),
     'Rupees (20)':                      ('Item',     None,  0x4E, None),
     'Heart Container (Boss)':           ('Item',     None,  0x4F, None),
+    'Milk':                             ('Item',     None,  0x50, None),
     'Goron Mask':                       ('Item',     None,  0x51, None),
     'Zora Mask':                        ('Item',     None,  0x52, None),
     'Gerudo Mask':                      ('Item',     None,  0x53, None),

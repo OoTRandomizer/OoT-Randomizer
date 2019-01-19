@@ -1070,3 +1070,7 @@ skip_GS_BGS_text:
     jal cow_after_init
     nop
     lw  ra, 0x003C (sp)
+
+.org 0xEF373C
+    jal cow_bottle_check
+    nop

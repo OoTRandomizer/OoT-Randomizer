@@ -1283,7 +1283,11 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
     # Update grotto id data
     set_grotto_id_data(rom)
 
-    set_cow_id_data(rom)
+    if world.shuffle_cows:
+        rom.write_byte(rom.sym('SHUFFLE_COWS'), 0x01)
+        #Moves the cow in LLR Tower, as the two cows are too close in vanilla
+        rom.write_bytes(0x33650CA, [0xFE, 0xD3, 0x00, 0x00, 0x00, 0x6E, 0x00, 0x00, 0x4A, 0x34])
+        set_cow_id_data(rom)
 
     if world.shuffle_smallkeys == 'remove' or world.shuffle_bosskeys == 'remove':
         locked_doors = get_locked_doors(rom, world)
