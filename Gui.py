@@ -40,7 +40,9 @@ def settings_to_guivars(settings, guivars):
                 guivar.set('')
             else:
                 if 'Custom Color' in info.choices and re.match(r'^[A-Fa-f0-9]{6}$', value):
-                    guivar.set('Custom (#' + value + ')')
+                    guivar.set('Custom (#%s)' % value)
+                elif 'Custom Navi Color' in info.choices and re.match(r'^[A-Fa-f0-9]{12}$', value):
+                    guivar.set('Custom (#%s #%s)' % (value[0:6], value[6:12]))
                 else:
                     try:
                         value = info.choices[value]
@@ -75,8 +77,8 @@ def guivars_to_settings(guivars):
         # Dropdown/radiobox
         if info.type == str:
             # Set guivar to hexcode if custom color
-            if 'Custom Color' in info.choices and re.match(r'^Custom \(#[A-Fa-f0-9]{6}\)$', guivar.get()):
-                result[name] = re.findall(r'[A-Fa-f0-9]{6}', guivar.get())[0]
+            if ('Custom Color' in info.choices or 'Custom Navi Color' in info.choices) and re.match(r'^Custom \((?: ?#[A-Fa-f0-9]{6})+\)$', guivar.get()):
+                result[name] = ''.join(re.findall(r'[A-Fa-f0-9]{6}', guivar.get()))
             else:
                 try:
                     value = info.reverse_choices[guivar.get()]
@@ -201,6 +203,16 @@ def guiMain(settings=None):
                 if color == (None, None):
                     color = ((0,0,0),'#000000')
                 guivars[info.name].set('Custom (' + color[1] + ')')
+
+            if info.type != list and info.name in guivars and guivars[info.name].get() == 'Custom Navi Color':
+                innerColor = colorchooser.askcolor(title='Pick an Inner Core color.')
+                if innerColor == (None, None):
+                    innerColor = ((0,0,0),'#000000')
+                outerColor = colorchooser.askcolor(title='Pick an Outer Glow color.')
+                if outerColor == (None, None):
+                    outerColor = ((0,0,0),'#000000')
+                guivars[info.name].set('Custom (%s %s)' % (innerColor[1], outerColor[1]))
+
         update_generation_type()
 
 

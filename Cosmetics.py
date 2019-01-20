@@ -42,7 +42,7 @@ tunic_colors = {
 
 
 NaviColors = {          # Inner Core Color         Outer Glow Color
-    "Custom Color":      (Color(0x00, 0x00, 0x00), Color(0x00, 0x00, 0x00)),
+    "Custom Navi Color": (Color(0x00, 0x00, 0x00), Color(0x00, 0x00, 0x00)),
     "Gold":              (Color(0xFE, 0xCC, 0x3C), Color(0xFE, 0xC0, 0x07)),
     "White":             (Color(0xFF, 0xFF, 0xFF), Color(0x00, 0x00, 0xFF)),
     "Green":             (Color(0x00, 0xFF, 0x00), Color(0x00, 0xFF, 0x00)),
@@ -173,7 +173,6 @@ def patch_navi_colors(rom, settings, log, symbols):
     ]
     navi_color_list = get_navi_colors()
     for navi_action, navi_option, navi_addresses in navi:
-        inner = navi_action in [action[0] for action in navi[0:4]]
         # choose a random choice for the whole group
         if navi_option == 'Random Choice':
             navi_option = random.choice(navi_color_list)
@@ -191,8 +190,12 @@ def patch_navi_colors(rom, settings, log, symbols):
                 colors = list(NaviColors[navi_option][0]), list(NaviColors[navi_option][1])
             # build color from hex code
             else:
-                base_color = list(int(navi_option[i:i+2], 16) for i in (0, 2 ,4))
-                colors = (base_color, base_color)
+                inner_color = list(int(navi_option[i:i+2], 16) for i in (0, 2 ,4))
+                if len(navi_option) / 6 == 1:
+                    outer_color = inner_color
+                else:
+                    outer_color = list(int(navi_option[i:i+2], 16) for i in (6, 8 ,10))
+                colors = (inner_color, outer_color)
                 custom_color = True
 
             color = colors[0] + [0xFF] + colors[1] + [0xFF]
