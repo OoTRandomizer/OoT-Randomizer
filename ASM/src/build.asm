@@ -27,7 +27,9 @@
 
 .org 0x80400000
 .area 0x10000
+.area 0x1000
 .include "coop_state.asm" ; This should always come first
+.endarea
 .include "config.asm"
 .include "init.asm"
 .include "item_overrides.asm"
@@ -48,10 +50,12 @@
 .include "gossip_hints.asm"
 .include "potion_shop.asm"
 .include "jabu_elevator.asm"
-.include "quickboots.asm"
+.include "dampe.asm"
+.include "dpad.asm"
 .include "chests.asm"
 .include "debug.asm"
 .importobj "../build/bundle.o"
+.align 8
 FONT_TEXTURE:
 .incbin("../resources/font.bin")
 DPAD_TEXTURE:

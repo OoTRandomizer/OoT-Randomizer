@@ -349,7 +349,7 @@ def fill_restrictive(window, worlds, base_state_list, locations, itempool, count
                         if not source_location.can_fill(maximum_exploration_state_list[item_to_place.world.id], item_to_place, perform_access_check):
                             # location wasn't reachable in item's world, so skip it
                             continue
-                    except RuntimeError:
+                    except KeyError:
                         # This location doesn't exist in the other world, let's look elsewhere.
                         # Check access to whatever parent region exists in the other world.
                         can_reach = True
@@ -359,7 +359,7 @@ def fill_restrictive(window, worlds, base_state_list, locations, itempool, count
                                 source_region = item_to_place.world.get_region(parent_region.name)
                                 can_reach = source_region.can_reach(maximum_exploration_state_list[item_to_place.world.id])
                                 break
-                            except RuntimeError:
+                            except KeyError:
                                 parent_region = parent_region.entrances[0].parent_region
                         if not can_reach:
                             continue

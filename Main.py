@@ -243,7 +243,10 @@ def main(settings, window=dummy_window()):
         cosmetics_log.to_file(os.path.join(output_dir, filename))
 
     window.update_progress(100)
-    window.update_status('Success: Rom patched successfully')
+    if cosmetics_log and cosmetics_log.error:
+        window.update_status('Success: Rom patched successfully. Cosmetics could not be applied.')
+    else:
+        window.update_status('Success: Rom patched successfully')
     logger.info('Done. Enjoy.')
     logger.debug('Total Time: %s', time.clock() - start)
 
@@ -314,7 +317,11 @@ def from_patch_file(settings, window=dummy_window()):
         cosmetics_log.to_file(os.path.join(output_dir, output_path + '_Cosmetics.txt'))
 
     window.update_progress(100)
-    window.update_status('Success: Rom patched successfully')
+    if cosmetics_log and cosmetics_log.error:
+        window.update_status('Success: Rom patched successfully. Cosmetics could not be applied.')
+    else:
+        window.update_status('Success: Rom patched successfully')
+
     logger.info('Done. Enjoy.')
     logger.debug('Total Time: %s', time.clock() - start)
 
@@ -399,7 +406,10 @@ def cosmetic_patch(settings, window=dummy_window()):
         cosmetics_log.to_file(os.path.join(output_dir, filename))
 
     window.update_progress(100)
-    window.update_status('Success: Rom patched successfully')
+    if cosmetics_log and cosmetics_log.error:
+        window.update_status('Success: Rom patched successfully. Cosmetics could not be applied.')
+    else:
+        window.update_status('Success: Rom patched successfully')
     logger.info('Done. Enjoy.')
     logger.debug('Total Time: %s', time.clock() - start)
 

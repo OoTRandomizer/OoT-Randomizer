@@ -1,10 +1,10 @@
-qb_draw:
+dpad_draw:
     addiu   sp, sp, -0x10
     sw      ra, 0(sp)
-    jal     draw_quickboots
+    jal     draw_dpad
     nop
-    lw      s4, 0x0000(s6)
-    lw      s1, 0x02b0(s4)
+    lw      t6, 0x1C44(s6)
+    lui     t8, 0xDB06
     lw      ra, 0(sp)
     jr      ra
     addiu   sp,sp, 0x10

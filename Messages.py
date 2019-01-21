@@ -170,7 +170,7 @@ ITEM_MESSAGES = {
     0x00AD: "\x08\x13\x05You got \x05\x41Din's Fire\x05\x40!\x01Its fireball engulfs everything!",
     0x00AE: "\x08\x13\x0DYou got \x05\x42Farore's Wind\x05\x40!\x01This is warp magic you can use!",
     0x00AF: "\x08\x13\x13You got \x05\x43Nayru's Love\x05\x40!\x01Cast this to create a powerful\x01protective barrier.",
-    0x00B4: "\x08You got a \x05\x41Gold Skulltula Token\x05\x40!\x01You've collected \x05\x41\x19\x05\x40 in total.",
+    0x00B4: "\x08You got a \x05\x41Gold Skulltula Token\x05\x40!\x01You've collected \x05\x41\x19\x05\x40 tokens in total.",
     0x00B5: "\x08You destroyed a \x05\x41Gold Skulltula\x05\x40.\x01You got a token proving you \x01destroyed it!", #Unused
     0x00C2: "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01Collect four pieces total to get\x01another Heart Container.",
     0x00C3: "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01So far, you've collected two \x01pieces.",
@@ -673,35 +673,43 @@ def move_shop_item_messages(messages, shop_items):
             shop.purchase_message |= 0x8000
 
 def make_player_message(text):
-    player_text_U = '\x05\x42\x0F\x05\x40'
-    player_text_L = '\x05\x42\x0F\x05\x40'
+    player_text = '\x05\x42\x0F\x05\x40'
     pronoun_mapping = {
-        'You have ': player_text_U + ' ',
-        'You\'ve ':  player_text_U + ' ',
-        'Your ':     player_text_U + '\'s ',
-        'You ':      player_text_U + ' ',
+        "You have ": player_text + " ",
+        "You've ":   player_text + " ",
+        "Your ":     player_text + "'s ",
+        "You ":      player_text + " ",
 
-        'you have ': player_text_L + ' ',
-        'you\'ve ':  player_text_L + ' ',
-        'your ':     player_text_L + '\'s ',
-        'you ':      player_text_L + ' ',
+        "you have ": player_text + " ",
+        "you've ":   player_text + " ",
+        "your ":     player_text + "'s ",
+        "you ":      player_text + " ",
     }
 
     verb_mapping = {
         'obtained ': 'got ',
         'received ': 'got ',
-        'learned ': 'got ',
+        'learned ':  'got ',
         'borrowed ': 'got ',
-        'found ': 'got ',
+        'found ':    'got ',
     }
 
     new_text = text
-    for find_text, replace_text in pronoun_mapping.items():
-        if find_text in text:
-            new_text = new_text.replace(find_text, replace_text, 1)
-            break
+
+    # Replace the first instance of a 'You' with the player name
+    lower_text = text.lower()
+    you_index = lower_text.find('you')
+    if you_index != -1:
+        for find_text, replace_text in pronoun_mapping.items():
+            # if the index do not match, then it is not the first 'You'
+            if text.find(find_text) == you_index:
+                new_text = new_text.replace(find_text, replace_text, 1)
+                break
+
+    # because names are longer, we shorten the verbs to they fit in the textboxes better
     for find_text, replace_text in verb_mapping.items():
         new_text = new_text.replace(find_text, replace_text)
+
     return new_text
 
 

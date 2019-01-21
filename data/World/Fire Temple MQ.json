@@ -54,7 +54,7 @@
         },
         "exits": {
             "Fire Upper Maze": "
-                (has_explosives or logic_fire_mq_upper_maze) and can_use(Hookshot)"
+                (has_explosives or logic_rusted_switches) and can_use(Hookshot)"
         }
     },
     {

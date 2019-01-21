@@ -73,7 +73,7 @@ void draw_dungeon_info(z64_disp_buf_t *db) {
     db->p = db->buf;
 
     // Call setup display list
-    gSPDisplayList(db->p++, setup_db.buf);
+    gSPDisplayList(db->p++, &setup_db);
 
     uint16_t altar_flags = z64_file.inf_table[27];
     int show_medals = !cfg_dungeon_info_reward_need_altar || (altar_flags & 1);

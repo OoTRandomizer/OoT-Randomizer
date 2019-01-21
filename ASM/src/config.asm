@@ -2,6 +2,20 @@
 ; Settings and tables which the front-end may write
 ;==================================================================================================
 
+; This is used to determine if and how the cosmetics can be patched
+; It this moves then the version will no longer be valid, so it is important that this does not move
+COSMETIC_FORMAT_VERSION:
+.word 0x1F04FA62
+CFG_DISPLAY_DPAD:
+.byte 0x01
+CFG_RAINBOW_SWORD_INNER_ENABLED:
+.byte 0x00
+CFG_RAINBOW_SWORD_OUTER_ENABLED:
+.byte 0x00
+
+.align 4
+
+
 ; Initial Save Data table:
 ;
 ; This table describes what extra data should be written when a new save file is created. It must be terminated with

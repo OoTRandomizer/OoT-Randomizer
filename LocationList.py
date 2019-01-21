@@ -103,7 +103,7 @@ location_table = {
     "Dampe Race Freestanding PoH":                     ("Collectable", 0x48,  0x07, "the Graveyard",          None),
     "Lon Lon Tower Freestanding PoH":                  ("Collectable", 0x4C,  0x01, "Lon Lon Ranch",          None),
     "Graveyard Freestanding PoH":                      ("Collectable", 0x53,  0x04, "the Graveyard",          None),
-    "Gravedigging Tour":                               ("Collectable", 0x53,  0x00, "the Graveyard",          None),
+    "Gravedigging Tour":                               ("Collectable", 0x53,  0x08, "the Graveyard",          None),
     "Zora River Lower Freestanding PoH":               ("Collectable", 0x54,  0x04, "Zora's River",           None),
     "Zora River Upper Freestanding PoH":               ("Collectable", 0x54,  0x0B, "Zora's River",           None),
     "Lake Hylia Freestanding PoH":                     ("Collectable", 0x57,  0x1E, "Lake Hylia",             None),

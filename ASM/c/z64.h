@@ -1122,6 +1122,7 @@ typedef struct
 #define z64_frame_input_func_addr               0x800A0BA0
 #define z64_main_hook_addr                      0x800A0C3C
 #define z64_frame_input_call_addr               0x800A16AC
+#define z64_GetMatrixStackTop_addr              0x800AA78C
 #define z64_DisplayTextbox_addr                 0x800DCE14
 #define gspF3DEX2_NoN_fifoTextStart             0x800E3F70
 #define z64_day_speed_addr                      0x800F1650
@@ -1188,6 +1189,7 @@ typedef void(*z64_LinkDamage_proc)        (z64_game_t *ctxt, z64_link_t *link,
                                            uint8_t damage_type, float unk_00, uint32_t unk_01,
                                            uint16_t unk_02);
 typedef void(*z64_LinkInvincibility_proc) (z64_link_t *link, uint8_t frames);
+typedef float *(*z64_GetMatrixStackTop_proc)();
 
 /* data */
 #define z64_file_mq             (*(OSMesgQueue*)      z64_file_mq_addr)
@@ -1240,5 +1242,7 @@ typedef void(*z64_LinkInvincibility_proc) (z64_link_t *link, uint8_t frames);
 #define z64_LinkDamage          ((z64_LinkDamage_proc)z64_LinkDamage_addr)
 #define z64_LinkInvincibility   ((z64_LinkInvincibility_proc)                 \
                                                       z64_LinkInvincibility_addr)
+#define z64_GetMatrixStackTop   ((z64_GetMatrixStackTop_proc) \
+                                                      z64_GetMatrixStackTop_addr)
 
 #endif

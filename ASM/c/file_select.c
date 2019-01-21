@@ -56,7 +56,7 @@ void draw_file_select_hash(uint32_t fade_out_alpha) {
     z64_disp_buf_t *db = &(z64_ctxt.gfx->poly_opa);
 
     // Call setup display list
-    gSPDisplayList(db->p++, setup_db.buf);
+    gSPDisplayList(db->p++, &setup_db);
 
     int icon_count = 5;
     int icon_size = 24;

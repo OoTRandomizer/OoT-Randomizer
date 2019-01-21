@@ -8,6 +8,12 @@
 ; Time Travel
 ;==================================================================================================
 
+; Prevents FW from being unset on time travel
+; Replaces:
+;   SW	R0, 0x0E80 (V1)
+.org 0xAC91B4 ; In memory: 0x80053254
+	nop
+
 ; Replaces:
 ;   jal     8006FDCC ; Give Item
 .org 0xCB6874 ; Bg_Toki_Swd addr 809190F4 in func_8091902C
@@ -212,16 +218,15 @@
 ; Freestanding models
 ;==================================================================================================
 
-; Override constructor for En_Item00 (Piece of Heart / Small Key)
-.org 0xB5D6C0
-.word item00_constructor ; Replaces 80011B4C
-
 ; Replaces:
 ;   jal     0x80013498 ; Piece of Heart draw function
-;   nop
-.org 0xA88F78
+.org 0xA88F78 ; In memory: 0x80013018
     jal     heart_piece_draw
-    nop
+
+; Replaces:
+;   jal     0x80013498 ; Collectable draw function
+.org 0xA89048 ; In memory: 0x800130E8
+    jal     small_key_draw
 
 ; Replaces:
 ;   addiu   sp, sp, -0x48
@@ -231,64 +236,46 @@
     nop
 
 ; Replaces:
-;   lw      a0, 0x001C (sp)
-;   jal     0x800570C0
-;   lh      a1, 0x0140 (t6)
-.org 0xDE1034
-    lw      a0, 0x18 (sp)
-    jal     item_etcetera_draw
-    lw      a1, 0x1C (sp)
+;   addiu   sp, sp, -0x18
+;   sw      ra, 0x14 (sp)
+.org 0xDE0FF8
+    j       item_etcetera_draw
+    nop
 
 ; Replaces:
-;   lw      a0, 0x001C (sp)
-;   jal     0x800570C0
-;   lh      a1, 0x0140 (t6)
-.org 0xDE1084
-    lw      a0, 0x18 (sp)
-    jal     item_etcetera_draw
-    lw      a1, 0x1C (sp)
+;   addiu   sp, sp, -0x18
+;   sw      ra, 0x14 (sp)
+.org 0xDE1050
+    j       item_etcetera_draw
+    nop
 
 ; Replaces:
-;   lw      a0, 0x001C (sp)
-;   jal     0x800570C0
-;   lh      a1, 0x0146 (a3)
-.org 0xE59EB0
-    lw      a0, 0x18 (sp)
-    jal     bowling_bomb_bag_draw
-    lw      a1, 0x1C (sp)
+;   addiu   sp, sp, -0x18
+;   sw      ra, 0x14 (sp)
+.org 0xE59E68
+    j       bowling_bomb_bag_draw
+    nop
 
 ; Replaces:
-;   lw      a1, 0x001C (sp)
-;   jal     0x80022554
-;   or      a2, r0, r0
-;   lw      a0, 0x001C (sp)
-;   jal     0x800570C0
-;   addiu   a1, r0, 0x0013
-.org 0xE59ED8
-    sw      a0, 0x18 (sp)
-    jal     0x80022554
-    or      a2, r0, r0
-    lw      a0, 0x18 (sp)
-    jal     bowling_heart_piece_draw
-    lw      a1, 0x1C (sp)
+;   addiu   sp, sp, -0x18
+;   sw      ra, 0x14 (sp)
+.org 0xE59ECC
+    j       bowling_heart_piece_draw
+    nop
 
 ; Replaces:
-;   lw      a0, 0x001C (sp)
-;   jal     0x800570C0
-;   addiu   a1, r0, 0x0074
-.org 0xEC6B40
-    lw      a0, 0x18 (sp)
-    jal     skull_token_draw
-    lw      a1, 0x1C (sp)
+;   addiu   sp, sp, -0x18
+;   sw      ra, 0x14 (sp)
+.org 0xEC6B04
+    j       skull_token_draw
+    nop
 
 ; Replaces:
-;   lw      a0, 0x001C (sp)
-;   jal     0x800570C0
-;   addiu   a1, r0, 0x002E
-.org 0xDB5418
-    lw      a0, 0x18 (sp)
-    jal     ocarina_of_time_draw
-    lw      a1, 0x1C (sp)
+;   addiu   sp, sp, -0x18
+;   sw      ra, 0x14 (sp)
+.org 0xDB53E8
+    j       ocarina_of_time_draw
+    nop
 
 ;==================================================================================================
 ; File select hash
@@ -778,11 +765,12 @@ skip_GS_BGS_text:
 ; Talon Cutscene Skip
 ;==================================================================================================
 
-; Replaces: lui    a1, 0x801F @ovl+0x1080
+; Replaces: lw      a0, 0x0018(sp)
+;           addiu   t1, r0, 0x0041
 
-.org 0xCC0020
-    jal     talon_break_free
-    lui     a1, 0x801F
+.org 0xCC0038
+    jal    talon_break_free
+    lw     a0, 0x0018(sp)
 
 ;==================================================================================================
 ; Patches.py imports
@@ -972,13 +960,13 @@ skip_GS_BGS_text:
 	jal		jabu_elevator
 
 ;==================================================================================================
-; Quick Boots Display
+; DPAD Display
 ;==================================================================================================
 ;
-; Replaces lw    s4, 0x0000(s6)
-;          lw    s1, 0x02B0(s4)
-.org 0xAEB68C ; In Memory: 0x8007572C
-	jal		qb_draw
+; Replaces lw    t6, 0x1C44(s6)
+;          lui   t8, 0xDB06
+.org 0xAEB67C ; In Memory: 0x8007571C
+	jal		dpad_draw
 	nop
 
 ;==================================================================================================
@@ -1022,7 +1010,7 @@ skip_GS_BGS_text:
 ; Big Goron Fix
 ;==================================================================================================
 ;
-;Replaces: beq     $zero, $zero, lbl_80B5AD64 
+;Replaces: beq     $zero, $zero, lbl_80B5AD64
 
 .org 0xED645C
     jal     bgs_fix
@@ -1034,4 +1022,31 @@ skip_GS_BGS_text:
 ;
 .org 0xBEA044
    jal      warp_speedup
+   nop
+
+;==================================================================================================
+; Dampe Digging Fix
+;==================================================================================================
+;
+; Dig Anyere
+.org 0xCC3FA8
+    sb      at, 0x1F8(s0) 
+
+; Always First Try
+.org 0xCC4024
+    nop
+
+; Leaving without collecting dampe's prize won't lock you out from that prize
+.org 0xCC4038
+    jal     dampe_fix
+    addiu   t4, r0, 0x0004
+
+.org 0xCC453C
+    .word 0x00000806
+;==================================================================================================
+; Drawbridge change
+;==================================================================================================
+;
+; Replaces: SH  T9, 0x00B4 (S0)
+.org 0xC82550
    nop

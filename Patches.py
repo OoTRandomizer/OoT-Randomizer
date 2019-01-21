@@ -39,6 +39,10 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
     rom.write_byte(0xCB6844, 0x35)
     rom.write_byte(0x253C0E2, 0x03) # Moves sheik from pedestal
 
+    # Fix Ice Cavern Alcove Camera
+    if not world.dungeon_mq['Ice Cavern']:
+        rom.write_byte(0x2BECA25,0x01);
+        rom.write_byte(0x2BECA2D,0x01);
 
     # Fix GS rewards to be static
     rom.write_int32(0xEA3934, 0)
@@ -618,10 +622,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
     rom.write_byte(0x1FF93D0, 0x06) # set the path points to 6
     rom.write_bytes(0x20160B6, [0x01, 0x8D, 0x00, 0x11, 0x01, 0x6C]) # set the carpenter's start position
 
-    # Dampe always digs something up and first dig is always the Piece of Heart
-    rom.write_bytes(0xCC3FA8, [0xA2, 0x01, 0x01, 0xF8])
-    rom.write_bytes(0xCC4024, [0x00, 0x00, 0x00, 0x00])
-
     # Give hp after first ocarina minigame round
     rom.write_bytes(0xDF2204, [0x24, 0x03, 0x00, 0x02])
 
@@ -892,6 +892,8 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
     # Revert change that Skips the Epona Race
     if not world.no_epona_race:
         rom.write_int32(0xA9E838, 0x03E00008)
+    else:
+        write_bits_to_save(0xF0E, 0x01) # Set talked to Malon flag
 
     # skip castle guard stealth sequence
     if world.no_guard_stealth:
@@ -1292,6 +1294,19 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
         # Move Ganon's Castle's Zelda's Lullaby Chest back so is reachable if large
         if not world.dungeon_mq['Ganons Castle']:
             rom.write_int16(0x321B176, 0xFC40) # original 0xFC48
+
+        #Move spirit temple compass chest if it is a small chest so it is reachable with hookshot 
+        for chest_name, chest_address in [('Spirit Temple Compass Chest', 0x2B6B07C), ('Spirit Temple MQ Compass Chest', 0x2B6FCDC)]:
+            try:
+                location = world.get_location(chest_name)
+            except KeyError:
+                # MQ/Vanilla veriant does not exist
+                continue
+
+            item = read_rom_item(rom, location.item.index)
+            if item['chest_type'] == 1 or item['chest_type'] == 3:
+                rom.write_int16(chest_address + 2, 0x0190) #X pos
+                rom.write_int16(chest_address + 6, 0xFABC) #Z pos
 
     # give dungeon items the correct messages
     add_item_messages(messages, shop_items, world)

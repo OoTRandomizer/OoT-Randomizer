@@ -65,7 +65,7 @@ class Sounds(Enum):
     CRATE_EXPLODE      = Sound(0x2839, 'exploding-crate',       'Exploding Crate',           [])
     CUCCO_CLUCK        = Sound(0x2812, 'cluck',                 'Cluck',                     [Tags.BRIEF])
     CUCCO_CROW         = Sound(0x2813, 'cockadoodledoo',        'Cockadoodledoo',            [])
-    CURSED_SCREAM      = Sound(0x6867, 'cursed-scream',         'Cursed Scream',             [])
+    CURSED_SCREAM      = Sound(0x6867, 'cursed-scream',         'Cursed Scream',             [Tags.PAINFUL])
     CURSED_ATTACK      = Sound(0x6868, 'cursed-attack',         'Cursed Attack',             [Tags.IMMEDIATE])
     DRAWBRIDGE_SET     = Sound(0x280E, 'drawbridge-set',        'Drawbridge Set',            [])
     DUSK_HOWL          = Sound(0x28AE, 'dusk-howl',             'Dusk Howl',                 [])
@@ -150,28 +150,62 @@ no_painful = [s for s in standard if Tags.PAINFUL not in s.value.tags]
 
 # Selected by hand (very much a WIP)
 navi = [
-        Sounds.SPIT_NUT,
-        Sounds.CURSED_SCREAM,
-        Sounds.TALON_CRY,
-        Sounds.BOW_TWANG,
-        Sounds.BOTTLE_CORK,
-        Sounds.GANON_TENNIS,
-        Sounds.STALCHILD_ATTACK,
-        Sounds.FANFARE_SMALL,
-        Sounds.STALCHILD_ATTACK,
-        Sounds.INGO_KAAH,
+        Sounds.NONE,
+        Sounds.CUCCO_CLUCK,
+        Sounds.SOFT_BEEP,
+        Sounds.HP_RECOVER,
+        Sounds.TIMER,
+        Sounds.HP_LOW,
+        Sounds.NOTIFICATION,
+        Sounds.TAMBOURINE,
+        Sounds.CARROT_REFILL,
+        Sounds.ZELDA_ADULT_GASP,
+        Sounds.ZORA_KING,
+        Sounds.ICE_SHATTER,
+        Sounds.EXPLOSION,
+        Sounds.CRATE_EXPLODE,
+        Sounds.GREAT_FAIRY,
+        Sounds.MOO,
+        Sounds.BARK,
+        Sounds.RIBBIT,
+        Sounds.POT_SHATTER,
+        Sounds.CUCCO_CROW,
         Sounds.HORSE_NEIGH,
+        Sounds.SKULLTULA,
+        Sounds.REDEAD_SCREAM,
+        Sounds.POE,
+        Sounds.RUTO_CHILD_GIGGLE,
+        Sounds.DUSK_HOWL,
+        Sounds.SCRUB_BUSINESS,
+        Sounds.GUAY,
+        Sounds.NAVI_HELLO,
         ]
 hp_low = [
-        Sounds.RIBBIT,
-        Sounds.BONGO_LOW,
-        Sounds.CURSED_SCREAM,
+        Sounds.NONE,
+        Sounds.CUCCO_CLUCK,
+        Sounds.SOFT_BEEP,
+        Sounds.HP_RECOVER,
+        Sounds.TIMER,
+        Sounds.NOTIFICATION,
         Sounds.TAMBOURINE,
-        Sounds.RUTO_CHILD_CRASH,
-        Sounds.SHABOM_BOUNCE,
         Sounds.CARROT_REFILL,
-        Sounds.MOBLIN_CLUB_GROUND,
+        Sounds.NAVI_RANDOM,
+        Sounds.NAVI_HEY,
+        Sounds.ZELDA_ADULT_GASP,
         Sounds.ZORA_KING,
+        Sounds.BOOTS_IRON,
+        Sounds.SWORD_BONK,
+        Sounds.BOW_TWANG,
+        Sounds.HORSE_TROT,
+        Sounds.DRAWBRIDGE_SET,
+        Sounds.SWITCH,
+        Sounds.BOMB_BOUNCE,
+        Sounds.BARK,
+        Sounds.RIBBIT,
+        Sounds.POT_SHATTER,
+        Sounds.SCRUB_BUSINESS,
+        Sounds.GUAY,
+        Sounds.BONGO_LOW,
         ]
 hover_boots = [
         Sounds.BARK,
@@ -215,24 +249,25 @@ horse_neigh = [
 
 SoundHook = namedtuple('SoundHook', 'name pool locations')
 class SoundHooks(Enum):
-    NAVI            = SoundHook('Navi',        navi,        [0xAE7EF2, 0xC26C7E, 0xAE7EC6])
-    HP_LOW          = SoundHook('Low Health',  hp_low,      [0xADBA1A])
-    BOOTS_HOVER     = SoundHook('Hover Boots', hover_boots, [0xBDBD8A])
-    NIGHTFALL       = SoundHook('Nightfall',   nightfall,   [0xAD3466, 0xAD7A2E])
-    MENU_SELECT     = SoundHook('Menu Select', no_painful, [
+    NAVI_OVERWORLD  = SoundHook('Navi - Overworld', navi,        [0xAE7EF2, 0xC26C7E])
+    NAVI_ENEMY      = SoundHook('Navi - Enemy',     navi,        [0xAE7EC6])
+    HP_LOW          = SoundHook('Low Health',       hp_low,      [0xADBA1A])
+    BOOTS_HOVER     = SoundHook('Hover Boots',      hover_boots, [0xBDBD8A])
+    NIGHTFALL       = SoundHook('Nightfall',        nightfall,   [0xAD3466, 0xAD7A2E])
+    MENU_SELECT     = SoundHook('Menu Select',      no_painful,  [
                         0xBA1BBE, 0xBA23CE, 0xBA2956, 0xBA321A, 0xBA72F6, 0xBA8106, 0xBA82EE,
                         0xBA9DAE, 0xBA9EAE, 0xBA9FD2, 0xBAE6D6])
-    MENU_CURSOR     = SoundHook('Menu Cursor', no_painful, [
+    MENU_CURSOR     = SoundHook('Menu Cursor',      no_painful,  [
                         0xBA165E, 0xBA1C1A, 0xBA2406, 0xBA327E, 0xBA3936, 0xBA77C2, 0xBA7886,
                         0xBA7A06, 0xBA7A6E, 0xBA7AE6, 0xBA7D6A, 0xBA8186, 0xBA822E, 0xBA82A2,
                         0xBAA11E, 0xBAE7C6])
-    HORSE_NEIGH     = SoundHook('Horse Neigh', horse_neigh, [
+    HORSE_NEIGH     = SoundHook('Horse Neigh',      horse_neigh, [
                         0xC18832, 0xC18C32, 0xC19A7E, 0xC19CBE, 0xC1A1F2, 0xC1A3B6, 0xC1B08A,
-                        0xC1B556, 0xC1C28A, 0xC1CC36, 0xC1EB4A, 0xC1F18E, 0xC6B136, 0xC6BBA2])
-#   # Merged these into one
-#   NAVI_OVERWORLD  = SoundHook('Navi - Overworld', navi_overworld,   [0xAE7EF2, 0xC26C7E])
-#   NAVI_ENEMY      = SoundHook('Navi - Enemy',     navi_enemy,       [0xAE7EC6])
-#   # Redeads have a different cutting sound, making this a bit weird
+                        0xC1B556, 0xC1C28A, 0xC1CC36, 0xC1EB4A, 0xC1F18E, 0xC6B136, 0xC6BBA2,
+                        0xC1E93A, 0XC6B366, 0XC6B562])
+
+
+#   # Some enemies have a different cutting sound, making this a bit weird
 #   SWORD_SLASH     = SoundHook('Sword Slash',      standard,         [0xAC2942])
 
 
@@ -250,7 +285,7 @@ def get_setting_choices(sound_hook):
     result   = {
         'default':           'Default',
         'completely-random': 'Completely Random',
-        'random-ear-safe':   'Completely Random (Ear-Safe)',
+        'random-ear-safe':   'Random Ear-Safe',
         'random-choice':     'Random Choice',
         'none':              'None',
         **choices,

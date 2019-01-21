@@ -175,7 +175,7 @@ class World(object):
                 if region.name == regionname:
                     self._region_cache[regionname] = region
                     return region
-            raise RuntimeError('No such region %s' % regionname)
+            raise KeyError('No such region %s' % regionname)
 
 
     def get_entrance(self, entrance):
@@ -189,7 +189,7 @@ class World(object):
                     if exit.name == entrance:
                         self._entrance_cache[entrance] = exit
                         return exit
-            raise RuntimeError('No such entrance %s' % entrance)
+            raise KeyError('No such entrance %s' % entrance)
 
 
     def get_location(self, location):
@@ -203,7 +203,7 @@ class World(object):
                     if r_location.name == location:
                         self._location_cache[location] = r_location
                         return r_location
-        raise RuntimeError('No such location %s' % location)
+        raise KeyError('No such location %s' % location)
 
 
     def get_items(self):

@@ -122,7 +122,7 @@
                         ((Small_Key_Spirit_Temple, 2) and Boomerang and bombchus_in_logic)))",
             "GS Spirit Temple Lobby": "
                 can_use(Silver_Gauntlets) and (Small_Key_Spirit_Temple, 3) and 
-                (can_use(Longshot) or can_use(Scarecrow) or Hover_Boots)"
+                (Progressive_Hookshot or Hover_Boots)"
         },
         "exits": {
             "Spirit Temple Outdoor Hands": "True",
@@ -163,7 +163,7 @@
         "locations": {
             "Spirit Temple Boss Key Chest": "
                 can_play(Zeldas_Lullaby) and has_bow and 
-                Progressive_Hookshot and can_blast_or_smash",
+                Progressive_Hookshot",
             "Spirit Temple Topmost Chest": "Mirror_Shield",
             "Twinrova Heart": "
                 Mirror_Shield and has_explosives and 
