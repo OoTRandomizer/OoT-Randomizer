@@ -1,6 +1,7 @@
 import argparse
 import json
 import os
+import platform
 import re
 from subprocess import check_call as call
 from rom_diff import create_diff
@@ -95,3 +96,13 @@ if pj64_sym_path:
 
 # Diff ROMs
 create_diff('roms/base.z64', 'roms/patched.z64', '../data/generated/rom_patch.txt')
+
+# Replace Windows line endings.
+if platform.system() == 'Windows':
+    files = ['build/c_symbols.txt', 'build/asm_symbols.txt', '../data/generated/rom_patch.txt', '../data/generated/symbols.json']
+    for file in files:
+        with open(file, 'rb') as f:
+            content = f.read()
+        content = content.replace(b'\r\n', b'\n')
+        with open (file, 'wb') as f:
+            f.write(content)
