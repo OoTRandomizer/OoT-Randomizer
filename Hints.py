@@ -233,7 +233,7 @@ def get_barren_hint(spoiler, world, checked):
 
     checked.append(area)
 
-    return (buildHintString(colorText(area, 'Pink') + " is barren of treasure."), None)
+    return (buildHintString(colorText(area, 'Pink') + " is off the Hero's Path."), None)
 
 
 def get_good_loc_hint(spoiler, world, checked):
