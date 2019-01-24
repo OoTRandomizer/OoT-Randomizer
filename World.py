@@ -386,11 +386,15 @@ class World(object):
             'Double Defense',
             'Ice Arrows',
             'Serenade of Water',
-            'Prelude of Light'
+            'Prelude of Light',
+            'Biggoron Sword',
         ]
         if self.damage_multiplier != 'ohko' and self.damage_multiplier != 'quadruple' and self.shuffle_scrubs == 'off':
             # nayru's love may be required to prevent forced damage
             exclude_item_list.append('Nayrus Love')
+        if self.hints == 'agony':
+            # Stone of Agony only required if it's used for hints
+            exclude_item_list.append('Stone of Agony')
 
         # The idea here is that if an item shows up in woth, then the only way
         # that another copy of that major item could ever be required is if it
