@@ -230,7 +230,7 @@ KEYSANITY_MESSAGES = {
     0x0095: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x43Water Temple\x05\x40!\x09",
     0x009B: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09",
     0x009F: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Gerudo Training\x01Grounds\x05\x40!\x09",
-    0x00A0: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Gerudo Fortress\x05\x40!\x09",
+    0x00A0: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Gerudo's Fortress\x05\x40!\x09",
     0x00A1: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for \x05\x41Ganon's Castle\x05\x40!\x09",
     0x00A2: "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09",
     0x00A3: "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09",
@@ -523,6 +523,12 @@ class Message():
 
         return cls(bytes, 0, id, opts, 0, len(bytes) + 1)
 
+    @classmethod
+    def from_bytearray(cls, bytearray, id=0, opts=0x00):
+        bytes = list(bytearray) + [0x02]
+
+        return cls(bytes, 0, id, opts, 0, len(bytes) + 1)
+
     __str__ = __repr__ = display
 
 # wrapper for updating the text of a message, given its message id
@@ -549,12 +555,18 @@ def get_message_by_id(messages, id):
 def update_message_by_index(messages, index, text, opts=None):
     if opts is None:
         opts = messages[index].opts
-    messages[index] = Message.from_string(text, messages[index].id, opts)
+    if isinstance(text, bytearray):
+        messages[index] = Message.from_bytearray(text, messages[index].id, opts)
+    else:
+        messages[index] = Message.from_string(text, messages[index].id, opts)
     messages[index].index = index
 
 # wrapper for adding a string message to a list of messages
 def add_message(messages, text, id=0, opts=0x00):
-    messages.append( Message.from_string(text, id, opts) )
+    if isinstance(text, bytearray):
+        messages.append( Message.from_bytearray(text, id, opts) )
+    else:
+        messages.append( Message.from_string(text, id, opts) )
     messages[-1].index = len(messages) - 1
 
 # holds a row in the shop item table (which contains pointers to the description and purchase messages)

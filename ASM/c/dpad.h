@@ -12,6 +12,7 @@
 
 #define BLOCK_OCARINA (0x00800000 | \
                        0x00000800 | \
+                       0x00200000 | \
                        0x08000000)
 
 #define DISPLAY_DPAD        (((z64_file.iron_boots || z64_file.hover_boots) && z64_file.link_age==0) || z64_file.items[0x07] == 0x07 || z64_file.items[0x07] == 0x08)

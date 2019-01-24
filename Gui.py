@@ -265,11 +265,10 @@ def guiMain(settings=None):
     guivars['count'] = StringVar()
     widgets['count'] = Spinbox(countDialogFrame, from_=1, to=100, textvariable=guivars['count'], width=3)
 
-    if os.path.exists(local_path('README.html')):
-        def open_readme():
-            open_file(local_path('README.html'))
-        openReadmeButton = Button(countDialogFrame, text='Open Documentation', command=open_readme)
-        openReadmeButton.pack(side=RIGHT, padx=5)
+    def open_readme():
+        open_file('https://wiki.ootrandomizer.com/index.php?title=Main_Page')
+    openReadmeButton = Button(countDialogFrame, text='Open Wiki Page', command=open_readme)
+    openReadmeButton.pack(side=RIGHT, padx=5)
 
     countLabel.pack(side=LEFT)
     widgets['count'].pack(side=LEFT, padx=2)

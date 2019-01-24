@@ -2,6 +2,7 @@ from State import State
 from Region import Region
 from Entrance import Entrance
 from Location import Location, LocationFactory
+from LocationList import business_scrubs
 from DungeonList import create_dungeons
 from Rules import set_rules, set_shop_rules
 from Item import Item
@@ -27,6 +28,7 @@ class World(object):
         self._location_cache = {}
         self.required_locations = []
         self.shop_prices = {}
+        self.scrub_prices = {}
         self.light_arrow_location = None
 
         # dump settings directly into world's namespace
@@ -163,6 +165,34 @@ class World(object):
                 if location.type == 'Shop':
                     if location.name[-1:] in shop_item_indexes[:shop_item_count]:
                         self.shop_prices[location.name] = int(random.betavariate(1.5, 2) * 60) * 5
+
+
+    def set_scrub_prices(self):
+        # Get Deku Scrub Locations
+        scrub_locations = [location for location in self.get_locations() if 'Deku Scrub' in location.name]
+        scrub_dictionary = {}
+        for location in scrub_locations:
+            if location.default not in scrub_dictionary:
+                scrub_dictionary[location.default] = []
+            scrub_dictionary[location.default].append(location)
+
+        # Loop through each type of scrub.
+        for (scrub_item, default_price, text_id, text_replacement) in business_scrubs:
+            price = default_price
+            if self.shuffle_scrubs == 'low':
+                price = 10
+            elif self.shuffle_scrubs == 'random':
+                # this is a random value between 0-99
+                # average value is ~33 rupees
+                price = int(random.betavariate(1, 2) * 99)
+
+            # Set price in the dictionary as well as the location.
+            self.scrub_prices[scrub_item] = price
+            if scrub_item in scrub_dictionary:
+                for location in scrub_dictionary[scrub_item]:
+                    location.price = price
+                    if location.item is not None:
+                        location.item.price = price
 
 
     def get_region(self, regionname):
@@ -326,14 +356,7 @@ class World(object):
                location.item.type == "Event":
                 continue
 
-            # We should consider GT and GC as the same area or it's confusing.
-            # You can get a hint GC is barren and a player might think that
-            # GT is also barren when it is not. They are separate scenes in
-            # the rom data, but one dungeon logically.
-            if location.hint == "Ganon's Tower":
-                area = "Ganon's Castle"
-            else:
-                area = location.hint
+            area = location.hint
 
             # Build the area list and their items
             if area not in areas:

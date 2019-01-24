@@ -1031,8 +1031,6 @@ setting_infos = [
                              'Random Prices': All Scrub prices will be
                              between 0-99 rupees. This will on average
                              be very, very expensive overall.
-        
-                             The texts of the Scrubs are not updated.
                              ''',
             shared         = True,
             ),

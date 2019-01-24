@@ -79,6 +79,7 @@ sword_colors = {        # Initial Color            Fade Color
     "Pink":              (Color(0xFF, 0x69, 0xB4), Color(0xFF, 0x69, 0xB4)),
 }
 
+
 def get_tunic_colors():
     return list(tunic_colors.keys())
 
@@ -103,32 +104,25 @@ def get_sword_color_options():
     return ["Random Choice", "Completely Random"] + get_sword_colors()
 
 
-def patch_cosmetics(settings, rom):
-    log = CosmeticsLog(settings)
-
-    # Check if cosmetic patch is compatible
-    if rom.read_int32(rom.sym('COSMETIC_FORMAT_VERSION')) != 0x1F04FA62:
-        # Unknown patch format
-        log.error = 'Unable to patch cosmetics. Rom uses unknown cosmetic patch format'
-        print(log.error)
-        return log
-
-    # re-seed for aesthetic effects. They shouldn't be affected by the generation seed
-    random.seed()
-
+def patch_targeting(rom, settings, log, symbols):
     # Set default targeting option to Hold
     if settings.default_targeting == 'hold':
         rom.write_byte(0xB71E6D, 0x01)
     else:
         rom.write_byte(0xB71E6D, 0x00)
 
-    # Display D-Pad HUD
-    dpad_sym = rom.sym('CFG_DISPLAY_DPAD')
-    if settings.display_dpad:
-        rom.write_byte(dpad_sym, 0x01)
-    else:
-        rom.write_byte(dpad_sym, 0x00)
 
+def patch_dpad(rom, settings, log, symbols):
+    # Display D-Pad HUD
+    if settings.display_dpad:
+        rom.write_byte(symbols['CFG_DISPLAY_DPAD'], 0x01)
+    else:
+        rom.write_byte(symbols['CFG_DISPLAY_DPAD'], 0x00)
+    log.display_dpad = settings.display_dpad
+
+
+
+def patch_music(rom, settings, log, symbols):
     # patch music
     if settings.background_music == 'random':
         restore_music(rom)
@@ -138,11 +132,13 @@ def patch_cosmetics(settings, rom):
     else:
         restore_music(rom)
 
+
+def patch_tunic_colors(rom, settings, log, symbols):
     # patch tunic colors
     tunics = [
         ('Kokiri Tunic', settings.kokiri_color, 0x00B6DA38),
-        ('Goron Tunic', settings.goron_color,  0x00B6DA3B),
-        ('Zora Tunic', settings.zora_color,   0x00B6DA3E),
+        ('Goron Tunic',  settings.goron_color,  0x00B6DA3B),
+        ('Zora Tunic',   settings.zora_color,   0x00B6DA3E),
     ]
     tunic_color_list = get_tunic_colors()
 
@@ -163,6 +159,8 @@ def patch_cosmetics(settings, rom):
         rom.write_bytes(address, color)
         log.tunic_colors[tunic] = dict(option=tunic_option, color=''.join(['{:02X}'.format(c) for c in color]))
 
+
+def patch_navi_colors(rom, settings, log, symbols):
     # patch navi colors
     navi = [
         # colors for Navi
@@ -187,7 +185,7 @@ def patch_cosmetics(settings, rom):
                          [random.getrandbits(8), random.getrandbits(8), random.getrandbits(8)])
                 if navi_action not in log.navi_colors:
                     log.navi_colors[navi_action] = list()
-                log.navi_colors[navi_action].append(dict(option=navi_option, color1=''.join(['{:02X}'.format(c) for c in color[0:3]]), color2=''.join(['{:02X}'.format(c) for c in color[4:7]])))
+                log.navi_colors[navi_action].append(dict(option=navi_option, color1=''.join(['{:02X}'.format(c) for c in list(colors[0])]), color2=''.join(['{:02X}'.format(c) for c in list(colors[1])])))
             # grab the color from the list
             elif navi_option in NaviColors:
                 colors = list(NaviColors[navi_option][0]), list(NaviColors[navi_option][1])
@@ -202,20 +200,23 @@ def patch_cosmetics(settings, rom):
         if custom_color:
             navi_option = 'Custom'
         if navi_action not in log.navi_colors:
-            log.navi_colors[navi_action] = [dict(option=navi_option, color1=''.join(['{:02X}'.format(c) for c in color[0:3]]), color2=''.join(['{:02X}'.format(c) for c in color[4:7]]))]
-    
+            log.navi_colors[navi_action] = [dict(option=navi_option, color1=''.join(['{:02X}'.format(c) for c in list(colors[0])]), color2=''.join(['{:02X}'.format(c) for c in list(colors[1])]))]
+
+
+def patch_sword_trails(rom, settings, log, symbols):
     # patch sword trail colors
     sword_trails = [
         ('Inner Initial Sword Trail', settings.sword_trail_color_inner, 
-            [(0x00BEFF80, 0xB0, 0xFF), (0x00BEFF88, 0x20, 0x40)], rom.sym('CFG_RAINBOW_SWORD_INNER_ENABLED')),
+            [(0x00BEFF80, 0xB0, 0xFF), (0x00BEFF88, 0x20, 0x40)], symbols['CFG_RAINBOW_SWORD_INNER_ENABLED']),
         ('Outer Initial Sword Trail', settings.sword_trail_color_outer, 
-            [(0x00BEFF7C, 0xB0, 0xFF), (0x00BEFF84, 0x10, 0x00)], rom.sym('CFG_RAINBOW_SWORD_OUTER_ENABLED')),
+            [(0x00BEFF7C, 0xB0, 0xFF), (0x00BEFF84, 0x10, 0x00)], symbols['CFG_RAINBOW_SWORD_OUTER_ENABLED']),
     ]
 
     sword_color_list = get_sword_colors()
 
     for index, item in enumerate(sword_trails):
-        sword_trail_name, sword_trail_option, sword_trail_addresses, sword_trail_rainbow = item
+        sword_trail_name, sword_trail_option, sword_trail_addresses, sword_trail_rainbow_symbol = item
+
         # handle random
         if sword_trail_option == 'Random Choice':
             sword_trail_option = random.choice(sword_color_list)
@@ -224,14 +225,19 @@ def patch_cosmetics(settings, rom):
         for index, (address, transparency, white_transparency) in enumerate(sword_trail_addresses):
             # set rainbow option
             if sword_trail_option == 'Rainbow':
-                rom.write_byte(sword_trail_rainbow, 0x01)
+                rom.write_byte(sword_trail_rainbow_symbol, 0x01)
+                color = [0x00, 0x00, 0x00]
                 continue
             else:
-                rom.write_byte(sword_trail_rainbow, 0x00)
+                rom.write_byte(sword_trail_rainbow_symbol, 0x00)
 
             # handle completely random
             if sword_trail_option == 'Completely Random':
                 color = [random.getrandbits(8), random.getrandbits(8), random.getrandbits(8)]
+                if sword_trail_name not in log.sword_colors:
+                    log.sword_colors[sword_trail_name] = list()
+                log.sword_colors[sword_trail_name].append(dict(option=sword_trail_option, color=''.join(['{:02X}'.format(c) for c in color[0:3]])))
+
             elif sword_trail_option in sword_colors:
                 color = list(sword_colors[sword_trail_option][index])
             # build color from hex code
@@ -248,9 +254,13 @@ def patch_cosmetics(settings, rom):
 
         if custom_color:
             sword_trail_option = 'Custom'
-        log.sword_colors[sword_trail_name] = dict(option=sword_trail_option, color=''.join(['{:02X}'.format(c) for c in color[0:3]]))
-
+        if sword_trail_name not in log.sword_colors:
+            log.sword_colors[sword_trail_name] = [dict(option=sword_trail_option, color=''.join(['{:02X}'.format(c) for c in color[0:3]]))]
+    log.sword_trail_duration = settings.sword_trail_duration
     rom.write_byte(0x00BEFF8C, settings.sword_trail_duration)
+
+
+def patch_sfx(rom, settings, log, symbols):
     # Configurable Sound Effects
     sfx_config = [
           (settings.sfx_navi_overworld, sfx.SoundHooks.NAVI_OVERWORLD),
@@ -281,6 +291,8 @@ def patch_cosmetics(settings, rom):
                 rom.write_int16(loc, sound_id)
         log.sfx[hook.value.name] = selection
 
+
+def patch_instrument(rom, settings, log, symbols):
     # Player Instrument
     instruments = {
            #'none':            0x00,
@@ -298,6 +310,77 @@ def patch_cosmetics(settings, rom):
         choice = random.choice(list(instruments.keys()))
     rom.write_byte(0x00B53C7B, instruments[choice])
     log.sfx['Ocarina'] = choice
+
+
+cosmetic_data_headers = [
+    0x03481000,
+    0x03480810,
+]
+
+global_patch_sets = [
+    patch_targeting,
+    patch_music,
+    patch_tunic_colors,
+    patch_navi_colors,
+    patch_sfx,
+    patch_instrument,    
+]
+
+patch_sets = {
+    0x1F04FA62: {
+        "patches": [
+            patch_dpad,
+            patch_sword_trails,
+        ],
+        "symbols": {    
+            "CFG_DISPLAY_DPAD": 0x03480814,
+            "CFG_RAINBOW_SWORD_INNER_ENABLED": 0x03480815,
+            "CFG_RAINBOW_SWORD_OUTER_ENABLED": 0x03480816,
+        },
+    },
+    0x1F05D3F9: {
+        "patches": [
+            patch_dpad,
+            patch_sword_trails,
+        ],
+        "symbols": {    
+            "CFG_DISPLAY_DPAD": 0x03481004,
+            "CFG_RAINBOW_SWORD_INNER_ENABLED": 0x03481005,
+            "CFG_RAINBOW_SWORD_OUTER_ENABLED": 0x03481006,
+        },
+    }
+}
+
+
+def patch_cosmetics(settings, rom):
+    log = CosmeticsLog(settings)
+
+    # re-seed for aesthetic effects. They shouldn't be affected by the generation seed
+    random.seed()
+
+    # patch cosmetics that use vanilla oot data, and always compatible
+    for patch_func in global_patch_sets:
+        patch_func(rom, settings, log, {})
+
+    # try to detect the cosmetic patch data format
+    versioned_patch_set = None
+    for header in cosmetic_data_headers:
+        # Search over all possible header locations
+        cosmetic_version = rom.read_int32(header)
+        if cosmetic_version in patch_sets:
+            versioned_patch_set = patch_sets[cosmetic_version]
+            break
+
+    # patch version specific patches
+    if versioned_patch_set:
+        if cosmetic_version != rom.read_int32(rom.sym('COSMETIC_FORMAT_VERSION')):
+            log.error = "ROM uses old cosmetic patch format."
+
+        for patch_func in versioned_patch_set['patches']:
+            patch_func(rom, settings, log, versioned_patch_set['symbols'])
+    else:
+        # Unknown patch format
+        log.error = "Unable to patch some cosmetics. ROM uses unknown cosmetic patch format."
 
     return log
 
@@ -422,31 +505,37 @@ class CosmeticsLog(object):
 
         if self.error:
             output += 'Error: %s\n' % self.error
-            return output
 
         format_string = '\n{key:{width}} {value}'
-        #keys = list(self.tunic_colors.keys()) + list(self.navi_colors.keys()) + list(self.sfx.keys()) + ['Default Targeting Option', 'Background Music']
-        #padding = 1 + len(max(keys, key=len))
         padding = 40
 
         output += format_string.format(key='Default Targeting Option:', value=self.settings.default_targeting, width=padding)
         output += format_string.format(key='Background Music:', value=self.settings.background_music, width=padding)
-        output += format_string.format(key='Display D-Pad HUD:', value=self.settings.display_dpad, width=padding)
+
+        if 'display_dpad' in self.__dict__:
+            output += format_string.format(key='Display D-Pad HUD:', value=self.display_dpad, width=padding)
 
         output += '\n\nColors:\n'
         for tunic, options in self.tunic_colors.items():
             color_option_string = '{option} (#{color})'
             output += format_string.format(key=tunic+':', value=color_option_string.format(option=options['option'], color=options['color']), width=padding)
+
         for navi_action, list in self.navi_colors.items():
-            i = 0
-            for options in list:
+            for i, options in enumerate(list):
                 color_option_string = '{option} (#{color1}, #{color2})'
                 output += format_string.format(key=(navi_action+':') if i == 0 else '', value=color_option_string.format(option=options['option'], color1=options['color1'], color2=options['color2']), width=padding)
-                i += 1
-        for sword_trail, options in self.sword_colors.items():
-            color_option_string = '{option} (#{color})'
-            output += format_string.format(key=sword_trail+':', value=color_option_string.format(option=options['option'], color=options['color']), width=padding)
-        output += format_string.format(key='Sword Trail Duration:', value=self.settings.sword_trail_duration, width=padding)
+
+        if 'sword_colors' in self.__dict__:
+            for sword_trail, list in self.sword_colors.items():
+                for i, options in enumerate(list):
+                    if options['option'] == 'Rainbow':
+                        color_option_string = '{option}'
+                    else:
+                        color_option_string = '{option} (#{color})'
+                    output += format_string.format(key=(sword_trail+':') if i == 0 else '', value=color_option_string.format(option=options['option'], color=options['color']), width=padding)
+
+        if 'sword_trail_duration' in self.__dict__:
+            output += format_string.format(key='Sword Trail Duration:', value=self.sword_trail_duration, width=padding)
 
         output += '\n\nSFX:\n'
         for key, value in self.sfx.items():

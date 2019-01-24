@@ -18,7 +18,7 @@ location_table = {
     "Zoras Domain Torch Run":                          ("Chest",       0x58,  0x00, "Zora's Domain",          None),
     "Hookshot Chest":                                  ("Chest",       0x48,  0x00, "the Graveyard",          None),
     "Gerudo Valley Hammer Rocks Chest":                ("Chest",       0x5A,  0x00, "Gerudo Valley",          None),
-    "Gerudo Fortress Rooftop Chest":                   ("Chest",       0x5D,  0x00, "Gerudo Fortress",        None),
+    "Gerudo Fortress Rooftop Chest":                   ("Chest",       0x5D,  0x00, "Gerudo's Fortress",      None),
     "Haunted Wasteland Structure Chest":               ("Chest",       0x5E,  0x00, "Haunted Wasteland",      None),
     "Redead Grotto Chest":                             ("Chest",       0x3E,  0x0A, "Kakariko Village",       None),
     "Wolfos Grotto Chest":                             ("Chest",       0x3E,  0x11, "Sacred Forest Meadow",   None),
@@ -79,8 +79,8 @@ location_table = {
     "Man on Roof":                                     ("NPC",         0x52,  0x3E, "Kakariko Village",       None),
     "Frog Ocarina Game":                               ("NPC",         0x54,  0x76, "Zora's River",           None),
     "Frogs in the Rain":                               ("NPC",         0x54,  0x3E, "Zora's River",           None),
-    "Horseback Archery 1000 Points":                   ("NPC",         0x5D,  0x3E, "Gerudo Fortress",        None),
-    "Horseback Archery 1500 Points":                   ("NPC",         0x5D,  0x30, "Gerudo Fortress",        None),
+    "Horseback Archery 1000 Points":                   ("NPC",         0x5D,  0x3E, "Gerudo's Fortress",      None),
+    "Horseback Archery 1500 Points":                   ("NPC",         0x5D,  0x30, "Gerudo's Fortress",      None),
     "Child Shooting Gallery":                          ("NPC",         0x42,  0x60, "the Market",             None),
     "Adult Shooting Gallery":                          ("NPC",         0x42,  0x30, "Kakariko Village",       None),
     "Target in Woods":                                 ("NPC",         0x5B,  0x60, "the Lost Woods",         None),
@@ -94,7 +94,7 @@ location_table = {
     "Rolling Goron as Child":                          ("NPC",         0x62,  0x34, "Goron City",             None),
     "Underwater Bottle":                               ("NPC",         0x57,  0x15, "Lake Hylia",             None),
     "Lake Hylia Sun":                                  ("NPC",         0x57,  0x58, "Lake Hylia",             None),
-    "Gerudo Fortress Membership Card":                 ("NPC",         0x0C,  0x3A, "Gerudo Fortress",        None),
+    "Gerudo Fortress Membership Card":                 ("NPC",         0x0C,  0x3A, "Gerudo's Fortress",      None),
     "Ocarina of Time":                                 ("NPC",         0x51,  0x0C, "Hyrule Field",           None),
 
     "Impa House Freestanding PoH":                     ("Collectable", 0x37,  0x01, "Kakariko Village",       None),
@@ -116,10 +116,10 @@ location_table = {
     "DM Crater Wall Freestanding PoH":                 ("Collectable", 0x61,  0x02, "Death Mountain Crater",  None),
     "DM Crater Volcano Freestanding PoH":              ("Collectable", 0x61,  0x08, "Death Mountain Crater",  None),
     "Goron City Pot Freestanding PoH":                 ("Collectable", 0x62,  0x1F, "Goron City",             None),
-    "Gerudo Fortress North F1 Carpenter":              ("Collectable", 0x0C,  0x0C, "Gerudo Fortress",        None),
-    "Gerudo Fortress North F2 Carpenter":              ("Collectable", 0x0C,  0x0A, "Gerudo Fortress",        None),
-    "Gerudo Fortress South F1 Carpenter":              ("Collectable", 0x0C,  0x0E, "Gerudo Fortress",        None),
-    "Gerudo Fortress South F2 Carpenter":              ("Collectable", 0x0C,  0x0F, "Gerudo Fortress",        None),
+    "Gerudo Fortress North F1 Carpenter":              ("Collectable", 0x0C,  0x0C, "Gerudo's Fortress",      None),
+    "Gerudo Fortress North F2 Carpenter":              ("Collectable", 0x0C,  0x0A, "Gerudo's Fortress",      None),
+    "Gerudo Fortress South F1 Carpenter":              ("Collectable", 0x0C,  0x0E, "Gerudo's Fortress",      None),
+    "Gerudo Fortress South F2 Carpenter":              ("Collectable", 0x0C,  0x0F, "Gerudo's Fortress",      None),
 
     "Magic Bean Salesman":                             ("Event",       None,  None, "Zora's River",           None),
     "King Zora Moves":                                 ("Event",       None,  None, "Zora's Domain",          None),
@@ -132,7 +132,7 @@ location_table = {
     "Zoras Domain Stick Pot":                          ("Event",       None,  None, "Zora's Domain",          None),
     "Zoras Domain Nut Pot":                            ("Event",       None,  None, "Zora's Domain",          None),
     "Spirit Temple Nut Crate":                         ("Event",       None,  None, "Spirit Temple",          None),
-    "Gerudo Fortress Carpenter Rescue":                ("Event",       None,  None, "Gerudo Fortress",        None),
+    "Gerudo Fortress Carpenter Rescue":                ("Event",       None,  None, "Gerudo's Fortress",      None),
     "Haunted Wasteland Bombchu Salesman":              ("Event",       None,  None, "Haunted Wasteland",      None),
     "Ganons Castle Forest Trial Clear":                ("Event",       None,  None, "Ganon's Castle",         None),
     "Ganons Castle Fire Trial Clear":                  ("Event",       None,  None, "Ganon's Castle",         None),
@@ -422,7 +422,7 @@ location_table = {
     "Gerudo Training Grounds MQ Heavy Block Chest":    ("Chest",       0x0B,  0x02, "Gerudo Training Grounds", None),
 
     # Ganon's Castle shared
-    "Ganons Tower Boss Key Chest":                     ("Chest",       0x0A,  0x0B, "Ganon's Tower",          None),
+    "Ganons Tower Boss Key Chest":                     ("Chest",       0x0A,  0x0B, "Ganon's Castle",         None),
     # Ganon's Castle vanilla
     "Ganons Castle Forest Trial Chest":                ("Chest",       0x0D,  0x09, "Ganon's Castle",         None),
     "Ganons Castle Water Trial Left Chest":            ("Chest",       0x0D,  0x07, "Ganon's Castle",         None),
@@ -458,7 +458,7 @@ location_table = {
     "Queen Gohma":                                     ("Boss",        None,  0x6C, "Deku Tree",              (0x0CA315F, 0x2079571)),
     "King Dodongo":                                    ("Boss",        None,  0x6D, "Dodongo's Cavern",       (0x0CA30DF, 0x2223309)),
     "Barinade":                                        ("Boss",        None,  0x6E, "Jabu Jabu's Belly",      (0x0CA36EB, 0x2113C19)),
-    "Phantom Ganon":                                   ("Boss",        None,  0x66, "Shadow Temple",          (0x0CA3D07, 0x0D4ED79)),
+    "Phantom Ganon":                                   ("Boss",        None,  0x66, "Forest Temple",          (0x0CA3D07, 0x0D4ED79)),
     "Volvagia":                                        ("Boss",        None,  0x67, "Fire Temple",            (0x0CA3D93, 0x0D10135)),
     "Morpha":                                          ("Boss",        None,  0x68, "Water Temple",           (0x0CA3E1F, 0x0D5A3A9)),
     "Twinrova":                                        ("Boss",        None,  0x69, "Spirit Temple",          (0x0CA3EB3, 0x0D39FF1)),
@@ -615,8 +615,8 @@ location_table = {
     "GS Gerudo Valley Small Bridge":                   ("GS Token",    0x13,  0x02, "Gerudo Valley",          None),
     "GS Gerudo Valley Pillar":                         ("GS Token",    0x13,  0x04, "Gerudo Valley",          None),
     "GS Gerudo Valley Behind Tent":                    ("GS Token",    0x13,  0x08, "Gerudo Valley",          None),
-    "GS Gerudo Fortress Archery Range":                ("GS Token",    0x14,  0x01, "Gerudo Fortress",        None),
-    "GS Gerudo Fortress Top Floor":                    ("GS Token",    0x14,  0x02, "Gerudo Fortress",        None),
+    "GS Gerudo Fortress Archery Range":                ("GS Token",    0x14,  0x01, "Gerudo's Fortress",      None),
+    "GS Gerudo Fortress Top Floor":                    ("GS Token",    0x14,  0x02, "Gerudo's Fortress",      None),
     "GS Desert Colossus Bean Patch":                   ("GS Token",    0x15,  0x01, "Desert Colossus",        None),
     "GS Wasteland Ruins":                              ("GS Token",    0x15,  0x02, "Haunted Wasteland",      None),
     "GS Desert Colossus Hill":                         ("GS Token",    0x15,  0x04, "Desert Colossus",        None),
@@ -770,3 +770,19 @@ location_table = {
     "Zoras River Plateau Gossip Stone":                ("GossipStone", None,  None, None,                     None),
     "Zoras River Waterfall Gossip Stone":              ("GossipStone", None,  None, None,                     None),
 }
+
+# Business Scrub Details
+business_scrubs = [
+    # id   price  text   text replacement
+    (0x30, 20,   0x10A0, ["Deku Nuts", "a \x05\x42mysterious item\x05\x40"]),
+    (0x31, 15,   0x10A1, ["Deku Sticks", "a \x05\x42mysterious item\x05\x40"]),
+    (0x3E, 10,   0x10A2, ["Piece of Heart", "\x05\x42mysterious item\x05\x40"]),
+    (0x33, 40,   0x10CA, ["\x05\x41Deku Seeds", "a \x05\x42mysterious item"]),
+    (0x34, 50,   0x10CB, ["\x41Deku Shield", "\x42mysterious item"]),
+    (0x37, 40,   0x10CC, ["\x05\x41Bombs", "a \x05\x42mysterious item"]),
+    (0x38, 00,   0x10CD, ["\x05\x41Arrows", "a \x05\x42mysterious item"]),  # unused
+    (0x39, 40,   0x10CE, ["\x05\x41Red Potion", "\x05\x42mysterious item"]),
+    (0x3A, 40,   0x10CF, ["Green Potion", "mysterious item"]),
+    (0x77, 40,   0x10DC, ["enable you to pick up more\x01\x05\x41Deku Sticks", "sell you a \x05\x42mysterious item"]),
+    (0x79, 40,   0x10DD, ["enable you to pick up more \x05\x41Deku\x01Nuts", "sell you a \x05\x42mysterious item"]),
+]

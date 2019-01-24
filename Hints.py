@@ -233,7 +233,7 @@ def get_barren_hint(spoiler, world, checked):
 
     checked.append(area)
 
-    return (buildHintString(colorText(area, 'Pink') + " is barren of treasure."), None)
+    return (buildHintString("plundering " + colorText(area, 'Pink') + " is a foolish choice."), None)
 
 
 def get_good_loc_hint(spoiler, world, checked):
@@ -532,8 +532,7 @@ def buildGanonText(world, messages):
     if world.trials == 0:
         location = world.light_arrow_location
         text = get_raw_text(getHint('Light Arrow Location', world.clearer_hints).text)
-        location_hint = location.hint.replace('Ganon\'s Castle', 'my castle') \
-                                     .replace('Ganon\'s Tower', 'my tower')
+        location_hint = location.hint.replace('Ganon\'s Castle', 'my castle')
         if world.id != location.world.id:
             text += "\x05\x42Player %d's\x05\x40 %s" % (location.world.id +1, get_raw_text(location_hint))
         else:

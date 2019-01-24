@@ -81,11 +81,13 @@ player.
 * Quick boot equips
   * Use D-pad left to equip Iron Boots if they're in the inventory, or D-pad right to equip Hover Boots if they're in the inventory.
   * Press the button again to equip Kokiri Boots.
+* Quck Ocarina
+  * Use D-pad down to pull out the Ocarina
 * Freestanding models
   * All freestanding item locations now display the model of the item you will receive.
 * Ice traps now work from any location
-  * Display as other items when in a freestanding location.
-  * Display as other items with a hint in shops.
+  * In freestanding locations, appears as a random major item
+  * In shops, appears as a random major item with a misspelling.
 * Various speedups
   * No Talon cutscene when he runs away.
   * Skip "Caught By Gerudo" cutscene.
@@ -102,6 +104,7 @@ player.
   * Warp songs now have a normal transition with no cutscene.
 * Gold Skulltula textbox displays current number obtained
 * Poe salesman tells point limit without needing to sell
+* Patch files added so that generated seeds can be distributed legally
 
 #### New Options
 
@@ -139,6 +142,14 @@ player.
     * Extra ice traps: Chance to add extra ice traps when junk items are added to the item pool
     * Ice trap mayhem: All junk items added will be ice traps.
     * Ice trap onslaught: All junk items will be ice traps, including ones in the base pool.
+* New Cosmetics
+  * Added options for Sword Trail colors
+    * Can set the length of the trails
+    * Can set the inner and outer colors
+    * Can set color to "Rainbow"
+  * Additional SFX options
+
+
 
 #### Updated Features
 
@@ -151,11 +162,13 @@ player.
     * Tournament: Similar to strong but has no variation in hint types.
 * Frogs Ocarina Game added to always hints.
 * Hints are only in logic once you are able to reach the location of the gossip stone by logic
-* Hints ignore logic if inaccessible.
-* Barren of treasure hint added.
+    * Hints ignore logic if inaccessible.
+* Foolish choice hint added.
+  * Regions that are a foolish choice will not have any required items no matter what route is taken in logic
 * Big Poes location does not require a hint if count set to 3 or less.
 * Add medallion icons to the Temple of Time altar hint.
-* Addd a hint for 0/6 trials if trial count is random.
+* Add a hint for 0/6 trials if trial count is random.
+* Scrub Shuffle now updates the Business Scrubs' textboxes with the updated price for buying their item.
 
 #### Updated Options
 
@@ -164,8 +177,8 @@ player.
   * Small keys appear in small gold chests
 * Free Scarecrow's Song changes
   * Pulling out ocarina near a spot where Pierre can spawn will do so.
-* Bridge changes
-  * Stones added as bridge requirement
+* Rainbow Bridge changes
+  * Spiritual Stones added as bridge requirement
   * 100 Gold Skulltula tokens added as bridge requirement
 * Any location can now be excluded from being required
 * Various advanced tricks has been split into individual tricks to be selected
@@ -186,7 +199,6 @@ player.
 * Switches in Forest and Fire Temple lowered by 1 unit to make it easier to press them.
 * Equipment menu will now show the name of the item you have in the first column.
 * Hover Boots will no longer show up as adult in the first equipment menu slot if a slingshot was not gotten before becoming adult.
-* Fix typo in red rupee hint/shop text.
 * Ammo items now use the correct item fanfare.
 * Fix chest size matches contents to work for all chests.
 * Removed key for key logic.
@@ -195,6 +207,13 @@ player.
 * Text error messages no longer display the Pocket Egg text.
 * Ice traps added back to OHKO as the softlock appears fixed.
 * Ganon now says "my castle" instead of "Ganon's Castle" for light arrow hint.
+* Fix various typos in text
+  * Gerudo's Fortress
+  * Zora's River
+  * Red Rupee
+* "Ganon's Tower" is now just "Ganon's Castle".
+* Dampe's Gravediggin reward correctly flags collection on pickup.
+* Castle Moat Bridge no longer closes when playing the Zelda Escape cutscene
 * Various logic fixes.
 
 #### Multiworld Changes
@@ -228,3 +247,5 @@ player.
 * Version check is no longer a dialog
   * Appears in a frame in the main randomizer window.
 * Copy settings string button
+* Cosmetic versioning added to rom. Some cosmetics are only applied if they are safe to do so.
+* Major refactor of code

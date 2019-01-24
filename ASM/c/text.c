@@ -14,8 +14,8 @@ typedef struct {
     uint32_t top : 12;
 } text_char_t;
 
-static text_char_t *text_buf = NULL;
 static text_char_t *text_end = NULL;
+static text_char_t *text_buf = NULL;
 
 void text_init() {
     text_buf = heap_alloc(text_max_chars * sizeof(text_char_t));
