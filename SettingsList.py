@@ -1659,7 +1659,7 @@ setting_infos = [
                              'Minimal': Most excess items are removed.
                              ''',
             shared         = True,
-            exclude_random = True,
+           
             ),
     Combobox(
             name           = 'damage_multiplier',
@@ -2290,6 +2290,42 @@ setting_infos = [
              max_rando     = True,
             affected      = 'junk_ice_traps',
             ),
+    Combobox(
+            name           = 'item_pool_value_max',
+            default        = 'balanced',
+            choices        = {
+                'plentiful': 'Plentiful',
+                'balanced':  'Balanced',
+                'scarce':    'Scarce',
+                'minimal':   'Minimal'
+                },
+            args_help      = '''\
+                             Change the item pool for an added challenge.
+                             plentiful:      Duplicates most of the major items, making it easier to find progression.
+                             balanced:       Default items
+                             scarce:         Double defense, double magic, and all 8 heart containers are removed. Ammo
+                                             for each type can only be expanded once and you can only find three Bombchu packs.
+                             minimal:        Double defense, double magic, Nayru's Love, and all health upgrades are removed.
+                                             No ammo expansions are available and you can only find one Bombchu pack.
+                             ''',
+            gui_text       = 'Max Item Pool difficulty',
+            gui_group      = 'random_settings',
+            gui_tooltip    = '''\
+                             Changes the amount of bonus items that
+                             are available in the game.
+        
+                             'Plentiful': Extra major items are added.
+        
+                             'Balanced': Original item pool.
+        
+                             'Scarce': Some excess items are removed,
+                             including health upgrades.
+        
+                             'Minimal': Most excess items are removed.
+                             ''',
+             max_rando     = True,
+            affected      = 'item_pool_value',
+            ),
     Checkbutton(
             name           = 'disallow_random_tricks',
             default         = True,
@@ -2304,6 +2340,7 @@ setting_infos = [
             max_rando     = True,
             affected      = 'allowed_tricks',
             ),
+   
 ]
 
 si_dict = {si.name: si for si in setting_infos}
