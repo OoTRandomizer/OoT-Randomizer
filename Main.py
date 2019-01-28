@@ -174,9 +174,9 @@ def main(settings, window=dummy_window()):
             window.update_status('Creating Patch Archive')
             output_path = os.path.join(output_dir, '%s.zpfz' % outfilebase)
             with zipfile.ZipFile(output_path, mode="w") as patch_archive:
-                for file in file_list:
+                for index, file in enumerate(file_list):
                     file_path = os.path.join(output_dir, file)
-                    patch_archive.write(file_path, file, compress_type=zipfile.ZIP_DEFLATED)
+                    patch_archive.write(file_path, 'P%d.zpf' % (index + 1), compress_type=zipfile.ZIP_DEFLATED)
             for file in file_list:
                 os.remove(os.path.join(output_dir, file))
         window.update_progress(95)
@@ -277,7 +277,7 @@ def from_patch_file(settings, window=dummy_window()):
     if extension == 'zpf':
         subfile = None
     else:
-        subfile = '%sP%d.zpf' % (outfilebase, settings.player_num)
+        subfile = 'P%d.zpf' % (settings.player_num)
         output_path += 'P%d' % (settings.player_num)
     apply_patch_file(rom, settings.patch_file, subfile)
     cosmetics_log = patch_cosmetics(settings, rom)
