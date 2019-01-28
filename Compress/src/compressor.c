@@ -82,7 +82,7 @@ int main(int argc, char** argv)
 	table_t tab;
 
 	errorCheck(argc, argv);
-	printf("Starting compression.\n");
+	printf("Starting compression. (Version R-1)\n");
 	fflush(stdout);
 
 	/* Open input, read into inROM */
@@ -210,9 +210,9 @@ int main(int argc, char** argv)
 
 			memcpy(outROM + tab.startP, out[i].data, size);
 			tab.startV = bSwap_32(tab.startV);
-			tab.endV =   bSwap_32(tab.endV);
+			tab.endV   = bSwap_32(tab.endV);
 			tab.startP = bSwap_32(tab.startP);
-			tab.endP =   bSwap_32(tab.endP);
+			tab.endP   = bSwap_32(tab.endP);
 			memcpy(outROM + tabStart, &tab, sizeof(table_t));
 		}
 
@@ -279,7 +279,7 @@ uint32_t findTable(uint8_t* argROM)
 		}
 	}
 
-	fprintf(stderr, "Error: Couldn't find file table!\n");
+	fprintf(stderr, "Error: Couldn't find dma table in ROM!\n");
 	exit(1);
 }
 
@@ -480,7 +480,7 @@ int32_t getNext()
 	if((file % 150) == 0)
 	{
 		temp = numFiles - file;
-		printf("%#4d files remaining...\n", (temp + 2));
+		printf("%4d files remaining...\n", (temp + 2));
 		fflush(stdout);
 	}
 
@@ -499,7 +499,7 @@ void errorCheck(int argc, char** argv)
 	/* Check for arguments */
 	if(argc != 3)
 	{
-		fprintf(stderr, "Usage: Compress [Input ROM] [Path for output ROM]\n");
+		fprintf(stderr, "Usage: Compress [Input ROM] [Output ROM]\n");
 		exit(1);
 	}
 
@@ -508,7 +508,6 @@ void errorCheck(int argc, char** argv)
 	if(file == NULL)
 	{
 		perror(argv[1]);
-		fclose(file);
 		exit(1);
 	}
 
@@ -527,7 +526,6 @@ void errorCheck(int argc, char** argv)
 	if(file == NULL)
 	{
 		perror(argv[2]);
-		fclose(file);
 		exit(1);
 	}
 	fclose(file);
