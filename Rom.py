@@ -26,7 +26,18 @@ class LocalRom(object):
             symbols = json.load(stream)
             self.symbols = { name: int(addr, 16) for name, addr in symbols.items() }
 
-        self.read_rom(file)
+        if file == '':
+            # if not specified, try to read from the previously decompressed rom
+            file = decomp_file
+            try:
+                self.read_rom(file)
+            except FileNotFoundError:
+                # could not find the decompressed rom either
+                raise FileNotFoundError('Must specify path to base ROM')
+        else:
+            self.read_rom(file)
+
+        # decompress rom, or check if it's already decompressed
         self.decompress_rom_file(file, decomp_file)
 
         # Add file to maximum size
@@ -78,8 +89,9 @@ class LocalRom(object):
             subprocess.call(subcall, **subprocess_args())
             self.read_rom(decomp_file)
         else:
-            # ROM file is a valid and already uncompressed, but we require a compressed rom
-            raise RuntimeError('Base ROM is uncompressed. Please provide an original ROM.')
+            # ROM file is a valid and already uncompressed
+            pass
+
 
     def restore(self):
         self.buffer = copy.copy(self.original)
