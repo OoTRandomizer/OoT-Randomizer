@@ -382,6 +382,9 @@ setting_infos = [
     Setting_Info('output_dir', str, 0, False, {
             'default': '',
             'help': 'Path to output directory for rom generation.'}),
+    Setting_Info('output_file', str, 0, False, {
+            'default': '',
+            'help': 'File name base to use for all generated files.'}),
     Setting_Info('seed', str, 0, False, {
             'help': 'Define seed number to generate.'}),
     Setting_Info('patch_file', str, 0, False, {
