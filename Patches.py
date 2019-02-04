@@ -812,8 +812,13 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
         write_bits_to_save(0xEDC, 0x08) # "Opened the Door of Time"
 
     # "fast-ganon" stuff
+    symbol = rom.sym('NO_ESCAPE_SEQUENCE')
     if world.no_escape_sequence:
         rom.write_bytes(0xD82A12, [0x05, 0x17]) # Sets exit from Ganondorf fight to entrance to Ganon fight
+        rom.write_bytes(0xB139A2, [0x05, 0x17]) # Sets Ganon deathwarp back to Ganon
+        rom.write_byte(symbol, 0x01)
+    else:
+        rom.write_byte(symbol, 0x00)
     if world.unlocked_ganondorf:
         write_bits_to_save(0x00D4 + 0x0A * 0x1C + 0x04 + 0x1, 0x10) # Ganon's Tower switch flag (unlock boss key door)
     if world.skipped_trials['Forest']:
