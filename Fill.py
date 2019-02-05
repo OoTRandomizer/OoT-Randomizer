@@ -28,7 +28,7 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
                location.type != 'GossipStone']
     world_states = [world.state for world in worlds]
 
-    window.locationcount = len(fill_locations) + len(song_locations)
+    window.locationcount = len(fill_locations) + len(song_locations) + len(shop_locations)
     window.fillcount = 0
 
     # Generate the itempools

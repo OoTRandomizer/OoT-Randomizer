@@ -430,7 +430,7 @@ def buildGossipHints(spoiler, world):
     if world.trials_random and world.trials == 6:
         add_hint(spoiler, world, stoneIDs, buildHintString(colorText("Ganon's Tower", 'Pink') + " is protected by a powerful barrier."), hint_dist['trial'][1], force_reachable=True)
     elif world.trials_random and world.trials == 0:
-        add_hint(spoiler, world, stoneIDs, buildHintString("Sheik dispelled the barrier around " + colorText("Ganon's Tower", 'Yellow')), hint_dist['trial'][1], force_reachable=True)
+        add_hint(spoiler, world, stoneIDs, buildHintString("Sheik dispelled the barrier around " + colorText("Ganon's Tower", 'Yellow')  + "."), hint_dist['trial'][1], force_reachable=True)
     elif world.trials < 6 and world.trials > 3:
         for trial,skipped in world.skipped_trials.items():
             if skipped:

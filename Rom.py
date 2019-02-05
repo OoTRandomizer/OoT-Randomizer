@@ -45,6 +45,7 @@ class LocalRom(object):
         self.original = copy.copy(self.buffer)
         self.changed_address = {}
         self.changed_dma = {}
+        self.force_patch = []
 
     def decompress_rom_file(self, file, decomp_file):
         validCRC = [
@@ -97,6 +98,7 @@ class LocalRom(object):
         self.buffer = copy.copy(self.original)
         self.changed_address = {}
         self.changed_dma = {}
+        self.force_patch = []        
         self.__last_address = None
 
     def sym(self, symbol_name):

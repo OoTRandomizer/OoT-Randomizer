@@ -386,16 +386,17 @@ def cosmetic_patch(settings, window=dummy_window()):
     else:
         subfile = 'P%d.zpf' % (settings.player_num)
     apply_patch_file(rom, settings.patch_file, subfile)
-    cosmetics_log = patch_cosmetics(settings, rom)
     window.update_progress(65)
 
+    rom.update_crc()
     rom.original = copy.copy(rom.buffer)
     rom.changed_address = {}
     rom.changed_dma = {}
+    rom.force_patch = []
 
     window.update_status('Patching ROM')
     patchfilename = '%s_Cosmetic.zpf' % output_path
-    patch_cosmetics(settings, rom)
+    cosmetics_log = patch_cosmetics(settings, rom)
     window.update_progress(80)
 
     window.update_status('Creating Patch File')

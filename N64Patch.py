@@ -135,9 +135,9 @@ def create_patch_file(rom, file, xor_range=(0x00B8AD30, 0x00F029A0)):
     # Make sure to not include any of the DMA table addresses
     changed_addresses = [address for address,value in rom.changed_address.items() \
         if (address >= dma_end or address < dma_start) and \
-            new_buffer[address] != value]
+            (address in rom.force_patch or new_buffer[address] != value)]
     changed_addresses.sort()
-        
+
     # Write the address changes. We'll store the data with XOR so that
     # the patch data won't be raw data from the patched rom.
     data = []

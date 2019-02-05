@@ -149,6 +149,13 @@ after_going_back:
     sw      t0, 0x6C (s0)
     ; Restore child equipment
     lhu     t0, 0x48 (s0)
+    ; Unequip hylian shield if adult lost it
+    lbu     t1, 0x9D (s0)
+    andi    t1, 0x20
+    bnez    t1, @@has_shield
+    nop
+    andi   t0, t0, 0xFFDF
+@@has_shield:
     sh      t0, 0x70 (s0)
 
     ; Set swordless flag if needed

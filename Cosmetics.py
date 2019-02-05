@@ -17,7 +17,7 @@ tunic_colors = {
     "Light Red":         Color(0xF8, 0x7C, 0x6D),
     "Fuchsia":           Color(0xFF, 0x00, 0xFF),
     "Purple":            Color(0x95, 0x30, 0x80),
-    "Majora Purple":     Color(0x50, 0x52, 0x9A),
+    "Majora Purple":     Color(0x40, 0x00, 0x40),
     "Twitch Purple":     Color(0x64, 0x41, 0xA5),
     "Purple Heart":      Color(0x8A, 0x2B, 0xE2),
     "Persian Rose":      Color(0xFF, 0x14, 0x93),
@@ -207,7 +207,7 @@ def patch_sword_trails(rom, settings, log, symbols):
     # patch sword trail colors
     sword_trails = [
         ('Inner Initial Sword Trail', settings.sword_trail_color_inner, 
-            [(0x00BEFF80, 0xB0, 0xFF), (0x00BEFF88, 0x20, 0x40)], symbols['CFG_RAINBOW_SWORD_INNER_ENABLED']),
+            [(0x00BEFF80, 0xB0, 0x40), (0x00BEFF88, 0x20, 0x00)], symbols['CFG_RAINBOW_SWORD_INNER_ENABLED']),
         ('Outer Initial Sword Trail', settings.sword_trail_color_outer, 
             [(0x00BEFF7C, 0xB0, 0xFF), (0x00BEFF84, 0x10, 0x00)], symbols['CFG_RAINBOW_SWORD_OUTER_ENABLED']),
     ]

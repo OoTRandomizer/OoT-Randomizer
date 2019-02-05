@@ -64,7 +64,7 @@ item_table = {
     'Fire Arrows':                      ('Item',     True,  0x58, None),
     'Ice Arrows':                       ('Item',     True,  0x59, None),
     'Light Arrows':                     ('Item',     True,  0x5A, None),
-    'Gold Skulltula Token':             ('Token',    True,  0x5B, None),
+    'Gold Skulltula Token':             ('Token',    True,  0x5B, {'progressive': True}),
     'Dins Fire':                        ('Item',     True,  0x5C, None),
     'Nayrus Love':                      ('Item',     True,  0x5E, None),
     'Farores Wind':                     ('Item',     True,  0x5D, None),

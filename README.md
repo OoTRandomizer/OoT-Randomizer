@@ -102,6 +102,7 @@ player.
   * Jabu-Jabu's Belly elevator spawns in a more convenient position
   * Kakariko carpenter position is offset so he is no longer in your way during the cucco route.
   * Warp songs now have a normal transition with no cutscene.
+  * Pause screen starts on Invetory Screen instead of the Map Screen.
 * Gold Skulltula textbox displays current number obtained
 * Poe salesman tells point limit without needing to sell
 * Patch files added so that generated seeds can be distributed legally
@@ -211,6 +212,7 @@ player.
   * Gerudo's Fortress
   * Zora's River
   * Red Rupee
+  * Textbox about Dampe's grave
 * "Ganon's Tower" is now just "Ganon's Castle".
 * Dampe's Gravediggin reward correctly flags collection on pickup.
 * Castle Moat Bridge no longer closes when playing the Zelda Escape cutscene
@@ -248,4 +250,5 @@ player.
   * Appears in a frame in the main randomizer window.
 * Copy settings string button
 * Cosmetic versioning added to rom. Some cosmetics are only applied if they are safe to do so.
+* Added ability to set the output file name and added file creation logs
 * Major refactor of code

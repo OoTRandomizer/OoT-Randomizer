@@ -12,7 +12,8 @@ from Hints import writeGossipStoneHints, buildBossRewardHints, \
 from Utils import data_path
 from Messages import read_messages, update_message_by_id, read_shop_items, \
         write_shop_items, remove_unused_messages, make_player_message, \
-        add_item_messages, repack_messages, shuffle_messages, get_message_by_id
+        add_item_messages, repack_messages, shuffle_messages, \
+        get_message_by_id
 from OcarinaSongs import replace_songs
 from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
 
@@ -29,8 +30,14 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
         titleBytes = stream.read()
         rom.write_bytes(0x01795300, titleBytes)
 
+    # Fixes the typo of keatan mask in the item select screen
+    with open(data_path('keaton.bin'), 'rb') as stream:
+        keatonBytes = stream.read()
+        rom.write_bytes(0x8A7C00, keatonBytes)
+
     # Force language to be English in the event a Japanese rom was submitted
     rom.write_byte(0x3E, 0x45)
+    rom.force_patch.append(0x3E)
 
     # Increase the instance size of Bombchus prevent the heap from becoming corrupt when
     # a Dodongo eats a Bombchu. Does not fix stale pointer issues with the animation
@@ -1212,6 +1219,26 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
     rom.write_int32(0x2DD802C, 0x03006A40)
     rom.write_int16s(0x2DDEA40, list(shop_objs))
 
+    # Scrub text stuff.
+    def update_scrub_text(message, text_replacement, default_price, price, item_name=None):
+        scrub_strip_text = ["some ", "1 piece   ", "5 pieces   ", "30 pieces   "]
+        for text in scrub_strip_text:
+            message = message.replace(text.encode(), b'')
+        message = message.replace(text_replacement[0].encode(), text_replacement[1].encode())
+        message = message.replace(b'they are', b'it is')
+        if default_price != price:
+            message = message.replace(('%d Rupees' % default_price).encode(), ('%d Rupees' % price).encode())
+        if item_name is not None:
+            message = message.replace(b'mysterious item', item_name.encode())
+        return message
+
+    single_item_scrubs = {
+        0x3E: world.get_location("HF Grotto Deku Scrub Piece of Heart"),
+        0x77: world.get_location("LW Deku Scrub Deku Stick Upgrade"),
+        0x79: world.get_location("LW Grotto Deku Scrub Deku Nut Upgrade"),
+    }
+
+    scrub_message_dict = {}
     if world.shuffle_scrubs == 'off':
         # Revert Deku Scrubs changes
         rom.write_int32s(0xEBB85C, [
@@ -1222,11 +1249,13 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
             0x94790EF0])# lhu t9, 0xef0(v1)
         rom.write_int32(0xDF7CB0,
             0xA44F0EF0)  # sh t7, 0xef0(v0)
-    else:
-        # Scrub text stuff.
-        scrub_message_dict = {}
-        scrub_strip_text = ["some ", "1 piece   ", "5 pieces   ", "30 pieces   "]
 
+        # Replace scrub text for 3 default shuffled scrubs.
+        for (scrub_item, default_price, text_id, text_replacement) in business_scrubs:
+            if scrub_item not in single_item_scrubs.keys():
+                continue
+            scrub_message_dict[text_id] = update_scrub_text(get_message_by_id(messages, text_id).raw_text, text_replacement, default_price, default_price)
+    else:
         # Rebuild Business Scrub Item Table
         rom.seek_address(0xDF8684)
         for (scrub_item, default_price, text_id, text_replacement) in business_scrubs:
@@ -1236,21 +1265,15 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
             rom.write_int32(None, scrub_item)  # Item
             rom.write_int32(None, 0x80A74FF8)  # Can_Buy_Func
             rom.write_int32(None, 0x80A75354)  # Buy_Func
-            # Text
-            message = get_message_by_id(messages, text_id).raw_text
-            for text in scrub_strip_text:
-                message = message.replace(text.encode(), b'')
-            message = message.replace(text_replacement[0].encode(), text_replacement[1].encode())
-            message = message.replace(('%d Rupees' % default_price).encode(), ('%d Rupees' % price).encode())
-            message = message.replace(b'they are', b'it is')
-            scrub_message_dict[text_id] = message
 
-        # Update messages.
-        for text_id, message in scrub_message_dict.items():
-            update_message_by_id(messages, text_id, message)
+            scrub_message_dict[text_id] = update_scrub_text(get_message_by_id(messages, text_id).raw_text, text_replacement, default_price, price)
 
         # update actor IDs
         set_deku_salesman_data(rom)
+
+    # Update scrub messages.
+    for text_id, message in scrub_message_dict.items():
+        update_message_by_id(messages, text_id, message)
 
     # Update grotto id data
     set_grotto_id_data(rom)
@@ -1267,6 +1290,10 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
             item = read_rom_item(rom, i)
             item['chest_type'] = 0
             write_rom_item(rom, i, item)
+    if world.bridge == 'tokens':
+        item = read_rom_item(rom, 0x5B)
+        item['chest_type'] = 0
+        write_rom_item(rom, 0x5B, item)       
 
     # Update chest type sizes
     if world.correct_chest_sizes:
@@ -1276,18 +1303,15 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
         if not world.dungeon_mq['Ganons Castle']:
             rom.write_int16(0x321B176, 0xFC40) # original 0xFC48
 
-        #Move spirit temple compass chest if it is a small chest so it is reachable with hookshot 
-        for chest_name, chest_address in [('Spirit Temple Compass Chest', 0x2B6B07C), ('Spirit Temple MQ Compass Chest', 0x2B6FCDC)]:
-            try:
-                location = world.get_location(chest_name)
-            except KeyError:
-                # MQ/Vanilla veriant does not exist
-                continue
-
+        # Move Spirit Temple Compass Chest if it is a small chest so it is reachable with hookshot 
+        if not world.dungeon_mq['Spirit Temple']:
+            chest_name = 'Spirit Temple Compass Chest'
+            chest_address = 0x2B6B07C
+            location = world.get_location(chest_name)
             item = read_rom_item(rom, location.item.index)
-            if item['chest_type'] == 1 or item['chest_type'] == 3:
-                rom.write_int16(chest_address + 2, 0x0190) #X pos
-                rom.write_int16(chest_address + 6, 0xFABC) #Z pos
+            if item['chest_type'] in (1, 3):
+                rom.write_int16(chest_address + 2, 0x0190) # X pos
+                rom.write_int16(chest_address + 6, 0xFABC) # Z pos
 
     # give dungeon items the correct messages
     add_item_messages(messages, shop_items, world)
@@ -1620,7 +1644,7 @@ def create_fake_name(name):
     
     # keeping the game E...
     new_name = ''.join(list_name)
-    censor = ['dike', 'cunt', 'cum', 'puss', 'shit', 'penis']
+    censor = ['cum', 'cunt', 'dike', 'penis', 'puss', 'shit']
     new_name_az = re.sub(r'[^a-zA-Z]', '', new_name.lower(), re.UNICODE)
     for cuss in censor:
         if cuss in new_name_az:
@@ -1632,8 +1656,7 @@ def place_shop_items(rom, world, shop_items, messages, locations, init_shop_id=F
     if init_shop_id:
         place_shop_items.shop_id = 0x32
 
-    shop_objs = { 0x0148 } # Sold Out
-    messages
+    shop_objs = { 0x0148 } # "Sold Out" object
     for location in locations:
         if location.item.type == 'Shop':
             shop_objs.add(location.item.special['object'])
