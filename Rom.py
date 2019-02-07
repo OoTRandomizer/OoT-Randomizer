@@ -136,61 +136,63 @@ class LocalRom(object):
         self.__last_address = address + 4
         return int32.unpack_from(self.buffer, address)[0]
 
-    def write_byte(self, address, value):
+    def write_byte(self, address, value, force_patch=False):
         if address == None:
             address = self.__last_address
         self.buffer[address] = value
         self.changed_address[address] = value
         self.__last_address = address + 1
+        if force_patch:
+            self.force_patch.append(address)
 
-    def write_sbyte(self, address, value):
+    def write_sbyte(self, address, value, force_patch=False):
         if address == None:
             address = self.__last_address
-        self.write_bytes(address, struct.pack('b', value))
+        self.write_bytes(address, struct.pack('b', value), force_patch)
 
-    def write_int16(self, address, value):
+    def write_int16(self, address, value, force_patch=False):
         if address == None:
             address = self.__last_address
-        self.write_bytes(address, int16_as_bytes(value))
+        self.write_bytes(address, int16_as_bytes(value), force_patch)
 
-    def write_int24(self, address, value):
+    def write_int24(self, address, value, force_patch=False):
         if address == None:
             address = self.__last_address
-        self.write_bytes(address, int24_as_bytes(value))
+        self.write_bytes(address, int24_as_bytes(value), force_patch)
 
-    def write_int32(self, address, value):
+    def write_int32(self, address, value, force_patch=False):
         if address == None:
             address = self.__last_address
-        self.write_bytes(address, int32_as_bytes(value))
+        self.write_bytes(address, int32_as_bytes(value), force_patch)
 
-    def write_f32(self, address, value:float):
+    def write_f32(self, address, value:float, force_patch=False):
         if address == None:
             address = self.__last_address
-        self.write_bytes(address, struct.pack('>f', value))
+        self.write_bytes(address, struct.pack('>f', value), force_patch)
 
-    def write_bytes(self, startaddress, values):
+    def write_bytes(self, startaddress, values, force_patch=False):
         if startaddress == None:
             startaddress = self.__last_address
         for i, value in enumerate(values):
-            self.write_byte(startaddress + i, value)
+            self.write_byte(startaddress + i, value, force_patch)
 
-    def write_int16s(self, startaddress, values):
+    def write_int16s(self, startaddress, values, force_patch=False):
         if startaddress == None:
             startaddress = self.__last_address
         for i, value in enumerate(values):
-            self.write_int16(startaddress + (i * 2), value)
+            self.write_int16(startaddress + (i * 2), value, force_patch)
 
-    def write_int24s(self, startaddress, values):
+    def write_int24s(self, startaddress, values, force_patch=False):
         if startaddress == None:
             startaddress = self.__last_address
         for i, value in enumerate(values):
-            self.write_int24(startaddress + (i * 3), value)
+            self.write_int24(startaddress + (i * 3), value, force_patch)
 
-    def write_int32s(self, startaddress, values):
+    def write_int32s(self, startaddress, values, force_patch=False):
         if startaddress == None:
             startaddress = self.__last_address
         for i, value in enumerate(values):
-            self.write_int32(startaddress + (i * 4), value)
+            self.write_int32(startaddress + (i * 4), value, force_patch)
 
     def write_to_file(self, file):
         self.verify_dmadata()

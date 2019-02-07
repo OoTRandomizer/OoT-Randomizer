@@ -107,17 +107,17 @@ def get_sword_color_options():
 def patch_targeting(rom, settings, log, symbols):
     # Set default targeting option to Hold
     if settings.default_targeting == 'hold':
-        rom.write_byte(0xB71E6D, 0x01)
+        rom.write_byte(0xB71E6D, 0x01, settings.cosmetics_only)
     else:
-        rom.write_byte(0xB71E6D, 0x00)
+        rom.write_byte(0xB71E6D, 0x00, settings.cosmetics_only)
 
 
 def patch_dpad(rom, settings, log, symbols):
     # Display D-Pad HUD
     if settings.display_dpad:
-        rom.write_byte(symbols['CFG_DISPLAY_DPAD'], 0x01)
+        rom.write_byte(symbols['CFG_DISPLAY_DPAD'], 0x01, settings.cosmetics_only)
     else:
-        rom.write_byte(symbols['CFG_DISPLAY_DPAD'], 0x00)
+        rom.write_byte(symbols['CFG_DISPLAY_DPAD'], 0x00, settings.cosmetics_only)
     log.display_dpad = settings.display_dpad
 
 
@@ -125,12 +125,12 @@ def patch_dpad(rom, settings, log, symbols):
 def patch_music(rom, settings, log, symbols):
     # patch music
     if settings.background_music == 'random':
-        restore_music(rom)
-        log.bgm = randomize_music(rom)
+        restore_music(rom, settings)
+        log.bgm = randomize_music(rom, settings)
     elif settings.background_music == 'off':
-        disable_music(rom)
+        disable_music(rom, settings)
     else:
-        restore_music(rom)
+        restore_music(rom, settings)
 
 
 def patch_tunic_colors(rom, settings, log, symbols):
@@ -156,7 +156,7 @@ def patch_tunic_colors(rom, settings, log, symbols):
         else:
             color = list(int(tunic_option[i:i+2], 16) for i in (0, 2 ,4))
             tunic_option = 'Custom'
-        rom.write_bytes(address, color)
+        rom.write_bytes(address, color, settings.cosmetics_only)
         log.tunic_colors[tunic] = dict(option=tunic_option, color=''.join(['{:02X}'.format(c) for c in color]))
 
 
@@ -196,7 +196,7 @@ def patch_navi_colors(rom, settings, log, symbols):
                 custom_color = True
 
             color = colors[0] + [0xFF] + colors[1] + [0xFF]
-            rom.write_bytes(address, color)
+            rom.write_bytes(address, color, settings.cosmetics_only)
         if custom_color:
             navi_option = 'Custom'
         if navi_action not in log.navi_colors:
@@ -225,11 +225,11 @@ def patch_sword_trails(rom, settings, log, symbols):
         for index, (address, transparency, white_transparency) in enumerate(sword_trail_addresses):
             # set rainbow option
             if sword_trail_option == 'Rainbow':
-                rom.write_byte(sword_trail_rainbow_symbol, 0x01)
+                rom.write_byte(sword_trail_rainbow_symbol, 0x01, settings.cosmetics_only)
                 color = [0x00, 0x00, 0x00]
                 continue
             else:
-                rom.write_byte(sword_trail_rainbow_symbol, 0x00)
+                rom.write_byte(sword_trail_rainbow_symbol, 0x00, settings.cosmetics_only)
 
             # handle completely random
             if sword_trail_option == 'Completely Random':
@@ -250,14 +250,14 @@ def patch_sword_trails(rom, settings, log, symbols):
             else:
                 color = color + [transparency]
 
-            rom.write_bytes(address, color)
+            rom.write_bytes(address, color, settings.cosmetics_only)
 
         if custom_color:
             sword_trail_option = 'Custom'
         if sword_trail_name not in log.sword_colors:
             log.sword_colors[sword_trail_name] = [dict(option=sword_trail_option, color=''.join(['{:02X}'.format(c) for c in color[0:3]]))]
     log.sword_trail_duration = settings.sword_trail_duration
-    rom.write_byte(0x00BEFF8C, settings.sword_trail_duration)
+    rom.write_byte(0x00BEFF8C, settings.sword_trail_duration, settings.cosmetics_only)
 
 
 def patch_sfx(rom, settings, log, symbols):
@@ -278,7 +278,7 @@ def patch_sfx(rom, settings, log, symbols):
         if selection == 'default':
             for loc in hook.value.locations:
                 sound_id = int.from_bytes((rom.original[loc:loc+2]), byteorder='big', signed=False)
-                rom.write_int16(loc, sound_id)
+                rom.write_int16(loc, sound_id, settings.cosmetics_only)
         else:
             if selection == 'random-choice':
                 selection = random.choice(sfx.get_hook_pool(hook)).value.keyword
@@ -288,7 +288,7 @@ def patch_sfx(rom, settings, log, symbols):
                 selection = random.choice(sfx.standard).value.keyword
             sound_id  = sound_dict[selection]
             for loc in hook.value.locations:
-                rom.write_int16(loc, sound_id)
+                rom.write_int16(loc, sound_id, settings.cosmetics_only)
         log.sfx[hook.value.name] = selection
 
 
@@ -308,7 +308,7 @@ def patch_instrument(rom, settings, log, symbols):
         choice = settings.sfx_ocarina
     else:
         choice = random.choice(list(instruments.keys()))
-    rom.write_byte(0x00B53C7B, instruments[choice])
+    rom.write_byte(0x00B53C7B, instruments[choice], settings.cosmetics_only)
     log.sfx['Ocarina'] = choice
 
 
@@ -437,7 +437,7 @@ bgm_sequence_ids = [
 ]
 
 
-def randomize_music(rom):
+def randomize_music(rom, settings):
     log = {}
 
     # Read in all the Music data
@@ -453,33 +453,33 @@ def randomize_music(rom):
     # Write Music data back in random ordering
     for bgm in bgm_sequence_ids:
         bgm_name, bgm_sequence, bgm_instrument = bgm_data.pop()
-        rom.write_bytes(0xB89AE0 + (bgm[1] * 0x10), bgm_sequence)
-        rom.write_int16(0xB89910 + 0xDD + (bgm[1] * 2), bgm_instrument)
+        rom.write_bytes(0xB89AE0 + (bgm[1] * 0x10), bgm_sequence, settings.cosmetics_only)
+        rom.write_int16(0xB89910 + 0xDD + (bgm[1] * 2), bgm_instrument, settings.cosmetics_only)
         log[bgm[0]] = bgm_name
 
     # Write Fairy Fountain instrument to File Select (uses same track but different instrument set pointer for some reason)
-    rom.write_int16(0xB89910 + 0xDD + (0x57 * 2), rom.read_int16(0xB89910 + 0xDD + (0x28 * 2)))
+    rom.write_int16(0xB89910 + 0xDD + (0x57 * 2), rom.read_int16(0xB89910 + 0xDD + (0x28 * 2)), settings.cosmetics_only)
     return log
 
 
-def disable_music(rom):
+def disable_music(rom, settings):
     # First track is no music
     blank_track = rom.read_bytes(0xB89AE0 + (0 * 0x10), 0x10)
     for bgm in bgm_sequence_ids:
-        rom.write_bytes(0xB89AE0 + (bgm[1] * 0x10), blank_track)
+        rom.write_bytes(0xB89AE0 + (bgm[1] * 0x10), blank_track, settings.cosmetics_only)
 
 
-def restore_music(rom):
+def restore_music(rom, settings):
     # Restore all music from original
     for bgm in bgm_sequence_ids:
         bgm_sequence = rom.original[0xB89AE0 + (bgm[1] * 0x10): 0xB89AE0 + (bgm[1] * 0x10) + 0x10]
-        rom.write_bytes(0xB89AE0 + (bgm[1] * 0x10), bgm_sequence)
+        rom.write_bytes(0xB89AE0 + (bgm[1] * 0x10), bgm_sequence, settings.cosmetics_only)
         bgm_instrument = rom.original[0xB89910 + 0xDD + (bgm[1] * 2): 0xB89910 + 0xDD + (bgm[1] * 2) + 0x02]
-        rom.write_bytes(0xB89910 + 0xDD + (bgm[1] * 2), bgm_instrument)
+        rom.write_bytes(0xB89910 + 0xDD + (bgm[1] * 2), bgm_instrument, settings.cosmetics_only)
 
     # restore file select instrument
     bgm_instrument = rom.original[0xB89910 + 0xDD + (0x57 * 2): 0xB89910 + 0xDD + (0x57 * 2) + 0x02]
-    rom.write_bytes(0xB89910 + 0xDD + (0x57 * 2), bgm_instrument)
+    rom.write_bytes(0xB89910 + 0xDD + (0x57 * 2), bgm_instrument, settings.cosmetics_only)
 
 
 class CosmeticsLog(object):
