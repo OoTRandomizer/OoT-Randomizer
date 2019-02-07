@@ -4,6 +4,7 @@
 #include "z64.h"
 
 void no_effect(z64_file_t *save, int16_t arg1, int16_t arg2);
+void full_heal(z64_file_t *save, int16_t arg1, int16_t arg2);
 void give_tycoon_wallet(z64_file_t *save, int16_t arg1, int16_t arg2);
 void give_biggoron_sword(z64_file_t *save, int16_t arg1, int16_t arg2);
 void give_bottle(z64_file_t *save, int16_t bottle_item_id, int16_t arg2);

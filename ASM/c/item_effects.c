@@ -6,6 +6,10 @@
 void no_effect(z64_file_t *save, int16_t arg1, int16_t arg2) {
 }
 
+void full_heal(z64_file_t *save, int16_t arg1, int16_t arg2) {
+    save->refill_hearts = 20 * 0x10;
+}
+
 void give_tycoon_wallet(z64_file_t *save, int16_t arg1, int16_t arg2) {
     save->wallet = 3;
 }
@@ -38,7 +42,7 @@ void give_small_key(z64_file_t *save, int16_t dungeon_id, int16_t arg2) {
 void give_defense(z64_file_t *save, int16_t arg1, int16_t arg2) {
     save->double_defense = 1;
     save->defense_hearts = 20;
-    save->refill_hearts = 20 * 16;
+    save->refill_hearts = 20 * 0x10;
 }
 
 void give_magic(z64_file_t *save, int16_t arg1, int16_t arg2) {
