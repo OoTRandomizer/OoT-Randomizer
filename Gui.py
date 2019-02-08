@@ -259,6 +259,11 @@ def guiMain(settings=None):
     openReadmeButton = Button(countDialogFrame, text='Open Wiki Page', command=open_readme)
     openReadmeButton.pack(side=RIGHT, padx=5)
 
+    def open_output():
+        open_file(default_output_path(guivars['output_dir'].get()))
+    openOutputButton = Button(countDialogFrame, text='Open Output Directory', command=open_output)
+    openOutputButton.pack(side=RIGHT, padx=5)
+
     countLabel.pack(side=LEFT)
     widgets['count'].pack(side=LEFT, padx=2)
     countDialogFrame.pack(side=TOP, anchor=W, padx=5, pady=(1,1))
