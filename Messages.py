@@ -64,6 +64,7 @@ GOSSIP_STONE_MESSAGES += [0x2053, 0x2054] # shared initial stone messages
 TEMPLE_HINTS_MESSAGES = [0x7057, 0x707A] # dungeon reward hints from the temple of time pedestal
 LIGHT_ARROW_HINT = [0x70CC] # ganondorf's light arrow hint line
 GS_TOKEN_MESSAGES = [0x00B4, 0x00B5] # Get Gold Skulltula Token messages
+ERROR_MESSAGE = 0x0001
 
 # messages for shorter item messages
 # ids are in the space freed up by move_shop_item_messages()
@@ -178,7 +179,7 @@ ITEM_MESSAGES = {
     0x00C5: "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01You've completed another Heart\x01Container!",
     0x00C6: "\x08\x13\x72You got a \x05\x41Heart Container\x05\x40!\x01Your maximum life energy is \x01increased by one heart.",
     0x00C7: "\x08\x13\x74You got the \x05\x41Boss Key\x05\x40!\x01Now you can get inside the \x01chamber where the Boss lurks.",
-	0x9002: "\x08You are a \x05\x43FOOL\x05\x40!",
+    0x9002: "\x08You are a \x05\x43FOOL\x05\x40!",
     0x00CC: "\x08You got a \x05\x43Blue Rupee\x05\x40!\x01That's \x05\x43five Rupees\x05\x40!",
     0x00CD: "\x08\x13\x53You got the \x05\x43Silver Scale\x05\x40!\x01You can dive deeper than you\x01could before.",
     0x00CE: "\x08\x13\x54You got the \x05\x43Golden Scale\x05\x40!\x01Now you can dive much\x01deeper than you could before!",
@@ -230,13 +231,23 @@ KEYSANITY_MESSAGES = {
     0x0095: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x43Water Temple\x05\x40!\x09",
     0x009B: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09",
     0x009F: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Gerudo Training\x01Grounds\x05\x40!\x09",
-    0x00A0: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Gerudo Fortress\x05\x40!\x09",
+    0x00A0: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Gerudo's Fortress\x05\x40!\x09",
     0x00A1: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for \x05\x41Ganon's Castle\x05\x40!\x09",
     0x00A2: "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09",
     0x00A3: "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09",
     0x00A5: "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09",
     0x00A6: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Spirit Temple\x05\x40!\x09",
     0x00A9: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09",
+}
+
+MISC_MESSAGES = {
+    0x507B: bytearray(
+            b"\x08I tell you, I saw him!\x04" \
+            b"\x08I saw the ghostly figure of Damp\x96\x01" \
+            b"the gravekeeper sinking into\x01" \
+            b"his grave. It looked like he was\x01" \
+            b"holding some kind of \x05\x41treasure\x05\x40!\x02"
+            ),
 }
 
 # convert byte array to an integer
@@ -523,6 +534,12 @@ class Message():
 
         return cls(bytes, 0, id, opts, 0, len(bytes) + 1)
 
+    @classmethod
+    def from_bytearray(cls, bytearray, id=0, opts=0x00):
+        bytes = list(bytearray) + [0x02]
+
+        return cls(bytes, 0, id, opts, 0, len(bytes) + 1)
+
     __str__ = __repr__ = display
 
 # wrapper for updating the text of a message, given its message id
@@ -549,12 +566,19 @@ def get_message_by_id(messages, id):
 def update_message_by_index(messages, index, text, opts=None):
     if opts is None:
         opts = messages[index].opts
-    messages[index] = Message.from_string(text, messages[index].id, opts)
+
+    if isinstance(text, bytearray):
+        messages[index] = Message.from_bytearray(text, messages[index].id, opts)
+    else:
+        messages[index] = Message.from_string(text, messages[index].id, opts)
     messages[index].index = index
 
 # wrapper for adding a string message to a list of messages
 def add_message(messages, text, id=0, opts=0x00):
-    messages.append( Message.from_string(text, id, opts) )
+    if isinstance(text, bytearray):
+        messages.append( Message.from_bytearray(text, id, opts) )
+    else:
+        messages.append( Message.from_string(text, id, opts) )
     messages[-1].index = len(messages) - 1
 
 # holds a row in the shop item table (which contains pointers to the description and purchase messages)
@@ -716,13 +740,15 @@ def make_player_message(text):
 # reduce item message sizes and add new item messages
 # make sure to call this AFTER move_shop_item_messages()
 def update_item_messages(messages, world):
-    new_item_messages = dict(ITEM_MESSAGES)
-    new_item_messages.update(KEYSANITY_MESSAGES)
+    new_item_messages = {**ITEM_MESSAGES, **KEYSANITY_MESSAGES}
     for id, text in new_item_messages.items():
         if world.world_count > 1:
             update_message_by_id(messages, id, make_player_message(text), 0x23)
         else:
             update_message_by_id(messages, id, text, 0x23)
+
+    for id, text in MISC_MESSAGES.items():
+        update_message_by_id(messages, id, text)
 
 
 # run all keysanity related patching to add messages for dungeon specific items
@@ -733,7 +759,6 @@ def add_item_messages(messages, shop_items, world):
 
 # reads each of the game's messages into a list of Message objects
 def read_messages(rom):
-
     table_offset = TABLE_START
     index = 0
     messages = []
@@ -754,7 +779,7 @@ def read_messages(rom):
 
     return messages
 
-# wrtie the messages back
+# write the messages back
 def repack_messages(rom, messages, permutation=None, always_allow_skip=True, speed_up_text=True):
 
     if permutation is None:
@@ -808,19 +833,23 @@ def shuffle_messages(rom, except_hints=True, always_allow_skip=True):
 
     permutation = [i for i, _ in enumerate(messages)]
 
-    def is_not_exempt(m):
-        exempt_as_id = m.is_id_message()
-        exempt_as_hint = ( except_hints and m.id in (GOSSIP_STONE_MESSAGES + TEMPLE_HINTS_MESSAGES + LIGHT_ARROW_HINT + list(KEYSANITY_MESSAGES.keys()) + shuffle_messages.shop_item_messages ) )
-        return not ( exempt_as_id or exempt_as_hint )
+    def is_exempt(m):
+        hint_ids = (
+            GOSSIP_STONE_MESSAGES + TEMPLE_HINTS_MESSAGES + LIGHT_ARROW_HINT +
+            list(KEYSANITY_MESSAGES.keys()) + shuffle_messages.shop_item_messages
+        )
+        is_hint = (except_hints and m.id in hint_ids)
+        is_error_message = (m.id == ERROR_MESSAGE)
+        return (is_hint or is_error_message or m.is_id_message())
 
-    have_goto =         list( filter( lambda m: is_not_exempt(m) and m.has_goto, messages) )
-    have_keep_open =    list( filter( lambda m: is_not_exempt(m) and m.has_keep_open, messages) )
-    have_event =        list( filter( lambda m: is_not_exempt(m) and m.has_event, messages) )
-    have_fade =         list( filter( lambda m: is_not_exempt(m) and m.has_fade, messages) )
-    have_ocarina =      list( filter( lambda m: is_not_exempt(m) and m.has_ocarina, messages) )
-    have_two_choice =   list( filter( lambda m: is_not_exempt(m) and m.has_two_choice, messages) )
-    have_three_choice = list( filter( lambda m: is_not_exempt(m) and m.has_three_choice, messages) )
-    basic_messages =    list( filter( lambda m: is_not_exempt(m) and m.is_basic(), messages) )
+    have_goto         = list( filter(lambda m: not is_exempt(m) and m.has_goto,         messages) )
+    have_keep_open    = list( filter(lambda m: not is_exempt(m) and m.has_keep_open,    messages) )
+    have_event        = list( filter(lambda m: not is_exempt(m) and m.has_event,        messages) )
+    have_fade         = list( filter(lambda m: not is_exempt(m) and m.has_fade,         messages) )
+    have_ocarina      = list( filter(lambda m: not is_exempt(m) and m.has_ocarina,      messages) )
+    have_two_choice   = list( filter(lambda m: not is_exempt(m) and m.has_two_choice,   messages) )
+    have_three_choice = list( filter(lambda m: not is_exempt(m) and m.has_three_choice, messages) )
+    basic_messages    = list( filter(lambda m: not is_exempt(m) and m.is_basic(),       messages) )
 
 
     def shuffle_group(group):

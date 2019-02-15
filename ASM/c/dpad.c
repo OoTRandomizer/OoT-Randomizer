@@ -1,7 +1,7 @@
 #include "gfx.h"
 #include "dpad.h"
 
-uint8_t display_dpad = 1;
+extern uint8_t CFG_DISPLAY_DPAD;
 
 //unknown 00 is a pointer to some vector transformation when the sound is tied to an actor. actor + 0x3E, when not tied to an actor (map), always 80104394
 //unknown 01 is always 4 in my testing
@@ -41,7 +41,7 @@ void handle_dpad() {
 }
 void draw_dpad() {
     z64_disp_buf_t *db = &(z64_ctxt.gfx->overlay);
-    if (DISPLAY_DPAD && display_dpad) {
+    if (DISPLAY_DPAD && CFG_DISPLAY_DPAD) {
         gSPDisplayList(db->p++, &setup_db);
         gDPPipeSync(db->p++);
         gDPSetCombineMode(db->p++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);

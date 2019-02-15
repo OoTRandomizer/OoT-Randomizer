@@ -71,7 +71,10 @@ class Item(object):
 
     @property
     def majoritem(self):
-        if self.type == 'Token' or self.type == 'Event' or self.type == 'Shop' or not self.advancement:
+        if self.type == 'Token':
+            return self.world.bridge == 'tokens'
+
+        if self.type == 'Event' or self.type == 'Shop' or not self.advancement:
             return False
 
         if self.name.startswith('Bombchus') and not self.world.bombchus_in_logic:

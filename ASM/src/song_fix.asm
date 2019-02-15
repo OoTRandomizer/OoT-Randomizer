@@ -95,15 +95,26 @@ Check_Has_Epona_Song:
     beqz    t0, @@return     ; Return False if no song
     li      v0, 0
 
+    ; Set has Epona flag
+    lb      t2, 0xED6 (s2)
+    ori     t2, t2, 0x01
+    sb      t2, 0xED6 (s2)
+
     ; Check if has Ocarina
     li      v0, 1
-    lb      t0, 0x7B(t2)
+    lb      t0, 0x7B(s2)
     li      t1, 0x07         ; Fairy ocarina
     beq     t0, t1, @@return
     li      t2, 0x08         ; Ocarina of Time
     beq     t0, t2, @@return ; Return True if song & (fairy or oot) ocarina
     nop
+
     li      v0, 0            ; Else False
+
+    ; unSet has Epona flag
+    lb      t2, 0xED6 (s2)
+    andi   t2, t2, 0xFE
+    sb      t2, 0xED6 (s2)
 
 @@return:
     jr      ra

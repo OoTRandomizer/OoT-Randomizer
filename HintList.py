@@ -163,7 +163,7 @@ hintTable = {
     'Ocarina of Time':                                       ("the #treasure thrown by Princess Zelda# is", None, 'alwaysLocation'),
     'Song from Ocarina of Time':                             ("the #Ocarina of Time# teaches", None, 'alwaysLocation'),
     'Biggoron':                                              ("#Biggoron# crafts", None, 'alwaysLocation'),
-    'Frog Ocarina Game':                                     (["an #amphibian feast# yields", "the #croaking choir's magnum opus# awards", "the #froggy finale# yields"], "the #Frogs of Zora River# final reward is", 'alwaysLocation'),
+    'Frog Ocarina Game':                                     (["an #amphibian feast# yields", "the #croaking choir's magnum opus# awards", "the #froggy finale# yields"], "the final reward from the #Frogs of Zora's River# is", 'alwaysLocation'),
     'Child Fishing':                                         ("#fishing in youth# bestows", None, 'location'),
     'Adult Fishing':                                         ("#fishing in maturity# bestows", None, 'location'),
     'Treasure Chest Game':                                   (["#gambling# grants", "there is a #1/32 chance# to win"], "the #treasure chest game# grants", 'location'),

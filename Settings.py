@@ -46,7 +46,7 @@ def text_to_bit_string(text):
 
 
 # holds the particular choices for a run's settings
-class Settings():
+class Settings:
 
     def get_settings_display(self):
         padding = 0
@@ -195,7 +195,11 @@ class Settings():
         self.seed = re.sub(r'[^a-zA-Z0-9_-]', '', self.seed, re.UNICODE)
 
     def update_seed(self, seed):
-        self.seed = seed
+        if seed is None or seed == '':
+            # https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits-in-python
+            self.seed = ''.join(random_choices(string.ascii_uppercase + string.digits, k=10))
+        else:
+            self.seed = seed
         self.sanitize_seed()
         self.numeric_seed = self.get_numeric_seed()
 
@@ -253,11 +257,7 @@ class Settings():
                     else:
                         self.__dict__[info.name] = []
         self.settings_string = self.get_settings_string()
-        if(self.seed is None):
-            # https://stackoverflow.com/questions/2257441/random-string-generation-with-upper-case-letters-and-digits-in-python
-            self.seed = ''.join(random_choices(string.ascii_uppercase + string.digits, k=10))
-        self.sanitize_seed()
-        self.numeric_seed = self.get_numeric_seed()
+        self.update_seed(self.seed)
 
 
 # gets the randomizer settings, whether to open the gui, and the logger level from command line arguments

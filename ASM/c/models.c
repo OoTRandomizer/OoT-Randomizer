@@ -55,27 +55,6 @@ void set_object_segment(loaded_object_t *object) {
     gSPSegment(opa->p++, 6, (uint32_t)(object->buf));
 }
 
-float scale_factor(int8_t graphic_id, z64_actor_t *actor) {
-    // By default, normalize model sizes to the scale that ruto's letter / fire arrows
-    // are usually drawn
-    float base = 0.5 / actor->scale.x;
-
-    if (graphic_id == 0x63) {
-        // Draw skull tokens at half size so they match vanilla
-        return base * 0.5;
-    }
-    if (graphic_id == 0x2F || graphic_id == 0x46) {
-        // Draw ocarinas smaller so they don't look ridiculous
-        return base * 0.75;
-    }
-    if (actor->actor_id == 0x15 && (actor->variable & 0xFF) == 0x11) {
-        // Draw small key actors smaller so they don't stick out of places
-        return base * 0.75;
-    }
-
-    return base;
-}
-
 void scale_top_matrix(float scale_factor) {
     float *matrix = z64_GetMatrixStackTop();
     for (int i = 0; i < 3; i++) {
@@ -93,17 +72,33 @@ typedef void (*actor_draw_fn)(z64_actor_t *actor, z64_game_t *game);
 #define base_draw_gi_model ((gi_draw_fn)0x800570C0)
 #define base_collectable_draw ((actor_draw_fn)0x80013268)
 
-void draw_model_by_id(int8_t graphic_id, z64_actor_t *actor, z64_game_t *game) {
-    scale_top_matrix(scale_factor(graphic_id, actor));
+void draw_model_low_level(int8_t graphic_id_minus_1, z64_actor_t *actor, z64_game_t *game) {
     pre_draw_1(actor, game, 0);
     pre_draw_2(actor, game, 0);
-    base_draw_gi_model(game, graphic_id - 1);
+    base_draw_gi_model(game, graphic_id_minus_1);
 }
 
-void draw_model(model_t model, z64_actor_t *actor, z64_game_t *game) {
+float scale_factor(int8_t graphic_id, z64_actor_t *actor, float base_scale) {
+    if (graphic_id == 0x63) {
+        // Draw skull tokens at their vanilla size
+        return base_scale * 0.5;
+    }
+    if (actor->actor_id == 0xF1 && (graphic_id == 0x46 || graphic_id == 0x2F)) {
+        // Draw ocarinas in the moat at vanilla size
+        return 1.0;
+    }
+    if (actor->actor_id == 0x15 && (actor->variable & 0xFF) == 0x11) {
+        // Draw small key actors smaller, so they don't stick out of places
+        return base_scale * 0.5;
+    }
+    return base_scale;
+}
+
+void draw_model(model_t model, z64_actor_t *actor, z64_game_t *game, float base_scale) {
     loaded_object_t *object = get_object(model.object_id);
     set_object_segment(object);
-    draw_model_by_id(model.graphic_id, actor, game);
+    scale_top_matrix(scale_factor(model.graphic_id, actor, base_scale));
+    draw_model_low_level(model.graphic_id - 1, actor, game);
 }
 
 void models_init() {
@@ -142,17 +137,21 @@ void heart_piece_draw(z64_actor_t *actor, z64_game_t *game) {
         .graphic_id = 0x14,
     };
     lookup_model(&model, actor, game, 0);
-    draw_model(model, actor, game);
+    draw_model(model, actor, game, 25.0);
 }
 
 void small_key_draw(z64_actor_t *actor, z64_game_t *game) {
-    model_t model = { 0 };
-    lookup_model(&model, actor, game, 0);
-    if (model.graphic_id == 0 || model.graphic_id == 0x02) {
+    if ((actor->variable & 0xFF) != 0x11) {
         base_collectable_draw(actor, game);
-    } else {
-        draw_model(model, actor, game);
+        return;
     }
+
+    model_t model = {
+        .object_id = 0x00AA,
+        .graphic_id = 0x02,
+     };
+    lookup_model(&model, actor, game, 0);
+    draw_model(model, actor, game, 25.0);
 }
 
 void heart_container_draw(z64_actor_t *actor, z64_game_t *game) {
@@ -161,7 +160,7 @@ void heart_container_draw(z64_actor_t *actor, z64_game_t *game) {
         .graphic_id = 0x13,
     };
     lookup_model(&model, actor, game, 0x4F);
-    draw_model(model, actor, game);
+    draw_model(model, actor, game, 1.25);
 }
 
 void skull_token_draw(z64_actor_t *actor, z64_game_t *game) {
@@ -170,7 +169,7 @@ void skull_token_draw(z64_actor_t *actor, z64_game_t *game) {
         .graphic_id = 0x63,
     };
     lookup_model(&model, actor, game, 0);
-    draw_model(model, actor, game);
+    draw_model(model, actor, game, 2.0);
 }
 
 void ocarina_of_time_draw(z64_actor_t *actor, z64_game_t *game) {
@@ -179,7 +178,7 @@ void ocarina_of_time_draw(z64_actor_t *actor, z64_game_t *game) {
         .graphic_id = 0x2F,
     };
     lookup_model(&model, actor, game, 0x0C);
-    draw_model(model, actor, game);
+    draw_model(model, actor, game, 2.5);
 }
 
 void item_etcetera_draw(z64_actor_t *actor, z64_game_t *game) {
@@ -203,10 +202,10 @@ void item_etcetera_draw(z64_actor_t *actor, z64_game_t *game) {
     model_t model = { 0 };
     lookup_model_by_override(&model, override);
     if (model.object_id != 0) {
-        draw_model(model, actor, game);
+        draw_model(model, actor, game, 1.0);
     } else {
         uint8_t default_graphic_id = *(((uint8_t *)actor) + 0x141);
-        draw_model_by_id(default_graphic_id, actor, game);
+        draw_model_low_level(default_graphic_id, actor, game);
     }
 }
 
@@ -219,10 +218,10 @@ void bowling_bomb_bag_draw(z64_actor_t *actor, z64_game_t *game) {
     model_t model = { 0 };
     lookup_model_by_override(&model, override);
     if (model.object_id != 0) {
-        draw_model(model, actor, game);
+        draw_model(model, actor, game, 1.0);
     } else {
         uint8_t default_graphic_id = *(((uint8_t *)actor) + 0x147);
-        draw_model_by_id(default_graphic_id, actor, game);
+        draw_model_low_level(default_graphic_id, actor, game);
     }
 }
 
@@ -232,5 +231,5 @@ void bowling_heart_piece_draw(z64_actor_t *actor, z64_game_t *game) {
         .graphic_id = 0x14,
     };
     lookup_model(&model, actor, game, 0x3E);
-    draw_model(model, actor, game);
+    draw_model(model, actor, game, 1.0);
 }

@@ -330,6 +330,8 @@ void get_skulltula_token(z64_actor_t *token_actor) {
     uint16_t resolved_item_id = resolve_upgrades(item_id);
     item_row_t *item_row = get_item_row(resolved_item_id);
 
+    token_actor->draw_proc = NULL;
+
     PLAYER_NAME_ID = player;
     z64_DisplayTextbox(&z64_game, item_row->text_id, 0);
 

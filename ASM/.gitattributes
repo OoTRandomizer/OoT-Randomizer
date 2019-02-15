@@ -1,2 +1,3 @@
 *.bin binary
 /build/* binary linguist-generated=true
+/build/*.txt text -diff linguist-generated=true

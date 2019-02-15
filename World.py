@@ -2,6 +2,7 @@ from State import State
 from Region import Region
 from Entrance import Entrance
 from Location import Location, LocationFactory
+from LocationList import business_scrubs
 from DungeonList import create_dungeons
 from Rules import set_rules, set_shop_rules
 from Item import Item
@@ -27,6 +28,7 @@ class World(object):
         self._location_cache = {}
         self.required_locations = []
         self.shop_prices = {}
+        self.scrub_prices = {}
         self.light_arrow_location = None
 
         # dump settings directly into world's namespace
@@ -165,6 +167,34 @@ class World(object):
                         self.shop_prices[location.name] = int(random.betavariate(1.5, 2) * 60) * 5
 
 
+    def set_scrub_prices(self):
+        # Get Deku Scrub Locations
+        scrub_locations = [location for location in self.get_locations() if 'Deku Scrub' in location.name]
+        scrub_dictionary = {}
+        for location in scrub_locations:
+            if location.default not in scrub_dictionary:
+                scrub_dictionary[location.default] = []
+            scrub_dictionary[location.default].append(location)
+
+        # Loop through each type of scrub.
+        for (scrub_item, default_price, text_id, text_replacement) in business_scrubs:
+            price = default_price
+            if self.shuffle_scrubs == 'low':
+                price = 10
+            elif self.shuffle_scrubs == 'random':
+                # this is a random value between 0-99
+                # average value is ~33 rupees
+                price = int(random.betavariate(1, 2) * 99)
+
+            # Set price in the dictionary as well as the location.
+            self.scrub_prices[scrub_item] = price
+            if scrub_item in scrub_dictionary:
+                for location in scrub_dictionary[scrub_item]:
+                    location.price = price
+                    if location.item is not None:
+                        location.item.price = price
+
+
     def get_region(self, regionname):
         if isinstance(regionname, Region):
             return regionname
@@ -175,7 +205,7 @@ class World(object):
                 if region.name == regionname:
                     self._region_cache[regionname] = region
                     return region
-            raise RuntimeError('No such region %s' % regionname)
+            raise KeyError('No such region %s' % regionname)
 
 
     def get_entrance(self, entrance):
@@ -189,7 +219,7 @@ class World(object):
                     if exit.name == entrance:
                         self._entrance_cache[entrance] = exit
                         return exit
-            raise RuntimeError('No such entrance %s' % entrance)
+            raise KeyError('No such entrance %s' % entrance)
 
 
     def get_location(self, location):
@@ -203,7 +233,7 @@ class World(object):
                     if r_location.name == location:
                         self._location_cache[location] = r_location
                         return r_location
-        raise RuntimeError('No such location %s' % location)
+        raise KeyError('No such location %s' % location)
 
 
     def get_items(self):
@@ -326,14 +356,7 @@ class World(object):
                location.item.type == "Event":
                 continue
 
-            # We should consider GT and GC as the same area or it's confusing.
-            # You can get a hint GC is barren and a player might think that
-            # GT is also barren when it is not. They are separate scenes in
-            # the rom data, but one dungeon logically.
-            if location.hint == "Ganon's Tower":
-                area = "Ganon's Castle"
-            else:
-                area = location.hint
+            area = location.hint
 
             # Build the area list and their items
             if area not in areas:
@@ -363,11 +386,15 @@ class World(object):
             'Double Defense',
             'Ice Arrows',
             'Serenade of Water',
-            'Prelude of Light'
+            'Prelude of Light',
+            'Biggoron Sword',
         ]
         if self.damage_multiplier != 'ohko' and self.damage_multiplier != 'quadruple' and self.shuffle_scrubs == 'off':
             # nayru's love may be required to prevent forced damage
             exclude_item_list.append('Nayrus Love')
+        if self.hints != 'agony':
+            # Stone of Agony only required if it's used for hints
+            exclude_item_list.append('Stone of Agony')
 
         # The idea here is that if an item shows up in woth, then the only way
         # that another copy of that major item could ever be required is if it

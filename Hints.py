@@ -233,7 +233,7 @@ def get_barren_hint(spoiler, world, checked):
 
     checked.append(area)
 
-    return (buildHintString(colorText(area, 'Pink') + " is barren of treasure."), None)
+    return (buildHintString("plundering " + colorText(area, 'Pink') + " is a foolish choice."), None)
 
 
 def get_good_loc_hint(spoiler, world, checked):
@@ -430,7 +430,7 @@ def buildGossipHints(spoiler, world):
     if world.trials_random and world.trials == 6:
         add_hint(spoiler, world, stoneIDs, buildHintString(colorText("Ganon's Tower", 'Pink') + " is protected by a powerful barrier."), hint_dist['trial'][1], force_reachable=True)
     elif world.trials_random and world.trials == 0:
-        add_hint(spoiler, world, stoneIDs, buildHintString("Sheik dispelled the barrier around " + colorText("Ganon's Tower", 'Yellow')), hint_dist['trial'][1], force_reachable=True)
+        add_hint(spoiler, world, stoneIDs, buildHintString("Sheik dispelled the barrier around " + colorText("Ganon's Tower", 'Yellow')  + "."), hint_dist['trial'][1], force_reachable=True)
     elif world.trials < 6 and world.trials > 3:
         for trial,skipped in world.skipped_trials.items():
             if skipped:
@@ -532,8 +532,7 @@ def buildGanonText(world, messages):
     if world.trials == 0:
         location = world.light_arrow_location
         text = get_raw_text(getHint('Light Arrow Location', world.clearer_hints).text)
-        location_hint = location.hint.replace('Ganon\'s Castle', 'my castle') \
-                                     .replace('Ganon\'s Tower', 'my tower')
+        location_hint = location.hint.replace('Ganon\'s Castle', 'my castle')
         if world.id != location.world.id:
             text += "\x05\x42Player %d's\x05\x40 %s" % (location.world.id +1, get_raw_text(location_hint))
         else:

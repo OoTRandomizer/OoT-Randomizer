@@ -235,12 +235,11 @@
     j       heart_container_draw
     nop
 
-; Replaces:
-;   addiu   sp, sp, -0x18
-;   sw      ra, 0x14 (sp)
-.org 0xDE0FF8
-    j       item_etcetera_draw
+.org 0xDE1018
+.area 10 * 4, 0
+    jal     item_etcetera_draw
     nop
+.endarea
 
 ; Replaces:
 ;   addiu   sp, sp, -0x18
@@ -1030,7 +1029,7 @@ skip_GS_BGS_text:
 ;
 ; Dig Anyere
 .org 0xCC3FA8
-    sb      at, 0x1F8(s0) 
+    sb      at, 0x1F8(s0)
 
 ; Always First Try
 .org 0xCC4024
@@ -1050,3 +1049,11 @@ skip_GS_BGS_text:
 ; Replaces: SH  T9, 0x00B4 (S0)
 .org 0xC82550
    nop
+
+;==================================================================================================
+; Never override menu subscreen index
+;==================================================================================================
+
+; Replaces: bnezl t7, 0xAD1988 ; 0x8005BA28
+.orga 0xAD193C ; 0x8005B9DC
+    b . + 0x4C

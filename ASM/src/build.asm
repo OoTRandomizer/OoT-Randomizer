@@ -27,7 +27,9 @@
 
 .org 0x80400000
 .area 0x10000
+.area 0x1000, 0
 .include "coop_state.asm" ; This should always come first
+.endarea
 .include "config.asm"
 .include "init.asm"
 .include "item_overrides.asm"

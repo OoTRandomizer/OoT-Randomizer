@@ -6,12 +6,12 @@ rainbow_bridge:
     li        at, 0x3F ; medallions
 
     li        at, 2
-    beq       t2, at, @@return
-    li        at, 0x1C003F ; stones and medallions
+    beq       t2, at, @@rainbow_bridge_dungeons
+    nop     
 
     li        at, 3
     beq       t2, at, @@return
-    li        at, 0x1C0000 ; stones
+    lui       at, 0x1C ; stones 0x1C0000
 
     li        at, 4
     beq       t2, at, @@rainbow_bridge_vanilla

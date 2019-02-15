@@ -379,6 +379,9 @@ setting_infos = [
     Setting_Info('output_dir', str, 0, False, {
             'default': '',
             'help': 'Path to output directory for rom generation.'}),
+    Setting_Info('output_file', str, 0, False, {
+            'default': '',
+            'help': 'File name base to use for all generated files.'}),
     Setting_Info('seed', str, 0, False, {
             'help': 'Define seed number to generate.'}),
     Setting_Info('patch_file', str, 0, False, {
@@ -1026,8 +1029,6 @@ setting_infos = [
                              'Random Prices': All Scrub prices will be
                              between 0-99 rupees. This will on average
                              be very, very expensive overall.
-        
-                             The texts of the Scrubs are not updated.
                              ''',
             shared         = True,
             ),
@@ -2097,13 +2098,13 @@ setting_infos = [
             name           = 'sfx_ocarina',
             default        = 'ocarina',
             choices        = {
-                'ocarina':     'Default',
-                'random':      'Random Choice',
-                'flute':       'Flute',
-                'harp':        'Harp',
-                'whistle':     'Whistle',
-                'malon':       'Malon',
-                'grind-organ': 'Grind Organ',
+                'ocarina':       'Default',
+                'random-choice': 'Random Choice',
+                'flute':         'Flute',
+                'harp':          'Harp',
+                'whistle':       'Whistle',
+                'malon':         'Malon',
+                'grind-organ':   'Grind Organ',
                 },
             args_help      = '''\
                              Change the sound of the ocarina.

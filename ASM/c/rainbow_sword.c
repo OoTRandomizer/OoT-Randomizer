@@ -8,8 +8,8 @@ static uint32_t frames = 0;
 #define CYCLE_FRAMES_OUTER 10
 #define CYCLE_FRAMES_INNER 12
 
-uint8_t cfg_rainbow_sword_inner_enabled = 0;
-uint8_t cfg_rainbow_sword_outer_enabled = 0;
+extern uint8_t CFG_RAINBOW_SWORD_INNER_ENABLED;
+extern uint8_t CFG_RAINBOW_SWORD_OUTER_ENABLED;
 
 typedef struct
 {
@@ -70,14 +70,14 @@ void update_color()
     frames++;
     colorRGBA_t *sword_trail = (colorRGBA_t*)0x80115DCE;
 
-    if (cfg_rainbow_sword_inner_enabled)
+    if (CFG_RAINBOW_SWORD_INNER_ENABLED)
     {
         colorRGB_t colorInner = get_color(frames, CYCLE_FRAMES_INNER);
         sword_trail[1].color = colorInner;
         sword_trail[3].color = colorInner;
     }
 
-    if (cfg_rainbow_sword_outer_enabled)
+    if (CFG_RAINBOW_SWORD_OUTER_ENABLED)
     {
         colorRGB_t colorOuter = get_color(frames, CYCLE_FRAMES_OUTER);
         sword_trail[0].color = colorOuter;
