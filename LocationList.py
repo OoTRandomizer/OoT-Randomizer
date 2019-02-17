@@ -786,3 +786,14 @@ business_scrubs = [
     (0x77, 40,   0x10DC, ["enable you to pick up more\x01\x05\x41Deku Sticks", "sell you a \x05\x42mysterious item"]),
     (0x79, 40,   0x10DD, ["enable you to pick up more \x05\x41Deku\x01Nuts", "sell you a \x05\x42mysterious item"]),
 ]
+
+game_location_names = [
+    'Horseback Archery 1000 Points',
+    'Horseback Archery 1500 Points',
+    'Child Shooting Gallery',
+    'Adult Shooting Gallery',
+    'Frog Ocarina Game',
+    'Ocarina Memory Game',
+    'Diving Minigame',
+    'Treasure Chest Game'
+]

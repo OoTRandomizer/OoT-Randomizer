@@ -991,6 +991,21 @@ setting_infos = [
             default        = True,
             shared         = True,
             ),
+    Checkbutton(
+        name               = 'can_require_games',
+        args_help          = '''\
+                             If disabled game rewards, such as those from the shooting, 
+                             galleries will not be required to advance.
+                             ''',
+        gui_text           = 'Require game rewards',
+        gui_group          = 'shuffle',
+        gui_tooltip        = '''\
+                             If disabled game rewards, such as those from the shooting, 
+                             galleries will not be required to advance.
+                             ''',
+        default            = True,
+        shared             = True,
+    ),
     Combobox(
             name           = 'shuffle_scrubs',
             default        = 'off',
