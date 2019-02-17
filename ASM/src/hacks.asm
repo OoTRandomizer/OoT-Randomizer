@@ -846,9 +846,9 @@ skip_GS_BGS_text:
 
 ; Dampe Chest spawn condition looks at chest flag instead of having obtained hookshot
 .org 0xDFEC3C
-    lw      t8, (SAVE_CONTEXT + 0xD4 + (0x48 * 0x1C)) ; Scene flags
+    lw      t8, (SAVE_CONTEXT + 0xDC + (0x48 * 0x1C)) ; Scene clear flags
     addiu   a1, sp, 0x24
-    andi    t9, t8, 0x0001
+    andi    t9, t8, 0x0010 ; clear flag 4
     nop
 
 ; Darunia sets an event flag and checks for it
