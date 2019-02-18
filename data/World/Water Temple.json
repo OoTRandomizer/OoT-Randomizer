@@ -5,6 +5,10 @@
         "locations": {
             "Water Temple Map Chest": "Iron_Boots",
             "Water Temple Compass Chest": "Iron_Boots",
+            "Water Temple Cracked Wall Chest": "
+                Iron_Boots and can_play(Zeldas_Lullaby) and has_explosives and
+                    ((logic_water_cracked_wall_hovers and Hover_Boots) or
+                    (has_bow or can_use(Dins_Fire) or (Small_Key_Water_Temple, 5)))",
             "Water Temple Torches Chest": "
                 (has_bow or can_use(Dins_Fire)) and 
                 can_play(Zeldas_Lullaby) and Iron_Boots",
@@ -48,7 +52,6 @@
         "dungeon": "Water Temple",
         "locations": {
             "Water Temple Central Pillar Chest": "has_ZoraTunic",
-            "Water Temple Cracked Wall Chest": "has_explosives",
             "GS Water Temple Central Room": "can_use(Longshot) or can_use(Farores_Wind)"
         }
     },

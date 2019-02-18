@@ -52,7 +52,8 @@
         "exits": {
             "Fire Temple Upper": "
                 (Small_Key_Fire_Temple, 8) or 
-                ((Small_Key_Fire_Temple, 7) and can_use(Hover_Boots) and can_use(Hammer))"
+                ((Small_Key_Fire_Temple, 7) and
+                    ((can_use(Hover_Boots) and can_use(Hammer)) or logic_fire_flame_maze))"
         }
     },
     {

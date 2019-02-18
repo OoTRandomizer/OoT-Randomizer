@@ -52,7 +52,6 @@
                 (Small_Key_Spirit_Temple, 5) and can_play(Song_of_Time)",
             "Spirit Temple MQ Boss Key Chest": "
                 (Small_Key_Spirit_Temple, 5) and can_play(Song_of_Time) and Mirror_Shield",
-            "GS Spirit Temple MQ Sun Block Room": "True",
             "GS Spirit Temple MQ Iron Knuckle West": "(Small_Key_Spirit_Temple, 7)",
             "GS Spirit Temple MQ Iron Knuckle North": "(Small_Key_Spirit_Temple, 7)"
         },
@@ -77,6 +76,9 @@
                 (has_slingshot and has_bow)",
             "Spirit Temple MQ Sun Block Room Chest": "
                 can_play(Song_of_Time) or 
+                (can_use(Longshot) and can_use(Silver_Gauntlets))",
+            "GS Spirit Temple MQ Sun Block Room": "
+                (logic_spirit_mq_sun_block_gs and can_play(Song_of_time) and Boomerang) or
                 (can_use(Longshot) and can_use(Silver_Gauntlets))"
         },
         "exits": {

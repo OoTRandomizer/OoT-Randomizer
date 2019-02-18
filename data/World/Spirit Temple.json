@@ -121,8 +121,10 @@
                     ((Small_Key_Spirit_Temple, 3) or 
                         ((Small_Key_Spirit_Temple, 2) and Boomerang and bombchus_in_logic)))",
             "GS Spirit Temple Lobby": "
-                can_use(Silver_Gauntlets) and (Small_Key_Spirit_Temple, 3) and 
-                (Progressive_Hookshot or Hover_Boots)"
+                ((has_explosives or (Small_Key_Spirit_Temple, 3) or ((Small_Key_Spirit_Temple, 2) and bombchus_in_logic)) and 
+                    logic_spirit_lobby_gs and Boomerang and (Progressive_Hookshot or Hover_Boots)) or
+                (logic_spirit_lobby_gs and (Small_Key_Spirit_Temple, 5) and has_explosives and can_play(Requiem_of_Spirit) and Boomerang) or
+                ((Small_Key_Spirit_Temple, 3) and can_use(Silver_Gauntlets) and (Progressive_Hookshot or Hover_Boots))"
         },
         "exits": {
             "Spirit Temple Outdoor Hands": "True",
@@ -152,7 +154,7 @@
         "exits": {
             "Spirit Temple Beyond Final Locked Door": "
                 (Small_Key_Spirit_Temple, 5) and 
-                (can_use(Longshot) or has_bombchus or 
+                (logic_spirit_wall or can_use(Longshot) or has_bombchus or 
                     ((has_bombs or has_nuts or can_use(Dins_Fire)) and 
                         (has_bow or can_use(Hookshot) or Hammer)))"
         }

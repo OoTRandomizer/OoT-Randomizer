@@ -259,7 +259,7 @@
             "Hyrule Field": "True",
             "Lake Hylia": "True",
             "Gerudo Valley Far Side": "
-                Epona or can_use(Longshot) or ((gerudo_fortress == 'open') and is_adult)"
+                is_adult and (Epona or can_use(Longshot) or (gerudo_fortress == 'open'))"
         }
     },
     {
@@ -293,7 +293,7 @@
             "GS Gerudo Fortress Archery Range": "
                 can_use(Hookshot) and Carpenter_Rescue and nighttime",
             "GS Gerudo Fortress Top Floor": "
-                nighttime and (can_use(Bow) or can_use(Hookshot) or 
+                nighttime and (Carpenter_Rescue or can_use(Bow) or can_use(Hookshot) or 
                     can_use(Hover_Boots) or logic_gerudo_kitchen)"
         },
         "exits": {
@@ -962,7 +962,8 @@
         "region_name": "Zora River Shared",
         "locations": {
             "Zora River Lower Freestanding PoH": "
-                has_explosives or can_dive or can_use(Hover_Boots)",
+                has_explosives or can_dive or
+                    (is_adult and (logic_zora_river_lower or Hover_Boots))",
             "Zora River Upper Freestanding PoH": "
                 has_explosives or can_dive or can_use(Hover_Boots)"
         },

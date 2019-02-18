@@ -21,7 +21,8 @@
             "Jabu Jabus Belly MQ Basement North Chest": "True",
             "Jabu Jabus Belly MQ Boomerang Room Small Chest": "True",
             "MQ Boomerang Chest": "True",
-            "GS Jabu Jabu MQ Boomerang Room": "can_play(Song_of_Time)"
+            "GS Jabu Jabu MQ Boomerang Room": "
+                can_play(Song_of_Time) or (logic_jabu_mq_sot_gs and Boomerang)"
         },
         "exits": {
             "Jabu Jabus Belly Beginning": "True",

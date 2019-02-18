@@ -34,7 +34,8 @@
             "Shadow Temple Invisible Spikes Chest": "(Small_Key_Shadow_Temple, 2)",
             "Shadow Temple Freestanding Key": "
                 (Small_Key_Shadow_Temple, 2) and Progressive_Hookshot and 
-                (has_bombs or Progressive_Strength_Upgrade)",
+                (has_bombs or Progressive_Strength_Upgrade or
+                    (logic_shadow_freestanding_key and has_bombchus))",
             "GS Shadow Temple Like Like Room": "Progressive_Hookshot",
             "GS Shadow Temple Crusher Room": "Progressive_Hookshot",
             "GS Shadow Temple Single Giant Pot": "(Small_Key_Shadow_Temple, 2) and Progressive_Hookshot"
