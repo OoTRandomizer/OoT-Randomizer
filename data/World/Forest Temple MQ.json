@@ -108,7 +108,7 @@
         "exits": {
             "Forest Temple Falling Room": "
                 (Small_Key_Forest_Temple, 5) and 
-                (can_use(Bow) or can_use(Dins_Fire))" # Only 5 keys because the door you could waste your key on is the door you're trying to use keys to get to.
+                (can_use(Bow) or can_use(Dins_Fire))"
         }
     },
     {
