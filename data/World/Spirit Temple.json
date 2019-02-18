@@ -74,6 +74,7 @@
                 Progressive_Hookshot and can_play(Zeldas_Lullaby)",
             "Spirit Temple Early Adult Right Chest": "
                 has_bow or Progressive_Hookshot or has_bombchus", 
+                #requires a very specific Bombchu use, Hover Boots can be skipped by jumping on top of the rolling rock.
             "Spirit Temple First Mirror Right Chest": "(Small_Key_Spirit_Temple, 3)",
             "Spirit Temple First Mirror Left Chest": "(Small_Key_Spirit_Temple, 3)",
             "GS Spirit Temple Boulder Room": "

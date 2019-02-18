@@ -21,6 +21,9 @@
                 (can_play(Zeldas_Lullaby) or keysanity) and 
                 (logic_water_bk_chest or (has_explosives and Progressive_Strength_Upgrade) or Hover_Boots) and 
                 can_use(Longshot)",
+            # If the player leaves the dungeon without collecting the item at Morpha Heart,
+            # they won't be able to come back without Iron Boots.
+            # If it is the Iron Boots or an item required to get them, it means a soft-lock.
             "Morpha Heart": "Boss_Key_Water_Temple and can_use(Longshot) and Iron_Boots",
             "Morpha": "Boss_Key_Water_Temple and can_use(Longshot)",
             "GS Water Temple South Basement": "has_explosives and can_play(Zeldas_Lullaby) and Iron_Boots",
@@ -28,6 +31,7 @@
                 can_use(Longshot) and Iron_Boots and 
                 (can_play(Zeldas_Lullaby) or keysanity) and 
                 (Small_Key_Water_Temple, 5)" 
+                # Longshot just reaches without the need to actually go near
         },
         "exits": {
             "Lake Hylia": "True",

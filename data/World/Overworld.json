@@ -1133,6 +1133,7 @@
             "Deku Theater Mask of Truth": "
                 (Zeldas_Letter and can_play(Sarias_Song) and 
                     Kokiri_Emerald and Goron_Ruby and Zora_Sapphire and guarantee_hint)" 
+                    #Must befriend Skull Kid to sell Skull Mask, all stones to spawn running man.
         }
     },
     {

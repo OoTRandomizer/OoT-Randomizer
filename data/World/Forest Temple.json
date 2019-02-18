@@ -39,9 +39,9 @@
         "exits": {
             "Forest Temple NW Outdoors": "
                 can_use(Iron_Boots) or can_use(Longshot) or (Progressive_Scale, 2) or 
-                (logic_forest_vines and can_use(Hookshot))",
+                (logic_forest_vines and can_use(Hookshot))", #Longshot can grab some very high up vines to drain the well.
             "Forest Temple Lobby": "True",
-            "Forest Temple Falling Room": "False"
+            "Forest Temple Falling Room": "False" #For some reason you can't actually activate this from below. Cool game.
         }
     },
     {
