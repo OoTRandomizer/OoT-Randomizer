@@ -210,7 +210,6 @@ logic_tricks = {
                     Silver Rupee Chest. May need to make multiple
                     trips.
                     '''},
-
     'Child Deadhand without Kokiri Sword': {
         'name'    : 'logic_child_deadhand',
         'tooltip' : '''\
@@ -283,6 +282,12 @@ logic_tricks = {
                     near Goron City and walk up the
                     very steep slope.
                     '''},
+    'Zora\'s Domain Entry with Cucco': {
+        'name'    : 'logic_zora_with_cucco',
+        'tooltip' : '''\
+                    Can fly behind the waterfall with
+                    a cucco as child.
+                    '''},
     'Gerudo Training Grounds MQ Left Side Silver Rupees with Hookshot': {
         'name'    : 'logic_gtg_mq_with_hookshot',
         'tooltip' : '''\
@@ -338,6 +343,62 @@ logic_tricks = {
                     shot is to first spawn a Song of Time block, and then
                     stand on the very edge of it.
                     '''},
+    'Spirit Temple Shifting Wall with No Additional Items': {
+        'name'    : 'logic_spirit_wall',
+        'tooltip' : '''\
+                    The logic normally guarantees a way of dealing with both
+                    the Beamos and the Walltula before climbing the wall.
+                    '''},
+    'Spirit Temple Main Room GS with Boomerang': {
+        'name'    : 'logic_spirit_lobby_gs',
+        'tooltip' : '''\
+                    Standing on the highest part of the arm of the statue, a
+                    precise Boomerang throw can kill and obtain this Gold
+                    Skulltula. You must throw the Boomerang slightly off to
+                    the side so that it curves into the Skulltula, as aiming
+                    directly at it will clank off of the wall in front.
+                    '''},
+    'Spirit Temple MQ Sun Block Room GS with Boomerang': {
+        'name'    : 'logic_spirit_mq_sun_block_gs',
+        'tooltip' : '''\
+                    Throw the Boomerang in such a way that it
+                    curves through the side of the glass block
+                    to hit the Gold Skulltula.
+                    '''},
+    'Jabu MQ Song of Time Block GS with Boomerang': {
+        'name'    : 'logic_jabu_mq_sot_gs',
+        'tooltip' : '''\
+                    Allow the Boomerang to return to you through
+                    the Song of Time block to grab the token.
+                    '''},
+    'Bottom of the Well MQ Dead Hand Freestanding Key with Boomerang': {
+        'name'    : 'logic_botw_mq_dead_hand_key',
+        'tooltip' : '''\
+                    Boomerang can fish the item out of the rubble without
+                    needing explosives to blow it up.
+                    '''},
+    'Fire Temple Flame Wall Maze Skip': {
+        'name'    : 'logic_fire_flame_maze',
+        'tooltip' : '''\
+                    If you move quickly you can sneak past the edge of
+                    a flame wall before it can rise up to block you.
+                    To do it without taking damage is more precise.
+                    '''},
+    'Fire Temple MQ Chest Near Boss without Breaking Crate': {
+        'name'    : 'logic_fire_mq_near_boss',
+        'tooltip' : '''\
+                    The hitbox for the torch extends a bit outside of the crate.
+                    Shoot a flaming arrow at the side of the crate to light the
+                    torch without needing to get over there and break the crate.
+                    '''},
+    'Fire Temple MQ Boulder Maze Side Room without Box': {
+        'name'    : 'logic_fire_mq_maze_side_room',
+        'tooltip' : '''\
+                    You can walk from the blue switch to the door and
+                    quickly open the door before the bars reclose. This
+                    skips needing the Hookshot in order to reach a box
+                    to place on the switch.
+                    '''},
     'Fire Temple MQ Boss Key Chest without Bow': {
         'name'    : 'logic_fire_mq_bk_chest',
         'tooltip' : '''\
@@ -346,11 +407,24 @@ logic_tricks = {
                     oversight in the way the game counts how many
                     torches have been lit.
                     '''},
-    'Zora\'s Domain Entry with Cucco': {
-        'name'    : 'logic_zora_with_cucco',
+    'Zora\'s River Lover Freestanding PoH as Adult with Nothing': {
+        'name'    : 'logic_zora_river_lower',
         'tooltip' : '''\
-                    Can fly behind the waterfall with
-                    a cucco as child.
+                    Adult can reach this PoH with a precise jump,
+                    no Hover Boots required.
+                    '''},
+    'Water Temple Cracked Wall with Hover Boots': {
+        'name'    : 'logic_water_cracked_wall_hovers',
+        'tooltip' : '''\
+                    With a midair side-hop while wearing the Hover
+                    Boots, you can reach the cracked wall without
+                    needing to raise the water up to the middle level.
+                    '''},
+    'Shadow Temple Freestanding Key with Bombchu': {
+        'name'    : 'logic_shadow_freestanding_key',
+        'tooltip' : '''\
+                    Release the Bombchu with good timing so that
+                    it explodes near the bottom of the pot.
                     '''},
     'Zora\'s Domain Entry with Hover Boots': {
         'name'    : 'logic_zora_with_hovers',
