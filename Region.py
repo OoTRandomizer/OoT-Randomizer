@@ -49,7 +49,7 @@ class Region(object):
 
     def can_reach(self, state):
         for entrance in self.entrances:
-            if state.can_reach(entrance):
+            if entrance.can_reach(state):
                 return True
         return False
 
