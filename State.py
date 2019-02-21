@@ -8,8 +8,6 @@ class State(object):
         self.prog_items = Counter()
         self.world = parent
         self.region_cache = {}
-        self.location_cache = {}
-        self.entrance_cache = {}
         self.recursion_count = 0
         self.collected_locations = {}
 
@@ -17,8 +15,6 @@ class State(object):
     def clear_cached_unreachable(self):
         # we only need to invalidate results which were False, places we could reach before we can still reach after adding more items
         self.region_cache = {k: v for k, v in self.region_cache.items() if v}
-        self.location_cache = {k: v for k, v in self.location_cache.items() if v}
-        self.entrance_cache = {k: v for k, v in self.entrance_cache.items() if v}
 
 
     def copy(self, new_world=None):
@@ -27,8 +23,6 @@ class State(object):
         new_state = State(new_world)
         new_state.prog_items = copy.copy(self.prog_items)
         new_state.region_cache = copy.copy(self.region_cache)
-        new_state.location_cache = copy.copy(self.location_cache)
-        new_state.entrance_cache = copy.copy(self.entrance_cache)
         new_state.collected_locations = copy.copy(self.collected_locations)
         return new_state
 
@@ -36,22 +30,20 @@ class State(object):
     def can_reach(self, spot, resolution_hint=None):
         try:
             spot_type = spot.spot_type
-            if spot_type == 'Location':
-                correct_cache = self.location_cache
+            if spot_type == 'Location' or spot_type == 'Entrance':
+                return spot.can_reach(self)
             elif spot_type == 'Region':
                 correct_cache = self.region_cache
-            elif spot_type == 'Entrance':
-                correct_cache = self.entrance_cache
             else:
                 raise AttributeError
         except AttributeError:
             # try to resolve a name
             if resolution_hint == 'Location':
                 spot = self.world.get_location(spot)
-                correct_cache = self.location_cache
+                return spot.can_reach(self)
             elif resolution_hint == 'Entrance':
                 spot = self.world.get_entrance(spot)
-                correct_cache = self.entrance_cache
+                return spot.can_reach(self)
             else:
                 # default to Region
                 spot = self.world.get_region(spot)
@@ -324,10 +316,8 @@ class State(object):
             if self.prog_items[item.name] <= 0:
                 del self.prog_items[item.name]
 
-            # invalidate collected cache. unreachable locations are still unreachable
+            # invalidate collected cache. unreachable regions are still unreachable
             self.region_cache =   {k: v for k, v in self.region_cache.items() if not v}
-            self.location_cache = {k: v for k, v in self.location_cache.items() if not v}
-            self.entrance_cache = {k: v for k, v in self.entrance_cache.items() if not v}
             self.recursion_count = 0
 
 
