@@ -498,10 +498,25 @@ junk_pool_base = [
     ('Rupees (20)',     4),
     ('Rupees (50)',     1),
 ]
+
+pending_junk_pool = []
 junk_pool = []
+
 def get_junk_item(count=1):
-    junk_items, junk_weights = zip(*junk_pool)
-    return random_choices(junk_items, weights=junk_weights, k=count)
+    if count < 1:
+        raise ValueError("get_junk_item argument 'count' must be greater than 0.")
+
+    random_count = (count - len(pending_junk_pool))
+    return_pool = []
+
+    if pending_junk_pool:
+        return_pool += [pending_junk_pool.pop() for _ in range(0, (count) if random_count <= 0 else len(pending_junk_pool))]
+
+    if random_count > 0:
+        junk_pool_dict = {item: weight for item, weight in junk_pool}
+        return_pool += random_choices(list(junk_pool_dict.keys()), weights=list(junk_pool_dict.values()), k=random_count)
+
+    return return_pool
 
 
 def replace_max_item(items, item, max):
@@ -763,6 +778,9 @@ def get_pool_core(world):
 
     if world.shuffle_gerudo_card and world.gerudo_fortress != 'open':
         pool.append('Gerudo Membership Card')
+    elif world.shuffle_gerudo_card:
+        pending_junk_pool.append('Gerudo Membership Card')
+        placed_items['Gerudo Fortress Membership Card'] = 'Ice Trap'
     else:
         placed_items['Gerudo Fortress Membership Card'] = 'Gerudo Membership Card'
 
@@ -936,6 +954,24 @@ def get_pool_core(world):
         replace_max_item(pool, 'Progressive Wallet', 0)
         for i in [1, 2, 3]: # collect wallets
             world.state.collect(ItemFactory('Progressive Wallet'))
+
+    # Make sure our pending_junk_pool is empty. If not, remove some random junk here.
+    if pending_junk_pool:
+        remove_junk_pool = junk_pool_base + [('Recovery Heart', 1), ('Bombs (20)', 1), ('Arrows (30)', 1), ('Ice Trap', 1)]
+        junk_pool_dict = {item: weight for item, weight in remove_junk_pool}
+        remove_junk = random_choices(list(junk_pool_dict.keys()), weights=list(junk_pool_dict.values()), k=len(pending_junk_pool))
+        while remove_junk:
+            junk_item = remove_junk.pop()
+            try:
+                pool.remove(junk_item)
+            except ValueError:
+                junk_pool_dict.pop(junk_item)
+                if junk_pool_dict:
+                    remove_junk.extend(random_choices(list(junk_pool_dict.keys()), weights=list(junk_pool_dict.values()), k=1))
+                    continue
+                else:
+                    raise RuntimeError("Not enough junk exists in item pool for all pending_junk_items to be added.")
+            pool.append(pending_junk_pool.pop())
 
     return (pool, placed_items)
 

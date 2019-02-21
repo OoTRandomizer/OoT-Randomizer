@@ -838,7 +838,8 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
 
     # open gerudo fortress
     if world.gerudo_fortress == 'open':
-        write_bits_to_save(0x00A5, 0x40) # Give Gerudo Card
+        if not world.shuffle_gerudo_card:
+            write_bits_to_save(0x00A5, 0x40) # Give Gerudo Card
         write_bits_to_save(0x0EE7, 0x0F) # Free all 4 carpenters
         write_bits_to_save(0x00D4 + 0x0C * 0x1C + 0x04 + 0x1, 0x0F) # Thieves' Hideout switch flags (started all fights)
         write_bits_to_save(0x00D4 + 0x0C * 0x1C + 0x04 + 0x2, 0x01) # Thieves' Hideout switch flags (heard yells/unlocked doors)
