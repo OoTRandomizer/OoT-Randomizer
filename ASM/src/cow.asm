@@ -5,6 +5,8 @@ cow_item_hook:
     beqz    t0, @@return
     nop
     lh      a2, 0x014 (a0) ; Load cow id (1 or 2)
+    beqzl   a2, @@return ; If the cow ID is zero, this cow should not give an item, so give milk
+    addiu   a2, r0, 0x50
     lb      t0, 0x1D44 (a1) ; Load scene collect flag
     and     t3, a2, t0
     bnezl   t3, @@return
@@ -26,9 +28,11 @@ cow_bottle_check:
     beqz    t0, @@bottle_check
     nop
     lh      t0, 0x014 (s0)
+    beqz    t0, @@bottle_check ; If this cow doesnt give an item, check for bottle
+    nop
     lb      t1, 0x1D44 (s1)
     and     t0, t0, t1 ; Get flag for cow
-    addiu     v0, r0, 0x1 ; Default to has a bottle
+    addiu   v0, r0, 0x1 ; Default to has a bottle
     beqz    t0, @@return ; Dont check for bottle if the collect flag is not set
     nop
 @@bottle_check:
@@ -47,7 +51,6 @@ cow_after_init:
     lh      t0, 0xB4 (a0)
     beqz    t0, @@return
     nop
-    sh      t0, 0x4A8 (a0)
     sh      r0, 0xB0 (a0)
 @@return:
     jr      ra

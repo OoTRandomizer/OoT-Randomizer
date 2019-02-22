@@ -46,6 +46,7 @@
         "region_name": "Jabu Jabus Belly Boss Area",
         "dungeon": "Jabu Jabus Belly",
         "locations": {
+            "Jabu Jabus Belly MQ Cow" : "True", 
             "Jabu Jabus Belly MQ Second Room Upper Chest": "True",
             "Jabu Jabus Belly MQ Near Boss Chest": "True",
             "Barinade Heart": "True",

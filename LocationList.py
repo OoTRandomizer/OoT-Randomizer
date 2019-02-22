@@ -189,6 +189,7 @@ location_table = {
     "Jabu Jabus Belly MQ Falling Like Like Room Chest":("Chest",       0x02,  0x09, "Jabu Jabu's Belly",      None),
     "Jabu Jabus Belly MQ Boomerang Room Small Chest":  ("Chest",       0x02,  0x01, "Jabu Jabu's Belly",      None),
     "MQ Boomerang Chest":                              ("Chest",       0x02,  0x06, "Jabu Jabu's Belly",      None),
+    "Jabu Jabus Belly MQ Cow":                         ("NPC",         0x02,  0x15, "Jabu Jabu's Belly",      None),
 
     # Forest Temple vanilla
     "Forest Temple First Chest":                       ("Chest",       0x03,  0x03, "Forest Temple",          None),
@@ -745,6 +746,7 @@ location_table = {
     "Gerudo Valley Cow":                               ("NPC",         0x5A,  0x15, "Gerudo Valley",          None),
     "DMT Grotto Cow":                                  ("NPC",         0x3E,  0x15, "Death Mountain Trail",   None),
     "HF Grotto Cow":                                   ("NPC",         0x3E,  0x16, "Hyrule Field",           None),
+    "MQ JabuCow":                            ("NPC",         0x36,  0x15, "Lon Lon Ranch",          None),
 
     # These are not actual locations, but are filler spots used for hint reachability
     "Death Mountain Crater Gossip Stone":              ("GossipStone", None,  None, None,                     None),

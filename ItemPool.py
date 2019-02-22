@@ -564,7 +564,7 @@ def get_pool_core(world):
         placed_items['Ocarina of Time'] = 'Ocarina'
 
     if world.shuffle_cows:
-        pool.extend(get_junk_item(9))
+        pool.extend(get_junk_item(10 if world.dungeon_mq['Jabu Jabus Belly'] else 9))
     else:
         placed_items['LLR Stables Left Cow'] = 'Milk'
         placed_items['LLR Stables Right Cow'] = 'Milk'
@@ -575,6 +575,9 @@ def get_pool_core(world):
         placed_items['Gerudo Valley Cow'] = 'Milk'
         placed_items['DMT Grotto Cow'] = 'Milk'
         placed_items['HF Grotto Cow'] = 'Milk'
+        if world.dungeon_mq['Jabu Jabus Belly']:
+            placed_items['Jabu Jabus Belly MQ Cow'] = 'Milk'
+        
 
     if world.dungeon_mq['Deku Tree']:
         skulltula_locations_final = skulltula_locations + [
