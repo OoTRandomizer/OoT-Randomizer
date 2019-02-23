@@ -41,7 +41,7 @@ class World(object):
             self.big_poe_count = random.randint(1, 10)
         if self.starting_tod == 'random':
             setting_info = get_setting_info('starting_tod')
-            choices = [ch for ch in setting_info.args_params['choices'] if ch not in ['default', 'random']]
+            choices = [ch for ch in setting_info.choices if ch not in ['default', 'random']]
             self.starting_tod = random.choice(choices)
 
         # rename a few attributes...
