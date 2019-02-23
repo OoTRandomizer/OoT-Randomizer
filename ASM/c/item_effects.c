@@ -71,3 +71,19 @@ void give_song(z64_file_t *save, int16_t quest_bit, int16_t arg2) {
 void ice_trap_effect(z64_file_t *save, int16_t arg1, int16_t arg2) {
     push_pending_ice_trap();
 }
+
+uint8_t OPEN_KAKARIKO = 0;
+uint8_t COMPLETE_MASK_QUEST = 0;
+void open_mask_shop(z64_file_t *save, int16_t arg1, int16_t arg2) {
+    if (OPEN_KAKARIKO) {
+        save->inf_table[7] = save->inf_table[7] | 0x40; // "Spoke to Gate Guard About Mask Shop"
+        if (!COMPLETE_MASK_QUEST) {
+            save->item_get_inf[2] = save->item_get_inf[2] & 0xFB87; // Unset "Obtained Mask" flags just in case of savewarp before Impa.
+        }
+    }
+    if (COMPLETE_MASK_QUEST) {
+        save->inf_table[7] = save->inf_table[7] | 0x80; // "Soldier Wears Keaton Mask"
+        save->item_get_inf[3] = save->item_get_inf[3] | 0x8F00; // "Sold Masks & Unlocked Masks" / "Obtained Mask of Truth"
+        save->event_chk_inf[8] = save->event_chk_inf[8] | 0xF000; // "Paid Back Mask Fees"
+    }
+}

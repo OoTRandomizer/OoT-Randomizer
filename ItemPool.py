@@ -465,7 +465,6 @@ tradeitemoptions = (
 
 eventlocations = {
     'Ganon': 'Triforce',
-    'Zeldas Letter': 'Zeldas Letter',
     'Magic Bean Salesman': 'Magic Bean',
     'King Zora Moves': 'Bottle',
     'Master Sword Pedestal': 'Master Sword',
@@ -553,7 +552,9 @@ def generate_itempool(world):
 
 def get_pool_core(world):
     pool = []
-    placed_items = {}
+    placed_items = {
+        'Zeldas Letter': 'Zeldas Letter',
+    }
 
     if world.shuffle_kokiri_sword:
         pool.append('Kokiri Sword')

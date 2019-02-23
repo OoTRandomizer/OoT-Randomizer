@@ -765,6 +765,16 @@ setting_infos = [
         shared         = True,
     ),
     Checkbutton(
+        name           = 'complete_mask_quest',
+        gui_text       = 'Complete Mask Quest',
+        gui_group      = 'convenience',
+        gui_tooltip    = '''\
+            Once the Happy Mask Shop is opened,
+            all masks will be available to be borrowed.
+        ''',
+        shared         = True,
+    ),
+    Checkbutton(
         name           = 'fast_chests',
         gui_text       = 'Fast Chest Cutscenes',
         gui_group      = 'convenience',
