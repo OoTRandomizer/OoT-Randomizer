@@ -595,10 +595,6 @@ setting_infos = [
             and the Kokiri boy no longer blocks the path out
             of the forest.
 
-            When this option is off, the Kokiri Sword and
-            Slingshot are always available somewhere
-            in the forest.
-
             This is incompatible with start as adult.
         ''',
         default        = True,
