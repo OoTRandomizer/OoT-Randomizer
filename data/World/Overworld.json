@@ -118,7 +118,7 @@
         "exits": {
             "Kokiri Forest": "True",
             "Goron City Woods Warp": "True",
-            "Zora River": "can_dive and can_leave_forest",
+            "Zora River": "can_dive",
             "Lost Woods Beyond Mido": "is_child or logic_adult_meadow_access or can_play(Sarias_Song)",
             "Lost Woods Generic Grotto": "can_blast_or_smash"
         }
@@ -796,8 +796,7 @@
         "region_name": "Goron City Woods Warp",
         "exits": {
             "Goron City": "
-                can_leave_forest and 
-                (as_either_here(can_blast_or_smash or can_use(Dins_Fire)) or 
+                 as_either_here(can_blast_or_smash or can_use(Dins_Fire) or 
                     can_reach('Goron City -> Goron City Woods Warp', Entrance, either))",
             "Lost Woods": "True"
         }
