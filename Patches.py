@@ -26,6 +26,13 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
             rom.write_int32(address, value)
     rom.scan_dmadata_update()
 
+    # Fast Chickens (Spawn all but 3 chickens in the pen to start)
+    # offsets = [0x02016206, 0x02016216, 0x02016226, 0x02016236, 0x02016246, 0x02016256, 0x02016266]
+    offsets = [0x02016216, 0x02016236, 0x02016256, 0x02016266]
+    position = [0x01, 0x38, 0x00, 0x50, 0x05, 0xED]
+    for offset in offsets:
+        rom.write_bytes(offset, position)
+
     # Write Randomizer title screen logo
     with open(data_path('title.bin'), 'rb') as stream:
         titleBytes = stream.read()
