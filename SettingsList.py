@@ -527,7 +527,7 @@ setting_infos = [
         name           = 'create_cosmetics_log',
         gui_text       = 'Create Cosmetics Log',
         gui_group      = 'rom_tab',
-        default        = True,
+        default        = False,
         dependency     = lambda settings: False if settings.compress_rom == 'None' else None,
     ),
     Setting_Info(
@@ -598,6 +598,7 @@ setting_infos = [
 
             Either way, the gate is always open as an adult.
         ''',
+        default=True,
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
@@ -613,6 +614,7 @@ setting_infos = [
             an Ocarina and Song of Time must be found to open
             the Door of Time.
         ''',
+        default=True,
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
@@ -650,7 +652,7 @@ setting_infos = [
     ),
     Combobox(
         name           = 'gerudo_fortress',
-        default        = 'normal',
+        default        = 'fast',
         choices        = {
             'normal': 'Default Behavior',
             'fast':   'Rescue One Carpenter',
@@ -774,7 +776,6 @@ setting_infos = [
             be bought until Bombchus have been
             obtained.
         ''',
-        default        = True,
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
@@ -821,7 +822,7 @@ setting_infos = [
     ),
     Scale(
         name           = 'trials',
-        default        = 6,
+        default        = 0,
         min            = 0,
         max            = 6,
         gui_group      = 'open',
@@ -844,6 +845,7 @@ setting_infos = [
             The tower escape sequence between
             Ganondorf and Ganon will be skipped.
         ''',
+        default        = True,
         shared         = True,
         dependency     = lambda settings: True if settings.entrance_shuffle == 'indoors' else None,
     ),
@@ -855,6 +857,7 @@ setting_infos = [
             The crawlspace into Hyrule Castle goes
             straight to Zelda, skipping the guards.
         ''',
+        default        = True,
         shared         = True,
     ),
     Checkbutton(
@@ -865,6 +868,7 @@ setting_infos = [
             Epona can be summoned with Epona's Song
             without needing to race Ingo.
         ''',
+        default        = True,
         shared         = True,
     ),
     Checkbutton(
@@ -955,7 +959,7 @@ setting_infos = [
     ),
     Scale(
         name           = 'big_poe_count',
-        default        = 10,
+        default        = 1,
         min            = 1,
         max            = 10,
         gui_group      = 'convenience',
@@ -993,7 +997,6 @@ setting_infos = [
             This will require finding an Ocarina before being able
             to play songs.
         ''',
-        default        = True,
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
@@ -1012,7 +1015,6 @@ setting_infos = [
             If Open Kakariko Gate is disabled, the Weird Egg will also
             be required for Zelda's Letter to open the gate as child.
         ''',
-        default        = True,
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
@@ -1045,7 +1047,6 @@ setting_infos = [
             and any location can contain a song. Otherwise, songs
             are only shuffled among themselves.
         ''',
-        default        = True,
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
@@ -1060,7 +1061,6 @@ setting_infos = [
             of cows to give an item. There are 9 cows, and an
             extra in MQ Jabu
         ''',
-        default        = False,
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
@@ -1237,7 +1237,7 @@ setting_infos = [
     ),
     Combobox(
         name           = 'shuffle_mapcompass',
-        default        = 'dungeon',
+        default        = 'startwith',
         choices        = {
             'remove':    'Maps/Compasses: Remove',
             'startwith': 'Maps/Compasses: Start With',
@@ -1352,7 +1352,6 @@ setting_infos = [
             'Maps/Compasses: Start With': The dungeon information
             is available immediately from the dungeon menu.
         ''',
-        default        = False,
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
@@ -1369,6 +1368,7 @@ setting_infos = [
             requirements to make it more likely
             that skipped trials can be avoided.
         ''',
+        default        = True,
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
@@ -1459,7 +1459,7 @@ setting_infos = [
     ),
     Combobox(
         name           = 'logic_earliest_adult_trade',
-        default        = 'pocket_egg',
+        default        = 'prescription',
         choices        = {
             'pocket_egg':   'Earliest: Pocket Egg',
             'pocket_cucco': 'Earliest: Pocket Cucco',
@@ -1554,6 +1554,7 @@ setting_infos = [
             The hints provided by Gossip Stones will
             be very direct if this option is enabled.
         ''',
+        default        = True,
         shared         = True,
     ),
     Combobox(
