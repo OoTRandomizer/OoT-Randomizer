@@ -11,20 +11,48 @@
         "region_name": "Child Spirit Temple",
         "dungeon": "Spirit Temple",
         "locations": {
+            # First condition allows activation of the switch to lower the bridge on the left
+            # Second condition is to clear the enemies in the initial room, the armos is weird
             "Spirit Temple Child Left Chest": "
-                (Boomerang or has_slingshot or (has_bombchus and logic_spirit_child_bombchu)) and 
-                (has_sticks or has_explosives or 
-                    ((has_nuts or Boomerang) and 
-                        (Kokiri_Sword or has_slingshot)))",
+                (
+                Boomerang or has_slingshot or (has_bombchus and logic_spirit_child_bombchu)
+                ) and 
+                (
+                has_sticks or has_explosives or 
+                    ( 
+                        (has_nuts or Boomerang) and 
+                            (Kokiri_Sword or has_slingshot)
+                    )
+                )",
+            # First condition allows activation of the switch to lower the bridge on the left
+            # Second condition is to clear the enemies in the initial room, the armos is weird
+            # Third condition is for the required fire to spawn the chest
             "Spirit Temple Child Right Chest": "
-                (Boomerang or has_slingshot or (has_bombchus and logic_spirit_child_bombchu)) and 
-                (has_sticks or has_explosives or 
-                    ((has_nuts or Boomerang) and (Kokiri_Sword or has_slingshot))) and 
-                (has_sticks or can_use(Dins_Fire))",
+                (
+                Boomerang or has_slingshot or (has_bombchus and logic_spirit_child_bombchu)
+                ) and 
+                (
+                has_sticks or has_explosives or 
+                    (
+                    (has_nuts or Boomerang) and (Kokiri_Sword or has_slingshot)
+                    )
+                ) and 
+                (
+                has_sticks or can_use(Dins_Fire)
+                )",
+            # Second condition to allow for clearing the enemies
+            # First condition either lowers the bridge, or in the case of rang allows access to the right immediately 
             "GS Spirit Temple Metal Fence": "
-                (Boomerang or has_slingshot or (has_bombchus and logic_spirit_child_bombchu)) and 
-                (has_sticks or has_explosives or 
-                    ((has_nuts or Boomerang) and (Kokiri_Sword or has_slingshot)))",
+                (
+                Boomerang or has_slingshot or (has_bombchus and logic_spirit_child_bombchu)
+                ) and 
+                (
+                has_sticks or has_explosives or 
+                    (
+                    (has_nuts or Boomerang) and (Kokiri_Sword or has_slingshot)
+                    )
+                )",
+            # Access to this crate is free, provides infinite nuts to child
             "Spirit Temple Nut Crate": "True"
         },
         "exits": {
@@ -35,33 +63,74 @@
         "region_name": "Child Spirit Temple Climb",
         "dungeon": "Spirit Temple",
         "locations": {
+            # Condition 1 allows for both ages to reach here. the implicit reachability of the main room
+                # is enough to guarantee the ability to open the chest should both child and adult be able to
+                # get here separately
+            # Condition 2 is if only adult has a projectile, this needs to account for out of logic chu usage
+                # on the adult side switch
+            # Condition 3 is only child has a projectile
             "Spirit Temple Child Climb East Chest": "
                 has_projectile(both) or 
-                (((Small_Key_Spirit_Temple, 3) or 
-                    ((Small_Key_Spirit_Temple, 2) and bombchus_in_logic and not shuffle_dungeon_entrances)) and 
-                can_use(Silver_Gauntlets) and has_projectile(adult)) or 
-                ((Small_Key_Spirit_Temple, 5) and is_child and 
-                    has_projectile(child))",
+                (
+                    (
+                    (Small_Key_Spirit_Temple, 3) or 
+                        (
+                        (Small_Key_Spirit_Temple, 2) and bombchus_in_logic and not shuffle_dungeon_entrances
+                        )
+                    ) and 
+                    can_use(Silver_Gauntlets) and has_projectile(adult)
+                ) or 
+                (
+                (Small_Key_Spirit_Temple, 5) and is_child and has_projectile(child)
+                )",
+            # Identical to the above
             "Spirit Temple Child Climb North Chest": "
                 has_projectile(both) or 
-                (((Small_Key_Spirit_Temple, 3) or 
-                    ((Small_Key_Spirit_Temple, 2) and bombchus_in_logic and not shuffle_dungeon_entrances)) and 
-                can_use(Silver_Gauntlets) and has_projectile(adult)) or 
-                ((Small_Key_Spirit_Temple, 5) and is_child and 
-                    has_projectile(child))",
+                (
+                    (
+                    (Small_Key_Spirit_Temple, 3) or 
+                        (
+                        (Small_Key_Spirit_Temple, 2) and bombchus_in_logic and not shuffle_dungeon_entrances
+                        )
+                    ) and 
+                    can_use(Silver_Gauntlets) and has_projectile(adult)
+                ) or 
+                (
+                (Small_Key_Spirit_Temple, 5) and is_child and has_projectile(child)
+                )",
+            # Conditions 1 and 2 allow you to kill the skulltula from afar and jump into the token
+            # Condition 3 allows child to jumpslash the skulltula, however since you take damage you 
+                # need to be able to live through it to climb back up
+            # Condition 4 allows you to kill the skull from afar and jump into the token solely as child
+            # Condition 5 is for adult. he needs access, enough keys even if you waste them, and a way to kill
+                # and collect the token without dying
             "GS Spirit Temple Bomb for Light Room": "
-                has_projectile(both) or can_use(Dins_Fire) or 
-                ((damage_multiplier != 'ohko' or has_bottle or can_use(Nayrus_Love)) and 
-                    (has_sticks or Kokiri_Sword or has_projectile(child))) or 
-                (is_child and 
-                    (Small_Key_Spirit_Temple, 5) and has_projectile(child)) or 
-                (((Small_Key_Spirit_Temple, 3) or 
-                    ((Small_Key_Spirit_Temple, 2) and bombchus_in_logic and not shuffle_dungeon_entrances)) and 
-                can_use(Silver_Gauntlets) and
-                (has_projectile(adult) or damage_multiplier != 'ohko' or 
-                    has_bottle or can_use(Nayrus_Love)))"
+                has_projectile(both) 
+                or 
+                can_use(Dins_Fire) 
+                or 
+                (
+                    (can_live_dmg(0.5) or has_bottle or can_use(Nayrus_Love)) 
+                    and 
+                    (has_sticks or Kokiri_Sword or has_projectile(child))
+                ) or 
+                (
+                is_child and (Small_Key_Spirit_Temple, 5) and has_projectile(child)
+                ) or 
+                (
+                    (
+                    (Small_Key_Spirit_Temple, 3) or 
+                        ((Small_Key_Spirit_Temple, 2) and bombchus_in_logic and not shuffle_dungeon_entrances)
+                    ) and 
+                    can_use(Silver_Gauntlets) 
+                    and
+                    (
+                    has_projectile(adult) or can_live_dmg(0.5) or has_bottle or can_use(Nayrus_Love)
+                    )
+                )"
         },
         "exits": {
+            # Gotta blow up the wall to let the sun shine through
             "Spirit Temple Central Chamber": "has_explosives"
         }
     },
@@ -74,8 +143,10 @@
             "Spirit Temple Early Adult Right Chest": "
                 has_bow or Progressive_Hookshot or has_bombchus", 
                 #requires a very specific Bombchu use, Hover Boots can be skipped by jumping on top of the rolling rock.
+            # Allows for child using his 2 possible keys
             "Spirit Temple First Mirror Right Chest": "(Small_Key_Spirit_Temple, 3)",
             "Spirit Temple First Mirror Left Chest": "(Small_Key_Spirit_Temple, 3)",
+            #Move the block and hit the switch in the previous room
             "GS Spirit Temple Boulder Room": "
                 can_play(Song_of_Time) and 
                 (has_bow or Progressive_Hookshot or has_bombchus)"
@@ -88,24 +159,52 @@
         "region_name": "Spirit Temple Central Chamber",
         "dungeon": "Spirit Temple",
         "locations": {
+            # Condition 1 is if both ages can access, need to make sure adult doesn't waste keys
+                # Subcondition allows for lighting the torch with fire-magic or if you have the trick enabled with just a bow
+            # Condition 2 allows for child alone
+            # Condition 3 allows for adult alone
             "Spirit Temple Map Chest": "
-                ((has_explosives or (Small_Key_Spirit_Temple, 3) or ((Small_Key_Spirit_Temple, 2) and bombchus_in_logic and not shuffle_dungeon_entrances)) and 
-                    (can_use(Dins_Fire) or
-                        (((Magic_Meter and Fire_Arrows) or logic_spirit_map_chest) and has_bow and has_sticks))) or 
-                ((Small_Key_Spirit_Temple, 5) and has_explosives and 
-                    can_use(Sticks)) or 
-                ((Small_Key_Spirit_Temple, 3) and
-                    (can_use(Fire_Arrows) or (logic_spirit_map_chest and has_bow)) and 
-                    can_use(Silver_Gauntlets))",
+                (
+                    (
+                    has_explosives or (Small_Key_Spirit_Temple, 3) or 
+                        ((Small_Key_Spirit_Temple, 2) and bombchus_in_logic and not shuffle_dungeon_entrances)
+                    ) and 
+                    (
+                    has_fire_source_with_torch or
+                        (
+                        logic_spirit_map_chest and has_bow
+                        )
+                    )
+                ) or 
+                (
+                (Small_Key_Spirit_Temple, 5) and has_explosives and can_use(Sticks)
+                ) or 
+                (
+                (Small_Key_Spirit_Temple, 3) and
+                    (
+                    can_use(Fire_Arrows) or (logic_spirit_map_chest and has_bow)
+                    ) and 
+                    can_use(Silver_Gauntlets)
+                )",
             "Spirit Temple Sun Block Room Chest": "
-                ((has_explosives or (Small_Key_Spirit_Temple, 3) or ((Small_Key_Spirit_Temple, 2) and bombchus_in_logic and not shuffle_dungeon_entrance)) and 
-                    (can_use(Dins_Fire) or
-                        (((Magic_Meter and Fire_Arrows) or logic_spirit_sun_chest) and has_bow and has_sticks))) or 
-                ((Small_Key_Spirit_Temple, 5) and has_explosives and
-                    can_use(Sticks)) or 
-                ((Small_Key_Spirit_Temple, 3) and
-                    (can_use(Fire_Arrows) or (logic_spirit_sun_chest and has_bow)) and 
-                    can_use(Silver_Gauntlets))",
+                (
+                    (has_explosives or (Small_Key_Spirit_Temple, 3) or 
+                        ((Small_Key_Spirit_Temple, 2) and bombchus_in_logic and not shuffle_dungeon_entrance)
+                    ) and 
+                    (
+                    has_fire_source_with_torch or (logic_spirit_sun_block and has_bow)
+                    )
+                ) or 
+                (
+                (Small_Key_Spirit_Temple, 5) and has_explosives and can_use(Sticks)
+                ) or 
+                (
+                (Small_Key_Spirit_Temple, 3) and
+                    (
+                    can_use(Fire_Arrows) or (logic_spirit_sun_chest and has_bow)
+                    ) and 
+                    can_use(Silver_Gauntlets)
+                )",
             "Spirit Temple Statue Hand Chest": "
                 (Small_Key_Spirit_Temple, 3) and can_use(Silver_Gauntlets) and 
                 can_play(Zeldas_Lullaby)",
@@ -113,16 +212,33 @@
                 (Small_Key_Spirit_Temple, 3) and can_use(Silver_Gauntlets) and can_play(Zeldas_Lullaby) and 
                 (Progressive_Hookshot or Hover_Boots)",
             "GS Spirit Temple Hall to West Iron Knuckle": "
-                (has_explosives and Boomerang and Progressive_Hookshot) or 
-                (can_use(Boomerang) and (Small_Key_Spirit_Temple, 5) and has_explosives) or 
-                (Progressive_Hookshot and can_use(Silver_Gauntlets) and 
-                    ((Small_Key_Spirit_Temple, 3) or 
-                        ((Small_Key_Spirit_Temple, 2) and Boomerang and bombchus_in_logic and not shuffle_dungeon_entrances)))",
+                (
+                has_explosives and Boomerang and Progressive_Hookshot
+                ) or 
+                (
+                can_use(Boomerang) and (Small_Key_Spirit_Temple, 5) and has_explosives
+                ) or 
+                (
+                Progressive_Hookshot and can_use(Silver_Gauntlets) and 
+                    (
+                    (Small_Key_Spirit_Temple, 3) or 
+                        ((Small_Key_Spirit_Temple, 2) and Boomerang and bombchus_in_logic and not shuffle_dungeon_entrances)
+                    )
+                )",
             "GS Spirit Temple Lobby": "
-                ((has_explosives or (Small_Key_Spirit_Temple, 3) or ((Small_Key_Spirit_Temple, 2) and bombchus_in_logic and not shuffle_dungeon_entrances)) and 
-                    logic_spirit_lobby_gs and Boomerang and (Progressive_Hookshot or Hover_Boots)) or
-                (logic_spirit_lobby_gs and (Small_Key_Spirit_Temple, 5) and has_explosives and can_use(Boomerang)) or
-                ((Small_Key_Spirit_Temple, 3) and can_use(Silver_Gauntlets) and (Progressive_Hookshot or Hover_Boots))"
+                (
+                    (
+                    has_explosives or (Small_Key_Spirit_Temple, 3) or 
+                        ((Small_Key_Spirit_Temple, 2) and bombchus_in_logic and not shuffle_dungeon_entrances)
+                    ) and 
+                    logic_spirit_lobby_gs and Boomerang and (Progressive_Hookshot or Hover_Boots)
+                ) or
+                (
+                logic_spirit_lobby_gs and (Small_Key_Spirit_Temple, 5) and has_explosives and can_use(Boomerang)
+                ) or
+                (
+                (Small_Key_Spirit_Temple, 3) and can_use(Silver_Gauntlets) and (Progressive_Hookshot or Hover_Boots)
+                )"
         },
         "exits": {
             "Spirit Temple Outdoor Hands": "True",
@@ -136,16 +252,27 @@
         "hint": "Desert Colossus",
         "locations": {
             "Silver Gauntlets Chest": "
-                ((Small_Key_Spirit_Temple, 3) and (Progressive_Hookshot, 2) and has_explosives) or 
+                (
+                (Small_Key_Spirit_Temple, 3) and (Progressive_Hookshot, 2) and has_explosives
+                ) or 
                 (Small_Key_Spirit_Temple, 5)",
             "Mirror Shield Chest": "
                 (Small_Key_Spirit_Temple, 4) and can_use(Silver_Gauntlets) and has_explosives"
         },
         "exits": {
             "Desert Colossus": "
-                (is_child and (Small_Key_Spirit_Temple, 5)) or
-                (can_use(Silver_Gauntlets) and
-                    (((Small_Key_Spirit_Temple, 3) and has_explosives) or (Small_Key_Spirit_Temple, 5)))"
+                (
+                is_child and (Small_Key_Spirit_Temple, 5)
+                ) or
+                (
+                can_use(Silver_Gauntlets) and
+                    (
+                        (
+                        (Small_Key_Spirit_Temple, 3) and has_explosives
+                        ) or 
+                        (Small_Key_Spirit_Temple, 5)
+                    )
+                )"
         }
     },
     {
@@ -159,9 +286,17 @@
         "exits": {
             "Spirit Temple Beyond Final Locked Door": "
                 (Small_Key_Spirit_Temple, 5) and 
-                (logic_spirit_wall or can_use(Longshot) or has_bombchus or 
-                    ((has_bombs or has_nuts or can_use(Dins_Fire)) and 
-                        (has_bow or can_use(Hookshot) or Hammer)))"
+                (
+                logic_spirit_wall or can_use(Longshot) or has_bombchus or 
+                    (
+                        (
+                        has_bombs or has_nuts or can_use(Dins_Fire)
+                        ) and 
+                        (
+                        has_bow or can_use(Hookshot) or Hammer
+                        )
+                    )
+                )"
         }
     },
     {
