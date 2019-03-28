@@ -26,13 +26,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
             rom.write_int32(address, value)
     rom.scan_dmadata_update()
 
-    # Fast Chickens (Spawn all but 3 chickens in the pen to start)
-    # offsets = [0x02016206, 0x02016216, 0x02016226, 0x02016236, 0x02016246, 0x02016256, 0x02016266]
-    offsets = [0x02016216, 0x02016236, 0x02016256, 0x02016266]
-    position = [0x01, 0x38, 0x00, 0x50, 0x05, 0xED]
-    for offset in offsets:
-        rom.write_bytes(offset, position)
-
     # Write Randomizer title screen logo
     with open(data_path('title.bin'), 'rb') as stream:
         titleBytes = stream.read()
@@ -97,6 +90,15 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
 
     if world.bombchus_in_logic:
         rom.write_int32(rom.sym('BOMBCHUS_IN_LOGIC'), 1)
+
+    if world.fast_chickens:
+        # All chickens
+        # offsets = [0x02016206, 0x02016216, 0x02016226, 0x02016236, 0x02016246, 0x02016256, 0x02016266]
+        offsets = [0x02016246, 0x02016256, 0x02016266]
+        position = [0x01, 0x38, 0x00, 0x50, 0x05, 0xED]
+        for offset in offsets:
+            rom.write_bytes(offset, position)
+
 
     # Change graveyard graves to not allow grabbing on to the ledge
     rom.write_byte(0x0202039D, 0x20)
@@ -877,6 +879,18 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         rom.write_int32(symbol, 4)
     elif world.bridge == 'tokens':
         rom.write_int32(symbol, 5)
+    elif world.bridge == 'med-open':
+        rom.write_int32(symbol, 0)
+        rom.write_int32(0x00ACCE20, 0x2009003F) # ADDI T1, R0, 0x003F
+        rom.write_bytes(0x00ACCE2C, 0x1549001B) # BNE  T2, T1, 0x80056F3C
+        # Set LACS to GT boss key
+    elif world.bridge == 'ad-open':
+        rom.write_int32(symbol, 0)
+        rom.write_int32(0x00ACCE20, 0x2009003F) # ADDI T1, R0, 0x003F
+        rom.write_bytes(0x00ACCE2C, 0x1549001B) # BNE  T2, T1, 0x80056F3C
+        rom.write_bytes(0x00ACCE34, 0x3C0B001C) # LUI  T3, 0x001C
+        rom.write_bytes(0x00ACCE3C, 0x158B0017) # BNE  T4, T3, 0x80056F3C
+        # Set LACS to GT boss key
 
     if world.open_forest:
         save_context.write_bits(0xED5, 0x10) # "Showed Mido Sword & Shield"

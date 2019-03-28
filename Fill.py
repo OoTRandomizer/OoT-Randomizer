@@ -24,6 +24,10 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
 
     shop_locations = [location for world in worlds for location in world.get_unfilled_locations() if location.type == 'Shop' and location.price == None]
 
+    # Place Ganon's Tower Boss Key at LACS if playing on medallions open or all dungeons open
+    # if worlds[0].bridge == 'med-open' or worlds[0].bridge == 'ad-open':
+    #     worlds[0].get_location('Zelda').push_item(location, 'Boss Key (Ganons Castle)')
+
     # If not passed in, then get a shuffled list of locations to fill in
     if not fill_locations:
         fill_locations = [location for world in worlds for location in world.get_unfilled_locations() \
@@ -412,6 +416,7 @@ def fast_fill(window, locations, itempool):
     while itempool and locations:
         spot_to_fill = locations.pop()
         item_to_place = itempool.pop()
+        # type(spot_to_fill)
         spot_to_fill.world.push_item(spot_to_fill, item_to_place)
         window.fillcount += 1
         window.update_progress(5 + ((window.fillcount / window.locationcount) * 30))

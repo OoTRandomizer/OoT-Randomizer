@@ -681,7 +681,9 @@ setting_infos = [
             'stones':	  'All Spiritual Stones',
             'medallions': 'All Medallions',
             'dungeons':   'All Dungeons',
-            'tokens':     '100 Gold Skulltula Tokens'
+            'tokens':     '100 Gold Skulltula Tokens',
+            'med-open':   'Medallions + Open',
+            'ad-open':    'All Dungeons + Open'
         },
         gui_text       = 'Rainbow Bridge Requirement',
         gui_group      = 'open',
@@ -692,6 +694,8 @@ setting_infos = [
             'All Medallions': All 6 Medallions.
             'All Dungeons': All Medallions and Spiritual Stones.
             '100 Gold Skulltula Tokens': All 100 Gold Skulltula Tokens.
+            'All Dungeons + Open': Open bridge, Ganon Tower boss key at Light Arrows, Light Arrow cutscene requires Medallions/Stones.
+            'Medallions + Open': Open bridge, Ganon Tower Boss Key at Light Arrows, Light Arrow cutscene requires all Medallions.
         ''',
         shared         = True,
         gui_params     = {
@@ -935,6 +939,15 @@ setting_infos = [
             Start the game with 10 Deku sticks and 20 Deku nuts.
             Additionally, start the game with a Deku shield equipped,
             unless playing with the Shopsanity setting.
+        ''',
+        shared         = True,
+    ),
+    Checkbutton(
+        name           = 'fast_chickens',
+        gui_text       = 'Fast Chickens',
+        gui_group      = 'convenience',
+        gui_tooltip    = '''\
+            Move 3 of the cuccos in child Kakariko into the pen.
         ''',
         shared         = True,
     ),
