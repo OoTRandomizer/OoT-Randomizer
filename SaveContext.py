@@ -495,7 +495,7 @@ class SaveContext():
 
             # Equipment
             'equip_items' : {
-                'kokiri_sword'           : Address(0x009C, size=2, mask=0x0001), #Accept86 mask not correct?
+                'kokiri_sword'           : Address(0x009C, size=2, mask=0x0001),
                 'master_sword'           : Address(0x009C, size=2, mask=0x0002),
                 'biggoron_sword'         : Address(0x009C, size=2, mask=0x0004),
                 'broken_knife'           : Address(0x009C, size=2, mask=0x0008),
