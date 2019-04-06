@@ -17,15 +17,9 @@ from Messages import read_messages, update_message_by_id, read_shop_items, \
 from OcarinaSongs import replace_songs
 from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
 from SaveContext import SaveContext
-<<<<<<< HEAD
 from working_navi import working_navi
 
 def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
-=======
-
-
-def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
->>>>>>> origin/HEAD
     with open(data_path('generated/rom_patch.txt'), 'r') as stream:
         for line in stream:
             address, value = [int(x, 16) for x in line.split(',')]
@@ -790,13 +784,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     rom.write_int32(rom.sym('cfg_file_select_hash'), hash_icons)
 
     save_context = SaveContext()
-<<<<<<< HEAD
 
-
-    
-    
-=======
->>>>>>> origin/HEAD
 
     # Initial Save Data
 
@@ -1505,8 +1493,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         save_context.equip_default_items('child')
     save_context.equip_current_items(world.starting_age)
     save_context.write_save_table(rom)
-<<<<<<< HEAD
-
 
 
 
@@ -1517,8 +1503,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         wNavi.working_navi_patch(rom, world, spoiler, save_context, outfilebase)
 
     
-=======
->>>>>>> origin/HEAD
 
     return rom
 
@@ -1732,7 +1716,6 @@ def set_grotto_shuffle_data(rom, world):
         if actor_id == 0x009B: #Grotto
             actor_zrot = rom.read_int16(actor + 12)
             actor_var = rom.read_int16(actor + 14)
-<<<<<<< HEAD
 
             grotto_table[actor] = {
                 'id': (scene << 16) + actor_var,
@@ -1763,38 +1746,6 @@ def set_grotto_shuffle_data(rom, world):
         grotto_override_id = (entrance.connected_region.addresses['scene'] << 16) + entrance.connected_region.addresses['grotto_var']
         shuffled_grotto_table[grotto_id] = grotto_override_id
 
-=======
-
-            grotto_table[actor] = {
-                'id': (scene << 16) + actor_var,
-                'scene': (actor_var >> 8) & 0xF0,
-                'entrance': actor_zrot & 0x00FF,
-                'content': actor_var & 0x00FF,
-            }
-
-    def override_grotto_data(rom, actor_id, actor, scene):
-        if actor_id == 0x009B: #Grotto
-            actor_zrot = rom.read_int16(actor + 12)
-            actor_var = rom.read_int16(actor + 14)
-            grotto_type = (actor_var >> 8) & 0x0F
-
-            grotto_data = grotto_override_table[actor]
-            rom.write_byte(actor + 14, grotto_type + grotto_data['scene'])
-            rom.write_byte(actor + 13, grotto_data['entrance'])
-            rom.write_byte(actor + 15, grotto_data['content'])
-
-    # Retrieve the original grotto data
-    grotto_table = {}
-    get_actor_list(rom, get_grotto_data)
-
-    # Build the override table based on shuffled grotto entrances
-    shuffled_grotto_table = {}
-    for entrance in world.get_shuffled_entrances(type='Grotto'):
-        grotto_id = (entrance.addresses['scene'] << 16) + entrance.addresses['grotto_var']
-        grotto_override_id = (entrance.connected_region.addresses['scene'] << 16) + entrance.connected_region.addresses['grotto_var']
-        shuffled_grotto_table[grotto_id] = grotto_override_id
-
->>>>>>> origin/HEAD
     grotto_override_table = {}
     for actor in grotto_table:
         grotto_id = grotto_table[actor]['id']
@@ -1802,6 +1753,7 @@ def set_grotto_shuffle_data(rom, world):
 
     # Override grotto actors data with the new table
     get_actor_list(rom, override_grotto_data)
+
 
 
 def set_deku_salesman_data(rom):

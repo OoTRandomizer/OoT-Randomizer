@@ -174,7 +174,7 @@ def main(settings, window=dummy_window()):
                 patchfilename = '%s.zpf' % outfilebase
 
             random.setstate(rng_state)
-            patch_rom(spoiler, world, rom)
+            patch_rom(spoiler, world, rom, outfilebase)
             cosmetics_log = patch_cosmetics(settings, rom)
             window.update_progress(65 + 20*(world.id + 1)/settings.world_count)
 
@@ -209,7 +209,7 @@ def main(settings, window=dummy_window()):
 
     elif settings.compress_rom != 'None':
         window.update_status('Patching ROM')
-        patch_rom(spoiler, worlds[settings.player_num - 1], rom)
+        patch_rom(spoiler, worlds[settings.player_num - 1], rom, outfilebase)
         cosmetics_log = patch_cosmetics(settings, rom)
         window.update_progress(65)
 
