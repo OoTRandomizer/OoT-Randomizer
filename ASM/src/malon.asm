@@ -14,40 +14,38 @@
 ; the function has pushed nothing to the stack (so nothing needs to be restored)
 ; we are expected to return 1 if Malon should spawn, and 0 if she should not
 
+;function 809F0C54 to 809F0D98, 0xD7E344 to 00D7E488
 .org 0xD7E398
                                 ; this is the state we need for Malon to move to Lon Lon Ranch
     lhu  t1,0x0ed6(a0)          ; this half holds both the following flags
-    andi t0,t1,0x10             ; t0 = "Talon has fled castle"
-    andi t1,t1,0x04             ; t1 = "Obtained Malon's Item"
-    or   t0,t0,t1               ; t0 = combination of the flags
+    andi t0,t1,0x14             ; 0x10 = "Talon has fled castle"
+                                ; 0x04 = "Obtained Malon's Item"
     li   t1,0x14                ; t1 = 0x14 which is the value if both flags are set
 
 @@hyrule_check:                 ; she should spawn at castle until Talon has fled and Item has been given
     li   at,0x5f                ; at = 0x5f (Hyrule Castle)
     bne  at,v1,@@lon_lon_check  ; if not in Hyrule Castle, try Lon Lon instead
     nop
-    beq  t0,t1,@@lon_lon_check  ; if Talon and Item, try Lon Lon instead
+    beq  t0,t1,@@return_false  ; if we've collected an item and talked to Talon and Item, return 0
     nop
-    li   v0,1
     jr   ra                      ; return true
-    nop
+    li   v0,1
 
 @@lon_lon_check:                ; she should spawn at Lon Lon only once Talon has fled and Item has been given
-    bne  a2,v0,@@return_false   ; this test is in the original code, it's probably for the credits
+    bne  a2,v0,@@return_false   ; original code, checks if child malon type == 3 (lon lon)
     li   at,0x63                ; at = 0x63 (Lon Lon Ranch)
     bne  at,v1,@@return_false   ; if not in Lon Lon Ranch, return false
     lw   t2,0x10(a0)            ; t2 = is night time
     bnez t2,@@return_false      ; Malon does not spawn at Ranch at night
     nop
     bne  t0,t1,@@return_false   ; make sure Talon has fled and Item has been given
-    li   v0,1
-    jr   ra                     ; return true
     nop
+    jr   ra                     ; return true
+    li   v0,1
 
 @@return_false:
-    li  v0,0
     jr ra                       ; return false
-    nop
+    li  v0,0
 
 
 ; 0xD7E110 starts a function that decides which text id Malon should use when spoken to
@@ -58,7 +56,15 @@
 ; the function needs to restore the stack and return pointer before returning
 ; we are expected to return a text id
 
+; Replaces
+; lw  t6,0x8C24(t6)
+; lw  t7,0x00A4(v1)
+.org 0xD7E140 ; mutated by Patches.py
+    li  t6,0x01
+    lb  t7,0x0EDE(v1) ; check learned song from malon flag
+
 .org 0xD7E160
+    la  a0, GLOBAL_CONTEXT
     lh  t0,0xA4(a0)     ; t0 = current scene number
     li  at,0x63         ; at = 0x63 (Lon Lon Ranch)
     bne at,t0,@@not_in_ranch ; if not in Lon Lon, she's in Hyrule Castle
@@ -75,8 +81,8 @@
 
 @@return:
 return_from_the_other_function:
-    lw  ra,20(sp)
-    addiu   sp,sp,24    ; restore stack
+    lw  ra, 0x14(sp)
+    addiu   sp,sp,0x18  ; restore stack
     jr  ra              ; return v0 (whatever text id was chosen)
     nop
 
@@ -104,17 +110,17 @@ return_from_the_other_function:
     nop
     nop
     nop
-    lui     v0,0x8012
-    addiu   v0,v0,0xa5d0
+    li      v0, SAVE_CONTEXT
 
 @@safe:
     li      t3,0x14             ; t3 = 0x14 which is the value if both flags are set
     lui     t6,0x8010
     or      t2,t2,t3            ; t2 = combination of the flags
     bne     t2,t3,ev0_return    ; check that both flags are true to continue this path
-    lh      t9,472(a0)
+    lh      t9,0x01D8(a0)
 
 @@not_hyrule:
+; D7E8D4 ; mutated by Patches.py
     li      t6,0x01
     lb      t7,0x0EDE(v0)       ; check learned song from malon flag
     and     t8,t6,t7            ; t8 = "Has Epona's Song"
@@ -177,38 +183,31 @@ ev0_return:
 
 .org 0xD7E76C
     lw      t8,68(sp)           ; t8 = global context
-    lui     t3,0x809f
+    lui     t3,hi(0x809F1128)
     lui     t0,0x8010
     lh      t8,0xA4(t8)         ; t8 = current scene number
 
-    lb      t1,0x0EDE(v0)
-    ;lw      t1,164(v0)          ; t1 = quest status
+    lb      t1,0x0EDE(v0)       ; mutated by Patches.py
+    ;lw      t1,164(v0)         ; t1 = quest status
 
-    addiu   t3,t3,4392          ; t3 = 0x809f1128 ( ev0 )
+    addiu   t3,t3,lo(0x809F1128); ( ev0 )
 
-    li      t0,0x01
-    ;lw      t0,-29660(t0)       ; t0 = malon's song mask
+    li      t0,0x01             ; mutated by Patches.py
+    ;lw      t0,-29660(t0)      ; t0 = malon's song mask
 
     move    a0,s0               ; a0 = actor pointer to set up function call
-    lui     t4,0x809f
-    addiu   t4,t4,4840          ; t4 = 0x809f12e8 ( ev1 )
+    lui     t4,hi(0x809F12E8)
+    addiu   t4,t4,lo(0x809F12E8); ( ev1 )
     and     t2,t0,t1            ; t2 = "Has Malon's Song"
     bnez    t2,@@set_ev0        ; if "Has Malon's Song", set event to ev0
     li      t9,0x5f             ; t9 = 0x5f (Hyrule Castle)
     bne     t9,t8,set_ev1       ; otherwise if not in Hyrule Castle, set event to ev1
 @@set_ev0:
-    sw      t3,384(s0)          ; write f_9f1128 to actor + 0x180
+    sw      t3,0x180(s0)        ; write f_9f1128 to actor + 0x180
 
 .org 0xD7E7B8
 set_ev1:
 
-
-; Replaces
-; lw  t6,-29660(t6)
-; lw  t7,164(v1)
-.org 0xD7E140
-    li  t6,0x01
-    lb  t7,0x0EDE(v1) ; check learned song from malon flag
 
 .org 0xD7EBBC
     jal override_epona_song ;bne v0,at,loc_0x00000408 ; if v0? == 7 then: Return // if preview is not done

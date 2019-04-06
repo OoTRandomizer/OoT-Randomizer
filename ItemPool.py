@@ -3,6 +3,8 @@ import logging
 import random
 from Utils import random_choices
 from Item import ItemFactory
+from ItemList import item_table
+from LocationList import location_groups
 
 
 #This file sets the item pools for various modes. Timed modes and triforce hunt are enforced first, and then extra items are specified per mode to fill in the remaining space.
@@ -212,7 +214,7 @@ normal_bottles = [
     'Bottle with Big Poe',
     'Bottle with Blue Fire']
 
-normal_bottle_count = 3
+bottle_count = 4
 
 
 normal_rupees = (
@@ -352,6 +354,19 @@ deku_scrubs_items = (
     ['Rupees (5)'] * 4) # ['Green Potion']
 
 
+boss_location_names = [
+    'Queen Gohma',
+    'King Dodongo',
+    'Barinade',
+    'Phantom Ganon',
+    'Volvagia',
+    'Morpha',
+    'Bongo Bongo',
+    'Twinrova',
+    'Links Pocket'
+]
+
+
 rewardlist = [
     'Kokiri Emerald',
     'Goron Ruby',
@@ -466,14 +481,22 @@ tradeitemoptions = (
 eventlocations = {
     'Ganon': 'Triforce',
     'Zeldas Letter': 'Zeldas Letter',
+    'Pierre': 'Scarecrow Song',
     'Magic Bean Salesman': 'Magic Bean',
-    'King Zora Moves': 'Bottle',
+    'Deliver Ruto\'s Letter': 'Deliver Letter',
+    "Sell 1 Big Poe": 'Sell Big Poe',
+    "Sell 2 Big Poe": 'Sell Big Poe',
+    "Sell 3 Big Poe": 'Sell Big Poe',
+    "Sell 4 Big Poe": 'Sell Big Poe',
     'Master Sword Pedestal': 'Master Sword',
     'Epona': 'Epona',
     'Deku Baba Sticks': 'Deku Stick Drop',
+    'Forest Temple Deku Baba Sticks': 'Deku Stick Drop',
     'Goron City Stick Pot': 'Deku Stick Drop',
     'Zoras Domain Stick Pot': 'Deku Stick Drop',
     'Deku Baba Nuts': 'Deku Nut Drop',
+    'Forest Temple Deku Baba Nuts': 'Deku Nut Drop',
+    'Dampes Grave Nut Pot': 'Deku Nut Drop',
     'Zoras Domain Nut Pot': 'Deku Nut Drop',
     'Gerudo Fortress Carpenter Rescue': 'Carpenter Rescue',
     'Haunted Wasteland Bombchu Salesman': 'Bombchus',
@@ -498,10 +521,64 @@ junk_pool_base = [
     ('Rupees (20)',     4),
     ('Rupees (50)',     1),
 ]
+
+pending_junk_pool = []
 junk_pool = []
+
+
+remove_junk_items = [
+    'Bombs (5)',
+    'Deku Nuts (5)',
+    'Deku Stick (1)',
+    'Deku Shield',
+    'Hylian Shield',
+    'Recovery Heart',
+    'Arrows (5)',
+    'Arrows (10)',
+    'Arrows (30)',
+    'Rupees (5)',
+    'Rupees (20)',
+    'Rupees (50)',
+    'Rupees (200)',
+    'Deku Nuts (10)',
+    'Bombs (10)',
+    'Bombs (20)',
+    'Deku Seeds (30)',
+    'Ice Trap',
+]
+
+
+item_groups = {
+    'Junk': remove_junk_items,
+    'AdultTrade': tradeitems,
+    'Bottle': normal_bottles,
+    'Spell': ('Dins Fire', 'Farores Wind', 'Nayrus Love'),
+    'Shield': ('Deku Shield', 'Hylian Shield'),
+    'Song': songlist,
+    'NonWarpSong': songlist[0:6],
+    'WarpSong': songlist[6:],
+    'HealthUpgrade': ('Heart Container', 'Piece of Heart'),
+    'ProgressItem': [name for (name, data) in item_table.items() if data[0] == 'Item' and data[1]],
+
+    'ForestFireWater': ('Forest Medallion', 'Fire Medallion', 'Water Medallion'),
+    'FireWater': ('Fire Medallion', 'Water Medallion'),
+}
+
+
 def get_junk_item(count=1):
+    if count < 1:
+        raise ValueError("get_junk_item argument 'count' must be greater than 0.")
+
+    return_pool = []
+    if pending_junk_pool:
+        pending_count = min(len(pending_junk_pool), count)
+        return_pool = [pending_junk_pool.pop() for _ in range(pending_count)]
+        count -= pending_count
+
     junk_items, junk_weights = zip(*junk_pool)
-    return random_choices(junk_items, weights=junk_weights, k=count)
+    return_pool.extend(random_choices(junk_items, weights=junk_weights, k=count))
+
+    return return_pool
 
 
 def replace_max_item(items, item, max):
@@ -546,11 +623,11 @@ def get_pool_core(world):
     else:
         placed_items['Kokiri Sword Chest'] = 'Kokiri Sword'
 
+    ruto_bottles = 1
     if world.open_fountain:
-        bottle = random.choice(normal_bottles)
-        pool.append(bottle)
-    else:
-        pool.append('Bottle with Letter')
+        ruto_bottles = 0
+    elif world.item_pool_value == 'plentiful':
+        ruto_bottles += 1
 
     if world.shuffle_weird_egg:
         pool.append('Weird Egg')
@@ -562,6 +639,22 @@ def get_pool_core(world):
     else:
         placed_items['Gift from Saria'] = 'Ocarina'
         placed_items['Ocarina of Time'] = 'Ocarina'
+
+    if world.shuffle_cows:
+        pool.extend(get_junk_item(10 if world.dungeon_mq['Jabu Jabus Belly'] else 9))
+    else:
+        placed_items['LLR Stables Left Cow'] = 'Milk'
+        placed_items['LLR Stables Right Cow'] = 'Milk'
+        placed_items['LLR Tower Left Cow'] = 'Milk'
+        placed_items['LLR Tower Right Cow'] = 'Milk'
+        placed_items['Links House Cow'] = 'Milk'
+        placed_items['Impas House Cow'] = 'Milk'
+        placed_items['Gerudo Valley Cow'] = 'Milk'
+        placed_items['DMT Grotto Cow'] = 'Milk'
+        placed_items['HF Grotto Cow'] = 'Milk'
+        if world.dungeon_mq['Jabu Jabus Belly']:
+            placed_items['Jabu Jabus Belly MQ Cow'] = 'Milk'
+        
 
     if world.dungeon_mq['Deku Tree']:
         skulltula_locations_final = skulltula_locations + [
@@ -763,6 +856,9 @@ def get_pool_core(world):
 
     if world.shuffle_gerudo_card and world.gerudo_fortress != 'open':
         pool.append('Gerudo Membership Card')
+    elif world.shuffle_gerudo_card:
+        pending_junk_pool.append('Gerudo Membership Card')
+        placed_items['Gerudo Fortress Membership Card'] = 'Ice Trap'
     else:
         placed_items['Gerudo Fortress Membership Card'] = 'Gerudo Membership Card'
 
@@ -785,7 +881,8 @@ def get_pool_core(world):
         shop_item_count = shop_slots_count - shop_nonitem_count
 
         pool.extend(random.sample(remain_shop_items, shop_item_count))
-        pool.extend(get_junk_item(shop_nonitem_count))
+        if shop_nonitem_count:
+            pool.extend(get_junk_item(shop_nonitem_count))
         if world.shopsanity == '0':
             pool.extend(normal_rupees)
         else:
@@ -877,15 +974,19 @@ def get_pool_core(world):
     else:
         pool.extend(GC_vanilla)
 
-    for _ in range(normal_bottle_count):
-        bottle = random.choice(normal_bottles)
-        pool.append(bottle)
+    for i in range(bottle_count):
+        if i >= ruto_bottles:
+            bottle = random.choice(normal_bottles)
+            pool.append(bottle)
+        else:
+            pool.append('Bottle with Letter')
 
     earliest_trade = tradeitemoptions.index(world.logic_earliest_adult_trade)
     latest_trade = tradeitemoptions.index(world.logic_latest_adult_trade)
     if earliest_trade > latest_trade:
         earliest_trade, latest_trade = latest_trade, earliest_trade
     tradeitem = random.choice(tradeitems[earliest_trade:latest_trade+1])
+    world.selected_adult_trade_item = tradeitem
     pool.append(tradeitem)
 
     pool.extend(songlist)
@@ -897,6 +998,9 @@ def get_pool_core(world):
         world.state.collect(ItemFactory('Serenade of Water'))
         world.state.collect(ItemFactory('Farores Wind'))
         pool.extend(get_junk_item(3))
+        
+    if world.free_scarecrow:
+        world.state.collect(ItemFactory('Scarecrow Song'))
 
     if world.shuffle_mapcompass == 'remove' or world.shuffle_mapcompass == 'startwith':
         for item in [item for dungeon in world.dungeons for item in dungeon.dungeon_items]:
@@ -937,37 +1041,52 @@ def get_pool_core(world):
         for i in [1, 2, 3]: # collect wallets
             world.state.collect(ItemFactory('Progressive Wallet'))
 
+    # Make sure our pending_junk_pool is empty. If not, remove some random junk here.
+    if pending_junk_pool:
+        remove_junk_pool, _ = zip(*junk_pool_base)
+        remove_junk_pool = list(remove_junk_pool) + ['Recovery Heart', 'Bombs (20)', 'Arrows (30)', 'Ice Trap']
+
+        junk_candidates = [item for item in pool if item in remove_junk_pool]
+        for pending_item in pending_junk_pool:
+            if not junk_candidates:
+                raise RuntimeError("Not enough junk exists in item pool for %s to be added." % pending_item)
+            junk_item = random.choice(junk_candidates)
+            junk_candidates.remove(junk_item)
+            pool.remove(junk_item)
+            pool.append(pending_item)
+
+    world.distribution.alter_pool(world, pool)
+
+    world.distribution.collect_starters(world.state)
+
     return (pool, placed_items)
 
 
 def choose_trials(world):
+    trial_pool = list(world.skipped_trials)
+    dist_chosen = world.distribution.configure_trials(trial_pool)
+    dist_num_chosen = len(dist_chosen)
+
     if world.trials_random:
-        world.trials = random.randint(0, 6)
+        world.trials = dist_num_chosen + random.randint(0, len(trial_pool))
     num_trials = int(world.trials)
-    choosen_trials = random.sample(['Forest', 'Fire', 'Water', 'Spirit', 'Shadow', 'Light'], num_trials)
+    choosen_trials = random.sample(trial_pool, num_trials - dist_num_chosen)
     for trial in world.skipped_trials:
-        if trial not in choosen_trials:
+        if trial not in choosen_trials and trial not in dist_chosen:
             world.skipped_trials[trial] = True
 
 
 def fill_bosses(world, bossCount=9):
     boss_rewards = ItemFactory(rewardlist, world)
-    boss_locations = [
-        world.get_location('Queen Gohma'),
-        world.get_location('King Dodongo'),
-        world.get_location('Barinade'),
-        world.get_location('Phantom Ganon'),
-        world.get_location('Volvagia'),
-        world.get_location('Morpha'),
-        world.get_location('Bongo Bongo'),
-        world.get_location('Twinrova'),
-        world.get_location('Links Pocket')]
+    boss_locations = [world.get_location(loc) for loc in boss_location_names]
 
     placed_prizes = [loc.item.name for loc in boss_locations if loc.item is not None]
     unplaced_prizes = [item for item in boss_rewards if item.name not in placed_prizes]
     empty_boss_locations = [loc for loc in boss_locations if loc.item is None]
     prizepool = list(unplaced_prizes)
     prize_locs = list(empty_boss_locations)
+
+    bossCount -= world.distribution.fill_bosses(world, prize_locs, prizepool)
 
     while bossCount:
         bossCount -= 1

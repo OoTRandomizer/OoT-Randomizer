@@ -1,6 +1,7 @@
 [
     {
         "region_name": "Ganons Castle Lobby",
+        "dungeon": "Ganons Castle",
         "exits": {
             "Ganons Castle Grounds": "True",
             "Ganons Castle Forest Trial": "True",
@@ -21,6 +22,7 @@
     },
     {
         "region_name": "Ganons Castle Deku Scrubs",
+        "dungeon": "Ganons Castle",
         "locations": {
             "GC MQ Deku Scrub Bombs": "True",
             "GC MQ Deku Scrub Arrows": "True",
@@ -44,7 +46,7 @@
         "dungeon": "Ganons Castle",
         "locations": {
             "Ganons Castle Fire Trial Clear": "
-                has_GoronTunic and can_use(Golden_Gauntlets) and 
+                can_use(Goron_Tunic) and can_use(Golden_Gauntlets) and 
                 can_use(Light_Arrows) and (can_use(Longshot) or Hover_Boots)"
         }
     },

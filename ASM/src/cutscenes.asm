@@ -286,3 +286,14 @@ warp_speedup:
 @@return: 
     jr     ra
     nop
+
+; Prevent hyrule castle guards from causing a softlock.
+guard_catch:
+    la      v0, GLOBAL_CONTEXT
+    lui     at, 0x0001
+    add     v0, v0, at
+    li	    at, 0x047e
+    sh      at, 0x1E1A(v0) ;entrance index = caught by guard
+    li      at, 0x14
+    jr      ra
+    sb      at, 0x1E15(v0) ; trigger load

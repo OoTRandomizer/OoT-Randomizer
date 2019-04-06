@@ -92,7 +92,7 @@ class VersionError(Exception):
 def check_version(checked_version):
     if compare_version(checked_version, __version__) < 0:
         try:
-            with urllib.request.urlopen('http://raw.githubusercontent.com/TestRunnerSRL/OoT-Randomizer/master/version.py') as versionurl:
+            with urllib.request.urlopen('http://raw.githubusercontent.com/TestRunnerSRL/OoT-Randomizer/Dev/version.py') as versionurl:
                 version = versionurl.read()
                 version = re.search(".__version__ = '(.+)'", str(version)).group(1)
 

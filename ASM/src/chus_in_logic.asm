@@ -62,15 +62,16 @@ logic_chus__shopkeeper:
     lui     t1, hi(SAVE_CONTEXT + 0x7C)
     lb      t2, lo(SAVE_CONTEXT + 0x7C)(t1) ; bombchu item
     li      t3, 9
-    beq     t2, t3, @@return ; if has bombchu, return 1 (can buy)
+    beq     t2, t3, @@return ; if has bombchu, return 0 (can buy)
     li      v0, 0
+    jr      ra
     li      v0, 2 ; else, return 2 (can't buy)
 
 @@logic_chus_false:
     lui     t1, hi(SAVE_CONTEXT + 0xA3)
     lb      t2, lo(SAVE_CONTEXT + 0xA3)(t1) ; bombbag size
     andi    t2, t2, 0x38
-    bnez    t2, @@return       ; If has bombbag, return 1 (can buy)
+    bnez    t2, @@return       ; If has bombbag, return 0 (can buy)
     li      v0, 0
     li      v0, 2              ; else, return 2, (can't buy)
 

@@ -1,19 +1,27 @@
-[    
-	{
+[
+    {
+        "region_name": "Ice Cavern Beginning",
+        "dungeon": "Ice Cavern",
+        "exits": {
+            #Frezzards are weird, they are immune to KS completely. Leave sticks out as 8/10 is
+            #a lot
+            "Ice Cavern": "as_either_here(is_adult or has_explosives or can_use(Dins_Fire))"
+        }
+    },
+    {
         "region_name": "Ice Cavern",
         "dungeon": "Ice Cavern",
         "locations": {
-            "Ice Cavern Map Chest": "has_bottle",
-            "Ice Cavern Compass Chest": "has_bottle",
-            "Ice Cavern Iron Boots Chest": "has_bottle",
-            "Ice Cavern Freestanding PoH": "has_bottle",
-            "Sheik in Ice Cavern": "has_bottle and is_adult",
-            "GS Ice Cavern Spinning Scythe Room": "can_use(Hookshot)",
-            "GS Ice Cavern Heart Piece Room": "can_use(Hookshot) and has_bottle",
-            "GS Ice Cavern Push Block Room": "can_use(Hookshot) and has_bottle"
-        },
-        "exits": {
-            "Outside Ice Cavern": "True"
+            "Ice Cavern Map Chest": "has_blue_fire and is_adult",
+            "Ice Cavern Compass Chest": "has_blue_fire",
+            "Ice Cavern Iron Boots Chest": "has_blue_fire",
+            "Ice Cavern Freestanding PoH": "has_blue_fire",
+            "Sheik in Ice Cavern": "has_blue_fire and is_adult",
+            "GS Ice Cavern Spinning Scythe Room": "can_use(Hookshot) or can_use(Boomerang)",
+            "GS Ice Cavern Heart Piece Room": "
+                has_blue_fire and (can_use(Hookshot) or can_use(Boomerang))",
+            "GS Ice Cavern Push Block Room": "
+                has_blue_fire and (can_use(Hookshot) or can_use(Boomerang))"
         }
     }
 ]

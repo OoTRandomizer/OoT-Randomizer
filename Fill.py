@@ -3,8 +3,12 @@ import logging
 from State import State
 from Rules import set_shop_rules
 from Location import DisableType
-from ItemPool import songlist, get_junk_item
+from ItemPool import junk_pool, item_groups
+from LocationList import location_groups
+from ItemPool import songlist, get_junk_item, junk_pool, item_groups
+from ItemList import item_table
 from Item import ItemFactory
+from functools import reduce
 
 
 class FillError(RuntimeError):
@@ -39,6 +43,8 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     if worlds[0].shuffle_song_items:
         itempool.extend(songitempool)
         fill_locations.extend(song_locations)
+        songitempool = []
+        song_locations = []
 
     # add unrestricted dungeon items to main item pool
     itempool.extend([item for world in worlds for item in world.get_unrestricted_dungeon_items()])
@@ -52,12 +58,20 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     # set ice traps to have the appearance of other random items in the item pool
     ice_traps = [item for item in itempool if item.name == 'Ice Trap']
     fake_items = []
+    major_items = [item for item in itempool if item.majoritem]
+    if len(major_items) == 0: # All major items were somehow removed from the pool (can happen in plando)
+        major_items = ItemFactory([item for (item, data) in item_table.items() if data[0] == 'Item' and data[1] and data[2] is not None])
     while len(ice_traps) > len(fake_items):
         # if there are more ice traps than major items, then double up on major items
-        fake_items.extend([item for item in itempool if item.majoritem])
+        fake_items.extend(major_items)
     for random_item in random.sample(fake_items, len(ice_traps)):
         ice_trap = ice_traps.pop(0)
         ice_trap.looks_like_item = random_item
+
+    cloakable_locations = shop_locations + song_locations + fill_locations
+    all_models = shopitempool + dungeon_items + songitempool + itempool
+    worlds[0].distribution.fill(window, worlds, [shop_locations, song_locations, fill_locations], [shopitempool, dungeon_items, songitempool, progitempool, prioitempool, restitempool])
+    itempool = progitempool + prioitempool + restitempool
 
     # We place all the shop items first. Like songs, they have a more limited
     # set of locations that they can be placed in, so placing them first will
@@ -65,7 +79,7 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     # to create item rules for every location for whether they are a shop item
     # or not. This shouldn't have much affect on item bias.
     if shop_locations:
-        fill_shops(window, worlds, shop_locations, shopitempool, itempool + songitempool + dungeon_items)
+        fill_ownworld_restrictive(window, worlds, shop_locations, shopitempool, itempool + songitempool + dungeon_items, "shop")
     # Update the shop item access rules
     for world in worlds:
         set_shop_rules(world)
@@ -83,7 +97,7 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     # of failing compared to other item type. So this way we only have retry
     # the song locations only.
     if not worlds[0].shuffle_song_items:
-        fill_songs(window, worlds, song_locations, songitempool, progitempool)
+        fill_ownworld_restrictive(window, worlds, song_locations, songitempool, progitempool, "song")
         if worlds[0].start_with_fast_travel:
             fill_locations += [location for location in song_locations if location.item is None]
 
@@ -122,6 +136,8 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
 
     if not State.can_beat_game(world_states, True):
         raise FillError('Cannot beat game!')
+
+    worlds[0].settings.distribution.cloak(worlds, [cloakable_locations], [all_models])
 
     # Get Light Arrow location for later usage.
     for world in worlds:
@@ -205,17 +221,17 @@ def fill_dungeon_unique_item(window, worlds, fill_locations, itempool):
     logging.getLogger('').info("Unique dungeon items placed")
 
 
-# Places the shop items into the world at the Shop locations
-def fill_shops(window, worlds, locations, shoppool, itempool, attempts=15):
-    # get the shop locations for each world
+# Places items restricting placement to the recipient player's own world
+def fill_ownworld_restrictive(window, worlds, locations, ownpool, itempool, description="Unknown", attempts=15):
+    # get the locations for each world
 
     # look for preplaced items
     placed_prizes = [loc.item.name for loc in locations if loc.item is not None]
-    unplaced_prizes = [item for item in shoppool if item.name not in placed_prizes]
-    empty_shop_locations = [loc for loc in locations if loc.item is None]
+    unplaced_prizes = [item for item in ownpool if item.name not in placed_prizes]
+    empty_locations = [loc for loc in locations if loc.item is None]
 
     prizepool_dict = {world.id: [item for item in unplaced_prizes if item.world.id == world.id] for world in worlds}
-    prize_locs_dict = {world.id: [loc for loc in empty_shop_locations if loc.world.id == world.id] for world in worlds}
+    prize_locs_dict = {world.id: [loc for loc in empty_locations if loc.world.id == world.id] for world in worlds}
 
     # Shop item being sent in to this method are tied to their own world.
     # Therefore, let's do this one world at a time. We do this to help
@@ -234,9 +250,9 @@ def fill_shops(window, worlds, locations, shoppool, itempool, attempts=15):
                 random.shuffle(prizepool)
                 fill_restrictive(window, worlds, all_state_base_list, prize_locs, prizepool)
                 
-                logging.getLogger('').info("Shop items placed for world %s", (world.id+1))
+                logging.getLogger('').info("%s items placed for world %s", description, (world.id+1))
             except FillError as e:
-                logging.getLogger('').info("Failed to place shop items for world %s. Will retry %s more times", (world.id+1), world_attempts)
+                logging.getLogger('').info("Failed to place %s items for world %s. Will retry %s more times", description, (world.id+1), world_attempts)
                 for location in prize_locs_dict[world.id]:
                     location.item = None
                     if location.disabled == DisableType.DISABLED:
@@ -245,50 +261,8 @@ def fill_shops(window, worlds, locations, shoppool, itempool, attempts=15):
                 continue
             break
         else:
-            raise FillError('Unable to place shop items in world %d' % (world.id+1))
+            raise FillError('Unable to place %s items in world %d' % (description, (world.id+1)))
 
-
-# Places the songs into the world at the Song locations
-def fill_songs(window, worlds, locations, songpool, itempool, attempts=15):
-    # get the song locations for each world
-
-    # look for preplaced items
-    placed_prizes = [loc.item.name for loc in locations if loc.item is not None]
-    unplaced_prizes = [song for song in songpool if song.name not in placed_prizes]
-    empty_song_locations = [loc for loc in locations if loc.item is None]
-
-    prizepool_dict = {world.id: [song for song in unplaced_prizes if song.world.id == world.id] for world in worlds}
-    prize_locs_dict = {world.id: [loc for loc in empty_song_locations if loc.world.id == world.id] for world in worlds}
-
-    # Songs being sent in to this method are tied to their own world.
-    # Therefore, let's do this one world at a time. We do this to help
-    # increase the chances of successfully placing songs
-    for world in worlds:
-        # List of states with all items
-        unplaced_prizes = [song for song in unplaced_prizes if song not in prizepool_dict[world.id]]
-        all_state_base_list = State.get_states_with_items([world.state for world in worlds], itempool + unplaced_prizes)
-
-        world_attempts = attempts
-        while world_attempts:
-            world_attempts -= 1
-            try:
-                prizepool = list(prizepool_dict[world.id])
-                prize_locs = list(prize_locs_dict[world.id])
-                random.shuffle(prizepool)
-                fill_restrictive(window, worlds, all_state_base_list, prize_locs, prizepool)
-                
-                logging.getLogger('').info("Songs placed for world %s", (world.id+1))
-            except FillError as e:
-                logging.getLogger('').info("Failed to place songs for world %s. Will retry %s more times", (world.id+1), world_attempts)
-                for location in prize_locs_dict[world.id]:
-                    location.item = None
-                    if location.disabled == DisableType.DISABLED:
-                        location.disabled = DisableType.PENDING
-                logging.getLogger('').info('\t%s' % str(e))
-                continue
-            break
-        else:
-            raise FillError('Unable to place songs in world %d' % (world.id+1))
 
 
 # Places items in the itempool into locations.
@@ -316,7 +290,7 @@ def fill_restrictive(window, worlds, base_state_list, locations, itempool, count
         if count == 0:
             break
 
-        # get and item and remove it from the itempool
+        # get an item and remove it from the itempool
         item_to_place = itempool.pop()
         random.shuffle(locations)
 
@@ -334,7 +308,7 @@ def fill_restrictive(window, worlds, base_state_list, locations, itempool, count
             # in an unreachable place in another world
             perform_access_check = not State.can_beat_game(maximum_exploration_state_list)
 
-        # find a location that the item can be places. It must be a valid location
+        # find a location that the item can be placed. It must be a valid location
         # in the world we are placing it (possibly checking for reachability)
         spot_to_fill = None
         for location in locations:
@@ -357,7 +331,7 @@ def fill_restrictive(window, worlds, base_state_list, locations, itempool, count
                         while parent_region:
                             try:
                                 source_region = item_to_place.world.get_region(parent_region.name)
-                                can_reach = source_region.can_reach(maximum_exploration_state_list[item_to_place.world.id])
+                                can_reach = maximum_exploration_state_list[item_to_place.world.id].can_reach(source_region)
                                 break
                             except KeyError:
                                 parent_region = parent_region.entrances[0].parent_region

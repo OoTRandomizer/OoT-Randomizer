@@ -1,33 +1,43 @@
 [    
-	{
+    {
         "region_name": "Fire Temple Lower",
         "dungeon": "Fire Temple",
         "locations": {
-            "Fire Temple Chest Near Boss": "True",
+            "Fire Temple Chest Near Boss" : "
+                logic_fewer_tunic_requirements or can_use(Goron_Tunic)",
             "Fire Temple Fire Dancer Chest": "
                 ((Small_Key_Fire_Temple, 8) or not keysanity) and can_use(Hammer)",
             "Fire Temple Boss Key Chest": "
                 ((Small_Key_Fire_Temple, 8) or not keysanity) and can_use(Hammer)",
-            "Fire Temple Big Lava Room Bombable Chest": "
-                (Small_Key_Fire_Temple, 2) and has_explosives",
-            "Fire Temple Big Lava Room Open Chest": "(Small_Key_Fire_Temple, 2)",
             "Volvagia Heart": "
-                has_GoronTunic and can_use(Hammer) and Boss_Key_Fire_Temple and 
-                (Hover_Boots or (can_reach(Fire_Temple_Upper) and 
+                can_use(Goron_Tunic) and can_use(Hammer) and Boss_Key_Fire_Temple and 
+                (logic_volvagia_jump or Hover_Boots or (can_reach(Fire_Temple_Upper) and 
                     (can_play(Song_of_Time) or has_explosives)))",
             "Volvagia": "
-                has_GoronTunic and can_use(Hammer) and Boss_Key_Fire_Temple and 
-                (Hover_Boots or (can_reach(Fire_Temple_Upper) and 
+                can_use(Goron_Tunic) and can_use(Hammer) and Boss_Key_Fire_Temple and 
+                (logic_volvagia_jump or Hover_Boots or (can_reach(Fire_Temple_Upper) and 
                     (can_play(Song_of_Time) or has_explosives)))",
-            "GS Fire Temple Song of Time Room": "
-                (Small_Key_Fire_Temple, 2) and can_play(Song_of_Time)",
             "GS Fire Temple Basement": "
                 ((Small_Key_Fire_Temple, 8) or not keysanity) and can_use(Hammer)"
         },
         "exits": {
-            "Death Mountain Crater Central": "True",
+            "Fire Temple Big Lava Room":"
+                (Small_Key_Fire_Temple, 2) and
+                (logic_fewer_tunic_requirements or can_use(Goron_Tunic))"
+        }
+    },
+    {
+        "region_name": "Fire Temple Big Lava Room",
+        "dungeon": "Fire Temple",
+        "locations": {
+            "Fire Temple Big Lava Room Open Chest": "True",
+            "Fire Temple Big Lava Room Bombable Chest": "has_explosives",
+            "GS Fire Temple Song of Time Room": "can_play(Song_of_Time)"
+        },
+        "exits": {
+            "Fire Temple Lower":  "True",
             "Fire Temple Middle": "
-                has_GoronTunic and (Small_Key_Fire_Temple, 4) and Progressive_Strength_Upgrade and 
+                can_use(Goron_Tunic) and (Small_Key_Fire_Temple, 4) and Progressive_Strength_Upgrade and 
                 (has_explosives or ((has_bow or Progressive_Hookshot) and is_adult))"
         }
     },
@@ -52,7 +62,8 @@
         "exits": {
             "Fire Temple Upper": "
                 (Small_Key_Fire_Temple, 8) or 
-                ((Small_Key_Fire_Temple, 7) and can_use(Hover_Boots) and can_use(Hammer))"
+                ((Small_Key_Fire_Temple, 7) and
+                    ((can_use(Hover_Boots) and can_use(Hammer)) or logic_fire_flame_maze))"
         }
     },
     {

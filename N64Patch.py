@@ -2,10 +2,10 @@ import struct
 import random
 import io
 import array
-from Rom import int16_as_bytes, int24_as_bytes, int32_as_bytes, bytes_as_int16, bytes_as_int24, bytes_as_int32
 import zlib
 import copy
 import zipfile
+from ntype import BigStream
 
 
 # get the next XOR key. Uses some location in the source rom.
@@ -17,8 +17,9 @@ def key_next(rom, key_address, address_range):
         key_address += 1
         if key_address > address_range[1]:
             key_address = address_range[0]
-        key = rom.original[key_address]
+        key = rom.original.buffer[key_address]
     return key, key_address
+
 
 # creates a XOR block for the patch. This might break it up into
 # multiple smaller blocks if there is a concern about the XOR key
@@ -74,13 +75,13 @@ def write_block(rom, xor_address, xor_range, block_start, data, patch_data):
 # then it will include the address to write to. Otherwise it will
 # have a number of XOR keys to skip and then continue writing after
 # the previous block
-def write_block_section(start, key_skip, in_data, out_data, is_continue):
+def write_block_section(start, key_skip, in_data, patch_data, is_continue):
     if not is_continue:
-        out_data += int32_as_bytes(start)
+        patch_data.append_int32(start)
     else:
-        out_data += [0xFF, key_skip]
-    out_data += int16_as_bytes(len(in_data))
-    out_data += in_data 
+        patch_data.append_bytes([0xFF, key_skip])
+    patch_data.append_int16(len(in_data))
+    patch_data.append_bytes(in_data)
 
 
 # This will create the patch file. Which can be applied to a source rom.
@@ -93,24 +94,25 @@ def create_patch_file(rom, file, xor_range=(0x00B8AD30, 0x00F029A0)):
     dma_start, dma_end = rom.get_dma_table_range()
 
     # add header
-    patch_data = list(map(ord, 'ZPFv1'))
-    patch_data += int32_as_bytes(dma_start)
-    patch_data += int32_as_bytes(xor_range[0])
-    patch_data += int32_as_bytes(xor_range[1])
+    patch_data = BigStream([])
+    patch_data.append_bytes(list(map(ord, 'ZPFv1')))
+    patch_data.append_int32(dma_start)
+    patch_data.append_int32(xor_range[0])
+    patch_data.append_int32(xor_range[1])
 
     # get random xor key. This range is chosed because it generally
     # doesn't have many sections of 0s
     xor_address = random.Random().randint(*xor_range)
-    patch_data += int32_as_bytes(xor_address)
+    patch_data.append_int32(xor_address)
 
-    new_buffer = copy.copy(rom.original)
+    new_buffer = copy.copy(rom.original.buffer)
 
     # write every changed DMA entry
     for dma_index, (from_file, start, size) in rom.changed_dma.items():
-        patch_data += int16_as_bytes(dma_index)
-        patch_data += int32_as_bytes(from_file)
-        patch_data += int32_as_bytes(start)
-        patch_data += int24_as_bytes(size)
+        patch_data.append_int16(dma_index)
+        patch_data.append_int32(from_file)
+        patch_data.append_int32(start)
+        patch_data.append_int24(size)
 
         # We don't trust files that have modified DMA to have their
         # changed addresses tracked correctly, so we invalidate the
@@ -120,16 +122,16 @@ def create_patch_file(rom, file, xor_range=(0x00B8AD30, 0x00F029A0)):
 
         # Simulate moving the files to know which addresses have changed
         if from_file >= 0:
-            old_dma_start, old_dma_end, old_size = rom.get_old_dmadata_record_by_key(from_file)
+            old_dma_start, old_dma_end, old_size = rom.original.get_dmadata_record_by_key(from_file)
             copy_size = min(size, old_size)
-            new_buffer[start:start+copy_size] = rom.original[from_file:from_file+copy_size]
+            new_buffer[start:start+copy_size] = rom.original.read_bytes(from_file, copy_size)
             new_buffer[start+copy_size:start+size] = [0] * (size - copy_size)
         else:
             # this is a new file, so we just fill with null data
             new_buffer[start:start+size] = [0] * size
 
     # end of DMA entries
-    patch_data += int16_as_bytes(-1)
+    patch_data.append_int16(0xFFFF)
 
     # filter down the addresses that will actually need to change.
     # Make sure to not include any of the DMA table addresses
@@ -166,7 +168,7 @@ def create_patch_file(rom, file, xor_range=(0x00B8AD30, 0x00F029A0)):
         xor_address = write_block(rom, xor_address, xor_range, block_start, data, patch_data)
 
     # compress the patch file
-    patch_data = bytes(patch_data)
+    patch_data = bytes(patch_data.buffer)
     patch_data = zlib.compress(patch_data)
 
     # save the patch file
@@ -187,80 +189,76 @@ def apply_patch_file(rom, file, sub_file=None):
     else:
         with open(file, 'rb') as stream:
             patch_data = stream.read()
-    patch_data = zlib.decompress(patch_data)
+    patch_data = BigStream(zlib.decompress(patch_data))
 
     # make sure the header is correct
-    if patch_data[0:4] != b'ZPFv':
-        print(patch_data[0:4])
+    if patch_data.read_bytes(length=4) != b'ZPFv':
         raise Exception("File is not in a Zelda Patch Format")
-    if patch_data[4:5] != b'1':
+    if patch_data.read_byte() != ord('1'):
         # in the future we might want to have revisions for this format
         raise Exception("Unsupported patch version.")
-    patch_address = 5
 
     # load the patch configuration info. The fact that the DMA Table is
     # included in the patch is so that this might be able to work with
     # other N64 games.
-    dma_start = bytes_as_int32(patch_data[patch_address:patch_address+4])
-    xor_range = (bytes_as_int32(patch_data[patch_address+4:patch_address+8]), 
-                 bytes_as_int32(patch_data[patch_address+8:patch_address+12]))
-    xor_address = bytes_as_int32(patch_data[patch_address+12:patch_address+16])
-    patch_address += 16
+    dma_start = patch_data.read_int32()
+    xor_range = (patch_data.read_int32(), patch_data.read_int32())
+    xor_address = patch_data.read_int32()
 
     # Load all the DMA table updates. This will move the files around.
     # A key thing is that some of these entries will list a source file
     # that they are from, so we know where to copy from, no matter where
     # in the DMA table this file has been moved to. Also important if a file
     # is copied. This list is terminated with 0xFFFF
-    while bytes_as_int16(patch_data[patch_address:patch_address+2]) != 0xFFFF:
+    while True:
         # Load DMA update
-        dma_index = bytes_as_int16(patch_data[patch_address:patch_address+2])
-        from_file = bytes_as_int32(patch_data[patch_address+2:patch_address+6])
-        start = bytes_as_int32(patch_data[patch_address+6:patch_address+10])
-        size = bytes_as_int24(patch_data[patch_address+10:patch_address+13])
-        patch_address += 13
+        dma_index = patch_data.read_int16()
+        if dma_index == 0xFFFF:
+            break
+
+        from_file = patch_data.read_int32()
+        start = patch_data.read_int32()
+        size = patch_data.read_int24()
 
         # Save new DMA Table entry
         dma_entry = dma_start + (dma_index * 0x10)
         end = start + size
-        rom.buffer[dma_entry:dma_entry+4] = int32_as_bytes(start)
-        rom.buffer[dma_entry+4:dma_entry+8] = int32_as_bytes(end)
-        rom.buffer[dma_entry+8:dma_entry+12] = int32_as_bytes(start)
-        rom.buffer[dma_entry+12:dma_entry+16] = int32_as_bytes(0)
+        rom.write_int32(dma_entry, start)
+        rom.write_int32(None,      end)
+        rom.write_int32(None,      start)
+        rom.write_int32(None,      0)
 
         if from_file != 0xFFFFFFFF:
             # If a source file is listed, copy from there
-            old_dma_start, old_dma_end, old_size = rom.get_old_dmadata_record_by_key(from_file)
+            old_dma_start, old_dma_end, old_size = rom.original.get_dmadata_record_by_key(from_file)
             copy_size = min(size, old_size)
-            rom.buffer[start:start+copy_size] = rom.original[from_file:from_file+copy_size]
+            rom.write_bytes(start, rom.original.read_bytes(from_file, copy_size))
             rom.buffer[start+copy_size:start+size] = [0] * (size - copy_size)
         else:
             # if it's a new file, fill with 0s
             rom.buffer[start:start+size] = [0] * size
 
-    # 2 bytes for the terminator
-    patch_address += 2
-
     # Read in the XOR data blocks. This goes to the end of the file.
     block_start = None
-    while patch_address < len(patch_data):
-        if patch_data[patch_address] != 0xFF:
+    while not patch_data.eof():
+        is_new_block = patch_data.read_byte() != 0xFF
+
+        if is_new_block:
             # start writing a new block
-            block_start = bytes_as_int32(patch_data[patch_address:patch_address+4])
-            block_size = bytes_as_int16(patch_data[patch_address+4:patch_address+6])
-            patch_address += 6
+            patch_data.seek_address(delta=-1)
+            block_start = patch_data.read_int32()
+            block_size = patch_data.read_int16()
         else:
             # continue writing from previous block
-            key_skip = patch_data[patch_address + 1]
-            block_size = bytes_as_int16(patch_data[patch_address+2:patch_address+4])
-            patch_address += 4
+            key_skip = patch_data.read_byte()
+            block_size = patch_data.read_int16()
             # skip specified XOR keys
             for _ in range(key_skip):
                 key, xor_address = key_next(rom, xor_address, xor_range)
 
         # read in the new data
         data = []
-        for b in patch_data[patch_address:patch_address+block_size]:
+        for b in patch_data.read_bytes(length=block_size):
             if b == 0:
                 # keep 0s as 0s
                 data += [0]
@@ -270,7 +268,6 @@ def apply_patch_file(rom, file, sub_file=None):
                 data += [b ^ key]
 
         # Save the new data to rom
-        rom.buffer[block_start:block_start+block_size] = data
-        patch_address += block_size
+        rom.write_bytes(block_start, data)
         block_start = block_start+block_size
 

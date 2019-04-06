@@ -1,9 +1,15 @@
 [
     {
+        "region_name": "Ice Cavern Beginning",
+        "dungeon": "Ice Cavern",
+        "exits": {
+            "Ice Cavern": "True"
+        }
+    },
+    {
         "region_name": "Ice Cavern",
         "dungeon": "Ice Cavern",
         "exits": {
-            "Outside Ice Cavern": "True",
             "Ice Cavern Interior": "has_bottle"
         }
     },

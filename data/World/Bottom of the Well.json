@@ -2,6 +2,13 @@
 	{
         "region_name": "Bottom of the Well",
         "dungeon": "Bottom of the Well",
+        "exits": {
+            "Bottom of the Well Main Area" : "is_child and (can_child_attack or has_nuts)"
+        }
+    },
+    {
+        "region_name": "Bottom of the Well Main Area",
+        "dungeon": "Bottom of the Well",
         "locations": {
             "Bottom of the Well Front Left Hidden Wall": "can_see_with_lens",
             "Bottom of the Well Front Center Bombable": "has_explosives",
@@ -37,7 +44,7 @@
             "Bottom of the Well Stick Pot": "True"
         },
         "exits": {
-            "Kakariko Village": "True"
+            "Bottom of the Well" : "True"
         }
     }
 ]

@@ -7,7 +7,6 @@
             "Jabu Jabus Belly MQ Entry Side Chest": "has_slingshot"
         },
         "exits": {
-            "Zoras Fountain": "True",
             "Jabu Jabus Belly Main": "has_slingshot"
         }
     },
@@ -21,7 +20,8 @@
             "Jabu Jabus Belly MQ Basement North Chest": "True",
             "Jabu Jabus Belly MQ Boomerang Room Small Chest": "True",
             "MQ Boomerang Chest": "True",
-            "GS Jabu Jabu MQ Boomerang Room": "can_play(Song_of_Time)"
+            "GS Jabu Jabu MQ Boomerang Room": "
+                can_play(Song_of_Time) or (logic_jabu_mq_sot_gs and Boomerang)"
         },
         "exits": {
             "Jabu Jabus Belly Beginning": "True",
@@ -46,6 +46,7 @@
         "region_name": "Jabu Jabus Belly Boss Area",
         "dungeon": "Jabu Jabus Belly",
         "locations": {
+            "Jabu Jabus Belly MQ Cow" : "can_play(Eponas_Song)",
             "Jabu Jabus Belly MQ Second Room Upper Chest": "True",
             "Jabu Jabus Belly MQ Near Boss Chest": "True",
             "Barinade Heart": "True",

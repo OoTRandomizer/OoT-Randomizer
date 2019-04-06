@@ -4,7 +4,7 @@ from enum import Enum
 
 class Location(object):
 
-    def __init__(self, name='', address=None, address2=None, default=None, type='Chest', scene=None, hint='Termina', parent=None):
+    def __init__(self, name='', address=None, address2=None, default=None, type='Chest', scene=None, parent=None, filter_tags=None):
         self.name = name
         self.parent_region = parent
         self.item = None
@@ -13,9 +13,8 @@ class Location(object):
         self.default = default
         self.type = type
         self.scene = scene
-        self.hint = hint
         self.spot_type = 'Location'
-        self.recursion_count = 0
+        self.recursion_count = { 'child': 0, 'adult': 0 }
         self.staleness_count = 0
         self.access_rule = lambda state: True
         self.item_rule = lambda location, item: True
@@ -24,10 +23,14 @@ class Location(object):
         self.minor_only = False
         self.world = None
         self.disabled = DisableType.ENABLED
+        if filter_tags is None:
+            self.filter_tags = None
+        else:
+            self.filter_tags = list(filter_tags)
 
 
     def copy(self, new_region):
-        new_location = Location(self.name, self.address, self.address2, self.default, self.type, self.scene, self.hint, new_region)
+        new_location = Location(self.name, self.address, self.address2, self.default, self.type, self.scene, new_region, self.filter_tags)
         new_location.world = new_region.world
         if self.item:
             new_location.item = self.item.copy(new_region.world)
@@ -51,20 +54,32 @@ class Location(object):
             (not check_access or state.can_reach(self)))
 
 
-    def can_fill_fast(self, item):
-        return (self.parent_region.can_fill(item) and self.item_rule(self, item))
+    def can_fill_fast(self, item, manual=False):
+        return (self.parent_region.can_fill(item, manual) and self.item_rule(self, item))
 
 
-    def can_reach(self, state):
-        if not self.is_disabled() and \
-           self.access_rule(state) and \
-           state.can_reach(self.parent_region):
-            return True
-        return False
+    def can_reach(self, state, noparent=False):
+        if self.is_disabled():
+            return False
+
+        return state.with_spot(self.access_rule, spot=self) and (noparent or state.can_reach(self.parent_region))
+
 
     def is_disabled(self):
         return (self.disabled == DisableType.DISABLED) or \
                (self.disabled == DisableType.PENDING and self.locked)
+
+
+    # Can the player see what's placed at this location without collecting it?
+    # Used to reduce JSON spoiler noise
+    def has_preview(self):
+        if self.type in ('Collectable', 'BossHeart', 'GS Token', 'Shop'):
+            return True
+        if self.type == 'Chest':
+            return self.scene == 0x10 # Treasure Chest Game Prize
+        if self.type == 'NPC':
+            return self.scene in (0x4B, 0x51, 0x57) # Bombchu Bowling, Hyrule Field (OoT), Lake Hylia (RL/FA)
+        return False
 
 
     def __str__(self):
@@ -83,17 +98,28 @@ def LocationFactory(locations, world=None):
         singleton = True
     for location in locations:
         if location in location_table:
-            type, scene, default, hint, addresses = location_table[location]
+            type, scene, default, addresses, filter_tags = location_table[location]
             if addresses is None:
                 addresses = (None, None)
             address, address2 = addresses
-            ret.append(Location(location, address, address2, default, type, scene, hint, ret))
+            ret.append(Location(location, address, address2, default, type, scene, ret, filter_tags))
         else:
             raise KeyError('Unknown Location: %s', location)
 
     if singleton:
         return ret[0]
     return ret
+
+
+def LocationIterator(predicate=lambda loc: True):
+    for location_name in location_table:
+        location = LocationFactory(location_name)
+        if predicate(location):
+            yield location
+
+
+def IsLocation(name):
+    return name in location_table
 
 
 class DisableType(Enum):

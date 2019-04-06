@@ -4,15 +4,20 @@
 
 ; This is used to determine if and how the cosmetics can be patched
 ; It this moves then the version will no longer be valid, so it is important that this does not move
+COSMETIC_CONTEXT:
+
 COSMETIC_FORMAT_VERSION:
-.word 0x1F05D3F9
+.word 0x1F0693FB
+CFG_MAGIC_COLOR:
+.halfword 0x0000, 0x00FF, 0x0000
+CFG_HEART_COLOR:
+.halfword 0x00FF, 0x0046, 0x0032
 CFG_DISPLAY_DPAD:
 .byte 0x01
 CFG_RAINBOW_SWORD_INNER_ENABLED:
 .byte 0x00
 CFG_RAINBOW_SWORD_OUTER_ENABLED:
 .byte 0x00
-
 .align 4
 
 
@@ -58,4 +63,9 @@ OCARINAS_SHUFFLED:
 .byte 0x00
 FAST_CHESTS:
 .byte 0x01
+SHUFFLE_COWS:
+.byte 0x00
+DISABLE_TIMERS:
+.byte 0x00
+
 .align 4

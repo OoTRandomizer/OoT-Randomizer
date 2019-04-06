@@ -1,5 +1,14 @@
 [    
-	{
+    {
+        "region_name": "Shadow Temple Entryway",
+        "dungeon": "Shadow Temple",
+        "exits": {
+            "Shadow Temple Beginning": "
+                can_see_with_lens and
+                (can_use(Hover_Boots) or can_use(Hookshot))"
+        }
+    },
+    {
         "region_name": "Shadow Temple Beginning",
         "dungeon": "Shadow Temple",
         "locations": {
@@ -7,7 +16,7 @@
             "Shadow Temple Hover Boots Chest": "True"
         },
         "exits": {
-            "Shadow Temple Warp Region": "True",
+            "Shadow Temple Entryway": "True",
             "Shadow Temple First Beamos": "Hover_Boots"
         }
     },
@@ -34,7 +43,8 @@
             "Shadow Temple Invisible Spikes Chest": "(Small_Key_Shadow_Temple, 2)",
             "Shadow Temple Freestanding Key": "
                 (Small_Key_Shadow_Temple, 2) and Progressive_Hookshot and 
-                (has_bombs or Progressive_Strength_Upgrade)",
+                (has_bombs or Progressive_Strength_Upgrade or
+                    (logic_shadow_freestanding_key and has_bombchus))",
             "GS Shadow Temple Like Like Room": "Progressive_Hookshot",
             "GS Shadow Temple Crusher Room": "Progressive_Hookshot",
             "GS Shadow Temple Single Giant Pot": "(Small_Key_Shadow_Temple, 2) and Progressive_Hookshot"
@@ -60,8 +70,8 @@
         "region_name": "Shadow Temple Beyond Boat",
         "dungeon": "Shadow Temple",
         "locations": {
-            "Shadow Temple Spike Walls Left Chest": "True",
-            "Shadow Temple Boss Key Chest": "True",
+            "Shadow Temple Spike Walls Left Chest": "can_use(Dins_Fire)",
+            "Shadow Temple Boss Key Chest": "can_use(Dins_Fire)",
             "Shadow Temple Hidden Floormaster Chest": "True",
             "Bongo Bongo Heart": "
                 (Small_Key_Shadow_Temple, 5) and 

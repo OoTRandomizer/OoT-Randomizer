@@ -4,7 +4,7 @@ import itertools
 import re
 
 from World import World
-from Rom import LocalRom
+from Rom import Rom
 from Spoiler import Spoiler
 from LocationList import business_scrubs
 from Hints import writeGossipStoneHints, buildBossRewardHints, \
@@ -16,9 +16,10 @@ from Messages import read_messages, update_message_by_id, read_shop_items, \
         get_message_by_id
 from OcarinaSongs import replace_songs
 from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
+from SaveContext import SaveContext
+from working_navi import working_navi
 
-
-def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
+def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
     with open(data_path('generated/rom_patch.txt'), 'r') as stream:
         for line in stream:
             address, value = [int(x, 16) for x in line.split(',')]
@@ -35,6 +36,11 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
         keatonBytes = stream.read()
         rom.write_bytes(0x8A7C00, keatonBytes)
 
+
+
+    
+
+
     # Force language to be English in the event a Japanese rom was submitted
     rom.write_byte(0x3E, 0x45)
     rom.force_patch.append(0x3E)
@@ -42,6 +48,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
     # Increase the instance size of Bombchus prevent the heap from becoming corrupt when
     # a Dodongo eats a Bombchu. Does not fix stale pointer issues with the animation
     rom.write_int32(0xD6002C, 0x1F0)
+
 
     # Can always return to youth
     rom.write_byte(0xCB6844, 0x35)
@@ -428,6 +435,10 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
         symbol = rom.sym('OCARINAS_SHUFFLED')
         rom.write_byte(symbol,0x01)
 
+    if world.child_lake_hylia_control:
+        symbol = rom.sym('CFG_CHILD_CONTROL_LAKE')
+        rom.write_byte(symbol,0x01)
+
     # Speed Zelda Light Arrow cutscene
     rom.write_bytes(0x2531B40, [0x00, 0x28, 0x00, 0x01, 0x00, 0x02, 0x00, 0x02])
     rom.write_bytes(0x2532FBC, [0x00, 0x75])
@@ -656,6 +667,108 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
     for address in Short_item_descriptions:
         rom.write_byte(address,0x02)
 
+    et_original = rom.read_bytes(0xB6FBF0, 4 * 0x0614)
+
+    entrance_updates = []
+
+    def write_entrance(target_index, data_index, length=4):
+        ti = target_index * 4
+        rom.write_bytes(0xB6FBF0 + data_index * 4, et_original[ti:ti+(4*length)])
+
+    def write_scene_exit(target_index, data_index, scene_start, scene_data):
+        start_count = 0
+        current = scene_data
+        command = 0
+        while command != 0x14:
+            command = rom.read_byte(current)
+            if command == 0x00:
+                start_count = rom.read_byte(current + 1)
+            current = current + 8
+        command = 0
+        current = scene_data
+        while command != 0x14:
+            command = rom.read_byte(current)
+            if command == 0x13:
+                entrance_list = scene_start + (rom.read_int32(current + 4) & 0x00FFFFFF)
+                for _ in range (0, start_count):
+                    entrance = rom.read_int16(entrance_list)
+                    if (entrance == data_index):
+                        entrance_updates.append((entrance_list, target_index))
+                    entrance_list = entrance_list + 2
+            if command == 0x18: # Alternate header list
+                header_list = scene_start + (rom.read_int32(current + 4) & 0x00FFFFFF)
+                for alt_id in range(0,3):
+                    header_offset = rom.read_int32(header_list) & 0x00FFFFFF
+                    if header_offset != 0:
+                        write_scene_exit(target_index, data_index, scene_start, scene_start + header_offset)
+                    header_list = header_list + 4
+            current = current + 8
+
+    def write_scenes_exits(target_index, data_index):
+        scene_table = 0x00B71440
+        for scene in range(0x00, 0x65):
+            #really hacky
+            if data_index == 0 and scene != 0x55:
+                continue
+            scene_start = rom.read_int32(scene_table + (scene * 0x14));
+            write_scene_exit(target_index, data_index, scene_start, scene_start)
+
+        #Special case: Jabu with the fish is entered from a cutscene hardcode
+        if data_index == 0x0028:
+            entrance_updates.append((0xAC95C2, target_index))
+
+    if world.shuffle_dungeon_entrances:
+        symbol = rom.sym('CFG_CHILD_CONTROL_LAKE')
+        rom.write_int32(symbol, 1)
+
+        # Connect lake hylia fill exit to revisit exit (Hylia blue will then be rewired below)
+        rom.write_int16(0xAC995A, 0x060C)
+
+        # Remove deku sprout and drop player at SFM after forest (SFM blue will then be rewired by ER below)
+        rom.write_int16(0xAC9F96, 0x0608)
+
+        remove_entrance_blockers(rom)
+        #Tell the Deku tree jaw actor we are always a child.
+        rom.write_int32(0x0C72C64, 0x240E0000)
+        rom.write_int32(0x0C72C74, 0x240F0001)
+
+        for world_entrance in world.get_shuffled_entrances(type='Dungeon'):
+            entrance = world_entrance.addresses
+            dungeon = world_entrance.connected_region.addresses
+            write_scenes_exits(dungeon['forward'], entrance['forward'])
+            write_scenes_exits(entrance['return'], dungeon['return'])
+            if "blue" in dungeon:
+                if "blue" in entrance:
+                    blue_out_data =  entrance["blue"]
+                else:
+                    blue_out_data = entrance["return"]
+                # Blue warps have multiple hardcodes leading to them. The good news is
+                # the blue warps (excluding deku sprout and lake fill special cases) each
+                # have a nice consistent 4-entry in the table we can just shuffle. So just
+                # catch all the hardcode with entrance table rewrite. This covers the
+                # Forest temple and Water temple blue warp revisits. Deku sprout remains
+                # vanilla as it never took you to the exit and the lake fill is handled
+                # above by removing the cutscene completely. Child has problems with Adult
+                # blue warps, so always use the return entrance if a child.
+                write_entrance(blue_out_data + 2, dungeon["blue"] + 2, 2)
+                write_entrance(entrance["return"], dungeon["blue"], 2)
+
+    if world.shuffle_interior_entrances:
+        # Disable trade quest timers
+        rom.write_byte(rom.sym('DISABLE_TIMERS'), 0x01)
+
+        for world_entrance in world.get_shuffled_entrances(type='Interior'):
+            entrance = world_entrance.addresses
+            interior = world_entrance.connected_region.addresses
+            write_scenes_exits(interior['forward'], entrance['forward'])
+            write_scenes_exits(entrance['return'], interior['return'])
+            if "exit_address" in interior:
+                # Dynamic exits are special and have to be set on a specific address
+                rom.write_int16(interior["exit_address"], entrance['return'])
+
+    for entrance, target in entrance_updates:
+        rom.write_int16(entrance, target)
+
     # Fix text for Pocket Cucco.
     rom.write_byte(0xBEEF45, 0x0B)
 
@@ -666,124 +779,87 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
         hash_icons |= (icon << (5 * i))
     rom.write_int32(rom.sym('cfg_file_select_hash'), hash_icons)
 
-    # will be populated with data to be written to initial save
-    # see initial_save.asm and config.asm for more details on specifics
-    # or just use the following functions to add an entry to the table
-    initial_save_table = []
+    save_context = SaveContext()
 
 
-    # will set the bits of value to the offset in the save (or'ing them with what is already there)
-    def write_bits_to_save(offset, value, filter=None):
-        nonlocal initial_save_table
-
-        if filter and not filter(value):
-            return
-
-        initial_save_table += [(offset & 0xFF00) >> 8, offset & 0xFF, 0x00, value]
-
-
-    # will overwrite the byte at offset with the given value
-    def write_byte_to_save(offset, value, filter=None):
-        nonlocal initial_save_table
-
-        if filter and not filter(value):
-            return
-
-        initial_save_table += [(offset & 0xFF00) >> 8, offset & 0xFF, 0x01, value]
-
-
-    # will overwrite the byte at offset with the given value
-    def write_bytes_to_save(offset, bytes, filter=None):
-        for i, value in enumerate(bytes):
-            write_byte_to_save(offset + i, value, filter)
-
-
-    # will overwrite the byte at offset with the given value
-    def write_save_table(rom):
-        nonlocal initial_save_table
-        initial_save_table += [0x00,0x00,0x00,0x00]
-
-        table_len = len(initial_save_table)
-        if table_len > 0x400:
-            raise Exception("The Initial Save Table has exceeded its maximum capacity: 0x%03X/0x400" % table_len)
-        rom.write_bytes(rom.sym('INITIAL_SAVE_DATA'), initial_save_table)
-
+    
+    
 
     # Initial Save Data
 
-    write_bits_to_save(0x00D4 + 0x03 * 0x1C + 0x04 + 0x0, 0x08) # Forest Temple switch flag (Poe Sisters cutscene)
-    write_bits_to_save(0x00D4 + 0x05 * 0x1C + 0x04 + 0x1, 0x01) # Water temple switch flag (Ruto)
-    write_bits_to_save(0x00D4 + 0x51 * 0x1C + 0x04 + 0x2, 0x08) # Hyrule Field switch flag (Owl)
-    write_bits_to_save(0x00D4 + 0x55 * 0x1C + 0x04 + 0x0, 0x80) # Kokiri Forest switch flag (Owl)
-    write_bits_to_save(0x00D4 + 0x56 * 0x1C + 0x04 + 0x2, 0x40) # Sacred Forest Meadow switch flag (Owl)
-    write_bits_to_save(0x00D4 + 0x5B * 0x1C + 0x04 + 0x2, 0x01) # Lost Woods switch flag (Owl)
-    write_bits_to_save(0x00D4 + 0x5B * 0x1C + 0x04 + 0x3, 0x80) # Lost Woods switch flag (Owl)
-    write_bits_to_save(0x00D4 + 0x5C * 0x1C + 0x04 + 0x0, 0x80) # Desert Colossus switch flag (Owl)
-    write_bits_to_save(0x00D4 + 0x5F * 0x1C + 0x04 + 0x3, 0x20) # Hyrule Castle switch flag (Owl)
+    save_context.write_bits(0x00D4 + 0x03 * 0x1C + 0x04 + 0x0, 0x08) # Forest Temple switch flag (Poe Sisters cutscene)
+    save_context.write_bits(0x00D4 + 0x05 * 0x1C + 0x04 + 0x1, 0x01) # Water temple switch flag (Ruto)
+    save_context.write_bits(0x00D4 + 0x51 * 0x1C + 0x04 + 0x2, 0x08) # Hyrule Field switch flag (Owl)
+    save_context.write_bits(0x00D4 + 0x55 * 0x1C + 0x04 + 0x0, 0x80) # Kokiri Forest switch flag (Owl)
+    save_context.write_bits(0x00D4 + 0x56 * 0x1C + 0x04 + 0x2, 0x40) # Sacred Forest Meadow switch flag (Owl)
+    save_context.write_bits(0x00D4 + 0x5B * 0x1C + 0x04 + 0x2, 0x01) # Lost Woods switch flag (Owl)
+    save_context.write_bits(0x00D4 + 0x5B * 0x1C + 0x04 + 0x3, 0x80) # Lost Woods switch flag (Owl)
+    save_context.write_bits(0x00D4 + 0x5C * 0x1C + 0x04 + 0x0, 0x80) # Desert Colossus switch flag (Owl)
+    save_context.write_bits(0x00D4 + 0x5F * 0x1C + 0x04 + 0x3, 0x20) # Hyrule Castle switch flag (Owl)
 
-    write_bits_to_save(0x0ED4, 0x10) # "Met Deku Tree"
-    write_bits_to_save(0x0ED5, 0x20) # "Deku Tree Opened Mouth"
-    write_bits_to_save(0x0ED6, 0x08) # "Rented Horse From Ingo"
-    write_bits_to_save(0x0EDA, 0x08) # "Began Nabooru Battle"
-    write_bits_to_save(0x0EDC, 0x80) # "Entered the Master Sword Chamber"
-    write_bits_to_save(0x0EDD, 0x20) # "Pulled Master Sword from Pedestal"
-    write_bits_to_save(0x0EE0, 0x80) # "Spoke to Kaepora Gaebora by Lost Woods"
-    write_bits_to_save(0x0EE7, 0x20) # "Nabooru Captured by Twinrova"
-    write_bits_to_save(0x0EE7, 0x10) # "Spoke to Nabooru in Spirit Temple"
-    write_bits_to_save(0x0EED, 0x20) # "Sheik, Spawned at Master Sword Pedestal as Adult"
-    write_bits_to_save(0x0EED, 0x01) # "Nabooru Ordered to Fight by Twinrova"
-    write_bits_to_save(0x0EED, 0x80) # "Watched Ganon's Tower Collapse / Caught by Gerudo"
-    write_bits_to_save(0x0EF9, 0x01) # "Greeted by Saria"
-    write_bits_to_save(0x0F0A, 0x04) # "Spoke to Ingo Once as Adult"
-    write_bits_to_save(0x0F0F, 0x40) # "Met Poe Collector in Ruined Market"
-    write_bits_to_save(0x0F1A, 0x04) # "Met Darunia in Fire Temple"
+    save_context.write_bits(0x0ED4, 0x10) # "Met Deku Tree"
+    save_context.write_bits(0x0ED5, 0x20) # "Deku Tree Opened Mouth"
+    save_context.write_bits(0x0ED6, 0x08) # "Rented Horse From Ingo"
+    save_context.write_bits(0x0EDA, 0x08) # "Began Nabooru Battle"
+    save_context.write_bits(0x0EDC, 0x80) # "Entered the Master Sword Chamber"
+    save_context.write_bits(0x0EDD, 0x20) # "Pulled Master Sword from Pedestal"
+    save_context.write_bits(0x0EE0, 0x80) # "Spoke to Kaepora Gaebora by Lost Woods"
+    save_context.write_bits(0x0EE7, 0x20) # "Nabooru Captured by Twinrova"
+    save_context.write_bits(0x0EE7, 0x10) # "Spoke to Nabooru in Spirit Temple"
+    save_context.write_bits(0x0EED, 0x20) # "Sheik, Spawned at Master Sword Pedestal as Adult"
+    save_context.write_bits(0x0EED, 0x01) # "Nabooru Ordered to Fight by Twinrova"
+    save_context.write_bits(0x0EED, 0x80) # "Watched Ganon's Tower Collapse / Caught by Gerudo"
+    save_context.write_bits(0x0EF9, 0x01) # "Greeted by Saria"
+    save_context.write_bits(0x0F0A, 0x04) # "Spoke to Ingo Once as Adult"
+    save_context.write_bits(0x0F0F, 0x40) # "Met Poe Collector in Ruined Market"
+    save_context.write_bits(0x0F1A, 0x04) # "Met Darunia in Fire Temple"
 
-    write_bits_to_save(0x0ED7, 0x01) # "Spoke to Child Malon at Castle or Market"
-    write_bits_to_save(0x0ED7, 0x20) # "Spoke to Child Malon at Ranch"
-    write_bits_to_save(0x0ED7, 0x40) # "Invited to Sing With Child Malon"
-    write_bits_to_save(0x0F09, 0x10) # "Met Child Malon at Castle or Market"
-    write_bits_to_save(0x0F09, 0x20) # "Child Malon Said Epona Was Scared of You"
+    save_context.write_bits(0x0ED7, 0x01) # "Spoke to Child Malon at Castle or Market"
+    save_context.write_bits(0x0ED7, 0x20) # "Spoke to Child Malon at Ranch"
+    save_context.write_bits(0x0ED7, 0x40) # "Invited to Sing With Child Malon"
+    save_context.write_bits(0x0F09, 0x10) # "Met Child Malon at Castle or Market"
+    save_context.write_bits(0x0F09, 0x20) # "Child Malon Said Epona Was Scared of You"
 
-    write_bits_to_save(0x0F21, 0x04) # "Ruto in JJ (M3) Talk First Time"
-    write_bits_to_save(0x0F21, 0x02) # "Ruto in JJ (M2) Meet Ruto"
+    save_context.write_bits(0x0F21, 0x04) # "Ruto in JJ (M3) Talk First Time"
+    save_context.write_bits(0x0F21, 0x02) # "Ruto in JJ (M2) Meet Ruto"
 
-    write_bits_to_save(0x0EE2, 0x01) # "Began Ganondorf Battle"
-    write_bits_to_save(0x0EE3, 0x80) # "Began Bongo Bongo Battle"
-    write_bits_to_save(0x0EE3, 0x40) # "Began Barinade Battle"
-    write_bits_to_save(0x0EE3, 0x20) # "Began Twinrova Battle"
-    write_bits_to_save(0x0EE3, 0x10) # "Began Morpha Battle"
-    write_bits_to_save(0x0EE3, 0x08) # "Began Volvagia Battle"
-    write_bits_to_save(0x0EE3, 0x04) # "Began Phantom Ganon Battle"
-    write_bits_to_save(0x0EE3, 0x02) # "Began King Dodongo Battle"
-    write_bits_to_save(0x0EE3, 0x01) # "Began Gohma Battle"
+    save_context.write_bits(0x0EE2, 0x01) # "Began Ganondorf Battle"
+    save_context.write_bits(0x0EE3, 0x80) # "Began Bongo Bongo Battle"
+    save_context.write_bits(0x0EE3, 0x40) # "Began Barinade Battle"
+    save_context.write_bits(0x0EE3, 0x20) # "Began Twinrova Battle"
+    save_context.write_bits(0x0EE3, 0x10) # "Began Morpha Battle"
+    save_context.write_bits(0x0EE3, 0x08) # "Began Volvagia Battle"
+    save_context.write_bits(0x0EE3, 0x04) # "Began Phantom Ganon Battle"
+    save_context.write_bits(0x0EE3, 0x02) # "Began King Dodongo Battle"
+    save_context.write_bits(0x0EE3, 0x01) # "Began Gohma Battle"
 
-    write_bits_to_save(0x0EE8, 0x01) # "Entered Deku Tree"
-    write_bits_to_save(0x0EE9, 0x80) # "Entered Temple of Time"
-    write_bits_to_save(0x0EE9, 0x40) # "Entered Goron City"
-    write_bits_to_save(0x0EE9, 0x20) # "Entered Hyrule Castle"
-    write_bits_to_save(0x0EE9, 0x10) # "Entered Zora's Domain"
-    write_bits_to_save(0x0EE9, 0x08) # "Entered Kakariko Village"
-    write_bits_to_save(0x0EE9, 0x02) # "Entered Death Mountain Trail"
-    write_bits_to_save(0x0EE9, 0x01) # "Entered Hyrule Field"
-    write_bits_to_save(0x0EEA, 0x04) # "Entered Ganon's Castle (Exterior)"
-    write_bits_to_save(0x0EEA, 0x02) # "Entered Death Mountain Crater"
-    write_bits_to_save(0x0EEA, 0x01) # "Entered Desert Colossus"
-    write_bits_to_save(0x0EEB, 0x80) # "Entered Zora's Fountain"
-    write_bits_to_save(0x0EEB, 0x40) # "Entered Graveyard"
-    write_bits_to_save(0x0EEB, 0x20) # "Entered Jabu-Jabu's Belly"
-    write_bits_to_save(0x0EEB, 0x10) # "Entered Lon Lon Ranch"
-    write_bits_to_save(0x0EEB, 0x08) # "Entered Gerudo's Fortress"
-    write_bits_to_save(0x0EEB, 0x04) # "Entered Gerudo Valley"
-    write_bits_to_save(0x0EEB, 0x02) # "Entered Lake Hylia"
-    write_bits_to_save(0x0EEB, 0x01) # "Entered Dodongo's Cavern"
-    write_bits_to_save(0x0F08, 0x08) # "Entered Hyrule Castle"
+    save_context.write_bits(0x0EE8, 0x01) # "Entered Deku Tree"
+    save_context.write_bits(0x0EE9, 0x80) # "Entered Temple of Time"
+    save_context.write_bits(0x0EE9, 0x40) # "Entered Goron City"
+    save_context.write_bits(0x0EE9, 0x20) # "Entered Hyrule Castle"
+    save_context.write_bits(0x0EE9, 0x10) # "Entered Zora's Domain"
+    save_context.write_bits(0x0EE9, 0x08) # "Entered Kakariko Village"
+    save_context.write_bits(0x0EE9, 0x02) # "Entered Death Mountain Trail"
+    save_context.write_bits(0x0EE9, 0x01) # "Entered Hyrule Field"
+    save_context.write_bits(0x0EEA, 0x04) # "Entered Ganon's Castle (Exterior)"
+    save_context.write_bits(0x0EEA, 0x02) # "Entered Death Mountain Crater"
+    save_context.write_bits(0x0EEA, 0x01) # "Entered Desert Colossus"
+    save_context.write_bits(0x0EEB, 0x80) # "Entered Zora's Fountain"
+    save_context.write_bits(0x0EEB, 0x40) # "Entered Graveyard"
+    save_context.write_bits(0x0EEB, 0x20) # "Entered Jabu-Jabu's Belly"
+    save_context.write_bits(0x0EEB, 0x10) # "Entered Lon Lon Ranch"
+    save_context.write_bits(0x0EEB, 0x08) # "Entered Gerudo's Fortress"
+    save_context.write_bits(0x0EEB, 0x04) # "Entered Gerudo Valley"
+    save_context.write_bits(0x0EEB, 0x02) # "Entered Lake Hylia"
+    save_context.write_bits(0x0EEB, 0x01) # "Entered Dodongo's Cavern"
+    save_context.write_bits(0x0F08, 0x08) # "Entered Hyrule Castle"
 
     # Make the Kakariko Gate not open with the MS
     if not world.open_kakariko:
         rom.write_int32(0xDD3538, 0x34190000) # li t9, 0
 
     if world.open_fountain:
-        write_bits_to_save(0x0EDB, 0x08) #Move king zora
+        save_context.write_bits(0x0EDB, 0x08) #Move king zora
 
     # Make all chest opening animations fast
     rom.write_byte(rom.sym('FAST_CHESTS'), int(world.fast_chests))
@@ -793,7 +869,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
     symbol = rom.sym('RAINBOW_BRIDGE_CONDITION')
     if world.bridge == 'open':
         rom.write_int32(symbol, 0)
-        write_bits_to_save(0xEDC, 0x20) # "Rainbow Bridge Built by Sages"
+        save_context.write_bits(0xEDC, 0x20) # "Rainbow Bridge Built by Sages"
     elif world.bridge == 'medallions':
         rom.write_int32(symbol, 1)
     elif world.bridge == 'dungeons':
@@ -806,10 +882,10 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
         rom.write_int32(symbol, 5)
 
     if world.open_forest:
-        write_bits_to_save(0xED5, 0x10) # "Showed Mido Sword & Shield"
+        save_context.write_bits(0xED5, 0x10) # "Showed Mido Sword & Shield"
 
     if world.open_door_of_time:
-        write_bits_to_save(0xEDC, 0x08) # "Opened the Door of Time"
+        save_context.write_bits(0xEDC, 0x08) # "Opened the Door of Time"
 
     # "fast-ganon" stuff
     symbol = rom.sym('NO_ESCAPE_SEQUENCE')
@@ -820,93 +896,84 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
     else:
         rom.write_byte(symbol, 0x00)
     if world.unlocked_ganondorf:
-        write_bits_to_save(0x00D4 + 0x0A * 0x1C + 0x04 + 0x1, 0x10) # Ganon's Tower switch flag (unlock boss key door)
+        save_context.write_bits(0x00D4 + 0x0A * 0x1C + 0x04 + 0x1, 0x10) # Ganon's Tower switch flag (unlock boss key door)
     if world.skipped_trials['Forest']:
-        write_bits_to_save(0x0EEA, 0x08) # "Completed Forest Trial"
+        save_context.write_bits(0x0EEA, 0x08) # "Completed Forest Trial"
     if world.skipped_trials['Fire']:
-        write_bits_to_save(0x0EEA, 0x40) # "Completed Fire Trial"
+        save_context.write_bits(0x0EEA, 0x40) # "Completed Fire Trial"
     if world.skipped_trials['Water']:
-        write_bits_to_save(0x0EEA, 0x10) # "Completed Water Trial"
+        save_context.write_bits(0x0EEA, 0x10) # "Completed Water Trial"
     if world.skipped_trials['Spirit']:
-        write_bits_to_save(0x0EE8, 0x20) # "Completed Spirit Trial"
+        save_context.write_bits(0x0EE8, 0x20) # "Completed Spirit Trial"
     if world.skipped_trials['Shadow']:
-        write_bits_to_save(0x0EEA, 0x20) # "Completed Shadow Trial"
+        save_context.write_bits(0x0EEA, 0x20) # "Completed Shadow Trial"
     if world.skipped_trials['Light']:
-        write_bits_to_save(0x0EEA, 0x80) # "Completed Light Trial"
+        save_context.write_bits(0x0EEA, 0x80) # "Completed Light Trial"
     if world.trials == 0:
-        write_bits_to_save(0x0EED, 0x08) # "Dispelled Ganon's Tower Barrier"
+        save_context.write_bits(0x0EED, 0x08) # "Dispelled Ganon's Tower Barrier"
 
     # open gerudo fortress
     if world.gerudo_fortress == 'open':
-        write_bits_to_save(0x00A5, 0x40) # Give Gerudo Card
-        write_bits_to_save(0x0EE7, 0x0F) # Free all 4 carpenters
-        write_bits_to_save(0x00D4 + 0x0C * 0x1C + 0x04 + 0x1, 0x0F) # Thieves' Hideout switch flags (started all fights)
-        write_bits_to_save(0x00D4 + 0x0C * 0x1C + 0x04 + 0x2, 0x01) # Thieves' Hideout switch flags (heard yells/unlocked doors)
-        write_bits_to_save(0x00D4 + 0x0C * 0x1C + 0x04 + 0x3, 0xFE) # Thieves' Hideout switch flags (heard yells/unlocked doors)
-        write_bits_to_save(0x00D4 + 0x0C * 0x1C + 0x0C + 0x2, 0xD4) # Thieves' Hideout collection flags (picked up keys, marks fights finished as well)
+        if not world.shuffle_gerudo_card:
+            save_context.write_bits(0x00A5, 0x40) # Give Gerudo Card
+        save_context.write_bits(0x0EE7, 0x0F) # Free all 4 carpenters
+        save_context.write_bits(0x00D4 + 0x0C * 0x1C + 0x04 + 0x1, 0x0F) # Thieves' Hideout switch flags (started all fights)
+        save_context.write_bits(0x00D4 + 0x0C * 0x1C + 0x04 + 0x2, 0x01) # Thieves' Hideout switch flags (heard yells/unlocked doors)
+        save_context.write_bits(0x00D4 + 0x0C * 0x1C + 0x04 + 0x3, 0xFE) # Thieves' Hideout switch flags (heard yells/unlocked doors)
+        save_context.write_bits(0x00D4 + 0x0C * 0x1C + 0x0C + 0x2, 0xD4) # Thieves' Hideout collection flags (picked up keys, marks fights finished as well)
     elif world.gerudo_fortress == 'fast':
-        write_bits_to_save(0x0EE7, 0x0E) # Free 3 carpenters
-        write_bits_to_save(0x00D4 + 0x0C * 0x1C + 0x04 + 0x1, 0x0D) # Thieves' Hideout switch flags (started all fights)
-        write_bits_to_save(0x00D4 + 0x0C * 0x1C + 0x04 + 0x2, 0x01) # Thieves' Hideout switch flags (heard yells/unlocked doors)
-        write_bits_to_save(0x00D4 + 0x0C * 0x1C + 0x04 + 0x3, 0xDC) # Thieves' Hideout switch flags (heard yells/unlocked doors)
-        write_bits_to_save(0x00D4 + 0x0C * 0x1C + 0x0C + 0x2, 0xC4) # Thieves' Hideout collection flags (picked up keys, marks fights finished as well)
+        save_context.write_bits(0x0EE7, 0x0E) # Free 3 carpenters
+        save_context.write_bits(0x00D4 + 0x0C * 0x1C + 0x04 + 0x1, 0x0D) # Thieves' Hideout switch flags (started all fights)
+        save_context.write_bits(0x00D4 + 0x0C * 0x1C + 0x04 + 0x2, 0x01) # Thieves' Hideout switch flags (heard yells/unlocked doors)
+        save_context.write_bits(0x00D4 + 0x0C * 0x1C + 0x04 + 0x3, 0xDC) # Thieves' Hideout switch flags (heard yells/unlocked doors)
+        save_context.write_bits(0x00D4 + 0x0C * 0x1C + 0x0C + 0x2, 0xC4) # Thieves' Hideout collection flags (picked up keys, marks fights finished as well)
 
     # start with maps/compasses
     if world.shuffle_mapcompass == 'startwith':
-        write_bits_to_save(0x00A8, 0x06) # "Deku Map/Compass"
-        write_bits_to_save(0x00A9, 0x06) # "Dodongo Map/Compass"
-        write_bits_to_save(0x00AA, 0x06) # "Jabu Map/Compass"
-        write_bits_to_save(0x00AB, 0x06) # "Forest Map/Compass"
-        write_bits_to_save(0x00AC, 0x06) # "Fire Map/Compass"
-        write_bits_to_save(0x00AD, 0x06) # "Water Map/Compass"
-        write_bits_to_save(0x00AF, 0x06) # "Shadow Map/Compass"
-        write_bits_to_save(0x00AE, 0x06) # "Spirit Map/Compass"
-        write_bits_to_save(0x00B0, 0x06) # "BotW Map/Compass"
-        write_bits_to_save(0x00B1, 0x06) # "Ice Map/Compass"
-
-    if world.start_with_rupees:
-        if world.start_with_wallet:
-            write_byte_to_save(0x0034, 0x03) # start with 999 rupees if tycoon, first byte
-            write_byte_to_save(0x0035, 0xE7) # second byte
-        else:
-            write_byte_to_save(0x0035, 0x63) # start with 99 rupees
+        for dungeon in ['deku', 'dodongo', 'jabu', 'forest', 'fire', 'water', 'spirit', 'shadow', 'botw', 'ice']:
+            save_context.addresses['dungeon_items'][dungeon]['compass'].value = True
+            save_context.addresses['dungeon_items'][dungeon]['map'].value = True
 
     if world.start_with_wallet:
-        write_bits_to_save(0x00A2, 0x30) # tycoon's wallet
-
+        world.distribution.give_item('Progressive Wallet', 3)
+    if world.start_with_rupees:
+        world.distribution.give_item('Rupees', 999)
     if world.start_with_deku_equipment:
         if world.shopsanity == "off":
-            write_bits_to_save(0x009D, 0x10) # start with Deku Shield
-            write_bits_to_save(0x0071, 0x10) # equip Deku Shield
-        write_byte_to_save(0x0074, 0x00) # Deku stick in 1st inventory slot
-        write_byte_to_save(0x008C, 0x0A) # start with 10 Deku sticks
-        write_byte_to_save(0x0075, 0x01) # Deku nut in 2nd inventory slot
-        write_byte_to_save(0x008D, 0x14) # start with 20 Deku nuts
-        write_bits_to_save(0x00A1, 0x12) # enable Deku stick/nut base capacity
-
+            world.distribution.give_item('Deku Shield')
+        world.distribution.give_item('Deku Sticks', 99)
+        world.distribution.give_item('Deku Nuts', 99)
     if world.start_with_fast_travel:
-        write_bits_to_save(0x00A6, 0x09) # start with Prelude of Light & Serenade of Water
-        write_byte_to_save(0x007F, 0x0D) # Farore's Wind in 12th inventory slot
+        world.distribution.give_item('Prelude of Light')
+        world.distribution.give_item('Serenade of Water')
+        world.distribution.give_item('Farores Wind')
 
     # Set starting time of day
     if world.starting_tod != 'default':
         tod = {
-                'midnight':      0x00,
-                'witching-hour': 0x20,
-                'early-morning': 0x40,
-                'morning':       0x60,
-                'noon':          0x80,
-                'afternoon':     0xA0,
-                'evening':       0xC0,
-                'dusk':          0xE0,
-                }
-        write_bytes_to_save(0x000C, [tod[world.starting_tod], 0x00])
+            'midnight':      0x0000,
+            'witching-hour': 0x2000,
+            'early-morning': 0x4000,
+            'morning':       0x6000,
+            'noon':          0x8000,
+            'afternoon':     0xA000,
+            'evening':       0xC000,
+            'dusk':          0xE000,
+        }
+        save_context.addresses['time_of_day'].value = tod[world.starting_tod]
+
+    if world.starting_age == 'adult':
+        save_context.addresses['link_age'].value = False                    # Set link's age to adult
+        save_context.addresses['scene_index'].value = 0x43                  # Set the scene index to Temple of Time
+        save_context.addresses['equip_items']['master_sword'].value = True  # Equip Master Sword by default
+        save_context.addresses['equip_items']['kokiri_tunic'].value = True  # Equip Kokiri Tunic & Kokiri Boots by default
+        save_context.addresses['equip_items']['kokiri_boots'].value = True  # (to avoid issues when going back child for the first time)
 
     # Revert change that Skips the Epona Race
     if not world.no_epona_race:
         rom.write_int32(0xA9E838, 0x03E00008)
     else:
-        write_bits_to_save(0xF0E, 0x01) # Set talked to Malon flag
+        save_context.write_bits(0xF0E, 0x01) # Set talked to Malon flag
 
     # skip castle guard stealth sequence
     if world.no_guard_stealth:
@@ -1051,13 +1118,13 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
         rom.write_int32(0xE09F68, 0x8C6F00A4)
         rom.write_int32(0xE09F74, 0x01CFC024)
         rom.write_int32(0xE09FB0, 0x240F0001)
-        # epona
-        rom.write_int32(0xD7E77C, 0x8C4900A4)
-        rom.write_int32(0xD7E784, 0x8D088C24)
-        rom.write_int32s(0xD7E8D4, [0x8DCE8C24, 0x8C4F00A4])
+        # epona's song
         rom.write_int32s(0xD7E140, [0x8DCE8C24, 0x8C6F00A4])
-        rom.write_int32(0xD7EBBC, 0x14410008)
-        rom.write_int32(0xD7EC1C, 0x17010010)
+        rom.write_int32( 0xD7E77C, 0x8C4900A4)
+        rom.write_int32( 0xD7E784, 0x8D088C24)
+        rom.write_int32s(0xD7E8D4, [0x8DCE8C24, 0x8C4F00A4])
+        rom.write_int32( 0xD7EBBC, 0x14410008)
+        rom.write_int32( 0xD7EC1C, 0x17010010)
         # song of time
         rom.write_int32(0xDB532C, 0x24050003)
 
@@ -1090,8 +1157,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
                 rom.write_byte(0x0D12ECB, special['item_id'])
                 rom.write_byte(0x2E8E931, special['text_id']) #Fix text box
             elif location.name == 'Song from Malon':
-                if item.name == 'Suns Song':
-                    rom.write_byte(locationaddress, next_song_id)
                 rom.write_int16(0xD7E142, bit_mask_pointer)
                 rom.write_int16(0xD7E8D6, bit_mask_pointer)
                 rom.write_int16(0xD7E786, bit_mask_pointer)
@@ -1126,7 +1191,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
                 rom.write_byte(0x218C589, special['text_id']) #Fix text box
         elif location.type == 'Boss':
             if location.name == 'Links Pocket':
-                write_bits_to_save(special['save_byte'], special['save_bit'])
+                save_context.give_item(item.name)
             else:
                 rom.write_byte(locationaddress, special['item_id'])
                 rom.write_byte(secondaryaddress, special['addr2_data'])
@@ -1280,13 +1345,20 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
     for text_id, message in scrub_message_dict.items():
         update_message_by_id(messages, text_id, message)
 
-    # Update grotto id data
-    set_grotto_id_data(rom)
+    if world.shuffle_grotto_entrances:
+        # Update grotto actors based on their new entrance
+        set_grotto_shuffle_data(rom, world)
+
+    if world.shuffle_cows:
+        rom.write_byte(rom.sym('SHUFFLE_COWS'), 0x01)
+        #Moves the cow in LLR Tower, as the two cows are too close in vanilla
+        rom.write_bytes(0x33650CA, [0xFE, 0xD3, 0x00, 0x00, 0x00, 0x6E, 0x00, 0x00, 0x4A, 0x34])
+        set_cow_id_data(rom, world)
 
     if world.shuffle_smallkeys == 'remove' or world.shuffle_bosskeys == 'remove':
         locked_doors = get_locked_doors(rom, world)
         for _,[door_byte, door_bits] in locked_doors.items():
-            write_bits_to_save(door_byte, door_bits)
+            save_context.write_bits(door_byte, door_bits)
 
     # Fix chest animations
     if world.bombchus_in_logic:
@@ -1405,7 +1477,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
 
     if world.free_scarecrow:
         # Played song as adult
-        write_bits_to_save(0x0EE6, 0x10)
+        save_context.write_bits(0x0EE6, 0x10)
         # Direct scarecrow behavior
         symbol = rom.sym('FREE_SCARECROW_ENABLED')
         rom.write_byte(symbol, 0x01)
@@ -1414,7 +1486,23 @@ def patch_rom(spoiler:Spoiler, world:World, rom:LocalRom):
         replace_songs(rom)
 
     # actually write the save table to rom
-    write_save_table(rom)
+    world.distribution.give_items(save_context)
+    if world.starting_age == 'adult':
+        # When starting as adult, the pedestal doesn't handle child default equips when going back child the first time, so we have to equip them ourselves
+        save_context.equip_default_items('child')
+    save_context.equip_current_items(world.starting_age)
+    save_context.write_save_table(rom)
+
+
+
+
+    #EDIT accept86 working_navi
+    #rom.write_bytes(0x03500400, [0x1, 0x2, 0x3, 0x4])
+    if world.settings.working_navi:
+        wNavi = working_navi()
+        wNavi.working_navi_patch(rom, world, spoiler, save_context, outfilebase)
+
+    
 
     return rom
 
@@ -1585,23 +1673,86 @@ def get_override_itemid(override_table, scene, type, flags):
             return entry[4]
     return None
 
+def remove_entrance_blockers(rom):
+    def remove_entrance_blockers_do(rom, actor_id, actor, scene):
+        if actor_id == 0x014E and scene == 97:
+            actor_var = rom.read_int16(actor + 14);
+            if actor_var == 0xFF01:
+                rom.write_int16(actor + 14, 0x0700)
+        if actor_id == 0x0145:
+            rom.write_int16(actor, 0x014E)
+            rom.write_int16(actor + 14, 0x0700)
 
-def set_grotto_id_data(rom):
-    def set_grotto_id(rom, actor_id, actor, scene):
+    get_actor_list(rom, remove_entrance_blockers_do)
+
+def set_cow_id_data(rom, world):
+    def set_cow_id(rom, actor_id, actor, scene):
+        nonlocal last_scene
+        nonlocal cow_count
+        nonlocal last_actor
+
+        if actor_id == 0x01C6: #Cow
+            if scene == last_scene and last_actor != actor:
+                cow_count += 1
+            else:
+                cow_count = 1
+
+            last_scene = scene
+            last_actor = actor
+            if world.dungeon_mq['Jabu Jabus Belly'] and scene == 2: #If its an MQ jabu cow
+                rom.write_int16(actor + 0x8, 1 if cow_count == 17 else 0) #Give all wall cows ID 0, and set cow 11's ID to 1
+            else:
+                rom.write_int16(actor + 0x8, cow_count)
+
+    last_actor = -1
+    last_scene = -1
+    cow_count = 1
+
+    get_actor_list(rom, set_cow_id)
+
+
+def set_grotto_shuffle_data(rom, world):
+    def get_grotto_data(rom, actor_id, actor, scene):
         if actor_id == 0x009B: #Grotto
             actor_zrot = rom.read_int16(actor + 12)
-            actor_var = rom.read_int16(actor + 14);
-            grotto_scene = actor_var >> 12
-            grotto_entrance = actor_zrot & 0x000F
-            grotto_id = actor_var & 0x00FF
+            actor_var = rom.read_int16(actor + 14)
 
-            if grotto_scene == 0 and grotto_entrance in [2, 4, 7, 10]:
-                grotto_scenes.add(scene)
-                rom.write_byte(actor + 15, len(grotto_scenes))
+            grotto_table[actor] = {
+                'id': (scene << 16) + actor_var,
+                'scene': (actor_var >> 8) & 0xF0,
+                'entrance': actor_zrot & 0x00FF,
+                'content': actor_var & 0x00FF,
+            }
 
-    grotto_scenes = set()
+    def override_grotto_data(rom, actor_id, actor, scene):
+        if actor_id == 0x009B: #Grotto
+            actor_zrot = rom.read_int16(actor + 12)
+            actor_var = rom.read_int16(actor + 14)
+            grotto_type = (actor_var >> 8) & 0x0F
 
-    get_actor_list(rom, set_grotto_id)
+            grotto_data = grotto_override_table[actor]
+            rom.write_byte(actor + 14, grotto_type + grotto_data['scene'])
+            rom.write_byte(actor + 13, grotto_data['entrance'])
+            rom.write_byte(actor + 15, grotto_data['content'])
+
+    # Retrieve the original grotto data
+    grotto_table = {}
+    get_actor_list(rom, get_grotto_data)
+
+    # Build the override table based on shuffled grotto entrances
+    shuffled_grotto_table = {}
+    for entrance in world.get_shuffled_entrances(type='Grotto'):
+        grotto_id = (entrance.addresses['scene'] << 16) + entrance.addresses['grotto_var']
+        grotto_override_id = (entrance.connected_region.addresses['scene'] << 16) + entrance.connected_region.addresses['grotto_var']
+        shuffled_grotto_table[grotto_id] = grotto_override_id
+
+    grotto_override_table = {}
+    for actor in grotto_table:
+        grotto_id = grotto_table[actor]['id']
+        grotto_override_table[actor] = next(filter(lambda grotto_data: grotto_data['id'] == shuffled_grotto_table[grotto_id], grotto_table.values()))
+
+    # Override grotto actors data with the new table
+    get_actor_list(rom, override_grotto_data)
 
 
 def set_deku_salesman_data(rom):
@@ -1761,3 +1912,7 @@ def configure_dungeon_info(rom, world):
     rom.write_int32(rom.sym('cfg_dungeon_info_reward_need_altar'), int(not mapcompass_keysanity))
     rom.write_bytes(rom.sym('cfg_dungeon_rewards'), dungeon_rewards)
     rom.write_bytes(rom.sym('cfg_dungeon_is_mq'), dungeon_is_mq)
+    
+    
+    
+    

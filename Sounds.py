@@ -29,49 +29,55 @@ from collections import namedtuple
 
 
 class Tags(Enum):
-    LOOPED    = 0
-    QUIET     = 1
-    IMMEDIATE = 2       # Delayed sounds are commonly undesirable
-    BRIEF     = 3       # Punchy sounds, good for rapid fire
-    NEW       = 4
-    PAINFUL   = 5       # Eardrum-piercing sounds
-    INC_NE    = 20      # Incompatible with NAVI_ENEMY? (Verify)
+    LOOPED     = 0
+    QUIET      = 1
+    IMMEDIATE  = 2      # Delayed sounds are commonly undesirable
+    BRIEF      = 3      # Punchy sounds, good for rapid fire
+    NEW        = 4
+    PAINFUL    = 5      # Eardrum-piercing sounds
+    NAVI       = 6      # Navi sounds (hand chosen)
+    HPLOW      = 7      # Low HP sounds (hand chosen)
+    HOVERBOOT  = 8      # Hover boot sounds (hand chosen)
+    NIGHTFALL  = 9      # Nightfall sounds (hand chosen)
+    MENUSELECT = 10     # Menu selection sounds (hand chosen, could use some more)
+    MENUMOVE   = 11     # Menu movement sounds  (hand chosen, could use some more)
+    HORSE      = 12     # Horse neigh sounds (hand chosen)
+    INC_NE     = 20     # Incompatible with NAVI_ENEMY? (Verify)
                         # I'm now thinking it has to do with a limit of concurrent sounds)
-
 
 Sound = namedtuple('Sound',   'id      keyword                  label                        tags')
 class Sounds(Enum):
-    NONE               = Sound(0x0000, 'none',                  'None',                      [])
-    ARMOS_GROAN        = Sound(0x3848, 'armos',                 'Armos',                     [])
-    BARK               = Sound(0x28D8, 'bark',                  'Bark',                      [Tags.BRIEF])
-    BOMB_BOUNCE        = Sound(0x282F, 'bomb-bounce',           'Bomb Bounce',               [Tags.QUIET])
+    NONE               = Sound(0x0000, 'none',                  'None',                      [Tags.NAVI, Tags.HPLOW])
+    ARMOS_GROAN        = Sound(0x3848, 'armos',                 'Armos',                     [Tags.HORSE])
+    BARK               = Sound(0x28D8, 'bark',                  'Bark',                      [Tags.BRIEF, Tags.NAVI, Tags.HPLOW, Tags.HOVERBOOT])
+    BOMB_BOUNCE        = Sound(0x282F, 'bomb-bounce',           'Bomb Bounce',               [Tags.QUIET, Tags.HPLOW])
     BOOTS_HOVER        = Sound(0x08C9, 'hover-boots',           'Hover Boots',               [Tags.LOOPED])
-    BOOTS_IRON         = Sound(0x080D, 'iron-boots',            'Iron Boots',                [Tags.BRIEF, Tags.QUIET])
+    BOOTS_IRON         = Sound(0x080D, 'iron-boots',            'Iron Boots',                [Tags.BRIEF, Tags.HPLOW, Tags.QUIET])
     BOTTLE_CORK        = Sound(0x286C, 'bottle-cork',           'Bottle Cork',               [Tags.IMMEDIATE, Tags.BRIEF, Tags.QUIET])
-    BOW_TWANG          = Sound(0x1830, 'bow-twang',             'Bow Twang',                 [])
+    BOW_TWANG          = Sound(0x1830, 'bow-twang',             'Bow Twang',                 [Tags.HPLOW, Tags.MENUMOVE])
     BUBBLE_LOL         = Sound(0x38CA, 'bubble-laugh',          'Bubble Laugh',              [])
-    BONGO_HIGH         = Sound(0x3951, 'bongo-bongo-high',      'Bongo Bongo High',          [])
-    BONGO_LOW          = Sound(0x3950, 'bongo-bongo-low',       'Bongo Bongo Low',           [Tags.QUIET])
-    CARROT_REFILL      = Sound(0x4845, 'carrot-refill',         'Carrot Refill',             [])
-    CARTOON_FALL       = Sound(0x28A0, 'cartoon-fall',          'Cartoon Fall',              [])
-    CHANGE_ITEM        = Sound(0x0835, 'change-item',           'Change Item',               [Tags.IMMEDIATE, Tags.BRIEF])
+    BONGO_HIGH         = Sound(0x3951, 'bongo-bongo-high',      'Bongo Bongo High',          [Tags.MENUSELECT])
+    BONGO_LOW          = Sound(0x3950, 'bongo-bongo-low',       'Bongo Bongo Low',           [Tags.QUIET, Tags.HPLOW, Tags.MENUMOVE])
+    CARROT_REFILL      = Sound(0x4845, 'carrot-refill',         'Carrot Refill',             [Tags.NAVI, Tags.HPLOW])
+    CARTOON_FALL       = Sound(0x28A0, 'cartoon-fall',          'Cartoon Fall',              [Tags.HOVERBOOT])
+    CHANGE_ITEM        = Sound(0x0835, 'change-item',           'Change Item',               [Tags.IMMEDIATE, Tags.BRIEF, Tags.MENUSELECT])
     CHEST_OPEN         = Sound(0x2820, 'chest-open',            'Chest Open',                [])
-    CHILD_CRINGE       = Sound(0x683A, 'child-cringe',          'Child Cringe',              [Tags.IMMEDIATE])
+    CHILD_CRINGE       = Sound(0x683A, 'child-cringe',          'Child Cringe',              [Tags.IMMEDIATE, Tags.MENUSELECT])
     CHILD_GASP         = Sound(0x6836, 'child-gasp',            'Child Gasp',                [])
     CHILD_HURT         = Sound(0x6825, 'child-hurt',            'Child Hurt',                [])
     CHILD_OWO          = Sound(0x6823, 'child-owo',             'Child owo',                 [])
     CHILD_PANT         = Sound(0x6829, 'child-pant',            'Child Pant',                [Tags.IMMEDIATE])
-    CHILD_SCREAM       = Sound(0x6828, 'child-scream',          'Child Scream',              [Tags.IMMEDIATE])
-    CRATE_EXPLODE      = Sound(0x2839, 'exploding-crate',       'Exploding Crate',           [])
-    CUCCO_CLUCK        = Sound(0x2812, 'cluck',                 'Cluck',                     [Tags.BRIEF])
-    CUCCO_CROW         = Sound(0x2813, 'cockadoodledoo',        'Cockadoodledoo',            [])
+    CHILD_SCREAM       = Sound(0x6828, 'child-scream',          'Child Scream',              [Tags.IMMEDIATE, Tags.MENUMOVE, Tags.HORSE])
+    CRATE_EXPLODE      = Sound(0x2839, 'exploding-crate',       'Exploding Crate',           [Tags.NAVI])
+    CUCCO_CLUCK        = Sound(0x2812, 'cluck',                 'Cluck',                     [Tags.BRIEF, Tags.NAVI, Tags.HPLOW])
+    CUCCO_CROW         = Sound(0x2813, 'cockadoodledoo',        'Cockadoodledoo',            [Tags.NAVI, Tags.NIGHTFALL])
     CURSED_SCREAM      = Sound(0x6867, 'cursed-scream',         'Cursed Scream',             [Tags.PAINFUL])
     CURSED_ATTACK      = Sound(0x6868, 'cursed-attack',         'Cursed Attack',             [Tags.IMMEDIATE])
-    DRAWBRIDGE_SET     = Sound(0x280E, 'drawbridge-set',        'Drawbridge Set',            [])
-    DUSK_HOWL          = Sound(0x28AE, 'dusk-howl',             'Dusk Howl',                 [])
-    DEKU_BABA_CHATTER  = Sound(0x3860, 'deku-baba',             'Deku Baba',                 [])
+    DRAWBRIDGE_SET     = Sound(0x280E, 'drawbridge-set',        'Drawbridge Set',            [Tags.HPLOW])
+    DUSK_HOWL          = Sound(0x28AE, 'dusk-howl',             'Dusk Howl',                 [Tags.NAVI])
+    DEKU_BABA_CHATTER  = Sound(0x3860, 'deku-baba',             'Deku Baba',                 [Tags.MENUMOVE])
     EPONA_CHILD        = Sound(0x2844, 'baby-epona',            'Baby Epona',                [])
-    EXPLOSION          = Sound(0x180E, 'explosion',             'Explosion',                 [])
+    EXPLOSION          = Sound(0x180E, 'explosion',             'Explosion',                 [Tags.NAVI])
     FANFARE_MED        = Sound(0x4831, 'medium-fanfare',        'Medium Fanfare',            [])
     FANFARE_SMALL      = Sound(0x4824, 'light-fanfare',         'Light Fanfare',             [])
     FIELD_SHRUB        = Sound(0x2877, 'field-shrub',           'Field Shrub',               [])
@@ -79,172 +85,81 @@ class Sounds(Enum):
     FLARE_BOSS_STARTLE = Sound(0x398B, 'flare-dancer-startled', 'Flare Dancer Startled',     [])
     GANON_TENNIS       = Sound(0x39CA, 'ganondorf-teh',         'Ganondorf "Teh!"',          [])
     GOHMA_LARVA_CROAK  = Sound(0x395D, 'gohma-larva-croak',     'Gohma Larva Croak',         [])
-    GOLD_SKULL_TOKEN   = Sound(0x4843, 'gold-skull-token',      'Gold Skull Token',          [])
+    GOLD_SKULL_TOKEN   = Sound(0x4843, 'gold-skull-token',      'Gold Skull Token',          [Tags.NIGHTFALL])
     GORON_WAKE         = Sound(0x38FC, 'goron-wake',            'Goron Wake',                [])
-    GREAT_FAIRY        = Sound(0x6858, 'great-fairy',           'Great Fairy',               [Tags.PAINFUL])
-    GUAY               = Sound(0x38B6, 'guay',                  'Guay',                      [Tags.BRIEF])
+    GREAT_FAIRY        = Sound(0x6858, 'great-fairy',           'Great Fairy',               [Tags.PAINFUL, Tags.NAVI, Tags.NIGHTFALL, Tags.HORSE])
+    GUAY               = Sound(0x38B6, 'guay',                  'Guay',                      [Tags.BRIEF, Tags.NAVI, Tags.HPLOW])
     GUNSHOT            = Sound(0x4835, 'gunshot',               'Gunshot',                   [])
     HAMMER_BONK        = Sound(0x180A, 'hammer-bonk',           'Hammer Bonk',               [])
-    HORSE_NEIGH        = Sound(0x2805, 'horse-neigh',           'Horse Neigh',               [Tags.PAINFUL])
-    HORSE_TROT         = Sound(0x2804, 'horse-trot',            'Horse Trot',                [])
-    HP_LOW             = Sound(0x481B, 'low-health',            'Low Health',                [Tags.INC_NE])
-    HP_RECOVER         = Sound(0x480B, 'recover-health',        'Recover Health',            [])
-    ICE_SHATTER        = Sound(0x0875, 'shattering-ice',        'Shattering Ice',            [])
+    HORSE_NEIGH        = Sound(0x2805, 'horse-neigh',           'Horse Neigh',               [Tags.PAINFUL, Tags.NAVI])
+    HORSE_TROT         = Sound(0x2804, 'horse-trot',            'Horse Trot',                [Tags.HPLOW])
+    HP_LOW             = Sound(0x481B, 'low-health',            'Low Health',                [Tags.INC_NE, Tags.NAVI])
+    HP_RECOVER         = Sound(0x480B, 'recover-health',        'Recover Health',            [Tags.NAVI, Tags.HPLOW])
+    ICE_SHATTER        = Sound(0x0875, 'shattering-ice',        'Shattering Ice',            [Tags.NAVI])
     INGO_WOOAH         = Sound(0x6854, 'ingo-wooah',            'Ingo "Wooah!"',             [])
     IRON_KNUCKLE       = Sound(0x3929, 'iron-knuckle',          'Iron Knuckle',              [])
     INGO_KAAH          = Sound(0x6855, 'kaah',                  'Kaah!',                     [])
     MOBLIN_CLUB_GROUND = Sound(0x38EF, 'moblin-club-ground',    'Moblin Club Ground',        [])
     MOBLIN_CLUB_SWING  = Sound(0x39E1, 'moblin-club-swing',     'Moblin Club Swing',         [])
-    MOO                = Sound(0x28DF, 'moo',                   'Moo',                       [])
-    NAVI_HELLO         = Sound(0x6844, 'navi-hello',            'Navi "Hello!"',             [])
-    NAVI_HEY           = Sound(0x685F, 'navi-hey',              'Navi "Hey!"',               [])
-    NAVI_RANDOM        = Sound(0x6843, 'navi-random',           'Navi Random',               [])
-    NOTIFICATION       = Sound(0x4820, 'notification',          'Notification',              [])
+    MOO                = Sound(0x28DF, 'moo',                   'Moo',                       [Tags.NAVI, Tags.NIGHTFALL, Tags.HORSE])
+    NAVI_HELLO         = Sound(0x6844, 'navi-hello',            'Navi "Hello!"',             [Tags.NAVI])
+    NAVI_HEY           = Sound(0x685F, 'navi-hey',              'Navi "Hey!"',               [Tags.HPLOW])
+    NAVI_RANDOM        = Sound(0x6843, 'navi-random',           'Navi Random',               [Tags.HPLOW])
+    NOTIFICATION       = Sound(0x4820, 'notification',          'Notification',              [Tags.NAVI, Tags.HPLOW])
     PHANTOM_GANON_LOL  = Sound(0x38B0, 'phantom-ganon-laugh',   'Phantom Ganon Laugh',       [])
     PLANT_EXPLODE      = Sound(0x284E, 'plant-explode',         'Plant Explode',             [])
-    POE                = Sound(0x38EC, 'poe',                   'Poe',                       [])
-    POT_SHATTER        = Sound(0x2887, 'shattering-pot',        'Shattering Pot',            [])
-    REDEAD_MOAN        = Sound(0x38E4, 'redead-moan',           'Redead Moan',               [])
-    REDEAD_SCREAM      = Sound(0x38E5, 'redead-scream',         'Redead Scream',             [Tags.PAINFUL])
-    RIBBIT             = Sound(0x28B1, 'ribbit',                'Ribbit',                    [])
+    POE                = Sound(0x38EC, 'poe',                   'Poe',                       [Tags.NAVI])
+    POT_SHATTER        = Sound(0x2887, 'shattering-pot',        'Shattering Pot',            [Tags.NAVI, Tags.HPLOW])
+    REDEAD_MOAN        = Sound(0x38E4, 'redead-moan',           'Redead Moan',               [Tags.NIGHTFALL])
+    REDEAD_SCREAM      = Sound(0x38E5, 'redead-scream',         'Redead Scream',             [Tags.PAINFUL, Tags.NAVI, Tags.HORSE])
+    RIBBIT             = Sound(0x28B1, 'ribbit',                'Ribbit',                    [Tags.NAVI, Tags.HPLOW])
     RUPEE              = Sound(0x4803, 'rupee',                 'Rupee',                     [Tags.PAINFUL])
     RUPEE_SILVER       = Sound(0x28E8, 'silver-rupee',          'Silver Rupee',              [])
     RUTO_CHILD_CRASH   = Sound(0x6860, 'ruto-crash',            'Ruto Crash',                [])
     RUTO_CHILD_EXCITED = Sound(0x6861, 'ruto-excited',          'Ruto Excited',              [])
-    RUTO_CHILD_GIGGLE  = Sound(0x6863, 'ruto-giggle',           'Ruto Giggle',               [])
+    RUTO_CHILD_GIGGLE  = Sound(0x6863, 'ruto-giggle',           'Ruto Giggle',               [Tags.NAVI])
     RUTO_CHILD_LIFT    = Sound(0x6864, 'ruto-lift',             'Ruto Lift',                 [])
     RUTO_CHILD_THROWN  = Sound(0x6865, 'ruto-thrown',           'Ruto Thrown',               [])
-    RUTO_CHILD_WIGGLE  = Sound(0x6866, 'ruto-wiggle',           'Ruto Wiggle',               [])
-    SCRUB_BUSINESS     = Sound(0x3882, 'business-scrub',        'Business Scrub',            [])
+    RUTO_CHILD_WIGGLE  = Sound(0x6866, 'ruto-wiggle',           'Ruto Wiggle',               [Tags.HORSE])
+    SCRUB_BUSINESS     = Sound(0x3882, 'business-scrub',        'Business Scrub',            [Tags.NAVI, Tags.HPLOW])
     SCRUB_NUTS_UP      = Sound(0x387C, 'scrub-emerge',          'Scrub Emerge',              [])
     SHABOM_BOUNCE      = Sound(0x3948, 'shabom-bounce',         'Shabom Bounce',             [Tags.IMMEDIATE])
-    SHABOM_POP         = Sound(0x3949, 'shabom-pop',            'Shabom Pop',                [Tags.IMMEDIATE, Tags.BRIEF])
+    SHABOM_POP         = Sound(0x3949, 'shabom-pop',            'Shabom Pop',                [Tags.IMMEDIATE, Tags.BRIEF, Tags.HOVERBOOT])
     SHELLBLADE         = Sound(0x3849, 'shellblade',            'Shellblade',                [])
-    SKULLTULA          = Sound(0x39DA, 'skulltula',             'Skulltula',                 [Tags.BRIEF])
-    SOFT_BEEP          = Sound(0x4804, 'soft-beep',             'Soft Beep',                 [])
+    SKULLTULA          = Sound(0x39DA, 'skulltula',             'Skulltula',                 [Tags.BRIEF, Tags.NAVI])
+    SOFT_BEEP          = Sound(0x4804, 'soft-beep',             'Soft Beep',                 [Tags.NAVI, Tags.HPLOW])
     SPIKE_TRAP         = Sound(0x38E9, 'spike-trap',            'Spike Trap',                [Tags.LOOPED])
     SPIT_NUT           = Sound(0x387E, 'spit-nut',              'Spit Nut',                  [Tags.IMMEDIATE, Tags.BRIEF])
-    STALCHILD_ATTACK   = Sound(0x3831, 'stalchild-attack',      'Stalchild Attack',          [])
+    STALCHILD_ATTACK   = Sound(0x3831, 'stalchild-attack',      'Stalchild Attack',          [Tags.HORSE])
     STINGER_CRY        = Sound(0x39A3, 'stinger-squeak',        'Stinger Squeak',            [Tags.PAINFUL])
-    SWITCH             = Sound(0x2815, 'switch',                'Switch',                    [])
-    SWORD_BONK         = Sound(0x181A, 'sword-bonk',            'Sword Bonk',                [])
-    TAMBOURINE         = Sound(0x4842, 'tambourine',            'Tambourine',                [Tags.QUIET])
+    SWITCH             = Sound(0x2815, 'switch',                'Switch',                    [Tags.HPLOW])
+    SWORD_BONK         = Sound(0x181A, 'sword-bonk',            'Sword Bonk',                [Tags.HPLOW])
+    TAMBOURINE         = Sound(0x4842, 'tambourine',            'Tambourine',                [Tags.QUIET, Tags.NAVI, Tags.HPLOW, Tags.HOVERBOOT])
     TARGETING_ENEMY    = Sound(0x4830, 'target-enemy',          'Target Enemy',              [])
     TARGETING_NEUTRAL  = Sound(0x480C, 'target-neutral',        'Target Neutral',            [])
     TALON_CRY          = Sound(0x6853, 'talon-cry',             'Talon Cry',                 [])
     TALON_HMM          = Sound(0x6852, 'talon-hmm',             'Talon "Hmm"',               [])
-    TALON_SNORE        = Sound(0x6850, 'talon-snore',           'Talon Snore',               [])
+    TALON_SNORE        = Sound(0x6850, 'talon-snore',           'Talon Snore',               [Tags.NIGHTFALL])
     TALON_WTF          = Sound(0x6851, 'talon-wtf',             'Talon Wtf',                 [])
-    THUNDER            = Sound(0x282E, 'thunder',               'Thunder',                   [])
-    TIMER              = Sound(0x481A, 'timer',                 'Timer',                     [Tags.INC_NE])
+    THUNDER            = Sound(0x282E, 'thunder',               'Thunder',                   [Tags.NIGHTFALL])
+    TIMER              = Sound(0x481A, 'timer',                 'Timer',                     [Tags.INC_NE, Tags.NAVI, Tags.HPLOW])
     TWINROVA_BICKER    = Sound(0x39E7, 'twinrova-bicker',       'Twinrova Bicker',           [Tags.LOOPED])
     WOLFOS_HOWL        = Sound(0x383C, 'wolfos-howl',           'Wolfos Howl',               [])
-    ZELDA_ADULT_GASP   = Sound(0x6879, 'adult-zelda-gasp',      'Adult Zelda Gasp',          [])
-    ZORA_KING          = Sound(0x687A, 'mweep',                 'Mweep!',                    [Tags.BRIEF])
+    ZELDA_ADULT_GASP   = Sound(0x6879, 'adult-zelda-gasp',      'Adult Zelda Gasp',          [Tags.NAVI, Tags.HPLOW])
+    ZORA_KING          = Sound(0x687A, 'mweep',                 'Mweep!',                    [Tags.BRIEF, Tags.NAVI, Tags.HPLOW, Tags.HOVERBOOT])
 
 
 # Sound pools
-standard   = [s for s in Sounds if Tags.LOOPED not in s.value.tags]
-looping    = [s for s in Sounds if Tags.LOOPED in s.value.tags]
-no_painful = [s for s in standard if Tags.PAINFUL not in s.value.tags]
-
-# Selected by hand (very much a WIP)
-navi = [
-        Sounds.NONE,
-        Sounds.CUCCO_CLUCK,
-        Sounds.SOFT_BEEP,
-        Sounds.HP_RECOVER,
-        Sounds.TIMER,
-        Sounds.HP_LOW,
-        Sounds.NOTIFICATION,
-        Sounds.TAMBOURINE,
-        Sounds.CARROT_REFILL,
-        Sounds.ZELDA_ADULT_GASP,
-        Sounds.ZORA_KING,
-        Sounds.ICE_SHATTER,
-        Sounds.EXPLOSION,
-        Sounds.CRATE_EXPLODE,
-        Sounds.GREAT_FAIRY,
-        Sounds.MOO,
-        Sounds.BARK,
-        Sounds.RIBBIT,
-        Sounds.POT_SHATTER,
-        Sounds.CUCCO_CROW,
-        Sounds.HORSE_NEIGH,
-        Sounds.SKULLTULA,
-        Sounds.REDEAD_SCREAM,
-        Sounds.POE,
-        Sounds.RUTO_CHILD_GIGGLE,
-        Sounds.DUSK_HOWL,
-        Sounds.SCRUB_BUSINESS,
-        Sounds.GUAY,
-        Sounds.NAVI_HELLO,
-        ]
-hp_low = [
-        Sounds.NONE,
-        Sounds.CUCCO_CLUCK,
-        Sounds.SOFT_BEEP,
-        Sounds.HP_RECOVER,
-        Sounds.TIMER,
-        Sounds.NOTIFICATION,
-        Sounds.TAMBOURINE,
-        Sounds.CARROT_REFILL,
-        Sounds.NAVI_RANDOM,
-        Sounds.NAVI_HEY,
-        Sounds.ZELDA_ADULT_GASP,
-        Sounds.ZORA_KING,
-        Sounds.BOOTS_IRON,
-        Sounds.SWORD_BONK,
-        Sounds.BOW_TWANG,
-        Sounds.HORSE_TROT,
-        Sounds.DRAWBRIDGE_SET,
-        Sounds.SWITCH,
-        Sounds.BOMB_BOUNCE,
-        Sounds.BARK,
-        Sounds.RIBBIT,
-        Sounds.POT_SHATTER,
-        Sounds.SCRUB_BUSINESS,
-        Sounds.GUAY,
-        Sounds.BONGO_LOW,
-        ]
-hover_boots = [
-        Sounds.BARK,
-        Sounds.SHABOM_POP,
-        Sounds.CARTOON_FALL,
-        Sounds.ZORA_KING,
-        Sounds.TAMBOURINE,
-        ]
-nightfall = [
-        Sounds.CUCCO_CROW,
-        Sounds.REDEAD_MOAN,
-        Sounds.TALON_SNORE,
-        Sounds.GREAT_FAIRY,
-        Sounds.THUNDER,
-        Sounds.MOO,
-        Sounds.GOLD_SKULL_TOKEN,
-        ]
-# Too small, needs more thought
-menu_select = [
-        Sounds.CHILD_CRINGE,
-        Sounds.CHANGE_ITEM,
-        Sounds.BONGO_HIGH,
-        ]
-# Too small, needs more thought
-menu_cursor = [
-        Sounds.CHILD_SCREAM,
-        Sounds.BOW_TWANG,
-        Sounds.DEKU_BABA_CHATTER,
-        Sounds.BONGO_LOW,
-        ]
-horse_neigh = [
-        Sounds.MOO,
-        Sounds.CHILD_SCREAM,
-        Sounds.RUTO_CHILD_WIGGLE,
-        Sounds.GREAT_FAIRY,
-        Sounds.ARMOS_GROAN,
-        Sounds.REDEAD_SCREAM,
-        Sounds.STALCHILD_ATTACK,
-        ]
+standard    = [s for s in Sounds if Tags.LOOPED not in s.value.tags]
+looping     = [s for s in Sounds if Tags.LOOPED in s.value.tags]
+no_painful  = [s for s in standard if Tags.PAINFUL not in s.value.tags]
+navi        = [s for s in Sounds if Tags.NAVI in s.value.tags]
+hp_low      = [s for s in Sounds if Tags.HPLOW in s.value.tags]
+hover_boots = [s for s in Sounds if Tags.HOVERBOOT in s.value.tags]
+nightfall   = [s for s in Sounds if Tags.NIGHTFALL in s.value.tags]
+menu_select = [s for s in Sounds if Tags.MENUSELECT in s.value.tags]
+menu_cursor = [s for s in Sounds if Tags.MENUMOVE in s.value.tags]
+horse_neigh = [s for s in Sounds if Tags.HORSE in s.value.tags]
 
 
 SoundHook = namedtuple('SoundHook', 'name pool locations')
@@ -275,8 +190,12 @@ def get_patch_dict():
     return {s.value.keyword: s.value.id for s in Sounds}
 
 
-def get_hook_pool(sound_hook):
-    return sound_hook.value.pool
+def get_hook_pool(sound_hook, earsafeonly = "FALSE"):
+    if earsafeonly == "TRUE":
+        list = [s for s in sound_hook.value.pool if Tags.PAINFUL not in s.value.tags]
+        return list
+    else:
+        return sound_hook.value.pool
 
 
 def get_setting_choices(sound_hook):

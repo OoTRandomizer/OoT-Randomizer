@@ -1,3 +1,5 @@
+#!/usr/bin/env/python3
+
 import argparse
 import json
 import os
@@ -85,7 +87,7 @@ data_symbols = {}
 for (name, sym) in symbols.items():
     if sym['type'] == 'data':
         addr = int(sym['address'], 16)
-        if 0x80400000 <= addr < 0x80410000:
+        if 0x80400000 <= addr < 0x80410000: #accept86
             addr = addr - 0x80400000 + 0x03480000
         else:
             continue

@@ -59,7 +59,7 @@ SPECIAL_CHARACTERS = {
     0xAA: '[Control Stick]',
 }
 
-GOSSIP_STONE_MESSAGES = list( range(0x0401, 0x0421) ) # ids of the actual hints
+GOSSIP_STONE_MESSAGES = list( range(0x0401, 0x04FF) ) # ids of the actual hints
 GOSSIP_STONE_MESSAGES += [0x2053, 0x2054] # shared initial stone messages
 TEMPLE_HINTS_MESSAGES = [0x7057, 0x707A] # dungeon reward hints from the temple of time pedestal
 LIGHT_ARROW_HINT = [0x70CC] # ganondorf's light arrow hint line
@@ -164,6 +164,7 @@ ITEM_MESSAGES = {
     0x0097: "\x08\x13\x20You caught a \x05\x41Poe \x05\x40in a bottle!\x01Something good might happen!",
     0x0098: "\x08\x13\x1AYou got \x05\x41Lon Lon Milk\x05\x40!\x01This milk is very nutritious!\x01There are two drinks in it.",
     0x0099: "\x08\x13\x1BYou found \x05\x41Ruto's Letter\x05\x40 in a\x01bottle! Show it to King Zora.",
+    0x9099: "\x08\x13\x1BYou found \x05\x41a letter in a bottle\x05\x40!\x01You remove the letter from the\x01bottle, freeing it for other uses.",
     0x009A: "\x08\x13\x21You got a \x05\x41Weird Egg\x05\x40!\x01Feels like there's something\x01moving inside!",
     0x00A4: "\x08\x13\x3BYou got the \x05\x42Kokiri Sword\x05\x40!\x01This is a hidden treasure of\x01the Kokiri.",
     0x00A7: "\x08\x13\x01Now you can carry\x01many \x05\x41Deku Nuts\x05\x40!\x01You can hold up to \x05\x4630\x05\x40 nuts!",
@@ -241,13 +242,14 @@ KEYSANITY_MESSAGES = {
 }
 
 MISC_MESSAGES = {
-    0x507B: bytearray(
+    0x507B: (bytearray(
             b"\x08I tell you, I saw him!\x04" \
             b"\x08I saw the ghostly figure of Damp\x96\x01" \
             b"the gravekeeper sinking into\x01" \
             b"his grave. It looked like he was\x01" \
             b"holding some kind of \x05\x41treasure\x05\x40!\x02"
-            ),
+            ), None),
+    0x0422: ("They say that once \x05\x41Morpha's Curse\x05\x40\x01is lifted, striking \x05\x42this stone\x05\x40 can\x01shift the tides of \x05\x44Lake Hylia\x05\x40.\x02", 0x23),
 }
 
 # convert byte array to an integer
@@ -747,8 +749,8 @@ def update_item_messages(messages, world):
         else:
             update_message_by_id(messages, id, text, 0x23)
 
-    for id, text in MISC_MESSAGES.items():
-        update_message_by_id(messages, id, text)
+    for id, (text, opt) in MISC_MESSAGES.items():
+        update_message_by_id(messages, id, text, opt)
 
 
 # run all keysanity related patching to add messages for dungeon specific items

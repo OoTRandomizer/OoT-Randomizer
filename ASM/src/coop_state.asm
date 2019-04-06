@@ -1,3 +1,5 @@
+COOP_CONTEXT:
+
 COOP_VERSION:
 .word 1 ; Increment this if layout of co-op state changes
 

@@ -1,8 +1,9 @@
 import Messages
+import re
 
 # Least common multiple of all possible character widths. A line wrap must occur when the combined widths of all of the
 # characters on a line reach this value.
-LINE_WIDTH = 1801800
+NORMAL_LINE_WIDTH = 1801800
 
 # Attempting to display more lines in a single text box will cause additional lines to bleed past the bottom of the box.
 LINES_PER_BOX = 4
@@ -11,32 +12,38 @@ LINES_PER_BOX = 4
 # appear in lower areas of the text box. Eventually, the text box will become uncloseable.
 MAX_CHARACTERS_PER_BOX = 200
 
-LINE_BREAK = '&'
-BOX_BREAK = '^'
-
+LINE_BREAK = ['&', '\x01']
+BOX_BREAK  = ['^', '\x04']
+TEXT_END   = '\x02'
 
 def lineWrap(text):
-    boxes = text.split(BOX_BREAK)
+    text = text.split(TEXT_END)[0]
+
+    boxes = text.split('|'.join(BOX_BREAK))
     boxesWithWrappedLines = []
 
+    if '\x13' in text:
+        line_width = 1441440
+    else:
+        line_width = NORMAL_LINE_WIDTH
+
     for box in boxes:
-        forcedLines = box.split(LINE_BREAK)
-        lines = [line.strip() for forcedLine in forcedLines for line in _wrapLines(forcedLine)]
-        wrapped = LINE_BREAK.join(lines)
+        forcedLines = re.split('|'.join(LINE_BREAK), box)
+        lines = [line.strip() for forcedLine in forcedLines for line in _wrapLines(forcedLine, line_width)]
 
-        if len(lines) > LINES_PER_BOX:
-            print('Wrapped text exceeds maximum lines per text box. Original text:\n' + box)
+        while lines:
+            if '\x10' in lines[0]:
+                boxesWithWrappedLines.append(lines.pop())
+                continue
 
-        # Subtracting line count so that line breaks aren't counted as characters
-        if len(wrapped) - (len(lines) - 1) > MAX_CHARACTERS_PER_BOX:
-            print('Text length exceeds maximum characters per text box. Original text:\n' + box)
+            bow = LINE_BREAK[0].join(lines[:4])
+            lines = lines[4:]
+            boxesWithWrappedLines.append(bow)
 
-        boxesWithWrappedLines.append(wrapped)
-
-    return BOX_BREAK.join(boxesWithWrappedLines)
+    return BOX_BREAK[0].join(boxesWithWrappedLines)
 
 
-def _wrapLines(text):
+def _wrapLines(text, line_width):
     lines = []
     currentLine = []
     currentWidth = 0
@@ -46,7 +53,7 @@ def _wrapLines(text):
         currentLinePlusWord.append(word)
         currentLinePlusWordWidth = _calculateWidth(currentLinePlusWord)
 
-        if (currentLinePlusWordWidth <= LINE_WIDTH):
+        if (currentLinePlusWordWidth <= line_width):
             currentLine = currentLinePlusWord
             currentWidth = currentLinePlusWordWidth
         else:
@@ -67,9 +74,10 @@ def _calculateWidth(words):
             character = word[index]
             index += 1
             if ord(character) in Messages.CONTROL_CODES:
+                if character == '\x06':
+                    wordsWidth += ord(word[index])
                 index += Messages.CONTROL_CODES[ord(character)][1]
-            else:
-                wordsWidth += _getCharacterWidth(character)
+            wordsWidth += _getCharacterWidth(character)
     spacesWidth = _getCharacterWidth(' ') * (len(words) - 1)
 
     return wordsWidth + spacesWidth
@@ -79,15 +87,31 @@ def _getCharacterWidth(character):
     try:
         return characterTable[character]
     except KeyError:
-        # Control character for color settings; does not affect the width
         if character == '#':
-            return 0
-        # Control character for displaying the player's name; assume greater than average width
-        elif character == '@':
-            return characterTable['M'] * 8
-        # A sane default with the most common character width
+            character = '\x05'
+        if character == '@':
+            character = '\x0F'
+
+        if ord(character) < 0x20:
+            if character in control_code_width:
+                return sum([characterTable[c] for c in control_code_width[character]])
+            else:
+                return 0
         else :
+            # A sane default with the most common character width
             return characterTable[' ']
+
+
+control_code_width = {
+    '\x0F': '00000000',
+    '\x16': '00\'00"',
+    '\x17': '00\'00"',
+    '\x18': '00000',
+    '\x19': '100',
+    '\x1D': '00',
+    '\x1E': '00000',
+    '\x1F': '00\'00"',
+}
 
 
 # Tediously measured by filling a full line of a gossip stone's text box with one character until it is reasonably full
@@ -97,6 +121,14 @@ def _getCharacterWidth(character):
 # Larger numbers in the denominator mean more of that character fits on a line; conversely, larger values in this table
 # mean the character is wider and can't fit as many on one line.
 characterTable = {
+    '\x0F': 655200,
+    '\x16': 292215,
+    '\x17': 292215,
+    '\x18': 300300,
+    '\x19': 145860,
+    '\x1D': 85800,
+    '\x1E': 300300,
+    '\x1F': 265980,
     'a':  51480, # LINE_WIDTH /  35
     'b':  51480, # LINE_WIDTH /  35
     'c':  51480, # LINE_WIDTH /  35

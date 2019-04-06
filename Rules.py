@@ -1,6 +1,7 @@
 import collections
 import logging
 from Location import DisableType
+from State import State
 
 
 def set_rules(world):
@@ -9,9 +10,13 @@ def set_rules(world):
     # ganon can only carry triforce
     world.get_location('Ganon').item_rule = lambda location, item: item.name == 'Triforce'
 
-    # these are default save&quit points and always accessible
-    world.get_region('Links House').can_reach = lambda state: True
-    
+    # these are default save&quit points and always accessible in their corresponding age
+    old_can_reach = world.get_region('Links House').can_reach
+    world.get_region('Links House').can_reach = lambda state: state.is_child() or old_can_reach(state)
+
+    old_can_reach = world.get_region('Temple of Time').can_reach
+    world.get_region('Temple of Time').can_reach = lambda state: state.is_adult() or old_can_reach(state)
+
     for location in world.get_locations():
 
         if not world.shuffle_song_items:
@@ -29,22 +34,21 @@ def set_rules(world):
                 add_item_rule(location, lambda location, item: item.type != 'Shop')
                 location.price = world.shop_prices[location.name]
                 if location.price > 200:
-                    set_rule(location, lambda state: state.has('Progressive Wallet', 2))
+                    add_rule(location, lambda state: state.has('Progressive Wallet', 2))
                 elif location.price > 99:
-                    set_rule(location, lambda state: state.has('Progressive Wallet'))
+                    add_rule(location, lambda state: state.has('Progressive Wallet'))
             else:
                 add_item_rule(location, lambda location, item: item.type == 'Shop' and item.world.id == location.world.id)
 
-            if location.parent_region.name in ['Castle Town Bombchu Shop', 'Castle Town Potion Shop', 'Castle Town Bazaar']:
-                if not world.check_beatable_only:
-                    forbid_item(location, 'Buy Goron Tunic')
-                    forbid_item(location, 'Buy Zora Tunic')
         elif not 'Deku Scrub' in location.name:
             add_item_rule(location, lambda location, item: item.type != 'Shop')
 
         if location.name == 'Forest Temple MQ First Chest' and world.shuffle_bosskeys == 'dungeon' and world.shuffle_smallkeys == 'dungeon' and world.tokensanity == 'off':
             # This location needs to be a small key. Make sure the boss key isn't placed here.
             forbid_item(location, 'Boss Key (Forest Temple)')
+
+        if location.type == 'GossipStone' and world.hints == 'mask':
+            add_rule(location, lambda state: state.is_child())
 
     for location in world.disabled_locations:
         try:
@@ -102,16 +106,7 @@ def set_shop_rules(world):
 
             # Add adult only checks
             if location.item.name in ['Buy Goron Tunic', 'Buy Zora Tunic']:
-                if location.parent_region.name == 'Goron Shop':
-                    add_rule(
-                        location,
-                        lambda state: state.is_adult() and (state.has_explosives() or state.has('Progressive Strength Upgrade') or state.has_bow()))
-                elif location.parent_region.name == 'Zora Shop':
-                    add_rule(location, lambda state: state.can_reach('Zoras Domain Frozen -> Zora Shop', 'Entrance'))
-                elif location.parent_region.name in ['Castle Town Bombchu Shop', 'Castle Town Potion Shop', 'Castle Town Bazaar']:
-                    set_rule(location, lambda state: False)
-                else:
-                    add_rule(location, lambda state: state.is_adult())
+                add_rule(location, lambda state: state.is_adult())
 
             # Add item prerequisit checks
             if location.item.name in ['Buy Blue Fire',
@@ -128,3 +123,20 @@ def set_shop_rules(world):
             if location.item.name in ['Buy Bombchu (10)', 'Buy Bombchu (20)', 'Buy Bombchu (5)']:
                 add_rule(location, lambda state: state.has_bombchus_item())
 
+
+# This function should be ran once after setting up entrances and before placing items
+# The goal is to automatically set item rules based on age requirements in case entrances were shuffled
+def set_entrances_based_rules(worlds):
+
+    # Use the states with all items available in the pools for this seed
+    complete_itempool = [item for world in worlds for item in world.get_itempool_with_dungeon_items()]
+    all_items_state_list = State.get_states_with_items([world.state for world in worlds], complete_itempool)
+
+    for world in worlds:
+        for location in world.get_locations():
+            if location.type == 'Shop':
+                # If All Locations Reachable is on, prevent shops only ever reachable as child from containing Buy Goron Tunic and Buy Zora Tunic items
+                if not world.check_beatable_only:
+                    if not all_items_state_list[world.id].can_reach(location.parent_region, age='adult'):
+                        forbid_item(location, 'Buy Goron Tunic')
+                        forbid_item(location, 'Buy Zora Tunic')

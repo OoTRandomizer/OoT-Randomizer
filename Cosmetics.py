@@ -42,7 +42,7 @@ tunic_colors = {
 
 
 NaviColors = {          # Inner Core Color         Outer Glow Color
-    "Custom Color":      (Color(0x00, 0x00, 0x00), Color(0x00, 0x00, 0x00)),
+    "Custom Navi Color": (Color(0x00, 0x00, 0x00), Color(0x00, 0x00, 0x00)),
     "Gold":              (Color(0xFE, 0xCC, 0x3C), Color(0xFE, 0xC0, 0x07)),
     "White":             (Color(0xFF, 0xFF, 0xFF), Color(0x00, 0x00, 0xFF)),
     "Green":             (Color(0x00, 0xFF, 0x00), Color(0x00, 0xFF, 0x00)),
@@ -79,6 +79,42 @@ sword_colors = {        # Initial Color            Fade Color
     "Pink":              (Color(0xFF, 0x69, 0xB4), Color(0xFF, 0x69, 0xB4)),
 }
 
+gauntlet_colors = {
+    "Custom Color":      Color(0x00, 0x00, 0x00),
+    "Silver":            Color(0xFF, 0xFF, 0xFF),
+    "Gold":              Color(0xFE, 0xCF, 0x0F),
+    "Black":             Color(0x00, 0x00, 0x06),
+    "Green":             Color(0x02, 0x59, 0x18),
+    "Blue":              Color(0x06, 0x02, 0x5A),
+    "Bronze":            Color(0x60, 0x06, 0x02),
+    "Red":               Color(0xFF, 0x00, 0x00),
+    "Sky Blue":          Color(0x02, 0x5D, 0xB0),
+    "Pink":              Color(0xFA, 0x6A, 0x90),
+    "Magenta":           Color(0xFF, 0x00, 0xFF),
+    "Orange":            Color(0xDA, 0x38, 0x00),
+    "Lime":              Color(0x5B, 0xA8, 0x06),
+    "Purple":            Color(0x80, 0x00, 0x80),
+}
+
+heart_colors = {
+    "Custom Color": Color(0x00, 0x00, 0x00),
+    "Red":          Color(0xFF, 0x46, 0x32),
+    "Green":        Color(0x46, 0xC8, 0x32),
+    "Blue":         Color(0x32, 0x46, 0xFF),
+    "Yellow":       Color(0xFF, 0xE0, 0x00),
+}
+
+magic_colors = {
+    "Custom Color":      Color(0x00, 0x00, 0x00),
+    "Green":             Color(0x00, 0xC8, 0x00),
+    "Red":               Color(0xC8, 0x00, 0x00),
+    "Blue":              Color(0x00, 0x30, 0xFF),
+    "Purple":            Color(0xB0, 0x00, 0xFF),
+    "Pink":              Color(0xFF, 0x00, 0xC8),
+    "Yellow":            Color(0xFF, 0xFF, 0x00),
+    "White":             Color(0xFF, 0xFF, 0xFF),
+}
+
 
 def get_tunic_colors():
     return list(tunic_colors.keys())
@@ -102,6 +138,30 @@ def get_sword_colors():
 
 def get_sword_color_options():
     return ["Random Choice", "Completely Random"] + get_sword_colors()
+
+
+def get_gauntlet_colors():
+    return list(gauntlet_colors.keys())
+
+
+def get_gauntlet_color_options():
+    return ["Random Choice", "Completely Random"] + get_gauntlet_colors()
+
+
+def get_heart_colors():
+    return list(heart_colors.keys())
+
+
+def get_heart_color_options():
+    return ["Random Choice", "Completely Random"] + get_heart_colors()
+
+
+def get_magic_colors():
+    return list(magic_colors.keys())
+
+
+def get_magic_color_options():
+    return ["Random Choice", "Completely Random"] + get_magic_colors()
 
 
 def patch_targeting(rom, settings, log, symbols):
@@ -173,7 +233,6 @@ def patch_navi_colors(rom, settings, log, symbols):
     ]
     navi_color_list = get_navi_colors()
     for navi_action, navi_option, navi_addresses in navi:
-        inner = navi_action in [action[0] for action in navi[0:4]]
         # choose a random choice for the whole group
         if navi_option == 'Random Choice':
             navi_option = random.choice(navi_color_list)
@@ -191,8 +250,12 @@ def patch_navi_colors(rom, settings, log, symbols):
                 colors = list(NaviColors[navi_option][0]), list(NaviColors[navi_option][1])
             # build color from hex code
             else:
-                base_color = list(int(navi_option[i:i+2], 16) for i in (0, 2 ,4))
-                colors = (base_color, base_color)
+                inner_color = list(int(navi_option[i:i+2], 16) for i in (0, 2, 4))
+                if len(navi_option) / 6 == 1:
+                    outer_color = inner_color
+                else:
+                    outer_color = list(int(navi_option[i:i+2], 16) for i in (6, 8, 10))
+                colors = (inner_color, outer_color)
                 custom_color = True
 
             color = colors[0] + [0xFF] + colors[1] + [0xFF]
@@ -242,7 +305,7 @@ def patch_sword_trails(rom, settings, log, symbols):
                 color = list(sword_colors[sword_trail_option][index])
             # build color from hex code
             else:
-                color = list(int(sword_trail_option[i:i+2], 16) for i in (0, 2 ,4))
+                color = list(int(sword_trail_option[i:i+2], 16) for i in (0, 2, 4))
                 custom_color = True
 
             if sword_trail_option == 'White':
@@ -258,6 +321,78 @@ def patch_sword_trails(rom, settings, log, symbols):
             log.sword_colors[sword_trail_name] = [dict(option=sword_trail_option, color=''.join(['{:02X}'.format(c) for c in color[0:3]]))]
     log.sword_trail_duration = settings.sword_trail_duration
     rom.write_byte(0x00BEFF8C, settings.sword_trail_duration)
+
+
+def patch_gauntlet_colors(rom, settings, log, symbols):
+    # patch gauntlet colors
+    gauntlets = [
+        ('Silver Gauntlets', settings.silver_gauntlets_color, 0x00B6DA44),
+        ('Gold Gauntlets', settings.golden_gauntlets_color,  0x00B6DA47),
+    ]
+    gauntlet_color_list = get_gauntlet_colors()
+
+    for gauntlet, gauntlet_option, address in gauntlets:
+        # handle random
+        if gauntlet_option == 'Random Choice':
+            gauntlet_option = random.choice(gauntlet_color_list)
+        # handle completely random
+        if gauntlet_option == 'Completely Random':
+            color = [random.getrandbits(8), random.getrandbits(8), random.getrandbits(8)]
+        # grab the color from the list
+        elif gauntlet_option in gauntlet_colors:
+            color = list(gauntlet_colors[gauntlet_option])
+        # build color from hex code
+        else:
+            color = list(int(gauntlet_option[i:i+2], 16) for i in (0, 2 ,4))
+            gauntlet_option = 'Custom'
+        rom.write_bytes(address, color)
+        log.gauntlet_colors[gauntlet] = dict(option=gauntlet_option, color=''.join(['{:02X}'.format(c) for c in color]))
+
+
+def patch_heart_colors(rom, settings, log, symbols):
+    # patch tunic colors
+    hearts = [
+        ('Heart Colors', settings.heart_color, symbols['CFG_HEART_COLOR']),
+    ]
+    heart_color_list = get_heart_colors()
+
+    for heart, heart_option, symbol in hearts:
+        # handle random
+        if heart_option == 'Random Choice':
+            heart_option = random.choice(heart_color_list)
+        # handle completely random
+        if heart_option == 'Completely Random':
+            color = [random.getrandbits(8), random.getrandbits(8), random.getrandbits(8)]
+        # grab the color from the list
+        elif heart_option in heart_colors:
+            color = list(heart_colors[heart_option])
+        # build color from hex code
+        else:
+            color = list(int(heart_option[i:i+2], 16) for i in (0, 2, 4))
+            heart_option = 'Custom'
+        rom.write_int16s(symbol, color)
+        log.heart_colors[heart] = dict(option=heart_option, color=''.join(['{:02X}'.format(c) for c in color]))
+
+
+def patch_magic_colors(rom, settings, log, symbols):
+    magic = [
+        ('Magic Meter Color', settings.magic_color, symbols["CFG_MAGIC_COLOR"]),
+    ]
+    magic_color_list = get_magic_colors()
+
+    for magic_color, magic_option, symbol in magic:
+        if magic_option == 'Random Choice':
+           magic_option = random.choice(magic_color_list)
+
+        if magic_option == 'Completely Random':
+            color = [random.getrandbits(8), random.getrandbits(8), random.getrandbits(8)]
+        elif magic_option in magic_colors:
+            color = list(magic_colors[magic_option])
+        else:
+            color = list(int(magic_option[i:i+2], 16) for i in (0, 2, 4))
+            magic_option = 'Custom'
+        rom.write_int16s(symbol, color)
+        log.magic_colors[magic_color] = dict(option=magic_option, color=''.join(['{:02X}'.format(c) for c in color]))
 
 
 def patch_sfx(rom, settings, log, symbols):
@@ -277,13 +412,13 @@ def patch_sfx(rom, settings, log, symbols):
     for selection, hook in sfx_config:
         if selection == 'default':
             for loc in hook.value.locations:
-                sound_id = int.from_bytes((rom.original[loc:loc+2]), byteorder='big', signed=False)
+                sound_id = rom.original.read_int16(loc)
                 rom.write_int16(loc, sound_id)
         else:
             if selection == 'random-choice':
                 selection = random.choice(sfx.get_hook_pool(hook)).value.keyword
             elif selection == 'random-ear-safe':
-                selection = random.choice(sfx.no_painful).value.keyword
+                selection = random.choice(sfx.get_hook_pool(hook, "TRUE")).value.keyword
             elif selection == 'completely-random':
                 selection = random.choice(sfx.standard).value.keyword
             sound_id  = sound_dict[selection]
@@ -312,7 +447,7 @@ def patch_instrument(rom, settings, log, symbols):
     log.sfx['Ocarina'] = choice
 
 
-cosmetic_data_headers = [
+legacy_cosmetic_data_headers = [
     0x03481000,
     0x03480810,
 ]
@@ -322,6 +457,7 @@ global_patch_sets = [
     patch_music,
     patch_tunic_colors,
     patch_navi_colors,
+    patch_gauntlet_colors,
     patch_sfx,
     patch_instrument,    
 ]
@@ -333,9 +469,9 @@ patch_sets = {
             patch_sword_trails,
         ],
         "symbols": {    
-            "CFG_DISPLAY_DPAD": 0x03480814,
-            "CFG_RAINBOW_SWORD_INNER_ENABLED": 0x03480815,
-            "CFG_RAINBOW_SWORD_OUTER_ENABLED": 0x03480816,
+            "CFG_DISPLAY_DPAD": 0x0004,
+            "CFG_RAINBOW_SWORD_INNER_ENABLED": 0x0005,
+            "CFG_RAINBOW_SWORD_OUTER_ENABLED": 0x0006,
         },
     },
     0x1F05D3F9: {
@@ -344,10 +480,25 @@ patch_sets = {
             patch_sword_trails,
         ],
         "symbols": {    
-            "CFG_DISPLAY_DPAD": 0x03481004,
-            "CFG_RAINBOW_SWORD_INNER_ENABLED": 0x03481005,
-            "CFG_RAINBOW_SWORD_OUTER_ENABLED": 0x03481006,
+            "CFG_DISPLAY_DPAD": 0x0004,
+            "CFG_RAINBOW_SWORD_INNER_ENABLED": 0x0005,
+            "CFG_RAINBOW_SWORD_OUTER_ENABLED": 0x0006,
         },
+    },
+    0x1F0693FB: {
+        "patches": [
+            patch_dpad,
+            patch_sword_trails,
+            patch_heart_colors,
+            patch_magic_colors,
+        ],
+        "symbols": {
+            "CFG_MAGIC_COLOR": 0x0004,
+            "CFG_HEART_COLOR": 0x000A,
+            "CFG_DISPLAY_DPAD": 0x0010,
+            "CFG_RAINBOW_SWORD_INNER_ENABLED": 0x0011,
+            "CFG_RAINBOW_SWORD_OUTER_ENABLED": 0x0012,
+        }
     }
 }
 
@@ -364,20 +515,35 @@ def patch_cosmetics(settings, rom):
 
     # try to detect the cosmetic patch data format
     versioned_patch_set = None
-    for header in cosmetic_data_headers:
-        # Search over all possible header locations
-        cosmetic_version = rom.read_int32(header)
-        if cosmetic_version in patch_sets:
-            versioned_patch_set = patch_sets[cosmetic_version]
-            break
+    cosmetic_context = rom.read_int32(rom.sym('RANDO_CONTEXT') + 4)
+    if cosmetic_context >= 0x80000000:
+        cosmetic_context = (cosmetic_context - 0x80400000) + 0x3480000 # convert from RAM to ROM address
+        cosmetic_version = rom.read_int32(cosmetic_context)
+        versioned_patch_set = patch_sets.get(cosmetic_version)
+    else:
+        # If cosmetic_context is not a valid pointer, then try to
+        # search over all possible legacy header locations.
+        for header in legacy_cosmetic_data_headers:
+            cosmetic_context = header
+            cosmetic_version = rom.read_int32(cosmetic_context)
+            if cosmetic_version in patch_sets:
+                versioned_patch_set = patch_sets[cosmetic_version]
+                break
 
     # patch version specific patches
     if versioned_patch_set:
+        # offset the cosmetic_context struct for absolute addressing
+        cosmetic_context_symbols = {
+            sym: address + cosmetic_context
+            for sym, address in versioned_patch_set['symbols'].items()
+        }
+
+        # warn if patching a legacy format
         if cosmetic_version != rom.read_int32(rom.sym('COSMETIC_FORMAT_VERSION')):
             log.error = "ROM uses old cosmetic patch format."
 
         for patch_func in versioned_patch_set['patches']:
-            patch_func(rom, settings, log, versioned_patch_set['symbols'])
+            patch_func(rom, settings, log, cosmetic_context_symbols)
     else:
         # Unknown patch format
         log.error = "Unable to patch some cosmetics. ROM uses unknown cosmetic patch format."
@@ -472,14 +638,14 @@ def disable_music(rom):
 def restore_music(rom):
     # Restore all music from original
     for bgm in bgm_sequence_ids:
-        bgm_sequence = rom.original[0xB89AE0 + (bgm[1] * 0x10): 0xB89AE0 + (bgm[1] * 0x10) + 0x10]
+        bgm_sequence = rom.original.read_bytes(0xB89AE0 + (bgm[1] * 0x10), 0x10)
         rom.write_bytes(0xB89AE0 + (bgm[1] * 0x10), bgm_sequence)
-        bgm_instrument = rom.original[0xB89910 + 0xDD + (bgm[1] * 2): 0xB89910 + 0xDD + (bgm[1] * 2) + 0x02]
-        rom.write_bytes(0xB89910 + 0xDD + (bgm[1] * 2), bgm_instrument)
+        bgm_instrument = rom.original.read_int16(0xB89910 + 0xDD + (bgm[1] * 2))
+        rom.write_int16(0xB89910 + 0xDD + (bgm[1] * 2), bgm_instrument)
 
     # restore file select instrument
-    bgm_instrument = rom.original[0xB89910 + 0xDD + (0x57 * 2): 0xB89910 + 0xDD + (0x57 * 2) + 0x02]
-    rom.write_bytes(0xB89910 + 0xDD + (0x57 * 2), bgm_instrument)
+    bgm_instrument = rom.original.read_int16(0xB89910 + 0xDD + (0x57 * 2))
+    rom.write_int16(0xB89910 + 0xDD + (0x57 * 2), bgm_instrument)
 
 
 class CosmeticsLog(object):
@@ -489,6 +655,9 @@ class CosmeticsLog(object):
         self.tunic_colors = {}
         self.navi_colors = {}
         self.sword_colors = {}
+        self.gauntlet_colors = {}
+        self.heart_colors = {}
+        self.magic_colors = {}
         self.sfx = {}
         self.bgm = {}
         self.error = None
@@ -536,6 +705,19 @@ class CosmeticsLog(object):
 
         if 'sword_trail_duration' in self.__dict__:
             output += format_string.format(key='Sword Trail Duration:', value=self.sword_trail_duration, width=padding)
+
+
+        for gauntlet, options in self.gauntlet_colors.items():
+            color_option_string = '{option} (#{color})'
+            output += format_string.format(key=gauntlet+':', value=color_option_string.format(option=options['option'], color=options['color']), width=padding)
+            
+        for heart, options in self.heart_colors.items():
+            color_option_string = '{option} (#{color})'
+            output += format_string.format(key=heart+':', value=color_option_string.format(option=options['option'], color=options['color']), width=padding)
+
+        for magic, options in self.magic_colors.items():
+            color_option_string = '{option} (#{color})'
+            output += format_string.format(key=magic+':', value=color_option_string.format(option=options['option'], color=options['color']), width=padding)
 
         output += '\n\nSFX:\n'
         for key, value in self.sfx.items():

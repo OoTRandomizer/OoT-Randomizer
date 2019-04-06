@@ -43,7 +43,7 @@
         "dungeon": "Ganons Castle",
         "locations": {
             "Ganons Castle Fire Trial Clear": "
-                has_GoronTunic and can_use(Golden_Gauntlets) and 
+                can_use(Goron_Tunic) and can_use(Golden_Gauntlets) and 
                 can_use(Light_Arrows) and can_use(Longshot)"
         }
     },

@@ -4,6 +4,7 @@ import tkinter as tk
 import traceback
 
 from Utils import data_path, is_bundled
+from itertools import chain
 
 def set_icon(window):
     er16 = tk.PhotoImage(file=data_path('ER16.gif'))
@@ -352,4 +353,36 @@ class SearchBox(tk.ttk.Combobox):
 
     def __select_callback(self, *dummy):
         self.config(values=list(self.options))
+        
+    def update(self, options):
+        self.__variable.set('')
+        self.options = options
+        self.__callback()
 
+        
+class SearchBoxFilterControl(tk.ttk.Combobox):
+    def __init__(self, master, slave, options, **kw):
+        self.__optpairs = options
+        categories = list(sorted(set(chain.from_iterable(options.values()))))
+        categories = list(chain(("(all)",), categories))
+        super().__init__(master, **kw)
+        
+        self.__variable = tk.StringVar()
+        self.bind("<<ComboboxSelected>>", self._select_callback)
+        self.config(textvariable=self.__variable, values=list(categories), state='readonly')
+
+        self.__slave = None
+        self.__variable.set("(all)")
+        self.__slave = slave
+        slave.update(options.keys())
+        
+    def _select_callback(self, *dummy):
+        if self.__slave is None:
+            return
+        selected = self.__variable.get()
+        if selected == "(all)":
+            self.__slave.update(self.__optpairs.keys())
+        else:
+            self.__slave.update([k for k,v in self.__optpairs.items() if selected in v])
+
+    

@@ -1,7 +1,7 @@
 .definelabel Shop_Item_Save_Offset, 0xD4 + (0x2C * 0x1C) + 0x10
 
 Shop_Check_Sold_Out:
-    lh  t6, 0x1c(a0)
+    lhu  t6, 0x1c(a0)
 
     ; if var is under 0x32, never sell out
     addi t5, t6, -0x32
@@ -19,7 +19,7 @@ Shop_Check_Sold_Out:
     ; load byte from save
     li   t4, SAVE_CONTEXT
     add  t4, t4, t1
-    lb   t3, (Shop_Item_Save_Offset)(t4)
+    lbu  t3, (Shop_Item_Save_Offset)(t4)
 
     ; mask out the bit flag
     and  t3, t3, t2
@@ -40,7 +40,7 @@ Shop_Check_Sold_Out:
 
 
 Shop_Set_Sold_Out:
-    lh  t6, 0x1c(a1)
+    lhu  t6, 0x1c(a1)
 
     ; if var is under 0x32, never sell out
     addi t5, t6, -0x32
@@ -58,7 +58,7 @@ Shop_Set_Sold_Out:
     ; load byte from save
     li   t4, SAVE_CONTEXT   
     add  t4, t4, t1
-    lb   t3, (Shop_Item_Save_Offset)(t4)
+    lbu  t3, (Shop_Item_Save_Offset)(t4)
 
     ; set and save the bit flag
     or   t3, t3, t2
@@ -89,15 +89,15 @@ Deku_Check_Sold_Out:
     li      t0, GLOBAL_CONTEXT
     li      t1, SAVE_CONTEXT
 
-    lh      t2, 0xA4(t0)     ; current scene number
+    lhu     t2, 0xA4(t0)     ; current scene number
     li      at, 0x3E         ; Grotto Scene
     bne     t2, at, @@continue ; If in grotto, use a free scene
 
-    lb      t3, 0x1397(t1)   ; Grotto ID
-    addi    t2, t3, 0x2D
+    lbu     t3, 0x1397(t1)   ; Grotto ID
+    addi    t2, t3, -0xD6
 
 @@continue:
-    lh      t3, 0x1C(s0)     ; var
+    lhu     t3, 0x1C(s0)     ; var
     addi    t3, t3, 1
     li      t4, 1
     sllv    t4, t4, t3       ; saleman item bitmask
@@ -119,12 +119,12 @@ Deku_Set_Sold_Out:
     li      t0, GLOBAL_CONTEXT
     li      t1, SAVE_CONTEXT
 
-    lh      t2, 0xA4(t0)     ; current scene number
+    lhu     t2, 0xA4(t0)     ; current scene number
     li      at, 0x3E         ; Grotto Scene
     bne     t2, at, @@continue ; If in grotto, use a free scene
 
-    lb      t3, 0x1397(t1)   ; Grotto ID
-    addi    t2, t3, 0x2D
+    lbu     t3, 0x1397(t1)   ; Grotto ID
+    addi    t2, t3, -0xD6
 
 @@continue:
     lh      t3, 0x1C(a0)     ; var

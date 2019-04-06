@@ -26,10 +26,13 @@ class Region(object):
         self.locations = []
         self.dungeon = None
         self.world = None
+        self.hint = None
         self.spot_type = 'Region'
-        self.recursion_count = 0
+        self.recursion_count = { 'child': 0, 'adult': 0 }
         self.price = None
         self.world = None
+        self.addresses = None
+        self.time_passes = False
 
 
     def copy(self, new_world):
@@ -38,6 +41,8 @@ class Region(object):
         new_region.spot_type = self.spot_type
         new_region.price = self.price
         new_region.can_reach = self.can_reach
+        new_region.addresses = self.addresses
+        new_region.hint = self.hint
 
         if self.dungeon:
             new_region.dungeon = self.dungeon.name
@@ -49,12 +54,13 @@ class Region(object):
 
     def can_reach(self, state):
         for entrance in self.entrances:
-            if state.can_reach(entrance):
+            if entrance.can_reach(state):
                 return True
+
         return False
 
 
-    def can_fill(self, item):
+    def can_fill(self, item, manual=False):
         is_dungeon_restricted = False
         if item.map or item.compass:
             is_dungeon_restricted = self.world.shuffle_mapcompass == 'dungeon'
@@ -63,7 +69,7 @@ class Region(object):
         elif item.bosskey:
             is_dungeon_restricted = self.world.shuffle_bosskeys == 'dungeon'
 
-        if is_dungeon_restricted:
+        if is_dungeon_restricted and not manual:
             return self.dungeon and self.dungeon.is_dungeon_item(item) and item.world.id == self.world.id
         return True
 

@@ -11,7 +11,6 @@
             "Gerudo Training Grounds MQ Maze Path Third Chest": "(Small_Key_Gerudo_Training_Grounds, 1)"
         },
         "exits": {
-            "Gerudo Fortress": "True",
             "Gerudo Training Grounds Left Side": "has_fire_source",
             "Gerudo Training Grounds Right Side": "has_bow"
         }
@@ -23,7 +22,7 @@
             "Gerudo Training Grounds MQ Dinolfos Chest": "True",
             "Gerudo Training Grounds MQ Underwater Silver Rupee Chest": "
                 (Hover_Boots or (can_reach(Gerudo_Training_Grounds_Central_Maze_Right) and (can_use(Longshot) or has_bow))) and 
-                has_fire_source and Iron_Boots and (logic_fewer_tunic_requirements or has_ZoraTunic) and 
+                has_fire_source and Iron_Boots and (logic_fewer_tunic_requirements or can_use(Zora_Tunic)) and 
                 (damage_multiplier != 'ohko' or (has_bottle or can_use(Nayrus_Love)))"
         }
     },
