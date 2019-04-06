@@ -45,7 +45,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
                 keywords=[])
 
         else:
-            return ast.Str(node.id.replace('_', ' '))
+            raise Exception('Parse Error: invalid node name %s', node.id)
 
 
     def visit_Tuple(self, node):

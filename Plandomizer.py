@@ -1,3 +1,4 @@
+import itertools
 import json
 import logging
 import re
@@ -12,8 +13,8 @@ from Item import ItemFactory, ItemIterator, IsItem
 from ItemPool import item_groups, rewardlist, get_junk_item
 from Location import LocationIterator, LocationFactory, IsLocation
 from LocationList import location_groups
+from Playthrough import Playthrough
 from Spoiler import HASH_ICONS
-from State import State
 from version import __version__
 from Utils import random_choices
 from JSONDump import dump_obj, CollapseList, CollapseDict, AllignedDict, SortedDict
@@ -421,9 +422,9 @@ class WorldDistribution(object):
                 item.price = record.price
             location.world.push_item(location, item, True)
             if item.advancement:
-                states_after = State.get_states_with_items([world.state for world in worlds], reduce(lambda a, b: a + b, item_pools))
-                if not State.can_beat_game(states_after, True):
-                    raise FillError('%s in world %d is not reachable without %s in world %d!' % (location.name, self.id + 1, item.name, player_world.id + 1))
+                playthrough = Playthrough.max_explore([world.state for world in worlds], itertools.chain.from_iterable(item_pools))
+                if not playthrough.can_beat_game(False):
+                    raise FillError('%s in world %d is not reachable without %s in world %d!' % (location.name, self.id + 1, item.name, player_id + 1))
             window.fillcount += 1
             window.update_progress(5 + ((window.fillcount / window.locationcount) * 30))
 
@@ -491,8 +492,8 @@ class Distribution(object):
 
 
     def fill(self, window, worlds, location_pools, item_pools):
-        max_states = State.get_states_with_items([world.state for world in worlds], reduce(lambda a, b: a + b, item_pools))
-        if not State.can_beat_game(max_states, True):
+        playthrough = Playthrough.max_explore([world.state for world in worlds], itertools.chain.from_iterable(item_pools))
+        if not playthrough.can_beat_game(False):
             raise FillError('Item pool does not contain items required to beat game!')
 
         for world_dist in self.world_dists:

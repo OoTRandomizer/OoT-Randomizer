@@ -32,10 +32,6 @@ class World(object):
         self.shop_prices = {}
         self.scrub_prices = {}
         self.light_arrow_location = None
-        #edit Accept86
-        #self.workingNavi = 
-        #self.workingNaviNaviExactLocations, 
-        #self.wworkingNaviDelay
 
         # dump settings directly into world's namespace
         # this gives the world an attribute for every setting listed in Settings.py
@@ -94,6 +90,7 @@ class World(object):
         new_world.skipped_trials = copy.copy(self.skipped_trials)
         new_world.dungeon_mq = copy.copy(self.dungeon_mq)
         new_world.big_poe_count = copy.copy(self.big_poe_count)
+        new_world.starting_tod = self.starting_tod
         new_world.starting_age = self.starting_age
         new_world.can_take_damage = self.can_take_damage
         new_world.shop_prices = copy.copy(self.shop_prices)
@@ -124,7 +121,7 @@ class World(object):
             raise Exception("JSON parse error around text:\n" + \
                             json_string[error.pos-35:error.pos+35] + "\n" + \
                             "                                   ^^\n")
-
+            
         for region in region_json:
             new_region = Region(region['region_name'])
             new_region.world = self

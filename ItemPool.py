@@ -488,7 +488,7 @@ eventlocations = {
     "Sell 2 Big Poe": 'Sell Big Poe',
     "Sell 3 Big Poe": 'Sell Big Poe',
     "Sell 4 Big Poe": 'Sell Big Poe',
-    'Master Sword Pedestal': 'Master Sword',
+    'Master Sword Pedestal': 'Time Travel',
     'Epona': 'Epona',
     'Deku Baba Sticks': 'Deku Stick Drop',
     'Forest Temple Deku Baba Sticks': 'Deku Stick Drop',

@@ -1,9 +1,6 @@
 def shop_address(shop_id, shelf_id):
     return 0xC71ED0 + (0x40 * shop_id) + (0x08 * shelf_id)
 
-
-
-
 #   Location:                                           Type          Scene Default Addresses                 Categories
 location_table = {
     "Kokiri Sword Chest":                              ("Chest",       0x55,  0x00, None,                     ("Kokiri Forest", "Forest",)),
@@ -25,8 +22,6 @@ location_table = {
     "Haunted Wasteland Structure Chest":               ("Chest",       0x5E,  0x00, None,                     ("Haunted Wasteland",)),
     "Redead Grotto Chest":                             ("Chest",       0x3E,  0x0A, None,                     ("Kakariko Village", "Kakariko", "Grottos")),
     "Wolfos Grotto Chest":                             ("Chest",       0x3E,  0x11, None,                     ("Sacred Forest Meadow", "Forest", "Grottos")),
-    "Silver Gauntlets Chest":                          ("Chest",       0x5C,  0x0B, None,                     ("Desert Colossus",)),
-    "Mirror Shield Chest":                             ("Chest",       0x5C,  0x09, None,                     ("Desert Colossus",)),
     "Field West Castle Town Grotto Chest":             ("Chest",       0x3E,  0x00, None,                     ("Hyrule Field", "Grottos",)),
     "Remote Southern Grotto Chest":                    ("Chest",       0x3E,  0x02, None,                     ("Hyrule Field", "Grottos",)),
     "Field Near Lake Outside Fence Grotto Chest":      ("Chest",       0x3E,  0x03, None,                     ("Hyrule Field", "Grottos",)),
@@ -278,6 +273,9 @@ location_table = {
     "Water Temple MQ Map Chest":                       ("Chest",       0x05,  0x02, None,                     ("Water Temple",)),
     "Water Temple MQ Freestanding Key":                ("Collectable", 0x05,  0x01, None,                     ("Water Temple",)),
 
+    # Spirit Temple shared
+    "Silver Gauntlets Chest":                          ("Chest",       0x5C,  0x0B, None,                     ("Spirit Temple", "Desert Colossus")),
+    "Mirror Shield Chest":                             ("Chest",       0x5C,  0x09, None,                     ("Spirit Temple", "Desert Colossus")),
     # Spirit Temple vanilla
     "Spirit Temple Child Left Chest":                  ("Chest",       0x06,  0x08, None,                     ("Spirit Temple",)),
     "Spirit Temple Child Right Chest":                 ("Chest",       0x06,  0x00, None,                     ("Spirit Temple",)),

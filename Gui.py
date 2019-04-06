@@ -653,10 +653,10 @@ def guiMain(settings=None):
         settings = guivars_to_settings(guivars)
         if generation_notebook.tab(generation_notebook.select())['text'] == 'Generate From Seed':
             notebook.tab(1, state="normal")
-            if guivars['logic_rules'].get() == 'Glitchless':
-                notebook.tab(2, state="normal")
-            else:
+            if guivars['logic_rules'].get() == 'No Logic':
                 notebook.tab(2, state="disabled")
+            else:
+                notebook.tab(2, state="normal")
             notebook.tab(3, state="normal")
             notebook.tab(4, state="normal")
             notebook.tab(5, state="normal")

@@ -28,7 +28,10 @@
         "region_name": "Water Temple Dive",
         "dungeon": "Water Temple",
         "locations": {
-            "Water Temple Map Chest": "True",
+            # This doesn't require the hookshot in its own right, however currently the hookshot is the expected
+            # way to restore water level to top level in the event the player drains the water before getting
+            # this check
+            "Water Temple Map Chest": "can_use(Hookshot)",
             "Water Temple Compass Chest": "
                 (can_play(Zeldas_Lullaby) or Iron_Boots) and can_use(Hookshot)",
             "Water Temple Cracked Wall Chest": "

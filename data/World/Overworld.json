@@ -1,5 +1,29 @@
 [
     {
+        "region_name": "Root",
+        "hint": "Link's Pocket",
+        "locations": {
+            "Links Pocket": "True"
+        },
+        "exits": {
+            "Root Exits": "is_starting_age or Time_Travel"
+        }
+    },
+    {
+        "region_name": "Root Exits",
+        "exits": {
+            "Links House": "is_child",
+            "Temple of Time": "
+                is_adult or 
+                (can_play(Prelude_of_Light) and can_leave_forest)",
+            "Sacred Forest Meadow": "can_play(Minuet_of_Forest)",
+            "Death Mountain Crater Central": "can_play(Bolero_of_Fire) and can_leave_forest",
+            "Lake Hylia": "can_play(Serenade_of_Water) and can_leave_forest",
+            "Shadow Temple Warp Region": "can_play(Nocturne_of_Shadow) and can_leave_forest",
+            "Desert Colossus": "can_play(Requiem_of_Spirit) and can_leave_forest"
+        }
+    },
+    {
         "region_name": "Kokiri Forest",
         "hint": "Kokiri Forest",
         "locations": {
@@ -51,19 +75,10 @@
         "region_name": "Links House",
         "hint": "Kokiri Forest",
         "locations": {
-            "Links Pocket": "True",
             "Links House Cow": "is_adult and Epona"
         },
         "exits": {
-            "Kokiri Forest": "True",
-            "Sacred Forest Meadow": "can_play(Minuet_of_Forest)",
-            "Temple of Time": "can_play(Prelude_of_Light) and can_leave_forest",
-            "Death Mountain Crater Central": "
-                can_play(Bolero_of_Fire) and can_leave_forest",
-            "Lake Hylia": "can_play(Serenade_of_Water) and can_leave_forest",
-            "Shadow Temple Warp Region": "
-                can_play(Nocturne_of_Shadow) and can_leave_forest",
-            "Desert Colossus": "can_play(Requiem_of_Spirit) and can_leave_forest"
+            "Kokiri Forest": "True"
         }
     },
     {
@@ -410,7 +425,7 @@
             "Sheik at Temple": "Forest_Medallion and is_adult"
         },
         "exits": {
-            "Temple of Time": "Master_Sword"
+            "Temple of Time": "True"
         }
     },
     {
@@ -591,7 +606,9 @@
             "Windmill": "True",
             "Kakariko Bazaar": "is_adult and at_day",
             "Kakariko Shooting Gallery": "is_adult and at_day",
-            "Bottom of the Well": "can_play(Song_of_Storms) or (is_adult and shuffle_dungeon_entrances)",
+            "Bottom of the Well": "
+                (is_child and can_play(Song_of_Storms)) or 
+                (is_adult and shuffle_dungeon_entrances)",
             "Kakariko Potion Shop Front": "True",
             "Kakariko Potion Shop Back": "True",
             "Odd Medicine Building": "is_adult",
@@ -937,6 +954,7 @@
     },
     {
         "region_name": "Zora River Front",
+        "hint": "Zora's River",
         "locations": {
             "GS Zora River Tree": "is_child and can_child_attack"
         },

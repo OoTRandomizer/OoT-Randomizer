@@ -13,17 +13,17 @@
                 (logic_deku_basement_gs and (is_adult or has_sticks or Kokiri_Sword))",
             "GS Deku Tree Basement Gate": "is_adult or can_child_attack",
             "GS Deku Tree Basement Back Room": "
-                (as_either_here(has_fire_source_with_torch()) and
+                (as_either_here(has_fire_source_with_torch) and
                  as_either_here(can_use(Slingshot) or can_use(Bow)) and
                  as_either_here(can_blast_or_smash) and
                  as_either_here(can_use(Hookshot) or can_use(Boomerang))) or
-                (as_adult_here(True) and is_child and has_explosives and
+                (as_adult_here and is_child and has_explosives and
                  can_use(Boomerang) and (has_sticks or can_use(Dins_Fire)))"
         },
         "exits": {
             "Deku Tree Slingshot Room": "as_either_here(has_shield)",
             "Deku Tree Boss Room": "
-                as_either_here(has_fire_source_with_torch()) and
+                as_either_here(has_fire_source_with_torch) and
                 as_either_here(is_adult or can_use(Slingshot))"
         }
     },

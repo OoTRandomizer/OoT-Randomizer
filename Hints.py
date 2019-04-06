@@ -8,9 +8,9 @@ import random
 from HintList import getHint, getHintGroup, Hint, hintExclusions
 from ItemPool import eventlocations
 from Messages import update_message_by_id
+from Playthrough import Playthrough
 from TextBox import lineWrap
 from Utils import random_choices
-from State import State
 
 
 class GossipStone():
@@ -141,11 +141,11 @@ def can_reach_stone(worlds, stone_location, location):
 
     old_item = location.item
     location.item = None
-    stone_states = State.get_states_with_items([world.state for world in worlds], [])
+    playthrough = Playthrough.max_explore([world.state for world in worlds])
     location.item = old_item
 
-    return stone_states[location.world.id].can_reach(stone_location, resolution_hint='Location') and \
-           stone_states[location.world.id].guarantee_hint()
+    return (playthrough.state_list[location.world.id].can_reach(stone_location, resolution_hint='Location')
+            and playthrough.state_list[location.world.id].guarantee_hint())
 
 
 def writeGossipStoneHints(spoiler, world, messages):
@@ -485,11 +485,11 @@ def buildGossipHints(spoiler, world):
 
     world.barren_dungeon = False
 
-    max_states = State.get_states_with_items([w.state for w in spoiler.worlds], [])
+    playthrough = Playthrough.max_explore([w.state for w in spoiler.worlds])
     for stone in gossipLocations.values():
-        stone.reachable = \
-            max_states[world.id].can_reach(stone.location, resolution_hint='Location') and \
-            max_states[world.id].guarantee_hint()
+        stone.reachable = (
+            playthrough.state_list[world.id].can_reach(stone.location, resolution_hint='Location')
+            and playthrough.state_list[world.id].guarantee_hint())
 
     checkedLocations = []
 

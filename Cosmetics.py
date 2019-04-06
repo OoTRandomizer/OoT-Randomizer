@@ -444,6 +444,8 @@ def patch_instrument(rom, settings, log, symbols):
     else:
         choice = random.choice(list(instruments.keys()))
     rom.write_byte(0x00B53C7B, instruments[choice])
+    # For Skull Kids' minigame in Lost Woods
+    rom.write_byte(0x00B4BF6F, instruments[choice])
     log.sfx['Ocarina'] = choice
 
 

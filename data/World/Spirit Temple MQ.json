@@ -78,7 +78,7 @@
                 can_play(Song_of_Time) or 
                 (can_use(Longshot) and can_use(Silver_Gauntlets))",
             "GS Spirit Temple MQ Sun Block Room": "
-                (logic_spirit_mq_sun_block_gs and can_play(Song_of_time) and Boomerang) or
+                (logic_spirit_mq_sun_block_gs and can_play(Song_of_Time) and Boomerang) or
                 (can_use(Longshot) and can_use(Silver_Gauntlets))"
         },
         "exits": {
@@ -118,14 +118,14 @@
     },
     {
         "region_name": "Mirror Shield Hand",
-        "hint": "Desert Colossus",
+        "dungeon": "Spirit Temple",
         "locations": {
             "Mirror Shield Chest": "True"
         }
     },
     {
         "region_name": "Silver Gauntlets Hand",
-        "hint": "Desert Colossus",
+        "dungeon": "Spirit Temple",
         "locations": {
             "Silver Gauntlets Chest": "True"
         }

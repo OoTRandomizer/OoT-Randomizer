@@ -1,0 +1,28 @@
+-- Stuff you can do that could possibly softlock -- 
+Opening the vanilla Iron boots chest as child will not spawn the serenade check
+and you cannot get it back.  
+
+Duping bottles into your inventory in any way.
+
+Getting zelda's letter and/or masks before the weird egg.  Weird egg after ZL and masks can be
+irreversible in some situations so this is not considered in logic, although it is doable under the ruleset
+to which this logic caters.  Do at your own risk!
+
+Collection delay such as speedfrog and fishing gold scale
+
+
+-- Other oddities --
+The colossus' hands chests (vanilla silver gauntlets and mirror shield), despite residing in Desert colossus
+are logically part of Spirit Temple as far as hints are concerned.  If you get a hint for WOTH spirit you may need
+to check these chests, or if a Foolish Desert Colossus happens you may have items in these chests.
+
+Where logic expects hovering is a little bit janky.  In general, commonly known hovers are included regardless of difficulty.
+This includes both tektite hover to fishing and the tektite hover in DMT, spirit hover, hovering to skip pierre in fire temple.
+Logical hovers will always require less than 20 bombs or with chus in logic 50 chus and will be infinitely repeatable.
+Non-standard logical hovers (usually for skulls) are generally short hovers, less than 9.  There is no hard and fast
+criteria, though.  Out of bounds hovers are not considered in logic at all as they can crash on N64.
+
+
+Child is not logically expected to enter Fire Temple at all.  This is due to child needing fairies and many explosives to get around.
+The hints can only deal with a single bottle, so you'll only ever have access to one fairy.  This may be added in the future, however
+for now it's a bit "mean" to allow.

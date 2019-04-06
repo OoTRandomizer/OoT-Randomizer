@@ -138,7 +138,7 @@ item_table = {
     'Small Key (Ganons Castle)':        ('SmallKey', True,  0xB7, {'progressive': True}),
     'Double Defense':                   ('Item',     True,  0xB8, None),
     'Zeldas Letter':                    ('Item',     True,  None, None),
-    'Master Sword':                     ('Item',     True,  None, None),
+    'Time Travel':                      ('Event',    True,  None, None),
     'Epona':                            ('Event',    True,  None, None),
     'Deku Stick Drop':                  ('Event',    True,  None, None),
     'Deku Nut Drop':                    ('Event',    True,  None, None),

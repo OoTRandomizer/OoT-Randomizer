@@ -83,4 +83,3 @@ class Spoiler(object):
             spoiler_entrances.sort(key=lambda entrance: entrance.name)
             spoiler_entrances.sort(key=lambda entrance: sort_order.get(entrance.type, 1))
             self.entrances[world.id] = OrderedDict([(str(entrance), str(entrance.connected_region)) for entrance in spoiler_entrances])
-            

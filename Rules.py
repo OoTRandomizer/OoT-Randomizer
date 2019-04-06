@@ -1,6 +1,7 @@
 import collections
 import logging
 from Location import DisableType
+from Playthrough import Playthrough
 from State import State
 
 
@@ -10,12 +11,8 @@ def set_rules(world):
     # ganon can only carry triforce
     world.get_location('Ganon').item_rule = lambda location, item: item.name == 'Triforce'
 
-    # these are default save&quit points and always accessible in their corresponding age
-    old_can_reach = world.get_region('Links House').can_reach
-    world.get_region('Links House').can_reach = lambda state: state.is_child() or old_can_reach(state)
-
-    old_can_reach = world.get_region('Temple of Time').can_reach
-    world.get_region('Temple of Time').can_reach = lambda state: state.is_adult() or old_can_reach(state)
+    # the root of the world graph is always considered reachable because the player can save&quit
+    world.get_region('Root').can_reach = lambda state: True
 
     for location in world.get_locations():
 
@@ -130,13 +127,15 @@ def set_entrances_based_rules(worlds):
 
     # Use the states with all items available in the pools for this seed
     complete_itempool = [item for world in worlds for item in world.get_itempool_with_dungeon_items()]
-    all_items_state_list = State.get_states_with_items([world.state for world in worlds], complete_itempool)
+    playthrough = Playthrough([world.state.copy() for world in worlds])
+    playthrough.collect_all(complete_itempool)
+    playthrough.collect_locations()
 
     for world in worlds:
         for location in world.get_locations():
             if location.type == 'Shop':
                 # If All Locations Reachable is on, prevent shops only ever reachable as child from containing Buy Goron Tunic and Buy Zora Tunic items
                 if not world.check_beatable_only:
-                    if not all_items_state_list[world.id].can_reach(location.parent_region, age='adult'):
+                    if not playthrough.can_reach(location.parent_region, age='adult'):
                         forbid_item(location, 'Buy Goron Tunic')
                         forbid_item(location, 'Buy Zora Tunic')

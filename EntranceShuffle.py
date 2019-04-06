@@ -1,6 +1,6 @@
 import random
 import logging
-from State import State
+from Playthrough import Playthrough
 from Rules import set_entrances_based_rules
 from Entrance import Entrance
 
@@ -115,10 +115,11 @@ def shuffle_entrances(worlds):
 
     # Store all locations unreachable to differentiate which locations were already unreachable from those we made unreachable while shuffling entrances
     complete_itempool = [item for world in worlds for item in world.get_itempool_with_dungeon_items()]
-    maximum_exploration_state_list = State.get_states_with_items([world.state for world in worlds], complete_itempool)
+    max_playthrough = Playthrough.max_explore([world.state for world in worlds], complete_itempool)
 
     all_locations = [location for world in worlds for location in world.get_locations()]
-    already_unreachable_locations = [location for location in all_locations if not maximum_exploration_state_list[location.world.id].can_reach(location)]
+    max_playthrough.visit_locations(all_locations)
+    already_unreachable_locations = [location for location in all_locations if not max_playthrough.visited(location)]
 
     # Shuffle all entrance pools based on settings
 
@@ -152,19 +153,22 @@ def shuffle_entrances(worlds):
                 logging.getLogger('').error('%s has %d shuffled entrances after shuffling, expected exactly 1 [World %d]',
                                                 region, len(region_shuffled_entrances), world.id)
 
-    maximum_exploration_state_list = State.get_states_with_items([world.state for world in worlds], complete_itempool)
+    # New playthrough with shuffled entrances
+    max_playthrough = Playthrough.max_explore([world.state for world in worlds], complete_itempool)
+    max_playthrough.visit_locations(all_locations)
 
     # Log all locations unreachable due to shuffling entrances
     alr_compliant = True
     if not worlds[0].check_beatable_only:
         for location in all_locations:
             if not location in already_unreachable_locations and \
-               not maximum_exploration_state_list[location.world.id].can_reach(location):
+               not max_playthrough.visited(location):
                 logging.getLogger('').error('Location now unreachable after shuffling entrances: %s [World %d]', location, location.world.id)
                 alr_compliant = False
 
     # Check for game beatability in all worlds
-    if not State.can_beat_game(maximum_exploration_state_list):
+    # Can this ever fail, if Triforce is in complete_itempool?
+    if not max_playthrough.can_beat_game(False):
         raise EntranceShuffleError('Cannot beat game!')
 
     # Throw an error if shuffling entrances broke the contract of ALR (All Locations Reachable)
@@ -198,7 +202,7 @@ def shuffle_entrance_pool(worlds, entrance_pool, already_unreachable_locations):
         restrictive_entrances, soft_entrances = split_entrances_by_requirements(worlds, entrances_to_shuffle)
 
         # Assumed Fill: Unplace, and assume we have access to entrances by connecting them to the root of reachability
-        root = world.get_region("Links House")
+        root = world.get_region('Root')
         target_regions = [entrance.disconnect() for entrance in entrances_to_shuffle]
         target_entrances = []
         for target_region in target_regions:
@@ -226,16 +230,16 @@ def split_entrances_by_requirements(worlds, entrances_to_split):
         original_connected_regions[entrance.name] = entrance.disconnect()
 
     # Generate the states with all entrances disconnected
-    # This ensures that no pre exisiting entrances among those to shuffle are required in order for an entrance to be reachable as one age
+    # This ensures that no pre existing entrances among those to shuffle are required in order for an entrance to be reachable as one age
     # Some entrances may not be reachable because of this, but this is fine as long as we deal with those entrances as being very limited
-    maximum_exploration_state_list = State.get_states_with_items([world.state for world in worlds], complete_itempool)
+    max_playthrough = Playthrough.max_explore([world.state for world in worlds], complete_itempool)
 
     restrictive_entrances = []
     soft_entrances = []
 
     for entrance in entrances_to_split:
         # Here, we find entrances that may be unreachable under certain conditions
-        if not maximum_exploration_state_list[entrance.world.id].can_reach(entrance, age='both', tod='all'):
+        if not max_playthrough.state_list[entrance.world.id].can_reach(entrance, age='both', tod='all'):
             restrictive_entrances.append(entrance)
             continue
         # If an entrance is reachable as both ages and all times of day with all the other entrances disconnected,
@@ -261,8 +265,6 @@ def shuffle_entrances_restrictive(worlds, entrances, target_entrances, already_u
     # Retrieve all items in the itempool, all worlds included
     complete_itempool = [item for world in worlds for item in world.get_itempool_with_dungeon_items()]
 
-    maximum_exploration_state_list = []
-
     for _ in range(retry_count):
         success = True;
         random.shuffle(entrances)
@@ -274,21 +276,19 @@ def shuffle_entrances_restrictive(worlds, entrances, target_entrances, already_u
             for target in target_entrances:
                 entrance.connect(target.disconnect())
 
-                # Regenerate the states because the final states might have changed after connecting/disconnecting entrances
-                # We also clear all state caches first because what was reachable before could now be unreachable and vice versa
-                for maximum_exploration_state in maximum_exploration_state_list:
-                    maximum_exploration_state.clear_cache()
-                maximum_exploration_state_list = State.get_states_with_items([world.state for world in worlds], complete_itempool)
+                # Regenerate the playthrough because the final states might have changed after connecting/disconnecting entrances
+                max_playthrough = Playthrough.max_explore([world.state for world in worlds], complete_itempool)
 
                 # If we only have to check that the game is still beatable, and the game is indeed still beatable, we can use that region
                 can_connect = True
-                if not (worlds[0].check_beatable_only and State.can_beat_game(maximum_exploration_state_list)):
+                if not (worlds[0].check_beatable_only and max_playthrough.can_beat_game(False)):
+                    max_playthrough.visit_locations(all_locations)
 
                     # Figure out if this entrance can be connected to the region being tested
                     # We consider that it can be connected if ALL locations previously reachable are still reachable
                     for location in all_locations:
                         if not location in already_unreachable_locations and \
-                           not maximum_exploration_state_list[location.world.id].can_reach(location):
+                           not max_playthrough.visited(location):
                             logging.getLogger('').debug('Failed to connect %s To %s (because of %s) [World %d]',
                                                             entrance, entrance.connected_region, location, entrance.world.id)
 

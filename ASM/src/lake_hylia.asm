@@ -2,7 +2,7 @@ CFG_CHILD_CONTROL_LAKE:
     .word 0x00000000
 
                       ; ID      x       y       z       xrot    yrot    zrot    var
-Gossip_Actor: .halfword 0x01B9, 0xFC00, 0xFB22, 0x1B20, 0x0000, 0x0400, 0x0000, 0x8022
+Gossip_Actor: .halfword 0x01B9, 0xFCD5, 0xFB25, 0x1AD2, 0x0000, 0xF2DC, 0x0000, 0x8022
 
 
 Hit_Gossip_Stone:

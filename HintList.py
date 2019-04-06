@@ -161,7 +161,6 @@ hintTable = {
     'Gold Skulltula Token':                                     (["proof of destruction", "an arachnid chip", "spider remains", "one percent of a curse"], "a Gold Skulltula Token", 'item'),
 
     '10 Big Poes':                                              (["#Big Poes# leads to", "#ghost hunters# will be rewarded with"], None, 'always'),
-    'Deku Theater Skull Mask':                                  ("the #Skull Mask# yields", None, 'always'),
     'Deku Theater Mask of Truth':                               ("the #Mask of Truth# yields", None, 'always'),
     '30 Gold Skulltula Reward':                                 ("slaying #30 Gold Skulltulas# reveals", None, 'always'),
     '40 Gold Skulltula Reward':                                 ("slaying #40 Gold Skulltulas# reveals", None, 'always'),
@@ -188,6 +187,7 @@ hintTable = {
     'Treasure Chest Game':                                      (["#gambling# grants", "there is a #1/32 chance# to win"], "the #treasure chest game# grants", 'minigame'),
     'Horseback Archery 1500 Points':                            ("mastery of #horseback archery# grants", "scoring 1500 in #horseback archery# grants", 'minigame'),
 
+    'Deku Theater Skull Mask':                                  ("the #Skull Mask# yields", None, 'overworld'),
     '20 Gold Skulltula Reward':                                 ("slaying #20 Gold Skulltulas# reveals", None, 'overworld'),
     'Darunias Joy':                                             ("#Darunia's dance# leads to", None, 'overworld'),
     'Skull Kid':                                                ("the #Skull Kid# grants", None, 'overworld'),
