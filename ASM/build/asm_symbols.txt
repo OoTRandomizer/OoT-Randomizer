@@ -534,6 +534,7 @@
 804098C8 DPAD_TEXTURE
 80410000 .data
 80410000 .dbl:0018
+80410000 WORKING_NAVI_GLOBALS
 80410000 working_navi_cyclicLogicGlobals
 80410018 .dbl:000C
 80410018 working_navi_cyclicLogicRestores

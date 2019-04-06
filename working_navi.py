@@ -3,6 +3,8 @@
 from SaveContext import SaveContext
 from Hints import get_raw_text, lineWrap        
 from Utils import default_output_path
+from Rom import Rom
+
 import os, os.path
                     
 import re
@@ -10,20 +12,33 @@ import re
 #s = 'a (45:45) b (65:40) ccc (blah$#)'
 #re.sub('\s?\(.*?\)', '', s).strip() # 'a b ccc'  
 
-class working_navi():
+class working_navi(Rom):
+    
+    WORKING_NAVI_RAM = None
+    WORKING_NAVI_ROM = None
+    WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM = None
+    WORKING_NAVI_DATA_GENERATED_TEXT_ROM = None  #length about 0x1000 hex - to 0x80501700
+    WORKING_NAVI_CODE_CYCLICLOGIC_RAM = None
+    WORKING_NAVI_CODE_TEXTLOADLOGIC_RAM = None
+    
+    
+    
+    def __init__(self, rom):
+        #TBD use rom.sym for all those
+        self.WORKING_NAVI_RAM = 0x80410000
+        self.WORKING_NAVI_ROM = rom.sym('WORKING_NAVI_GLOBALS') #0x03490000
+        self.WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM = self.WORKING_NAVI_ROM + 0x40     #TBD from .json File?
+        self.WORKING_NAVI_DATA_GENERATED_TEXT_ROM = self.WORKING_NAVI_ROM + 0x800    #length about 0x1000 hex - to 0x80501700
+        self.WORKING_NAVI_CODE_CYCLICLOGIC_RAM = self.WORKING_NAVI_RAM + 0x300
+        self.WORKING_NAVI_CODE_TEXTLOADLOGIC_RAM = self.WORKING_NAVI_RAM + 0x600
+    
     
     lastUpgradeIndexes = [0,0,0]
     
     def Reset(self):
         lastUpgradeIndexes = [0,0,0]
         
-    #TBD generate, from .json file? (Source ASM)
-    C_WORKING_NAVI_RAM = 0x80410000
-    C_WORKING_NAVI_ROM = 0x03490000
-    WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM = C_WORKING_NAVI_ROM + 0x40     #TBD from .json File?
-    WORKING_NAVI_DATA_GENERATED_TEXT_ROM = C_WORKING_NAVI_ROM + 0x800    #length about 0x1000 hex - to 0x80501700
-    WORKING_NAVI_CODE_CYCLICLOGIC_RAM = C_WORKING_NAVI_RAM + 0x300
-    WORKING_NAVI_CODE_TEXTLOADLOGIC_RAM = C_WORKING_NAVI_RAM + 0x600
+    
 
     def getBitOffsetIndex(self, mask):
         i=0;
@@ -240,7 +255,7 @@ class working_navi():
             glob4 = list(bytearray(asmglobal4_FlagForAsmHack_initvalue.to_bytes(4, 'big')))
             byteArray = bytearray( glob1 + glob2 + glob3 + glob4 )
             
-            rom.write_bytes(self.C_WORKING_NAVI_ROM, byteArray)
+            rom.write_bytes(self.WORKING_NAVI_ROM, byteArray)
             
             
             #hook for TextLoad

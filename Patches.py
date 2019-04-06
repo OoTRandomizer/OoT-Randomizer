@@ -1499,7 +1499,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
     #EDIT accept86 working_navi
     #rom.write_bytes(0x03500400, [0x1, 0x2, 0x3, 0x4])
     if world.settings.working_navi:
-        wNavi = working_navi()
+        wNavi = working_navi(rom)
         wNavi.working_navi_patch(rom, world, spoiler, save_context, outfilebase)
 
     

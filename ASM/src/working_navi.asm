@@ -8,7 +8,10 @@
 
 
 
-.org C_WORKING_NAVI_RAM
+.org WORKING_NAVI_RAM
+
+WORKING_NAVI_GLOBALS:
+
 .area 0x40
 
 .data:
