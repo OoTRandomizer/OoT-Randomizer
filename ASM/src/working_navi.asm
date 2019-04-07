@@ -16,10 +16,7 @@ WORKING_NAVI_GLOBALS:
 
 .data:
    working_navi_cyclicLogicGlobals:  .word  0x0,0x0,0x0,0x0,0x0,0x0
-   working_navi_cyclicLogicRestores:  .word  0x0,0x0,0x0
-   
    working_navi_TextPointerGlobal:  .word  0x0
-   working_navi_TextLoadLogicGlobals:  .word  0x0,0x0
    
 .endarea   
    
@@ -33,10 +30,8 @@ WORKING_NAVI_GLOBALS:
 
 
 working_navi_cyclicLogic:
-    la t6, working_navi_cyclicLogicRestores
-    sw ra, 0x0000 (t6)      
-    sw a1, 0x0004 (t6)
-    sw a2, 0x0008 (t6)
+    addiu   sp, sp, -0x18
+    sw      ra, 0x0014(sp)
 
 
     ;lui t0, 0x0350            ;WORKING_NAVI_DATA_GENERATED_TEXT_ROM
@@ -59,14 +54,14 @@ working_navi_cyclicLogic:
     lui t3, 0x0000
     ori t3, 0xd90       ; 1 minute
     
-    beq t6, t3, WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE   ; every minute, Check if any Progress has been made - Reset timer if progress made
+    beq t6, t3, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE   ; every minute, Check if any Progress has been made - Reset timer if progress made
     nop
-WNAVI_AFTER_CL_HAS_ANY_PROGRESS_BEEN_MADE:
+@WNAVI_AFTER_CL_HAS_ANY_PROGRESS_BEEN_MADE:
 
 
 
 
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_RAM
+    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_RAM ; Reset t7 to LookupTable-Base
 
 ;Timercheck => otherwise say "You are doing so well, no need to bother you" 
     lw t6, 0x0000 (t1)       ;load global variable 1 (Timer)
@@ -75,15 +70,15 @@ WNAVI_AFTER_CL_HAS_ANY_PROGRESS_BEEN_MADE:
     
     lw t5, 0x0008 (t1)       ;global Variable 3 - MaxTime when Navi gets activated
     
- beq t6, t5, WNAVI_CL_TEXTPOINTER_RESTORE   ; Restore Textpointer when Timer expired
+ beq t6, t5, @WNAVI_CL_TEXTPOINTER_RESTORE   ; Restore Textpointer when Timer expired
     nop
-WNAVI_AFTER_CL_TEXTPOINTER_RESTORE:    
+@WNAVI_AFTER_CL_TEXTPOINTER_RESTORE:    
        
     slt t4, t6, t5           ;Test : t6(timer) less than t5 (global variable with TimerBase)
     lui t3, 0x0000
     ori t3, t3, 0x0001
     
- beq t4, t3, WNAVI_CL_TIMER_NOK       ;BRANCH Jump over to WNAVI_CL_TIMER_NOK when Timer not allowing Navi Text Output
+ beq t4, t3, @WNAVI_CL_TIMER_NOK       ;BRANCH Jump over to @WNAVI_CL_TIMER_NOK when Timer not allowing Navi Text Output
     nop
     
     lui t4, 0x0000
@@ -94,15 +89,15 @@ WNAVI_AFTER_CL_TEXTPOINTER_RESTORE:
 ;after Timer OK => give useful text - calculate next Text
     addiu t7, t7, 0xfff8     ;From here is the LookupTablePointer setting. Decrement T7 LookupTablePointer by 4
 
-WNAVI_CL_INCREMENT_POINTERS:
+@WNAVI_CL_INCREMENT_POINTERS:
 
     addiu t0, t0, 0x003c     ;TARGET Jump Here to INCREMENT_POINTERS From here is the TextTablePointer setting. Increment T0 TextTablePointer by 3C
     addiu t7, t7, 0x0008     ; 0x0004     ;Increment LookupTablePointer
 
 
-    li a1, WNAVI_CL_INCREMENT_POINTERS          ; A1: Increment Pointers Address
+    li a1, @WNAVI_CL_INCREMENT_POINTERS          ; A1: Increment Pointers Address
     move a2, t7                                 ; t7 LookupTablePointer
-    JAL WNAVI_CL_CHECKSAVEDATA                  ;checks save Data for LookupTableEntry
+    JAL @WNAVI_CL_CHECKSAVEDATA                  ;checks save Data for LookupTableEntry
     nop
 
 
@@ -111,7 +106,7 @@ WNAVI_CL_INCREMENT_POINTERS:
 
     ;when t0 not changed, no need to save
     lw t6, 0x0010 (t1)       ;load last Textpointer
- beq t6, t0, WNAVI_CL_NOTCHANGED_BRANCH
+ beq t6, t0, @@WNAVI_CL_NOTCHANGED_BRANCH
     nop
     
   ;Here: Textpointer has changed
@@ -123,19 +118,16 @@ WNAVI_CL_INCREMENT_POINTERS:
     sw t3, 0x0000 (t1)       ; Reset Timer TBD test this
     
     
-WNAVI_CL_NOTCHANGED_BRANCH:
+@@WNAVI_CL_NOTCHANGED_BRANCH:
     
     
 
 ;Restore and Return
-WNAVI_CL_RETURN:         
-    ;TARGET WNAVI_CL_RETURN - Restore and Return
-    la t6, working_navi_cyclicLogicRestores
-    lw ra, 0x0000 (t6)      
-    lw a1, 0x0004 (t6)
-    lw a2, 0x0008 (t6)
-    
-    jr ra
+@WNAVI_CL_RETURN:         
+    ;Restore RA and return
+    lw      ra, 0x0014(sp)
+    addiu   sp, sp, 0x18
+    jr      ra
     nop
 
 
@@ -145,7 +137,7 @@ WNAVI_CL_RETURN:
 ;_______Subroutines for cyclic logic__________
 
     
-WNAVI_CL_TEXTPOINTER_RESTORE:
+@WNAVI_CL_TEXTPOINTER_RESTORE:
     la t3, working_navi_TextPointerGlobal
     la t1, working_navi_cyclicLogicGlobals
     lw t2, 0x0010 (t1)       ;Load Backup of lastTexpointer (normally t0, but that is generated from the ground up again)
@@ -155,36 +147,35 @@ WNAVI_CL_TEXTPOINTER_RESTORE:
     ori t3, t3, 0x0001
     sw t3, 0x0004 (t1) ;ShowTextFlag set
    
-    J WNAVI_AFTER_CL_TEXTPOINTER_RESTORE
+    J @WNAVI_AFTER_CL_TEXTPOINTER_RESTORE
     nop    
     
     
-WNAVI_CL_TIMER_NOK:
-    ;TBDTBD only if okFlag not set
+@WNAVI_CL_TIMER_NOK:
     la t1, working_navi_cyclicLogicGlobals
     
     lui t3, 0x0000
     ori t3, t3, 0x0001
     lw t2, 0x0004 (t1)          ;ShowTextFlag
- beq t2, t3, WNAVI_CL_RETURN
+ beq t2, t3, @WNAVI_CL_RETURN
     nop
     
     la t1, working_navi_TextPointerGlobal
     li t0, WORKING_NAVI_DATA_GENERATED_TEXT_ROM
     sw t0, 0x0000 (t1)       ;Store T0 in Global Variable 5 Textpointer
    
-    J WNAVI_CL_RETURN
+    J @WNAVI_CL_RETURN
     nop    
 
 ;_______Subroutine1__________
-WNAVI_CL_CHECKSAVEDATA: ;ARGUMENTS: a1=LABEL TO INCREMENT LookupTable; a2=LookupTablePointer
+@WNAVI_CL_CHECKSAVEDATA: ;ARGUMENTS: a1=LABEL TO INCREMENT LookupTable; a2=LookupTablePointer
 
     lb t6, 0x0003 (a2)       ;Load "IsDone" Part of LookupTable-Element
     andi t6, t6, 0x00ff      ;BitMaskFilter
     lui t5, 0x0000
     ori t5, t5, 0x00ff
     
- beq t6, t5, WNAVI_CL_INT_CHECKSAVEDATA_RETURN       ;BRANCH - EndofTable? to AFTER_TEXT_POINTER_UPDATE
+ beq t6, t5, @WNAVI_CL_INT_CHECKSAVEDATA_RETURN       ;BRANCH - EndofTable? to AFTER_TEXT_POINTER_UPDATE
     nop
 
     lw t6, 0x0000 (a2)       ;Load SaveDataOffset from LookupTablePointer in T6
@@ -192,11 +183,11 @@ WNAVI_CL_CHECKSAVEDATA: ;ARGUMENTS: a1=LABEL TO INCREMENT LookupTable; a2=Lookup
     andi t6, t6, 0xffff      ;Mask SaveDataOffset
     lui t5, 0x0000
     
- bne t6, t5, WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP1       ;BRANCH - if LookupTable Offset is 0 Jump Back INCREMENT_POINTERS
+ bne t6, t5, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP1       ;BRANCH - if LookupTable Offset is 0 Jump Back INCREMENT_POINTERS
     nop
     jr a1
     nop
-WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP1:
+@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP1:
     
     
     ;lb t5, 0x0002 (a2)       ;Load SaveDataBitOffset
@@ -211,7 +202,7 @@ WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP1:
     
     lui t6, 0xFFFF
     ori t6, 0xFFFF
-    beq t4, t6, WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveData is FF => DONT Go to INCREMENT_POINTERS/a1
+    beq t4, t6, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveData is FF => DONT Go to INCREMENT_POINTERS/a1
     nop    
     
     
@@ -226,27 +217,27 @@ WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP1:
     lui t6, 0x0000
     ori t6, 0x00FF
  
- beq t6, t5, WNAVI_CL_SAVEMASKFF               ;BRANCH, MASK is FF, check savedata different
+ beq t6, t5, @WNAVI_CL_SAVEMASKFF               ;BRANCH, MASK is FF, check savedata different
     nop
     
     ;Savemask not FF
     lui t5, 0x0000        ;load 0 in t5
 
- beq t4, t5, WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveData has this Item => Go to INCREMENT_POINTERS/a1
+ beq t4, t5, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveData has this Item => Go to INCREMENT_POINTERS/a1
     nop
     jr a1
     nop
     
-WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2:
+@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2:
     
  
-WNAVI_CL_INT_CHECKSAVEDATA_RETURN:   
+@WNAVI_CL_INT_CHECKSAVEDATA_RETURN:   
     jr ra
     nop
     
     
 ;____Sub-Subroutine1___    
-WNAVI_CL_SAVEMASKFF:        ; TARGET if Savedatamask is FF
+@WNAVI_CL_SAVEMASKFF:        ; TARGET if Savedatamask is FF
     ;Savemask is FF
     lw t5, 0x0004 (a2)        ;load savemask in t5
     lui t6, 0x0000
@@ -257,16 +248,16 @@ WNAVI_CL_SAVEMASKFF:        ; TARGET if Savedatamask is FF
     andi t5, t5, 0x00FF
     
     ;lui t6, 0x0000
- ;beq t4, t6, WNAVI_CL_INT_CHECKSAVEDATA_RETURN ; if 0 => Item not aquired EDIT: seems like 0x00 can mean aquired after all (Deku Sticks)
+ ;beq t4, t6, @WNAVI_CL_INT_CHECKSAVEDATA_RETURN ; if 0 => Item not aquired EDIT: seems like 0x00 can mean aquired after all (Deku Sticks)
     ;nop
     
- beq t4, t5, WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP3       ;BRANCH If SaveData mask FF and Savedata not FF Item aquired => Go to INCREMENT_POINTERS/a1
+ beq t4, t5, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP3       ;BRANCH If SaveData mask FF and Savedata not FF Item aquired => Go to INCREMENT_POINTERS/a1
     nop
     jr a1
     nop
-WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP3:
+@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP3:
 
-    J WNAVI_CL_INT_CHECKSAVEDATA_RETURN
+    J @WNAVI_CL_INT_CHECKSAVEDATA_RETURN
     nop
 
     
@@ -274,19 +265,19 @@ WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP3:
     
 
 ;_______Subroutine2_______
-WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE:
+@WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE:
     la t1, working_navi_cyclicLogicGlobals
     lui t3, 0x0000
     sw t3, 0x0014 (t1)       ;Reset global variable 6 (Timer2)
     
     li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_RAM
 
-    J WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_INITJUMP
+    J @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_INITJUMP
     nop
     
     
     
-WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_GOT_ITEM:  
+@WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_GOT_ITEM:  
     lui t6, 0x0000
     lb t6, 0x0003 (t7)       ;Load "IsDone" Part of LookupTable-Element
     ori t6, t6, 0x0001       ;Save Flag for gotten Item
@@ -296,7 +287,7 @@ WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_GOT_ITEM:
     ori t3, 0x0001
     
 ; Reset ShowText, Reset Timer, if Item is newly gotten
- bne t6, t3, WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_NO_TIMERRESET
+ bne t6, t3, @@WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_NO_TIMERRESET
     nop
     ori t6, t6, 0x0003       ;Save Flag for gotten Item "before"
     sb t6, 0x0003 (t7)
@@ -305,28 +296,28 @@ WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_GOT_ITEM:
     lui t3, 0x0000
     sw t3, 0x0004 (t4) ;Reset ShowTextFlag
     sw t3, 0x0000 (t4) ;Reset Timer1 (NaviDelay)
-WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_NO_TIMERRESET:    
+@@WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_NO_TIMERRESET:    
     
-WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_ITEM_NOT_GOTTEN:
+@WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_ITEM_NOT_GOTTEN:
     addiu t7, t7, 0x0008     ; 0x0004     ;Increment LookupTablePointer
     
-WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_INITJUMP:     
+@WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_INITJUMP:     
     
     lui t3, 0x0000
     ori t3, t3, 0x00FF
     lb t6, 0x0003 (t7)       ;Load "IsDone" Part of LookupTable-Element
     andi t6, t6, 0x00ff      ;BitMaskFilter
     
- beq t3, t6, WNAVI_AFTER_CL_HAS_ANY_PROGRESS_BEEN_MADE ; Escape at end of loop <= THIS IS THE RETURN OUT
+ beq t3, t6, @WNAVI_AFTER_CL_HAS_ANY_PROGRESS_BEEN_MADE ; Escape at end of loop <= THIS IS THE RETURN OUT
     nop
     
 
-    li a1, WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_GOT_ITEM     ; A1: Item Got Jump Address
+    li a1, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_GOT_ITEM     ; A1: Item Got Jump Address
     move a2, t7                                 ; t7 LookupTablePointer
-    JAL WNAVI_CL_CHECKSAVEDATA                  ;checks save Data for LookupTableEntry
+    JAL @WNAVI_CL_CHECKSAVEDATA                  ;checks save Data for LookupTableEntry
     nop
 
-    J WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_ITEM_NOT_GOTTEN
+    J @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_ITEM_NOT_GOTTEN
     nop
     
     ;Heres no Return needed, always go to end of lookuptable
@@ -342,10 +333,9 @@ WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_INITJUMP:
 .area 0x1F0
 
 working_navi_TextLoadLogic:
-    la t6, working_navi_TextLoadLogicGlobals
+    addiu   sp, sp, -0x18
+    sw      ra, 0x0014(sp)
     
-    sw ra, 0x0004 (t6)      ;global variable 2 - RA
-    sw sp, 0x0000 (t6)      ;global variable 1 - old SP
     lui t2, 0x0000
     ori t2, t2, 0x0000      ;just 0 in T2 for using with compares
     
@@ -353,14 +343,14 @@ working_navi_TextLoadLogic:
     ori t3, t3, 0x2ea0      ;TextLoadPointerMin old: 0x4af0
     slt t1, t3, a1          ;comparison, A1 = requested Textloadpointer of the game
     
- beq t1, t2, WNAVI_TLL_LOAD_TEXT      ;BRANCH if reqested Textpointer A1 < Min NaviSection: Jump LOAD_TEXT
+ beq t1, t2, @@WNAVI_TLL_LOAD_TEXT      ;BRANCH if reqested Textpointer A1 < Min NaviSection: Jump LOAD_TEXT
     nop
     
     lui t3, 0x0093          ; TBD why did this value change since Rando 1.0?
     ori t3, t3, 0x37ac      ; TextLoadPointer max old: 0x5400
     slt t1, a1, t3          ;A1 < T3 (Max) req Textpointer A1 < Max NaviSection
 
- beq t1, t2, WNAVI_TLL_LOAD_TEXT      ;BRANCH if Textpointer < Max => Jump LOAD_TEXT
+ beq t1, t2, @@WNAVI_TLL_LOAD_TEXT      ;BRANCH if Textpointer < Max => Jump LOAD_TEXT
     nop
     
                             ; T7 Global Variable 5 Textpointer
@@ -378,15 +368,15 @@ working_navi_TextLoadLogic:
     sw t3, 0x0000 (t2) ;Timer1 Reset
 
     
-WNAVI_TLL_LOAD_TEXT:        ;TARGET LOAD_TEXT
+@@WNAVI_TLL_LOAD_TEXT:        ;TARGET LOAD_TEXT
     jal 0x80000DF0          ;DMALoad Text in
     nop
     
          
-    la t6, working_navi_TextLoadLogicGlobals        ;Restore RA and SP
-    lw ra, 0x0004 (t6)
-    lw sp, 0x0000 (t6)
-    jr ra
+    ;Restore RA and return
+    lw      ra, 0x0014(sp)
+    addiu   sp, sp, 0x18
+    jr      ra
     nop
 
 ;==================================================================================================
