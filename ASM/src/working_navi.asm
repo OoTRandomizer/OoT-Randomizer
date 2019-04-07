@@ -146,6 +146,15 @@ working_navi_cyclicLogic:
     lui t3, 0x0000
     ori t3, t3, 0x0001
     sw t3, 0x0004 (t1) ;ShowTextFlag set
+    
+    
+    lui t2, 0x8011
+    ori t2, 0xA608
+    lui t3, 0x0000     ;Manipulate OOT Navi Timer
+    ori t3, 0x0009
+    sb t3, 0x0000 (t2)
+    
+    
    
     J @WNAVI_AFTER_CL_TEXTPOINTER_RESTORE
     nop    
