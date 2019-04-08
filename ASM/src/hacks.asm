@@ -1213,3 +1213,24 @@ skip_GS_BGS_text:
 ; ==================================================================================================
 .orga 0xAC7AD4
     jal     Static_ctxt_Init
+    
+    
+    
+    
+    
+; ==================================================================================================
+; working Navi - see working_navi.py
+; ==================================================================================================
+      
+;            #hook for TextLoad
+;            intAddress =  int((self.WORKING_NAVI_CODE_TEXTLOADLOGIC_RAM & 0x00FFFFFF)/4)
+;            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
+;            byteArray = [0x0C] + byteArray
+;            rom.write_bytes(0xB52BDC, bytearray(byteArray)) #is a JAL was a jal to DMALoad Text before
+            
+;            #hook for cyclic call
+;            intAddress =  int((self.WORKING_NAVI_CODE_CYCLICLOGIC_RAM & 0x00FFFFFF)/4)
+;            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
+;            byteArray = [0x08] + byteArray
+;            rom.write_bytes(0xB12A94, bytearray(byteArray)) #is a J, was a jr before, cyclic hack jumps back to previous ret address
+              

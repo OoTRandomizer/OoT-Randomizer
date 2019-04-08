@@ -94,6 +94,15 @@ for (name, sym) in symbols.items():
         data_symbols[name] = '{0:08X}'.format(addr)
 with open('../data/generated/symbols.json', 'w') as f:
     json.dump(data_symbols, f, indent=4, sort_keys=True)
+    
+#accept86    
+for (name, sym) in symbols.items():
+    if sym['type'] == 'data':
+        addr = int(sym['address'], 16)
+        data_symbols[name] = '{0:08X}'.format(addr)
+with open('../data/generated/symbols_RAM.json', 'w') as f:
+    json.dump(data_symbols, f, indent=4, sort_keys=True)
+    
 
 if pj64_sym_path:
     pj64_sym_path = os.path.realpath(pj64_sym_path)

@@ -2,7 +2,7 @@
 ;==================================================================================================
 
 ;WORKING_NAVI_DATA_GENERATED_TEXT_ROM => Texts with 0x3C increment (ROM-Address)
-;WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_RAM => LookUpTable For NaviTexts (8 Bytes each per Text 
+;WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM => LookUpTable For NaviTexts (8 Bytes each per Text 
         ; 2 Bytes SaveDataOffset, ;1 Byte SaveDataBitoffset, 1 Byte to handle by Software)
         ; 4 Bytes SavedataMask for Item
 
@@ -37,9 +37,9 @@ working_navi_cyclicLogic:
     ;lui t0, 0x0350            ;WORKING_NAVI_DATA_GENERATED_TEXT_ROM
     ;ori t0, 0x0700            ;WORKING_NAVI_DATA_GENERATED_TEXT_ROM ;TextTablePointer for Navi-Texts
     li t0, WORKING_NAVI_DATA_GENERATED_TEXT_ROM
-    ;lui t7, 0x8050            ;WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_RAM
-    ;ori t7, 0x0400            ;WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_RAM  ;LookupTablePointer for Navi-Texts
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_RAM
+    ;lui t7, 0x8050            ;WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    ;ori t7, 0x0400            ;WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM  ;LookupTablePointer for Navi-Texts
+    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
                                     ;global variable 1 (Timer), 2 (showTextFlag), 
     la t1, working_navi_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
                                              ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
@@ -61,7 +61,7 @@ working_navi_cyclicLogic:
 
 
 
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_RAM ; Reset t7 to LookupTable-Base
+    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM ; Reset t7 to LookupTable-Base
 
 ;Timercheck => otherwise say "You are doing so well, no need to bother you" 
     lw t6, 0x0000 (t1)       ;load global variable 1 (Timer)
@@ -279,7 +279,7 @@ working_navi_cyclicLogic:
     lui t3, 0x0000
     sw t3, 0x0014 (t1)       ;Reset global variable 6 (Timer2)
     
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_RAM
+    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
 
     J @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_INITJUMP
     nop
@@ -398,7 +398,7 @@ working_navi_ExtendedInit:
     li t0, WORKING_NAVI_DATA_GENERATED_TEXT_ROM
     sw t0, 0x0000 (t1)       ;Store T0 in Global Variable 5 Textpointer
    
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_RAM
+    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
                                     ;global variable 1 (Timer), 2 (dummy), 
     la t1, working_navi_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
                                              ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
@@ -414,4 +414,9 @@ working_navi_ExtendedInit:
 .endarea 
 
 
+
+.org WORKING_NAVI_DATA_GENERATED_TEXT_SYM  ; see addresses.asm, this is only done so we get a symbol in symbols_RAM.json
+.area 0x1000
+nop
+.endarea
 

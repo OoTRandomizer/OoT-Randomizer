@@ -24,13 +24,12 @@ class working_navi(Rom):
     
     
     def __init__(self, rom):
-        #TBD use rom.sym for all those
-        self.WORKING_NAVI_RAM = 0x80410000
+        self.WORKING_NAVI_RAM = rom.symRAM('WORKING_NAVI_GLOBALS') #0x80410000
         self.WORKING_NAVI_ROM = rom.sym('WORKING_NAVI_GLOBALS') #0x03490000
-        self.WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM = self.WORKING_NAVI_ROM + 0x40     #TBD from .json File?
-        self.WORKING_NAVI_DATA_GENERATED_TEXT_ROM = self.WORKING_NAVI_ROM + 0x800    #length about 0x1000 hex - to 0x80501700
-        self.WORKING_NAVI_CODE_CYCLICLOGIC_RAM = self.WORKING_NAVI_RAM + 0x300
-        self.WORKING_NAVI_CODE_TEXTLOADLOGIC_RAM = self.WORKING_NAVI_RAM + 0x600
+        self.WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM = rom.sym('WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM') #self.WORKING_NAVI_ROM + 0x40     #TBD from .json File?
+        self.WORKING_NAVI_DATA_GENERATED_TEXT_ROM = rom.sym('WORKING_NAVI_DATA_GENERATED_TEXT_SYM') #self.WORKING_NAVI_ROM + 0x800    #length about 0x1000 hex - to 0x80501700
+        self.WORKING_NAVI_CODE_CYCLICLOGIC_RAM = rom.symRAM('WORKING_NAVI_DATA_CODE') #self.WORKING_NAVI_RAM + 0x300
+        self.WORKING_NAVI_CODE_TEXTLOADLOGIC_RAM = rom.symRAM('WORKING_NAVI_DATA_CODE2') #self.WORKING_NAVI_RAM + 0x600
     
     
     lastUpgradeIndexes = [0,0,0]
