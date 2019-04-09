@@ -54,26 +54,39 @@ working_navi_cyclicLogic:
     lui t3, 0x0000
     ori t3, 0xd90       ; 1 minute
     
-    beq t6, t3, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE   ; every minute, Check if any Progress has been made - Reset timer if progress made
+ beq t6, t3, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE   ; every minute, Check if any Progress has been made - Reset timer if progress made
     nop
+
+    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM ; Reset t7 to LookupTable-Base
+
+;Timercheck => otherwise say "You are doing so well, no need to bother you" 
+    lw t5, 0x0008 (t1)       ;global Variable 3 - MaxTime when Navi gets activated
+    lw t6, 0x0000 (t1)       ;load global variable 1 (Timer)
+    addiu t6, t6, 0x0001     ;increment
+    sw t6, 0x0000 (t1)       ;store increment global variable 1 (Timer)
+    
+ beq t6, t5, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE   ; Check when Timer1 expires, too (when timers are desynced)
+    nop
+
+
 @WNAVI_AFTER_CL_HAS_ANY_PROGRESS_BEEN_MADE:
 
 
 
 
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM ; Reset t7 to LookupTable-Base
 
-;Timercheck => otherwise say "You are doing so well, no need to bother you" 
+    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM ; Reset t7 to LookupTable-Base
     lw t6, 0x0000 (t1)       ;load global variable 1 (Timer)
-    addiu t6, t6, 0x0001     ;increment
-    sw t6, 0x0000 (t1)       ;store increment global variable 1 (Timer)
-    
     lw t5, 0x0008 (t1)       ;global Variable 3 - MaxTime when Navi gets activated
+
     
  beq t6, t5, @WNAVI_CL_TEXTPOINTER_RESTORE   ; Restore Textpointer when Timer expired
     nop
 @WNAVI_AFTER_CL_TEXTPOINTER_RESTORE:    
        
+       
+       
+;actual timertest        
     slt t4, t6, t5           ;Test : t6(timer) less than t5 (global variable with TimerBase)
     lui t3, 0x0000
     ori t3, t3, 0x0001
@@ -119,8 +132,7 @@ working_navi_cyclicLogic:
     
     
 @@WNAVI_CL_NOTCHANGED_BRANCH:
-    
-    
+        
 
 ;Restore and Return
 @WNAVI_CL_RETURN:         

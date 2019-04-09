@@ -1606,11 +1606,7 @@ setting_infos = [
         gui_tooltip    = '''\
             This sets the minimum delay time in minutes
             for actual navi hints. The timer will reset
-            whenever you get a REQUIRED item. Navi will
-            not get activated directly after the delay
-            time is met, but with the "normal" game 
-            mechanism (for example she will pop up shortly
-            after a game reset or when you die and continue.
+            whenever you get a REQUIRED item. 
             When the delay time is not met, instead Navi
             will say "you are doing so well, no need to
             bother you"
