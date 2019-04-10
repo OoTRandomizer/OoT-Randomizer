@@ -39,18 +39,36 @@ class working_navi(Rom):
         
     
 
-    #def getBitOffsetIndex(self, mask):
-    #    i=0;
-    #    for i in range(0, 31):
-    #        if( ((mask>>i)&1)!=0 ):
-    #            break
+    def getBitOffsetIndex(self, mask):
+        i=0;
+        for i in range(0, 31):
+            if( ((mask>>i)&1)!=0 ):
+                break
             
-    #    return i
+        return i
     
     #def getMaskByBitOffsetIndex(self, bitoffset):
     #    mask = 1 << bitoffset
             
     #    return mask
+    
+    
+    def OptimizeOffsetAndMask(self, array):
+        ItemByteOffset = array[0]
+        ItemBitOffset = 0 #array[1]
+        ItemMask = array[2]
+        ItemID = array[3]
+        
+        maskOffset = self.getBitOffsetIndex(ItemMask)
+        maskOffset8Increment = int(maskOffset/8)*8
+        
+        
+        ItemMask = (ItemMask >> maskOffset8Increment) & 0xFFFF
+        ItemBitOffset += maskOffset8Increment
+        
+        
+        return [ItemByteOffset,ItemBitOffset,ItemMask,ItemID]
+    
     
     
     def getUpgradeBitmask(self, UpgradeIndex, address, name_no_brackets ):
@@ -79,7 +97,7 @@ class working_navi(Rom):
                                 
                                 
         ItemByteoffset =  address[0]-address[0]%4   #Accept86 sometimes its not 32bit alligned?
-        ItemBitoffset =  int(address[1]) #this is just the bitoffset of the mask how far one has to shift it
+        #ItemBitoffset =  0 #int(address[1]) #this is just the bitoffset of the mask how far one has to shift it
         ItemMask = int(address[2])
         RealBitOffsetAndMask = self.getActualBitOffsetAndMask(address[0], ItemMask)      
         ItemCategory = str(address[3])
@@ -89,32 +107,23 @@ class working_navi(Rom):
         #Progressive Scale'
         #Progressive Wallet'
         #'Progressive Hookshot'
-        
         NameTable = [['gorons_bracelet','silver_gauntlets','golden_gauntlets'],['silver_scale','golden_scale'],['adults_wallet','giants_wallet'],['hookshot','longshot']]
         
-        
         ItemID = int(SaveContext.item_id_map[NameTable[UpgradeIndex][self.lastUpgradeIndexes[UpgradeIndex]]])
-        
         self.lastUpgradeIndexes[UpgradeIndex]=self.lastUpgradeIndexes[UpgradeIndex]+1
         
         
-        #if ( ItemMask == 0xFFFFFFFF ):  
-        #    RealBitOffset = int((3-address[0]%4)*8)
-        #    RealItemMask = int( (ItemMask << (int(3-address[0]%4)*8)) &0xFFFFFFFF) #its big endianess, %4 => move to right, magic offset 0xXXA => the real value is 2 Bytes to the right mask FFFF
-            #so example fire arrows is the left Byte
-        #else:
-        #    RealBitOffset = ItemBitoffset 
-        #    intBitOffset = self.getBitOffsetIndex(ItemMask) + self.lastUpgradeIndexes[UpgradeIndex]
-        #    RealItemMask = self.getMaskByBitOffsetIndex(intBitOffset) 
-        #    self.lastUpgradeIndexes[UpgradeIndex]=self.lastUpgradeIndexes[UpgradeIndex]+1
-    
-        return [ItemByteoffset,RealBitOffsetAndMask[0],RealBitOffsetAndMask[1],ItemID]
+        return self.OptimizeOffsetAndMask([ItemByteoffset,RealBitOffsetAndMask[0],RealBitOffsetAndMask[1],ItemID])
     
     
 
     def getActualBitOffsetAndMask(self, actualAddress, ItemMask):
-        bitoffset = int((3-actualAddress%4)*8)        #its big endianess, %4 => move to right, magic offset 0xXXA => the real value is 2 Bytes to the right mask FFFF              
-        mask = int( (ItemMask << bitoffset) & 0xFFFFFFFF ) 
+        bitoffset = 0
+        mask = ItemMask
+        if True: #( ItemMask == 0xFFFFFFFF ):
+            if((actualAddress%4)!=0):
+                bitoffset = int((3-actualAddress%4)*8)        #its big endianess, %4 => move to right, magic offset 0xXXA => the real value is 2 Bytes to the right mask FFFF              
+            mask = int( (ItemMask << bitoffset) & 0xFFFFFFFF ) 
         #so example fire arrows is the left Byte        
         return [bitoffset,mask]
 
@@ -123,7 +132,6 @@ class working_navi(Rom):
     def getSaveFileAdressAndMaskByItem(self, Item, ItemType, save_context):
         
         address = -1
-    
     
         name_no_brackets = re.sub('\s? \(.*?\)', '', Item.name).strip()
         name_no_brackets = name_no_brackets.replace('Buy ', '')
@@ -136,19 +144,12 @@ class working_navi(Rom):
             
             
         ItemByteoffset =  address[0]-address[0]%4   #Accept86 sometimes its not 32bit alligned?
-        ItemBitoffset =  int(address[1]) #this is just the bitoffset of the mask how far one has to shift it
         ItemMask = int(address[2])
         RealBitOffsetAndMask = self.getActualBitOffsetAndMask(address[0], ItemMask)    
         ItemCategory = str(address[3])
         ItemID = 0
       
-      
-        #if(ItemCategory == 'quest'):
-        #    if ( ItemMask == 0xFFFFFFFF ):  
-        #        RealBitOffset = int((3-address[0]%4)*8)                      
-        #        RealItemMask = int( (ItemMask << (int(3-address[0]%4)*8)) &0xFFFFFFFF) #its big endianess, %4 => move to right, magic offset 0xXXA => the real value is 2 Bytes to the right mask FFFF
-                #so example fire arrows is the left Byte
-                                        
+            
         if (ItemCategory == 'upgrades'):
             if(name_no_brackets=='Progressive Strength Upgrade'):
                 return self.getUpgradeBitmask(0, address, name_no_brackets )
@@ -156,48 +157,26 @@ class working_navi(Rom):
                 return self.getUpgradeBitmask(1, address, name_no_brackets )
             elif(name_no_brackets=='Progressive Wallet'):  
                 return self.getUpgradeBitmask(2, address, name_no_brackets ) 
-            #else:
-            #    if ( ItemMask == 0xFFFFFFFF ):  
-            #        RealBitOffset = int((3-address[0]%4)*8) 
-            #        RealItemMask = int( (ItemMask << (int(3-address[0]%4)*8)) &0xFFFFFFFF) 
-                    
-          
+
         elif((ItemCategory == 'item_slot') and (name_no_brackets=='Progressive Hookshot')):  
             return self.getUpgradeBitmask(3, address, name_no_brackets )   
           
         elif (ItemCategory == 'magic_acquired'):
-            #if ( ItemMask == 0xFFFFFFFF ):  
-                #RealBitOffset = 8                    
-                #RealItemMask = 0x00007F00   #FF has the Problem that 0x00 counts as aquired for magic, but for deku sticks its the other way around
-            RealBitOffsetAndMask = [8, 0x00007F00]
-                                       
-            #else:     
-            #    RealBitOffset = 16 #int(ItemBitoffset + 16)    #accept86 rando seems to give the offset 2 Bytes down for equip items?    
-            #    RealItemMask = int((ItemMask << 16)&0xFFFF0000) 
-            
+            RealBitOffsetAndMask = [0, 0x00007F00] #FF has the Problem that 0x00 counts as aquired for magic, but for deku sticks its the other way around
+        
         elif (ItemCategory == 'bottle_types'):
             if name_no_brackets in SaveContext.bottle_types:
                 pass #TBD
         
-        else:  
-        #if(ItemCategory == 'item_slot'): #if(ItemCategory == 'equip_items'):
-            #if ( ItemMask == 0xFFFFFFFF ):  
-            #    RealBitOffset = int((3-address[0]%4)*8)                    
-            #    RealItemMask = int( (ItemMask << (int(3-address[0]%4)*8)) &0xFFFFFFFF) #its big endianess, %4 => move to right, magic offset 0xXXA => the real value is 2 Bytes to the right mask FFFF
-                #so example fire arrows is the left Byte
-            #else:
-            
+        elif(ItemCategory != 'quest'): 
             if ( ItemMask != 0xFFFFFFFF ):       
-                #RealBitOffset = 16 #int(ItemBitoffset + 16)    #accept86 rando seems to give the offset 2 Bytes down for equip items?    
-                #RealItemMask = int((ItemMask << 16)&0xFFFF0000) 
-                RealBitOffsetAndMask = [16, int((ItemMask << 16)&0xFFFF0000)]                        
+                RealBitOffsetAndMask = [0, int((ItemMask << 16)&0xFFFF0000)]                        
 
-        return [ItemByteoffset,RealBitOffsetAndMask[0],RealBitOffsetAndMask[1],ItemID]
+        return self.OptimizeOffsetAndMask([ItemByteoffset,RealBitOffsetAndMask[0],RealBitOffsetAndMask[1],ItemID])
        
        
        
 
-    
     
     def working_navi_patch_LookUpTableItem(self, ItemByteoffset, ItemBitoffset, ItemMask, ItemID, sphere_nr, CurLookupTablePointerB, rom):
         bArray = bytearray()
@@ -207,8 +186,14 @@ class working_navi(Rom):
         bArray = ItemBitoffset.to_bytes(1, 'big')
         rom.write_bytes(CurLookupTablePointerB+2, bArray)
         
-        bArray = ItemMask.to_bytes(4, 'big')
+        bArray = ItemMask.to_bytes(2, 'big')
         rom.write_bytes(CurLookupTablePointerB+4, bArray)
+        
+        bArray = ItemID.to_bytes(1, 'big')
+        rom.write_bytes(CurLookupTablePointerB+6, bArray)
+        
+        bArray = int(sphere_nr).to_bytes(1, 'big')
+        rom.write_bytes(CurLookupTablePointerB+7, bArray)
         
                             
                             

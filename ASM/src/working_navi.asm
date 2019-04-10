@@ -4,7 +4,7 @@
 ;WORKING_NAVI_DATA_GENERATED_TEXT_ROM => Texts with 0x3C increment (ROM-Address)
 ;WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM => LookUpTable For NaviTexts (8 Bytes each per Text 
         ; 2 Bytes SaveDataOffset, ;1 Byte SaveDataBitoffset, 1 Byte to handle by Software)
-        ; 4 Bytes SavedataMask for Item
+        ; 1 Byte Sphere, 1 Byte ItemID, 2 Bytes SavedataMask for Item
 
 
 
@@ -211,8 +211,12 @@ working_navi_cyclicLogic:
 @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP1:
     
     
-    ;lb t5, 0x0002 (a2)       ;Load SaveDataBitOffset
+    lb t3, 0x0002 (a2)       ;Load SaveDataBitOffset
+    andi t3, t3, 0x00ff
+    
     lw t5, 0x0004 (a2)        ;load savemask in t5
+    srlv t5, t5, t3           ;Only max 2 Bytes large
+    andi t5, t5, 0xffff
     
 
     lui t4, 0x8011           ;Load SaveDataBasePointer to Add to SaveDataOffset
@@ -220,28 +224,31 @@ working_navi_cyclicLogic:
 
     addu t6, t6, t4          ;Get Resulting SaveDataPointer with Offset in t6
     lw t4, 0x0000 (t6)       ;T4: Resulting SaveDataElementWord
-    
-    lui t6, 0xFFFF
-    ori t6, 0xFFFF
-    beq t4, t6, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveData is FF => DONT Go to INCREMENT_POINTERS/a1
-    nop    
+    srlv t4, t4, t3
+    andi t4, t4, 0xffff
     
     
-    ;srlv t4, t4, t5
-    ;andi t4, t4, 0x0001      ;Get T4 Resulting Bit from SaveDataElement
-    and t4, t4, t5            ;mask saveData with saveDatamask
+    lui t6, 0x0
+    ori t6, 0xffff
+ beq t4, t6, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveDataElementWord is FFFF => didnt get item
+    nop     
+    
     
     ;the mask could be FF => save data has item if not FF
-    lb t6, 0x0002 (a2)
-    srlv t5, t5, t6            ;shift mask by bit offset
-    andi t5, t5, 0x00FF
-    lui t6, 0x0000
-    ori t6, 0x00FF
- 
  beq t6, t5, @WNAVI_CL_SAVEMASKFF               ;BRANCH, MASK is FF, check savedata different
     nop
     
-    ;Savemask not FF
+    
+    lb t3, 0x0006 (a2)       ;Load ItemID
+    andi t3, t3, 0x00ff
+    lui t6, 0x0
+ bne t3, t6, @WNAVI_CL_CHECKSAVEDATA_ITEMID
+    nop
+    
+    
+    
+;Savemask not FF or itemID
+    and t4, t4, t5        ;mask saveData with saveDatamask
     lui t5, 0x0000        ;load 0 in t5
 
  beq t4, t5, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveData has this Item => Go to INCREMENT_POINTERS/a1
@@ -257,20 +264,13 @@ working_navi_cyclicLogic:
     nop
     
     
+    
+    
 ;____Sub-Subroutine1___    
 @WNAVI_CL_SAVEMASKFF:        ; TARGET if Savedatamask is FF
+
     ;Savemask is FF
-    lw t5, 0x0004 (a2)        ;load savemask in t5
-    lui t6, 0x0000
-    lb t6, 0x0002 (a2)        ;bitOffset
-    srlv t4, t4, t6            ;Shift SaveDataValue by bit offset
-    andi t4, t4, 0x00FF        ;Example Magic - further left is some "counter"
-    srlv t5, t5, t6            ;shift mask by bit offset
-    andi t5, t5, 0x00FF
-    
-    ;lui t6, 0x0000
- ;beq t4, t6, @WNAVI_CL_INT_CHECKSAVEDATA_RETURN ; if 0 => Item not aquired EDIT: seems like 0x00 can mean aquired after all (Deku Sticks)
-    ;nop
+    ;t4: SaveDataElementWord , t5 SaveDataMask
     
  beq t4, t5, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP3       ;BRANCH If SaveData mask FF and Savedata not FF Item aquired => Go to INCREMENT_POINTERS/a1
     nop
@@ -278,9 +278,35 @@ working_navi_cyclicLogic:
     nop
 @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP3:
 
+
     J @WNAVI_CL_INT_CHECKSAVEDATA_RETURN
     nop
 
+
+
+;____Sub-Subroutine2___
+@WNAVI_CL_CHECKSAVEDATA_ITEMID: 
+
+
+    ;t3 is ItemID
+    ;t4: SaveDataElementWord , t5 SaveDataMask
+    
+    
+    sltu t6,t4,t3   ; SaveData < ItemID?
+    lui t2, 0x0000
+    ori t2, t2, 0x0001
+    
+ beq t6, t2, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP4       ;BRANCH If SaveData < ItemID, dont got item
+    nop
+    jr a1
+    nop
+@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP4:
+
+
+    J @WNAVI_CL_INT_CHECKSAVEDATA_RETURN
+    nop  
+    
+    
     
     
     
