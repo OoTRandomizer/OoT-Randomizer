@@ -32,59 +32,93 @@ class working_navi(Rom):
         self.WORKING_NAVI_CODE_TEXTLOADLOGIC_RAM = rom.symRAM('WORKING_NAVI_DATA_CODE2') #self.WORKING_NAVI_RAM + 0x600
     
     
-    lastUpgradeIndexes = [0,0,0]
+    lastUpgradeIndexes = [0,0,0,0]
     
     def Reset(self):
-        lastUpgradeIndexes = [0,0,0]
+        lastUpgradeIndexes = [0,0,0,0]
         
     
 
-    def getBitOffsetIndex(self, mask):
-        i=0;
-        for i in range(0, 31):
-            if( ((mask>>i)&1)!=0 ):
-                break
+    #def getBitOffsetIndex(self, mask):
+    #    i=0;
+    #    for i in range(0, 31):
+    #        if( ((mask>>i)&1)!=0 ):
+    #            break
             
-        return i
+    #    return i
     
-    def getMaskByBitOffsetIndex(self, bitoffset):
-        mask = 1 << bitoffset
+    #def getMaskByBitOffsetIndex(self, bitoffset):
+    #    mask = 1 << bitoffset
             
-        return mask
+    #    return mask
     
     
-    def getUpgradeBitmask(self, UpgradeIndex, address ):
-                # Upgrades
-                #'upgrades' : {
-                #    'quiver'                 : Address(0x00A0, mask=0x00000007, max=3),
-                #    'bomb_bag'               : Address(0x00A0, mask=0x00000038, max=3),
-                #    'strength_upgrade'       : Address(0x00A0, mask=0x000001C0, max=3),
-                #    'diving_upgrade'         : Address(0x00A0, mask=0x00000E00, max=2),
-                #    'wallet'                 : Address(0x00A0, mask=0x00003000, max=3),
-                #    'bullet_bag'             : Address(0x00A0, mask=0x0001C000, max=3),
-                #    'stick_upgrade'          : Address(0x00A0, mask=0x000E0000, max=3),
-                #    'nut_upgrade'            : Address(0x00A0, mask=0x00700000, max=3),
-                #},
-                
+    def getUpgradeBitmask(self, UpgradeIndex, address, name_no_brackets ):
+        # Upgrades
+        #'upgrades' : {
+        #    'quiver'                 : Address(0x00A0, mask=0x00000007, max=3),
+        #    'bomb_bag'               : Address(0x00A0, mask=0x00000038, max=3),
+        #    'strength_upgrade'       : Address(0x00A0, mask=0x000001C0, max=3),
+        #    'diving_upgrade'         : Address(0x00A0, mask=0x00000E00, max=2),
+        #    'wallet'                 : Address(0x00A0, mask=0x00003000, max=3),
+        #    'bullet_bag'             : Address(0x00A0, mask=0x0001C000, max=3),
+        #    'stick_upgrade'          : Address(0x00A0, mask=0x000E0000, max=3),
+        #    'nut_upgrade'            : Address(0x00A0, mask=0x00700000, max=3),
+        #},
+        
+        #=> bitshiftcount with 0x80 flag -> 0x84, 0x88 0x8C
+        #=> if Bigger than that got item
+        #-do testing for all those upgrades
+        #strength: goes 0=>0x40->0x80->0xC0, no bitencoding
+        #scale: 0 => 0x200 => 0x400
+        #hookshot: 0xFFFF => 0xFF0A => 0xFF0B
+        #Wallet:  0=>0x1000 => 0x2000
+        #Bottles:bitmask 2 bytes to high, 0xFFFFFFFF=> 0xFFFF16FF => 0xFFFF161B => 0xFFFF161B 0x1E
+                #green potion drunk 0x16->0x14
+                #these are the Item Ids
+                                
+                                
         ItemByteoffset =  address[0]-address[0]%4   #Accept86 sometimes its not 32bit alligned?
         ItemBitoffset =  int(address[1]) #this is just the bitoffset of the mask how far one has to shift it
         ItemMask = int(address[2])
-        RealItemMask = ItemMask 
-        RealBitOffset = ItemBitoffset     
+        RealBitOffsetAndMask = self.getActualBitOffsetAndMask(address[0], ItemMask)      
         ItemCategory = str(address[3])
         
-        if ( ItemMask == 0xFFFFFFFF ):  
-            RealBitOffset = int((3-address[0]%4)*8)
-            RealItemMask = int( (ItemMask << (int(3-address[0]%4)*8)) &0xFFFFFFFF) #its big endianess, %4 => move to right, magic offset 0xXXA => the real value is 2 Bytes to the right mask FFFF
+        
+        #'Progressive Strength Upgrade'
+        #Progressive Scale'
+        #Progressive Wallet'
+        #'Progressive Hookshot'
+        
+        NameTable = [['gorons_bracelet','silver_gauntlets','golden_gauntlets'],['silver_scale','golden_scale'],['adults_wallet','giants_wallet'],['hookshot','longshot']]
+        
+        
+        ItemID = int(SaveContext.item_id_map[NameTable[UpgradeIndex][self.lastUpgradeIndexes[UpgradeIndex]]])
+        
+        self.lastUpgradeIndexes[UpgradeIndex]=self.lastUpgradeIndexes[UpgradeIndex]+1
+        
+        
+        #if ( ItemMask == 0xFFFFFFFF ):  
+        #    RealBitOffset = int((3-address[0]%4)*8)
+        #    RealItemMask = int( (ItemMask << (int(3-address[0]%4)*8)) &0xFFFFFFFF) #its big endianess, %4 => move to right, magic offset 0xXXA => the real value is 2 Bytes to the right mask FFFF
             #so example fire arrows is the left Byte
-        else:
-            RealBitOffset = ItemBitoffset 
-            intBitOffset = self.getBitOffsetIndex(ItemMask) + self.lastUpgradeIndexes[UpgradeIndex]
-            RealItemMask = self.getMaskByBitOffsetIndex(intBitOffset) 
-            self.lastUpgradeIndexes[UpgradeIndex]=self.lastUpgradeIndexes[UpgradeIndex]+1
+        #else:
+        #    RealBitOffset = ItemBitoffset 
+        #    intBitOffset = self.getBitOffsetIndex(ItemMask) + self.lastUpgradeIndexes[UpgradeIndex]
+        #    RealItemMask = self.getMaskByBitOffsetIndex(intBitOffset) 
+        #    self.lastUpgradeIndexes[UpgradeIndex]=self.lastUpgradeIndexes[UpgradeIndex]+1
     
-        return [ItemByteoffset,RealBitOffset,RealItemMask]
+        return [ItemByteoffset,RealBitOffsetAndMask[0],RealBitOffsetAndMask[1],ItemID]
     
+    
+
+    def getActualBitOffsetAndMask(self, actualAddress, ItemMask):
+        bitoffset = int((3-actualAddress%4)*8)        #its big endianess, %4 => move to right, magic offset 0xXXA => the real value is 2 Bytes to the right mask FFFF              
+        mask = int( (ItemMask << bitoffset) & 0xFFFFFFFF ) 
+        #so example fire arrows is the left Byte        
+        return [bitoffset,mask]
+
+
 
     def getSaveFileAdressAndMaskByItem(self, Item, ItemType, save_context):
         
@@ -104,58 +138,68 @@ class working_navi(Rom):
         ItemByteoffset =  address[0]-address[0]%4   #Accept86 sometimes its not 32bit alligned?
         ItemBitoffset =  int(address[1]) #this is just the bitoffset of the mask how far one has to shift it
         ItemMask = int(address[2])
-        RealItemMask = ItemMask 
-        RealBitOffset = ItemBitoffset     
+        RealBitOffsetAndMask = self.getActualBitOffsetAndMask(address[0], ItemMask)    
         ItemCategory = str(address[3])
+        ItemID = 0
       
       
-        if(ItemCategory == 'quest'):
-            if ( ItemMask == 0xFFFFFFFF ):  
-                RealBitOffset = int((3-address[0]%4)*8)                      
-                RealItemMask = int( (ItemMask << (int(3-address[0]%4)*8)) &0xFFFFFFFF) #its big endianess, %4 => move to right, magic offset 0xXXA => the real value is 2 Bytes to the right mask FFFF
+        #if(ItemCategory == 'quest'):
+        #    if ( ItemMask == 0xFFFFFFFF ):  
+        #        RealBitOffset = int((3-address[0]%4)*8)                      
+        #        RealItemMask = int( (ItemMask << (int(3-address[0]%4)*8)) &0xFFFFFFFF) #its big endianess, %4 => move to right, magic offset 0xXXA => the real value is 2 Bytes to the right mask FFFF
                 #so example fire arrows is the left Byte
                                         
-        elif (ItemCategory == 'upgrades'):
+        if (ItemCategory == 'upgrades'):
             if(name_no_brackets=='Progressive Strength Upgrade'):
-                return self.getUpgradeBitmask(0, address )
-            elif(name_no_brackets=='Progressive Diving upgrade'):
-                return self.getUpgradeBitmask(1, address )
+                return self.getUpgradeBitmask(0, address, name_no_brackets )
+            elif(name_no_brackets=='Progressive Scale'):
+                return self.getUpgradeBitmask(1, address, name_no_brackets )
             elif(name_no_brackets=='Progressive Wallet'):  
-                return self.getUpgradeBitmask(2, address ) 
-            else:
-                if ( ItemMask == 0xFFFFFFFF ):  
-                    RealBitOffset = int((3-address[0]%4)*8) 
-                    RealItemMask = int( (ItemMask << (int(3-address[0]%4)*8)) &0xFFFFFFFF) #its big endianess, %4 => move to right, magic offset 0xXXA => the real value is 2 Bytes to the right mask FFFF
-                    #so example fire arrows is the left Byte
+                return self.getUpgradeBitmask(2, address, name_no_brackets ) 
+            #else:
+            #    if ( ItemMask == 0xFFFFFFFF ):  
+            #        RealBitOffset = int((3-address[0]%4)*8) 
+            #        RealItemMask = int( (ItemMask << (int(3-address[0]%4)*8)) &0xFFFFFFFF) 
+                    
+          
+        elif((ItemCategory == 'item_slot') and (name_no_brackets=='Progressive Hookshot')):  
+            return self.getUpgradeBitmask(3, address, name_no_brackets )   
           
         elif (ItemCategory == 'magic_acquired'):
-            if ( ItemMask == 0xFFFFFFFF ):  
-                RealBitOffset = 8                    
-                RealItemMask = 0x00007F00   #FF has the Problem that 0x00 counts as aquired for magic, but for deku sticks its the other way around
+            #if ( ItemMask == 0xFFFFFFFF ):  
+                #RealBitOffset = 8                    
+                #RealItemMask = 0x00007F00   #FF has the Problem that 0x00 counts as aquired for magic, but for deku sticks its the other way around
+            RealBitOffsetAndMask = [8, 0x00007F00]
                                        
-            else:     
-                RealBitOffset = 16 #int(ItemBitoffset + 16)    #accept86 rando seems to give the offset 2 Bytes down for equip items?    
-                RealItemMask = int((ItemMask << 16)&0xFFFF0000) 
+            #else:     
+            #    RealBitOffset = 16 #int(ItemBitoffset + 16)    #accept86 rando seems to give the offset 2 Bytes down for equip items?    
+            #    RealItemMask = int((ItemMask << 16)&0xFFFF0000) 
             
+        elif (ItemCategory == 'bottle_types'):
+            if name_no_brackets in SaveContext.bottle_types:
+                pass #TBD
+        
         else:  
         #if(ItemCategory == 'item_slot'): #if(ItemCategory == 'equip_items'):
-            if ( ItemMask == 0xFFFFFFFF ):  
-                RealBitOffset = int((3-address[0]%4)*8)                    
-                RealItemMask = int( (ItemMask << (int(3-address[0]%4)*8)) &0xFFFFFFFF) #its big endianess, %4 => move to right, magic offset 0xXXA => the real value is 2 Bytes to the right mask FFFF
+            #if ( ItemMask == 0xFFFFFFFF ):  
+            #    RealBitOffset = int((3-address[0]%4)*8)                    
+            #    RealItemMask = int( (ItemMask << (int(3-address[0]%4)*8)) &0xFFFFFFFF) #its big endianess, %4 => move to right, magic offset 0xXXA => the real value is 2 Bytes to the right mask FFFF
                 #so example fire arrows is the left Byte
-            else:     
-                RealBitOffset = 16 #int(ItemBitoffset + 16)    #accept86 rando seems to give the offset 2 Bytes down for equip items?    
-                RealItemMask = int((ItemMask << 16)&0xFFFF0000) 
-                                        
+            #else:
+            
+            if ( ItemMask != 0xFFFFFFFF ):       
+                #RealBitOffset = 16 #int(ItemBitoffset + 16)    #accept86 rando seems to give the offset 2 Bytes down for equip items?    
+                #RealItemMask = int((ItemMask << 16)&0xFFFF0000) 
+                RealBitOffsetAndMask = [16, int((ItemMask << 16)&0xFFFF0000)]                        
 
-        return [ItemByteoffset,RealBitOffset,RealItemMask]
+        return [ItemByteoffset,RealBitOffsetAndMask[0],RealBitOffsetAndMask[1],ItemID]
        
        
        
 
     
     
-    def working_navi_patch_LookUpTableItem(self, ItemByteoffset, ItemBitoffset, ItemMask, CurLookupTablePointerB, rom):
+    def working_navi_patch_LookUpTableItem(self, ItemByteoffset, ItemBitoffset, ItemMask, ItemID, sphere_nr, CurLookupTablePointerB, rom):
         bArray = bytearray()
         #bArray.extend(map(ord, itemid))
         bArray = ItemByteoffset.to_bytes(2, 'big')
@@ -210,16 +254,22 @@ class working_navi(Rom):
                         ItemByteoffset =  adressAndMask[0]
                         ItemBitoffset =  adressAndMask[1] 
                         ItemMask = adressAndMask[2]
+                        ItemID = adressAndMask[3]
                         
                         locationexact = 'check ' + str(location)
                         locationvague = locationexact
                         if(location.filter_tags != None):
                             locationvague = 'Maybe we find something in ' + str(location.filter_tags[0])
                     
+                        #get all items with this str(location.item.name) in an array
+                        #for the first one, normal location output
+                        #for the others, combine the locations
+                        #limit string length
+                    
                         self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, locationexact, locationvague, rom)
                         CurTextPointerBaseA += 0x3C
                         
-                        self.working_navi_patch_LookUpTableItem(ItemByteoffset, ItemBitoffset, ItemMask, CurLookupTablePointerB, rom)
+                        self.working_navi_patch_LookUpTableItem(ItemByteoffset, ItemBitoffset, ItemMask, ItemID, sphere_nr, CurLookupTablePointerB, rom)
                         CurLookupTablePointerB += 8
                         
                         if world.settings.create_spoiler:
