@@ -215,7 +215,7 @@ working_navi_cyclicLogic:
     andi t3, t3, 0x00ff
     
     lw t5, 0x0004 (a2)        ;load savemask in t5
-    srlv t5, t5, t3           ;Only max 2 Bytes large
+    srl t5, t5, 16           ;Only max 2 Bytes large
     andi t5, t5, 0xffff
     
 

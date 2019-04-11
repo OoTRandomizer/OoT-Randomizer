@@ -35,7 +35,7 @@ class working_navi(Rom):
     lastUpgradeIndexes = [0,0,0,0]
     
     def Reset(self):
-        lastUpgradeIndexes = [0,0,0,0]
+        self.lastUpgradeIndexes = [0,0,0,0]
         
     
 
@@ -53,19 +53,13 @@ class working_navi(Rom):
     #    return mask
     
     
-    def OptimizeOffsetAndMask(self, array):
-        ItemByteOffset = array[0]
-        ItemBitOffset = 0 #array[1]
-        ItemMask = array[2]
-        ItemID = array[3]
-        
+    def OptimizeOffsetAndMask(self, ItemByteOffset,ItemMask,ItemID):
+    
         maskOffset = self.getBitOffsetIndex(ItemMask)
         maskOffset8Increment = int(maskOffset/8)*8
         
-        
         ItemMask = (ItemMask >> maskOffset8Increment) & 0xFFFF
-        ItemBitOffset += maskOffset8Increment
-        
+        ItemBitOffset = maskOffset8Increment
         
         return [ItemByteOffset,ItemBitOffset,ItemMask,ItemID]
     
@@ -97,9 +91,8 @@ class working_navi(Rom):
                                 
                                 
         ItemByteoffset =  address[0]-address[0]%4   #Accept86 sometimes its not 32bit alligned?
-        #ItemBitoffset =  0 #int(address[1]) #this is just the bitoffset of the mask how far one has to shift it
         ItemMask = int(address[2])
-        RealBitOffsetAndMask = self.getActualBitOffsetAndMask(address[0], ItemMask)      
+        RealMask = self.getActualBitOffsetAndMask(address[0], ItemMask)      
         ItemCategory = str(address[3])
         
         
@@ -110,10 +103,10 @@ class working_navi(Rom):
         NameTable = [['gorons_bracelet','silver_gauntlets','golden_gauntlets'],['silver_scale','golden_scale'],['adults_wallet','giants_wallet'],['hookshot','longshot']]
         
         ItemID = int(SaveContext.item_id_map[NameTable[UpgradeIndex][self.lastUpgradeIndexes[UpgradeIndex]]])
-        self.lastUpgradeIndexes[UpgradeIndex]=self.lastUpgradeIndexes[UpgradeIndex]+1
+        self.lastUpgradeIndexes[UpgradeIndex] = self.lastUpgradeIndexes[UpgradeIndex] + 1
         
         
-        return self.OptimizeOffsetAndMask([ItemByteoffset,RealBitOffsetAndMask[0],RealBitOffsetAndMask[1],ItemID])
+        return self.OptimizeOffsetAndMask(ItemByteoffset,RealMask,ItemID)
     
     
 
@@ -125,7 +118,7 @@ class working_navi(Rom):
                 bitoffset = int((3-actualAddress%4)*8)        #its big endianess, %4 => move to right, magic offset 0xXXA => the real value is 2 Bytes to the right mask FFFF              
             mask = int( (ItemMask << bitoffset) & 0xFFFFFFFF ) 
         #so example fire arrows is the left Byte        
-        return [bitoffset,mask]
+        return mask
 
 
 
@@ -145,9 +138,9 @@ class working_navi(Rom):
             
         ItemByteoffset =  address[0]-address[0]%4   #Accept86 sometimes its not 32bit alligned?
         ItemMask = int(address[2])
-        RealBitOffsetAndMask = self.getActualBitOffsetAndMask(address[0], ItemMask)    
+        RealMask = self.getActualBitOffsetAndMask(address[0], ItemMask)    
         ItemCategory = str(address[3])
-        ItemID = 0
+        
       
             
         if (ItemCategory == 'upgrades'):
@@ -162,17 +155,23 @@ class working_navi(Rom):
             return self.getUpgradeBitmask(3, address, name_no_brackets )   
           
         elif (ItemCategory == 'magic_acquired'):
-            RealBitOffsetAndMask = [0, 0x00007F00] #FF has the Problem that 0x00 counts as aquired for magic, but for deku sticks its the other way around
+            RealMask = 0x00007F00 #FF has the Problem that 0x00 counts as aquired for magic, but for deku sticks its the other way around
         
         elif (ItemCategory == 'bottle_types'):
             if name_no_brackets in SaveContext.bottle_types:
                 pass #TBD
+            
+        elif (ItemCategory == 'quest'):
+            if('Medallion' in name_no_brackets):
+                pass #RealMask = int(RealMask >> 16)   
+            
         
-        elif(ItemCategory != 'quest'): 
+        else:
             if ( ItemMask != 0xFFFFFFFF ):       
-                RealBitOffsetAndMask = [0, int((ItemMask << 16)&0xFFFF0000)]                        
+                RealMask = int((ItemMask << 16)&0xFFFF0000)    #RealMask = int((RealMask << 16)&0xFFFF0000)                       
 
-        return self.OptimizeOffsetAndMask([ItemByteoffset,RealBitOffsetAndMask[0],RealBitOffsetAndMask[1],ItemID])
+        ItemID = 0
+        return self.OptimizeOffsetAndMask(ItemByteoffset,RealMask,ItemID)
        
        
        
