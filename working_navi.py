@@ -33,15 +33,17 @@ class working_navi(Rom):
     
     
     lastUpgradeIndexes = [0,0,0,0]
+    lastBottleIndex = 0
+    
     
     def Reset(self):
         self.lastUpgradeIndexes = [0,0,0,0]
-        
+        self.lastBottleIndex = 0
     
 
     def getBitOffsetIndex(self, mask):
         i=0;
-        for i in range(0, 31):
+        for i in range(0, (31+16)):
             if( ((mask>>i)&1)!=0 ):
                 break
             
@@ -52,6 +54,28 @@ class working_navi(Rom):
             
     #    return mask
     
+    #=> bitshiftcount with 0x80 flag -> 0x84, 0x88 0x8C
+    #=> if value from save not smaller than that got item
+    #strength: goes 0=>0x40->0x80->0xC0, no bitencoding
+    #scale: 0 => 0x200 => 0x400
+    #hookshot: 0xFFFF => 0xFF0A => 0xFF0B
+    #Wallet:  0=>0x1000 => 0x2000
+    item_id_map_Rando = {
+        'none'                : 0xFF,
+        'hookshot'            : 0x0A,
+        'longshot'            : 0x0B,
+        'gorons_bracelet'     : 0x40,
+        'silver_gauntlets'    : 0x80,
+        'golden_gauntlets'    : 0xC0,
+        'silver_scale'        : 0x02,
+        'golden_scale'        : 0x04,
+        'adults_wallet'       : 0x10,
+        'giants_wallet'       : 0x20,
+    }
+
+
+
+    
     
     def OptimizeOffsetAndMask(self, ItemByteOffset,ItemMask,ItemID):
     
@@ -59,6 +83,11 @@ class working_navi(Rom):
         maskOffset8Increment = int(maskOffset/8)*8
         
         ItemMask = (ItemMask >> maskOffset8Increment) & 0xFFFF
+        
+        if(maskOffset8Increment>=32):
+            #ItemByteOffset -= 4
+            maskOffset8Increment -= 32
+        
         ItemBitOffset = maskOffset8Increment
         
         return [ItemByteOffset,ItemBitOffset,ItemMask,ItemID]
@@ -77,19 +106,7 @@ class working_navi(Rom):
         #    'stick_upgrade'          : Address(0x00A0, mask=0x000E0000, max=3),
         #    'nut_upgrade'            : Address(0x00A0, mask=0x00700000, max=3),
         #},
-        
-        #=> bitshiftcount with 0x80 flag -> 0x84, 0x88 0x8C
-        #=> if Bigger than that got item
-        #-do testing for all those upgrades
-        #strength: goes 0=>0x40->0x80->0xC0, no bitencoding
-        #scale: 0 => 0x200 => 0x400
-        #hookshot: 0xFFFF => 0xFF0A => 0xFF0B
-        #Wallet:  0=>0x1000 => 0x2000
-        #Bottles:bitmask 2 bytes to high, 0xFFFFFFFF=> 0xFFFF16FF => 0xFFFF161B => 0xFFFF161B 0x1E
-                #green potion drunk 0x16->0x14
-                #these are the Item Ids
-                                
-                                
+                              
         ItemByteoffset =  address[0]-address[0]%4   #Accept86 sometimes its not 32bit alligned?
         ItemMask = int(address[2])
         RealMask = self.getActualBitOffsetAndMask(address[0], ItemMask)      
@@ -102,7 +119,7 @@ class working_navi(Rom):
         #'Progressive Hookshot'
         NameTable = [['gorons_bracelet','silver_gauntlets','golden_gauntlets'],['silver_scale','golden_scale'],['adults_wallet','giants_wallet'],['hookshot','longshot']]
         
-        ItemID = int(SaveContext.item_id_map[NameTable[UpgradeIndex][self.lastUpgradeIndexes[UpgradeIndex]]])
+        ItemID = int(self.item_id_map_Rando[NameTable[UpgradeIndex][self.lastUpgradeIndexes[UpgradeIndex]]])
         self.lastUpgradeIndexes[UpgradeIndex] = self.lastUpgradeIndexes[UpgradeIndex] + 1
         
         
@@ -114,9 +131,9 @@ class working_navi(Rom):
         bitoffset = 0
         mask = ItemMask
         if True: #( ItemMask == 0xFFFFFFFF ):
-            if((actualAddress%4)!=0):
-                bitoffset = int((3-actualAddress%4)*8)        #its big endianess, %4 => move to right, magic offset 0xXXA => the real value is 2 Bytes to the right mask FFFF              
-            mask = int( (ItemMask << bitoffset) & 0xFFFFFFFF ) 
+            #if((actualAddress%4)!=0):
+            bitoffset = int((3-actualAddress%4)*8)        #its big endianess, %4 => move to right, magic offset 0xXXA => the real value is 2 Bytes to the right mask FFFF              
+            mask = int( (ItemMask << bitoffset) & 0xFFFFFFFFFFFF ) 
         #so example fire arrows is the left Byte        
         return mask
 
@@ -138,7 +155,7 @@ class working_navi(Rom):
             
         ItemByteoffset =  address[0]-address[0]%4   #Accept86 sometimes its not 32bit alligned?
         ItemMask = int(address[2])
-        RealMask = self.getActualBitOffsetAndMask(address[0], ItemMask)    
+        RealMask = 0   
         ItemCategory = str(address[3])
         
       
@@ -159,10 +176,18 @@ class working_navi(Rom):
         
         elif (ItemCategory == 'bottle_types'):
             if name_no_brackets in SaveContext.bottle_types:
-                pass #TBD
+                RealMask = self.getActualBitOffsetAndMask(address[0]+self.lastBottleIndex, 0x00FF)  
+                self.lastBottleIndex += 1
+                
+            #Bottles:bitmask 2 bytes to high, 0xFFFFFFFF=> 0xFFFF16FF => 0xFFFF161B => 0xFFFF161B 0x1E
+                #green potion drunk 0x16->0x14
+                #these are the Item Ids
             
         elif (ItemCategory == 'quest'):
-                pass #RealMask = int(RealMask >> 16)   
+            if ( ItemMask == 0xFFFFFFFF ): 
+                self.getActualBitOffsetAndMask(address[0], ItemMask) 
+            else:
+                RealMask = ItemMask   
             
         
         else:

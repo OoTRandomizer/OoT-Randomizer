@@ -214,9 +214,9 @@ working_navi_cyclicLogic:
     lb t3, 0x0002 (a2)       ;Load SaveDataBitOffset
     andi t3, t3, 0x00ff
     
-    lw t5, 0x0004 (a2)        ;load savemask in t5
-    srl t5, t5, 16           ;Only max 2 Bytes large
-    andi t5, t5, 0xffff
+    ;lw t5, 0x0004 (a2)        ;load savemask in t5
+    ;srl t5, t5, 16           ;Only max 2 Bytes large
+    ;andi t5, t5, 0xffff
     
 
     lui t4, 0x8011           ;Load SaveDataBasePointer to Add to SaveDataOffset
@@ -225,18 +225,13 @@ working_navi_cyclicLogic:
     addu t6, t6, t4          ;Get Resulting SaveDataPointer with Offset in t6
     lw t4, 0x0000 (t6)       ;T4: Resulting SaveDataElementWord
     srlv t4, t4, t3
+    andi t3, t4, 0x00ff
     andi t4, t4, 0xffff
     
-    
     lui t6, 0x0
-    ori t6, 0xffff
- beq t4, t6, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveDataElementWord is FFFF => didnt get item
+    ori t6, 0xff
+ beq t3, t6, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveDataElementWord is FF => didnt get item
     nop     
-    
-    
-    ;the mask could be FF => save data has item if not FF
- beq t6, t5, @WNAVI_CL_SAVEMASKFF               ;BRANCH, MASK is FF, check savedata different
-    nop
     
     
     lb t3, 0x0006 (a2)       ;Load ItemID
@@ -247,7 +242,10 @@ working_navi_cyclicLogic:
     
     
     
-;Savemask not FF or itemID
+;Savemask 
+    lw t5, 0x0004 (a2)        ;load savemask in t5
+    srl t5, t5, 16           ;Only max 2 Bytes large
+    andi t5, t5, 0xffff
     and t4, t4, t5        ;mask saveData with saveDatamask
     lui t5, 0x0000        ;load 0 in t5
 
@@ -257,6 +255,13 @@ working_navi_cyclicLogic:
     nop
     
 @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2:
+
+
+    lui t6, 0x0
+    ori t6, 0xffff
+    ;the mask could be FF => save data has item if not FF
+ beq t6, t5, @WNAVI_CL_SAVEMASKFF               ;BRANCH, MASK is FF, check savedata different
+    nop
     
  
 @WNAVI_CL_INT_CHECKSAVEDATA_RETURN:   
@@ -291,7 +296,7 @@ working_navi_cyclicLogic:
     ;t3 is ItemID
     ;t4: SaveDataElementWord , t5 SaveDataMask
     
-    
+    andi t4, t4, 0x00ff
     sltu t6,t4,t3   ; SaveData < ItemID?
     lui t2, 0x0000
     ori t2, t2, 0x0001
