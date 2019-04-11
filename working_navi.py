@@ -73,9 +73,6 @@ class working_navi(Rom):
         'giants_wallet'       : 0x20,
     }
 
-
-
-    
     
     def OptimizeOffsetAndMask(self, ItemByteOffset,ItemMask,ItemID):
     
@@ -85,7 +82,7 @@ class working_navi(Rom):
         ItemMask = (ItemMask >> maskOffset8Increment) & 0xFFFF
         
         if(maskOffset8Increment>=32):
-            #ItemByteOffset -= 4
+            ItemByteOffset += 4
             maskOffset8Increment -= 32
         
         ItemBitOffset = maskOffset8Increment
@@ -109,7 +106,7 @@ class working_navi(Rom):
                               
         ItemByteoffset =  address[0]-address[0]%4   #Accept86 sometimes its not 32bit alligned?
         ItemMask = int(address[2])
-        RealMask = self.getActualBitOffsetAndMask(address[0], ItemMask)      
+        RealMask = ItemMask 
         ItemCategory = str(address[3])
         
         
