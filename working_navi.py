@@ -162,7 +162,6 @@ class working_navi(Rom):
                 pass #TBD
             
         elif (ItemCategory == 'quest'):
-            if('Medallion' in name_no_brackets):
                 pass #RealMask = int(RealMask >> 16)   
             
         
