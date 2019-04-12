@@ -231,7 +231,53 @@ class working_navi(Rom):
         CurTextPointerA += len(bArray)
         rom.write_bytes(CurTextPointerA, [0x20, 0x05, 0x40, 0x02])
                     
+             
+             
+    def getLocationTests(self, location, spoiler):
+        
+        LocationList = list()
+        for (sphere_nr, sphere) in spoiler.playthrough.items():
+            for (locationB) in sphere:
+                if str(locationB.item.name) == str(location.item.name):
+                    LocationList.append(locationB)
+                    
+        RemoveList = list()
+        length = len(LocationList)
+        i = int(0)
+        for n in range(i+1, length):
+            if(str(LocationList[i].filter_tags[0]) == str(LocationList[n].filter_tags[0]) ):
+                RemoveList.append(LocationList[n])
+                    
                  
+        locationexact = 'check '
+        locationexact = locationexact + str(LocationList[0])
+        
+        for i in range(1,len(LocationList)):
+            locationexact = locationexact + ' or ' + str(LocationList[i]) + ' '
+        
+        locationvague = locationexact
+        
+        if(LocationList[0].filter_tags != None):
+            locationvague = 'Maybe we find something in ' + str(LocationList[0].filter_tags[0])
+            
+            for locationC in RemoveList:
+                LocationList.remove(locationC)   
+            for i in range(1,len(LocationList)):
+                locationvague = locationvague + ' or ' + str(LocationList[i].filter_tags[0]) + ' '
+                                                                
+        
+        #get all items with this str(location.item.name) in an array
+        #for the first one, normal location output
+        #for the others, combine the locations
+        #limit string length
+        
+        
+        maxlen = 0x3C-6-4
+        locationexact = (locationexact[:maxlen] + '..') if len(locationexact) > maxlen else locationexact
+        locationvague = (locationvague[:maxlen] + '..') if len(locationvague) > maxlen else locationvague
+        return [locationexact, locationvague]
+                        
+                                     
                  
     def working_navi_patch_internal(self, rom, world, spoiler, save_context, outfile):
         # Save Navi Texts in Rom
@@ -261,16 +307,10 @@ class working_navi(Rom):
                         ItemMask = adressAndMask[2]
                         ItemID = adressAndMask[3]
                         
-                        locationexact = 'check ' + str(location)
-                        locationvague = locationexact
-                        if(location.filter_tags != None):
-                            locationvague = 'Maybe we find something in ' + str(location.filter_tags[0])
-                    
-                        #get all items with this str(location.item.name) in an array
-                        #for the first one, normal location output
-                        #for the others, combine the locations
-                        #limit string length
-                    
+                        locTexts = self.getLocationTests(location, spoiler)
+                        locationexact = locTexts[0]
+                        locationvague = locTexts[1]
+                        
                         self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, locationexact, locationvague, rom)
                         CurTextPointerBaseA += 0x3C
                         
