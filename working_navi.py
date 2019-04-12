@@ -91,7 +91,7 @@ class working_navi(Rom):
     
     
     
-    def getUpgradeBitmask(self, UpgradeIndex, address, name_no_brackets ):
+    def getUpgradeBitmask(self, UpgradeIndex, ItemByteoffset, ItemMask, ItemCategory, name_no_brackets ):
         # Upgrades
         #'upgrades' : {
         #    'quiver'                 : Address(0x00A0, mask=0x00000007, max=3),
@@ -104,11 +104,7 @@ class working_navi(Rom):
         #    'nut_upgrade'            : Address(0x00A0, mask=0x00700000, max=3),
         #},
                               
-        ItemByteoffset =  address[0]-address[0]%4   #Accept86 sometimes its not 32bit alligned?
-        ItemMask = int(address[2])
         RealMask = ItemMask 
-        ItemCategory = str(address[3])
-        
         
         #'Progressive Strength Upgrade'
         #Progressive Scale'
@@ -155,19 +151,16 @@ class working_navi(Rom):
         RealMask = 0   
         ItemCategory = str(address[3])
         
-      
+        
             
         if (ItemCategory == 'upgrades'):
             if(name_no_brackets=='Progressive Strength Upgrade'):
-                return self.getUpgradeBitmask(0, address, name_no_brackets )
+                return self.getUpgradeBitmask(0, ItemByteoffset, ItemMask, ItemCategory, name_no_brackets )
             elif(name_no_brackets=='Progressive Scale'):
-                return self.getUpgradeBitmask(1, address, name_no_brackets )
+                return self.getUpgradeBitmask(1, ItemByteoffset, ItemMask, ItemCategory, name_no_brackets )
             elif(name_no_brackets=='Progressive Wallet'):  
-                return self.getUpgradeBitmask(2, address, name_no_brackets ) 
+                return self.getUpgradeBitmask(2, ItemByteoffset, ItemMask, ItemCategory, name_no_brackets ) 
 
-        elif((ItemCategory == 'item_slot') and (name_no_brackets=='Progressive Hookshot')):  
-            return self.getUpgradeBitmask(3, address, name_no_brackets )   
-          
         elif (ItemCategory == 'magic_acquired'):
             RealMask = 0x00007F00 #FF has the Problem that 0x00 counts as aquired for magic, but for deku sticks its the other way around
         
@@ -181,15 +174,27 @@ class working_navi(Rom):
                 #these are the Item Ids
             
         elif (ItemCategory == 'quest'):
-            if ( ItemMask == 0xFFFFFFFF ): 
-                self.getActualBitOffsetAndMask(address[0], ItemMask) 
+            if ( ItemMask == 0xFFFFFFFF): 
+                RealMask = self.getActualBitOffsetAndMask(address[0], 0xFFFF)
             else:
-                RealMask = ItemMask   
+                RealMask = ItemMask
             
-        
-        else:
-            if ( ItemMask != 0xFFFFFFFF ):       
-                RealMask = int((ItemMask << 16)&0xFFFF0000)    #RealMask = int((RealMask << 16)&0xFFFF0000)                       
+        elif(ItemCategory == 'item_slot'):  
+            if ( ItemMask == 0xFFFFFFFF): 
+                RealMask = self.getActualBitOffsetAndMask(address[0], 0xFFFF)
+            else:
+                RealMask = int((ItemMask << 16)&0xFFFF0000)    #Rando gives some masks 2 Bytes down                  
+                
+            if(name_no_brackets=='Progressive Hookshot'):
+                return self.getUpgradeBitmask(3, ItemByteoffset, RealMask, ItemCategory, name_no_brackets )        
+                
+
+        elif(ItemCategory == 'equip_items'):
+            if ( ItemMask == 0xFFFFFFFF): 
+                RealMask = self.getActualBitOffsetAndMask(address[0], 0xFFFF)
+            else:       
+                RealMask = int((ItemMask << 16)&0xFFFF0000)    #Rando gives some masks 2 Bytes down                  
+
 
         ItemID = 0
         return self.OptimizeOffsetAndMask(ItemByteoffset,RealMask,ItemID)
@@ -271,6 +276,7 @@ class working_navi(Rom):
         #for the others, combine the locations
         #limit string length
         
+        #TBD TBD <= do this for bottles, too
         
         maxlen = 0x3C-6-4
         locationexact = (locationexact[:maxlen] + '..') if len(locationexact) > maxlen else locationexact
