@@ -2,9 +2,9 @@
 ;==================================================================================================
 
 ;WORKING_NAVI_DATA_GENERATED_TEXT_ROM => Texts with 0x3C increment (ROM-Address)
-;WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM => LookUpTable For NaviTexts (8 Bytes each per Text 
-        ; 2 Bytes SaveDataOffset, ;1 Byte SaveDataBitoffset, 1 Byte to handle by Software)
-        ; 1 Byte Sphere, 1 Byte ItemID, 2 Bytes SavedataMask for Item
+;WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM => LookUpTable For NaviTexts (8 Bytes each per text
+        ;2 Bytes SaveDataOffset, 1 Byte SaveDataBitoffset, 1 Byte to handle by software,
+        ;2 Bytes SavedataMask, 1 Byte ItemID, 1 Byte Sphere - for each required Item)
 
 
 

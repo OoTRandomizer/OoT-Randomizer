@@ -1223,6 +1223,7 @@ skip_GS_BGS_text:
 ; ==================================================================================================
       
 ;            #hook for TextLoad
+;            #I put the hooks here, because I don´t want to change code flow of main rando            
 ;            intAddress =  int((self.WORKING_NAVI_CODE_TEXTLOADLOGIC_RAM & 0x00FFFFFF)/4)
 ;            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
 ;            byteArray = [0x0C] + byteArray
