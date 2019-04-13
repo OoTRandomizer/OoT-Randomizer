@@ -236,7 +236,7 @@ working_navi_cyclicLogic:
     
     lb t3, 0x0006 (a2)       ;Load ItemID
     andi t3, t3, 0x00ff
-    lui t6, 0x0
+    lui t6, 0x0000
  bne t3, t6, @WNAVI_CL_CHECKSAVEDATA_ITEMID
     nop
     
@@ -247,9 +247,9 @@ working_navi_cyclicLogic:
     srl t5, t5, 16           ;Only max 2 Bytes large
     andi t5, t5, 0xffff
     and t4, t4, t5        ;mask saveData with saveDatamask
-    lui t5, 0x0000        ;load 0 in t5
+    lui t6, 0x0000        ;load 0 in t5
 
- beq t4, t5, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveData has this Item => Go to INCREMENT_POINTERS/a1
+ beq t4, t6, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveData has this Item => Go to INCREMENT_POINTERS/a1
     nop
     jr a1
     nop
