@@ -409,7 +409,7 @@ working_navi_TextLoadLogic:
     la t7, working_navi_TextPointerGlobal
     lw a1, 0x0000 (t7)      ; IF req Textpointer A1 in NaviSection => Load GlobalVar with Text of workingNavi in A1
 
-
+    
     ; Reset Textpointer stuff(cyclic logic), so the message isnt shown twice
     la t1, working_navi_TextPointerGlobal
     li t0, WORKING_NAVI_DATA_GENERATED_TEXT_ROM
@@ -417,6 +417,13 @@ working_navi_TextLoadLogic:
     la t2, working_navi_cyclicLogicGlobals
     lui t3, 0x0000
     sw t3, 0x0004 (t2) ;ShowTextFlag Reset
+    
+    
+    
+    li t0, WORKING_NAVI_DATA_GENERATED_TEXT_ROM     ; if Text says "You are doing so well..." / Textpointer is on base, dont reset timer
+ beq t0, a1, @@WNAVI_TLL_LOAD_TEXT
+    nop
+    
     sw t3, 0x0000 (t2) ;Timer1 Reset
 
     
