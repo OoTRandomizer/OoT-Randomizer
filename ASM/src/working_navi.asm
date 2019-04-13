@@ -32,7 +32,9 @@ WORKING_NAVI_GLOBALS:
 working_navi_cyclicLogic:
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)
-
+    
+    jal @WNAVI_CL_ACTIVATE_NAVI_IN_DUNGEONS         ;<= hack, navi in dungeons
+    nop
 
     ;lui t0, 0x0350            ;WORKING_NAVI_DATA_GENERATED_TEXT_ROM
     ;ori t0, 0x0700            ;WORKING_NAVI_DATA_GENERATED_TEXT_ROM ;TextTablePointer for Navi-Texts
@@ -213,11 +215,6 @@ working_navi_cyclicLogic:
     
     lb t3, 0x0002 (a2)       ;Load SaveDataBitOffset
     andi t3, t3, 0x00ff
-    
-    ;lw t5, 0x0004 (a2)        ;load savemask in t5
-    ;srl t5, t5, 16           ;Only max 2 Bytes large
-    ;andi t5, t5, 0xffff
-    
 
     lui t4, 0x8011           ;Load SaveDataBasePointer to Add to SaveDataOffset
     ori t4, t4, 0xa5d0       ;RAM Address NTSC1.0 0x8011A5D0 https://wiki.cloudmodding.com/oot/Save_Format#Save_File_Validation 
@@ -233,21 +230,27 @@ working_navi_cyclicLogic:
  beq t3, t6, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveDataElementWord is FF => didnt get item
     nop     
     
-    
+;ItemID    
     lb t3, 0x0006 (a2)       ;Load ItemID
     andi t3, t3, 0x00ff
     lui t6, 0x0000
- bne t3, t6, @WNAVI_CL_CHECKSAVEDATA_ITEMID
-    nop
     
-    
-    
-;Savemask 
     lw t5, 0x0004 (a2)        ;load savemask in t5
     srl t5, t5, 16           ;Only max 2 Bytes large
     andi t5, t5, 0xffff
     and t4, t4, t5        ;mask saveData with saveDatamask
-    lui t6, 0x0000        ;load 0 in t5
+    
+ bne t4, t6, @WNAVI_CL_CHECKSAVEDATA_ITEMID
+    nop
+    
+    
+;Savemask 
+    ;mask already done
+    ;lw t5, 0x0004 (a2)        ;load savemask in t5
+    ;srl t5, t5, 16           ;Only max 2 Bytes large
+    ;andi t5, t5, 0xffff
+    ;and t4, t4, t5        ;mask saveData with saveDatamask
+    lui t6, 0x0000        ;load 0 in t6
 
  beq t4, t6, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveData has this Item => Go to INCREMENT_POINTERS/a1
     nop
@@ -291,8 +294,6 @@ working_navi_cyclicLogic:
 
 ;____Sub-Subroutine2___
 @WNAVI_CL_CHECKSAVEDATA_ITEMID: 
-
-
     ;t3 is ItemID
     ;t4: SaveDataElementWord , t5 SaveDataMask
     
@@ -373,6 +374,21 @@ working_navi_cyclicLogic:
     nop
     
     ;Heres no Return needed, always go to end of lookuptable
+    
+    
+    
+;_______Subroutine3_______
+@WNAVI_CL_ACTIVATE_NAVI_IN_DUNGEONS:     ;<= hack, navi in dungeons
+
+    li t8, 0x802617B0
+    lui t3, 0x0000
+    ori t3, t3, 0x41
+    
+    ;TBD test this, ok with deku tree
+    sb t3, 0x0002 (t8)   ;<= loads 0x5F when in Dungeon normally, 0x41 is with navi
+ 
+    jr ra 
+    nop   
     
     
 .endarea    
