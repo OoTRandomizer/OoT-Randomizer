@@ -1,0 +1,78 @@
+Remember this is work in progress, I´m not done yet
+
+The general Idea is that you set a delay of 30min or an hour or whatever, and if you dont get ANY required Item in that time, the first Item from the rando spoiler data that you havent got yet, I mean its location will be told by navi. The "general area" normally.
+
+You don´t want hints? Even when stuck and you would be ready to look at the spoiler file and catching more than you wanted?
+Its deactivated by default and you can set the delay to like 10 hours so you will never get a hint
+I mean you just have to find a delay time that's suitable for you
+and if that suitable time runs out, you probably want to know which area to look at
+
+To be done:
+-A lot of testing and some bugfixing - to be done
+-Clean up the code more - done
+-Manipulate the OOT Navi timer - done
+-React right to progressable items - done
+-Navi should pop up in dungeons, too - partly done
+-Multitexts for bottles - to be done
+-Make the hint logic more sophisticated - to be done
+
+For the Implementation I have 2 areas in the ROM, the lookuptable and the texts itself. The lookuptable is also dma loaded in the RAM. The lookuptable for Navi texts (8 Bytes each per text
+2 Bytes SaveDataOffset, 1 Byte SaveDataBitoffset, 1 Byte to handle by software,
+2 Bytes SavedataMask, 1 Byte ItemID, 1 Byte Sphere - for each required Item). All those are generated in Python from the spoiler data. I hand the spoiler data item to savedata context to get address and bitmask.
+Thats it for the python part
+
+For the asm part
+I have 2 new hooks, textloadlogic and cycliclogic.
+The textloadlogic is called whenever any text is loaded.
+I check the text rom address and if its a navi text rom address, I manipulate it to my own rom address.
+The cycliclogic generates the target rom address for the text.
+The cycliclogic works like: Check all the lookuptable entrys and check the savedata for each lookuptable entry, if you got the item check if you got it before, if not reset the my navi timer. if my navi timer runs out get the first lookuptable entry you dont have the item in the savedata => Set rom address for textloadlogic
+
+
+
+
+
+
+
+How does Navi work?
+0x803922C8: BEQ R0, R0, 0x80392338 => Checks if C Up is pressed when Navi is UP
+0x80392170: BEQL A3, R0, 0x80392338 => Checks if Navi Timer OK, also called in dungeons, but A3 is 0
+0x80392154: LW A3, 0x067C (S0)  => Loads A3
+
+8039210C: BEQL T9, R0, 0x80392168
+	Checks if Navi is aktive at all, otherwise A3 is not loaded
+
+T9 is controlled by 0x80392108: LH T9, 0x0680 (S0)
+S0 is 801DAA30 
+801DAA30 + 0x680 = 801db0b0
+(btw: Function entry 803920A0: ADDIU SP, SP, 0xFFC8)
+
+801db0b0 is written by 
+801DAA30 + 0x670 = 801db0a0 => 200000 has navi, 10000000 or 0 not (value goes from  801db0a0 to 801db0b0)
+
+****
+
+The first thing that shoots through is the 0x8039210C BEQL T9, R0, 0x80392168 once navi gets active
+(from 0x680 (s0)) 801db0b0
+
+This is written by 
+801E0D84: JAL 0x8005977C     <= This function sets 0x680 (V1) - 801db0b0
+saved at 801E0D94 SH V0, 0x680 (V1) 
+
+JAL 0x8005977C: works also in dungeons, but value V0=15F instead 141, so no navi
+
+is set by 0x80059640: JAL 0x800590e0
+and outside Dungeons
+0x80059654: LBU V0, 0x0002 (T7)		<= loads 0x41 when Navi
+T7 = 0x8026BB34
+
+changed at 0x8002B36C SH A2, 0x0002 (A0)
+A0 = 0x8026BB34
+
+in dungeons:
+0x800596E8: LBU V0, 0x0002 (T8)   <= loads 0x5F when in Dungeon
+T8 = 0x802617B0
+
+
+_____So just write 0x802617B0 byte 2 to 0x41 => Navi in dungeons, tested with deku tree_____
+(This value gets only set on area changes)
