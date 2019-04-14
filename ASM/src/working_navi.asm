@@ -26,7 +26,7 @@ WORKING_NAVI_GLOBALS:
 
 
 .org WORKING_NAVI_DATA_CODE  ; see changed build.asm and addresses.asm
-.area 0x300
+.area 0x4F0
 
 
 working_navi_cyclicLogic:
@@ -297,8 +297,73 @@ working_navi_cyclicLogic:
 ;____Sub-Subroutine2___
 @WNAVI_CL_CHECKSAVEDATA_ITEMID: 
     ;t3 is ItemID
-    ;t4: SaveDataElementWord , t5 SaveDataMask
+    ;t4: SaveDataElementWord 
     
+;Check rutos letter / Bottle with letter
+    ori t5, r0, 0x001B  ; item ID to compare
+
+ bne t3, t5, @WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP5
+    nop
+    ;here it is rutos letter to check
+    lui t6, 0x8011
+    ori t6, t6, 0xa656 ;get bottle base address
+    
+    ;Bottle1
+    lb t4, 0x0000 (t6)  
+    andi t4, t4, 0x00ff
+ bne t4, t5, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO1
+    nop
+    jr a1
+    nop
+@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO1:
+    
+    ;Bottle2
+    lb t4, 0x0001 (t6)  
+    andi t4, t4, 0x00ff
+ bne t4, t5, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO2
+    nop
+    jr a1
+    nop
+@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO2:  
+    
+    ;Bottle3
+    lb t4, 0x0002 (t6)  
+    andi t4, t4, 0x00ff
+ bne t4, t5, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO3
+    nop
+    jr a1
+    nop
+@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO3: 
+    
+    ;Bottle4
+    lb t4, 0x0003 (t6)  
+    andi t4, t4, 0x00ff
+ bne t4, t5, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO4
+    nop
+    jr a1
+    nop
+@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO4:
+
+
+    ;King Zora Moved?
+    lui t6, 0x8011 
+    ori t6, t6, 0xB4AB ;get King Zora moved address
+    lb t4, 0x0000 (t6)  
+    andi t4, t4, 0x0008
+    
+ beq t4, r0, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO5 
+    nop
+    jr a1
+    nop
+@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO5:    
+    
+    J @WNAVI_CL_INT_CHECKSAVEDATA_RETURN
+    nop  
+    
+    
+@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP5:     
+    
+;normal item ID check
     andi t4, t4, 0x00ff
     sltu t6,t4,t3   ; SaveData < ItemID?
     ;lui t2, 0x0000

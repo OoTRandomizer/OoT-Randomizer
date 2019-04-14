@@ -74,7 +74,7 @@ class working_navi(Rom):
     }
 
     
-    def OptimizeOffsetAndMask(self, ItemByteOffset,ItemMask,ItemID):
+    def OptimizeOffsetAndMask(self, ItemByteOffset,ItemMask,ItemID, item):
     
         maskOffset = self.getBitOffsetIndex(ItemMask)
         maskOffset8Increment = int(maskOffset/8)*8
@@ -87,11 +87,17 @@ class working_navi(Rom):
         
         ItemBitOffset = maskOffset8Increment
         
+        #special handling for Rutos Letter
+        #item ID int(0x1B)
+        if item.name=='Bottle with Letter':
+            ItemID = int(0x1B)  #theres more special handling in working_navi.asm, if itemID 0x1B, got item if ID correct or King Zora moved
+        
+        
         return [ItemByteOffset,ItemBitOffset,ItemMask,ItemID]
     
     
     
-    def getUpgradeBitmask(self, UpgradeIndex, ItemByteoffset, ItemMask, ItemCategory, name_no_brackets ):
+    def getUpgradeBitmask(self, UpgradeIndex, ItemByteoffset, ItemMask, ItemCategory, name_no_brackets, item ):
         # Upgrades
         #'upgrades' : {
         #    'quiver'                 : Address(0x00A0, mask=0x00000007, max=3),
@@ -116,7 +122,7 @@ class working_navi(Rom):
         self.lastUpgradeIndexes[UpgradeIndex] = self.lastUpgradeIndexes[UpgradeIndex] + 1
         
         
-        return self.OptimizeOffsetAndMask(ItemByteoffset,RealMask,ItemID)
+        return self.OptimizeOffsetAndMask(ItemByteoffset,RealMask,ItemID,item)
     
     
 
@@ -155,11 +161,11 @@ class working_navi(Rom):
             
         if (ItemCategory == 'upgrades'):
             if(name_no_brackets=='Progressive Strength Upgrade'):
-                return self.getUpgradeBitmask(0, ItemByteoffset, ItemMask, ItemCategory, name_no_brackets )
+                return self.getUpgradeBitmask(0, ItemByteoffset, ItemMask, ItemCategory, name_no_brackets, Item )
             elif(name_no_brackets=='Progressive Scale'):
-                return self.getUpgradeBitmask(1, ItemByteoffset, ItemMask, ItemCategory, name_no_brackets )
+                return self.getUpgradeBitmask(1, ItemByteoffset, ItemMask, ItemCategory, name_no_brackets, Item )
             elif(name_no_brackets=='Progressive Wallet'):  
-                return self.getUpgradeBitmask(2, ItemByteoffset, ItemMask, ItemCategory, name_no_brackets ) 
+                return self.getUpgradeBitmask(2, ItemByteoffset, ItemMask, ItemCategory, name_no_brackets, Item ) 
 
         elif (ItemCategory == 'magic_acquired'):
             RealMask = 0x00007F00 #FF has the Problem that 0x00 counts as aquired for magic, but for deku sticks its the other way around
@@ -186,7 +192,7 @@ class working_navi(Rom):
                 RealMask = int((ItemMask << 16)&0xFFFF0000)    #Rando gives some masks 2 Bytes down                  
                 
             if(name_no_brackets=='Progressive Hookshot'):
-                return self.getUpgradeBitmask(3, ItemByteoffset, RealMask, ItemCategory, name_no_brackets )        
+                return self.getUpgradeBitmask(3, ItemByteoffset, RealMask, ItemCategory, name_no_brackets, Item )        
                 
 
         elif(ItemCategory == 'equip_items'):
@@ -197,7 +203,7 @@ class working_navi(Rom):
 
 
         ItemID = 0
-        return self.OptimizeOffsetAndMask(ItemByteoffset,RealMask,ItemID)
+        return self.OptimizeOffsetAndMask(ItemByteoffset,RealMask,ItemID, Item)
        
        
        
