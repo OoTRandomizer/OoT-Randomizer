@@ -8,12 +8,12 @@ I mean you just have to find a delay time that's suitable for you
 and if that suitable time runs out, you probably want to know which area to look at
 
 To be done:
--A lot of testing and some bugfixing - to be done
+-A lot of testing and some bugfixing - partly done
 -Clean up the code more - done
 -Manipulate the OOT Navi timer - done
 -React right to progressable items - done
--Navi should pop up in dungeons, too - partly done
--Multitexts for bottles - to be done
+-Navi should pop up in dungeons, too - done
+-Multitexts for bottles(only if multiple bottles in spoiler/rutos letter) - done
 -Make the hint logic more sophisticated - to be done
 
 For the Implementation I have 2 areas in the ROM, the lookuptable and the texts itself. The lookuptable is also dma loaded in the RAM. The lookuptable for Navi texts (8 Bytes each per text
@@ -27,8 +27,6 @@ The textloadlogic is called whenever any text is loaded.
 I check the text rom address and if its a navi text rom address, I manipulate it to my own rom address.
 The cycliclogic generates the target rom address for the text.
 The cycliclogic works like: Check all the lookuptable entrys and check the savedata for each lookuptable entry, if you got the item check if you got it before, if not reset the my navi timer. if my navi timer runs out get the first lookuptable entry you dont have the item in the savedata => Set rom address for textloadlogic
-
-
 
 
 
