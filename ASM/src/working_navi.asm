@@ -50,8 +50,9 @@ working_navi_cyclicLogic:
     addiu t6, t6, 0x0001     ;increment
     sw t6, 0x0014 (t1)       ;store increment global variable 6 (Timer2)
     
-    lui t3, 0x0000
-    ori t3, 0xd90       ; 1 minute
+    ;lui t3, 0x0000
+    ;ori t3, 0xd90       ; 1 minute
+    ori t3, r0, 0xd90    ; 1 minute
     
  beq t6, t3, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE   ; every minute, Check if any Progress has been made - Reset timer if progress made
     nop
@@ -87,8 +88,10 @@ working_navi_cyclicLogic:
        
 ;actual timertest        
     slt t4, t6, t5           ;Test : t6(timer) less than t5 (global variable with TimerBase)
-    lui t3, 0x0000
-    ori t3, t3, 0x0001
+    ;lui t3, 0x0000
+    ;ori t3, t3, 0x0001
+    ori t3, r0, 0x0001
+    
     
  beq t4, t3, @WNAVI_CL_TIMER_NOK       ;BRANCH Jump over to @WNAVI_CL_TIMER_NOK when Timer not allowing Navi Text Output
     nop
@@ -154,15 +157,17 @@ working_navi_cyclicLogic:
     lw t2, 0x0010 (t1)       ;Load Backup of lastTexpointer (normally t0, but that is generated from the ground up again)
     sw t2, 0x0000 (t3)       ;Store t2 in Global Variable 5 Textpointer, which was "You are doing so well, no need to bother you"
     
-    lui t3, 0x0000
-    ori t3, t3, 0x0001
+    ;lui t3, 0x0000
+    ;ori t3, t3, 0x0001
+    ori t3, r0, 0x0001
     sw t3, 0x0004 (t1) ;ShowTextFlag set
     
     
     lui t2, 0x8011
     ori t2, 0xA608
-    lui t3, 0x0000     ;Manipulate OOT Navi Timer
-    ori t3, 0x0009
+    ;lui t3, 0x0000     ;Manipulate OOT Navi Timer
+    ;ori t3, 0x0009
+    ori t3, r0, 0x0009   ;Manipulate OOT Navi Timer
     sb t3, 0x0000 (t2)
     
     
@@ -174,8 +179,9 @@ working_navi_cyclicLogic:
 @WNAVI_CL_TIMER_NOK:
     la t1, working_navi_cyclicLogicGlobals
     
-    lui t3, 0x0000
-    ori t3, t3, 0x0001
+    ;lui t3, 0x0000
+    ;ori t3, t3, 0x0001
+    ori t3, r0, 0x0001
     lw t2, 0x0004 (t1)          ;ShowTextFlag
  beq t2, t3, @WNAVI_CL_RETURN
     nop
@@ -192,8 +198,10 @@ working_navi_cyclicLogic:
 
     lb t6, 0x0003 (a2)       ;Load "IsDone" Part of LookupTable-Element
     andi t6, t6, 0x00ff      ;BitMaskFilter
-    lui t5, 0x0000
-    ori t5, t5, 0x00ff
+    ;lui t5, 0x0000
+    ;ori t5, t5, 0x00ff
+    ori t5, r0, 0x00ff
+    
     
  beq t6, t5, @WNAVI_CL_INT_CHECKSAVEDATA_RETURN       ;BRANCH - EndofTable? to AFTER_TEXT_POINTER_UPDATE
     nop
@@ -201,9 +209,9 @@ working_navi_cyclicLogic:
     lw t6, 0x0000 (a2)       ;Load SaveDataOffset from LookupTablePointer in T6
     srl t6, t6, 16         
     andi t6, t6, 0xffff      ;Mask SaveDataOffset
-    lui t5, 0x0000
+    ;lui t5, 0x0000
     
- bne t6, t5, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP1       ;BRANCH - if LookupTable Offset is 0 Jump Back INCREMENT_POINTERS
+ bne t6, r0, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP1       ;BRANCH - if LookupTable Offset is 0 Jump Back INCREMENT_POINTERS
     nop
     jr a1
     nop
@@ -230,26 +238,22 @@ working_navi_cyclicLogic:
 ;ItemID    
     lb t3, 0x0006 (a2)       ;Load ItemID
     andi t3, t3, 0x00ff
-    lui t6, 0x0000
+    ;lui t6, 0x0000
     
     lw t5, 0x0004 (a2)        ;load savemask in t5
     srl t5, t5, 16           ;Only max 2 Bytes large
     andi t5, t5, 0xffff
     and t4, t4, t5        ;mask saveData with saveDatamask
     
- bne t4, t6, @WNAVI_CL_CHECKSAVEDATA_ITEMID
+ bne t3, r0, @WNAVI_CL_CHECKSAVEDATA_ITEMID     ; to be tested
     nop
     
     
 ;Savemask 
     ;mask already done
-    ;lw t5, 0x0004 (a2)        ;load savemask in t5
-    ;srl t5, t5, 16           ;Only max 2 Bytes large
-    ;andi t5, t5, 0xffff
-    ;and t4, t4, t5        ;mask saveData with saveDatamask
-    lui t6, 0x0000        ;load 0 in t6
+    ;lui t6, 0x0000        ;load 0 in t6
 
- beq t4, t6, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveData has this Item => Go to INCREMENT_POINTERS/a1
+ beq t4, r0, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveData has this Item => Go to INCREMENT_POINTERS/a1
     nop
     jr a1
     nop
@@ -257,8 +261,9 @@ working_navi_cyclicLogic:
 @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2:
 
 
-    lui t6, 0x0
-    ori t6, 0xffff
+    ;lui t6, 0x0
+    ;ori t6, 0xffff
+    ori t6, r0, 0xffff
     ;the mask could be FF => save data has item if not FF
  beq t6, t5, @WNAVI_CL_SAVEMASKFF               ;BRANCH, MASK is FF, check savedata different
     nop
@@ -296,8 +301,9 @@ working_navi_cyclicLogic:
     
     andi t4, t4, 0x00ff
     sltu t6,t4,t3   ; SaveData < ItemID?
-    lui t2, 0x0000
-    ori t2, t2, 0x0001
+    ;lui t2, 0x0000
+    ;ori t2, t2, 0x0001
+    ori t2, r0, 0x0001
     
  beq t6, t2, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP4       ;BRANCH If SaveData < ItemID, dont got item
     nop
@@ -333,8 +339,9 @@ working_navi_cyclicLogic:
     ori t6, t6, 0x0001       ;Save Flag for gotten Item
     sb t6, 0x0003 (t7)
     
-    lui t3, 0x0000
-    ori t3, 0x0001
+    ;lui t3, 0x0000
+    ;ori t3, 0x0001
+    ori t3, r0, 0x0001
     
 ; Reset ShowText, Reset Timer, if Item is newly gotten
  bne t6, t3, @@WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_NO_TIMERRESET
@@ -353,8 +360,9 @@ working_navi_cyclicLogic:
     
 @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_INITJUMP:     
     
-    lui t3, 0x0000
-    ori t3, t3, 0x00FF
+    ;lui t3, 0x0000
+    ;ori t3, t3, 0x00FF
+    ori t3, r0, 0x00ff
     lb t6, 0x0003 (t7)       ;Load "IsDone" Part of LookupTable-Element
     andi t6, t6, 0x00ff      ;BitMaskFilter
     
@@ -386,7 +394,7 @@ working_navi_TextLoadLogic:
     sw      ra, 0x0014(sp)
     
     lui t2, 0x0000
-    ori t2, t2, 0x0000      ;just 0 in T2 for using with compares
+    ;ori t2, t2, 0x0000      ;just 0 in T2 for using with compares
     
     lui t3, 0x0093          ; TBD why did this value change since Rando 1.0?
     ori t3, t3, 0x2ea0      ;TextLoadPointerMin old: 0x4af0
@@ -463,8 +471,10 @@ working_navi_ExtendedInit:
     
 WNAVI_CL_ACTIVATE_NAVI_IN_DUNGEONS:     ;<= hack, navi in dungeons, see working_navi.py
 
-    lui t3, 0x0000
-    ori t3, t3, 0x0141  ;0x41 <= Navi activated
+    ;lui t3, 0x0000
+    ;ori t3, t3, 0x0141  ;0x41 <= Navi activated
+    ori t3, r0, 0x0141
+    
 
     move v0, t3        
     sh v0, 0x0002 (t8)
