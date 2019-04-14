@@ -72,7 +72,7 @@ A0 = 0x8026BB34
 in dungeons:
 0x800596E8: LBU V0, 0x0002 (T8)   <= loads 0x5F when in Dungeon
 T8 = 0x802617B0
-
+ROM Address is 0x00ACF648 (LBU V0, 0x0002 (T8))
 
 _____So just write 0x802617B0 byte 2 to 0x41 => Navi in dungeons, tested with deku tree_____
 (This value gets only set on area changes)

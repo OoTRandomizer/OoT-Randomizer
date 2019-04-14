@@ -20,7 +20,7 @@ class working_navi(Rom):
     WORKING_NAVI_DATA_GENERATED_TEXT_ROM = None  #length about 0x1000 hex - to 0x80501700
     WORKING_NAVI_CODE_CYCLICLOGIC_RAM = None
     WORKING_NAVI_CODE_TEXTLOADLOGIC_RAM = None
-    
+    WORKING_NAVI_CODE_NAVI_IN_DUNGEONS_RAM = None
     
     
     def __init__(self, rom):
@@ -30,7 +30,7 @@ class working_navi(Rom):
         self.WORKING_NAVI_DATA_GENERATED_TEXT_ROM = rom.sym('WORKING_NAVI_DATA_GENERATED_TEXT_SYM') #self.WORKING_NAVI_ROM + 0x800    #length about 0x1000 hex - to 0x80501700
         self.WORKING_NAVI_CODE_CYCLICLOGIC_RAM = rom.symRAM('WORKING_NAVI_DATA_CODE') #self.WORKING_NAVI_RAM + 0x300
         self.WORKING_NAVI_CODE_TEXTLOADLOGIC_RAM = rom.symRAM('WORKING_NAVI_DATA_CODE2') #self.WORKING_NAVI_RAM + 0x600
-    
+        self.WORKING_NAVI_CODE_NAVI_IN_DUNGEONS_RAM = rom.symRAM('WNAVI_CL_ACTIVATE_NAVI_IN_DUNGEONS')
     
     lastUpgradeIndexes = [0,0,0,0]
     lastBottleIndex = 0
@@ -371,6 +371,15 @@ class working_navi(Rom):
             byteArray = [0x08] + byteArray
             rom.write_bytes(0xB12A94, bytearray(byteArray)) #is a J, was a jr before, cyclic hack jumps back to previous ret address
            
+            #hook for Navi in dungeons
+            intAddress =  int((self.WORKING_NAVI_CODE_NAVI_IN_DUNGEONS_RAM & 0x00FFFFFF)/4)
+            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
+            byteArray = [0x0C] + byteArray
+            rom.write_bytes(0x00ACF648, bytearray(byteArray)) #LBU V0, 0x0002 (T8) before
+           
+            
+            
+            
             
             spoiler_path = ""     
             if world.settings.create_spoiler: 

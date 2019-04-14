@@ -32,9 +32,6 @@ WORKING_NAVI_GLOBALS:
 working_navi_cyclicLogic:
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)
-    
-    jal @WNAVI_CL_ACTIVATE_NAVI_IN_DUNGEONS         ;<= hack, navi in dungeons
-    nop
 
     ;lui t0, 0x0350            ;WORKING_NAVI_DATA_GENERATED_TEXT_ROM
     ;ori t0, 0x0700            ;WORKING_NAVI_DATA_GENERATED_TEXT_ROM ;TextTablePointer for Navi-Texts
@@ -375,22 +372,6 @@ working_navi_cyclicLogic:
     
     ;Heres no Return needed, always go to end of lookuptable
     
-    
-    
-;_______Subroutine3_______
-@WNAVI_CL_ACTIVATE_NAVI_IN_DUNGEONS:     ;<= hack, navi in dungeons
-
-    li t8, 0x802617B0
-    lui t3, 0x0000
-    ori t3, t3, 0x41
-    
-    ;TBD test this, ok with deku tree
-    sb t3, 0x0002 (t8)   ;<= loads 0x5F when in Dungeon normally, 0x41 is with navi
- 
-    jr ra 
-    nop   
-    
-    
 .endarea    
     
     
@@ -475,12 +456,27 @@ working_navi_ExtendedInit:
     
     jr ra
     nop
+    
+    
+    
+    
+    
+WNAVI_CL_ACTIVATE_NAVI_IN_DUNGEONS:     ;<= hack, navi in dungeons, see working_navi.py
 
+    lui t3, 0x0000
+    ori t3, t3, 0x0141  ;0x41 <= Navi activated
+
+    move v0, t3        
+    sh v0, 0x0002 (t8)
+
+    jr ra 
+    nop   
+    
 
 .endarea 
 
 
-
+    
 .org WORKING_NAVI_DATA_GENERATED_TEXT_SYM  ; see addresses.asm, this is only done so we get a symbol in symbols_RAM.json
 .area 0x1000
 nop
