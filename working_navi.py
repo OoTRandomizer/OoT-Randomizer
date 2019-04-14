@@ -241,10 +241,17 @@ class working_navi(Rom):
     def getLocationTests(self, location, spoiler):
         
         LocationList = list()
-        for (sphere_nr, sphere) in spoiler.playthrough.items():
-            for (locationB) in sphere:
-                if str(locationB.item.name) == str(location.item.name):
-                    LocationList.append(locationB)
+        
+        if location.item.info.bottle:
+            for (sphere_nr, sphere) in spoiler.playthrough.items():
+                for (locationB) in sphere:
+                    if locationB.item.info.bottle or (locationB.item.name=='Bottle with Letter'):
+                        LocationList.append(locationB)
+        else:
+            for (sphere_nr, sphere) in spoiler.playthrough.items():
+                for (locationB) in sphere:
+                    if str(locationB.item.name) == str(location.item.name):
+                        LocationList.append(locationB)
                     
         RemoveList = list()
         length = len(LocationList)
