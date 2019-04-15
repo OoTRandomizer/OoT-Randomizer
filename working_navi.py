@@ -265,8 +265,9 @@ class working_navi(Rom):
         length = len(LocationList)
         i = int(0)
         for n in range(i+1, length):
-            if(str(LocationList[i].filter_tags[0]) == str(LocationList[n].filter_tags[0]) ):
-                RemoveList.append(LocationList[n])
+            if (LocationList[i].filter_tags != None) and (LocationList[n].filter_tags != None):
+                if(str(LocationList[i].filter_tags[0]) == str(LocationList[n].filter_tags[0]) ):
+                    RemoveList.append(LocationList[n])
                     
                  
         locationexact = 'check '
@@ -283,7 +284,10 @@ class working_navi(Rom):
             for locationC in RemoveList:
                 LocationList.remove(locationC)   
             for i in range(1,len(LocationList)):
-                locationvague = locationvague + ' or ' + str(LocationList[i].filter_tags[0]) + ' '
+                if(LocationList[i].filter_tags != None):
+                    locationvague = locationvague + ' or ' + str(LocationList[i].filter_tags[0]) + ' '
+                else:
+                    locationvague = locationvague + ' or ' + str(LocationList[i]) + ' '
                                                                 
         
         #get all items with this str(location.item.name) in an array
