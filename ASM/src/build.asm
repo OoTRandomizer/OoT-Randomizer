@@ -23,6 +23,9 @@
 ; New code region
 ;==================================================================================================
 
+;Working Navi accept86
+.org WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM  ; see addresses.asm, this is only done so we get a symbol
+
 .headersize (0x80400000 - 0x03480000)
 
 .org 0x80400000

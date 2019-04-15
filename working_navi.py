@@ -21,7 +21,7 @@ class working_navi(Rom):
     WORKING_NAVI_CODE_CYCLICLOGIC_RAM = None
     WORKING_NAVI_CODE_TEXTLOADLOGIC_RAM = None
     WORKING_NAVI_CODE_NAVI_IN_DUNGEONS_RAM = None
-    
+    WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM = None
     
     def __init__(self, rom):
         self.WORKING_NAVI_RAM = rom.symRAM('WORKING_NAVI_GLOBALS') #0x80410000
@@ -31,6 +31,8 @@ class working_navi(Rom):
         self.WORKING_NAVI_CODE_CYCLICLOGIC_RAM = rom.symRAM('WORKING_NAVI_DATA_CODE') #self.WORKING_NAVI_RAM + 0x300
         self.WORKING_NAVI_CODE_TEXTLOADLOGIC_RAM = rom.symRAM('WORKING_NAVI_DATA_CODE2') #self.WORKING_NAVI_RAM + 0x600
         self.WORKING_NAVI_CODE_NAVI_IN_DUNGEONS_RAM = rom.symRAM('WNAVI_CL_ACTIVATE_NAVI_IN_DUNGEONS')
+        self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM = rom.symRAM('WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM')
+    
     
     lastUpgradeIndexes = [0,0,0,0]
     lastBottleIndex = 0
@@ -248,7 +250,7 @@ class working_navi(Rom):
         
         LocationList = list()
         
-        if location.item.info.bottle:
+        if location.item.info.bottle or (location.item.name=='Bottle with Letter'): #TBD test
             for (sphere_nr, sphere) in spoiler.playthrough.items():
                 for (locationB) in sphere:
                     if locationB.item.info.bottle or (locationB.item.name=='Bottle with Letter'):
@@ -291,7 +293,7 @@ class working_navi(Rom):
         
         #TBD TBD <= do this for bottles, too
         
-        maxlen = 0x3C-6-4
+        maxlen = self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM-6-4
         locationexact = (locationexact[:maxlen] + '..') if len(locationexact) > maxlen else locationexact
         locationvague = (locationvague[:maxlen] + '..') if len(locationvague) > maxlen else locationvague
         return [locationexact, locationvague]
@@ -303,7 +305,7 @@ class working_navi(Rom):
         CurTextPointerBaseA = self.WORKING_NAVI_DATA_GENERATED_TEXT_ROM
              
         self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, "You are doing so well, no need to bother you", "You are doing so well, no need to bother you", rom)
-        CurTextPointerBaseA += 0x3C
+        CurTextPointerBaseA += self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM
         
         # set LookUp Table for Navi Texts        
         CurLookupTablePointerB = self.WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM
@@ -331,7 +333,7 @@ class working_navi(Rom):
                         locationvague = locTexts[1]
                         
                         self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, locationexact, locationvague, rom)
-                        CurTextPointerBaseA += 0x3C
+                        CurTextPointerBaseA += self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM
                         
                         self.working_navi_patch_LookUpTableItem(ItemByteoffset, ItemBitoffset, ItemMask, ItemID, sphere_nr, CurLookupTablePointerB, rom)
                         CurLookupTablePointerB += 8
@@ -342,7 +344,7 @@ class working_navi(Rom):
                 
                      
         self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, "We got everything we need, lets beat ganon", "We got everything we need, lets beat ganon", rom) 
-        CurTextPointerBaseA += 0x3C             
+        CurTextPointerBaseA += self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM             
           
         #end of LookUp Table
         rom.write_bytes(CurLookupTablePointerB, [0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00])  

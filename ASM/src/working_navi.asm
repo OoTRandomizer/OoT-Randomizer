@@ -1,7 +1,7 @@
 ;Accept86 WorkingNavi
 ;==================================================================================================
 
-;WORKING_NAVI_DATA_GENERATED_TEXT_ROM => Texts with 0x3C increment (ROM-Address)
+;WORKING_NAVI_DATA_GENERATED_TEXT_ROM => Texts with WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM increment (ROM-Address)
 ;WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM => LookUpTable For NaviTexts (8 Bytes each per text
         ;2 Bytes SaveDataOffset, 1 Byte SaveDataBitoffset, 1 Byte to handle by software,
         ;2 Bytes SavedataMask, 1 Byte ItemID, 1 Byte Sphere - for each required Item)
@@ -106,7 +106,7 @@ working_navi_cyclicLogic:
 
 @WNAVI_CL_INCREMENT_POINTERS:
 
-    addiu t0, t0, 0x003c     ;TARGET Jump Here to INCREMENT_POINTERS From here is the TextTablePointer setting. Increment T0 TextTablePointer by 3C
+    addiu t0, t0, WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM     ;TARGET Jump Here to INCREMENT_POINTERS From here is the TextTablePointer setting. Increment T0 TextTablePointer by 3C
     addiu t7, t7, 0x0008     ; 0x0004     ;Increment LookupTablePointer
 
 
@@ -478,7 +478,8 @@ working_navi_TextLoadLogic:
                             ; T7 Global Variable 5 Textpointer
     la t7, working_navi_TextPointerGlobal
     lw a1, 0x0000 (t7)      ; IF req Textpointer A1 in NaviSection => Load GlobalVar with Text of workingNavi in A1
-
+    ;set dmaloadsize to textsize
+    ori a2, r0, WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM
     
     ; Reset Textpointer stuff(cyclic logic), so the message isnt shown twice
     la t1, working_navi_TextPointerGlobal
@@ -523,7 +524,7 @@ working_navi_ExtendedInit:
     la t1, working_navi_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
                                              ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
                                              ;6 Timer2
-    addiu t0, t0, 0x003c  ;The Textpointer Backup is not on "You are doing so well, no need to bother you" but on the first real hint
+    addiu t0, t0, WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM  ;The Textpointer Backup is not on "You are doing so well, no need to bother you" but on the first real hint
     sw t0, 0x0010 (t1)
     sw t7, 0x000C (t1)
     
@@ -556,4 +557,6 @@ WNAVI_CL_ACTIVATE_NAVI_IN_DUNGEONS:     ;<= hack, navi in dungeons, see working_
 .area 0x1000
 nop
 .endarea
+
+
 
