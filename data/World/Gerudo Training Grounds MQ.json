@@ -40,11 +40,12 @@
         "region_name": "Gerudo Training Grounds Stalfos Room",
         "dungeon": "Gerudo Training Grounds",
         "locations": {
+            "Gerudo Training Grounds MQ Blue Fire": "has_bottle",
             "Gerudo Training Grounds MQ Before Heavy Block Chest": "True",
             "Gerudo Training Grounds MQ Heavy Block Chest": "can_use(Silver_Gauntlets)"
         },
         "exits": {
-            "Gerudo Training Grounds Back Areas": "can_play(Song_of_Time) and can_see_with_lens and has_bottle"
+            "Gerudo Training Grounds Back Areas": "can_play(Song_of_Time) and can_see_with_lens and has_blue_fire"
         }
     },
     {

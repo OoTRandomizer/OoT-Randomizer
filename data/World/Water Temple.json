@@ -14,7 +14,8 @@
         "dungeon":  "Water Temple",
         "locations": {
             "Morpha": "Boss_Key_Water_Temple and can_use(Longshot)",
-            "Morpha Heart": "Boss_Key_Water_Temple and can_use(Longshot)"
+            "Morpha Heart": "Boss_Key_Water_Temple and can_use(Longshot)",
+            "Defeat Morpha": "Boss_Key_Water_Temple and can_use(Longshot)"
         },
         "exits": {
             "Water Temple Dark Link Region": "

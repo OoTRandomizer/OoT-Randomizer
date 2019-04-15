@@ -6,7 +6,8 @@
             "Gerudo Training Grounds Lobby Left Chest": "can_use(Bow) or can_use(Slingshot)",
             "Gerudo Training Grounds Lobby Right Chest": "can_use(Bow) or can_use(Slingshot)",
             "Gerudo Training Grounds Stalfos Chest": "can_jumpslash",
-            "Gerudo Training Grounds Beamos Chest": "has_explosives and can_jumpslash"
+            "Gerudo Training Grounds Beamos Chest": "has_explosives and can_jumpslash",
+            "Gerudo Training Grounds MQ Blue Fire": "False"
         },
         "exits": {
             "Gerudo Training Grounds Heavy Block Room": "True",

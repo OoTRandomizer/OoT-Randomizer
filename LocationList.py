@@ -66,6 +66,7 @@ location_table = {
     "King Zora Thawed":                                ("NPC",         0x58,  0x2D, None,                     ("Zora's Domain",)),
     "Bombchu Bowling Bomb Bag":                        ("NPC",         0x4B,  0x34, None,                     ("the Market", "Castle Town", "Minigames")),
     "Bombchu Bowling Piece of Heart":                  ("NPC",         0x4B,  0x3E, None,                     ("the Market", "Castle Town", "Minigames")),
+    "Bombchu Bowling Bombchus":                        ("Event",       0x4B,  0x3E, None,                     ("the Market", "Castle Town", "Minigames")),
     "Dog Lady":                                        ("NPC",         0x35,  0x3E, None,                     ("the Market", "Castle Town",)),
     "Skull Kid":                                       ("NPC",         0x5B,  0x3E, None,                     ("the Lost Woods", "Forest",)),
     "Ocarina Memory Game":                             ("NPC",         0x5B,  0x76, None,                     ("the Lost Woods", "Forest", "Minigames")),
@@ -140,6 +141,11 @@ location_table = {
     "Spirit Temple Nut Crate":                         ("Event",       None,  None, None,                     None),
     "Gerudo Fortress Carpenter Rescue":                ("Event",       None,  None, None,                     None),
     "Haunted Wasteland Bombchu Salesman":              ("Event",       None,  None, None,                     ("Haunted Wasteland",)),
+    "Windmill Drain Well":                             ("Event",       None,  None, None,                     None),
+    "Defeat Morpha":                                   ("Event",       None,  None, None,                     None),
+    "Goron City Woods Warp from City":                 ("Event",       None,  None, None,                     None),
+    "Goron City Woods Warp from Darunia":              ("Event",       None,  None, None,                     None),
+    "Goron City Woods Warp from Woods":                ("Event",       None,  None, None,                     None),
     "Ganons Castle Forest Trial Clear":                ("Event",       None,  None, None,                     None),
     "Ganons Castle Fire Trial Clear":                  ("Event",       None,  None, None,                     None),
     "Ganons Castle Water Trial Clear":                 ("Event",       None,  None, None,                     None),
@@ -379,6 +385,7 @@ location_table = {
     "Bottom of the Well MQ East Inner Room Freestanding Key":("Collectable",0x08,0x01,None,                   ("Bottom of the Well",)),
 
     # Ice Cavern vanilla
+    "Ice Cavern Blue Fire":                            ("Event",       None,  None, None,                     None),
     "Ice Cavern Map Chest":                            ("Chest",       0x09,  0x00, None,                     ("Ice Cavern",)),
     "Ice Cavern Compass Chest":                        ("Chest",       0x09,  0x01, None,                     ("Ice Cavern",)),
     "Ice Cavern Iron Boots Chest":                     ("Chest",       0x09,  0x02, None,                     ("Ice Cavern",)),
@@ -416,6 +423,7 @@ location_table = {
     "Gerudo Training Grounds MQ Lobby Right Chest":    ("Chest",       0x0B,  0x07, None,                    ("Gerudo Training Grounds",)),
     "Gerudo Training Grounds MQ Lobby Left Chest":     ("Chest",       0x0B,  0x13, None,                    ("Gerudo Training Grounds",)),
     "Gerudo Training Grounds MQ First Iron Knuckle Chest": ("Chest",   0x0B,  0x00, None,                    ("Gerudo Training Grounds",)),
+    "Gerudo Training Grounds MQ Blue Fire":            ("Event",       None,  None, None,                    ("Gerudo Training Grounds",)),
     "Gerudo Training Grounds MQ Before Heavy Block Chest": ("Chest",   0x0B,  0x11, None,                    ("Gerudo Training Grounds",)),
     "Gerudo Training Grounds MQ Eye Statue Chest":     ("Chest",       0x0B,  0x03, None,                    ("Gerudo Training Grounds",)),
     "Gerudo Training Grounds MQ Flame Circle Chest":   ("Chest",       0x0B,  0x0E, None,                    ("Gerudo Training Grounds",)),
@@ -435,6 +443,7 @@ location_table = {
     "Ganons Tower Boss Key Chest":                     ("Chest",       0x0A,  0x0B, None,                     ("Ganon's Castle",)),
     # Ganon's Castle vanilla
     "Ganons Castle Forest Trial Chest":                ("Chest",       0x0D,  0x09, None,                     ("Ganon's Castle",)),
+    "Ganons Castle Water Trial Blue Fire":             ("Event",       None,  None, None,                     ("Ganon's Castle",)),
     "Ganons Castle Water Trial Left Chest":            ("Chest",       0x0D,  0x07, None,                     ("Ganon's Castle",)),
     "Ganons Castle Water Trial Right Chest":           ("Chest",       0x0D,  0x06, None,                     ("Ganon's Castle",)),
     "Ganons Castle Shadow Trial First Chest":          ("Chest",       0x0D,  0x08, None,                     ("Ganon's Castle",)),

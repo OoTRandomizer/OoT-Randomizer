@@ -29,7 +29,7 @@ never = {
 # items required at most once, specifically things with multiple possible names
 # (except bottles)
 once = {
-    'Deku Nut', 'Bombchu', 'Deku Stick', 'Deku Shield', 'Hylian Shield',
+    'Deku Nut', 'Deku Stick', 'Deku Shield', 'Hylian Shield',
     'Goron Tunic', 'Zora Tunic',
 }
 
@@ -40,7 +40,7 @@ progressive = {
 
 bottles = {
     item for item, (_, _, _, special) in item_table.items()
-    if special and 'bottle' in special
+    if special and 'bottle' in special and item != 'Deliver Letter'
 }
 
 

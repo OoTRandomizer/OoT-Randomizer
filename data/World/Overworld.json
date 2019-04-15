@@ -120,12 +120,13 @@
             "Ocarina Memory Game": "is_child and has_ocarina",
             "Target in Woods": "can_use(Slingshot)",
             "LW Deku Scrub Deku Stick Upgrade": "is_child and can_stun_deku",
+            "Goron City Woods Warp from Woods": "can_blast_or_smash or can_use(Dins_Fire)",
             "GS Lost Woods Bean Patch Near Bridge": "can_plant_bugs and can_child_attack",
             "Lost Woods Gossip Stone": "True"
         },
         "exits": {
             "Kokiri Forest": "True",
-            "Goron City Woods Warp": "True",
+            "Goron City": "Goron_City_Woods_Warp_Open",
             "Zora River": "can_dive and can_leave_forest",
             "Lost Woods Beyond Mido": "is_child or logic_adult_meadow_access or can_play(Sarias_Song)",
             "Lost Woods Generic Grotto": "as_either_here(can_blast_or_smash)"
@@ -226,10 +227,10 @@
             "Pierre": "has_ocarina and as_both_here and not free_scarecrow",
             "Underwater Bottle": "
                 is_child and
-                (can_dive or (as_adult(can_reach(Morpha, Location)) and child_lake_hylia_control))",
+                (can_dive or (Lake_Refill and child_lake_hylia_control))",
             "Lake Hylia Sun": "
                 is_adult and 
-                (can_use(Distant_Scarecrow) or can_reach(Morpha, Location)) and can_use(Bow)",
+                (can_use(Distant_Scarecrow) or Lake_Refill) and can_use(Bow)",
             "Lake Hylia Freestanding PoH": "can_use(Scarecrow) or can_use(Magic_Bean)",
             "GS Lake Hylia Bean Patch": "can_plant_bugs and can_child_attack",
             "GS Lake Hylia Lab Wall": "
@@ -245,13 +246,13 @@
             "Hyrule Field": "True",
             "Zoras Domain": "
                 is_child and
-                (can_dive or (as_adult(can_reach(Morpha, Location)) and child_lake_hylia_control))",
+                (can_dive or (Lake_Refill and child_lake_hylia_control))",
             "Lake Hylia Lab": "True",
             "Fishing Hole": "
-                is_child or can_use(Scarecrow) or can_use(Magic_Bean) or can_reach(Morpha, Location)",
+                is_child or can_use(Scarecrow) or can_use(Magic_Bean) or Lake_Refill",
             "Water Temple Lobby": "
                 as_adult_here((can_use(Hookshot) and can_use(Iron_Boots)) or can_use(Longshot)) and
-                ((as_adult(can_reach(Morpha, Location)) and child_lake_hylia_control) or is_adult) and
+                ((Lake_Refill and child_lake_hylia_control) or is_adult) and
                 ((Progressive_Scale, 2) or can_use(Iron_Boots))",
             "Lake Hylia Grotto": "True"
         }
@@ -533,8 +534,9 @@
     {
         "region_name": "Castle Town Bombchu Bowling",
         "locations": {
-            "Bombchu Bowling Bomb Bag": "has_bombchus",
-            "Bombchu Bowling Piece of Heart": "has_bombchus"
+            "Bombchu Bowling Bomb Bag": "has_bombchus_item",
+            "Bombchu Bowling Piece of Heart": "has_bombchus_item",
+            "Bombchu Bowling Bombchus": "has_bombchus_item"
         }
     },
     {
@@ -607,8 +609,7 @@
             "Kakariko Bazaar": "is_adult and at_day",
             "Kakariko Shooting Gallery": "is_adult and at_day",
             "Bottom of the Well": "
-                as_child_here(can_play(Song_of_Storms)) and
-                (is_child or shuffle_dungeon_entrances)",
+                Drain_Well and (is_child or shuffle_dungeon_entrances)",
             "Kakariko Potion Shop Front": "True",
             "Kakariko Potion Shop Back": "True",
             "Odd Medicine Building": "is_adult",
@@ -653,7 +654,8 @@
             "Windmill Freestanding PoH": "
                 (is_adult and (logic_windmill_poh or can_play(Song_of_Time))) or 
                 can_use(Boomerang)",
-            "Song at Windmill": "is_adult and has_ocarina"
+            "Song at Windmill": "is_adult and has_ocarina",
+            "Windmill Drain Well": "is_child and can_play(Song_of_Storms)"
         }
     },
     {
@@ -833,14 +835,12 @@
             "Goron City Maze Gossip Stone": "
                 can_blast_or_smash or can_use(Silver_Gauntlets)",
             "Goron City Medigoron Gossip Stone": "
-                can_blast_or_smash or Progressive_Strength_Upgrade"
+                can_blast_or_smash or Progressive_Strength_Upgrade",
+            "Goron City Woods Warp from City": "
+                can_blast_or_smash or can_use(Dins_Fire) or can_use(Bow) or Progressive_Strength_Upgrade"
         },
         "exits": {
             "Death Mountain": "True",
-            "Goron City Woods Warp": "
-                as_child(can_reach(Darunias_Chamber) and has_sticks) or
-                as_either_here(can_blast_or_smash or can_use(Dins_Fire) or 
-                                can_use(Bow) or Progressive_Strength_Upgrade)",
             "Goron Shop": "
                 has_explosives or Progressive_Strength_Upgrade or can_use(Bow) or 
                 (is_child and (can_use(Dins_Fire) or (can_play(Zeldas_Lullaby) and has_sticks)))",
@@ -853,24 +853,16 @@
                     ((damage_multiplier != 'ohko' and damage_multiplier != 'quadruple') or 
                         can_use(Goron_Tunic) or can_use(Longshot) or can_use(Nayrus_Love))) or 
                 (damage_multiplier != 'ohko' and can_use(Goron_Tunic) and can_use(Hookshot)) or 
-                (can_use(Nayrus_Love) and can_use(Hookshot)))"
-        }
-    },
-    {
-        "region_name": "Goron City Woods Warp",
-        "exits": {
-            "Goron City": "
-                can_leave_forest and 
-                (as_either_here(can_blast_or_smash or can_use(Dins_Fire)) or 
-                    can_reach('Goron City -> Goron City Woods Warp', Entrance, either))",
-            "Lost Woods": "True"
+                (can_use(Nayrus_Love) and can_use(Hookshot)))",
+            "Lost Woods": "Goron_City_Woods_Warp_Open"
         }
     },
     {
         "region_name": "Darunias Chamber",
         "hint": "Goron City",
         "locations": {
-            "Darunias Joy": "is_child and can_play(Sarias_Song)"
+            "Darunias Joy": "is_child and can_play(Sarias_Song)",
+            "Goron City Woods Warp from Darunia": "is_child and has_sticks"
         },
         "exits": {
             "Goron City": "True",
@@ -1002,7 +994,7 @@
         "locations": {
             "Diving Minigame": "is_child",
             "Zoras Domain Torch Run": "can_use(Sticks)",
-            "Deliver Ruto's Letter": "(is_child and Bottle_with_Letter) and not open_fountain",
+            "Deliver Ruto's Letter": "is_child and Bottle_with_Letter and not open_fountain",
             "King Zora Thawed": "is_adult and has_blue_fire",
             "Zoras Domain Stick Pot": "is_child",
             "Zoras Domain Nut Pot": "True",
@@ -1013,9 +1005,7 @@
         "exits": {
             "Zora River": "True",
             "Lake Hylia": "is_child and can_dive",
-            "Zoras Fountain": "
-                open_fountain or 
-                (can_reach(Zoras_Domain, Region, child) and Bottle_with_Letter)",
+            "Zoras Fountain": "open_fountain or Deliver_Letter",
             "Zora Shop": "is_child or has_blue_fire",
             "Zoras Domain Storms Grotto": "is_child and can_play(Song_of_Storms)"
         }

@@ -157,7 +157,8 @@
         "dungeon": "Water Temple",
         "locations": {
             "Morpha": "can_jumpslash and (can_hover or Boss_Key_Water_Temple)",
-            "Morpha Heart": "can_jumpslash and (can_hover or Boss_Key_Water_Temple)"
+            "Morpha Heart": "can_jumpslash and (can_hover or Boss_Key_Water_Temple)",
+            "Defeat Morpha": "can_jumpslash and (can_hover or Boss_Key_Water_Temple)"
         }
     }
 ]

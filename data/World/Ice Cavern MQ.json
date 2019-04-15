@@ -9,8 +9,11 @@
     {
         "region_name": "Ice Cavern",
         "dungeon": "Ice Cavern",
+        "locations": {
+            "Ice Cavern Blue Fire": "has_bottle"
+        },
         "exits": {
-            "Ice Cavern Interior": "has_bottle"
+            "Ice Cavern Interior": "has_blue_fire"
         }
     },
     {

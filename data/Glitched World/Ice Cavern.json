@@ -19,6 +19,7 @@
                 or can_use(Boomerang))",
             "Ice Cavern Iron Boots Chest": "is_adult and (has_blue_fire or (can_use(Hover_Boots) and can_shield) or can_mega)",
             "Sheik in Ice Cavern": "is_adult and (has_blue_fire or (can_use(Hover_Boots) and can_shield) or can_mega)",
+            "Ice Cavern Blue Fire": "has_bottle",
             "GS Ice Cavern Spinning Scythe Room": "can_use(Hookshot) or can_use(Boomerang) or
                 (can_use(Hover_Boots) and can_mega)",
             "GS Ice Cavern Heart Piece Room": "(is_adult or (is_child and (can_live_dmg(0.5) or can_use(Nayrus_Love)) )) and

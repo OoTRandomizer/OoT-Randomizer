@@ -12,7 +12,8 @@
             # If it is the Iron Boots or an item required to get them, it means a soft-lock.
             "Morpha Heart": "
                 Boss_Key_Water_Temple and can_use(Longshot) and Iron_Boots",
-            "Morpha": "Boss_Key_Water_Temple and can_use(Longshot)"
+            "Morpha": "Boss_Key_Water_Temple and can_use(Longshot)",
+            "Defeat Morpha": "Boss_Key_Water_Temple and can_use(Longshot)"
         },
         "exits": {
             "Lake Hylia": "True",

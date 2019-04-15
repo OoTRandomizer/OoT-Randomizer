@@ -117,12 +117,13 @@
             "Ocarina Memory Game": "is_child and has_ocarina",
             "Target in Woods": "can_use(Slingshot)",
             "LW Deku Scrub Deku Stick Upgrade": "is_child and can_stun_deku",
+            "Goron City Woods Warp from Woods": "can_blast_or_smash or can_use(Dins_Fire)",
             "GS Lost Woods Bean Patch Near Bridge": "can_plant_bugs and can_child_attack",
             "Lost Woods Gossip Stone": "True"
         },
         "exits": {
             "Kokiri Forest": "True",
-            "Goron City Woods Warp": "True",
+            "Goron City": "can_leave_forest",
             "Zora River": "(can_dive or can_jumpslash) and can_leave_forest",
             "Lost Woods Beyond Mido": "True",
             "Lost Woods Generic Grotto": "can_blast_or_smash"
@@ -517,8 +518,9 @@
     {
         "region_name": "Castle Town Bombchu Bowling",
         "locations": {
-            "Bombchu Bowling Bomb Bag": "has_bombchus",
-            "Bombchu Bowling Piece of Heart": "has_bombchus"
+            "Bombchu Bowling Bomb Bag": "has_bombchus_item",
+            "Bombchu Bowling Piece of Heart": "has_bombchus_item",
+            "Bombchu Bowling Bombchus": "has_bombchus_item"
         }
     },
     {
@@ -590,7 +592,7 @@
             "Windmill": "True",
             "Kakariko Bazaar": "is_adult or (is_child and can_jumpslash)",
             "Kakariko Shooting Gallery": "is_adult",
-            "Bottom of the Well": "(is_child and (can_play(Song_of_Storms) or can_jumpslash or can_isg or has_nuts))
+            "Bottom of the Well": "(is_child and (Drain_Well or can_jumpslash or can_isg or has_nuts))
                 or (is_adult and has_explosives)",
             "Kakariko Potion Shop Front": "is_adult",
             "Kakariko Potion Shop Back": "is_adult",
@@ -637,7 +639,8 @@
         "hint": "Kakariko Village",
         "locations": {
             "Windmill Freestanding PoH": "is_adult or can_use(Boomerang)",
-            "Song at Windmill": "is_adult and has_ocarina"
+            "Song at Windmill": "is_adult and has_ocarina",
+            "Windmill Drain Well": "is_child and can_play(Song_of_Storms)"
         }
     },
     {
@@ -816,6 +819,8 @@
             "GS Goron City Boulder Maze": "is_child and has_explosives",
             "GS Goron City Center Platform": "is_adult",
             "Goron City Stick Pot": "is_child",
+            "Goron City Woods Warp from City": "
+                can_blast_or_smash or can_use(Dins_Fire) or can_use(Bow) or Progressive_Strength_Upgrade",
             "Goron City Maze Gossip Stone": "
                 can_blast_or_smash or can_use(Silver_Gauntlets) or (Progressive_Strength_Upgrade and can_shield)",
             "Goron City Medigoron Gossip Stone": "
@@ -823,10 +828,7 @@
         },
         "exits": {
             "Death Mountain": "True",
-            "Goron City Woods Warp": "
-                as_child(can_reach(Darunias_Chamber) and has_sticks) or
-                as_either_here(can_blast_or_smash or can_use(Dins_Fire) or 
-                                can_use(Bow) or Progressive_Strength_Upgrade)",
+            "Lost Woods": "Goron_City_Woods_Warp_Open",
             "Goron Shop": "
                 has_explosives or Progressive_Strength_Upgrade or can_use(Bow) or 
                 (is_child and (can_use(Dins_Fire) or (can_play(Zeldas_Lullaby) and has_sticks)))",
@@ -842,20 +844,11 @@
         }
     },
     {
-        "region_name": "Goron City Woods Warp",
-        "exits": {
-            "Goron City": "
-                can_leave_forest and 
-                (as_either_here(can_blast_or_smash or can_use(Dins_Fire)) or 
-                    can_reach('Goron City -> Goron City Woods Warp', Entrance, either))",
-            "Lost Woods": "True"
-        }
-    },
-    {
         "region_name": "Darunias Chamber",
         "hint": "Goron City",
         "locations": {
-            "Darunias Joy": "is_child and can_play(Sarias_Song)"
+            "Darunias Joy": "is_child and can_play(Sarias_Song)",
+            "Goron City Woods Warp from Darunia": "is_child and has_sticks"
         },
         "exits": {
             "Goron City": "True",
