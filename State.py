@@ -355,13 +355,13 @@ class State(object):
 
 
     def can_buy_bombchus(self):
-        return self.has_any_of(('Buy Bombchu (5)', 'Buy Bombchu (10)', 'Buy Bombchu (20)', 'More Bombchus'))
+        return self.has_any_of(('Buy Bombchu (5)', 'Buy Bombchu (10)', 'Buy Bombchu (20)', 'Bombchu Drop'))
 
 
     def has_bombchus(self):
         if self.can_buy_bombchus():
             if self.world.bombchus_in_logic:
-                return self.has_any_of(('Bombchus', 'Bombchus (5)', 'Bombchus (10)', 'Bombchus (20)', 'More Bombchus'))
+                return self.has_any_of(('Bombchus', 'Bombchus (5)', 'Bombchus (10)', 'Bombchus (20)', 'Bombchu Drop'))
             else:
                 return self.has('Bomb Bag')
         else:

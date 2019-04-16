@@ -30,7 +30,7 @@ never = {
 # (except bottles)
 once = {
     'Deku Nut', 'Deku Stick', 'Deku Shield', 'Hylian Shield',
-    'Goron Tunic', 'Zora Tunic',
+    'Goron Tunic', 'Zora Tunic', 'Bombchus',
 }
 
 progressive = {

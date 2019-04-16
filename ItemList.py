@@ -90,7 +90,7 @@ item_table = {
     'Deku Nut Capacity':                ('Item',     None,  0x87, None),
     'Deku Stick Capacity':              ('Item',     None,  0x88, None),
     'Bombchus':                         ('Item',     True,  0x89, None),
-    'More Bombchus':                    ('Item',     True,  None, None),
+    'Bombchu Drop':                     ('Item',     True,  None, None),
     'Magic Meter':                      ('Item',     True,  0x8A, None),
     'Ocarina':                          ('Item',     True,  0x8B, None),
     'Bottle with Red Potion':           ('Item',     True,  0x8C, {'bottle': True, 'shop_object': 0x0F}),
