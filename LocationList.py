@@ -66,7 +66,7 @@ location_table = {
     "King Zora Thawed":                                ("NPC",         0x58,  0x2D, None,                     ("Zora's Domain",)),
     "Bombchu Bowling Bomb Bag":                        ("NPC",         0x4B,  0x34, None,                     ("the Market", "Castle Town", "Minigames")),
     "Bombchu Bowling Piece of Heart":                  ("NPC",         0x4B,  0x3E, None,                     ("the Market", "Castle Town", "Minigames")),
-    "Bombchu Bowling Bombchus":                        ("Event",       0x4B,  0x3E, None,                     ("the Market", "Castle Town", "Minigames")),
+    "Bombchu Bowling Bombchus":                        ("Event",       0x4B,  None, None,                     ("the Market", "Castle Town", "Minigames")),
     "Dog Lady":                                        ("NPC",         0x35,  0x3E, None,                     ("the Market", "Castle Town",)),
     "Skull Kid":                                       ("NPC",         0x5B,  0x3E, None,                     ("the Lost Woods", "Forest",)),
     "Ocarina Memory Game":                             ("NPC",         0x5B,  0x76, None,                     ("the Lost Woods", "Forest", "Minigames")),
