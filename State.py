@@ -284,11 +284,11 @@ class State(object):
 
 
     def has_nuts(self):
-        return self.has_any_of(['Buy Deku Nut (5)', 'Buy Deku Nut (10)', 'Deku Nut Drop'])
+        return self.has_any_of(('Buy Deku Nut (5)', 'Buy Deku Nut (10)', 'Deku Nut Drop'))
 
 
     def has_sticks(self):
-        return self.has_any_of(['Buy Deku Stick (1)', 'Deku Stick Drop'])
+        return self.has_any_of(('Buy Deku Stick (1)', 'Deku Stick Drop'))
 
 
     def has_bow(self):
@@ -304,11 +304,11 @@ class State(object):
 
 
     def has_blue_fire(self):
-        return self.has_any_of(['Buy Blue Fire', 'Blue Fire Drop'])
+        return self.has_any_of(('Buy Blue Fire', 'Blue Fire Drop'))
 
 
     def has_ocarina(self):
-        return self.has_any_of(['Ocarina', 'Fairy Ocarina', 'Ocarina of Time'])
+        return self.has_any_of(('Ocarina', 'Fairy Ocarina', 'Ocarina of Time'))
 
 
     def can_play(self, song):
@@ -355,13 +355,13 @@ class State(object):
 
 
     def can_buy_bombchus(self):
-        return self.has_any_of(['Buy Bombchu (5)', 'Buy Bombchu (10)', 'Buy Bombchu (20)', 'More Bombchus'])
+        return self.has_any_of(('Buy Bombchu (5)', 'Buy Bombchu (10)', 'Buy Bombchu (20)', 'More Bombchus'))
 
 
     def has_bombchus(self):
         if self.can_buy_bombchus():
             if self.world.bombchus_in_logic:
-                return self.has_any_of(['Bombchus', 'Bombchus (5)', 'Bombchus (10)', 'Bombchus (20)', 'More Bombchus'])
+                return self.has_any_of(('Bombchus', 'Bombchus (5)', 'Bombchus (10)', 'Bombchus (20)', 'More Bombchus'))
             else:
                 return self.has('Bomb Bag')
         else:
@@ -370,7 +370,7 @@ class State(object):
 
     def has_bombchus_item(self):
         if self.world.bombchus_in_logic:
-            return self.has_any(lambda pritem: pritem.startswith('Bombchus'))
+            return self.has_any_of(('Bombchus', 'Bombchus (5)', 'Bombchus (10)', 'Bombchus (20)'))
         else:
             return self.has('Bomb Bag')
 
@@ -462,7 +462,7 @@ class State(object):
 
     def has_mask_of_truth(self):
         # Must befriend Skull Kid to sell Skull Mask, all stones to spawn running man.
-        return self.has_skull_mask() and self.can_play('Sarias Song') and self.has_all_of(['Kokiri Emerald', 'Goron Ruby', 'Zora Sapphire'])
+        return self.has_skull_mask() and self.can_play('Sarias Song') and self.has_all_of(('Kokiri Emerald', 'Goron Ruby', 'Zora Sapphire'))
 
 
     def has_bottle(self):
