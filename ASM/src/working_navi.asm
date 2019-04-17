@@ -108,6 +108,11 @@ working_navi_cyclicLogic_HOOK:
     addiu t0, t0, WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM     ;TARGET Jump Here to INCREMENT_POINTERS From here is the TextTablePointer setting. Increment T0 TextTablePointer by 3C
     addiu t7, t7, 0x0008     ; 0x0004     ;Increment LookupTablePointer
 
+    lb t6, 0x0003 (t7)       ;Load "IsDone" Part of LookupTable-Element
+    andi t6, t6, 0x00ff
+    ori t5, r0, 0x0003
+ beq t6, t5, @WNAVI_CL_INCREMENT_POINTERS       ; if already got, no need to check
+    nop
 
     li a1, @WNAVI_CL_INCREMENT_POINTERS          ; A1: Increment Pointers Address
     move a2, t7                                 ; t7 LookupTablePointer
@@ -691,9 +696,7 @@ working_navi_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
     
 working_navi_Activate_Navi_In_Dungeons_HOOK:     ;<= hack, navi in dungeons, see working_navi.py
 
-
     ori v0, r0, 0x0141       ;0x41 <= Navi activated
-     
     sh v0, 0x0002 (t8)  ; displaced code
 
     jr ra 
