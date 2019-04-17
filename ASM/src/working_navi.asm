@@ -6,6 +6,9 @@
         ;2 Bytes SaveDataOffset, 1 Byte SaveDataBitoffset, 1 Byte to handle by software,
         ;2 Bytes SavedataMask, 1 Byte ItemID, 1 Byte Sphere - for each required Item)
 
+.definelabel working_navi_Save_Offset, 0xD4 + (52 * 0x1C) ;no chests or switches in Links house, so we can use that space hopefully
+
+
 
 
 .org WORKING_NAVI_RAM
@@ -50,8 +53,6 @@ working_navi_cyclicLogic_HOOK:
     addiu t6, t6, 0x0001     ;increment
     sw t6, 0x0014 (t1)       ;store increment global variable 6 (Timer2)
     
-    ;lui t3, 0x0000
-    ;ori t3, 0xd90       ; 1 minute
     ori t3, r0, 0xd90    ; 1 minute
     
  beq t6, t3, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE   ; every minute, Check if any Progress has been made - Reset timer if progress made
@@ -88,8 +89,6 @@ working_navi_cyclicLogic_HOOK:
        
 ;actual timertest        
     slt t4, t6, t5           ;Test : t6(timer) less than t5 (global variable with TimerBase)
-    ;lui t3, 0x0000
-    ;ori t3, t3, 0x0001
     ori t3, r0, 0x0001
     
     
@@ -112,7 +111,7 @@ working_navi_cyclicLogic_HOOK:
 
     li a1, @WNAVI_CL_INCREMENT_POINTERS          ; A1: Increment Pointers Address
     move a2, t7                                 ; t7 LookupTablePointer
-    JAL @WNAVI_CL_CHECKSAVEDATA                  ;checks save Data for LookupTableEntry
+    jal @WNAVI_CL_CHECKSAVEDATA                  ;checks save Data for LookupTableEntry
     nop
 
 
@@ -157,16 +156,13 @@ working_navi_cyclicLogic_HOOK:
     lw t2, 0x0010 (t1)       ;Load Backup of lastTexpointer (normally t0, but that is generated from the ground up again)
     sw t2, 0x0000 (t3)       ;Store t2 in Global Variable 5 Textpointer, which was "You are doing so well, no need to bother you"
     
-    ;lui t3, 0x0000
-    ;ori t3, t3, 0x0001
+
     ori t3, r0, 0x0001
     sw t3, 0x0004 (t1) ;ShowTextFlag set
     
     
     lui t2, 0x8011
     ori t2, 0xA608
-    ;lui t3, 0x0000     ;Manipulate OOT Navi Timer
-    ;ori t3, 0x0009
     ori t3, r0, 0x0009   ;Manipulate OOT Navi Timer
     sb t3, 0x0000 (t2)
     
@@ -179,8 +175,6 @@ working_navi_cyclicLogic_HOOK:
 @WNAVI_CL_TIMER_NOK:
     la t1, working_navi_cyclicLogicGlobals
     
-    ;lui t3, 0x0000
-    ;ori t3, t3, 0x0001
     ori t3, r0, 0x0001
     lw t2, 0x0004 (t1)          ;ShowTextFlag
  beq t2, t3, @WNAVI_CL_RETURN
@@ -198,8 +192,6 @@ working_navi_cyclicLogic_HOOK:
 
     lb t6, 0x0003 (a2)       ;Load "IsDone" Part of LookupTable-Element
     andi t6, t6, 0x00ff      ;BitMaskFilter
-    ;lui t5, 0x0000
-    ;ori t5, t5, 0x00ff
     ori t5, r0, 0x00ff
     
     
@@ -209,7 +201,6 @@ working_navi_cyclicLogic_HOOK:
     lw t6, 0x0000 (a2)       ;Load SaveDataOffset from LookupTablePointer in T6
     srl t6, t6, 16         
     andi t6, t6, 0xffff      ;Mask SaveDataOffset
-    ;lui t5, 0x0000
     
  bne t6, r0, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP1       ;BRANCH - if LookupTable Offset is 0 Jump Back INCREMENT_POINTERS
     nop
@@ -238,7 +229,6 @@ working_navi_cyclicLogic_HOOK:
 ;ItemID    
     lb t3, 0x0006 (a2)       ;Load ItemID
     andi t3, t3, 0x00ff
-    ;lui t6, 0x0000
     
     lw t5, 0x0004 (a2)        ;load savemask in t5
     srl t5, t5, 16           ;Only max 2 Bytes large
@@ -251,7 +241,6 @@ working_navi_cyclicLogic_HOOK:
     
 ;Savemask 
     ;mask already done
-    ;lui t6, 0x0000        ;load 0 in t6
 
  beq t4, r0, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveData has this Item => Go to INCREMENT_POINTERS/a1
     nop
@@ -261,8 +250,6 @@ working_navi_cyclicLogic_HOOK:
 @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2:
 
 
-    ;lui t6, 0x0
-    ;ori t6, 0xffff
     ori t6, r0, 0xffff
     ;the mask could be FF => save data has item if not FF
  beq t6, t5, @WNAVI_CL_SAVEMASKFF               ;BRANCH, MASK is FF, check savedata different
@@ -366,8 +353,6 @@ working_navi_cyclicLogic_HOOK:
 ;normal item ID check
     andi t4, t4, 0x00ff
     sltu t6,t4,t3   ; SaveData < ItemID?
-    ;lui t2, 0x0000
-    ;ori t2, t2, 0x0001
     ori t2, r0, 0x0001
     
  beq t6, t2, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP4       ;BRANCH If SaveData < ItemID, dont got item
@@ -391,6 +376,9 @@ working_navi_cyclicLogic_HOOK:
     lui t3, 0x0000
     sw t3, 0x0014 (t1)       ;Reset global variable 6 (Timer2)
     
+    jal @WNAVI_CL_SAVEPROGRESS       ; <== Save progress in save, this is called every minute
+    nop
+    
     li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
 
     J @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_INITJUMP
@@ -404,8 +392,6 @@ working_navi_cyclicLogic_HOOK:
     ori t6, t6, 0x0001       ;Save Flag for gotten Item
     sb t6, 0x0003 (t7)
     
-    ;lui t3, 0x0000
-    ;ori t3, 0x0001
     ori t3, r0, 0x0001
     
 ; Reset ShowText, Reset Timer, if Item is newly gotten
@@ -424,9 +410,7 @@ working_navi_cyclicLogic_HOOK:
     addiu t7, t7, 0x0008     ; 0x0004     ;Increment LookupTablePointer
     
 @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_INITJUMP:     
-    
-    ;lui t3, 0x0000
-    ;ori t3, t3, 0x00FF
+
     ori t3, r0, 0x00ff
     lb t6, 0x0003 (t7)       ;Load "IsDone" Part of LookupTable-Element
     andi t6, t6, 0x00ff      ;BitMaskFilter
@@ -449,6 +433,29 @@ working_navi_cyclicLogic_HOOK:
     
     
     
+@WNAVI_CL_SAVEPROGRESS:
+                                             ;global variable 1 (Timer), 2 (showTextFlag), 
+    la t1, working_navi_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
+                                             ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
+                                             ;6 Timer2
+    lw t6, 0x0000 (t1)       ;load global variable timer
+    li   t4, SAVE_CONTEXT 
+    
+    ; store timer in save  
+    sw  t6, (working_navi_Save_Offset)(t4)
+    addiu t4, t4, 4
+    
+    ; store show text flag
+    lw t6, 0x0004 (t1)
+    sb  t6, (working_navi_Save_Offset)(t4)
+    addiu t4, t4, 1
+    
+
+    jr ra
+    nop    
+    
+    
+    
 ;==================================================================================================
 
 .org WORKING_NAVI_DATA_CODE2  ; see changed build.asm and addresses.asm
@@ -458,8 +465,7 @@ working_navi_TextLoadLogic_HOOK:
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)
     
-    lui t2, 0x0000
-    ;ori t2, t2, 0x0000      ;just 0 in T2 for using with compares
+    lui t2, 0x0000          ;just 0 in T2 for using with compares    
     
     lui t3, 0x0093          ; TBD why did this value change since Rando 1.0?
     ori t3, t3, 0x2ea0      ;TextLoadPointerMin old: 0x4af0
@@ -512,8 +518,37 @@ working_navi_TextLoadLogic_HOOK:
 ;==================================================================================================
 
 
-working_navi_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
+@WNAVI_CL_LOADPROGRESS:
+                                             ;global variable 1 (Timer), 2 (showTextFlag), 
+    la t1, working_navi_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
+                                             ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
+                                             ;6 Timer2
+    
+    li   t4, SAVE_CONTEXT 
+    
+    ; load timer from save  
+    lw  t6, (working_navi_Save_Offset)(t4)
+    sw t6, 0x0000 (t1)       ;save global variable timer
+    addiu t4, t4, 4
+    
+    ; store show text flag
+    lbu  t6, (working_navi_Save_Offset)(t4)
+    sw t6, 0x0004 (t1)
+    addiu t4, t4, 1
+    
 
+    jr ra
+    nop    
+    
+    
+
+
+
+
+working_navi_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
+    addiu   sp, sp, -0x18
+    sw      ra, 0x0014(sp)
+    
     ; Init global variables (for cyclic logic)
     la t1, working_navi_TextPointerGlobal
     li t0, WORKING_NAVI_DATA_GENERATED_TEXT_ROM
@@ -528,6 +563,13 @@ working_navi_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
     sw t0, 0x0010 (t1)
     sw t7, 0x000C (t1)
     
+    
+    jal @WNAVI_CL_LOADPROGRESS  ; Load progress from save
+    nop
+    
+    ;Restore RA and return
+    lw      ra, 0x0014(sp)
+    addiu   sp, sp, 0x18
     jr ra
     nop
     
@@ -537,13 +579,10 @@ working_navi_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
     
 working_navi_Activate_Navi_In_Dungeons_HOOK:     ;<= hack, navi in dungeons, see working_navi.py
 
-    ;lui t3, 0x0000
-    ;ori t3, t3, 0x0141  ;0x41 <= Navi activated
-    ori t3, r0, 0x0141
-    
 
-    move v0, t3        
-    sh v0, 0x0002 (t8)
+    ori v0, r0, 0x0141       ;0x41 <= Navi activated
+     
+    sh v0, 0x0002 (t8)  ; displaced code
 
     jr ra 
     nop   
