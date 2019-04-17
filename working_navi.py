@@ -18,19 +18,21 @@ class working_navi(Rom):
     WORKING_NAVI_ROM = None
     WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM = None
     WORKING_NAVI_DATA_GENERATED_TEXT_ROM = None  #length about 0x1000 hex - to 0x80501700
-    WORKING_NAVI_CODE_CYCLICLOGIC_RAM = None
-    WORKING_NAVI_CODE_TEXTLOADLOGIC_RAM = None
-    WORKING_NAVI_CODE_NAVI_IN_DUNGEONS_RAM = None
     WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM = None
+    WORKING_NAVI_HOOK_CYCLICLOGIC_RAM = None
+    WORKING_NAVI_HOOK_TEXTLOADLOGIC_RAM = None
+    WORKING_NAVI_HOOK_NAVI_IN_DUNGEONS_RAM = None
+    WORKING_NAVI_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM = None
     
     def __init__(self, rom):
         self.WORKING_NAVI_RAM = rom.symRAM('WORKING_NAVI_GLOBALS') #0x80410000
         self.WORKING_NAVI_ROM = rom.sym('WORKING_NAVI_GLOBALS') #0x03490000
         self.WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM = rom.sym('WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM') #self.WORKING_NAVI_ROM + 0x40     #TBD from .json File?
         self.WORKING_NAVI_DATA_GENERATED_TEXT_ROM = rom.sym('WORKING_NAVI_DATA_GENERATED_TEXT_SYM') #self.WORKING_NAVI_ROM + 0x800    #length about 0x1000 hex - to 0x80501700
-        self.WORKING_NAVI_CODE_CYCLICLOGIC_RAM = rom.symRAM('WORKING_NAVI_DATA_CODE') #self.WORKING_NAVI_RAM + 0x300
-        self.WORKING_NAVI_CODE_TEXTLOADLOGIC_RAM = rom.symRAM('WORKING_NAVI_DATA_CODE2') #self.WORKING_NAVI_RAM + 0x600
-        self.WORKING_NAVI_CODE_NAVI_IN_DUNGEONS_RAM = rom.symRAM('WNAVI_CL_ACTIVATE_NAVI_IN_DUNGEONS')
+        self.WORKING_NAVI_HOOK_CYCLICLOGIC_RAM = rom.symRAM('working_navi_cyclicLogic_HOOK') #self.WORKING_NAVI_RAM + 0x300
+        self.WORKING_NAVI_HOOK_TEXTLOADLOGIC_RAM = rom.symRAM('working_navi_TextLoadLogic_HOOK') #self.WORKING_NAVI_RAM + 0x600
+        self.WORKING_NAVI_HOOK_NAVI_IN_DUNGEONS_RAM = rom.symRAM('working_navi_Activate_Navi_In_Dungeons_HOOK')
+        self.WORKING_NAVI_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM = rom.symRAM('working_navi_Extended_Init_On_Saveloads_HOOK')
         self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM = rom.symRAM('WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM')
     
     
@@ -379,24 +381,29 @@ class working_navi(Rom):
             
             #hook for TextLoad
             #I put the hooks here, because I don´t want to change code flow of main rando
-            intAddress =  int((self.WORKING_NAVI_CODE_TEXTLOADLOGIC_RAM & 0x00FFFFFF)/4)
+            intAddress =  int((self.WORKING_NAVI_HOOK_TEXTLOADLOGIC_RAM & 0x00FFFFFF)/4)
             byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
             byteArray = [0x0C] + byteArray
             rom.write_bytes(0xB52BDC, bytearray(byteArray)) #is a JAL was a jal to DMALoad Text before
             
             #hook for cyclic call
-            intAddress =  int((self.WORKING_NAVI_CODE_CYCLICLOGIC_RAM & 0x00FFFFFF)/4)
+            intAddress =  int((self.WORKING_NAVI_HOOK_CYCLICLOGIC_RAM & 0x00FFFFFF)/4)
             byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
             byteArray = [0x08] + byteArray
             rom.write_bytes(0xB12A94, bytearray(byteArray)) #is a J, was a jr before, cyclic hack jumps back to previous ret address
            
             #hook for Navi in dungeons
-            intAddress =  int((self.WORKING_NAVI_CODE_NAVI_IN_DUNGEONS_RAM & 0x00FFFFFF)/4)
+            intAddress =  int((self.WORKING_NAVI_HOOK_NAVI_IN_DUNGEONS_RAM & 0x00FFFFFF)/4)
             byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
             byteArray = [0x0C] + byteArray
             rom.write_bytes(0x00ACF648, bytearray(byteArray)) #LBU V0, 0x0002 (T8) before
            
-            
+            #hook for Extended Init on Saveloads
+            intAddress =  int((self.WORKING_NAVI_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM & 0x00FFFFFF)/4)
+            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
+            byteArray = [0x08] + byteArray
+            rom.write_bytes(0x00B0652C, bytearray(byteArray)) #is a J, was a jr before
+           
             
             
             

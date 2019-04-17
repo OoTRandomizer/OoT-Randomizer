@@ -16,8 +16,8 @@ init:
     ;ori a2, r0, 0x1a20
     
     
-    jal     working_navi_ExtendedInit
-    nop
+    ;jal     working_navi_ExtendedInit ;Now done on saveload-hook instead
+    ;nop
 
     ; Displaced code - from before the hook
     lui     v0, 0x8012

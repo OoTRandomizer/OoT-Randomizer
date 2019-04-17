@@ -29,7 +29,7 @@ WORKING_NAVI_GLOBALS:
 .area 0x4F0
 
 
-working_navi_cyclicLogic:
+working_navi_cyclicLogic_HOOK:
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)
 
@@ -454,7 +454,7 @@ working_navi_cyclicLogic:
 .org WORKING_NAVI_DATA_CODE2  ; see changed build.asm and addresses.asm
 .area 0x1F0
 
-working_navi_TextLoadLogic:
+working_navi_TextLoadLogic_HOOK:
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)
     
@@ -512,7 +512,7 @@ working_navi_TextLoadLogic:
 ;==================================================================================================
 
 
-working_navi_ExtendedInit:
+working_navi_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
 
     ; Init global variables (for cyclic logic)
     la t1, working_navi_TextPointerGlobal
@@ -535,7 +535,7 @@ working_navi_ExtendedInit:
     
     
     
-WNAVI_CL_ACTIVATE_NAVI_IN_DUNGEONS:     ;<= hack, navi in dungeons, see working_navi.py
+working_navi_Activate_Navi_In_Dungeons_HOOK:     ;<= hack, navi in dungeons, see working_navi.py
 
     ;lui t3, 0x0000
     ;ori t3, t3, 0x0141  ;0x41 <= Navi activated
