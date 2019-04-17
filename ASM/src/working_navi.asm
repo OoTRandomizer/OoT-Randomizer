@@ -332,17 +332,18 @@ working_navi_cyclicLogic_HOOK:
 @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO4:
 
 
-    ;King Zora Moved?
-    lui t6, 0x8011 
-    ori t6, t6, 0xB4AB ;get King Zora moved address
-    lb t4, 0x0000 (t6)  
-    andi t4, t4, 0x0008
+; not needed anymore, because save and load in savedata now
+;    ;King Zora Moved?
+;    lui t6, 0x8011 
+;    ori t6, t6, 0xB4AB ;get King Zora moved address
+;    lb t4, 0x0000 (t6)  
+;    andi t4, t4, 0x0008
     
- beq t4, r0, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO5 
-    nop
-    jr a1
-    nop
-@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO5:    
+; beq t4, r0, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO5 
+;    nop
+;    jr a1
+;    nop
+;@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO5:    
     
     J @WNAVI_CL_INT_CHECKSAVEDATA_RETURN
     nop  
@@ -429,7 +430,7 @@ working_navi_cyclicLogic_HOOK:
     
     ;Heres no Return needed, always go to end of lookuptable
     
-.endarea    
+   
     
     
     
@@ -450,11 +451,60 @@ working_navi_cyclicLogic_HOOK:
     sb  t6, (working_navi_Save_Offset)(t4)
     addiu t4, t4, 1
     
+;save progress bits    
+    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    lui t5, 0x0000
+    lui t8, 0x0000
+    
+    J @WNAVI_CL_SAVEPROGRESS_INITJUMP
+    nop
+    
+    
+@WNAVI_CL_SAVEPROGRESS_NEXT:    
+    
+    addiu t7, t7, 0x0008     ; 0x0004     ;Increment LookupTablePointer
+    addiu t5, t5, 1
+    
+@WNAVI_CL_SAVEPROGRESS_INITJUMP:     
 
+    ori t3, r0, 0x00ff
+    lb t6, 0x0003 (t7)       ;Load "IsDone" Part of LookupTable-Element
+    andi t6, t6, 0x00ff      ;BitMaskFilter
+    
+ beq t3, t6, @WWNAVI_CL_SAVEPROGRESS_END ; Escape at end of loop <= THIS IS THE RETURN OUT
+    nop
+    
+; here we save our progress
+   slti t3, t5, 8     ; t5 bitindex still ok?
+ bne t3, r0, @@WNAVI_CL_SAVEPROGRESS_NO_NEXTBYTE
+   nop
+   
+   ; if a byte is complete, save
+   lui t5, 0x0000
+   sb  t8, (working_navi_Save_Offset)(t4)
+   addiu t4, t4, 1
+   lui t8, 0x0000
+   
+@@WNAVI_CL_SAVEPROGRESS_NO_NEXTBYTE:
+
+ beq r0, t6, @WNAVI_CL_SAVEPROGRESS_NEXT
+    nop
+;here we build our t8 progress-saveflag-bytes
+    ori t9, r0, 1
+    sllv t9, t9, t5
+    or t8, t8, t9
+    
+    J @WNAVI_CL_SAVEPROGRESS_NEXT
+    nop
+   
+@WWNAVI_CL_SAVEPROGRESS_END: 
+
+    sb  t8, (working_navi_Save_Offset)(t4)
+   
     jr ra
     nop    
     
-    
+.endarea     
     
 ;==================================================================================================
 
@@ -555,13 +605,14 @@ working_navi_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
     sw t0, 0x0000 (t1)       ;Store T0 in Global Variable 5 Textpointer
    
     li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
-                                    ;global variable 1 (Timer), 2 (dummy), 
+                                    ;global variable 1 (Timer), 2 (showtextflag), 
     la t1, working_navi_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
                                              ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
                                              ;6 Timer2
     addiu t0, t0, WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM  ;The Textpointer Backup is not on "You are doing so well, no need to bother you" but on the first real hint
     sw t0, 0x0010 (t1)
     sw t7, 0x000C (t1)
+    sw r0, 0x0014 (t1)       ;reset global variable 6 (Timer2)
     
     
     jal @WNAVI_CL_LOADPROGRESS  ; Load progress from save

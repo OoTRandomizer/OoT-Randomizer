@@ -285,7 +285,7 @@
     "wallet_upgrade,00000030": "80404DFC",
     "warp_song_fix": "80401810",
     "warp_speedup": "80401174",
-    "working_navi_Activate_Navi_In_Dungeons_HOOK": "80410908",
+    "working_navi_Activate_Navi_In_Dungeons_HOOK": "8041090C",
     "working_navi_Extended_Init_On_Saveloads_HOOK": "804108BC",
     "working_navi_Save_Offset": "684",
     "working_navi_TextLoadLogic_HOOK": "80410800",
