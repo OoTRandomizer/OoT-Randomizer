@@ -586,6 +586,67 @@ working_navi_TextLoadLogic_HOOK:
     sw t6, 0x0004 (t1)
     addiu t4, t4, 1
     
+    
+    ;load progress bits    
+    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    lui t5, 0x0000
+    lb  t8, (working_navi_Save_Offset)(t4)
+    
+    J @WNAVI_CL_LOADPROGRESS_INITJUMP
+    nop
+    
+    
+@WNAVI_CL_LOADPROGRESS_NEXT:    
+    
+    addiu t7, t7, 0x0008     ; 0x0004     ;Increment LookupTablePointer
+    addiu t5, t5, 1
+    
+@WNAVI_CL_LOADPROGRESS_INITJUMP:     
+
+    ori t3, r0, 0x00ff
+    lb t6, 0x0003 (t7)       ;Load "IsDone" Part of LookupTable-Element
+    andi t6, t6, 0x00ff
+    
+ beq t3, t6, @WWNAVI_CL_LOADPROGRESS_END ; Escape at end of loop <= THIS IS THE RETURN OUT
+    nop
+    
+    lui t6, 0x0000
+    sb t6, 0x0003 (t7)       ;Reset "IsDone" Part of LookupTable-Element
+    
+; here we load our progress
+   slti t3, t5, 8     ; t5 bitindex still ok?
+ bne t3, r0, @@WNAVI_CL_LOADPROGRESS_NO_NEXTBYTE
+   nop
+   
+   ; if a byte is complete, next one
+   lui t5, 0x0000
+   addiu t4, t4, 1
+   
+@@WNAVI_CL_LOADPROGRESS_NO_NEXTBYTE:
+
+   lb  t8, (working_navi_Save_Offset)(t4)
+
+;here we check our t8 progress-saveflag-bits
+    ori t9, r0, 1
+    sllv t9, t9, t5
+    and t8, t8, t9
+
+ beq r0, t8, @WNAVI_CL_LOADPROGRESS_NEXT  
+    nop
+;bit set for this lookuptableentry
+    ori t6, r0, 0x0003
+    sb t6, 0x0003 (t7)       ;Load "IsDone" Part of LookupTable-Element
+    
+    J @WNAVI_CL_LOADPROGRESS_NEXT
+    nop
+   
+@WWNAVI_CL_LOADPROGRESS_END: 
+
+    ;dont overwrite ff end of lookuptable
+    ;andi t8, t8, 0x00ff      ;BitMaskFilter
+    ;sb t8, 0x0003 (t7)       ;Load "IsDone" Part of LookupTable-Element
+    
+    
 
     jr ra
     nop    
