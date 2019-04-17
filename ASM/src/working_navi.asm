@@ -382,9 +382,6 @@ working_navi_cyclicLogic_HOOK:
     lui t3, 0x0000
     sw t3, 0x0014 (t1)       ;Reset global variable 6 (Timer2)
     
-    jal @WNAVI_CL_SAVEPROGRESS       ; <== Save progress in save, this is called every minute
-    nop
-    
     li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
 
     J @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_INITJUMP
@@ -421,7 +418,7 @@ working_navi_cyclicLogic_HOOK:
     lb t6, 0x0003 (t7)       ;Load "IsDone" Part of LookupTable-Element
     andi t6, t6, 0x00ff      ;BitMaskFilter
     
- beq t3, t6, @WNAVI_AFTER_CL_HAS_ANY_PROGRESS_BEEN_MADE ; Escape at end of loop <= THIS IS THE RETURN OUT
+ beq t3, t6, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_END ; Escape at end of loop <= THIS IS THE RETURN OUT
     nop
     
 
@@ -433,8 +430,15 @@ working_navi_cyclicLogic_HOOK:
     J @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_ITEM_NOT_GOTTEN
     nop
     
-    ;Heres no Return needed, always go to end of lookuptable
     
+@WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_END:  
+
+    jal @WNAVI_CL_SAVEPROGRESS       ; <== Save progress in save, this is called every minute
+    nop
+    
+    J  @WNAVI_AFTER_CL_HAS_ANY_PROGRESS_BEEN_MADE
+    nop
+   
    
     
     

@@ -289,7 +289,7 @@ class working_navi(Rom):
                 if(LocationList[i].filter_tags != None):
                     locationvague = locationvague + ' or ' + str(LocationList[i].filter_tags[0]) + ' '
                 else:
-                    locationvague = locationvague + ' or ' + str(LocationList[i]) + ' '
+                    locationvague = locationvague + ' or check ' + str(LocationList[i]) + ' '
                                                                 
         
         #get all items with this str(location.item.name) in an array
