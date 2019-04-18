@@ -663,53 +663,67 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
 
     et_original = rom.read_bytes(0xB6FBF0, 4 * 0x0614)
 
-    entrance_updates = []
+    exit_updates = []
 
     def write_entrance(target_index, data_index, length=4):
         ti = target_index * 4
         rom.write_bytes(0xB6FBF0 + data_index * 4, et_original[ti:ti+(4*length)])
 
-    def write_scene_exit(target_index, data_index, scene_start, scene_data):
-        start_count = 0
-        current = scene_data
-        command = 0
-        while command != 0x14:
-            command = rom.read_byte(current)
-            if command == 0x00:
-                start_count = rom.read_byte(current + 1)
-            current = current + 8
-        command = 0
-        current = scene_data
-        while command != 0x14:
-            command = rom.read_byte(current)
-            if command == 0x13:
-                entrance_list = scene_start + (rom.read_int32(current + 4) & 0x00FFFFFF)
-                for _ in range (0, start_count):
-                    entrance = rom.read_int16(entrance_list)
-                    if (entrance == data_index):
-                        entrance_updates.append((entrance_list, target_index))
-                    entrance_list = entrance_list + 2
-            if command == 0x18: # Alternate header list
-                header_list = scene_start + (rom.read_int32(current + 4) & 0x00FFFFFF)
-                for alt_id in range(0,3):
-                    header_offset = rom.read_int32(header_list) & 0x00FFFFFF
-                    if header_offset != 0:
-                        write_scene_exit(target_index, data_index, scene_start, scene_start + header_offset)
-                    header_list = header_list + 4
-            current = current + 8
+    def generate_exit_lookup_table():
+        # Assumes that the last exit on a scene's exit list cannot be 0000
+        exit_table = {}
 
-    def write_scenes_exits(target_index, data_index):
+        def add_scene_exits(scene_start, offset = 0):
+
+            current = scene_start + offset
+
+            exit_list_start_off = 0
+            exit_list_end_off = 0
+        
+            command = 0
+            while command != 0x14:
+                command = rom.read_byte(current)
+                if command == 0x18: # Alternate header list
+                    header_list = scene_start + (rom.read_int32(current + 4) & 0x00FFFFFF)
+                    for alt_id in range(0,3):
+                        header_offset = rom.read_int32(header_list) & 0x00FFFFFF
+                        if header_offset != 0:
+                            add_scene_exits(scene_start, header_offset)
+                        header_list += 4
+                if command == 0x13: # Exit List
+                    exit_list_start_off = rom.read_int32(current + 4) & 0x00FFFFFF
+                if command == 0x0F: # Lighting list, follows exit list
+                    exit_list_end_off = rom.read_int32(current + 4) & 0x00FFFFFF
+                current += 8
+            
+            if exit_list_start_off == 0 or exit_list_end_off == 0:
+                return
+
+            # calculate the exit list length
+            list_length = (exit_list_end_off - exit_list_start_off) // 2
+            last_id = rom.read_int16(scene_start + exit_list_end_off - 2)
+            if last_id == 0:
+                list_length -= 1
+
+            # update 
+            addr = scene_start + exit_list_start_off
+            for _ in range(0, list_length):
+                index = rom.read_int16(addr)
+                if index not in exit_table:
+                    exit_table[index] = []
+                exit_table[index].append(addr)
+                addr += 2
+
         scene_table = 0x00B71440
         for scene in range(0x00, 0x65):
-            #really hacky
-            if data_index == 0 and scene != 0x55:
-                continue
             scene_start = rom.read_int32(scene_table + (scene * 0x14));
-            write_scene_exit(target_index, data_index, scene_start, scene_start)
-
+            add_scene_exits(scene_start)
+            
         #Special case: Jabu with the fish is entered from a cutscene hardcode
-        if data_index == 0x0028:
-            entrance_updates.append((0xAC95C2, target_index))
+        exit_table[0x0028].append(0xAC95C2)
+
+        return exit_table
+
 
     if world.shuffle_dungeon_entrances:
         symbol = rom.sym('CFG_CHILD_CONTROL_LAKE')
@@ -732,8 +746,8 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         for world_entrance in world.get_shuffled_entrances(type='Dungeon'):
             entrance = world_entrance.addresses
             dungeon = world_entrance.connected_region.addresses
-            write_scenes_exits(dungeon['forward'], entrance['forward'])
-            write_scenes_exits(entrance['return'], dungeon['return'])
+            exit_updates.append((entrance['forward'], dungeon['forward']))
+            exit_updates.append((dungeon['return'], entrance['return']))
             if "blue" in dungeon:
                 if "blue" in entrance:
                     blue_out_data =  entrance["blue"]
@@ -757,14 +771,17 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         for world_entrance in world.get_shuffled_entrances(type='Interior'):
             entrance = world_entrance.addresses
             interior = world_entrance.connected_region.addresses
-            write_scenes_exits(interior['forward'], entrance['forward'])
-            write_scenes_exits(entrance['return'], interior['return'])
+            exit_updates.append((entrance['forward'], interior['forward']))
+            exit_updates.append((interior['return'], entrance['return']))
             if "exit_address" in interior:
                 # Dynamic exits are special and have to be set on a specific address
                 rom.write_int16(interior["exit_address"], entrance['return'])
+                    
+    exit_table = generate_exit_lookup_table()
 
-    for entrance, target in entrance_updates:
-        rom.write_int16(entrance, target)
+    for k, v in [(k,v) for k, v in exit_updates if k in exit_table]:
+        for addr in exit_table[k]:
+            rom.write_int16(addr, v)
 
     # Fix text for Pocket Cucco.
     rom.write_byte(0xBEEF45, 0x0B)
