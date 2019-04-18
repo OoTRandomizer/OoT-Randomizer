@@ -1,5 +1,3 @@
-Remember this is work in progress, I´m not done yet
-
 The general Idea is that you set a delay of 30min or an hour or whatever, and if you dont get ANY required Item in that time, the first Item from the rando spoiler data that you havent got yet, I mean its location will be told by navi. The "general area" normally.
 
 You don´t want hints? Even when stuck and you would be ready to look at the spoiler file and catching more than you wanted?
@@ -8,13 +6,13 @@ I mean you just have to find a delay time that's suitable for you
 and if that suitable time runs out, you probably want to know which area to look at
 
 To be done:
--A lot of testing and some bugfixing - partly done
+-A lot of testing and some bugfixing - done
 -Clean up the code more - done
 -Manipulate the OOT Navi timer - done
 -React right to progressable items - done
 -Navi should pop up in dungeons, too - done
--Multitexts for bottles(only if multiple bottles in spoiler/rutos letter) - done
--Make the hint logic more sophisticated - to be done
+-Multitexts for bottles(only if multiple bottles in spoiler) - done
+-Make the hint logic more sophisticated - not sure if making it dynamicly location based is necessary, on hold for now
 
 For the Implementation I have 2 areas in the ROM, the lookuptable and the texts itself. The lookuptable is also dma loaded in the RAM. The lookuptable for Navi texts (8 Bytes each per text
 2 Bytes SaveDataOffset, 1 Byte SaveDataBitoffset, 1 Byte to handle by software,

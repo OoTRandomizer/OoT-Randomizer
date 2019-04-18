@@ -1235,9 +1235,16 @@ skip_GS_BGS_text:
 ;            byteArray = [0x08] + byteArray
 ;            rom.write_bytes(0xB12A94, bytearray(byteArray)) #is a J, was a jr before, cyclic hack jumps back to previous ret address
               
-
 ;            #hook for Navi in dungeons
 ;            intAddress =  int((self.WORKING_NAVI_CODE_NAVI_IN_DUNGEONS_RAM & 0x00FFFFFF)/4)
 ;            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
 ;            byteArray = [0x0C] + byteArray
 ;            rom.write_bytes(0x00ACF648, bytearray(byteArray)) #LBU V0, 0x0002 (T8) before
+            
+;            #hook for Extended Init on Saveloads
+;            intAddress =  int((self.WORKING_NAVI_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM & 0x00FFFFFF)/4)
+;            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
+;            byteArray = [0x08] + byteArray
+;            rom.write_bytes(0x00B0652C, bytearray(byteArray)) #is a J, was a jr before
+           
+
