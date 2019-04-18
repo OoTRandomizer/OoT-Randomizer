@@ -455,7 +455,9 @@ working_navi_cyclicLogic_HOOK:
     
     ; store timer in save  
     sw  t6, (working_navi_Save_Offset)(t4)
-    addiu t4, t4, 4
+    ;addiu t4, t4, 4
+    ;here we go to the next unused savedata section
+    addiu t4, t4, 0x1C  
     
     ; store show text flag
     lw t6, 0x0004 (t1)
@@ -500,7 +502,7 @@ working_navi_cyclicLogic_HOOK:
  bne t9, r0, @@WNAVI_CL_SAVEPROGRESS_NO_NEXTBYTE    ; if t4 bytecount modulo 4 is 0 => next unused savedata section
    nop
    ;here we go to the next unused savedata section
-   addiu t4, t4, 0x1C   
+   addiu t4, t4, (0x1C-4)   
    
 @@WNAVI_CL_SAVEPROGRESS_NO_NEXTBYTE:
 
@@ -596,7 +598,9 @@ working_navi_TextLoadLogic_HOOK:
     ; load timer from save  
     lw  t6, (working_navi_Save_Offset)(t4)
     sw t6, 0x0000 (t1)       ;save global variable timer
-    addiu t4, t4, 4
+    ;addiu t4, t4, 4
+    ;here we go to the next unused savedata section
+    addiu t4, t4, 0x1C  
     
     ; store show text flag
     lbu  t6, (working_navi_Save_Offset)(t4)
@@ -643,7 +647,7 @@ working_navi_TextLoadLogic_HOOK:
  bne t9, r0, @@WNAVI_CL_LOADPROGRESS_NO_NEXTBYTE    ; if t4 bytecount modulo 4 is 0 => next unused savedata section
    nop
    ;here we go to the next unused savedata section
-   addiu t4, t4, 0x1C  
+   addiu t4, t4, (0x1C-4)  
    
 @@WNAVI_CL_LOADPROGRESS_NO_NEXTBYTE:
 

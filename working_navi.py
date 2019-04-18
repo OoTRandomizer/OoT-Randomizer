@@ -252,10 +252,11 @@ class working_navi(Rom):
         
         LocationList = list()
         
-        if location.item.info.bottle or (location.item.name=='Bottle with Letter'): #TBD test
+        #Bottle with Letter / Rutos letter should be handled seperately since you can't use it as bottle
+        if location.item.info.bottle: # or (location.item.name=='Bottle with Letter'): #TBD test
             for (sphere_nr, sphere) in spoiler.playthrough.items():
                 for (locationB) in sphere:
-                    if locationB.item.info.bottle or (locationB.item.name=='Bottle with Letter'):
+                    if locationB.item.info.bottle:# or (locationB.item.name=='Bottle with Letter'):
                         LocationList.append(locationB)
         else:
             for (sphere_nr, sphere) in spoiler.playthrough.items():
@@ -275,9 +276,14 @@ class working_navi(Rom):
         locationexact = 'check '
         locationexact = locationexact + str(LocationList[0])
         
-        if(location != LocationList[0]):  # get multiple locations if its not the first Location in the row, in which you can get the item
-            for i in range(1,len(LocationList)):
-                locationexact = locationexact + ' or ' + str(LocationList[i]) + ' '
+        LocationToUseCount = len(LocationList)
+        for i in range(0,LocationToUseCount):
+            if(location == LocationList[i]):
+                LocationToUseCount = i + 1 # get multiple locations if its not the first Location in the row, in which you can get the item
+                break
+        
+        for i in range(1,LocationToUseCount):
+            locationexact = locationexact + ' or ' + str(LocationList[i]) + ' '
             
         locationvague = locationexact
         
@@ -285,15 +291,21 @@ class working_navi(Rom):
         if(LocationList[0].filter_tags != None):
             locationvague = 'Maybe we find something in ' + str(LocationList[0].filter_tags[0])
             
-            if(location != LocationList[0]):  # get multiple locations if its not the first Location in the row, in which you can get the item
-                for locationC in RemoveList:
-                    LocationList.remove(locationC)   
-                for i in range(1,len(LocationList)):
-                    if(LocationList[i].filter_tags != None):
-                        locationvague = locationvague + ' or ' + str(LocationList[i].filter_tags[0]) + ' '
-                    else:
-                        locationvague = locationvague + ' or check ' + str(LocationList[i]) + ' '
-                                                                    
+            for locationC in RemoveList:
+                LocationList.remove(locationC)   
+                
+            LocationToUseCount = len(LocationList)
+            for i in range(0,LocationToUseCount):
+                if(location == LocationList[i]):
+                    LocationToUseCount = i + 1 # get multiple locations if its not the first Location in the row, in which you can get the item
+                    break    
+                
+            for i in range(1,LocationToUseCount):
+                if(LocationList[i].filter_tags != None):
+                    locationvague = locationvague + ' or ' + str(LocationList[i].filter_tags[0]) + ' '
+                else:
+                    locationvague = locationvague + ' or check ' + str(LocationList[i]) + ' '
+                                                                
             
         #get all items with this str(location.item.name) in an array
         #for the first one, normal location output
