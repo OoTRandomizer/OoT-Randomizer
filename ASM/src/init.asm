@@ -9,7 +9,7 @@ init:
     lui a1, 0x0349
     lui a0, 0x8041
     jal 0x80000DF0          ;DMALoad JAL 0x80000DF0
-    lui a2, 0x0001
+    lui a2, 0x0001          ; TBD make sure its the right size - Texts don't have to be loaded in
     ;li a1, 0x01f818e0
     ;lui a0, 0x8041
     ;jal 0x80000DF0          ;DMALoad JAL 0x80000DF0

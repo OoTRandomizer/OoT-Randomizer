@@ -275,23 +275,26 @@ class working_navi(Rom):
         locationexact = 'check '
         locationexact = locationexact + str(LocationList[0])
         
-        for i in range(1,len(LocationList)):
-            locationexact = locationexact + ' or ' + str(LocationList[i]) + ' '
-        
+        if(location != LocationList[0]):  # get multiple locations if its not the first Location in the row, in which you can get the item
+            for i in range(1,len(LocationList)):
+                locationexact = locationexact + ' or ' + str(LocationList[i]) + ' '
+            
         locationvague = locationexact
+        
         
         if(LocationList[0].filter_tags != None):
             locationvague = 'Maybe we find something in ' + str(LocationList[0].filter_tags[0])
             
-            for locationC in RemoveList:
-                LocationList.remove(locationC)   
-            for i in range(1,len(LocationList)):
-                if(LocationList[i].filter_tags != None):
-                    locationvague = locationvague + ' or ' + str(LocationList[i].filter_tags[0]) + ' '
-                else:
-                    locationvague = locationvague + ' or check ' + str(LocationList[i]) + ' '
-                                                                
-        
+            if(location != LocationList[0]):  # get multiple locations if its not the first Location in the row, in which you can get the item
+                for locationC in RemoveList:
+                    LocationList.remove(locationC)   
+                for i in range(1,len(LocationList)):
+                    if(LocationList[i].filter_tags != None):
+                        locationvague = locationvague + ' or ' + str(LocationList[i].filter_tags[0]) + ' '
+                    else:
+                        locationvague = locationvague + ' or check ' + str(LocationList[i]) + ' '
+                                                                    
+            
         #get all items with this str(location.item.name) in an array
         #for the first one, normal location output
         #for the others, combine the locations
@@ -310,7 +313,7 @@ class working_navi(Rom):
         # Save Navi Texts in Rom
         CurTextPointerBaseA = self.WORKING_NAVI_DATA_GENERATED_TEXT_ROM
              
-        self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, "You are doing so well, no need to bother you", "You are doing so well, no need to bother you", rom)
+        self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, "I have faith in you, you can progress", "YI have faith in you, you can progress", rom)
         CurTextPointerBaseA += self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM
         
         # set LookUp Table for Navi Texts        
@@ -349,7 +352,7 @@ class working_navi(Rom):
                                 outfile.write('\n %s: %s : %s' % (sphere_nr, location, location.item ) )
                 
                      
-        self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, "We got everything we need, lets beat ganon", "We got everything we need, lets beat ganon", rom) 
+        self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, "We got everything we need, lets beat Ganon", "We got everything we need, lets beat Ganon", rom) 
         CurTextPointerBaseA += self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM             
           
         #end of LookUp Table

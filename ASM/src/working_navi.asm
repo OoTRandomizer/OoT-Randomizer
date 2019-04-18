@@ -6,7 +6,9 @@
         ;2 Bytes SaveDataOffset, 1 Byte SaveDataBitoffset, 1 Byte to handle by software,
         ;2 Bytes SavedataMask, 1 Byte ItemID, 1 Byte Sphere - for each required Item)
 
-.definelabel working_navi_Save_Offset, 0xD4 + (52 * 0x1C) ;no chests or switches in Links house, so we can use that space hopefully
+.definelabel working_navi_Save_Offset, 0xD4 + (52 * 0x1C) +0x10 
+        ;no chests or switches in Links house, so we can use that space hopefully
+        ;right, I remembered Cow in House.... so I´m only going to use unused spaces after all
 
 
 
@@ -494,6 +496,12 @@ working_navi_cyclicLogic_HOOK:
    addiu t4, t4, 1
    lui t8, 0x0000
    
+   andi t9, t4, 0x0003
+ bne t9, r0, @@WNAVI_CL_SAVEPROGRESS_NO_NEXTBYTE    ; if t4 bytecount modulo 4 is 0 => next unused savedata section
+   nop
+   ;here we go to the next unused savedata section
+   addiu t4, t4, 0x1C   
+   
 @@WNAVI_CL_SAVEPROGRESS_NO_NEXTBYTE:
 
  beq r0, t6, @WNAVI_CL_SAVEPROGRESS_NEXT
@@ -630,6 +638,12 @@ working_navi_TextLoadLogic_HOOK:
    ; if a byte is complete, next one
    lui t5, 0x0000
    addiu t4, t4, 1
+   
+   andi t9, t4, 0x0003
+ bne t9, r0, @@WNAVI_CL_LOADPROGRESS_NO_NEXTBYTE    ; if t4 bytecount modulo 4 is 0 => next unused savedata section
+   nop
+   ;here we go to the next unused savedata section
+   addiu t4, t4, 0x1C  
    
 @@WNAVI_CL_LOADPROGRESS_NO_NEXTBYTE:
 
