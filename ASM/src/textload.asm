@@ -2,27 +2,42 @@
 ;==================================================================================================
 
 
+TABLE_START  equ 0xB849EC
+TABLE_START_RAM  equ 0x8010A94C
+TEXT_START  equ 0x92D000
+
 TextLoadLogic_HOOK:
-    addiu   sp, sp, -0x18
+    addiu   sp, sp, -0x1c
     sw      ra, 0x0014(sp)
+    sw      a2, 0x0018(sp)
     
-    lui t2, 0x0000          ;just 0 in T2 for using with compares    
  
 ;====Saria Repeats Hints==== ;TBD only if activated
-;TEXT_START = 0x92D000
-;TABLE_SIZE_LIMIT = 0x43A8  
+;I want to make sure the Saria Texts get actually displayed before saving the id
+;The Textpointer borders can change on every seed/version, so I have to dynamicly read them
 
-    lui t3, 0x0092         
-    ori t3, t3, 0xD000      
-    slt t1, t3, a1         
+
+    ;lui t3, 0x0092         
+    ;ori t3, t3, 0xD000
     
+    ori a2, r0, 0x0401
+    jal @get_TextTablePointer_ByIndex
+    nop      
+    slt t1, t3, a1         
+    lui t2, 0x0000          ;just 0 in T2 for using with compares    
+ 
  beq t1, t2, @@TEXTLOAD_WNAVI      ;BRANCH if reqested Textpointer A1 < Min
     nop
     
-    lui t3, 0x0093         
-    ori t3, t3, 0x13A8     
+    ;lui t3, 0x0093         
+    ;ori t3, t3, 0x13A8   
+      
+    ori a2, r0, 0x04FF
+    jal @get_TextTablePointer_ByIndex
+    nop
     slt t1, a1, t3          ;A1 < T3 (Max) req Textpointer A1 < Max 
-
+    lui t2, 0x0000          ;just 0 in T2 for using with compares    
+ 
  beq t1, t2, @@TEXTLOAD_WNAVI      ;BRANCH if Textpointer < Max 
     nop
     
@@ -38,14 +53,16 @@ TextLoadLogic_HOOK:
     lui t3, 0x0093          ; TBD why did this value change since Rando 1.0?
     ori t3, t3, 0x2ea0      ;TextLoadPointerMin old: 0x4af0
     slt t1, t3, a1          ;comparison, A1 = requested Textloadpointer of the game
-    
+    lui t2, 0x0000          ;just 0 in T2 for using with compares    
+ 
  beq t1, t2, @@WNAVI_TLL_LOAD_TEXT      ;BRANCH if reqested Textpointer A1 < Min NaviSection: Jump LOAD_TEXT
     nop
     
     lui t3, 0x0093          ; TBD why did this value change since Rando 1.0?
     ori t3, t3, 0x37ac      ; TextLoadPointer max old: 0x5400
     slt t1, a1, t3          ;A1 < T3 (Max) req Textpointer A1 < Max NaviSection
-
+    lui t2, 0x0000          ;just 0 in T2 for using with compares    
+ 
  beq t1, t2, @@WNAVI_TLL_LOAD_TEXT      ;BRANCH if Textpointer < Max => Jump LOAD_TEXT
     nop
     
@@ -76,15 +93,37 @@ TextLoadLogic_HOOK:
 ;=======Load Text=======
     
 @@WNAVI_TLL_LOAD_TEXT:        ;TARGET LOAD_TEXT
+    lw      a2, 0x0018(sp)
     jal 0x80000DF0          ;DMALoad Text in
     nop
     
          
     ;Restore RA and return
     lw      ra, 0x0014(sp)
-    addiu   sp, sp, 0x18
+    addiu   sp, sp, 0x1c
     jr      ra
     nop
 
 ;==================================================================================================
 
+
+
+@get_TextTablePointer_ByIndex:
+
+    ;entry_offset = TABLE_START + 8 * index
+    li t1, TABLE_START_RAM
+    ori t2, r0, 0x0008
+    MULTU t2, a2
+    ;offset = bytes_to_int(entry[5:8])
+    mflo t5
+    addu t3, t1, t5
+    lw t3, 0x0004 (t3)
+    lui t5, 0x00ff
+    ori t5, t5, 0xffff
+    and t3, t3, t5
+    li t4, TEXT_START
+    addu t3, t3, t4
+    
+    jr ra
+    nop
+    
