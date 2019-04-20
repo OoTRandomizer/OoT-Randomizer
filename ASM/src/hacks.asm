@@ -1251,10 +1251,15 @@ skip_GS_BGS_text:
 ; ==================================================================================================
 ; saria repeats hints
 ; ==================================================================================================
-.orga 0x00BD7270      ;RAM 80392268 - here the A button is checked on gossip stones
+.orga 0x00BD7268      ;RAM 80392258 - here the A button is checked on gossip stones
     jal     saria_hints_Button_Hook
     nop
+ beq T8, AT, saria_hints_Button_hook_BeqTarget
+    nop
     
+    
+.orga 0x00BD7280
+    saria_hints_Button_hook_BeqTarget:
     
     
 
