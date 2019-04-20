@@ -1219,16 +1219,18 @@ skip_GS_BGS_text:
     
 ;accept86
 ; ==================================================================================================
+; working Navi/Saria repeats hints
+; ==================================================================================================
+;hook for TextLoad
+.orga 0xB52BDC
+    jal     TextLoadLogic_HOOK    ;is a JAL was a jal to DMALoad Text before
+    
+    
+; ==================================================================================================
 ; working Navi - see working_navi.py
 ; ==================================================================================================
       
-;            #hook for TextLoad
-;            #I put the hooks here, because I don´t want to change code flow of main rando            
-;            intAddress =  int((self.WORKING_NAVI_CODE_TEXTLOADLOGIC_RAM & 0x00FFFFFF)/4)
-;            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
-;            byteArray = [0x0C] + byteArray
-;            rom.write_bytes(0xB52BDC, bytearray(byteArray)) #is a JAL was a jal to DMALoad Text before
-            
+;            #I put the hooks here, because I don´t want to change code flow of main rando 
 ;            #hook for cyclic call
 ;            intAddress =  int((self.WORKING_NAVI_CODE_CYCLICLOGIC_RAM & 0x00FFFFFF)/4)
 ;            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
@@ -1247,21 +1249,12 @@ skip_GS_BGS_text:
 ;            byteArray = [0x08] + byteArray
 ;            rom.write_bytes(0x00B0652C, bytearray(byteArray)) #is a J, was a jr before
            
+           
+           
 ;accept86
 ; ==================================================================================================
 ; saria repeats hints
 ; ==================================================================================================
-.orga 0x00BD7268      ;RAM 80392258 - here the A button is checked on gossip stones
-    jal     saria_hints_Button_Hook
-    nop
- beq T8, AT, saria_hints_Button_hook_BeqTarget
-    nop
-    
-    
-.orga 0x00BD7280
-    saria_hints_Button_hook_BeqTarget:
-    
-    
 
 
 

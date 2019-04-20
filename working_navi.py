@@ -30,7 +30,7 @@ class working_navi(Rom):
         self.WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM = rom.sym('WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM') #self.WORKING_NAVI_ROM + 0x40     #TBD from .json File?
         self.WORKING_NAVI_DATA_GENERATED_TEXT_ROM = rom.sym('WORKING_NAVI_DATA_GENERATED_TEXT_SYM') #self.WORKING_NAVI_ROM + 0x800    #length about 0x1000 hex - to 0x80501700
         self.WORKING_NAVI_HOOK_CYCLICLOGIC_RAM = rom.symRAM('working_navi_cyclicLogic_HOOK') #self.WORKING_NAVI_RAM + 0x300
-        self.WORKING_NAVI_HOOK_TEXTLOADLOGIC_RAM = rom.symRAM('working_navi_TextLoadLogic_HOOK') #self.WORKING_NAVI_RAM + 0x600
+        #self.WORKING_NAVI_HOOK_TEXTLOADLOGIC_RAM = rom.symRAM('working_navi_TextLoadLogic_HOOK') #self.WORKING_NAVI_RAM + 0x600
         self.WORKING_NAVI_HOOK_NAVI_IN_DUNGEONS_RAM = rom.symRAM('working_navi_Activate_Navi_In_Dungeons_HOOK')
         self.WORKING_NAVI_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM = rom.symRAM('working_navi_Extended_Init_On_Saveloads_HOOK')
         self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM = rom.symRAM('WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM')
@@ -394,12 +394,14 @@ class working_navi(Rom):
             rom.write_bytes(self.WORKING_NAVI_ROM, byteArray)
             
             
-            #hook for TextLoad
+            #hook for TextLoad - this is done in hacks.asm now
+            
+            #intAddress =  int((self.WORKING_NAVI_HOOK_TEXTLOADLOGIC_RAM & 0x00FFFFFF)/4)
+            #byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
+            #byteArray = [0x0C] + byteArray
+            #rom.write_bytes(0xB52BDC, bytearray(byteArray)) #is a JAL was a jal to DMALoad Text before
+            
             #I put the hooks here, because I don´t want to change code flow of main rando
-            intAddress =  int((self.WORKING_NAVI_HOOK_TEXTLOADLOGIC_RAM & 0x00FFFFFF)/4)
-            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
-            byteArray = [0x0C] + byteArray
-            rom.write_bytes(0xB52BDC, bytearray(byteArray)) #is a JAL was a jal to DMALoad Text before
             
             #hook for cyclic call
             intAddress =  int((self.WORKING_NAVI_HOOK_CYCLICLOGIC_RAM & 0x00FFFFFF)/4)

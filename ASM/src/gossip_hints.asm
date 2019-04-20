@@ -1,3 +1,8 @@
+.area 0x10
+   gossip_Globals:  .word  0x0
+.endarea   
+
+
 gossip_hints:
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)
@@ -7,6 +12,11 @@ gossip_hints:
     ; Get Message ID
     lh      t7, 0x001C(s0)
     andi    t8, t7, 0x00FF
+    
+    la t1, gossip_Globals   ;accept86 needed for saria
+    sw t8, 0x0000 (t1)
+    
+    
     li      at, 0xFF
     bne     t8, at, @@not_grotto
     addiu   v0, t8, 0x0400
