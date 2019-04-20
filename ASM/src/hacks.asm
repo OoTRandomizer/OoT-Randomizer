@@ -943,7 +943,7 @@ skip_GS_BGS_text:
 ; Gossip Stone Hints
 ;==================================================================================================
 
-.org 0xEE7B84
+.org 0xEE7B84           ; 0x801EE084
     jal     gossip_hints
     lw      a0, 0x002C(sp) ; global context
     nop
@@ -1217,7 +1217,7 @@ skip_GS_BGS_text:
     
     
     
-    
+;accept86
 ; ==================================================================================================
 ; working Navi - see working_navi.py
 ; ==================================================================================================
@@ -1247,4 +1247,16 @@ skip_GS_BGS_text:
 ;            byteArray = [0x08] + byteArray
 ;            rom.write_bytes(0x00B0652C, bytearray(byteArray)) #is a J, was a jr before
            
+;accept86
+; ==================================================================================================
+; saria repeats hints
+; ==================================================================================================
+.orga 0x00BD7270      ;RAM 80392268 - here the A button is checked on gossip stones
+    jal     saria_hints_Button_Hook
+    nop
+    
+    
+    
+
+
 

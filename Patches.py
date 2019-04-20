@@ -37,10 +37,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
         rom.write_bytes(0x8A7C00, keatonBytes)
 
 
-
-    
-
-
     # Force language to be English in the event a Japanese rom was submitted
     rom.write_byte(0x3E, 0x45)
     rom.force_patch.append(0x3E)
