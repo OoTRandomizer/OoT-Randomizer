@@ -70,23 +70,23 @@ SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = Textpointer, a2 = TextID
     li   t4, SAVE_CONTEXT 
     
     ;get byteoffset
-    srl t1, a1, 3       ; equals / 8
+    srl t3, a1, 5       ; equals / 32
     
     ;get Bitoffset
-    andi t2, a1, 0x7    ; equals % 8
+    andi t2, a1, 0x1F    ; equals % 32
     
     ;calc byte to save
-    ori t6, t6, 0x1C
-    multu t1, t6
+    ori t6, r0, 0x1C
+    multu t3, t6
     mflo t6
     addu t4, t4, t6
-    lb t3, (Saria_Gossip_Save_Offset) (t4)
+    lw t3, (Saria_Gossip_Save_Offset) (t4)
     ori t5, r0, 0x0001
     sllv t5, t5, t2
     or t3, t3, t5
     
     ;save
-    sb t3, (Saria_Gossip_Save_Offset) (t4)    
+    sw t3, (Saria_Gossip_Save_Offset) (t4)    
     
     jr ra
     nop
