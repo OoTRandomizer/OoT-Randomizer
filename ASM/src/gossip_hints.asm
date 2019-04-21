@@ -11,12 +11,12 @@ gossip_hints:
 
     ; Get Message ID
     lh      t7, 0x001C(s0)
-    andi    t8, t7, 0x00FF
     
     la t1, gossip_Globals   ;accept86 needed for saria
-    sw t8, 0x0000 (t1)
+    sw t7, 0x0000 (t1)
     
-    
+    andi    t8, t7, 0x00FF
+
     li      at, 0xFF
     bne     t8, at, @@not_grotto
     addiu   v0, t8, 0x0400

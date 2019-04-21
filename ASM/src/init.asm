@@ -15,10 +15,10 @@ init:
     ;jal 0x80000DF0          ;DMALoad JAL 0x80000DF0
     ;ori a2, r0, 0x1a20
     
-    
     ;jal     working_navi_ExtendedInit ;Now done on saveload-hook instead
     ;nop
-
+    
+    
     ; Displaced code - from before the hook
     lui     v0, 0x8012
     addiu   v0, v0, 0xD2A0

@@ -1,9 +1,8 @@
 ;Accept86 WorkingNavi / Saria Repeats hints
 ;==================================================================================================
 
-
 TABLE_START  equ 0xB849EC
-TABLE_START_RAM  equ 0x8010A94C
+TABLE_START_RAM  equ 0x8010EA8C
 TEXT_START  equ 0x92D000
 
 TextLoadLogic_HOOK:
@@ -11,16 +10,12 @@ TextLoadLogic_HOOK:
     sw      ra, 0x0014(sp)
     sw      a2, 0x0018(sp)
     
- 
 ;====Saria Repeats Hints==== ;TBD only if activated
 ;I want to make sure the Saria Texts get actually displayed before saving the id
 ;The Textpointer borders can change on every seed/version, so I have to dynamicly read them
 
 
-    ;lui t3, 0x0092         
-    ;ori t3, t3, 0xD000
-    
-    ori a2, r0, 0x0401
+    ori a2, r0, 0x0401                  ;gossip index low
     jal @get_TextTablePointer_ByIndex
     nop      
     slt t1, t3, a1         
@@ -29,10 +24,7 @@ TextLoadLogic_HOOK:
  beq t1, t2, @@TEXTLOAD_WNAVI      ;BRANCH if reqested Textpointer A1 < Min
     nop
     
-    ;lui t3, 0x0093         
-    ;ori t3, t3, 0x13A8   
-      
-    ori a2, r0, 0x04FF
+    ori a2, r0, 0x04FF                  ;gossip index high
     jal @get_TextTablePointer_ByIndex
     nop
     slt t1, a1, t3          ;A1 < T3 (Max) req Textpointer A1 < Max 
@@ -44,7 +36,7 @@ TextLoadLogic_HOOK:
 ;=>Gossip Text, save for saria
     jal SARIA_HINTS_GOSSIP_READING
     nop
-    J @@WNAVI_TLL_LOAD_TEXT
+    J @@TLL_LOAD_TEXT
     nop
     
     
@@ -55,7 +47,7 @@ TextLoadLogic_HOOK:
     slt t1, t3, a1          ;comparison, A1 = requested Textloadpointer of the game
     lui t2, 0x0000          ;just 0 in T2 for using with compares    
  
- beq t1, t2, @@WNAVI_TLL_LOAD_TEXT      ;BRANCH if reqested Textpointer A1 < Min NaviSection: Jump LOAD_TEXT
+ beq t1, t2, @@TLL_LOAD_TEXT      ;BRANCH if reqested Textpointer A1 < Min NaviSection: Jump LOAD_TEXT
     nop
     
     lui t3, 0x0093          ; TBD why did this value change since Rando 1.0?
@@ -63,7 +55,7 @@ TextLoadLogic_HOOK:
     slt t1, a1, t3          ;A1 < T3 (Max) req Textpointer A1 < Max NaviSection
     lui t2, 0x0000          ;just 0 in T2 for using with compares    
  
- beq t1, t2, @@WNAVI_TLL_LOAD_TEXT      ;BRANCH if Textpointer < Max => Jump LOAD_TEXT
+ beq t1, t2, @@TLL_LOAD_TEXT      ;BRANCH if Textpointer < Max => Jump LOAD_TEXT
     nop
     
                             ; T7 Global Variable 5 Textpointer
@@ -81,18 +73,16 @@ TextLoadLogic_HOOK:
     sw t3, 0x0004 (t2) ;ShowTextFlag Reset
     
     
-    
     li t0, WORKING_NAVI_DATA_GENERATED_TEXT_ROM     ; if Text says "You are doing so well..." / Textpointer is on base, dont reset timer
- beq t0, a1, @@WNAVI_TLL_LOAD_TEXT
+ beq t0, a1, @@TLL_LOAD_TEXT
     nop
     
     sw t3, 0x0000 (t2) ;Timer1 Reset
 
 
-
 ;=======Load Text=======
     
-@@WNAVI_TLL_LOAD_TEXT:        ;TARGET LOAD_TEXT
+@@TLL_LOAD_TEXT:        ;TARGET LOAD_TEXT
     lw      a2, 0x0018(sp)
     jal 0x80000DF0          ;DMALoad Text in
     nop
@@ -107,17 +97,18 @@ TextLoadLogic_HOOK:
 ;==================================================================================================
 
 
-
 @get_TextTablePointer_ByIndex:
 
-    ;entry_offset = TABLE_START + 8 * index
     li t1, TABLE_START_RAM
     ori t2, r0, 0x0008
-    MULTU t2, a2
-    ;offset = bytes_to_int(entry[5:8])
-    mflo t5
-    addu t3, t1, t5
-    lw t3, 0x0004 (t3)
+    
+@@get_TextTablePointer_ByIndex_inc:
+    addiu t1, t1, 8 
+    lh t3, 0x0000 (t1)
+ bne t3, a2, @@get_TextTablePointer_ByIndex_inc 
+    nop
+
+    lw t3, 0x0004 (t1)
     lui t5, 0x00ff
     ori t5, t5, 0xffff
     and t3, t3, t5
@@ -127,3 +118,6 @@ TextLoadLogic_HOOK:
     jr ra
     nop
     
+    
+    
+
