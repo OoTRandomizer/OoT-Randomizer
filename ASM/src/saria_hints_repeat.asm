@@ -2,12 +2,12 @@
 ;==================================================================================================
     
     
-SARIA_HINTS_GOSSIP_READING:
+SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = Textpointer, a2 = TextID
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)
     
     ; Get Message Text Index offset
-    move a2, a1
+
     jal @get_SariaIndexOffset_ByTextPointer
     nop
 
@@ -20,10 +20,9 @@ SARIA_HINTS_GOSSIP_READING:
     
     
     
-@get_SariaIndexOffset_ByTextPointer: ; arguments: a2 is gossip Textpointer to find
+@get_SariaIndexOffset_ByTextPointer: ; arguments: a1 is gossip Textpointer to find
 
     li t1, TABLE_START_RAM
-    ori t2, r0, 0x0008
     ori t4, r0, 0x0401  ;TextStart GossipTexts
     
 @@get_SariaIndexOffset_ByID_inc:
@@ -46,7 +45,7 @@ SARIA_HINTS_GOSSIP_READING:
     addu t3, t3, t4
     addiu t7, t7, 0x0001
     
- bne t3, a2, @@get_SariaIndexOffset_ByID_inc2 
+ bne t3, a1, @@get_SariaIndexOffset_ByID_inc2 
     nop
     
     ;now in t7 is the indexoffset
