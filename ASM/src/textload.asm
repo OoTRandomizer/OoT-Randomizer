@@ -1,10 +1,6 @@
 ;Accept86 WorkingNavi / Saria Repeats hints
 ;==================================================================================================
 
-TABLE_START  equ 0xB849EC
-TABLE_START_RAM  equ 0x8010EA8C
-TEXT_START  equ 0x92D000
-
 TextLoadLogic_HOOK:
     addiu   sp, sp, -0x1c
     sw      ra, 0x0014(sp)
@@ -15,8 +11,8 @@ TextLoadLogic_HOOK:
 ;The Textpointer borders can change on every seed/version, so I have to dynamicly read them
 
 
-    ori a2, r0, 0x0401                  ;gossip index low
-    jal @get_TextTablePointer_ByIndex
+    ori a2, r0, 0x0401                  ;gossip Text ID low
+    jal @get_TextTablePointer_ByID
     nop      
     slt t1, t3, a1         
     lui t2, 0x0000          ;just 0 in T2 for using with compares    
@@ -24,8 +20,8 @@ TextLoadLogic_HOOK:
  beq t1, t2, @@TEXTLOAD_WNAVI      ;BRANCH if reqested Textpointer A1 < Min
     nop
     
-    ori a2, r0, 0x04FF                  ;gossip index high
-    jal @get_TextTablePointer_ByIndex
+    ori a2, r0, 0x04FF                  ;gossip Text ID high
+    jal @get_TextTablePointer_ByID
     nop
     slt t1, a1, t3          ;A1 < T3 (Max) req Textpointer A1 < Max 
     lui t2, 0x0000          ;just 0 in T2 for using with compares    
@@ -42,16 +38,18 @@ TextLoadLogic_HOOK:
     
 @@TEXTLOAD_WNAVI:    
 ;====Working Navi=====   ;TBD only if activated
-    lui t3, 0x0093          ; TBD why did this value change since Rando 1.0?
-    ori t3, t3, 0x2ea0      ;TextLoadPointerMin old: 0x4af0
+    ori a2, r0, 0x0141                  ;navi Text ID low
+    jal @get_TextTablePointer_ByID
+    nop      
     slt t1, t3, a1          ;comparison, A1 = requested Textloadpointer of the game
     lui t2, 0x0000          ;just 0 in T2 for using with compares    
  
  beq t1, t2, @@TLL_LOAD_TEXT      ;BRANCH if reqested Textpointer A1 < Min NaviSection: Jump LOAD_TEXT
     nop
     
-    lui t3, 0x0093          ; TBD why did this value change since Rando 1.0?
-    ori t3, t3, 0x37ac      ; TextLoadPointer max old: 0x5400
+    ori a2, r0, 0x015f                  ;navi Text ID high
+    jal @get_TextTablePointer_ByID
+    nop      
     slt t1, a1, t3          ;A1 < T3 (Max) req Textpointer A1 < Max NaviSection
     lui t2, 0x0000          ;just 0 in T2 for using with compares    
  
@@ -97,15 +95,15 @@ TextLoadLogic_HOOK:
 ;==================================================================================================
 
 
-@get_TextTablePointer_ByIndex:
+@get_TextTablePointer_ByID:     ;arguments: a2 is the Text ID
 
     li t1, TABLE_START_RAM
     ori t2, r0, 0x0008
     
-@@get_TextTablePointer_ByIndex_inc:
+@@get_TextTablePointer_ByID_inc:
     addiu t1, t1, 8 
     lh t3, 0x0000 (t1)
- bne t3, a2, @@get_TextTablePointer_ByIndex_inc 
+ bne t3, a2, @@get_TextTablePointer_ByID_inc 
     nop
 
     lw t3, 0x0004 (t1)
@@ -117,7 +115,6 @@ TextLoadLogic_HOOK:
     
     jr ra
     nop
-    
     
     
 
