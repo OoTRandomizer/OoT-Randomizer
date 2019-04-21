@@ -1492,6 +1492,21 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
 
 
 
+
+    #EDIT accept86 working_navi/Saria Hints
+    symbol = rom.sym('WORKING_NAVI_CONDITION')
+    if world.settings.working_navi:
+        rom.write_int32(symbol, 1)
+    else:
+        rom.write_int32(symbol, 0)
+        
+    symbol = rom.sym('SARIA_HINTS_CONDITION')
+    if world.settings.saria_repeats_hints:
+        rom.write_int32(symbol, 1)
+    else:
+        rom.write_int32(symbol, 0)
+
+
     #EDIT accept86 working_navi
     #rom.write_bytes(0x03500400, [0x1, 0x2, 0x3, 0x4])
     if world.settings.working_navi:

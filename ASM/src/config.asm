@@ -48,6 +48,17 @@ RAINBOW_BRIDGE_CONDITION:
 ; 4 = Vanilla
 ; 5 = Tokens
 
+
+;accept86
+SARIA_HINTS_CONDITION:
+.word 0x00
+
+
+WORKING_NAVI_CONDITION:
+.word 0x00
+
+
+
 GOSSIP_HINT_CONDITION:
 .word 0x00
 ; 0 = Mask of Truth

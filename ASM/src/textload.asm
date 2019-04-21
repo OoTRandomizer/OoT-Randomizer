@@ -1,15 +1,20 @@
 ;Accept86 WorkingNavi / Saria Repeats hints
 ;==================================================================================================
 
+
 TextLoadLogic_HOOK:
-    addiu   sp, sp, -0x1c
+    addiu   sp, sp, -0x20
     sw      ra, 0x0014(sp)
     sw      a2, 0x0018(sp)
+    sw      a1, 0x001c(sp)
     
 ;====Saria Repeats Hints==== ;TBD only if activated
 ;I want to make sure the Saria Texts get actually displayed before saving the id
 ;The Textpointer borders can change on every seed/version, so I have to dynamicly read them
 
+    lw t2, SARIA_HINTS_CONDITION
+ beq t2, r0, @@TEXTLOAD_WNAVI
+    nop
 
     jal @checkGossipText
     nop
@@ -20,12 +25,18 @@ TextLoadLogic_HOOK:
 ;=>Gossip Text, save for saria
     jal SARIA_HINTS_GOSSIP_READING
     nop
+    lw      a1, 0x001c(sp)          ;restore a1
     J @@TLL_LOAD_TEXT
     nop
     
     
 @@TEXTLOAD_WNAVI:    
 ;====Working Navi=====   ;TBD only if activated
+
+    lw t2, WORKING_NAVI_CONDITION
+ beq t2, r0, @@TLL_LOAD_TEXT
+    nop
+
     ori a2, r0, 0x0141                  ;navi Text ID low
     jal @get_TextTablePointer_ByID
     nop      
@@ -74,7 +85,7 @@ TextLoadLogic_HOOK:
          
     ;Restore RA and return
     lw      ra, 0x0014(sp)
-    addiu   sp, sp, 0x1c
+    addiu   sp, sp, 0x20
     jr      ra
     nop
 
