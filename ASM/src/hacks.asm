@@ -1256,5 +1256,8 @@ skip_GS_BGS_text:
 ; saria repeats hints
 ; ==================================================================================================
 
-
+;hook for TextID changing
+.orga 0xB529FC
+    jal     Saria_TextID_HOOK    ;is a JAL was a jal to DMALoad Text before
+    
 
