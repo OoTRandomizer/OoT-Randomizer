@@ -1256,8 +1256,12 @@ skip_GS_BGS_text:
 ; saria repeats hints
 ; ==================================================================================================
 
-;hook for TextID changing
-.orga 0xB529FC
-    jal     Saria_TextID_HOOK    ;is a JAL was a jal to DMALoad Text before
+;hook for TextBoxBreaks ID Setting
+.orga 0xACF6C4
+    jal     Saria_TextBoxBreak_HOOK    ;is a JAL was a jal to DMALoad Text before
     
+    
+;for displaced Code
+.org 0x800595D0    ;.orga 0xACF530
+OOT_TextBoxBreak_TextID_Generation:    
 

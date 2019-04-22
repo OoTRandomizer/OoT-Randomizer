@@ -6,29 +6,21 @@
 Saria_Hints_Globals:  .word  0x0, 0x0, 0x0   ;1:last TextID loaded, 2:internal GossipText index
                                              ;3:Activation
 
-Saria_TextID_HOOK:
-    addiu   sp, sp, -0x40
+Saria_TextBoxBreak_HOOK:
+    addiu   sp, sp, -0x1C
     sw      ra, 0x0014(sp)
-    sw      at, 0x0018(sp)
-    sw      t1, 0x001C(sp)
-    sw      t2, 0x0020(sp)
-    sw      t3, 0x0024(sp)
-    sw      t4, 0x0028(sp)
-    sw      t5, 0x002C(sp)
-    sw      t6, 0x0030(sp)
-    sw      t7, 0x0034(sp)
-    sw      t8, 0x0038(sp)
-    sw      t9, 0x003C(sp)
+    sw      a1, 0x0018(sp)
 
     ;displaced code
-    sh t9, 0x62F9 (at)
+    jal OOT_TextBoxBreak_TextID_Generation
+    nop
     
     
     lw t2, SARIA_HINTS_CONDITION
  beq t2, r0, @@Saria_TextID_END
     nop
     
-    ;t9 is the TextID
+    ;v0 is the TextID
     
     la t1, Saria_Hints_Globals
     lw t2, 0x0000 (t1)      ;Load Last TextID
@@ -48,7 +40,7 @@ Saria_TextID_HOOK:
     sw r0, 0x0004 (t1)          ;Reset Text Index
     
 @@Saria_TextID_Continue:
-    sw t9, 0x0000 (t1)          ;Save Last TextID
+    sw v0, 0x0000 (t1)          ;Save Last TextID
     
     
     lw t2, 0x0008 (t1)          ;Load Activation
@@ -59,16 +51,16 @@ Saria_TextID_HOOK:
 ; Is it a Saria Text?    
     
     ori t2, r0, 0x0160                  ;saria Text ID low
-    slt t1, t2, t9        
+    slt t1, t2, v0        
 
  beq t1, r0, @@Saria_TextID_END      ;BRANCH if reqested Textpointer A1 < Min
     nop
     
     ori t2, r0, 0x016c                  ;saria Text ID high - TBD is this correct? 
-    slt t1, t9, t2   
+    slt t1, v0, t2   
     
   beq t1, r0, @@Saria_TextID_END      ;BRANCH if reqested Textpointer A1 < Min
-    nop     
+    nop    
  
 @@Saria_TextID_Change: 
     ori t2, r0, 0x0001
@@ -76,31 +68,17 @@ Saria_TextID_HOOK:
      
     jal @GET_NEXT_GOSSIP_ID
     nop
-    move t9, v0                 ; Modify T9 with the new TextID
-    lw      at, 0x0018(sp)      ; Restore AT
-    sh t9, 0x62F9 (at)          ; Change ID in RAM
+    ; Modifying v0 with the new TextID
 
 
-@@Saria_TextID_END:
+
+@@Saria_TextID_END:    
     ;Restore RA and return
     lw      ra, 0x0014(sp)
-    lw      at, 0x0018(sp)
-    lw      t1, 0x001C(sp)
-    lw      t2, 0x0020(sp)
-    lw      t3, 0x0024(sp)
-    lw      t4, 0x0028(sp)
-    lw      t5, 0x002C(sp)
-    lw      t6, 0x0030(sp)
-    lw      t7, 0x0034(sp)
-    lw      t8, 0x0038(sp)
-    ;                   ;lw      t9, 0x003C(sp)
-    addiu   sp, sp, 0x40
+    lw      a1, 0x0018(sp)
+    addiu   sp, sp, 0x1C
     jr ra
     nop  
-
-
-
-
 
 
 
