@@ -285,6 +285,8 @@ SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = Textpointer, a2 = TextID
     ;set TextID
     ori v0, r0, 0x00e3  ;Do you want to talk to Saria again?
     sw r0, 0x0008 (t1)  ;reset activation
+    sw r0, 0x0004 (t1)  ;reset lastIndex
+    
 
     ;Restore RA and return
     lw      ra, 0x0014(sp)
