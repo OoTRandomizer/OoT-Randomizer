@@ -1260,8 +1260,24 @@ skip_GS_BGS_text:
 .orga 0xACF6C4
     jal     Saria_TextBoxBreak_HOOK    ;is a JAL was a jal to DMALoad Text before
     
-    
 ;for displaced Code
 .org 0x800595D0    ;.orga 0xACF530
-OOT_TextBoxBreak_TextID_Generation:    
+OOT_TextBoxBreak_TextID_Generation: 
+
+;hook for TextBoxBreaks chaining
+.orga 0xB534DC
+    j     Saria_TextBoxBreak_Chaining_HOOK
+    nop
+    
+    
+;hook2 for TextBoxBreaks chaining
+.orga 0xC269B4
+    j   Saria_TextBoxBreak_Chaining2_HOOK
+    nop
+
+.org 0x801E0B1C
+    Saria_TextBoxBreak_Chaining2_HOOK_END:
+    
+    
+   
 

@@ -64,6 +64,7 @@ Saria_TextBoxBreak_HOOK:
  
 @@Saria_TextID_Change: 
     ori t2, r0, 0x0001
+    la t1, Saria_Hints_Globals
     sw t2, 0x0008 (t1)          ;save Activation  
      
     jal @GET_NEXT_GOSSIP_ID
@@ -82,6 +83,40 @@ Saria_TextBoxBreak_HOOK:
 
 
 
+Saria_TextBoxBreak_Chaining_HOOK:
+    la t1, Saria_Hints_Globals
+    lw t2, 0x0008 (t1)      ;Load Activation
+    
+ beq t2, r0, @@Saria_TextBoxBreak_Chaining_NoChange
+    nop
+    ;overwrite V0 to chain TextBoxes
+    ori v0, r0, 5
+
+@@Saria_TextBoxBreak_Chaining_NoChange:
+    ;displaced code
+    jr ra
+    nop
+
+
+
+Saria_TextBoxBreak_Chaining2_HOOK:
+
+    ;displaced code
+    lw a0, 0x0020 (SP)
+    
+    la t1, Saria_Hints_Globals
+    lw t2, 0x0008 (t1)      ;Load Activation
+    
+ bne t2, r0, @@Saria_TextBoxBreak_Chaining_NoChange
+    nop
+    
+    ;displaced code
+    sw t6, 0x0130 (t7)     ;if TextBoxChaining active for Saria, no resetting with t6
+
+@@Saria_TextBoxBreak_Chaining_NoChange:
+    ;displaced code
+    j Saria_TextBoxBreak_Chaining2_HOOK_END
+    nop
 
 
 
@@ -227,7 +262,8 @@ SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = Textpointer, a2 = TextID
 ;bit set for this entry
 
     lw t2, 0x0004 (t1)      ; load lastIndex
-    slt t3, at, t2
+    addiu t6, t2, 1
+    slt t3, at, t6
  bne t3, r0, @Get_Next_GossipID_NEXT        ;NextEntry if continuation not reached
     nop
     
