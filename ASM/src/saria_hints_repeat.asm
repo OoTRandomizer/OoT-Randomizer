@@ -23,6 +23,11 @@ Saria_TextID_HOOK:
     ;displaced code
     sh t9, 0x62F9 (at)
     
+    
+    lw t2, SARIA_HINTS_CONDITION
+ beq t2, r0, @@Saria_TextID_END
+    nop
+    
     ;t9 is the TextID
     
     la t1, Saria_Hints_Globals
@@ -72,7 +77,8 @@ Saria_TextID_HOOK:
     jal @GET_NEXT_GOSSIP_ID
     nop
     move t9, v0                 ; Modify T9 with the new TextID
-    sh t9, 0x62F9 (at)
+    lw      at, 0x0018(sp)      ; Restore AT
+    sh t9, 0x62F9 (at)          ; Change ID in RAM
 
 
 @@Saria_TextID_END:
@@ -87,7 +93,7 @@ Saria_TextID_HOOK:
     lw      t6, 0x0030(sp)
     lw      t7, 0x0034(sp)
     lw      t8, 0x0038(sp)
-    lw      t9, 0x003C(sp)
+    ;                   ;lw      t9, 0x003C(sp)
     addiu   sp, sp, 0x40
     jr ra
     nop  
