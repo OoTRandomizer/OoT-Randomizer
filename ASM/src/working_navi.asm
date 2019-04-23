@@ -13,22 +13,18 @@
 
 
 
-.org WORKING_NAVI_RAM
-
 WORKING_NAVI_GLOBALS:
 
 .area 0x40
-
    working_navi_cyclicLogicGlobals:  .word  0x0,0x0,0x0,0x0,0x0,0x0
    working_navi_TextPointerGlobal:  .word  0x0
    
 .endarea   
-   
 
 
-
-.org WORKING_NAVI_DATA_CODE  ; see changed build.asm and addresses.asm
-.area 0x4F0
+WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM:
+.area 0x300, 0      ;max 768 bytes for lookuptable, 96 Entrys/required items -1
+.endarea
 
 
 working_navi_cyclicLogic_HOOK:
@@ -40,7 +36,7 @@ working_navi_cyclicLogic_HOOK:
     li t0, WORKING_NAVI_DATA_GENERATED_TEXT_ROM
     ;lui t7, 0x8050            ;WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
     ;ori t7, 0x0400            ;WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM  ;LookupTablePointer for Navi-Texts
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
                                     ;global variable 1 (Timer), 2 (showTextFlag), 
     la t1, working_navi_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
                                              ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
@@ -52,12 +48,12 @@ working_navi_cyclicLogic_HOOK:
     addiu t6, t6, 0x0001     ;increment
     sw t6, 0x0014 (t1)       ;store increment global variable 6 (Timer2)
     
-    ori t3, r0, 0xd90    ; 1 minute
+    ori t3, r0, 0xd9    ; 6 seconds polling rate for updates
     
  beq t6, t3, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE   ; every minute, Check if any Progress has been made - Reset timer if progress made
     nop
 
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM ; Reset t7 to LookupTable-Base
+    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM ; Reset t7 to LookupTable-Base
 
 ;Timercheck => otherwise say "You are doing so well, no need to bother you" 
     lw t5, 0x0008 (t1)       ;global Variable 3 - MaxTime when Navi gets activated
@@ -75,7 +71,7 @@ working_navi_cyclicLogic_HOOK:
 
 
 
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM ; Reset t7 to LookupTable-Base
+    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM ; Reset t7 to LookupTable-Base
     lw t6, 0x0000 (t1)       ;load global variable 1 (Timer)
     lw t5, 0x0008 (t1)       ;global Variable 3 - MaxTime when Navi gets activated
 
@@ -381,7 +377,7 @@ working_navi_cyclicLogic_HOOK:
     lui t3, 0x0000
     sw t3, 0x0014 (t1)       ;Reset global variable 6 (Timer2)
     
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
 
     J @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_INITJUMP
     nop
@@ -462,7 +458,7 @@ working_navi_cyclicLogic_HOOK:
     addiu t4, t4, 1
     
 ;save progress bits    
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
     lui t5, 0x0000
     lui t8, 0x0000
     
@@ -520,9 +516,6 @@ working_navi_cyclicLogic_HOOK:
     jr ra
     nop    
     
-.endarea     
-    
-    
     
     
 @WNAVI_CL_LOADPROGRESS:
@@ -547,7 +540,7 @@ working_navi_cyclicLogic_HOOK:
     
     
     ;load progress bits    
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
     lui t5, 0x0000
     lb  t8, (working_navi_Save_Offset)(t4)
     
@@ -630,7 +623,7 @@ working_navi_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
     li t0, WORKING_NAVI_DATA_GENERATED_TEXT_ROM
     sw t0, 0x0000 (t1)       ;Store T0 in Global Variable 5 Textpointer
    
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
                                     ;global variable 1 (Timer), 2 (showtextflag), 
     la t1, working_navi_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
                                              ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
@@ -661,13 +654,6 @@ working_navi_Activate_Navi_In_Dungeons_HOOK:     ;<= hack, navi in dungeons, see
 
     jr ra 
     nop   
-
-
-    
-.org WORKING_NAVI_DATA_GENERATED_TEXT_SYM  ; see addresses.asm, this is only done so we get a symbol in symbols_RAM.json
-.area 0x1000
-nop
-.endarea
 
 
 

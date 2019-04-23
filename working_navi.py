@@ -14,8 +14,8 @@ import re
 
 class working_navi(Rom):
     
-    WORKING_NAVI_RAM = None
-    WORKING_NAVI_ROM = None
+    #WORKING_NAVI_RAM_GLOBALS = None
+    WORKING_NAVI_ROM_GLOBALS = None
     WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM = None
     WORKING_NAVI_DATA_GENERATED_TEXT_ROM = None  #length about 0x1000 hex - to 0x80501700
     WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM = None
@@ -25,8 +25,8 @@ class working_navi(Rom):
     WORKING_NAVI_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM = None
     
     def __init__(self, rom):
-        self.WORKING_NAVI_RAM = rom.symRAM('WORKING_NAVI_GLOBALS') #0x80410000
-        self.WORKING_NAVI_ROM = rom.sym('WORKING_NAVI_GLOBALS') #0x03490000
+        #self.WORKING_NAVI_RAM_GLOBALS = rom.symRAM('WORKING_NAVI_GLOBALS') #0x80410000
+        self.WORKING_NAVI_ROM_GLOBALS = rom.sym('WORKING_NAVI_GLOBALS') #0x03490000
         self.WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM = rom.sym('WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM') #self.WORKING_NAVI_ROM + 0x40     #TBD from .json File?
         self.WORKING_NAVI_DATA_GENERATED_TEXT_ROM = rom.sym('WORKING_NAVI_DATA_GENERATED_TEXT_SYM') #self.WORKING_NAVI_ROM + 0x800    #length about 0x1000 hex - to 0x80501700
         self.WORKING_NAVI_HOOK_CYCLICLOGIC_RAM = rom.symRAM('working_navi_cyclicLogic_HOOK') #self.WORKING_NAVI_RAM + 0x300
@@ -391,7 +391,7 @@ class working_navi(Rom):
             glob4 = list(bytearray(asmglobal4_FlagForAsmHack_initvalue.to_bytes(4, 'big')))
             byteArray = bytearray( glob1 + glob2 + glob3 + glob4 )
             
-            rom.write_bytes(self.WORKING_NAVI_ROM, byteArray)
+            rom.write_bytes(self.WORKING_NAVI_ROM_GLOBALS, byteArray)
             
             
             #hook for TextLoad - this is done in hacks.asm now
