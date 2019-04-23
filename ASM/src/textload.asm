@@ -19,40 +19,36 @@ TextLoadLogic_HOOK:
     jal @checkGossipText
     nop
     
- beq v0, r0, @@TEXTLOAD_WNAVI      ;BRANCH if Textpointer < Max 
+    lw      a1, 0x001c(sp)          ;restore a1
+    lw      a2, 0x0018(sp)          ;restore a2
+    
+ beq v0, r0, @@TEXTLOAD_WNAVI      ;BRANCH if TextID no Gossip Text
     nop
     
 ;=>Gossip Text, save for saria
-    jal SARIA_HINTS_GOSSIP_READING
+    jal SARIA_HINTS_GOSSIP_READING      ;has a1 TextPointer, a2 TextID
     nop
-    lw      a1, 0x001c(sp)          ;restore a1
     J @@TLL_LOAD_TEXT
     nop
     
     
+    
 @@TEXTLOAD_WNAVI:    
-;====Working Navi=====   ;TBD only if activated
+;====Working Navi=====   
 
     lw t2, WORKING_NAVI_CONDITION
  beq t2, r0, @@TLL_LOAD_TEXT
     nop
 
-    ori a2, r0, 0x0141                  ;navi Text ID low
-    jal @get_TextTablePointer_ByID
-    nop      
-    slt t1, t3, a1          ;comparison, A1 = requested Textloadpointer of the game
-
- beq t1, r0, @@TLL_LOAD_TEXT      ;BRANCH if reqested Textpointer A1 < Min NaviSection: Jump LOAD_TEXT
+    jal @checkNaviText
     nop
     
-    ori a2, r0, 0x015f                  ;navi Text ID high
-    jal @get_TextTablePointer_ByID
-    nop      
-    slt t1, a1, t3          ;A1 < T3 (Max) req Textpointer A1 < Max NaviSection
-
- beq t1, r0, @@TLL_LOAD_TEXT      ;BRANCH if Textpointer < Max => Jump LOAD_TEXT
-    nop
+    lw      a1, 0x001c(sp)          ;restore a1
+    lw      a2, 0x0018(sp)          ;restore a2
     
+ beq v0, r0, @@TLL_LOAD_TEXT      ;BRANCH if TextID no Navi Text
+    nop
+
                             ; T7 Global Variable 5 Textpointer
     la t7, working_navi_TextPointerGlobal
     lw a1, 0x0000 (t7)      ; IF req Textpointer A1 in NaviSection => Load GlobalVar with Text of workingNavi in A1
@@ -78,7 +74,8 @@ TextLoadLogic_HOOK:
 ;=======Load Text=======
     
 @@TLL_LOAD_TEXT:        ;TARGET LOAD_TEXT
-    lw      a2, 0x0018(sp)
+
+    ;a1 and a2 might have been modified by wNavi
     jal 0x80000DF0          ;DMALoad Text in
     nop
     
@@ -92,25 +89,25 @@ TextLoadLogic_HOOK:
 ;==================================================================================================
 
 
-@get_TextTablePointer_ByID:     ;arguments: a2 is the Text ID
+;get_TextTablePointer_ByID:     ;arguments: a2 is the Text ID
 
-    li t1, TABLE_START_RAM
+;    li t1, TABLE_START_RAM
     
-@@get_TextTablePointer_ByID_inc:
-    addiu t1, t1, 8 
-    lh t3, 0x0000 (t1)
- bne t3, a2, @@get_TextTablePointer_ByID_inc 
-    nop
+;@@get_TextTablePointer_ByID_inc:
+;    addiu t1, t1, 8 
+;    lh t3, 0x0000 (t1)
+; bne t3, a2, @@get_TextTablePointer_ByID_inc 
+;    nop
 
-    lw t3, 0x0004 (t1)
-    lui t5, 0x00ff
-    ori t5, t5, 0xffff
-    and t3, t3, t5
-    li t4, TEXT_START
-    addu t3, t3, t4
+;    lw t3, 0x0004 (t1)
+;    lui t5, 0x00ff
+;    ori t5, t5, 0xffff
+;    and t3, t3, t5
+;    li t4, TEXT_START
+;    addu t3, t3, t4
     
-    jr ra
-    nop
+;    jr ra
+;    nop
     
     
     
@@ -137,8 +134,7 @@ get_TextID_ByTextPointer: ; arguments: a1 is Textpointer to find
     nop
     
     ;we found our table entry
-    lh t3, 0x0000 (t1)
-    
+    lh v0, 0x0000 (t1)
     
     jr ra
     nop
@@ -149,27 +145,29 @@ get_TextID_ByTextPointer: ; arguments: a1 is Textpointer to find
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)
 
-    lui v0, 0x0000
+    lui t9, 0x0000
     
     jal get_TextID_ByTextPointer
     nop      
-    move a2, t3                         ;a2 has the textID
+    move a2, v0                         ;a2 has the textID, for saria stuff
     
-    ori t2, r0, 0x0401                  ;gossip Text ID low
-    slt t1, t2, t3        
+    ori t2, r0, (0x0401 -1)                 ;gossip Text ID low
+    slt t1, t2, v0        
 
  beq t1, r0, @@checkGossipText_NOK      ;BRANCH if reqested Textpointer A1 < Min
     nop
     
-    ori t2, r0, 0x04FF                  ;gossip Text ID high    
-    slt t1, t3, t2   
+    ori t2, r0, (0x04FF +1)                  ;gossip Text ID high    
+    slt t1, v0, t2   
     
   beq t1, r0, @@checkGossipText_NOK      ;BRANCH if reqested Textpointer A1 < Min
     nop     
 
-    ori v0, r0, 0x0001
+    ori t9, r0, 0x0001
 @@checkGossipText_NOK:
 
+    move v0, t9
+    
     ;Restore RA and return
     lw      ra, 0x0014(sp)
     addiu   sp, sp, 0x18
@@ -178,4 +176,37 @@ get_TextID_ByTextPointer: ; arguments: a1 is Textpointer to find
 
 
 
+
+
+@checkNaviText:
+    addiu   sp, sp, -0x18
+    sw      ra, 0x0014(sp)
+
+    lui t9, 0x0000
+    
+    jal get_TextID_ByTextPointer
+    nop      
+    
+    ori t2, r0, (0x0141 -1)                  ;Navi Text ID low
+    slt t1, t2, v0        
+
+ beq t1, r0, @@checkNaviText_NOK      ;BRANCH if reqested Textpointer A1 < Min
+    nop
+    
+    ori t2, r0, (0x015f +1)                  ;Navi Text ID high    
+    slt t1, v0, t2   
+    
+  beq t1, r0, @@checkNaviText_NOK      ;BRANCH if reqested Textpointer A1 < Min
+    nop     
+
+    ori t9, r0, 0x0001
+@@checkNaviText_NOK:
+
+    move v0, t9
+    
+    ;Restore RA and return
+    lw      ra, 0x0014(sp)
+    addiu   sp, sp, 0x18
+    jr ra
+    nop
 
