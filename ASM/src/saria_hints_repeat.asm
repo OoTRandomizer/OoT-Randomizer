@@ -3,8 +3,8 @@
     
 .definelabel Saria_Gossip_Save_Offset, 0xD4 + (57 * 0x1C) +0x10 
 
-Saria_Hints_Globals:  .word  0x0, 0x0, 0x0   ;1:last TextID loaded, 2:internal GossipText index
-                                             ;3:Activation
+Saria_Hints_Globals:  .word  0x0, 0x0, 0x0, 0x0   ;1:last TextID loaded, 2:internal GossipText index
+                                             ;3:Activation, 4: just deactivated
 
 Saria_TextBoxBreak_HOOK:
     addiu   sp, sp, -0x1C
@@ -83,7 +83,7 @@ Saria_TextBoxBreak_HOOK:
 
 
 
-Saria_TextBoxBreak_Chaining_HOOK:
+Saria_TextBoxBreak_Chaining_HOOK:       ;in a subfunction in the TextBoxBreak function
     la t1, Saria_Hints_Globals
     lw t2, 0x0008 (t1)      ;Load Activation
     
@@ -99,12 +99,18 @@ Saria_TextBoxBreak_Chaining_HOOK:
 
 
 
-Saria_TextBoxBreak_Chaining2_HOOK:
+Saria_TextBoxBreak_Chaining2_HOOK:      ; On the JalR FunctionPointer settings
 
     ;displaced code
     lw a0, 0x0020 (SP)
     
     la t1, Saria_Hints_Globals
+    
+    lw t2, 0x000C (t1)      ;Load just deactivated
+ bne t2, r0, @@Saria_TextBoxBreak_Chaining_JustDeactivated
+    nop
+
+    
     lw t2, 0x0008 (t1)      ;Load Activation
     
  bne t2, r0, @@Saria_TextBoxBreak_Chaining_NoChange
@@ -119,6 +125,14 @@ Saria_TextBoxBreak_Chaining2_HOOK:
     nop
 
 
+@@Saria_TextBoxBreak_Chaining_JustDeactivated:
+    sw r0, 0x000C (t1)      ;reset just deactivated
+    lui t6, 0x801E
+    ori t6, t6, 0x0C2c
+    sw t6, 0x0130 (t7)     ;if TextBoxChaining just deactivated, set function pointer to normal value
+
+    j @@Saria_TextBoxBreak_Chaining_NoChange
+    nop
 
 
 
@@ -299,6 +313,8 @@ SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = Textpointer, a2 = TextID
     ori v0, r0, 0x00e3  ;Do you want to talk to Saria again?
     sw r0, 0x0008 (t1)  ;reset activation
     sw r0, 0x0004 (t1)  ;reset lastIndex
+    ori t2, r0, 0x0001
+    sw t2, 0x000C (t1)  ;set just deactiveted
     
 
     ;Restore RA and return
