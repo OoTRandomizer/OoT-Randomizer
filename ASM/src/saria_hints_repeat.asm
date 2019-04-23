@@ -20,7 +20,7 @@ Saria_TextBoxBreak_HOOK:
  beq t2, r0, @@Saria_TextID_END
     nop
     
-    ;v0 is the TextID
+    ;v0 is the TextID (from the hook!)
     
     la t1, Saria_Hints_Globals
     lw t2, 0x0000 (t1)      ;Load Last TextID
@@ -50,13 +50,13 @@ Saria_TextBoxBreak_HOOK:
     
 ; Is it a Saria Text?    
     
-    ori t2, r0, 0x0160                  ;saria Text ID low
+    ori t2, r0, (0x0160 -1)                  ;saria Text ID low
     slt t1, t2, v0        
 
  beq t1, r0, @@Saria_TextID_END      ;BRANCH if reqested Textpointer A1 < Min
     nop
     
-    ori t2, r0, 0x016c                  ;saria Text ID high - TBD is this correct? 
+    ori t2, r0, (0x016c +1)                  ;saria Text ID high - TBD is this correct? 
     slt t1, v0, t2   
     
   beq t1, r0, @@Saria_TextID_END      ;BRANCH if reqested Textpointer A1 < Min
@@ -127,6 +127,13 @@ SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = Textpointer, a2 = TextID
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)
     
+    
+    la t1, Saria_Hints_Globals
+    lw t2, 0x0008 (t1)      ;Load Activation
+    
+ bne t2, r0, @@SARIA_HINTS_GOSSIP_READING_NOSAVE ;if Saria Text Activation is active, no saving
+    nop
+    
     ; Get Message Text Index offset
     jal @get_SariaIndexOffset_ByTextPointer
     nop
@@ -135,13 +142,16 @@ SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = Textpointer, a2 = TextID
     move a1, v0                     ;a1 is indexoffset of gossiptext now
     jal @SARIA_GOSSIP_SAVEPROGRESS
     nop
-    
+
+@@SARIA_HINTS_GOSSIP_READING_NOSAVE:    
 
     ;Restore RA and return
     lw      ra, 0x0014(sp)
     addiu   sp, sp, 0x18
     jr ra
     nop    
+    
+    
     
     
     
@@ -199,8 +209,8 @@ SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = Textpointer, a2 = TextID
     mflo t6
     addu t4, t4, t6
     lw t3, (Saria_Gossip_Save_Offset) (t4)
-    ori t5, r0, 0x0001
-    sllv t5, t5, t2
+    lui t5, 0x8000  
+    srlv t5, t5, t2     ;big endian
     or t3, t3, t5
     
     ;save
@@ -252,8 +262,8 @@ SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = Textpointer, a2 = TextID
    lb  t8, (Saria_Gossip_Save_Offset)(t4)
 
 ;here we check our t8 progress-saveflag-bits
-    ori t9, r0, 1
-    sllv t9, t9, t5
+    ori t9, r0, 0x80
+    srlv t9, t9, t5     ;big endian
     and t8, t8, t9
     
     addiu t5, t5, 1             ;Increase Bitindex
@@ -273,7 +283,7 @@ SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = Textpointer, a2 = TextID
     sw at, 0x0004 (t1)      ; save lastIndex
     
     ;set TextID by entry found
-    move a1, at
+    addiu a1, at, -1
     jal @get_SariaTextID_byIndexOffset
     nop
     
@@ -313,6 +323,7 @@ SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = Textpointer, a2 = TextID
     nop
     
     ori t2, r0, 0x0008
+    addiu a1, a1, -1
     multu a1, t2
     mflo t2
     
