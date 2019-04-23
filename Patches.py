@@ -1503,6 +1503,21 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
     symbol = rom.sym('SARIA_HINTS_CONDITION')
     if world.settings.saria_repeats_hints:
         rom.write_int32(symbol, 1)
+        
+        #Generate gossip stone TextID table
+        index = 0
+        SARIA_GOSSIP_TEXTID_TABLE_SYM = rom.sym('SARIA_GOSSIP_TEXTID_TABLE_SYM')
+        
+        for message in messages:
+            if (message.id <= 0x04FF) and (message.id >= 0x0401):
+                byteArray = message.id.to_bytes(2, 'big')
+                rom.write_bytes(int(SARIA_GOSSIP_TEXTID_TABLE_SYM)+2*index, byteArray) #is a J, was a jr before, cyclic hack jumps back to previous ret address
+                
+                index += 1
+                
+                if(index>42):
+                    raise ValueError('ERROR - Saria gossip TextID overflow')
+        
     else:
         rom.write_int32(symbol, 0)
 

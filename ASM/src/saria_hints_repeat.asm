@@ -6,6 +6,13 @@
 Saria_Hints_Globals:  .word  0x0, 0x0, 0x0, 0x0   ;1:last TextID loaded, 2:internal GossipText index
                                              ;3:Activation, 4: just deactivated
 
+
+SARIA_GOSSIP_TEXTID_TABLE_SYM:
+.area (42*2+4), 0      ;somehow its 42 Gossip TextIDs?, 4 Bytes as Space to code
+.endarea
+
+
+
 Saria_TextBoxBreak_HOOK:
     addiu   sp, sp, -0x1C
     sw      ra, 0x0014(sp)
@@ -170,36 +177,29 @@ SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = Textpointer, a2 = TextID
     
     
 @get_SariaIndexOffset_ByTextPointer:    ; arguments: a1 is gossip Textpointer to find
-
-    li t1, TABLE_START_RAM
-    ori t4, r0, 0x0401  ;TextStart GossipTexts
+    addiu   sp, sp, -0x18
+    sw      ra, 0x0014(sp)
     
-@@get_SariaIndexOffset_ByID_inc:
-    addiu t1, t1, 8 
+    jal get_TextID_ByTextPointer ;v0 is TextID now
+    nop
+    
+    la t1, SARIA_GOSSIP_TEXTID_TABLE_SYM
+    lui t2, 0x0000
+@@get_SariaIndexOffset_ByTextPointer_notFoundYet:
     lh t3, 0x0000 (t1)
- bne t3, t4, @@get_SariaIndexOffset_ByID_inc 
-    nop
+    addiu t2, t2, 1
+    addiu t1, t1, 2
+    bne v0, t3, @@get_SariaIndexOffset_ByTextPointer_notFoundYet
+        nop
     
-    lui t7, 0x0000
-    j @@get_SariaIndexOffset_ByID_initjump
-    nop
-@@get_SariaIndexOffset_ByID_inc2:
-    addiu t1, t1, 8 
-@@get_SariaIndexOffset_ByID_initjump:
-    lw t3, 0x0004 (t1)
-    lui t5, 0x00ff
-    ori t5, t5, 0xffff
-    and t3, t3, t5
-    li t4, TEXT_START
-    addu t3, t3, t4
-    addiu t7, t7, 0x0001
+    addiu t2, t2, -1
     
- bne t3, a1, @@get_SariaIndexOffset_ByID_inc2 
-    nop
+    ;now in t2 is the indexoffset
+    move v0, t2
     
-    ;now in t7 is the indexoffset
-    move v0, t7
-    
+    ;Restore RA and return
+    lw      ra, 0x0014(sp)
+    addiu   sp, sp, 0x18
     jr ra
     nop
     
@@ -329,27 +329,15 @@ SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = Textpointer, a2 = TextID
     
 @get_SariaTextID_byIndexOffset:    ; arguments: a1 is IndexOffset
 
-    li t1, TABLE_START_RAM
-    ori t4, r0, 0x0401  ;TextStart GossipTexts
-    
-@@get_SariaIndexOffset_ByID_inc:
-    addiu t1, t1, 8 
-    lh t3, 0x0000 (t1)
- bne t3, t4, @@get_SariaIndexOffset_ByID_inc 
-    nop
-    
-    ori t2, r0, 0x0008
-    addiu a1, a1, -1
-    multu a1, t2
-    mflo t2
-    
-    addu t1, t1, t2
-    
-    ;now in t1 is the TextTableAddress
+    la t1, SARIA_GOSSIP_TEXTID_TABLE_SYM
+    sll a1, a1, 1   ;mult with 2
+    addu t1, t1, a1
+
     lh v0, 0x0000 (t1)
     
     jr ra
     nop
+    
     
     
     
