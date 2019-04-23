@@ -325,7 +325,7 @@ class working_navi(Rom):
         # Save Navi Texts in Rom
         CurTextPointerBaseA = self.WORKING_NAVI_DATA_GENERATED_TEXT_ROM
              
-        self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, "I have faith in you, you can progress", "YI have faith in you, you can progress", rom)
+        self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, "I have faith in you, you can progress", "I have faith in you, you can progress", rom)
         CurTextPointerBaseA += self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM
         
         # set LookUp Table for Navi Texts        
