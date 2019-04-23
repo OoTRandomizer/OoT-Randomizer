@@ -20,7 +20,7 @@ TextLoadLogic_HOOK:
     nop
     
     lw      a1, 0x001c(sp)          ;restore a1
-    lw      a2, 0x0018(sp)          ;restore a2
+            ;lw      a2, 0x0018(sp)          ;restore a2 _don't mess up TextID yet
     
  beq v0, r0, @@TEXTLOAD_WNAVI      ;BRANCH if TextID no Gossip Text
     nop
@@ -28,6 +28,8 @@ TextLoadLogic_HOOK:
 ;=>Gossip Text, save for saria
     jal SARIA_HINTS_GOSSIP_READING      ;has a1 TextPointer, a2 TextID
     nop
+    lw      a1, 0x001c(sp)          ;restore a1
+    lw      a2, 0x0018(sp)          ;restore a2
     J @@TLL_LOAD_TEXT
     nop
     
@@ -35,6 +37,8 @@ TextLoadLogic_HOOK:
     
 @@TEXTLOAD_WNAVI:    
 ;====Working Navi=====   
+
+    lw      a2, 0x0018(sp)          ;restore a2
 
     lw t2, WORKING_NAVI_CONDITION
  beq t2, r0, @@TLL_LOAD_TEXT
