@@ -90,6 +90,14 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
 
     if world.bombchus_in_logic:
         rom.write_int32(rom.sym('BOMBCHUS_IN_LOGIC'), 1)
+		
+    if world.fast_chickens:
+        # All chickens
+        # offsets = [ Entrance: 0x02016206, near Gate 0x02016216, near pen 0x02016226, near windmill 0x02016236, boxed 0x02016246, skulltulla house 0x02016256, backgrotto 0x02016266]
+        offsets = [0x02016246, 0x02016256, 0x02016266, 0x02016206, 0x02016216, 0x02016236]
+        position = [0x01, 0x38, 0x00, 0x50, 0x05, 0xED]
+        for offset in offsets:
+            rom.write_bytes(offset, position)
 
     # Change graveyard graves to not allow grabbing on to the ledge
     rom.write_byte(0x0202039D, 0x20)
