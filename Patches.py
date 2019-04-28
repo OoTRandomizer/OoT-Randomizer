@@ -829,7 +829,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
 
     save_context = SaveContext()
 
-
     # Initial Save Data
 
     save_context.write_bits(0x00D4 + 0x03 * 0x1C + 0x04 + 0x0, 0x08) # Forest Temple switch flag (Poe Sisters cutscene)
@@ -1176,15 +1175,15 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
 
     # Set damage multiplier
     if world.damage_multiplier == 'half':
-        rom.write_int32(0xAE808C, 0x00108043)
+        rom.write_byte(rom.sym('CFG_DAMAGE_MULTIPLYER'), -1)
     if world.damage_multiplier == 'normal':
-        rom.write_int32(0xAE808C, 0x00108000)
+        rom.write_byte(rom.sym('CFG_DAMAGE_MULTIPLYER'), 0)
     if world.damage_multiplier == 'double':
-        rom.write_int32(0xAE808C, 0x00108040)
+        rom.write_byte(rom.sym('CFG_DAMAGE_MULTIPLYER'), 1)
     if world.damage_multiplier == 'quadruple':
-        rom.write_int32(0xAE808C, 0x00108080)
+        rom.write_byte(rom.sym('CFG_DAMAGE_MULTIPLYER'), 2)
     if world.damage_multiplier == 'ohko':
-        rom.write_int32(0xAE808C, 0x00108200)
+        rom.write_byte(rom.sym('CFG_DAMAGE_MULTIPLYER'), 3)
 
     # Patch songs and boss rewards
     for location in world.get_filled_locations():
@@ -1771,10 +1770,6 @@ def remove_entrance_blockers(rom):
             actor_var = rom.read_int16(actor + 14);
             if actor_var == 0xFF01:
                 rom.write_int16(actor + 14, 0x0700)
-        if actor_id == 0x0145:
-            rom.write_int16(actor, 0x014E)
-            rom.write_int16(actor + 14, 0x0700)
-
     get_actor_list(rom, remove_entrance_blockers_do)
 
 def set_cow_id_data(rom, world):
@@ -1834,8 +1829,8 @@ def set_grotto_shuffle_data(rom, world):
     # Build the override table based on shuffled grotto entrances
     shuffled_grotto_table = {}
     for entrance in world.get_shuffled_entrances(type='Grotto'):
-        grotto_id = (entrance.addresses['scene'] << 16) + entrance.addresses['grotto_var']
-        grotto_override_id = (entrance.connected_region.addresses['scene'] << 16) + entrance.connected_region.addresses['grotto_var']
+        grotto_id = (entrance.data['scene'] << 16) + entrance.data['grotto_var']
+        grotto_override_id = (entrance.replaces.data['scene'] << 16) + entrance.replaces.data['grotto_var']
         shuffled_grotto_table[grotto_id] = grotto_override_id
 
     grotto_override_table = {}
@@ -1845,7 +1840,6 @@ def set_grotto_shuffle_data(rom, world):
 
     # Override grotto actors data with the new table
     get_actor_list(rom, override_grotto_data)
-
 
 
 def set_deku_salesman_data(rom):
@@ -2005,7 +1999,3 @@ def configure_dungeon_info(rom, world):
     rom.write_int32(rom.sym('cfg_dungeon_info_reward_need_altar'), int(not mapcompass_keysanity))
     rom.write_bytes(rom.sym('cfg_dungeon_rewards'), dungeon_rewards)
     rom.write_bytes(rom.sym('cfg_dungeon_is_mq'), dungeon_is_mq)
-    
-    
-    
-    

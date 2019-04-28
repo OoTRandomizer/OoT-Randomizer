@@ -7,8 +7,9 @@ import struct
 import subprocess
 import random
 import copy
-from Utils import is_bundled, subprocess_args, local_path, data_path, default_output_path
+from Utils import is_bundled, subprocess_args, local_path, data_path, default_output_path, get_version_bytes
 from ntype import BigStream
+from version import __version__
 
 DMADATA_START = 0x7430
 
@@ -142,7 +143,13 @@ class Rom(BigStream):
             outfile.write(self.buffer)
 
 
+    def update_rom_title(self):
+        self.write_bytes(0x35, get_version_bytes(__version__))
+
+
     def update_crc(self):
+        self.update_rom_title()
+
         t1 = t2 = t3 = t4 = t5 = t6 = 0xDF26F436
         u32 = 0xFFFFFFFF
 
