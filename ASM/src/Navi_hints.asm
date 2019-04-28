@@ -11,8 +11,6 @@
         ;right, I remembered Cow in House.... so I´m only going to use unused spaces after all
 
 
-
-
 NAVI_HINTS_GLOBALS:
 
 .area 0x40

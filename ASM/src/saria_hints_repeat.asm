@@ -143,7 +143,6 @@ Saria_TextBoxBreak_Chaining2_HOOK:      ; On the JalR FunctionPointer settings
 
 
 
-
 SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = Textpointer, a2 = TextID
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)

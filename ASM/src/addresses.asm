@@ -17,7 +17,17 @@ C_MEM   equ 0x80500000
 
 ;TextTables for NaviHints / Saria
 TABLE_START  equ 0xB849EC
+C_TABLE_START:
+.word TABLE_START
+
 TABLE_START_RAM  equ 0x8010EA8C
+C_TABLE_START_RAM:
+.word TABLE_START_RAM
+
 TEXT_START  equ 0x92D000
+C_TEXT_START:
+.word TEXT_START
 
 Navi_Hints_TextID_Base equ 0x7400
+C_Navi_Hints_TextID_Base:
+.word Navi_Hints_TextID_Base
