@@ -505,23 +505,29 @@
         "region_name": "Colossus Fairy",
         "locations": {
             "Desert Colossus Fairy Reward": "can_play(Zeldas_Lullaby)"
+        },
+        "exits": {
+            "Desert Colossus": "True"
+        }
+    },
+    {
+        "region_name": "Castle Town Entrance",
+        "scene": "Castle Town Entrance",
+        "hint": "the Market",
+        "exits": {
+            "Hyrule Field": "is_adult or at_day",
+            "Castle Town": "True",
+            "Castle Town Rupee Room": "True"
         }
     },
     {
         "region_name": "Castle Town",
+        "scene": "Castle Town",
         "hint": "the Market",
-        "locations": {
-            "Temple of Time Gossip Stone (Left)": "True",
-            "Temple of Time Gossip Stone (Left-Center)": "True",
-            "Temple of Time Gossip Stone (Right)": "True",
-            "Temple of Time Gossip Stone (Right-Center)": "True"
-        },
         "exits": {
-            "Hyrule Field": "True",
-            "Temple of Time": "True",
-            "Hyrule Castle Grounds": "is_child",
-            "Ganons Castle Grounds": "is_adult",
-            "Castle Town Rupee Room": "True",
+            "Castle Town Entrance": "True",
+            "Temple of Time Exterior": "True",
+            "Castle Grounds": "True",
             "Castle Town Bazaar": "is_child and at_day",
             "Castle Town Mask Shop": "is_child and at_day",
             "Castle Town Shooting Gallery": "is_child and at_day",
@@ -534,13 +540,29 @@
         }
     },
     {
+        "region_name": "Temple of Time Exterior",
+        "scene": "Temple of Time Exterior",
+        "hint": "the Market",
+        "locations": {
+            "Temple of Time Gossip Stone (Left)": "True",
+            "Temple of Time Gossip Stone (Left-Center)": "True",
+            "Temple of Time Gossip Stone (Right)": "True",
+            "Temple of Time Gossip Stone (Right-Center)": "True",
+            "Gossip Stone Fairy": "can_summon_gossip_fairy and has_bottle"
+        },
+        "exits": {
+            "Castle Town": "True",
+            "Temple of Time": "True"
+        }
+    },
+    {
         "region_name": "Temple of Time",
         "hint": "Temple of Time",
         "locations": {
             "Zelda": "Shadow_Medallion and Spirit_Medallion and is_adult"
         },
         "exits": {
-            "Castle Town": "True",
+            "Temple of Time Exterior": "True",
             "Beyond Door of Time": "can_play(Song_of_Time) or open_door_of_time"
         }
     },
@@ -556,17 +578,30 @@
         }
     },
     {
+        "region_name": "Castle Grounds",
+        "scene": "Castle Grounds",
+        "exits": {
+            "Castle Town": "True",
+            "Hyrule Castle Grounds": "is_child",
+            "Ganons Castle Grounds": "is_adult"
+        }
+    },
+    {
         "region_name": "Hyrule Castle Grounds",
+        "scene": "Castle Grounds",
         "hint": "Hyrule Castle",
         "time_passes": true,
         "locations": {
             "Malon Egg": "True",
             "GS Hyrule Castle Tree": "can_child_attack",
             "Hyrule Castle Malon Gossip Stone": "True",
-            "Hyrule Castle Rock Wall Gossip Stone": "True"
+            "Hyrule Castle Rock Wall Gossip Stone": "True",
+            "Gossip Stone Fairy": "can_summon_gossip_fairy and has_bottle",
+            "Butterfly Fairy": "can_use(Sticks) and has_bottle",
+            "Bug Rock": "has_bottle"
         },
         "exits": {
-            "Castle Town": "True",
+            "Castle Grounds": "True",
             "Hyrule Castle Garden": "Weird_Egg or (not shuffle_weird_egg)",
             "Hyrule Castle Fairy": "has_explosives",
             "Castle Storms Grotto": "can_play(Song_of_Storms)"
@@ -574,6 +609,7 @@
     },
     {
         "region_name": "Hyrule Castle Garden",
+        "scene": "Castle Grounds",
         "hint": "Hyrule Castle",
         "locations": {
             "Zeldas Letter": "True",
@@ -587,17 +623,21 @@
         "region_name": "Hyrule Castle Fairy",
         "locations": {
             "Hyrule Castle Fairy Reward": "can_play(Zeldas_Lullaby)"
+        },
+        "exits": {
+            "Castle Grounds": "True"
         }
     },
     {
         "region_name": "Ganons Castle Grounds",
+        "scene": "Castle Grounds",
         "hint": "outside Ganon's Castle",
         "locations": {
             "GS Outside Ganon's Castle": "True"
         },
         "exits": {
-            "Castle Town": "True",
-            "Ganons Castle Fairy": "can_use(Golden_Gauntlets)",
+            "Castle Grounds": "at_night",
+            "Ganons Castle Fairy": "can_use(Golden_Gauntlets) and at_night",
             "Ganons Castle Lobby": "
                 (bridge == 'open')
                 or ((bridge == 'medallions') and
@@ -619,6 +659,9 @@
         "region_name": "Ganons Castle Fairy",
         "locations": {
             "Ganons Castle Fairy Reward": "can_play(Zeldas_Lullaby)"
+        },
+        "exits": {
+            "Castle Grounds": "True"
         }
     },
     {
@@ -630,9 +673,12 @@
             "Sell 4 Big Poe":"is_adult and (Bottle_with_Big_Poe, 4)",
             "10 Big Poes": "
                 is_adult and 
-                ((can_use(Bow) and Epona and has_bottle and (big_poe_count <= 3 or guarantee_hint)) or 
+                ((has_big_poe_drop and (big_poe_count <= 3 or guarantee_hint)) or 
                     (Bottle_with_Big_Poe, big_poe_count))",
             "GS Castle Market Guard House": "is_child"
+        },
+        "exits": {
+            "Castle Town Entrance": "True"
         }
     },
     {
@@ -646,15 +692,24 @@
             "Castle Town Bazaar Item 6": "True",
             "Castle Town Bazaar Item 7": "True",
             "Castle Town Bazaar Item 8": "True"
+        },
+        "exits": {
+            "Castle Town": "True"
         }
     },
     {
-        "region_name": "Castle Town Mask Shop"
+        "region_name": "Castle Town Mask Shop",
+        "exits": {
+            "Castle Town": "True"
+        }
     },
     {
         "region_name": "Castle Town Shooting Gallery",
         "locations": {
             "Child Shooting Gallery": "is_child"
+        },
+        "exits": {
+            "Castle Town": "True"
         }
     },
     {
@@ -662,6 +717,9 @@
         "locations": {
             "Bombchu Bowling Bomb Bag": "has_bombchus",
             "Bombchu Bowling Piece of Heart": "has_bombchus"
+        },
+        "exits": {
+            "Castle Town": "True"
         }
     },
     {
@@ -675,12 +733,18 @@
             "Castle Town Potion Shop Item 6": "True",
             "Castle Town Potion Shop Item 7": "True",
             "Castle Town Potion Shop Item 8": "True"
+        },
+        "exits": {
+            "Castle Town": "True"
         }
     },
     {
         "region_name": "Castle Town Treasure Chest Game",
         "locations": {
             "Treasure Chest Game": "can_use(Lens_of_Truth)"
+        },
+        "exits": {
+            "Castle Town": "True"
         }
     },
     {
@@ -694,35 +758,51 @@
             "Bombchu Shop Item 6": "True",
             "Bombchu Shop Item 7": "True",
             "Bombchu Shop Item 8": "True"
+        },
+        "exits": {
+            "Castle Town": "True"
         }
     },
     {
         "region_name": "Castle Town Dog Lady",
         "locations": {
             "Dog Lady": "at_night"
+        },
+        "exits": {
+            "Castle Town": "True"
         }
     },
     {
-        "region_name": "Castle Town Man in Green House"
+        "region_name": "Castle Town Man in Green House",
+        "exits": {
+            "Castle Town": "True"
+        }
     },
     {
         "region_name": "Kakariko Village",
+        "scene": "Kakariko Village",
         "hint": "Kakariko Village",
         "locations": {
-            "Man on Roof": "logic_man_on_roof or can_use(Hookshot)",
-            "Anju as Adult": "is_adult",
-            "Anjus Chickens": "is_child",
             "Sheik in Kakariko": "
                 is_adult and Forest_Medallion and Fire_Medallion and Water_Medallion",
-            "GS Kakariko House Under Construction": "is_child and nighttime",
-            "GS Kakariko Skulltula House": "is_child and nighttime",
-            "GS Kakariko Guard's House": "is_child and nighttime",
-            "GS Kakariko Tree": "is_child and nighttime",
+            "Man on Roof": "
+                can_use(Hookshot) or 
+                (logic_man_on_roof and 
+                    (is_adult or at_day or has_slingshot or has_bombchus or 
+                        (logic_kakariko_tower_gs and (has_sticks or Kokiri_Sword) and
+                            (damage_multiplier != 'ohko' or has_fairy or can_use(Nayrus_Love)))))",
+            "Anju as Adult": "is_adult and at_day",
+            "Anjus Chickens": "is_child and at_day",
+            "GS Kakariko House Under Construction": "is_child and at_night",
+            "GS Kakariko Skulltula House": "is_child and at_night",
+            "GS Kakariko Guard's House": "is_child and at_night",
+            "GS Kakariko Tree": "is_child and at_night",
             "GS Kakariko Watchtower": "
                 is_child and (has_slingshot or has_bombchus or 
                     (logic_kakariko_tower_gs and (has_sticks or Kokiri_Sword) and
-                    (damage_multiplier != 'ohko' or has_bottle or can_use(Nayrus_Love)))) and nighttime",
-            "GS Kakariko Above Impa's House": "can_use(Hookshot) and nighttime"
+                    (damage_multiplier != 'ohko' or has_fairy or can_use(Nayrus_Love)))) and at_night",
+            "GS Kakariko Above Impa's House": "can_use(Hookshot) and at_night",
+            "Bug Rock": "has_bottle"
         },
         "exits": {
             "Hyrule Field": "True",
@@ -734,19 +814,22 @@
             "Kakariko Bazaar": "is_adult and at_day",
             "Kakariko Shooting Gallery": "is_adult and at_day",
             "Bottom of the Well": "
-                (is_child and can_play(Song_of_Storms)) or 
-                (is_adult and shuffle_dungeon_entrances)",
-            "Kakariko Potion Shop Front": "True",
-            "Kakariko Potion Shop Back": "True",
+                as_child(can_reach(Windmill) and can_play(Song_of_Storms)) and
+                (is_child or shuffle_dungeon_entrances)",
+            "Kakariko Potion Shop Front": "is_child or at_day",
+            "Kakariko Potion Shop Back": "is_adult and at_day",
             "Odd Medicine Building": "is_adult",
             "Kakariko Bombable Grotto": "can_blast_or_smash",
             "Kakariko Back Grotto": "True",
             "Graveyard": "True",
-            "Death Mountain": "Zeldas_Letter or is_adult or open_kakariko"
+            "Kakariko Village Behind Gate": "Zeldas_Letter or is_adult or open_kakariko"
         }
     },
     {
-        "region_name": "Carpenter Boss House"
+        "region_name": "Carpenter Boss House",
+        "exits": {
+            "Kakariko Village": "True"
+        }
     },
     {
         "region_name": "House of Skulltula",
@@ -761,26 +844,38 @@
                 (Gold_Skulltula_Token, 40) and guarantee_hint",
             "50 Gold Skulltula Reward": "
                 (Gold_Skulltula_Token, 50) and guarantee_hint"
+        },
+        "exits": {
+            "Kakariko Village": "True"
         }
     },
     {
-        "region_name": "Impas House"
+        "region_name": "Impas House",
+        "exits": {
+            "Kakariko Village": "True"
+        }
     },
     {
         "region_name": "Impas House Back",
         "locations": {
             "Impa House Freestanding PoH": "True",
             "Impas House Cow": "can_play(Eponas_Song)"
+        },
+        "exits": {
+            "Kakariko Village": "True"
         }
     },
     {
         "region_name": "Windmill",
-        "hint": "Kakariko Village",
         "locations": {
             "Windmill Freestanding PoH": "
-                (is_adult and (logic_windmill_poh or can_play(Song_of_Time))) or 
-                can_use(Boomerang)",
+                can_use(Boomerang) or
+                (is_adult and logic_windmill_poh) or 
+                can_reach('Dampes Grave -> Windmill', Entrance)",
             "Song at Windmill": "is_adult and has_ocarina"
+        },
+        "exits": {
+            "Kakariko Village": "True"
         }
     },
     {
@@ -794,12 +889,18 @@
             "Kakariko Bazaar Item 6": "True",
             "Kakariko Bazaar Item 7": "True",
             "Kakariko Bazaar Item 8": "True"
+        },
+        "exits": {
+            "Kakariko Village": "True"
         }
     },
     {
         "region_name": "Kakariko Shooting Gallery",
         "locations": {
             "Adult Shooting Gallery": "can_use(Bow)"
+        },
+        "exits": {
+            "Kakariko Village": "True"
         }
     },
     {
@@ -820,23 +921,29 @@
         "region_name": "Kakariko Potion Shop Back"
     },
     {
-        "region_name": "Odd Medicine Building"
+        "region_name": "Odd Medicine Building",
+        "exits": {
+            "Kakariko Village": "True"
+        }
     },
     {
         "region_name": "Graveyard",
+        "scene": "Graveyard",
         "hint": "the Graveyard",
         "locations": {
             "Graveyard Freestanding PoH": "can_use(Magic_Bean) or can_use(Longshot)",
-            "Gravedigging Tour": "is_child",
-            "GS Graveyard Wall": "can_use(Boomerang) and nighttime",
-            "GS Graveyard Bean Patch": "can_plant_bugs and can_child_attack"
+            "Gravedigging Tour": "is_child and at_dampe_time",
+            "GS Graveyard Wall": "can_use(Boomerang) and at_night",
+            "GS Graveyard Bean Patch": "can_plant_bugs and can_child_attack",
+            "Butterfly Fairy": "can_use(Sticks) and at_day and has_bottle",
+            "Bug Rock": "has_bottle"
         },
         "exits": {
             "Shield Grave": "True",
             "Composer Grave": "can_play(Zeldas_Lullaby)",
             "Heart Piece Grave": "True",
             "Dampes Grave": "is_adult",
-            "Dampes House": "is_adult or at_night",
+            "Dampes House": "is_adult or at_dampe_time",
             "Kakariko Village": "True"
         }
     },
@@ -844,12 +951,19 @@
         "region_name": "Shield Grave",
         "locations": {
             "Shield Grave Chest": "True"
+        },
+        "exits": {
+            "Graveyard": "True"
         }
     },
     {
         "region_name": "Heart Piece Grave",
         "locations": {
-            "Heart Piece Grave Chest": "can_play(Suns_Song)"
+            "Heart Piece Grave Chest": "can_play(Suns_Song)",
+            "Free Fairies": "can_blast_or_smash and has_bottle"
+        },
+        "exits": {
+            "Graveyard": "True"
         }
     },
     {
@@ -860,25 +974,36 @@
                 is_adult or 
                 (has_slingshot or Boomerang or has_sticks or 
                     has_explosives or Kokiri_Sword)"
+        },
+        "exits": {
+            "Graveyard": "True"
         }
     },
     {
         "region_name": "Dampes Grave",
-        "hint": "the Graveyard",
         "locations": {
-            "Dampes Grave Nut Pot": "True",
             "Hookshot Chest": "True",
-            "Dampe Race Freestanding PoH": "True"
+            "Dampe Race Freestanding PoH": "True",
+            "Nut Pot": "True"
+        },
+        "exits": {
+            "Graveyard": "True",
+            "Windmill": "can_play(Song_of_Time)"
         }
     },
     {
-        "region_name": "Dampes House"
+        "region_name": "Dampes House",
+        "exits": {
+            "Graveyard": "True"
+        }
     },
     {
         "region_name": "Shadow Temple Warp Region",
+        "scene": "Graveyard",
         "hint": "the Graveyard",
         "locations": {
-            "Graveyard Gossip Stone": "True"
+            "Graveyard Gossip Stone": "True",
+            "Gossip Stone Fairy": "can_summon_gossip_fairy and has_bottle"
         },
         "exits": {
             "Graveyard": "True",
@@ -886,7 +1011,16 @@
         }
     },
     {
+        "region_name": "Kakariko Village Behind Gate",
+        "scene": "Kakariko Village",
+        "exits": {
+            "Kakariko Village": "True",
+            "Death Mountain": "True"
+        }
+    },
+    {
         "region_name": "Death Mountain",
+        "scene": "Death Mountain",
         "hint": "Death Mountain Trail",
         "time_passes": true,
         "locations": {
@@ -895,15 +1029,15 @@
                 (logic_dmt_bombable and Progressive_Strength_Upgrade)",
             "DM Trail Freestanding PoH": "
                 is_child or (damage_multiplier != 'ohko') or 
-                can_use(Nayrus_Love) or has_bottle or Hover_Boots",
+                can_use(Nayrus_Love) or has_fairy or Hover_Boots",
             "GS Mountain Trail Bean Patch": "
                 can_plant_bugs and (has_explosives or Progressive_Strength_Upgrade)",
             "GS Mountain Trail Bomb Alcove": "can_blast_or_smash",
-            "GS Mountain Trail Path to Crater": "can_use(Hammer) and nighttime",
-            "GS Mountain Trail Above Dodongo's Cavern": "can_use(Hammer) and nighttime"
+            "GS Mountain Trail Path to Crater": "can_use(Hammer) and at_night",
+            "GS Mountain Trail Above Dodongo's Cavern": "can_use(Hammer) and at_night"
         },
         "exits": {
-            "Kakariko Village": "True",
+            "Kakariko Village Behind Gate": "True",
             "Goron City": "True",
             "Death Mountain Summit": "as_either_here(can_blast_or_smash)",
             "Dodongos Cavern Entryway": "
@@ -914,21 +1048,33 @@
     },
     {
         "region_name": "Death Mountain Summit",
+        "scene": "Death Mountain",
         "hint": "Death Mountain Trail",
         "time_passes": true,
         "locations": {
             "Biggoron": "
                 is_adult and can_finish_adult_trades and guarantee_hint",
-            "Death Mountain Trail Gossip Stone": "True"
+            "Death Mountain Trail Gossip Stone": "True",
+            "Gossip Stone Fairy": "can_summon_gossip_fairy and has_bottle",
+            "Bug Rock": "is_child and has_bottle"
         },
         "exits": {
             "Death Mountain": "True",
             "Death Mountain Crater Upper": "True",
+            "Death Mountain Summit Owl Flight": "is_child",
             "Mountain Summit Fairy": "as_either_here(can_blast_or_smash)"
         }
     },
     {
+        "region_name": "Death Mountain Summit Owl Flight",
+        "scene": "Death Mountain",
+        "exits": {
+            "Kakariko Village": "True"
+        }
+    },
+    {
         "region_name": "Dodongos Cavern Entryway",
+        "scene": "Death Mountain",
         "exits": {
             "Dodongos Cavern Beginning": "True",
             "Death Mountain": "True"
@@ -936,6 +1082,7 @@
     },
     {
         "region_name": "Goron City",
+        "scene": "Goron City",
         "hint": "Goron City",
         "locations": {
             "Goron City Leftmost Maze Chest": "
@@ -947,7 +1094,7 @@
             "Goron City Pot Freestanding PoH": "
                 is_child and 
                 (has_bombs or Progressive_Strength_Upgrade) and 
-                ((can_play(Zeldas_Lullaby) and has_sticks) or can_use(Dins_Fire))",
+                (can_use(Dins_Fire) or (can_reach(Darunias_Chamber) and has_sticks))",
             "Rolling Goron as Child": "
                 is_child and 
                 (has_explosives or (Progressive_Strength_Upgrade and logic_child_rolling_with_strength))",
