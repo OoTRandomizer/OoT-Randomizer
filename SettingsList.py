@@ -603,12 +603,15 @@ setting_infos = [
             in the forest.
 
             This is incompatible with start as adult.
+            This is also forced enabled when shuffling
+            "All Indoors" and/or "Overworld" entrances.
         ''',
         default        = True,
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
         },
+        dependency     = lambda settings: True if settings.entrance_shuffle in ['all-indoors', 'all'] else None,
     ),
     Checkbutton(
         name           = 'open_kakariko',
