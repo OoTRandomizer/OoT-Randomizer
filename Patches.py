@@ -1523,7 +1523,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
     save_context.write_save_table(rom)
 
 
-    symbol = rom.sym('NAVI_HINTSs_CONDITION')
+    symbol = rom.sym('NAVI_HINTS_CONDITION')
     if world.settings.Navi_Hints:
         rom.write_int32(symbol, 1)
         wNavi = Navi_Hints(rom)
