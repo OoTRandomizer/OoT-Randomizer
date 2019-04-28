@@ -26,7 +26,7 @@
         "dungeon": "Jabu Jabus Belly",
         "locations": {
             "Jabu Jabus Belly Map Chest": "can_use(Boomerang)",
-            "Jabu Jabus Belly Compass Chest": "can_use(Boomerang) or has_bottle
+            "Jabu Jabus Belly Compass Chest": "can_use(Boomerang) or has_fairy
                   or (is_adult and (can_live_dmg(0.5) or Hover_Boots) and has_explosives)"
         },
         "exits": {

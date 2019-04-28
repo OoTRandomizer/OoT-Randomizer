@@ -82,8 +82,8 @@ location_table = {
     "Child Shooting Gallery":                          ("NPC",         0x42,  0x60, None,                     ("the Market", "Castle Town", "Minigames")),
     "Adult Shooting Gallery":                          ("NPC",         0x42,  0x30, None,                     ("Kakariko Village", "Kakariko", "Minigames")),
     "Target in Woods":                                 ("NPC",         0x5B,  0x60, None,                     ("the Lost Woods", "Forest",)),
-    "Deku Theater Skull Mask":                         ("NPC",         0x3E,  0x77, None,                     ("the Lost Woods", "Forest",)),
-    "Deku Theater Mask of Truth":                      ("NPC",         0x3E,  0x7A, None,                     ("the Lost Woods", "Forest", "Need Spiritual Stones")),
+    "Deku Theater Skull Mask":                         ("NPC",         0x3E,  0x77, None,                     ("the Lost Woods", "Forest", "Grottos")),
+    "Deku Theater Mask of Truth":                      ("NPC",         0x3E,  0x7A, None,                     ("the Lost Woods", "Forest", "Need Spiritual Stones", "Grottos")),
     "Anju as Adult":                                   ("NPC",         0x52,  0x1D, None,                     ("Kakariko Village", "Kakariko",)),
     "Biggoron":                                        ("NPC",         0x60,  0x57, None,                     ("Death Mountain Trail", "Death Mountain",)),
     "Anjus Chickens":                                  ("NPC",         0x52,  0x0F, None,                     ("Kakariko Village", "Kakariko", "Minigames")),
@@ -128,16 +128,6 @@ location_table = {
     "Sell 4 Big Poe":                                  ("Event",       None,  None, None,                     None),
     "Master Sword Pedestal":                           ("Event",       None,  None, None,                     None),
     "Epona":                                           ("Event",       None,  None, None,                     None),
-    "Deku Baba Sticks":                                ("Event",       None,  None, None,                     None),
-    "Deku Baba Nuts":                                  ("Event",       None,  None, None,                     None),
-    "Forest Temple Deku Baba Sticks":                  ("Event",       None,  None, None,                     None),
-    "Forest Temple Deku Baba Nuts":                    ("Event",       None,  None, None,                     None),
-    "Goron City Stick Pot":                            ("Event",       None,  None, None,                     None),
-    "Bottom of the Well Stick Pot":                    ("Event",       None,  None, None,                     None),
-    "Zoras Domain Stick Pot":                          ("Event",       None,  None, None,                     None),
-    "Zoras Domain Nut Pot":                            ("Event",       None,  None, None,                     None),
-    "Dampes Grave Nut Pot":                            ("Event",       None,  None, None,                     None),
-    "Spirit Temple Nut Crate":                         ("Event",       None,  None, None,                     None),
     "Gerudo Fortress Carpenter Rescue":                ("Event",       None,  None, None,                     None),
     "Haunted Wasteland Bombchu Salesman":              ("Event",       None,  None, None,                     ("Haunted Wasteland",)),
     "Ganons Castle Forest Trial Clear":                ("Event",       None,  None, None,                     None),
@@ -146,6 +136,24 @@ location_table = {
     "Ganons Castle Shadow Trial Clear":                ("Event",       None,  None, None,                     None),
     "Ganons Castle Spirit Trial Clear":                ("Event",       None,  None, None,                     None),
     "Ganons Castle Light Trial Clear":                 ("Event",       None,  None, None,                     None),
+
+    "Deku Baba Sticks":                                ("Drop",        None,  None, None,                     None),
+    "Deku Baba Nuts":                                  ("Drop",        None,  None, None,                     None),
+    "Stick Pot":                                       ("Drop",        None,  None, None,                     None),
+    "Nut Pot":                                         ("Drop",        None,  None, None,                     None),
+    "Nut Crate":                                       ("Drop",        None,  None, None,                     None),
+    "Blue Fire":                                       ("Drop",        None,  None, None,                     None),
+    "Lone Fish":                                       ("Drop",        None,  None, None,                     None),
+    "Fish Group":                                      ("Drop",        None,  None, None,                     None),
+    "Bug Rock":                                        ("Drop",        None,  None, None,                     None),
+    "Bug Shrub":                                       ("Drop",        None,  None, None,                     None),
+    "Wandering Bugs":                                  ("Drop",        None,  None, None,                     None),
+    "Fairy Pot":                                       ("Drop",        None,  None, None,                     None),
+    "Free Fairies":                                    ("Drop",        None,  None, None,                     None),
+    "Butterfly Fairy":                                 ("Drop",        None,  None, None,                     None),
+    "Gossip Stone Fairy":                              ("Drop",        None,  None, None,                     None),
+    "Fairy Pond":                                      ("Drop",        None,  None, None,                     None),
+    "Big Poe Kill":                                    ("Drop",        None,  None, None,                     None),
 
     # Deku Tree vanilla
     "Deku Tree Lobby Chest":                           ("Chest",       0x00,  0x03, None,                     ("Deku Tree",)),
@@ -575,8 +583,8 @@ location_table = {
     "GS Ice Cavern MQ Scarecrow":                      ("GS Token",    0x09,  0x01, None,                     ("Ice Cavern", "Skulltulas",)),
     "GS Ice Cavern MQ Ice Block":                      ("GS Token",    0x09,  0x04, None,                     ("Ice Cavern", "Skulltulas",)),
     "GS Ice Cavern MQ Red Ice":                        ("GS Token",    0x09,  0x02, None,                     ("Ice Cavern", "Skulltulas",)),
-    "GS Hyrule Field Near Gerudo Valley":              ("GS Token",    0x0A,  0x01, None,                     ("Hyrule Field", "Skulltulas",)),
-    "GS Hyrule Field near Kakariko":                   ("GS Token",    0x0A,  0x02, None,                     ("Hyrule Field", "Skulltulas",)),
+    "GS Hyrule Field Near Gerudo Valley":              ("GS Token",    0x0A,  0x01, None,                     ("Hyrule Field", "Skulltulas", "Grottos")),
+    "GS Hyrule Field near Kakariko":                   ("GS Token",    0x0A,  0x02, None,                     ("Hyrule Field", "Skulltulas", "Grottos")),
     "GS Lon Lon Ranch Back Wall":                      ("GS Token",    0x0B,  0x01, None,                     ("Lon Lon Ranch", "Skulltulas",)),
     "GS Lon Lon Ranch Rain Shed":                      ("GS Token",    0x0B,  0x02, None,                     ("Lon Lon Ranch", "Skulltulas",)),
     "GS Lon Lon Ranch House Window":                   ("GS Token",    0x0B,  0x04, None,                     ("Lon Lon Ranch", "Skulltulas",)),
@@ -589,7 +597,7 @@ location_table = {
     "GS Lost Woods Above Stage":                       ("GS Token",    0x0D,  0x04, None,                     ("the Lost Woods", "Skulltulas",)),
     "GS Sacred Forest Meadow":                         ("GS Token",    0x0D,  0x08, None,                     ("Sacred Forest Meadow", "Skulltulas",)),
     "GS Outside Ganon's Castle":                       ("GS Token",    0x0E,  0x01, None,                     ("outside Ganon's Castle", "Skulltulas",)),
-    "GS Hyrule Castle Grotto":                         ("GS Token",    0x0E,  0x02, None,                     ("Hyrule Castle", "Skulltulas",)),
+    "GS Hyrule Castle Grotto":                         ("GS Token",    0x0E,  0x02, None,                     ("Hyrule Castle", "Skulltulas", "Grottos")),
     "GS Hyrule Castle Tree":                           ("GS Token",    0x0E,  0x04, None,                     ("Hyrule Castle", "Skulltulas",)),
     "GS Castle Market Guard House":                    ("GS Token",    0x0E,  0x08, None,                     ("the Market", "Skulltulas",)),
     "GS Mountain Crater Bean Patch":                   ("GS Token",    0x0F,  0x01, None,                     ("Death Mountain Crater", "Skulltulas",)),
@@ -753,8 +761,8 @@ location_table = {
     "Links House Cow":                                 ("NPC",         0x34,  0x15, None,                     ("Links House", "Forest", "Cow", "Minigames")),
     "Impas House Cow":                                 ("NPC",         0x37,  0x15, None,                     ("Kakariko Village", "Kakariko", "Cow")),
     "Gerudo Valley Cow":                               ("NPC",         0x5A,  0x15, None,                     ("Gerudo Valley", "Gerudo", "Cow")),
-    "DMT Grotto Cow":                                  ("NPC",         0x3E,  0x15, None,                     ("Death Mountain Trail", "Death Mountain", "Cow")),
-    "HF Grotto Cow":                                   ("NPC",         0x3E,  0x16, None,                     ("Hyrule Field", "Cow")),
+    "DMT Grotto Cow":                                  ("NPC",         0x3E,  0x15, None,                     ("Death Mountain Trail", "Death Mountain", "Cow", "Grottos")),
+    "HF Grotto Cow":                                   ("NPC",         0x3E,  0x16, None,                     ("Hyrule Field", "Cow", "Grottos")),
 
     # These are not actual locations, but are filler spots used for hint reachability
     "Death Mountain Crater Gossip Stone":              ("GossipStone", None,  None, None,                     None),
@@ -825,3 +833,10 @@ location_groups = {
     'CollectableLike': [name for (name, data) in location_table.items() if data[0] in ('Collectable', 'BossHeart', 'GS Token')],
     'Dungeon': [name for (name, data) in location_table.items() if data[4] is not None and any(dungeon in data[4] for dungeon in dungeons)],
 }
+
+# Function to run exactly once after after placing items in drop locations for each world
+# Sets all Drop locations to a unique name in order to avoid name issues and to identify locations in the spoiler
+def set_drop_location_names(world):
+    for location in world.get_locations():
+        if location.type == 'Drop':
+            location.name = location.parent_region.name + " " + location.name

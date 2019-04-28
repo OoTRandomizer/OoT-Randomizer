@@ -16,25 +16,25 @@ typedef void(*usebutton_t)(z64_game_t *game, z64_link_t *link, uint8_t item, uin
 
 void handle_dpad() {
 
-    uint16_t pad_pressed = z64_game.common.input[0].pad_pressed;
+    pad_t pad_pressed = z64_game.common.input[0].pad_pressed;
 
     if (CAN_USE_DPAD && DISPLAY_DPAD){
         if(z64_file.link_age == 0) {
-            if (pad_pressed & DPAD_L && z64_file.iron_boots) {
+            if (pad_pressed.dl && z64_file.iron_boots) {
                 if (z64_file.equip_boots == 2) z64_file.equip_boots = 1;
                 else z64_file.equip_boots = 2;
                 z64_UpdateEquipment(&z64_game, &z64_link);
                 z64_playsfx(0x835, (z64_xyzf_t*)0x80104394, 0x04, (float*)0x801043A0, (float*)0x801043A0, (float*)0x801043A8);
             }
 
-            if ((pad_pressed & DPAD_R) && z64_file.hover_boots) {
+            if (pad_pressed.dr && z64_file.hover_boots) {
                 if (z64_file.equip_boots == 3) z64_file.equip_boots = 1;
                 else z64_file.equip_boots = 3;
                 z64_UpdateEquipment(&z64_game, &z64_link);
                 z64_playsfx(0x835, (z64_xyzf_t*)0x80104394, 0x04, (float*)0x801043A0, (float*)0x801043A0, (float*)0x801043A8);
             }
         }
-        if ((pad_pressed & DPAD_D) && CAN_USE_OCARINA){
+        if (pad_pressed.dd && CAN_USE_OCARINA){
             z64_usebutton(&z64_game,&z64_link,z64_file.items[0x07], 2);
         }
     }

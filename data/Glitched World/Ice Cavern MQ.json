@@ -1,10 +1,20 @@
 [
     {
-        "region_name": "Ice Cavern",
+        "region_name": "Ice Cavern Beginning",
         "dungeon": "Ice Cavern",
         "exits": {
             "Zoras Fountain": "True",
-            "Ice Cavern Interior": "has_bottle"
+            "Ice Cavern": "True"
+        }
+    },
+    {
+        "region_name": "Ice Cavern",
+        "dungeon": "Ice Cavern",
+        "locations": {
+            "Blue Fire": "is_adult and has_bottle"
+        },
+        "exits": {
+            "Ice Cavern Interior": "has_blue_fire"
         }
     },
     {

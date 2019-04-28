@@ -66,17 +66,16 @@ RANDO_CONTEXT:
 .include "lake_hylia.asm"
 .include "timers.asm"
 .include "shooting_gallery.asm"
-.include "saria_hints_repeat.asm"  ;accept86
-.include "textload.asm"     ;accept86
-.include "working_navi.asm" ;accept86
+.include "damage.asm"
+.include "saria_hints_repeat.asm"
+.include "textload.asm"
+.include "working_navi.asm"
 .importobj "../build/bundle.o"
 .align 8
 FONT_TEXTURE:
 .incbin("../resources/font.bin")
 DPAD_TEXTURE:
 .incbin("../resources/dpad.bin")
-
 .endarea
 
 .close
-

@@ -1,9 +1,16 @@
+SPEED_MULTIPLIER:
+    .float 1.0
+
 bunny_hood :
     ori     t0, r0, 0x04
     la      t1, GLOBAL_CONTEXT
     lw      t1, 0x1C44(t1)  ; Player in actor instance table
     beqz    t1, @@return
     nop
+
+    l.s     f22, SPEED_MULTIPLIER
+    nop
+    mul.s   f12, f12, f22
 
     lbu     t1, 0x14f(t1)   ; Worn Mask
     bne     t0, t1, @@return

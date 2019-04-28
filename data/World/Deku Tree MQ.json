@@ -10,6 +10,7 @@
             "GS Deku Tree MQ Lobby": "can_child_attack"
         },
         "exits": {
+            "Outside Deku Tree": "True",
             "Deku Tree Compass Room": "has_slingshot and (has_sticks or can_use(Dins_Fire))",
             "Deku Tree Boss Room": "has_slingshot and (has_sticks or can_use(Dins_Fire))"
         }

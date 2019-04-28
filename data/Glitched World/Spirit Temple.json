@@ -31,7 +31,7 @@
             (has_sticks or has_explosives or 
                 ( (has_nuts or can_use(Boomerang)) and 
                     (can_use(Kokiri_Sword) or has_slingshot) ) ))",
-            "Spirit Temple Nut Crate": "True"
+            "Nut Crate": "True"
         },
         "exits": {
             "Child Spirit Temple Climb": "(Small_Key_Spirit_Temple, 2) and
@@ -48,8 +48,8 @@
             "Spirit Temple Child Climb North Chest": "can_reach('Spirit Temple Central Chamber')
                 or is_child or has_projectile(adult)",
             "GS Spirit Temple Bomb for Light Room": "can_use(Boomerang) or can_use(Hookshot) or
-                (can_child_damage and (can_live_dmg(0.5) or has_bottle or can_use(Nayrus_Love))) or 
-                (is_adult and (can_live_dmg(0.5) or has_bottle or can_use(Nayrus_Love)))"
+                (can_child_damage and (can_live_dmg(0.5) or has_fairy or can_use(Nayrus_Love))) or 
+                (is_adult and (can_live_dmg(0.5) or has_fairy or can_use(Nayrus_Love)))"
         },
         "exits": {
             "Spirit Temple Central Chamber": "has_explosives"

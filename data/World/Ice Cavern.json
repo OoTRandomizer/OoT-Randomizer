@@ -3,8 +3,8 @@
         "region_name": "Ice Cavern Beginning",
         "dungeon": "Ice Cavern",
         "exits": {
-            #Frezzards are weird, they are immune to KS completely. Leave sticks out as 8/10 is
-            #a lot
+            "Zoras Fountain": "True",
+            #Frezzards are weird, they are immune to KS completely. Leave sticks out as 8/10 is a lot
             "Ice Cavern": "as_either_here(is_adult or has_explosives or can_use(Dins_Fire))"
         }
     },
@@ -21,7 +21,8 @@
             "GS Ice Cavern Heart Piece Room": "
                 has_blue_fire and (can_use(Hookshot) or can_use(Boomerang))",
             "GS Ice Cavern Push Block Room": "
-                has_blue_fire and (can_use(Hookshot) or can_use(Boomerang))"
+                has_blue_fire and (can_use(Hookshot) or can_use(Boomerang))",
+            "Blue Fire": "is_adult and has_bottle"
         }
     }
 ]

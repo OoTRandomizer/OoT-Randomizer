@@ -8,6 +8,7 @@ import uuid
 from functools import reduce
 
 from Fill import FillError
+from EntranceShuffle import EntranceShuffleError, change_connections, confirm_replacement, validate_worlds
 from Hints import gossipLocations, GossipText
 from Item import ItemFactory, ItemIterator, IsItem
 from ItemPool import item_groups, rewardlist, get_junk_item
@@ -25,7 +26,7 @@ per_world_keys = (
     'item_pool',
     'dungeons',
     'trials',
-    ':entrances',
+    'entrances',
     'locations',
     ':woth_locations',
     ':barren_regions',
@@ -138,15 +139,36 @@ class LocationRecord(SimpleRecord({'item': None, 'player': None, 'price': None, 
         })
 
 
-class EntranceRecord(SimpleRecord({'target': None})):
+class EntranceRecord(SimpleRecord({'region': None, 'origin': None})):
     def __init__(self, src_dict):
         if isinstance(src_dict, str):
-            src_dict = {'target':src_dict}
+            src_dict = {'region':src_dict}
+        if 'from' in src_dict:
+            src_dict['origin'] = src_dict['from']
+            del src_dict['from']
         super().__init__(src_dict)
 
 
     def to_json(self):
-        return self.target
+        self_dict = super().to_json()
+        if list(self_dict.keys()) == ['region']:
+            return str(self.region)
+        else:
+            self_dict['from'] = self_dict['origin']
+            del self_dict['origin']
+            return CollapseDict(self_dict)
+
+
+    @staticmethod
+    def from_entrance(entrance):
+        if entrance.type in ['Overworld', 'OwlDrop']:
+            origin_name = entrance.replaces.parent_region.name
+        else:
+            origin_name = None
+        return EntranceRecord({
+            'region': entrance.connected_region.name,
+            'origin': origin_name,
+        })
 
 
 class StarterRecord(SimpleRecord({'count': 1})):
@@ -192,7 +214,7 @@ class WorldDistribution(object):
             'trials': {name: TrialRecord(record) for (name, record) in src_dict.get('trials', {}).items()},
             'item_pool': {name: ItemPoolRecord(record) for (name, record) in src_dict.get('item_pool', {}).items()},
             'starting_items': {name: StarterRecord(record) for (name, record) in src_dict.get('starting_items', {}).items()},
-            'entrances': None,
+            'entrances': {name: EntranceRecord(record) for (name, record) in src_dict.get('entrances', {}).items()},
             'locations': {name: [LocationRecord(rec) for rec in record] if is_pattern(name) else LocationRecord(record) for (name, record) in src_dict.get('locations', {}).items() if not is_output_only(name)},
             'woth_locations': None,
             'barren_regions': None,
@@ -221,7 +243,7 @@ class WorldDistribution(object):
             'dungeons': {name: record.to_json() for (name, record) in self.dungeons.items()},
             'trials': {name: record.to_json() for (name, record) in self.trials.items()},
             'item_pool': SortedDict({name: record.to_json() for (name, record) in self.item_pool.items()}),
-            ':entrances': None if self.entrances is None else {name: record.to_json() for (name, record) in self.entrances.items()},
+            'entrances': {name: record.to_json() for (name, record) in self.entrances.items()},
             'locations': {name: [rec.to_json() for rec in record] if is_pattern(name) else record.to_json() for (name, record) in self.locations.items()},
             ':woth_locations': None if self.woth_locations is None else {name: record.to_json() for (name, record) in self.woth_locations.items()},
             ':barren_regions': self.barren_regions,
@@ -360,6 +382,64 @@ class WorldDistribution(object):
                 except KeyError:
                     continue
                 state.collect(item)
+
+
+    def set_shuffled_entrances(self, worlds, entrance_pools, target_entrance_pools, locations_to_ensure_reachable, itempool):
+        for (name, record) in self.entrances.items():
+            if record.region is None:
+                continue
+            if not worlds[self.id].get_entrance(name):
+                raise RuntimeError('Unknown entrance in world %d: %s' % (self.id + 1, name))
+
+            entrance_found = False
+            for pool_type, entrance_pool in entrance_pools.items():
+                try:
+                    matched_entrance = next(filter(lambda entrance: entrance.name == name, entrance_pool))
+                except StopIteration:
+                    continue
+
+                entrance_found = True
+                if matched_entrance.connected_region != None:
+                    if matched_entrance.type == 'Overworld':
+                        continue
+                    else:
+                        raise RuntimeError('Entrance already shuffled in world %d: %s' % (self.id + 1, name))
+
+                target_region = record.region
+
+                matched_targets_to_region = list(filter(lambda target: target.connected_region and target.connected_region.name == target_region, 
+                                                        target_entrance_pools[pool_type]))
+                if not matched_targets_to_region:
+                    raise RuntimeError('No entrance found to replace with %s that leads to %s in world %d' % 
+                                                (matched_entrance, target_region, self.id + 1))
+
+                if matched_entrance.type in ['Overworld', 'OwlDrop']:
+                    target_parent = record.origin
+                    try:
+                        matched_target = next(filter(lambda target: target.replaces.parent_region.name == target_parent, matched_targets_to_region))
+                    except StopIteration:
+                        raise RuntimeError('No entrance found to replace with %s that leads to %s from %s in world %d' % 
+                                                (matched_entrance, target_region, target_parent, self.id + 1))
+                else:
+                    matched_target = matched_targets_to_region[0]
+                    target_parent = matched_target.parent_region.name
+
+                if matched_target.connected_region == None:
+                    raise RuntimeError('Entrance leading to %s from %s is already shuffled in world %d' % 
+                                            (target_region, target_parent, self.id + 1))
+
+                change_connections(matched_entrance, matched_target)
+
+                try:
+                    validate_worlds(worlds, None, locations_to_ensure_reachable, itempool)
+                except EntranceShuffleError as error:
+                    raise RuntimeError('Cannot connect %s To %s in world %d (Reason: %s)' % 
+                                            (matched_entrance, matched_entrance.connected_region, self.id + 1, error))
+
+                confirm_replacement(matched_entrance, matched_target)
+
+            if not entrance_found:
+                raise RuntimeError('Entrance does not belong to a pool of shuffled entrances in world %d: %s' % (self.id + 1, name))
 
 
     def fill_bosses(self, world, prize_locs, prizepool):
@@ -509,6 +589,7 @@ class Distribution(object):
         update_dict = {
             'file_hash': (src_dict.get('file_hash', []) + [None, None, None, None, None])[0:5],
             'playthrough': None,
+            'entrance_playthrough': None,
         }
 
         if update_all:
@@ -558,6 +639,14 @@ class Distribution(object):
                     for (sphere_nr, sphere) in self.playthrough.items()
                 }, depth=2)
 
+            if self.entrance_playthrough is not None and len(self.entrance_playthrough) > 0:
+                self_dict[':entrance_playthrough'] = AllignedDict({
+                    sphere_nr: {
+                        name: record.to_json() for name, record in sphere.items()
+                    }
+                    for (sphere_nr, sphere) in self.entrance_playthrough.items()
+                }, depth=2)
+
         if not include_output:
             strip_output_only(self_dict)
         return self_dict
@@ -583,7 +672,7 @@ class Distribution(object):
             world_dist = self.world_dists[world.id]
             world_dist.dungeons = {dung: DungeonRecord({ 'mq': world.dungeon_mq[dung] }) for dung in world.dungeon_mq}
             world_dist.trials = {trial: TrialRecord({ 'active': not world.skipped_trials[trial] }) for trial in world.skipped_trials}
-            world_dist.entrances = {ent: EntranceRecord(target) for (ent, target) in spoiler.entrances[world.id].items()}
+            world_dist.entrances = {ent.name: EntranceRecord.from_entrance(ent) for ent in spoiler.entrances[world.id]}
             world_dist.locations = {loc: LocationRecord.from_item(item) for (loc, item) in spoiler.locations[world.id].items()}
             world_dist.woth_locations = {loc.name: LocationRecord.from_item(loc.item) for loc in spoiler.required_locations[world.id]}
             world_dist.barren_regions = [*world.empty_areas]
@@ -592,7 +681,7 @@ class Distribution(object):
 
         for world in spoiler.worlds:
             for (_, item) in spoiler.locations[world.id].items():
-                if item.dungeonitem or item.type == 'Event':
+                if item.dungeonitem or item.type == 'Event' or item.type == 'Drop':
                     continue
                 player_dist = item.world.distribution
                 if item.name in player_dist.item_pool:
@@ -611,6 +700,19 @@ class Distribution(object):
                     location_key = location.name
 
                 loc_rec_sphere[location_key] = LocationRecord.from_item(location.item)
+
+        self.entrance_playthrough = {}
+        for (sphere_nr, sphere) in spoiler.entrance_playthrough.items():
+            if len(sphere) > 0:
+                ent_rec_sphere = {}
+                self.entrance_playthrough[sphere_nr] = ent_rec_sphere
+                for entrance in sphere:
+                    if spoiler.settings.world_count > 1:
+                        entrance_key = '%s [W%d]' % (entrance.name, entrance.world.id + 1)
+                    else:
+                        entrance_key = entrance.name
+
+                    ent_rec_sphere[entrance_key] = EntranceRecord.from_entrance(entrance)
 
 
     @staticmethod
