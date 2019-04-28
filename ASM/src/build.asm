@@ -66,9 +66,9 @@ RANDO_CONTEXT:
 .include "lake_hylia.asm"
 .include "timers.asm"
 .include "shooting_gallery.asm"
-.include "saria_hints_repeat.asm"  ;accept86
-.include "textload.asm"     ;accept86
-.include "working_navi.asm" ;accept86
+.include "saria_hints_repeat.asm"
+.include "textload.asm" 
+.include "Navi_hints.asm"
 .importobj "../build/bundle.o"
 .align 8
 FONT_TEXTURE:

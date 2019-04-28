@@ -17,8 +17,7 @@ from Messages import read_messages, update_message_by_id, read_shop_items, \
 from OcarinaSongs import replace_songs
 from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
 from SaveContext import SaveContext
-from working_navi import working_navi
-from Utils import default_output_path       #TBD can be removed later
+from Navi_Hints import Navi_Hints
 
 def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
     with open(data_path('generated/rom_patch.txt'), 'r') as stream:
@@ -1524,12 +1523,11 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
     save_context.write_save_table(rom)
 
 
-    #EDIT accept86 working_navi/Saria Hints
-    symbol = rom.sym('WORKING_NAVI_CONDITION')
-    if world.settings.working_navi:
+    symbol = rom.sym('NAVI_HINTSs_CONDITION')
+    if world.settings.Navi_Hints:
         rom.write_int32(symbol, 1)
-        wNavi = working_navi(rom)
-        wNavi.working_navi_patch(rom, world, spoiler, save_context, outfilebase, messages)
+        wNavi = Navi_Hints(rom)
+        wNavi.Navi_Hints_patch(rom, world, spoiler, save_context, outfilebase, messages)
 
     else:
         rom.write_int32(symbol, 0)
@@ -1578,23 +1576,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
 
 
     
-    #create message dump - TBD remove when not needed anymore
-    if True: 
-        output_dir = default_output_path(world.settings.output_dir)      
-        Messages_path = os.path.join(output_dir, '%s_Messages.txt' % outfilebase)
-        with open(Messages_path, 'w') as outfile:
-            outfile.write('Messages:\n\n')
-            mydict = {'key':'value'}
-            for message in messages:
-                disp = message.display()
-                message_str = disp.encode('ascii', 'ignore')
-                strID = str(int(str(message.id),16))
-                mydict[strID.zfill(6)] = message_str
-            for key in sorted(mydict.keys()):
-                outfile.write('\n %s \n' % (mydict[key]) )
-    
-    
-
     return rom
 
 

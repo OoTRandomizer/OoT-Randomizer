@@ -89,7 +89,7 @@ class Combobox(Setting_Info):
 
         super().__init__(name, str, shared, choices, default, dependency, gui_params)
 
-#accept86
+
 class TextBox(Setting_Info):
 
     def __init__(self, name, gui_text=None, gui_group=None,
@@ -1571,10 +1571,10 @@ setting_infos = [
         ''',
         shared         = True,
     ),
-    #Edit Accept86
+
     Checkbutton(
-        name           = 'working_navi',
-        gui_text       = 'working navi',
+        name           = 'Navi_Hints',
+        gui_text       = 'Navi hints',
         gui_group      = 'other',
         gui_tooltip    = '''\
             This will activate a modified Navi
@@ -1583,8 +1583,8 @@ setting_infos = [
         shared         = True,
     ),
     Checkbutton(
-        name           = 'working_navi_exact',
-        gui_text       = 'working navi exact hints',
+        name           = 'Navi_Hints_exact',
+        gui_text       = 'Navi hints - exact hints',
         gui_group      = 'other',
         gui_tooltip    = '''\
             This will activate exact navi hints.
@@ -1592,9 +1592,9 @@ setting_infos = [
         shared         = True,
     ),
     TextBox(
-        name           = 'working_navi_delay',
+        name           = 'Navi_Hints_delay',
         default        = '30',
-        gui_text       = 'working navi delay(min)',
+        gui_text       = 'Navi hints delay(min)',
         gui_group      = 'other',
         gui_tooltip    = '''\
             This sets the minimum delay time in minutes

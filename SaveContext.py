@@ -207,7 +207,7 @@ class SaveContext():
                 return
             
             
-#accept86            
+        
     def give_bottleAddressAndMask(self, item, count):
         for bottle_id in range(4):
             item_slot = 'bottle_%d' % (bottle_id + 1)
@@ -268,7 +268,6 @@ class SaveContext():
             raise ValueError("Cannot give unknown starting item %s" % item)
 
 
-#Accept86
     def give_item_addressAndMask(self, item):
         count = 1 #TBD ok?
         if item in SaveContext.bottle_types:

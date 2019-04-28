@@ -36,7 +36,7 @@ TextLoadLogic_HOOK:
     
     
 @@TEXTLOAD_WNAVI:    
-;====Working Navi=====   
+;====Navi Hints=====   
 
     lw      a2, 0x0018(sp)          ;restore a2
 
