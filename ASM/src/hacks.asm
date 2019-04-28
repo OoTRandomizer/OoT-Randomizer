@@ -746,13 +746,12 @@ skip_GS_BGS_text:
 .org 0xAE807C
     bgez    s0, @@continue ; check if damage is negative
     lh      t8, 0x30(a1)   ; load hp for later
-    lbu     t7, 0x3d(a1)   ; check if has double defense
-    beq     t7, zero, @@continue
-    sll     s0, s0, 0      ; damage multiplier (delay slot)
-.skip 4
-.skip 4
-.skip 4
-.skip 4
+    jal     Apply_Damage_Multiplier
+    nop
+    lh      t8, 0x30(a1)   ; load hp for later
+    nop
+    nop
+    nop
 @@continue:
 
 ;==================================================================================================
@@ -943,7 +942,7 @@ skip_GS_BGS_text:
 ; Gossip Stone Hints
 ;==================================================================================================
 
-.org 0xEE7B84           ; 0x801EE084
+.org 0xEE7B84
     jal     gossip_hints
     lw      a0, 0x002C(sp) ; global context
     nop

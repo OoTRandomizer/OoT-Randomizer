@@ -36,4 +36,5 @@ void after_game_state_update() {
 void after_scene_init() {
     check_ganon_entry();
     models_reset();
+    extern_scene_init();
 }

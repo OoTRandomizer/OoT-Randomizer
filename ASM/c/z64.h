@@ -668,30 +668,32 @@ typedef struct
                                         /* 0x02EC */
 } z64_gfx_t;
 
+typedef union
+{
+  struct
+  {
+    uint16_t  a  : 1;
+    uint16_t  b  : 1;
+    uint16_t  z  : 1;
+    uint16_t  s  : 1;
+    uint16_t  du : 1;
+    uint16_t  dd : 1;
+    uint16_t  dl : 1;
+    uint16_t  dr : 1;
+    uint16_t     : 2;
+    uint16_t  l  : 1;
+    uint16_t  r  : 1;
+    uint16_t  cu : 1;
+    uint16_t  cd : 1;
+    uint16_t  cl : 1;
+    uint16_t  cr : 1;
+  };
+  uint16_t    pad;
+} pad_t;
+
 typedef struct
 {
-  union
-  {
-    struct
-    {
-      uint16_t  a  : 1;
-      uint16_t  b  : 1;
-      uint16_t  z  : 1;
-      uint16_t  s  : 1;
-      uint16_t  du : 1;
-      uint16_t  dd : 1;
-      uint16_t  dl : 1;
-      uint16_t  dr : 1;
-      uint16_t     : 2;
-      uint16_t  l  : 1;
-      uint16_t  r  : 1;
-      uint16_t  cu : 1;
-      uint16_t  cd : 1;
-      uint16_t  cl : 1;
-      uint16_t  cr : 1;
-    };
-    uint16_t    pad;
-  };
+  pad_t         pad;
   int8_t        x;
   int8_t        y;
 } z64_controller_t;
@@ -787,11 +789,11 @@ typedef struct
   uint16_t          unk_00_;
   z64_controller_t  raw_prev;
   uint16_t          unk_01_;
-  uint16_t          pad_pressed;
+  pad_t             pad_pressed;
   int8_t            x_diff;
   int8_t            y_diff;
   char              unk_02_[0x0002];
-  uint16_t          pad_released;
+  pad_t             pad_released;
   int8_t            adjusted_x;
   int8_t            adjusted_y;
   char              unk_03_[0x0002];

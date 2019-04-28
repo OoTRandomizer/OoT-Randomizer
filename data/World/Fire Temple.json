@@ -18,9 +18,13 @@
                 (logic_volvagia_jump or Hover_Boots or (can_reach(Fire_Temple_Upper) and 
                     (can_play(Song_of_Time) or has_explosives)))",
             "GS Fire Temple Basement": "
-                ((Small_Key_Fire_Temple, 8) or not keysanity) and can_use(Hammer)"
+                ((Small_Key_Fire_Temple, 8) or not keysanity) and can_use(Hammer)",
+            "Fairy Pot": "
+                has_bottle and (can_use(Hover_Boots) or can_use(Hookshot)) and
+                (logic_fewer_tunic_requirements or can_use(Goron_Tunic))"
         },
         "exits": {
+            "Death Mountain Crater Central": "True",
             "Fire Temple Big Lava Room":"
                 (Small_Key_Fire_Temple, 2) and
                 (logic_fewer_tunic_requirements or can_use(Goron_Tunic))"
@@ -31,8 +35,8 @@
         "dungeon": "Fire Temple",
         "locations": {
             "Fire Temple Big Lava Room Open Chest": "True",
-            "Fire Temple Big Lava Room Bombable Chest": "has_explosives",
-            "GS Fire Temple Song of Time Room": "can_play(Song_of_Time)"
+            "Fire Temple Big Lava Room Bombable Chest": "is_adult and has_explosives",
+            "GS Fire Temple Song of Time Room": "is_adult and can_play(Song_of_Time)"
         },
         "exits": {
             "Fire Temple Lower":  "True",

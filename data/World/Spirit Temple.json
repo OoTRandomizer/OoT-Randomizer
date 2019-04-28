@@ -3,6 +3,7 @@
         "region_name": "Spirit Temple Lobby",
         "dungeon": "Spirit Temple",
         "exits": {
+            "Desert Colossus": "True",
             "Child Spirit Temple": "is_child",
             "Early Adult Spirit Temple": "can_use(Silver_Gauntlets)"
         }
@@ -25,7 +26,7 @@
                 (Boomerang or has_slingshot or (has_bombchus and logic_spirit_child_bombchu)) and 
                 (has_sticks or has_explosives or 
                     ((has_nuts or Boomerang) and (Kokiri_Sword or has_slingshot)))",
-            "Spirit Temple Nut Crate": "True"
+            "Nut Crate": "True"
         },
         "exits": {
             "Child Spirit Temple Climb": "(Small_Key_Spirit_Temple, 1)"
@@ -51,7 +52,7 @@
                     has_projectile(child))",
             "GS Spirit Temple Bomb for Light Room": "
                 has_projectile(both) or can_use(Dins_Fire) or 
-                ((damage_multiplier != 'ohko' or has_bottle or can_use(Nayrus_Love)) and 
+                ((damage_multiplier != 'ohko' or has_fairy or can_use(Nayrus_Love)) and 
                     (has_sticks or Kokiri_Sword or has_projectile(child))) or 
                 (is_child and 
                     (Small_Key_Spirit_Temple, 5) and has_projectile(child)) or 
@@ -59,7 +60,7 @@
                     ((Small_Key_Spirit_Temple, 2) and bombchus_in_logic and not shuffle_dungeon_entrances)) and 
                 can_use(Silver_Gauntlets) and
                 (has_projectile(adult) or damage_multiplier != 'ohko' or 
-                    has_bottle or can_use(Nayrus_Love)))"
+                    has_fairy or can_use(Nayrus_Love)))"
         },
         "exits": {
             "Spirit Temple Central Chamber": "has_explosives"

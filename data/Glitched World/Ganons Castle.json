@@ -37,7 +37,7 @@
         "dungeon": "Ganons Castle",
         "locations": {
             "Ganons Castle Fire Trial Clear": "
-                (can_use(Goron_Tunic) or has_bottle) and (can_use(Golden_Gauntlets) or can_use(Hover_Boots)) and 
+                (can_use(Goron_Tunic) or has_fairy) and (can_use(Golden_Gauntlets) or can_use(Hover_Boots)) and 
                 can_use(Light_Arrows) and (can_use(Longshot) or (can_mega and can_use(Hover_Boots)))"
         }
     },
@@ -47,7 +47,8 @@
         "locations": {
             "Ganons Castle Water Trial Left Chest": "True",
             "Ganons Castle Water Trial Right Chest": "True",
-            "Ganons Castle Water Trial Clear": "(has_bottle or can_use(Hookshot)) and Hammer and can_use(Light_Arrows)"
+            "Ganons Castle Water Trial Clear": "(has_blue_fire or can_use(Hookshot)) and Hammer and can_use(Light_Arrows)",
+            "Blue Fire": "has_bottle"
         }
     },
     {

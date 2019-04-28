@@ -54,10 +54,11 @@
         "region_name": "Ganons Castle Water Trial",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Castle MQ Water Trial Chest": "has_bottle",
+            "Ganons Castle MQ Water Trial Chest": "has_blue_fire",
             "Ganons Castle Water Trial Clear": "
-                has_bottle and can_use(Light_Arrows) and 
-                (Small_Key_Ganons_Castle, 3)"
+                has_blue_fire and can_use(Light_Arrows) and 
+                (Small_Key_Ganons_Castle, 3)",
+            "Blue Fire": "has_bottle"
         }
     },
     {

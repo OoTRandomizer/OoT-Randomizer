@@ -1,0 +1,13 @@
+diff a/data/Glitched World/Overworld.json b/data/Glitched World/Overworld.json	(rejected hunks)
+@@ -724,9 +724,9 @@
+         "region_name": "Dampes Grave",
+         "hint": "the Graveyard",
+         "locations": {
++            "Dampes Grave Nut Pot": "True",
+             "Hookshot Chest": "True",
+-            "Dampe Race Freestanding PoH": "True",
+-            "Nut Pot": "True"
++            "Dampe Race Freestanding PoH": "True"
+         }
+     },
+     {

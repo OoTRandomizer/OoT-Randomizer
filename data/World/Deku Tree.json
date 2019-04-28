@@ -18,9 +18,14 @@
                  as_either_here(can_blast_or_smash) and
                  as_either_here(can_use(Hookshot) or can_use(Boomerang))) or
                 (as_adult_here and is_child and has_explosives and
-                 can_use(Boomerang) and (has_sticks or can_use(Dins_Fire)))"
+                 can_use(Boomerang) and (has_sticks or can_use(Dins_Fire)))",
+            "Deku Baba Sticks": "is_adult or Kokiri_Sword or Boomerang",
+            "Deku Baba Nuts": "
+                is_adult or has_slingshot or has_sticks or 
+                has_explosives or Kokiri_Sword or can_use(Dins_Fire)"
         },
         "exits": {
+            "Outside Deku Tree": "True",
             "Deku Tree Slingshot Room": "as_either_here(has_shield)",
             "Deku Tree Boss Room": "
                 as_either_here(has_fire_source_with_torch) and
