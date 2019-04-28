@@ -85,7 +85,7 @@ os.chdir(run_dir)
 
 data_symbols = {}
 for (name, sym) in symbols.items():
-    if sym['type'] == 'data':
+    if sym['type'] == 'data':           
         addr = int(sym['address'], 16)
         if 0x80400000 <= addr < 0x80420000: #accept86
             addr = addr - 0x80400000 + 0x03480000

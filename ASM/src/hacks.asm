@@ -943,7 +943,7 @@ skip_GS_BGS_text:
 ; Gossip Stone Hints
 ;==================================================================================================
 
-.org 0xEE7B84
+.org 0xEE7B84           ; 0x801EE084
     jal     gossip_hints
     lw      a0, 0x002C(sp) ; global context
     nop
@@ -1217,18 +1217,33 @@ skip_GS_BGS_text:
     
     
     
+;accept86
+; ==================================================================================================
+; working Navi/Saria repeats hints
+; ==================================================================================================
+;hook for TextLoad
+.orga 0xB52BDC
+    jal     TextLoadLogic_HOOK    ;is a JAL was a jal to DMALoad Text before
+    
+  ;for displaced Code
+.org 0x800595D0    ;.orga 0xACF530
+OOT_Navi_Saria_TextID_Generation:    
+    
     
 ; ==================================================================================================
 ; working Navi - see working_navi.py
 ; ==================================================================================================
       
-;            #hook for TextLoad
-;            #I put the hooks here, because I don´t want to change code flow of main rando            
-;            intAddress =  int((self.WORKING_NAVI_CODE_TEXTLOADLOGIC_RAM & 0x00FFFFFF)/4)
-;            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
-;            byteArray = [0x0C] + byteArray
-;            rom.write_bytes(0xB52BDC, bytearray(byteArray)) #is a JAL was a jal to DMALoad Text before
-            
+      
+ ;hook for Navi TextID changing
+ .orga 0xACF700
+    jal NaviHints_TextID_HOOK
+    
+    
+      
+      
+      
+;            #I put the hooks here, because I don´t want to change code flow of main rando 
 ;            #hook for cyclic call
 ;            intAddress =  int((self.WORKING_NAVI_CODE_CYCLICLOGIC_RAM & 0x00FFFFFF)/4)
 ;            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
@@ -1247,4 +1262,32 @@ skip_GS_BGS_text:
 ;            byteArray = [0x08] + byteArray
 ;            rom.write_bytes(0x00B0652C, bytearray(byteArray)) #is a J, was a jr before
            
+           
+           
+;accept86
+; ==================================================================================================
+; saria repeats hints
+; ==================================================================================================
+
+;hook for TextBoxBreaks ID Setting
+.orga 0xACF6C4
+    jal     Saria_TextBoxBreak_HOOK    ;is a JAL was a jal to DMALoad Text before
+    
+
+;hook for TextBoxBreaks chaining
+.orga 0xB534DC
+    j     Saria_TextBoxBreak_Chaining_HOOK
+    nop
+    
+    
+;hook2 for TextBoxBreaks chaining
+.orga 0xC269B4
+    j   Saria_TextBoxBreak_Chaining2_HOOK
+    nop
+
+.org 0x801E0B1C
+    Saria_TextBoxBreak_Chaining2_HOOK_END:
+    
+    
+   
 

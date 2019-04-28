@@ -4,6 +4,7 @@ from SaveContext import SaveContext
 from Hints import get_raw_text, lineWrap        
 from Utils import default_output_path
 from Rom import Rom
+from Messages import add_message
 
 import os, os.path
                     
@@ -14,23 +15,26 @@ import re
 
 class working_navi(Rom):
     
-    WORKING_NAVI_RAM = None
-    WORKING_NAVI_ROM = None
+    #WORKING_NAVI_RAM_GLOBALS = None
+    WORKING_NAVI_ROM_GLOBALS = None
     WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM = None
-    WORKING_NAVI_DATA_GENERATED_TEXT_ROM = None  #length about 0x1000 hex - to 0x80501700
-    WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM = None
+    #WORKING_NAVI_DATA_GENERATED_TEXT_ROM = None  #length about 0x1000 hex - to 0x80501700
+    #WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM = None
     WORKING_NAVI_HOOK_CYCLICLOGIC_RAM = None
     WORKING_NAVI_HOOK_TEXTLOADLOGIC_RAM = None
     WORKING_NAVI_HOOK_NAVI_IN_DUNGEONS_RAM = None
     WORKING_NAVI_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM = None
     
+    Navi_Hints_TextID_Base = 0x7400
+    
+    
     def __init__(self, rom):
-        self.WORKING_NAVI_RAM = rom.symRAM('WORKING_NAVI_GLOBALS') #0x80410000
-        self.WORKING_NAVI_ROM = rom.sym('WORKING_NAVI_GLOBALS') #0x03490000
+        #self.WORKING_NAVI_RAM_GLOBALS = rom.symRAM('WORKING_NAVI_GLOBALS') #0x80410000
+        self.WORKING_NAVI_ROM_GLOBALS = rom.sym('WORKING_NAVI_GLOBALS') #0x03490000
         self.WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM = rom.sym('WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM') #self.WORKING_NAVI_ROM + 0x40     #TBD from .json File?
         self.WORKING_NAVI_DATA_GENERATED_TEXT_ROM = rom.sym('WORKING_NAVI_DATA_GENERATED_TEXT_SYM') #self.WORKING_NAVI_ROM + 0x800    #length about 0x1000 hex - to 0x80501700
         self.WORKING_NAVI_HOOK_CYCLICLOGIC_RAM = rom.symRAM('working_navi_cyclicLogic_HOOK') #self.WORKING_NAVI_RAM + 0x300
-        self.WORKING_NAVI_HOOK_TEXTLOADLOGIC_RAM = rom.symRAM('working_navi_TextLoadLogic_HOOK') #self.WORKING_NAVI_RAM + 0x600
+        #self.WORKING_NAVI_HOOK_TEXTLOADLOGIC_RAM = rom.symRAM('working_navi_TextLoadLogic_HOOK') #self.WORKING_NAVI_RAM + 0x600
         self.WORKING_NAVI_HOOK_NAVI_IN_DUNGEONS_RAM = rom.symRAM('working_navi_Activate_Navi_In_Dungeons_HOOK')
         self.WORKING_NAVI_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM = rom.symRAM('working_navi_Extended_Init_On_Saveloads_HOOK')
         self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM = rom.symRAM('WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM')
@@ -232,19 +236,19 @@ class working_navi(Rom):
         
                             
                             
-    def working_navi_patch_TextTableItem(self, navi_exact_locations, CurTextPointerBaseA, locationstringexact, locationstringvague, rom):
-        bArray = bytearray()
-        if navi_exact_locations:
-            bArray.extend(map(ord, get_raw_text(lineWrap(locationstringexact)) )) 
-        if not navi_exact_locations:
-            bArray.extend(map(ord, get_raw_text(lineWrap(locationstringvague)) )) 
+    #def working_navi_patch_TextTableItem(self, navi_exact_locations, CurTextPointerBaseA, locationstringexact, locationstringvague, rom):
+    #    bArray = bytearray()
+    #    if navi_exact_locations:
+    #        bArray.extend(map(ord, get_raw_text(lineWrap(locationstringexact)) )) 
+    #    if not navi_exact_locations:
+    #        bArray.extend(map(ord, get_raw_text(lineWrap(locationstringvague)) )) 
             
-        CurTextPointerA = CurTextPointerBaseA
-        rom.write_bytes(CurTextPointerA, [0x05, 0x44])
-        CurTextPointerA += 2
-        rom.write_bytes(CurTextPointerA, bArray)
-        CurTextPointerA += len(bArray)
-        rom.write_bytes(CurTextPointerA, [0x20, 0x05, 0x40, 0x02])
+    #    CurTextPointerA = CurTextPointerBaseA
+    #    rom.write_bytes(CurTextPointerA, [0x05, 0x44])
+    #    CurTextPointerA += 2
+    #    rom.write_bytes(CurTextPointerA, bArray)
+    #    CurTextPointerA += len(bArray)
+    #    rom.write_bytes(CurTextPointerA, [0x20, 0x05, 0x40, 0x02])
                     
              
              
@@ -314,19 +318,23 @@ class working_navi(Rom):
         
         #TBD TBD <= do this for bottles, too
         
-        maxlen = self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM-6-4
+        maxlen = 0x7C-6-4
         locationexact = (locationexact[:maxlen] + '..') if len(locationexact) > maxlen else locationexact
         locationvague = (locationvague[:maxlen] + '..') if len(locationvague) > maxlen else locationvague
         return [locationexact, locationvague]
                         
                                      
                  
-    def working_navi_patch_internal(self, rom, world, spoiler, save_context, outfile):
+    def working_navi_patch_internal(self, rom, world, spoiler, save_context, outfile, messages):
         # Save Navi Texts in Rom
-        CurTextPointerBaseA = self.WORKING_NAVI_DATA_GENERATED_TEXT_ROM
+        #CurTextPointerBaseA = self.WORKING_NAVI_DATA_GENERATED_TEXT_ROM
              
-        self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, "I have faith in you, you can progress", "YI have faith in you, you can progress", rom)
-        CurTextPointerBaseA += self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM
+        CurNavi_Hints_TextID = self.Navi_Hints_TextID_Base
+                  
+        #self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, "I have faith in you, you can progress", "I have faith in you, you can progress", rom)
+        #CurTextPointerBaseA += self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM
+        add_message(messages, get_raw_text(lineWrap("I have faith in you, you can progress")), id=CurNavi_Hints_TextID)
+        CurNavi_Hints_TextID += 1
         
         # set LookUp Table for Navi Texts        
         CurLookupTablePointerB = self.WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM
@@ -353,8 +361,15 @@ class working_navi(Rom):
                         locationexact = locTexts[0]
                         locationvague = locTexts[1]
                         
-                        self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, locationexact, locationvague, rom)
-                        CurTextPointerBaseA += self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM
+                        #self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, locationexact, locationvague, rom)
+                        #CurTextPointerBaseA += self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM
+                        
+                        
+                        if world.settings.working_navi_exact:
+                            add_message(messages, get_raw_text(lineWrap(locationexact)), id=CurNavi_Hints_TextID)
+                        else:
+                            add_message(messages, get_raw_text(lineWrap(locationvague)), id=CurNavi_Hints_TextID)
+                        CurNavi_Hints_TextID += 1
                         
                         self.working_navi_patch_LookUpTableItem(ItemByteoffset, ItemBitoffset, ItemMask, ItemID, sphere_nr, CurLookupTablePointerB, rom)
                         CurLookupTablePointerB += 8
@@ -364,8 +379,11 @@ class working_navi(Rom):
                                 outfile.write('\n %s: %s : %s' % (sphere_nr, location, location.item ) )
                 
                      
-        self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, "We got everything we need, lets beat Ganon", "We got everything we need, lets beat Ganon", rom) 
-        CurTextPointerBaseA += self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM             
+        #self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, "We got everything we need, lets beat Ganon", "We got everything we need, lets beat Ganon", rom) 
+        #CurTextPointerBaseA += self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM             
+         
+        add_message(messages, get_raw_text(lineWrap("We got everything we need, lets beat Ganon")), id=CurNavi_Hints_TextID)
+        CurNavi_Hints_TextID += 1 
           
         #end of LookUp Table
         rom.write_bytes(CurLookupTablePointerB, [0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00])  
@@ -376,7 +394,7 @@ class working_navi(Rom):
                             
     
         
-    def working_navi_patch(self, rom, world, spoiler, save_context, outfilebase):
+    def working_navi_patch(self, rom, world, spoiler, save_context, outfilebase, messages):
         #working navi by accept86 wNavi
         if world.settings.working_navi:
             #write global variables
@@ -391,15 +409,17 @@ class working_navi(Rom):
             glob4 = list(bytearray(asmglobal4_FlagForAsmHack_initvalue.to_bytes(4, 'big')))
             byteArray = bytearray( glob1 + glob2 + glob3 + glob4 )
             
-            rom.write_bytes(self.WORKING_NAVI_ROM, byteArray)
+            rom.write_bytes(self.WORKING_NAVI_ROM_GLOBALS, byteArray)
             
             
-            #hook for TextLoad
+            #hook for TextLoad - this is done in hacks.asm now
+            
+            #intAddress =  int((self.WORKING_NAVI_HOOK_TEXTLOADLOGIC_RAM & 0x00FFFFFF)/4)
+            #byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
+            #byteArray = [0x0C] + byteArray
+            #rom.write_bytes(0xB52BDC, bytearray(byteArray)) #is a JAL was a jal to DMALoad Text before
+            
             #I put the hooks here, because I don´t want to change code flow of main rando
-            intAddress =  int((self.WORKING_NAVI_HOOK_TEXTLOADLOGIC_RAM & 0x00FFFFFF)/4)
-            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
-            byteArray = [0x0C] + byteArray
-            rom.write_bytes(0xB52BDC, bytearray(byteArray)) #is a JAL was a jal to DMALoad Text before
             
             #hook for cyclic call
             intAddress =  int((self.WORKING_NAVI_HOOK_CYCLICLOGIC_RAM & 0x00FFFFFF)/4)
@@ -429,7 +449,7 @@ class working_navi(Rom):
                 with open(spoiler_path, 'w') as outfile:
                         outfile.write('OoT Randomizer Working Navi\n\n')
                         outfile.write('\nPlaythrough:\n\n')
-                        self.working_navi_patch_internal(rom, world, spoiler, save_context, outfile)
+                        self.working_navi_patch_internal(rom, world, spoiler, save_context, outfile, messages)
                         
             else:
                 self.working_navi_patch_internal(rom, world, spoiler, save_context, None)          

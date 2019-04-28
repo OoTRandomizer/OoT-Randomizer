@@ -1615,6 +1615,17 @@ setting_infos = [
     ),
     
     
+    Checkbutton(
+        name           = 'saria_repeats_hints',
+        gui_text       = 'saria repeats gossip hints',
+        gui_group      = 'other',
+        gui_tooltip    = '''\
+            This will activate saria repeating gossip hints
+            that were displayed already.
+        ''',
+        shared         = True,
+    ),
+    
     Combobox(
         name           = 'hints',
         default        = 'agony',

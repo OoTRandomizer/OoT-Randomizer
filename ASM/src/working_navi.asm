@@ -13,41 +13,32 @@
 
 
 
-.org WORKING_NAVI_RAM
-
 WORKING_NAVI_GLOBALS:
 
 .area 0x40
-
-.data:
    working_navi_cyclicLogicGlobals:  .word  0x0,0x0,0x0,0x0,0x0,0x0
-   working_navi_TextPointerGlobal:  .word  0x0
+   working_navi_TextIDOffsetGlobal:  .word  0x0
    
 .endarea   
-   
-.text:
 
 
-
-
-.org WORKING_NAVI_DATA_CODE  ; see changed build.asm and addresses.asm
-.area 0x4F0
+WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM:
+.area 0x300, 0      ;max 768 bytes for lookuptable, 96 Entrys/required items -1
+.endarea
 
 
 working_navi_cyclicLogic_HOOK:
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)
 
-    ;lui t0, 0x0350            ;WORKING_NAVI_DATA_GENERATED_TEXT_ROM
-    ;ori t0, 0x0700            ;WORKING_NAVI_DATA_GENERATED_TEXT_ROM ;TextTablePointer for Navi-Texts
-    li t0, WORKING_NAVI_DATA_GENERATED_TEXT_ROM
     ;lui t7, 0x8050            ;WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
     ;ori t7, 0x0400            ;WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM  ;LookupTablePointer for Navi-Texts
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
                                     ;global variable 1 (Timer), 2 (showTextFlag), 
     la t1, working_navi_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
                                              ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
                                              ;6 Timer2
+    lui t0, 0x0000          ;TextID-Offset
 
 
 ;Progress made? =>Timer Reset
@@ -55,12 +46,12 @@ working_navi_cyclicLogic_HOOK:
     addiu t6, t6, 0x0001     ;increment
     sw t6, 0x0014 (t1)       ;store increment global variable 6 (Timer2)
     
-    ori t3, r0, 0xd90    ; 1 minute
+    ori t3, r0, 0xd9    ; 6 seconds polling rate for updates
     
  beq t6, t3, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE   ; every minute, Check if any Progress has been made - Reset timer if progress made
     nop
 
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM ; Reset t7 to LookupTable-Base
+    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM ; Reset t7 to LookupTable-Base
 
 ;Timercheck => otherwise say "You are doing so well, no need to bother you" 
     lw t5, 0x0008 (t1)       ;global Variable 3 - MaxTime when Navi gets activated
@@ -78,14 +69,14 @@ working_navi_cyclicLogic_HOOK:
 
 
 
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM ; Reset t7 to LookupTable-Base
+    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM ; Reset t7 to LookupTable-Base
     lw t6, 0x0000 (t1)       ;load global variable 1 (Timer)
     lw t5, 0x0008 (t1)       ;global Variable 3 - MaxTime when Navi gets activated
 
     
- beq t6, t5, @WNAVI_CL_TEXTPOINTER_RESTORE   ; Restore Textpointer when Timer expired
+ beq t6, t5, @WNAVI_CL_TextIDOffset_RESTORE   ; Restore TextIDOffset when Timer expired
     nop
-@WNAVI_AFTER_CL_TEXTPOINTER_RESTORE:    
+@WNAVI_AFTER_CL_TextIDOffset_RESTORE:    
        
        
        
@@ -107,7 +98,7 @@ working_navi_cyclicLogic_HOOK:
 
 @WNAVI_CL_INCREMENT_POINTERS:
 
-    addiu t0, t0, WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM     ;TARGET Jump Here to INCREMENT_POINTERS From here is the TextTablePointer setting. Increment T0 TextTablePointer by 3C
+    addiu t0, t0, 1     ;TARGET Jump Here to INCREMENT_POINTERS From here is the TextID setting
     addiu t7, t7, 0x0008     ; 0x0004     ;Increment LookupTablePointer
 
     lb t6, 0x0003 (t7)       ;Load "IsDone" Part of LookupTable-Element
@@ -123,18 +114,18 @@ working_navi_cyclicLogic_HOOK:
 
 
 
-;then set Textpointer
+;then set TextIDOffset
 
     ;when t0 not changed, no need to save
-    lw t6, 0x0010 (t1)       ;load last Textpointer
+    lw t6, 0x0010 (t1)       ;load last TextIDOffset
  beq t6, t0, @@WNAVI_CL_NOTCHANGED_BRANCH
     nop
     
-  ;Here: Textpointer has changed
-    la t2, working_navi_TextPointerGlobal
-    sw t0, 0x0000 (t2)       ; Store T0 in Global Variable 5 Textpointer
+  ;Here: TextIDOffset has changed
+    la t2, working_navi_TextIDOffsetGlobal
+    sw t0, 0x0000 (t2)       ; Store T0 in Global Variable 5 TextIDOffset
     sw t7, 0x000c (t1)       ; Save Global Variable 4 LastLookupTablePointer
-    sw t0, 0x0010 (t1)       ; save last Textpointer
+    sw t0, 0x0010 (t1)       ; save last TextIDOffset
     lui t3, 0x0000
     sw t3, 0x0000 (t1)       ; Reset Timer TBD test this
     
@@ -157,11 +148,11 @@ working_navi_cyclicLogic_HOOK:
 ;_______Subroutines for cyclic logic__________
 
     
-@WNAVI_CL_TEXTPOINTER_RESTORE:
-    la t3, working_navi_TextPointerGlobal
+@WNAVI_CL_TextIDOffset_RESTORE:
+    la t3, working_navi_TextIDOffsetGlobal
     la t1, working_navi_cyclicLogicGlobals
     lw t2, 0x0010 (t1)       ;Load Backup of lastTexpointer (normally t0, but that is generated from the ground up again)
-    sw t2, 0x0000 (t3)       ;Store t2 in Global Variable 5 Textpointer, which was "You are doing so well, no need to bother you"
+    sw t2, 0x0000 (t3)       ;Store t2 in Global Variable 5 TextIDOffset, which was "You are doing so well, no need to bother you"
     
 
     ori t3, r0, 0x0001
@@ -175,7 +166,7 @@ working_navi_cyclicLogic_HOOK:
     
     
    
-    J @WNAVI_AFTER_CL_TEXTPOINTER_RESTORE
+    J @WNAVI_AFTER_CL_TextIDOffset_RESTORE
     nop    
     
     
@@ -187,9 +178,8 @@ working_navi_cyclicLogic_HOOK:
  beq t2, t3, @WNAVI_CL_RETURN
     nop
     
-    la t1, working_navi_TextPointerGlobal
-    li t0, WORKING_NAVI_DATA_GENERATED_TEXT_ROM
-    sw t0, 0x0000 (t1)       ;Store T0 in Global Variable 5 Textpointer
+    la t1, working_navi_TextIDOffsetGlobal
+    sw r0, 0x0000 (t1)       ;Store 0 in Global Variable 5 TextID-Offset
    
     J @WNAVI_CL_RETURN
     nop    
@@ -384,7 +374,7 @@ working_navi_cyclicLogic_HOOK:
     lui t3, 0x0000
     sw t3, 0x0014 (t1)       ;Reset global variable 6 (Timer2)
     
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
 
     J @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_INITJUMP
     nop
@@ -465,7 +455,7 @@ working_navi_cyclicLogic_HOOK:
     addiu t4, t4, 1
     
 ;save progress bits    
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
     lui t5, 0x0000
     lui t8, 0x0000
     
@@ -523,70 +513,8 @@ working_navi_cyclicLogic_HOOK:
     jr ra
     nop    
     
-.endarea     
-    
-;==================================================================================================
-
-.org WORKING_NAVI_DATA_CODE2  ; see changed build.asm and addresses.asm
-.area 0x1F0
-
-working_navi_TextLoadLogic_HOOK:
-    addiu   sp, sp, -0x18
-    sw      ra, 0x0014(sp)
-    
-    lui t2, 0x0000          ;just 0 in T2 for using with compares    
-    
-    lui t3, 0x0093          ; TBD why did this value change since Rando 1.0?
-    ori t3, t3, 0x2ea0      ;TextLoadPointerMin old: 0x4af0
-    slt t1, t3, a1          ;comparison, A1 = requested Textloadpointer of the game
-    
- beq t1, t2, @@WNAVI_TLL_LOAD_TEXT      ;BRANCH if reqested Textpointer A1 < Min NaviSection: Jump LOAD_TEXT
-    nop
-    
-    lui t3, 0x0093          ; TBD why did this value change since Rando 1.0?
-    ori t3, t3, 0x37ac      ; TextLoadPointer max old: 0x5400
-    slt t1, a1, t3          ;A1 < T3 (Max) req Textpointer A1 < Max NaviSection
-
- beq t1, t2, @@WNAVI_TLL_LOAD_TEXT      ;BRANCH if Textpointer < Max => Jump LOAD_TEXT
-    nop
-    
-                            ; T7 Global Variable 5 Textpointer
-    la t7, working_navi_TextPointerGlobal
-    lw a1, 0x0000 (t7)      ; IF req Textpointer A1 in NaviSection => Load GlobalVar with Text of workingNavi in A1
-    ;set dmaloadsize to textsize
-    ori a2, r0, WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM
-    
-    ; Reset Textpointer stuff(cyclic logic), so the message isnt shown twice
-    la t1, working_navi_TextPointerGlobal
-    li t0, WORKING_NAVI_DATA_GENERATED_TEXT_ROM
-    sw t0, 0x0000 (t1)       ;Store T0 in Global Variable  Textpointer (Reset)
-    la t2, working_navi_cyclicLogicGlobals
-    lui t3, 0x0000
-    sw t3, 0x0004 (t2) ;ShowTextFlag Reset
     
     
-    
-    li t0, WORKING_NAVI_DATA_GENERATED_TEXT_ROM     ; if Text says "You are doing so well..." / Textpointer is on base, dont reset timer
- beq t0, a1, @@WNAVI_TLL_LOAD_TEXT
-    nop
-    
-    sw t3, 0x0000 (t2) ;Timer1 Reset
-
-    
-@@WNAVI_TLL_LOAD_TEXT:        ;TARGET LOAD_TEXT
-    jal 0x80000DF0          ;DMALoad Text in
-    nop
-    
-         
-    ;Restore RA and return
-    lw      ra, 0x0014(sp)
-    addiu   sp, sp, 0x18
-    jr      ra
-    nop
-
-;==================================================================================================
-
-
 @WNAVI_CL_LOADPROGRESS:
                                              ;global variable 1 (Timer), 2 (showTextFlag), 
     la t1, working_navi_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
@@ -609,7 +537,7 @@ working_navi_TextLoadLogic_HOOK:
     
     
     ;load progress bits    
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
     lui t5, 0x0000
     lb  t8, (working_navi_Save_Offset)(t4)
     
@@ -688,16 +616,15 @@ working_navi_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
     sw      ra, 0x0014(sp)
     
     ; Init global variables (for cyclic logic)
-    la t1, working_navi_TextPointerGlobal
-    li t0, WORKING_NAVI_DATA_GENERATED_TEXT_ROM
-    sw t0, 0x0000 (t1)       ;Store T0 in Global Variable 5 Textpointer
+    la t1, working_navi_TextIDOffsetGlobal
+    sw r0, 0x0000 (t1)       ;Store T0 in Global Variable 5 TextID-Offset
    
-    li t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
                                     ;global variable 1 (Timer), 2 (showtextflag), 
     la t1, working_navi_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
                                              ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
                                              ;6 Timer2
-    addiu t0, t0, WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM  ;The Textpointer Backup is not on "You are doing so well, no need to bother you" but on the first real hint
+    ori t0, r0, 1  ;The TextID-Offset Backup is not on "You are doing so well, no need to bother you" but on the first real hint
     sw t0, 0x0010 (t1)
     sw t7, 0x000C (t1)
     sw r0, 0x0014 (t1)       ;reset global variable 6 (Timer2)
@@ -723,16 +650,52 @@ working_navi_Activate_Navi_In_Dungeons_HOOK:     ;<= hack, navi in dungeons, see
 
     jr ra 
     nop   
+
+
+
+
+
+NaviHints_TextID_HOOK:
+    addiu   sp, sp, -0x18
+    sw      ra, 0x0014(sp)
     
-
-.endarea 
-
-
+    ;displaced code
+    jal OOT_Navi_Saria_TextID_Generation
+    nop
     
-.org WORKING_NAVI_DATA_GENERATED_TEXT_SYM  ; see addresses.asm, this is only done so we get a symbol in symbols_RAM.json
-.area 0x1000
-nop
-.endarea
+    
+    lw t2, WORKING_NAVI_CONDITION
+ beq t2, r0, @@NaviHints_Return
+    nop
+    
+    ;first check if Navi text
+    
+    ori t2, r0, (0x0141 -1)                  ;Navi Text ID low
+    slt t1, t2, v0        
 
+ beq t1, r0, @@NaviHints_Return      ;BRANCH if reqested Textpointer A1 < Min
+    nop
+    
+    ori t2, r0, (0x015f +1)                  ;Navi Text ID high    
+    slt t1, v0, t2   
+    
+  beq t1, r0, @@NaviHints_Return      ;BRANCH if reqested Textpointer A1 < Min
+    nop     
+    
+    ; OK its a Navi Text
+    ;=> Modify r0
+    la t2, working_navi_TextIDOffsetGlobal
+    lw v0, 0x0000 (t2)       ; Load Global Variable 5 TextIDOffset
+    addiu v0, v0, Navi_Hints_TextID_Base
+    andi v0, v0, 0xffff
+    
+    @@NaviHints_Return:
+
+
+    ;Restore RA and return
+    lw      ra, 0x0014(sp)
+    addiu   sp, sp, 0x18
+    jr ra
+    nop
 
 

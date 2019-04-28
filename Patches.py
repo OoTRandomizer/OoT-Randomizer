@@ -3,6 +3,8 @@ import struct
 import itertools
 import re
 
+import os, os.path      #TBD can be removed later
+
 from World import World
 from Rom import Rom
 from Spoiler import Spoiler
@@ -18,6 +20,7 @@ from OcarinaSongs import replace_songs
 from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
 from SaveContext import SaveContext
 from working_navi import working_navi
+from Utils import default_output_path       #TBD can be removed later
 
 def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
     with open(data_path('generated/rom_patch.txt'), 'r') as stream:
@@ -35,10 +38,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
     with open(data_path('keaton.bin'), 'rb') as stream:
         keatonBytes = stream.read()
         rom.write_bytes(0x8A7C00, keatonBytes)
-
-
-
-    
 
 
     # Force language to be English in the event a Japanese rom was submitted
@@ -1458,23 +1457,9 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
     if world.world_count > 1:
        tycoon_message = make_player_message(tycoon_message)
     update_message_by_id(messages, 0x00F8, tycoon_message, 0x23)
-
-    repack_messages(rom, messages)
-    write_shop_items(rom, shop_item_file.start + 0x1DEC, shop_items)
-
-    # text shuffle
-    if world.text_shuffle == 'except_hints':
-        shuffle_messages(rom, except_hints=True)
-    elif world.text_shuffle == 'complete':
-        shuffle_messages(rom, except_hints=False)
-
-    # output a text dump, for testing...
-    #with open('keysanity_' + str(world.seed) + '_dump.txt', 'w', encoding='utf-16') as f:
-    #     messages = read_messages(rom)
-    #     f.write('item_message_strings = {\n')
-    #     for m in messages:
-    #        f.write("\t0x%04X: \"%s\",\n" % (m.id, m.get_python_string()))
-    #     f.write('}\n')
+    
+    #write/shuffle messages was moved down
+    
 
     if world.free_scarecrow:
         # Played song as adult
@@ -1495,13 +1480,75 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
     save_context.write_save_table(rom)
 
 
-
-    #EDIT accept86 working_navi
-    #rom.write_bytes(0x03500400, [0x1, 0x2, 0x3, 0x4])
+    #EDIT accept86 working_navi/Saria Hints
+    symbol = rom.sym('WORKING_NAVI_CONDITION')
     if world.settings.working_navi:
+        rom.write_int32(symbol, 1)
         wNavi = working_navi(rom)
-        wNavi.working_navi_patch(rom, world, spoiler, save_context, outfilebase)
+        wNavi.working_navi_patch(rom, world, spoiler, save_context, outfilebase, messages)
 
+    else:
+        rom.write_int32(symbol, 0)
+
+
+    repack_messages(rom, messages)
+
+    # text shuffle
+    if world.text_shuffle == 'except_hints':
+        shuffle_messages(rom, except_hints=True)
+    elif world.text_shuffle == 'complete':
+        shuffle_messages(rom, except_hints=False)
+        
+    write_shop_items(rom, shop_item_file.start + 0x1DEC, shop_items)
+
+
+    # output a text dump, for testing...
+    #with open('keysanity_' + str(world.seed) + '_dump.txt', 'w', encoding='utf-16') as f:
+    #     messages = read_messages(rom)
+    #     f.write('item_message_strings = {\n')
+    #     for m in messages:
+    #        f.write("\t0x%04X: \"%s\",\n" % (m.id, m.get_python_string()))
+    #     f.write('}\n')
+
+        
+    symbol = rom.sym('SARIA_HINTS_CONDITION')
+    if world.settings.saria_repeats_hints:
+        rom.write_int32(symbol, 1)
+        
+        #Generate gossip stone TextID table
+        index = 0
+        SARIA_GOSSIP_TEXTID_TABLE_SYM = rom.sym('SARIA_GOSSIP_TEXTID_TABLE_SYM')
+        
+        for message in messages:
+            if (message.id <= 0x04FF) and (message.id >= 0x0401):
+                byteArray = message.id.to_bytes(2, 'big')
+                rom.write_bytes(int(SARIA_GOSSIP_TEXTID_TABLE_SYM)+2*index, byteArray) #is a J, was a jr before, cyclic hack jumps back to previous ret address
+                
+                index += 1
+                
+                if(index>42):
+                    raise ValueError('ERROR - Saria gossip TextID overflow')
+        
+    else:
+        rom.write_int32(symbol, 0)
+
+
+    
+    #create message dump - TBD remove when not needed anymore
+    if True: 
+        output_dir = default_output_path(world.settings.output_dir)      
+        Messages_path = os.path.join(output_dir, '%s_Messages.txt' % outfilebase)
+        with open(Messages_path, 'w') as outfile:
+            outfile.write('Messages:\n\n')
+            mydict = {'key':'value'}
+            for message in messages:
+                disp = message.display()
+                message_str = disp.encode('ascii', 'ignore')
+                strID = str(int(str(message.id),16))
+                mydict[strID.zfill(6)] = message_str
+            for key in sorted(mydict.keys()):
+                outfile.write('\n %s \n' % (mydict[key]) )
+    
     
 
     return rom

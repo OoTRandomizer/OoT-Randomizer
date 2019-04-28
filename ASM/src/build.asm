@@ -23,13 +23,10 @@
 ; New code region
 ;==================================================================================================
 
-;Working Navi accept86
-.org WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM  ; see addresses.asm, this is only done so we get a symbol
-
 .headersize (0x80400000 - 0x03480000)
 
 .org 0x80400000
-.area 0x20000
+.area 0x10000
 
 .area 0x20, 0
 RANDO_CONTEXT:
@@ -69,22 +66,15 @@ RANDO_CONTEXT:
 .include "lake_hylia.asm"
 .include "timers.asm"
 .include "shooting_gallery.asm"
+.include "saria_hints_repeat.asm"  ;accept86
+.include "textload.asm"     ;accept86
+.include "working_navi.asm" ;accept86
 .importobj "../build/bundle.o"
 .align 8
 FONT_TEXTURE:
 .incbin("../resources/font.bin")
 DPAD_TEXTURE:
 .incbin("../resources/dpad.bin")
-
-
-;==================================================================================================
-; New code region
-;==================================================================================================
-
-;Edit Accept86
-
-.org 0x80410000
-.include "working_navi.asm"
 
 .endarea
 

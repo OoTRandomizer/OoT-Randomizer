@@ -30,7 +30,7 @@ The cycliclogic works like: Check all the lookuptable entrys and check the saved
 
 
 
-How does Navi work?
+==============Navi Notes===========
 0x803922C8: BEQ R0, R0, 0x80392338 => Checks if C Up is pressed when Navi is UP
 0x80392170: BEQL A3, R0, 0x80392338 => Checks if Navi Timer OK, also called in dungeons, but A3 is 0
 0x80392154: LW A3, 0x067C (S0)  => Loads A3
@@ -59,16 +59,207 @@ JAL 0x8005977C: works also in dungeons, but value V0=15F instead 141, so no navi
 
 is set by 0x80059640: JAL 0x800590e0
 and outside Dungeons
-0x80059654: LBU V0, 0x0002 (T7)		<= loads 0x41 when Navi
-T7 = 0x8026BB34
+0x80059654: LBU V0, 0x0002 (T7)		<= loads 0x41 when Navi (TextID)
+T7 = 0x8026BB34 for example
 
-changed at 0x8002B36C SH A2, 0x0002 (A0)
-A0 = 0x8026BB34
+	write: 0x8000118C SB T0, 0xFFFF (S0)		<=This Block gets copied over
+	S0: 8026BB35 for example
+	
+		800011D8: 904CFFFF LBU T4, 0xFFFF (V0)		<= T4 is 0x41 after
+			Registers: PC: 800011D8
+
+			R0: 00000000 00000000  S0: 00000000 802B11B7
+			AT: 00000000 00000000  S1: 00000000 800086D7
+			V0: 00000000 802B1177  S2: 00000000 8000889C
+		
+		8000118C: SB T0, 0xFFFF (S0)	<= This writes the Mem with T0;
+			S0 = 802B1177
+
+		T0 comes from: LBU T0, 0x0000 (S1)
+			S1 = 800086C2
+			
+		80004E28: A0A2FFFF SB V0, 0xFFFF (A1)
+			Registers: PC: 80004E28
+
+			R0: 00000000 00000000  S0: 00000000 80008491
+			AT: 00000000 00000001  S1: 00000000 80008881
+			V0: 00000000 00000041  S2: 00000000 8000889C
+
+
+			
+		v0 comes from mem 8000888E
+			80004E18: 80820000 LB V0, 0x0000 (A0)
+			Registers: PC: 80004E18
+
+			R0: 00000000 00000000  S0: 00000000 80008491
+			AT: 00000000 00000001  S1: 00000000 80008881
+			V0: 00000000 0000005E  S2: 00000000 8000889C
+			V1: 00000000 80008890  S3: 00000000 80008898
+			A0: 00000000 8000888E  S4: 00000000 802D5420
+			
+			
+
+	
+	T0 comes from 8000117C LBU T0, 0x0000 (S1)
+	S1: 80008587
+	
+	
+	
+	800BC72C: 000EC080 SLL T8, T6, 2
+		Registers: PC: 800BC72C
+
+		R0: 00000000 00000000  S0: 00000000 8019DE50
+		AT: 00000000 00000001  S1: 00000000 8019DE20
+		V0: 00000000 00000001  S2: 00000000 8019DEE0
+		V1: 00000000 00000000  S3: 00000000 FFFFFFFF
+		A0: 00000000 801A1940  S4: 00000000 80125630
+		A1: 00000000 3F2ADC0A  S5: 00000000 00000011
+		A2: 00000000 8011FFF4  S6: 00000000 00000001
+		A3: 00000000 801A1940  S7: 00000000 00000EE0
+		T0: 00000000 801A1140  T8: 00000000 00000041
+	
+	
+	Functions with TextIDs:
+	0x800b6a4c
+	0x800d5e44
+	0x80030e5c
+	0x8002c184
+	0x8002b360
+
+	0x8002C1B0
+	0x800b2380
+	0x800b2210
+
+	0x800d5e44
+	0x80030e5c
+	0x80063cf0
+	0x8002db58
+	0x8002c3a8
+	0x80002454
+	0x8002b4f4
+	0x800a6ea0
+	0x8000600c
+	0x80207adc
+	0x800aa4c8
+	0x8007a660
+	0x80034028
+	0x800c1404
+	0x800be118
+	0x800b21e0
+	0x800b6a74
+	0x801e0d70
+	0x800b21e8
+	0x8002d204
+	0x8002c534
+	0x8005965c
+	0x80392140 => Navi Hey
+
+	mem 801DB0B0 has 141
+	written by 801E0D94: SH V0, 0x0680 (V1)
+	V0 from: 801E0D84 jal 0x8005977C
+	
+	There from:8005977C - jal 0x800595d0
+	
+	
+	
 
 in dungeons:
-0x800596E8: LBU V0, 0x0002 (T8)   <= loads 0x5F when in Dungeon
-T8 = 0x802617B0
+0x800596E8: LBU V0, 0x0002 (T8)   <= loads 0x5F when in Dungeon (TextID)
+T8 = 0x802617B0 for example
 ROM Address is 0x00ACF648 (LBU V0, 0x0002 (T8))
 
 _____So just write 0x802617B0 byte 2 to 0x41 => Navi in dungeons, tested with deku tree_____
 (This value gets only set on area changes)
+
+
+
+
+
+
+
+===============Saria Notes==============
+800DCC7C <= TextLoadHook
+800DCE9C <= before that
+
+if "talk to saria again":
+	801E09d0 <= before that 801E0958
+			800240d8 <= jalR loop before that
+
+	801E0998 <= check if selected
+	
+
+
+if "first saria call":
+	801E0CB4 <= before that, function start 801E0C2c
+
+	801E0C6C <= check if selected
+	
+	cycles in BNEL 800A19D0
+
+
+all from JalR to 801E997C
+JALR change: 801E0CB0 SW T7, 0x0130 (S0)
+			801E0CB4: Base function for TextIDStuff/TextLoad call
+	function start 801E0C2C called from JALR
+
+
+if "Next Box Load":
+	801E0AEC: BEQL V0, R0, 0x801E0B1C <= ButtonCheck, check if boxbreak
+		from function Start 801E0AB0
+
+
+TextIDStuff:
+	(800DC9D8: LHU V0, 0x62F8 (T6) )
+800DCA9C: SH T9, 0x62F9 (AT)    <= ID: 0x00e2
+	800DCE9c <= before that in instance
+	function start 800DC838
+	
+	
+in subfunction - 800D6ABC: BNEL T0, A3, 0x800D6AF4
+	from 800DCC04
+	Creates A1 - Textpointer
+
+in this subfunction with: 800DCC7C <= TextLoadHook
+	from 800DCC7c
+
+The rest on A1 gets added up on 800DCC80 parallel with the jal
+800DCC7C <= TextLoadHook
+
+
+
+_________A1 for the TextIDStuff with A1=TextID on funtion 800DC838
+	gets set in Function 80059714 for Box-Breaks (by V0)__________
+		in this 80059714 V0 gets set on 80059764
+		for example from base 801E0AF4 function root 801E0AB0
+		from 800240d8 JalR
+		
+		V0 for not jumping over 80059714 is set t0 5 by 801E0AD0: JAL 0x800DD464
+		
+		
+	JALR Address T9 is loaded from
+	800240CC: LW T9, 0x0130 (S0) Which is memory address 801dab60 with value 80097740 for example			
+								or Memory 801E2050 with value 801E0AB0 <= ___which is the Box-Break function address___
+
+______gets overwritten by 801E0B14 SW T6, 0x0130 (T7) <= value 801E0A34
+
+	gets set by 801E0CB0: SW T7, 0x0130 (S0) <= value 801E0AB0 <= ___which is the Box-Break function address___
+	from function base 801E0C2c
+	called from 
+	JalR
+	
+	function 801E0C2c is set for jalR (at 800240D8) for T9, 800240CC: LW T9, 0x0130 (S0)
+	to the value 801E0C2c by Memory Address 801E2050 from
+	
+	801E0E38: SW T2, 0x0130 (S0) - T2 = 801E0C2c when the camera zoomes out after playing sarias song
+	function base 801E0d30 => This gets set at area loading
+	
+	
+	Hack at 801E0B14: overwrite
+	
+	
+		
+
+Cuuco Lady call 80390E04 => 0x800DCE14
+
+Saria Song call 80390E04 => 0x800DCE14
+	A1 = E0 = ID
