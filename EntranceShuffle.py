@@ -251,133 +251,154 @@ def set_entrances(worlds):
         world.initialize_entrances()
 
     if worlds[0].entrance_shuffle != 'off':
-        shuffle_entrances(worlds)
+        shuffle_random_entrances(worlds)
 
     set_entrances_based_rules(worlds)
 
 
 # Shuffles entrances that need to be shuffled in all worlds
-def shuffle_entrances(worlds):
+def shuffle_random_entrances(worlds):
 
-    # Store all locations unreachable to differentiate which locations were already unreachable from those we made unreachable while shuffling entrances
+    # Store all locations reachable before shuffling to differentiate which locations were already unreachable from those we made unreachable
     complete_itempool = [item for world in worlds for item in world.get_itempool_with_dungeon_items()]
     max_playthrough = Playthrough.max_explore([world.state for world in worlds], complete_itempool)
 
-    all_locations = [location for world in worlds for location in world.get_locations()]
-    max_playthrough.visit_locations(all_locations)
-    already_unreachable_locations = [location for location in all_locations if not max_playthrough.visited(location)]
+    non_drop_locations = [location for world in worlds for location in world.get_locations() if location.type != 'Drop']
+    max_playthrough.visit_locations(non_drop_locations)
+    locations_to_ensure_reachable = list(filter(max_playthrough.visited, non_drop_locations))
 
-    # Shuffle all entrance pools based on settings
+    # Shuffle all entrances within their own worlds
+    for world in worlds:
 
-    if worlds[0].shuffle_dungeon_entrances:
-        dungeon_entrance_pool = get_entrance_pool('Dungeon')
-        # The fill algorithm will already make sure gohma is reachable, however it can end up putting
-        # a forest escape via the hands of spirit on Deku leading to Deku on spirit in logic. This is
-        # not really a closed forest anymore, so specifically remove Deku Tree from closed forest.
-        if (not worlds[0].open_forest):
-            del dungeon_entrance_pool["Outside Deku Tree -> Deku Tree Lobby"]
-        shuffle_entrance_pool(worlds, dungeon_entrance_pool, already_unreachable_locations)
+        # Determine entrance pools based on settings, to be shuffled in the order we set them by
+        entrance_pools = OrderedDict()
 
-    if worlds[0].shuffle_interior_entrances:
-        interior_entrance_pool = get_entrance_pool('Interior')
-        shuffle_entrance_pool(worlds, interior_entrance_pool, already_unreachable_locations)
+        if worlds[0].shuffle_special_interior_entrances:
+            entrance_pools['SpecialInterior'] = entrance_instances(world, get_entrance_pool('SpecialInterior'))
 
-    if worlds[0].shuffle_grotto_entrances:
-        grotto_entrance_pool = get_entrance_pool('Grotto')
-        shuffle_entrance_pool(worlds, grotto_entrance_pool, already_unreachable_locations)
+        if worlds[0].shuffle_overworld_entrances:
+            entrance_pools['Overworld'] = entrance_instances(world, get_entrance_pool('Overworld'))
+            # Overworld entrances should be shuffled from both directions, unlike other types of entrances
+            for entrance in entrance_pools['Overworld'].copy():
+                entrance.reverse.primary = True
+                entrance_pools['Overworld'].append(entrance.reverse)
+            entrance_pools['OwlDrop'] = entrance_instances(world, get_entrance_pool('OwlDrop'))
+
+        if worlds[0].shuffle_dungeon_entrances:
+            entrance_pools['Dungeon'] = entrance_instances(world, get_entrance_pool('Dungeon'))
+            # The fill algorithm will already make sure gohma is reachable, however it can end up putting
+            # a forest escape via the hands of spirit on Deku leading to Deku on spirit in logic. This is
+            # not really a closed forest anymore, so specifically remove Deku Tree from closed forest.
+            if not worlds[0].open_forest:
+                entrance_pools['Dungeon'].remove(world.get_entrance('Outside Deku Tree -> Deku Tree Lobby'))
+
+        if worlds[0].shuffle_interior_entrances:
+            entrance_pools['Interior'] = entrance_instances(world, get_entrance_pool('Interior')) + entrance_pools.get('SpecialInterior', [])
+
+        if worlds[0].shuffle_grotto_entrances:
+            entrance_pools['Grotto'] = entrance_instances(world, get_entrance_pool('Grotto'))
+
+        # Set the assumption that all entrances are reachable
+        target_entrance_pools = {}
+        for pool_type, entrance_pool in entrance_pools.items():
+            target_entrance_pools[pool_type] = assume_pool_reachable(world, entrance_pool)
+
+        # Special interiors need to be handled specifically by placing them in reverse and among all interiors, including normal ones
+        if 'SpecialInterior' in entrance_pools:
+            entrance_pools['SpecialInterior'] = [entrance.reverse for entrance in entrance_pools['SpecialInterior']]
+            target_entrance_pools['SpecialInterior'] = [entrance.reverse for entrance in target_entrance_pools['Interior']]
+
+        # Owl Drops are extra entrances that will be connected to an owl drop or will be a duplicate entrance to an overworld entrance
+        # We don't assume they are reachable until placing them because we don't want the placement algorithm to expect all overworld regions to be reachable
+        if 'OwlDrop' in entrance_pools:
+            duplicate_overworld_targets = [target.copy(target.parent_region) for target in target_entrance_pools['Overworld']]
+            for target in duplicate_overworld_targets:
+                target.connect(world.get_region(target.connected_region))
+                target.parent_region.exits.append(target)
+            target_entrance_pools['OwlDrop'] += duplicate_overworld_targets
+            for target in target_entrance_pools['OwlDrop']:
+                target.access_rule = lambda state: False
+
+        # Set entrances defined in the distribution
+        world.distribution.set_shuffled_entrances(worlds, entrance_pools, target_entrance_pools, locations_to_ensure_reachable, complete_itempool)
+
+        # Shuffle all entrances among the pools to shuffle
+        for pool_type, entrance_pool in entrance_pools.items():
+            if pool_type == 'SpecialInterior':
+                # When placing special interiors, we pre place ToT and Links House first, making sure the assumed access rules are always valid
+                temple_of_time_exit = world.get_entrance('Temple of Time -> Temple of Time Exterior')
+                links_house_exit = world.get_entrance('Links House -> Kokiri Forest')
+                for target in target_entrance_pools[pool_type]:
+                    target.access_rule = lambda state: temple_of_time_exit.connected_region == None or (links_house_exit.connected_region == None and state.is_child())
+                shuffle_entrance_pool(worlds, [temple_of_time_exit], target_entrance_pools[pool_type], locations_to_ensure_reachable)
+                shuffle_entrance_pool(worlds, [links_house_exit], target_entrance_pools[pool_type], locations_to_ensure_reachable)
+
+            if pool_type in ['SpecialInterior', 'Overworld', 'OwlDrop', 'Dungeon']:
+                # Those pools contain entrances leading to regions that might open access to completely new areas
+                # Dungeons are among those because exiting Spirit Temple from the hands is in logic 
+                # and could give access to Desert Colossus and potentially new areas from there
+                shuffle_entrance_pool(worlds, entrance_pool, target_entrance_pools[pool_type], locations_to_ensure_reachable)
+            else:
+                # Other pools are only "internal", which means they are leaves in the world graph and can't open new access
+                shuffle_entrance_pool(worlds, entrance_pool, target_entrance_pools[pool_type], locations_to_ensure_reachable, internal=True)
+
+            if pool_type == 'OwlDrop':
+                # Delete all unused owl drop targets after placing the entrances, since the unused targets won't ever be replaced
+                for target in target_entrance_pools[pool_type]:
+                    delete_target_entrance(target)
 
     # Multiple checks after shuffling entrances to make sure everything went fine
-
-    for world in worlds:
-        entrances_shuffled = world.get_shuffled_entrances()
-
-        # Check that all target regions have exactly one entrance among those we shuffled
-        target_regions = [entrance.connected_region for entrance in entrances_shuffled]
-        for region in target_regions:
-            region_shuffled_entrances = list(filter(lambda entrance: entrance in entrances_shuffled, region.entrances))
-            if len(region_shuffled_entrances) != 1:
-                logging.getLogger('').error('%s has %d shuffled entrances after shuffling, expected exactly 1 [World %d]',
-                                                region, len(region_shuffled_entrances), world.id)
-
-    # New playthrough with shuffled entrances
     max_playthrough = Playthrough.max_explore([world.state for world in worlds], complete_itempool)
-    max_playthrough.visit_locations(all_locations)
 
-    # Log all locations unreachable due to shuffling entrances
-    alr_compliant = True
-    if not worlds[0].check_beatable_only:
-        for location in all_locations:
-            if not location in already_unreachable_locations and \
-               not max_playthrough.visited(location):
-                logging.getLogger('').error('Location now unreachable after shuffling entrances: %s [World %d]', location, location.world.id)
-                alr_compliant = False
+    # Check that all shuffled entrances are properly connected to a region
+    for world in worlds:
+        for entrance in world.get_shuffled_entrances():
+            if entrance.connected_region == None:
+                logging.getLogger('').error('%s was shuffled but still isn\'t connected to any region [World %d]', entrance, world.id)
 
     # Check for game beatability in all worlds
-    # Can this ever fail, if Triforce is in complete_itempool?
     if not max_playthrough.can_beat_game(False):
         raise EntranceShuffleError('Cannot beat game!')
 
-    # Throw an error if shuffling entrances broke the contract of ALR (All Locations Reachable)
-    if not alr_compliant:
-        raise EntranceShuffleError('ALR is enabled but not all locations are reachable!')
+    # Validate the worlds one last time to ensure all special conditions are still valid
+    try:
+        validate_worlds(worlds, None, locations_to_ensure_reachable, complete_itempool)
+    except EntranceShuffleError as error:
+        raise EntranceShuffleError('Worlds are not valid after shuffling entrances, Reason: %s' % error)
 
 
-# Shuffle all entrances within a provided pool for all worlds
-def shuffle_entrance_pool(worlds, entrance_pool, already_unreachable_locations):
+# Shuffle all entrances within a provided pool
+def shuffle_entrance_pool(worlds, entrance_pool, target_entrances, locations_to_ensure_reachable, internal=False):
 
-    # Shuffle entrances only within their own world
-    for world in worlds:
+    # Split entrances between those that have requirements (restrictive) and those that do not (soft). These are primarily age or time of day requirements.
+    restrictive_entrances, soft_entrances = split_entrances_by_requirements(worlds, entrance_pool, target_entrances)
 
-        # Initialize entrances to shuffle with their addresses and shuffle type
-        entrances_to_shuffle = []
-        for entrance_name, (type, addresses) in entrance_pool.items():
-            entrance = world.get_entrance(entrance_name)
-            entrance.type = type
-            entrance.addresses = addresses
-            # Regions should associate specific entrances with specific addresses. But for the moment, keep it simple as dungeon and
-            # interior ER only ever has one rando entrance per region.
-            if entrance.connected_region.addresses is not None:
-                raise EntranceShuffleError('Entrance rando of regions with multiple rando entrances not supported [World %d]' % world.id)
-            entrance.connected_region.addresses = addresses
-            entrance.shuffled = True
-            entrances_to_shuffle.append(entrance)
+    # Shuffle restrictive entrances first while more regions are available in order to heavily reduce the chances of the placement failing.
+    shuffle_entrances(worlds, restrictive_entrances, target_entrances, locations_to_ensure_reachable)
 
-        # Split entrances between those that have requirements (restrictive) and those that do not (soft). These are primarly age requirements.
-        # Restrictive entrances should be placed first while more regions are available. The remaining regions are then just placed on
-        # soft entrances without any need for logic.
-        restrictive_entrances, soft_entrances = split_entrances_by_requirements(worlds, entrances_to_shuffle)
-
-        # Assumed Fill: Unplace, and assume we have access to entrances by connecting them to the root of reachability
-        root = world.get_region('Root')
-        target_regions = [entrance.disconnect() for entrance in entrances_to_shuffle]
-        target_entrances = []
-        for target_region in target_regions:
-            fill_entrance = Entrance("Root -> " + target_region.name, root)
-            fill_entrance.connect(target_region)
-            root.exits.append(fill_entrance)
-            target_entrances.append(fill_entrance)
-
-        shuffle_entrances_restrictive(worlds, restrictive_entrances, target_entrances, already_unreachable_locations)
-        shuffle_entrances_fast(worlds, soft_entrances, target_entrances)
+    # Shuffle the rest of the entrances
+    if internal:
+        # If we are shuffling an "internal" entrance pool, those entrances can be considered as completely versatile, 
+        # So we don't have to check for beatability and/or reachability of locations when shuffling them
+        shuffle_entrances(worlds, soft_entrances, target_entrances)
+    else:
+        shuffle_entrances(worlds, soft_entrances, target_entrances, locations_to_ensure_reachable)
 
 
 # Split entrances based on their requirements to figure out how each entrance should be handled when shuffling them
-# This is done to ensure that we can place them in an order less likely to fail, and with the appropriate method to optimize the placement speed
-# Indeed, some entrances should be handled before others, and this also allows us to determine which entrances don't need to check for reachability
-# If all entrances were handled in a random order, the algorithm could have high chances to fail to connect the last few entrances because of requirements
-def split_entrances_by_requirements(worlds, entrances_to_split):
+def split_entrances_by_requirements(worlds, entrances_to_split, assumed_entrances):
 
-    # Retrieve all items in the itempool, all worlds included
-    complete_itempool = [item for world in worlds for item in world.get_itempool_with_dungeon_items()]
-
-    # First, disconnect all entrances and save which regions they were originally connected to, so we can reconnect them later
+    # First, disconnect all root assumed entrances and save which regions they were originally connected to, so we can reconnect them later
     original_connected_regions = {}
-    for entrance in entrances_to_split:
-        original_connected_regions[entrance.name] = entrance.disconnect()
+    entrances_to_disconnect = assumed_entrances + [entrance.reverse for entrance in assumed_entrances 
+                                                    if entrance.reverse and entrance.reverse not in assumed_entrances]
+    for entrance in entrances_to_disconnect:
+        if entrance.connected_region:
+            original_connected_regions[entrance] = entrance.disconnect()
 
-    # Generate the states with all entrances disconnected
-    # This ensures that no pre existing entrances among those to shuffle are required in order for an entrance to be reachable as one age
-    # Some entrances may not be reachable because of this, but this is fine as long as we deal with those entrances as being very limited
+    # Generate the states with all assumed entrances disconnected
+    # This ensures no assumed entrances corresponding to those we are shuffling are required in order for an entrance to be reachable as some age/tod
+    complete_itempool = [item for world in worlds for item in world.get_itempool_with_dungeon_items()]
     max_playthrough = Playthrough.max_explore([world.state for world in worlds], complete_itempool)
 
     restrictive_entrances = []

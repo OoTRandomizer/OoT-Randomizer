@@ -43,10 +43,27 @@ class Entrance(object):
 
 
     def disconnect(self):
-        self.connected_region.entrances = list(filter(lambda entrance: self != entrance, self.connected_region.entrances))
+        self.connected_region.entrances.remove(self)
         previously_connected = self.connected_region
         self.connected_region = None
         return previously_connected
+
+
+    def assume_reachable(self):
+        if self.assumed == None:
+            target_region = self.disconnect()
+            root = self.world.get_region('Root Exits')
+            assumed_entrance = Entrance('Root -> ' + target_region.name, root)
+            assumed_entrance.connect(target_region)
+            assumed_entrance.replaces = self
+            root.exits.append(assumed_entrance)
+            self.assumed = assumed_entrance
+        return self.assumed
+
+
+    def bind_two_way(self, other_entrance):
+        self.reverse = other_entrance
+        other_entrance.reverse = self
 
 
     def __str__(self):
