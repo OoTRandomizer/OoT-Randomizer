@@ -1217,7 +1217,6 @@ skip_GS_BGS_text:
     
     
     
-;accept86
 ; ==================================================================================================
 ; working Navi/Saria repeats hints
 ; ==================================================================================================
@@ -1239,8 +1238,6 @@ OOT_Navi_Saria_TextID_Generation:
  .orga 0xACF700
     jal NaviHints_TextID_HOOK
     
-    
-      
       
       
 ;            #I put the hooks here, because I don´t want to change code flow of main rando 
@@ -1263,8 +1260,7 @@ OOT_Navi_Saria_TextID_Generation:
 ;            rom.write_bytes(0x00B0652C, bytearray(byteArray)) #is a J, was a jr before
            
            
-           
-;accept86
+
 ; ==================================================================================================
 ; saria repeats hints
 ; ==================================================================================================

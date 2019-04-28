@@ -6,12 +6,9 @@
 ; Remove the unused files at the bottom the DMA Table
 ;   - this isn't strictly necessary, but adds flexibility for the future
 .org 0xD1B0
-    .word 0x03480000, 0x03490000, 0x03480000, 0, 0x03490000, 0x03500000, 0x03490000, 0 ;edit accept86
-;Edit - Accept86, added File in DMATable 0x03490000-0x03500000 => this one does not get compressed via dmatable.dat (there was trouble with going out of the bounds of the actual ROM with my dmaload)
-
-.area 0x0D0, 0  ; Edit Accept86 This Area was changed, because the compressor somehow didnt like the old version and there was a dmatable entry missing, that normally appears behind the upper file 
-    ;.word 0x03480000, 0x03490000, 0x03480000, 0
-.endarea 
+.area 0x100, 0
+    .word 0x03480000, 0x03490000, 0x03480000, 0
+.endarea
 
 ; Load new code from ROM
 ; Replaces:
