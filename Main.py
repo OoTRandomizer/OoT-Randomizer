@@ -31,6 +31,7 @@ from Rules import set_rules, set_shop_rules
 from Plandomizer import Distribution
 from Playthrough import Playthrough
 from EntranceShuffle import set_entrances
+from LocationList import set_drop_location_names
 
 
 class dummy_window():
@@ -124,6 +125,7 @@ def main(settings, window=dummy_window()):
         logger.info('Generating Item Pool.')
         generate_itempool(world)
         set_shop_rules(world)
+        set_drop_location_names(world)
 
     logger.info('Setting Entrances.')
     set_entrances(worlds)
@@ -523,8 +525,7 @@ def create_playthrough(spoiler):
     required_locations = []
     for sphere in reversed(collection_spheres):
         for location in sphere:
-            # we remove the item at location and check if game is still beatable
-            logger.debug('Checking if %s is required to beat the game.', location.item.name)
+            # we remove the item at location and check if the game is still beatable in case the item could be required
             old_item = location.item
             location.item = None
 
@@ -532,26 +533,36 @@ def create_playthrough(spoiler):
             state_list[old_item.world.id].remove(old_item)
             playthrough.unvisit(location)
 
-            # Test whether the game is still beatable from here.
-            if not playthrough.can_beat_game():
-                # still required, so reset the item
-                location.item = old_item
-                required_locations.append(location)
+            # An item can only be required if it isn't already obtained or if it's progressive
+            if state_list[old_item.world.id].item_count(old_item.name) < old_item.special.get('progressive', 1):
+                # Test whether the game is still beatable from here.
+                logger.debug('Checking if %s is required to beat the game.', old_item.name)
+                if not playthrough.can_beat_game():
+                    # still required, so reset the item
+                    location.item = old_item
+                    required_locations.append(location)
 
     # Regenerate the spheres as we might not reach places the same way anymore.
     playthrough.reset()  # playthrough state has no items, okay to reuse sphere 0 cache
     collection_spheres = []
+    entrance_spheres = []
+    remaining_entrances = set(entrance for world in worlds for entrance in world.get_shuffled_entrances() if entrance.primary)
     while True:
         # Not collecting while the generator runs means we only get one sphere at a time
         # Otherwise, an item we collect could influence later item collection in the same sphere
         collected = list(playthrough.iter_reachable_locations(required_locations))
+        accessed_entrances = set(filter(lambda entrance: state_list[entrance.world.id].can_reach(entrance), remaining_entrances))
         if not collected: break
         for location in collected:
             # Collect the item for the state world it is for
             state_list[location.item.world.id].collect(location.item)
         collection_spheres.append(collected)
+        entrance_spheres.append(accessed_entrances)
+        remaining_entrances -= accessed_entrances
     logger.info('Collected %d final spheres', len(collection_spheres))
 
     # Then we can finally output our playthrough
     spoiler.playthrough = OrderedDict((str(i + 1), {location: location.item for location in sphere}) for i, sphere in enumerate(collection_spheres))
 
+    if worlds[0].entrance_shuffle != 'off':
+        spoiler.entrance_playthrough = OrderedDict((str(i + 1), list(sphere)) for i, sphere in enumerate(entrance_spheres))

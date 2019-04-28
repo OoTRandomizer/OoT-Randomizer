@@ -702,11 +702,13 @@ def make_player_message(text):
     player_text = '\x05\x42\x0F\x05\x40'
     pronoun_mapping = {
         "You have ": player_text + " ",
+        "You are ":  player_text + " is ",
         "You've ":   player_text + " ",
         "Your ":     player_text + "'s ",
         "You ":      player_text + " ",
 
         "you have ": player_text + " ",
+        "you are ":  player_text + " is ",
         "you've ":   player_text + " ",
         "your ":     player_text + "'s ",
         "you ":      player_text + " ",
