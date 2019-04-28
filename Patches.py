@@ -17,7 +17,7 @@ from Messages import read_messages, update_message_by_id, read_shop_items, \
 from OcarinaSongs import replace_songs
 from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
 from SaveContext import SaveContext
-from Navi_Hints import Navi_Hints
+from NaviHints import Navi_Hints
 
 def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
     with open(data_path('generated/rom_patch.txt'), 'r') as stream:

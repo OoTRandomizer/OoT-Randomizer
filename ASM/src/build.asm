@@ -66,6 +66,7 @@ RANDO_CONTEXT:
 .include "lake_hylia.asm"
 .include "timers.asm"
 .include "shooting_gallery.asm"
+.include "damage.asm"
 .include "saria_hints_repeat.asm"
 .include "textload.asm" 
 .include "Navi_hints.asm"

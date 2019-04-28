@@ -1,41 +1,41 @@
-;Accept86 WorkingNavi
+;Accept86 Navi Hints
 ;==================================================================================================
 
-;WORKING_NAVI_DATA_GENERATED_TEXT_ROM => Texts with WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM increment (ROM-Address)
-;WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM => LookUpTable For NaviTexts (8 Bytes each per text
+;NAVI_HINTS_DATA_GENERATED_TEXT_ROM => Texts with NAVI_HINTS_DATA_GENERATED_TEXT_INCREMENT_SYM increment (ROM-Address)
+;NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM => LookUpTable For NaviTexts (8 Bytes each per text
         ;2 Bytes SaveDataOffset, 1 Byte SaveDataBitoffset, 1 Byte to handle by software,
         ;2 Bytes SavedataMask, 1 Byte ItemID, 1 Byte Sphere - for each required Item)
 
-.definelabel working_navi_Save_Offset, 0xD4 + (52 * 0x1C) +0x10 
+.definelabel Navi_Hints_Save_Offset, 0xD4 + (52 * 0x1C) +0x10 
         ;no chests or switches in Links house, so we can use that space hopefully
         ;right, I remembered Cow in House.... so I´m only going to use unused spaces after all
 
 
 
 
-WORKING_NAVI_GLOBALS:
+NAVI_HINTS_GLOBALS:
 
 .area 0x40
-   working_navi_cyclicLogicGlobals:  .word  0x0,0x0,0x0,0x0,0x0,0x0
-   working_navi_TextIDOffsetGlobal:  .word  0x0
+   Navi_Hints_cyclicLogicGlobals:  .word  0x0,0x0,0x0,0x0,0x0,0x0
+   Navi_Hints_TextIDOffsetGlobal:  .word  0x0
    
 .endarea   
 
 
-WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM:
+NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM:
 .area 0x300, 0      ;max 768 bytes for lookuptable, 96 Entrys/required items -1
 .endarea
 
 
-working_navi_cyclicLogic_HOOK:
+Navi_Hints_cyclicLogic_HOOK:
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)
 
-    ;lui t7, 0x8050            ;WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
-    ;ori t7, 0x0400            ;WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM  ;LookupTablePointer for Navi-Texts
-    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    ;lui t7, 0x8050            ;NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM
+    ;ori t7, 0x0400            ;NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM  ;LookupTablePointer for Navi-Texts
+    la t7, NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM
                                     ;global variable 1 (Timer), 2 (showTextFlag), 
-    la t1, working_navi_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
+    la t1, Navi_Hints_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
                                              ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
                                              ;6 Timer2
     lui t0, 0x0000          ;TextID-Offset
@@ -51,7 +51,7 @@ working_navi_cyclicLogic_HOOK:
  beq t6, t3, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE   ; every minute, Check if any Progress has been made - Reset timer if progress made
     nop
 
-    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM ; Reset t7 to LookupTable-Base
+    la t7, NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM ; Reset t7 to LookupTable-Base
 
 ;Timercheck => otherwise say "You are doing so well, no need to bother you" 
     lw t5, 0x0008 (t1)       ;global Variable 3 - MaxTime when Navi gets activated
@@ -69,7 +69,7 @@ working_navi_cyclicLogic_HOOK:
 
 
 
-    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM ; Reset t7 to LookupTable-Base
+    la t7, NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM ; Reset t7 to LookupTable-Base
     lw t6, 0x0000 (t1)       ;load global variable 1 (Timer)
     lw t5, 0x0008 (t1)       ;global Variable 3 - MaxTime when Navi gets activated
 
@@ -122,7 +122,7 @@ working_navi_cyclicLogic_HOOK:
     nop
     
   ;Here: TextIDOffset has changed
-    la t2, working_navi_TextIDOffsetGlobal
+    la t2, Navi_Hints_TextIDOffsetGlobal
     sw t0, 0x0000 (t2)       ; Store T0 in Global Variable 5 TextIDOffset
     sw t7, 0x000c (t1)       ; Save Global Variable 4 LastLookupTablePointer
     sw t0, 0x0010 (t1)       ; save last TextIDOffset
@@ -149,8 +149,8 @@ working_navi_cyclicLogic_HOOK:
 
     
 @WNAVI_CL_TextIDOffset_RESTORE:
-    la t3, working_navi_TextIDOffsetGlobal
-    la t1, working_navi_cyclicLogicGlobals
+    la t3, Navi_Hints_TextIDOffsetGlobal
+    la t1, Navi_Hints_cyclicLogicGlobals
     lw t2, 0x0010 (t1)       ;Load Backup of lastTexpointer (normally t0, but that is generated from the ground up again)
     sw t2, 0x0000 (t3)       ;Store t2 in Global Variable 5 TextIDOffset, which was "You are doing so well, no need to bother you"
     
@@ -171,14 +171,14 @@ working_navi_cyclicLogic_HOOK:
     
     
 @WNAVI_CL_TIMER_NOK:
-    la t1, working_navi_cyclicLogicGlobals
+    la t1, Navi_Hints_cyclicLogicGlobals
     
     ori t3, r0, 0x0001
     lw t2, 0x0004 (t1)          ;ShowTextFlag
  beq t2, t3, @WNAVI_CL_RETURN
     nop
     
-    la t1, working_navi_TextIDOffsetGlobal
+    la t1, Navi_Hints_TextIDOffsetGlobal
     sw r0, 0x0000 (t1)       ;Store 0 in Global Variable 5 TextID-Offset
    
     J @WNAVI_CL_RETURN
@@ -370,11 +370,11 @@ working_navi_cyclicLogic_HOOK:
 
 ;_______Subroutine2_______
 @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE:
-    la t1, working_navi_cyclicLogicGlobals
+    la t1, Navi_Hints_cyclicLogicGlobals
     lui t3, 0x0000
     sw t3, 0x0014 (t1)       ;Reset global variable 6 (Timer2)
     
-    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    la t7, NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM
 
     J @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_INITJUMP
     nop
@@ -395,7 +395,7 @@ working_navi_cyclicLogic_HOOK:
     ori t6, t6, 0x0003       ;Save Flag for gotten Item "before"
     sb t6, 0x0003 (t7)
     
-    la t4, working_navi_cyclicLogicGlobals
+    la t4, Navi_Hints_cyclicLogicGlobals
     lui t3, 0x0000
     sw t3, 0x0004 (t4) ;Reset ShowTextFlag
     sw t3, 0x0000 (t4) ;Reset Timer1 (NaviDelay)
@@ -437,25 +437,25 @@ working_navi_cyclicLogic_HOOK:
     
 @WNAVI_CL_SAVEPROGRESS:
                                              ;global variable 1 (Timer), 2 (showTextFlag), 
-    la t1, working_navi_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
+    la t1, Navi_Hints_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
                                              ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
                                              ;6 Timer2
     lw t6, 0x0000 (t1)       ;load global variable timer
     li   t4, SAVE_CONTEXT 
     
     ; store timer in save  
-    sw  t6, (working_navi_Save_Offset)(t4)
+    sw  t6, (Navi_Hints_Save_Offset)(t4)
     ;addiu t4, t4, 4
     ;here we go to the next unused savedata section
     addiu t4, t4, 0x1C  
     
     ; store show text flag
     lw t6, 0x0004 (t1)
-    sb  t6, (working_navi_Save_Offset)(t4)
+    sb  t6, (Navi_Hints_Save_Offset)(t4)
     addiu t4, t4, 1
     
 ;save progress bits    
-    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    la t7, NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM
     lui t5, 0x0000
     lui t8, 0x0000
     
@@ -484,7 +484,7 @@ working_navi_cyclicLogic_HOOK:
    
    ; if a byte is complete, save
    lui t5, 0x0000
-   sb  t8, (working_navi_Save_Offset)(t4)
+   sb  t8, (Navi_Hints_Save_Offset)(t4)
    addiu t4, t4, 1
    lui t8, 0x0000
    
@@ -508,7 +508,7 @@ working_navi_cyclicLogic_HOOK:
    
 @WWNAVI_CL_SAVEPROGRESS_END: 
 
-    sb  t8, (working_navi_Save_Offset)(t4)
+    sb  t8, (Navi_Hints_Save_Offset)(t4)
    
     jr ra
     nop    
@@ -517,29 +517,29 @@ working_navi_cyclicLogic_HOOK:
     
 @WNAVI_CL_LOADPROGRESS:
                                              ;global variable 1 (Timer), 2 (showTextFlag), 
-    la t1, working_navi_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
+    la t1, Navi_Hints_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
                                              ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
                                              ;6 Timer2
     
     li   t4, SAVE_CONTEXT 
     
     ; load timer from save  
-    lw  t6, (working_navi_Save_Offset)(t4)
+    lw  t6, (Navi_Hints_Save_Offset)(t4)
     sw t6, 0x0000 (t1)       ;save global variable timer
     ;addiu t4, t4, 4
     ;here we go to the next unused savedata section
     addiu t4, t4, 0x1C  
     
     ; store show text flag
-    lbu  t6, (working_navi_Save_Offset)(t4)
+    lbu  t6, (Navi_Hints_Save_Offset)(t4)
     sw t6, 0x0004 (t1)
     addiu t4, t4, 1
     
     
     ;load progress bits    
-    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    la t7, NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM
     lui t5, 0x0000
-    lb  t8, (working_navi_Save_Offset)(t4)
+    lb  t8, (Navi_Hints_Save_Offset)(t4)
     
     J @WNAVI_CL_LOADPROGRESS_INITJUMP
     nop
@@ -579,7 +579,7 @@ working_navi_cyclicLogic_HOOK:
    
 @@WNAVI_CL_LOADPROGRESS_NO_NEXTBYTE:
 
-   lb  t8, (working_navi_Save_Offset)(t4)
+   lb  t8, (Navi_Hints_Save_Offset)(t4)
 
 ;here we check our t8 progress-saveflag-bits
     ori t9, r0, 1
@@ -611,17 +611,17 @@ working_navi_cyclicLogic_HOOK:
 
 
 
-working_navi_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
+Navi_Hints_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)
     
     ; Init global variables (for cyclic logic)
-    la t1, working_navi_TextIDOffsetGlobal
+    la t1, Navi_Hints_TextIDOffsetGlobal
     sw r0, 0x0000 (t1)       ;Store T0 in Global Variable 5 TextID-Offset
    
-    la t7, WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM
+    la t7, NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM
                                     ;global variable 1 (Timer), 2 (showtextflag), 
-    la t1, working_navi_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
+    la t1, Navi_Hints_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
                                              ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
                                              ;6 Timer2
     ori t0, r0, 1  ;The TextID-Offset Backup is not on "You are doing so well, no need to bother you" but on the first real hint
@@ -643,7 +643,7 @@ working_navi_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
     
     
     
-working_navi_Activate_Navi_In_Dungeons_HOOK:     ;<= hack, navi in dungeons, see working_navi.py
+Navi_Hints_Activate_Navi_In_Dungeons_HOOK:     ;<= hack, navi in dungeons, see Navi_Hints.py
 
     ori v0, r0, 0x0141       ;0x41 <= Navi activated
     sh v0, 0x0002 (t8)  ; displaced code
@@ -664,7 +664,7 @@ NaviHints_TextID_HOOK:
     nop
     
     
-    lw t2, WORKING_NAVI_CONDITION
+    lw t2, NAVI_HINTS_CONDITION
  beq t2, r0, @@NaviHints_Return
     nop
     
@@ -684,7 +684,7 @@ NaviHints_TextID_HOOK:
     
     ; OK its a Navi Text
     ;=> Modify r0
-    la t2, working_navi_TextIDOffsetGlobal
+    la t2, Navi_Hints_TextIDOffsetGlobal
     lw v0, 0x0000 (t2)       ; Load Global Variable 5 TextIDOffset
     addiu v0, v0, Navi_Hints_TextID_Base
     andi v0, v0, 0xffff

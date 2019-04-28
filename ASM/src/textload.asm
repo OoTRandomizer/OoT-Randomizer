@@ -40,7 +40,7 @@ TextLoadLogic_HOOK:
 
     lw      a2, 0x0018(sp)          ;restore a2
 
-    lw t2, WORKING_NAVI_CONDITION
+    lw t2, NAVI_HINTS_CONDITION
  beq t2, r0, @@TLL_LOAD_TEXT
     nop
 
@@ -56,10 +56,10 @@ TextLoadLogic_HOOK:
     ;The TextOutput is handled normally
     
     ; Reset TextIDOffset stuff(cyclic logic), so the message isnt shown twice
-    la t1, working_navi_TextIDOffsetGlobal
+    la t1, navi_hints_TextIDOffsetGlobal
     sw r0, 0x0000 (t1)       ;Store TextIDOffset (Reset)
     
-    la t2, working_navi_cyclicLogicGlobals
+    la t2, navi_hints_cyclicLogicGlobals
     sw r0, 0x0004 (t2) ;ShowTextFlag Reset
     
     jal get_TextID_ByTextPointer
