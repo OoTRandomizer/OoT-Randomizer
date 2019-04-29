@@ -13,11 +13,34 @@
 ;.global Navi_Hints_cyclicLogicGlobals    ;for use in C
 
 
+
+
+;TextTables for NaviHints / Saria
+TABLE_START  equ 0xB849EC
+C_TABLE_START:
+.word TABLE_START
+
+TABLE_START_RAM  equ 0x8010EA8C
+C_TABLE_START_RAM:
+.word TABLE_START_RAM
+
+TEXT_START  equ 0x92D000
+C_TEXT_START:
+.word TEXT_START
+
+Navi_Hints_TextID_Base equ 0x7400
+C_Navi_Hints_TextID_Base:
+.word Navi_Hints_TextID_Base
+
+
+
+
 TextLoadLogic_HOOK:
-    addiu   sp, sp, -0x20
+    addiu   sp, sp, -0x24
     sw      ra, 0x0014(sp)
     sw      a2, 0x0018(sp)
     sw      a1, 0x001c(sp)
+    sw      a0, 0x0020(sp)
     
     jal     TextLoadLogic_handling  ; done in C
     nop
@@ -25,12 +48,13 @@ TextLoadLogic_HOOK:
     
     lw      a2, 0x0018(sp)
     lw      a1, 0x001c(sp)
+    lw      a0, 0x0020(sp)
     jal 0x80000DF0          ;DMALoad Text in
     nop
      
     ;Restore RA and return
     lw      ra, 0x0014(sp)
-    addiu   sp, sp, 0x20
+    addiu   sp, sp, 0x24
     jr      ra
     nop
 

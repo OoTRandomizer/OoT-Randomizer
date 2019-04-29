@@ -53,20 +53,20 @@ uint8_t TextLoadLogic_handling(uint32_t unknown, uint32_t TextAddress, uint32_t 
 
 uint16_t c_get_TextID_ByTextPointer(uint32_t TextAddress)
 {
-    uint8_t* curTableAddress = (uint8_t*)C_TABLE_START_RAM;
+    uint8_t* curTableAddress = (uint8_t*)(uint32_t)C_TABLE_START_RAM;
 
     while(1)
     {
-        uint32_t TextOffset = (uint32_t)(uint32_t*)(curTableAddress+4);
+        uint32_t TextOffset = (uint32_t)(*(uint32_t*)(curTableAddress+4));
         TextOffset &= 0xffffff;
         
-        if((TextOffset+C_TEXT_START)==TextAddress)
+        if((TextOffset+(uint32_t)C_TEXT_START)==(TextAddress&0xffffffff))
             break;
         
         curTableAddress += 8;
     }
     
-    uint32_t TextID = (uint32_t)(uint16_t*)(curTableAddress);
+    uint32_t TextID = (uint32_t)(*(uint16_t*)(curTableAddress));
 
     return TextID;
 }
