@@ -58,23 +58,6 @@ TextLoadLogic_HOOK:
     jr      ra
     nop
 
-
-
-
-get_TextID_ByTextPointer:
-    addiu   sp, sp, -0x18
-    sw      ra, 0x0014(sp)
-    
-    jal c_get_TextID_ByTextPointer
-    nop
-
-    ;Restore RA and return
-    lw      ra, 0x0014(sp)
-    addiu   sp, sp, 0x18
-    jr      ra
-    nop
-
-
     
     
 CyclicLogic_ResetText:

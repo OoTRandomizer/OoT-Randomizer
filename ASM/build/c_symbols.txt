@@ -126,7 +126,7 @@ SYMBOL TABLE:
 00000000         *UND*	00000000 OCARINAS_SHUFFLED
 00001fec g     F .text	0000010c get_item
 00000000         *UND*	00000000 CHEST_SIZE_MATCH_CONTENTS
-00003b74 g     F .text	0000008c TextLoadLogic_handling
+00003bc4 g     F .text	0000008c TextLoadLogic_handling
 00000000         *UND*	00000000 CFG_RAINBOW_SWORD_OUTER_ENABLED
 000028a8 g     F .text	0000001c give_magic
 00000028 g     O .sbss	00000004 active_item_text_id
@@ -158,7 +158,6 @@ SYMBOL TABLE:
 00000018 g     O .sbss	00000001 satisified_pending_frames
 00002f6c g     F .text	00000060 scale_top_matrix
 00001db0 g     F .text	00000068 pop_ice_trap
-00003c00 g     F .text	00000050 c_get_TextID_ByTextPointer
 0000226c g     F .text	00000030 sprite_bytes
 00002a28 g     F .text	0000002c bomb_bag_upgrade
 00000000         *UND*	00000000 C_TEXT_START
@@ -223,7 +222,7 @@ SYMBOL TABLE:
 00000004 g     O .sbss	00000004 cfg_dungeon_info_reward_need_compass
 0000000c g     O .sbss	00000004 cfg_dungeon_info_mq_enable
 00000000         *UND*	00000000 C_HEAP
-00000000         *UND*	00000000 get_TextID_ByTextPointer
+00003b74 g     F .text	00000050 get_TextID_ByTextPointer
 000018ec g     F .text	00000110 get_override_search_key
 00000014 g     O .sbss	00000001 NO_ESCAPE_SEQUENCE
 00001ba8 g     F .text	0000004c clear_override

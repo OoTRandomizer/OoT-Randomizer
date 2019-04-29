@@ -22,7 +22,7 @@ uint8_t TextLoadLogic_handling(uint32_t unknown, uint32_t TextAddress, uint32_t 
     {
         uint16_t TextID = get_TextID_ByTextPointer(TextAddress);
     
-        if((TextID>=0x0401) && (TextID<=0x04FF))
+        if((TextID>=0x0401) && (TextID<=0x04FF))        // gossip hints TextID-Borders
         {
             SARIA_HINTS_GOSSIP_READING(0, TextAddress, TextID);
         }
@@ -32,7 +32,7 @@ uint8_t TextLoadLogic_handling(uint32_t unknown, uint32_t TextAddress, uint32_t 
     {
         uint16_t TextID = get_TextID_ByTextPointer(TextAddress);
     
-        if((TextID>=0x0141) && (TextID<=0x015f) )
+        if((TextID>=0x0141) && (TextID<=0x015f) )       // Navi Text TextID-Borders
         {
             //The TextOutput is handled normally  
             //Reset TextIDOffset stuff(cyclic logic), so the message isnt shown twice 
@@ -51,7 +51,7 @@ uint8_t TextLoadLogic_handling(uint32_t unknown, uint32_t TextAddress, uint32_t 
 
 
 
-uint16_t c_get_TextID_ByTextPointer(uint32_t TextAddress)
+uint16_t get_TextID_ByTextPointer(uint32_t TextAddress)
 {
     uint8_t* curTableAddress = (uint8_t*)(uint32_t)C_TABLE_START_RAM;
 

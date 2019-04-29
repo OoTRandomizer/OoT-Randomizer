@@ -179,6 +179,7 @@ SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = Textpointer, a2 = TextID
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)
     
+    move a0, a1
     jal get_TextID_ByTextPointer ;v0 is TextID now
     nop
     
