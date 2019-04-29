@@ -60,7 +60,7 @@ uint16_t get_TextID_ByTextPointer(uint32_t TextAddress)
         uint32_t TextOffset = (uint32_t)(*(uint32_t*)(curTableAddress+4));
         TextOffset &= 0xffffff;
         
-        if((TextOffset+(uint32_t)C_TEXT_START)==(TextAddress&0xffffffff))
+        if( (TextOffset+(uint32_t)C_TEXT_START) == TextAddress )
             break;
         
         curTableAddress += 8;

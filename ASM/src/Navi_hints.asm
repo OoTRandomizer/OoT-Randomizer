@@ -26,8 +26,9 @@ NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM:
 
 
 Navi_Hints_cyclicLogic_HOOK:
-    addiu   sp, sp, -0x18
+    addiu   sp, sp, -0x1c
     sw      ra, 0x0014(sp)
+    sw      a0, 0x0018(sp)
 
     ;lui t7, 0x8050            ;NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM
     ;ori t7, 0x0400            ;NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM  ;LookupTablePointer for Navi-Texts
@@ -105,9 +106,13 @@ Navi_Hints_cyclicLogic_HOOK:
  beq t6, t5, @WNAVI_CL_INCREMENT_POINTERS       ; if already got, no need to check
     nop
 
-    li a1, @WNAVI_CL_INCREMENT_POINTERS          ; A1: Increment Pointers Address
-    move a2, t7                                 ; t7 LookupTablePointer
+    ;li a1, @WNAVI_CL_INCREMENT_POINTERS          ; A1: Increment Pointers Address
+    move a0, t7                                 ; t7 LookupTablePointer
     jal @WNAVI_CL_CHECKSAVEDATA                  ;checks save Data for LookupTableEntry
+    nop
+    
+    ori t9, r0, 1
+ beq t9, v0, @WNAVI_CL_INCREMENT_POINTERS
     nop
 
 
@@ -135,7 +140,8 @@ Navi_Hints_cyclicLogic_HOOK:
 @WNAVI_CL_RETURN:         
     ;Restore RA and return
     lw      ra, 0x0014(sp)
-    addiu   sp, sp, 0x18
+    lw      a0, 0x0018(sp)
+    addiu   sp, sp, 0x1c
     jr      ra
     nop
 
@@ -182,187 +188,19 @@ Navi_Hints_cyclicLogic_HOOK:
     J @WNAVI_CL_RETURN
     nop    
 
-;_______Subroutine1__________
-@WNAVI_CL_CHECKSAVEDATA: ;ARGUMENTS: a1=LABEL TO INCREMENT LookupTable; a2=LookupTablePointer
 
-    lb t6, 0x0003 (a2)       ;Load "IsDone" Part of LookupTable-Element
-    andi t6, t6, 0x00ff      ;BitMaskFilter
-    ori t5, r0, 0x00ff
-    
-    
- beq t6, t5, @WNAVI_CL_INT_CHECKSAVEDATA_RETURN       ;BRANCH - EndofTable? to AFTER_TEXT_POINTER_UPDATE
-    nop
+;______Subroutine_________
+@WNAVI_CL_CHECKSAVEDATA: ;ARGUMENTS: a1=LABEL TO INCREMENT jump LookupTable; a2=LookupTablePointer
+    addiu   sp, sp, -0x18
+    sw      ra, 0x0014(sp)
 
-    lw t6, 0x0000 (a2)       ;Load SaveDataOffset from LookupTablePointer in T6
-    srl t6, t6, 16         
-    andi t6, t6, 0xffff      ;Mask SaveDataOffset
+    jal Navi_CheckSaveData
     
- bne t6, r0, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP1       ;BRANCH - if LookupTable Offset is 0 Jump Back INCREMENT_POINTERS
-    nop
-    jr a1
-    nop
-@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP1:
-    
-    
-    lb t3, 0x0002 (a2)       ;Load SaveDataBitOffset
-    andi t3, t3, 0x00ff
-
-    lui t4, 0x8011           ;Load SaveDataBasePointer to Add to SaveDataOffset
-    ori t4, t4, 0xa5d0       ;RAM Address NTSC1.0 0x8011A5D0 https://wiki.cloudmodding.com/oot/Save_Format#Save_File_Validation 
-
-    addu t6, t6, t4          ;Get Resulting SaveDataPointer with Offset in t6
-    lw t4, 0x0000 (t6)       ;T4: Resulting SaveDataElementWord
-    srlv t4, t4, t3
-    andi t3, t4, 0x00ff
-    andi t4, t4, 0xffff
-    
-    lui t6, 0x0
-    ori t6, 0xff
- beq t3, t6, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveDataElementWord is FF => didnt get item
-    nop     
-    
-;ItemID    
-    lb t3, 0x0006 (a2)       ;Load ItemID
-    andi t3, t3, 0x00ff
-    
-    lw t5, 0x0004 (a2)        ;load savemask in t5
-    srl t5, t5, 16           ;Only max 2 Bytes large
-    andi t5, t5, 0xffff
-    and t4, t4, t5        ;mask saveData with saveDatamask
-    
- bne t3, r0, @WNAVI_CL_CHECKSAVEDATA_ITEMID     ; to be tested
-    nop
-    
-    
-;Savemask 
-    ;mask already done
-
- beq t4, r0, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2       ;BRANCH If SaveData has this Item => Go to INCREMENT_POINTERS/a1
-    nop
-    jr a1
-    nop
-    
-@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP2:
-
-
-    ori t6, r0, 0xffff
-    ;the mask could be FF => save data has item if not FF
- beq t6, t5, @WNAVI_CL_SAVEMASKFF               ;BRANCH, MASK is FF, check savedata different
-    nop
-    
- 
-@WNAVI_CL_INT_CHECKSAVEDATA_RETURN:   
+    ;Restore RA and return
+    lw      ra, 0x0014(sp)
+    addiu   sp, sp, 0x18
     jr ra
     nop
-    
-    
-    
-    
-;____Sub-Subroutine1___    
-@WNAVI_CL_SAVEMASKFF:        ; TARGET if Savedatamask is FF
-
-    ;Savemask is FF
-    ;t4: SaveDataElementWord , t5 SaveDataMask
-    
- beq t4, t5, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP3       ;BRANCH If SaveData mask FF and Savedata not FF Item aquired => Go to INCREMENT_POINTERS/a1
-    nop
-    jr a1
-    nop
-@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP3:
-
-
-    J @WNAVI_CL_INT_CHECKSAVEDATA_RETURN
-    nop
-
-
-
-;____Sub-Subroutine2___
-@WNAVI_CL_CHECKSAVEDATA_ITEMID: 
-    ;t3 is ItemID
-    ;t4: SaveDataElementWord 
-    
-;Check rutos letter / Bottle with letter
-    ori t5, r0, 0x001B  ; item ID to compare
-
- bne t3, t5, @WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP5
-    nop
-    ;here it is rutos letter to check
-    lui t6, 0x8011
-    ori t6, t6, 0xa656 ;get bottle base address
-    
-    ;Bottle1
-    lb t4, 0x0000 (t6)  
-    andi t4, t4, 0x00ff
- bne t4, t5, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO1
-    nop
-    jr a1
-    nop
-@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO1:
-    
-    ;Bottle2
-    lb t4, 0x0001 (t6)  
-    andi t4, t4, 0x00ff
- bne t4, t5, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO2
-    nop
-    jr a1
-    nop
-@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO2:  
-    
-    ;Bottle3
-    lb t4, 0x0002 (t6)  
-    andi t4, t4, 0x00ff
- bne t4, t5, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO3
-    nop
-    jr a1
-    nop
-@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO3: 
-    
-    ;Bottle4
-    lb t4, 0x0003 (t6)  
-    andi t4, t4, 0x00ff
- bne t4, t5, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO4
-    nop
-    jr a1
-    nop
-@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO4:
-
-
-; not needed anymore, because save and load in savedata now
-;    ;King Zora Moved?
-;    lui t6, 0x8011 
-;    ori t6, t6, 0xB4AB ;get King Zora moved address
-;    lb t4, 0x0000 (t6)  
-;    andi t4, t4, 0x0008
-    
-; beq t4, r0, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO5 
-;    nop
-;    jr a1
-;    nop
-;@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP_RUTO5:    
-    
-    J @WNAVI_CL_INT_CHECKSAVEDATA_RETURN
-    nop  
-    
-    
-@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP5:     
-    
-;normal item ID check
-    andi t4, t4, 0x00ff
-    sltu t6,t4,t3   ; SaveData < ItemID?
-    ori t2, r0, 0x0001
-    
- beq t6, t2, @@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP4       ;BRANCH If SaveData < ItemID, dont got item
-    nop
-    jr a1
-    nop
-@@WNAVI_CL_INT_CHECKSAVEDATA_DONT_JUMP4:
-
-
-    J @WNAVI_CL_INT_CHECKSAVEDATA_RETURN
-    nop  
-    
-    
-    
     
     
 
@@ -412,14 +250,17 @@ Navi_Hints_cyclicLogic_HOOK:
     nop
     
 
-    li a1, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_GOT_ITEM     ; A1: Item Got Jump Address
-    move a2, t7                                 ; t7 LookupTablePointer
+    ;li a1, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_GOT_ITEM     ; A1: Item Got Jump Address
+    move a0, t7                                 ; t7 LookupTablePointer
     JAL @WNAVI_CL_CHECKSAVEDATA                  ;checks save Data for LookupTableEntry
     nop
-
-    J @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_ITEM_NOT_GOTTEN
+    
+ beq r0, v0, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_ITEM_NOT_GOTTEN
     nop
     
+    ori t9, r0, 1
+ beq t9, v0, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_GOT_ITEM
+    nop
     
 @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_END:  
 
