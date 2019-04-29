@@ -26,9 +26,11 @@ NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM:
 
 
 Navi_Hints_cyclicLogic_HOOK:
-    addiu   sp, sp, -0x1c
+    addiu   sp, sp, -0x2C
     sw      ra, 0x0014(sp)
     sw      a0, 0x0018(sp)
+    sw      a1, 0x0024(sp)
+    sw      a2, 0x0028(sp)
 
     ;lui t7, 0x8050            ;NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM
     ;ori t7, 0x0400            ;NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM  ;LookupTablePointer for Navi-Texts
@@ -108,8 +110,12 @@ Navi_Hints_cyclicLogic_HOOK:
 
     ;li a1, @WNAVI_CL_INCREMENT_POINTERS          ; A1: Increment Pointers Address
     move a0, t7                                 ; t7 LookupTablePointer
-    jal @WNAVI_CL_CHECKSAVEDATA                  ;checks save Data for LookupTableEntry
+    sw      t7, 0x001c(sp)
+    sw      t0, 0x0020(sp)
+    JAL @WNAVI_CL_CHECKSAVEDATA                  ;checks save Data for LookupTableEntry
     nop
+    lw      t7, 0x001c(sp)
+    lw      t0, 0x0020(sp)
     
     ori t9, r0, 1
  beq t9, v0, @WNAVI_CL_INCREMENT_POINTERS
@@ -141,7 +147,9 @@ Navi_Hints_cyclicLogic_HOOK:
     ;Restore RA and return
     lw      ra, 0x0014(sp)
     lw      a0, 0x0018(sp)
-    addiu   sp, sp, 0x1c
+    sw      a1, 0x0024(sp)
+    sw      a2, 0x0028(sp)
+    addiu   sp, sp, 0x2c
     jr      ra
     nop
 
@@ -195,6 +203,7 @@ Navi_Hints_cyclicLogic_HOOK:
     sw      ra, 0x0014(sp)
 
     jal Navi_CheckSaveData
+    nop
     
     ;Restore RA and return
     lw      ra, 0x0014(sp)
@@ -206,6 +215,11 @@ Navi_Hints_cyclicLogic_HOOK:
 
 ;_______Subroutine2_______
 @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE:
+    addiu   sp, sp, -0x1c
+    sw      ra, 0x0014(sp)
+    
+
+
     la t1, Navi_Hints_cyclicLogicGlobals
     lui t3, 0x0000
     sw t3, 0x0014 (t1)       ;Reset global variable 6 (Timer2)
@@ -252,8 +266,10 @@ Navi_Hints_cyclicLogic_HOOK:
 
     ;li a1, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_GOT_ITEM     ; A1: Item Got Jump Address
     move a0, t7                                 ; t7 LookupTablePointer
+    sw      t7, 0x0018(sp)
     JAL @WNAVI_CL_CHECKSAVEDATA                  ;checks save Data for LookupTableEntry
     nop
+    lw      t7, 0x0018(sp)
     
  beq r0, v0, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_ITEM_NOT_GOTTEN
     nop
@@ -266,6 +282,12 @@ Navi_Hints_cyclicLogic_HOOK:
 
     jal @WNAVI_CL_SAVEPROGRESS       ; <== Save progress in save, this is called every minute
     nop
+    
+    
+    
+    ;Restore RA and return
+    lw      ra, 0x0014(sp)
+    addiu   sp, sp, 0x1c
     
     J  @WNAVI_AFTER_CL_HAS_ANY_PROGRESS_BEEN_MADE
     nop
