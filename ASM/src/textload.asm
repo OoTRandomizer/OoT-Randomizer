@@ -1,19 +1,6 @@
 ;Accept86 WorkingNavi / Saria Repeats hints
 ;==================================================================================================
 
-;.global TABLE_START     
-;.global TABLE_START_RAM   
-;.global TEXT_START    
-;.global Navi_Hints_TextID_Base
-;.global SARIA_HINTS_CONDITION  
-;.global NAVI_HINTS_CONDITION     
-;.global SARIA_HINTS_GOSSIP_READING  
-;.global CyclicLogic_ResetText
-;.global navi_hints_TextIDOffsetGlobal    ;for use in C
-;.global Navi_Hints_cyclicLogicGlobals    ;for use in C
-
-
-
 
 ;TextTables for NaviHints / Saria
 TABLE_START  equ 0xB849EC
@@ -28,11 +15,13 @@ TEXT_START  equ 0x92D000
 C_TEXT_START:
 .word TEXT_START
 
+;other Navi/Saria constant words
 Navi_Hints_TextID_Base equ 0x7400
 C_Navi_Hints_TextID_Base:
 .word Navi_Hints_TextID_Base
 
-
+C_SAVE_CONTEXT:
+.word SAVE_CONTEXT
 
 
 TextLoadLogic_HOOK:
@@ -70,18 +59,21 @@ CyclicLogic_ResetText:
     ;ShowTextFlag (Reset)  
      
     la t1, navi_hints_TextIDOffsetGlobal
-    sw r0, 0x0000 (t1)                  
+    sw r0, 0x0000 (t1)                      ;Reset TextID              
                                          
     la t2, navi_hints_cyclicLogicGlobals 
-    sw r0, 0x0004 (t2)                   
-                                         
-    jal get_TextID_ByTextPointer        
-    li t0, Navi_Hints_TextID_Base   
-    
+    sw r0, 0x0004 (t2)                      ;Reset showTextFlag              
+                          
+                          
     ;if Text says 'I have faith in you..' Textpointer is on base, dont reset timer 
-    ;Timer1 Reset <= TBD test this      
-                             
-    sw t3, 0x0000 (t2)                  
+    ;Timer1 Reset <= TBD test this                                
+    li t0, Navi_Hints_TextID_Base     
+ beq t0, a0, @@DONT_RESET_TIMER   
+    nop
+                          
+    sw r0, 0x0000 (t2)                  
+    
+    @@DONT_RESET_TIMER:
                                         
                 
     ;Restore RA and return
