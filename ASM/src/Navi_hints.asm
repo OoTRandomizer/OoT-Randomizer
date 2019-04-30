@@ -110,12 +110,8 @@ Navi_Hints_cyclicLogic_HOOK:
 
     ;li a1, @WNAVI_CL_INCREMENT_POINTERS          ; A1: Increment Pointers Address
     move a0, t7                                 ; t7 LookupTablePointer
-    sw      t7, 0x001c(sp)
-    sw      t0, 0x0020(sp)
     JAL @WNAVI_CL_CHECKSAVEDATA                  ;checks save Data for LookupTableEntry
     nop
-    lw      t7, 0x001c(sp)
-    lw      t0, 0x0020(sp)
     
     ori t9, r0, 1
  beq t9, v0, @WNAVI_CL_INCREMENT_POINTERS
@@ -199,15 +195,21 @@ Navi_Hints_cyclicLogic_HOOK:
 
 ;______Subroutine_________
 @WNAVI_CL_CHECKSAVEDATA: ;ARGUMENTS: a1=LABEL TO INCREMENT jump LookupTable; a2=LookupTablePointer
-    addiu   sp, sp, -0x18
+    addiu   sp, sp, -0x24
     sw      ra, 0x0014(sp)
+    sw      t1, 0x0018(sp)
+    sw      t7, 0x001c(sp)
+    sw      t0, 0x0020(sp)
 
     jal Navi_CheckSaveData
     nop
     
     ;Restore RA and return
     lw      ra, 0x0014(sp)
-    addiu   sp, sp, 0x18
+    lw      t1, 0x0018(sp)
+    lw      t7, 0x001c(sp)
+    lw      t0, 0x0020(sp)
+    addiu   sp, sp, 0x24
     jr ra
     nop
     
@@ -215,82 +217,28 @@ Navi_Hints_cyclicLogic_HOOK:
 
 ;_______Subroutine2_______
 @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE:
-    addiu   sp, sp, -0x1c
+   
+    addiu   sp, sp, -0x24
     sw      ra, 0x0014(sp)
-    
+    sw      t1, 0x0018(sp)
+    sw      t7, 0x001c(sp)
+    sw      t0, 0x0020(sp)
 
-
-    la t1, Navi_Hints_cyclicLogicGlobals
-    lui t3, 0x0000
-    sw t3, 0x0014 (t1)       ;Reset global variable 6 (Timer2)
-    
-    la t7, NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM
-
-    J @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_INITJUMP
+    jal Navi_has_any_progress_been_made
     nop
-    
-    
-    
-@WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_GOT_ITEM:  
-    lui t6, 0x0000
-    lb t6, 0x0003 (t7)       ;Load "IsDone" Part of LookupTable-Element
-    ori t6, t6, 0x0001       ;Save Flag for gotten Item
-    sb t6, 0x0003 (t7)
-    
-    ori t3, r0, 0x0001
-    
-; Reset ShowText, Reset Timer, if Item is newly gotten
- bne t6, t3, @@WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_NO_TIMERRESET
-    nop
-    ori t6, t6, 0x0003       ;Save Flag for gotten Item "before"
-    sb t6, 0x0003 (t7)
-    
-    la t4, Navi_Hints_cyclicLogicGlobals
-    lui t3, 0x0000
-    sw t3, 0x0004 (t4) ;Reset ShowTextFlag
-    sw t3, 0x0000 (t4) ;Reset Timer1 (NaviDelay)
-@@WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_NO_TIMERRESET:    
-    
-@WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_ITEM_NOT_GOTTEN:
-    addiu t7, t7, 0x0008     ; 0x0004     ;Increment LookupTablePointer
-    
-@WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_INITJUMP:     
-
-    ori t3, r0, 0x00ff
-    lb t6, 0x0003 (t7)       ;Load "IsDone" Part of LookupTable-Element
-    andi t6, t6, 0x00ff      ;BitMaskFilter
-    
- beq t3, t6, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_END ; Escape at end of loop <= THIS IS THE RETURN OUT
-    nop
-    
-
-    ;li a1, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_GOT_ITEM     ; A1: Item Got Jump Address
-    move a0, t7                                 ; t7 LookupTablePointer
-    sw      t7, 0x0018(sp)
-    JAL @WNAVI_CL_CHECKSAVEDATA                  ;checks save Data for LookupTableEntry
-    nop
-    lw      t7, 0x0018(sp)
-    
- beq r0, v0, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_ITEM_NOT_GOTTEN
-    nop
-    
-    ori t9, r0, 1
- beq t9, v0, @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_GOT_ITEM
-    nop
-    
-@WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE_END:  
-
-    jal @WNAVI_CL_SAVEPROGRESS       ; <== Save progress in save, this is called every minute
-    nop
-    
-    
     
     ;Restore RA and return
     lw      ra, 0x0014(sp)
-    addiu   sp, sp, 0x1c
+    lw      t1, 0x0018(sp)
+    lw      t7, 0x001c(sp)
+    lw      t0, 0x0020(sp)
+    addiu   sp, sp, 0x24
     
     J  @WNAVI_AFTER_CL_HAS_ANY_PROGRESS_BEEN_MADE
     nop
+
+
+
    
    
     

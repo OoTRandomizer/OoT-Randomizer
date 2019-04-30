@@ -51,17 +51,13 @@ class Navi_Hints(Rom):
 
     def getBitOffsetIndex(self, mask):
         i=0;
-        for i in range(0, (31+16)):
+        for i in range(0, (32+16)):
             if( ((mask>>i)&1)!=0 ):
                 break
             
         return i
     
-    #def getMaskByBitOffsetIndex(self, bitoffset):
-    #    mask = 1 << bitoffset
-            
-    #    return mask
-    
+
     #=> bitshiftcount with 0x80 flag -> 0x84, 0x88 0x8C
     #=> if value from save not smaller than that got item
     #strength: goes 0=>0x40->0x80->0xC0, no bitencoding
@@ -106,18 +102,7 @@ class Navi_Hints(Rom):
     
     
     def getUpgradeBitmask(self, UpgradeIndex, ItemByteoffset, ItemMask, ItemCategory, name_no_brackets, item ):
-        # Upgrades
-        #'upgrades' : {
-        #    'quiver'                 : Address(0x00A0, mask=0x00000007, max=3),
-        #    'bomb_bag'               : Address(0x00A0, mask=0x00000038, max=3),
-        #    'strength_upgrade'       : Address(0x00A0, mask=0x000001C0, max=3),
-        #    'diving_upgrade'         : Address(0x00A0, mask=0x00000E00, max=2),
-        #    'wallet'                 : Address(0x00A0, mask=0x00003000, max=3),
-        #    'bullet_bag'             : Address(0x00A0, mask=0x0001C000, max=3),
-        #    'stick_upgrade'          : Address(0x00A0, mask=0x000E0000, max=3),
-        #    'nut_upgrade'            : Address(0x00A0, mask=0x00700000, max=3),
-        #},
-                              
+                           
         RealMask = ItemMask 
         
         #'Progressive Strength Upgrade'
@@ -213,8 +198,6 @@ class Navi_Hints(Rom):
         ItemID = 0
         return self.OptimizeOffsetAndMask(ItemByteoffset,RealMask,ItemID, Item)
        
-       
-       
 
     
     def Navi_Hints_patch_LookUpTableItem(self, ItemByteoffset, ItemBitoffset, ItemMask, ItemID, sphere_nr, CurLookupTablePointerB, rom):
@@ -234,23 +217,7 @@ class Navi_Hints(Rom):
         bArray = int(sphere_nr).to_bytes(1, 'big')
         rom.write_bytes(CurLookupTablePointerB+7, bArray)
         
-                            
-                            
-    #def NAVI_HINTS_patch_TextTableItem(self, navi_exact_locations, CurTextPointerBaseA, locationstringexact, locationstringvague, rom):
-    #    bArray = bytearray()
-    #    if navi_exact_locations:
-    #        bArray.extend(map(ord, get_raw_text(lineWrap(locationstringexact)) )) 
-    #    if not navi_exact_locations:
-    #        bArray.extend(map(ord, get_raw_text(lineWrap(locationstringvague)) )) 
-            
-    #    CurTextPointerA = CurTextPointerBaseA
-    #    rom.write_bytes(CurTextPointerA, [0x05, 0x44])
-    #    CurTextPointerA += 2
-    #    rom.write_bytes(CurTextPointerA, bArray)
-    #    CurTextPointerA += len(bArray)
-    #    rom.write_bytes(CurTextPointerA, [0x20, 0x05, 0x40, 0x02])
-                    
-             
+                                  
              
     def getLocationTests(self, location, spoiler):
         
@@ -316,8 +283,6 @@ class Navi_Hints(Rom):
         #for the others, combine the locations
         #limit string length
         
-        #TBD TBD <= do this for bottles, too
-        
         maxlen = 0x7C-6-4
         locationexact = (locationexact[:maxlen] + '..') if len(locationexact) > maxlen else locationexact
         locationvague = (locationvague[:maxlen] + '..') if len(locationvague) > maxlen else locationvague
@@ -327,12 +292,8 @@ class Navi_Hints(Rom):
                  
     def Navi_Hints_patch_internal(self, rom, world, spoiler, save_context, outfile, messages):
         # Save Navi Texts in Rom
-        #CurTextPointerBaseA = self.NAVI_HINTS_DATA_GENERATED_TEXT_ROM
-             
         CurNavi_Hints_TextID = self.Navi_Hints_TextID_Base
                   
-        #self.Navi_Hints_patch_TextTableItem(world.settings.Navi_Hints_exact, CurTextPointerBaseA, "I have faith in you, you can progress", "I have faith in you, you can progress", rom)
-        #CurTextPointerBaseA += self.Navi_Hints_DATA_GENERATED_TEXT_INCREMENT_SYM
         add_message(messages, get_raw_text(lineWrap("I have faith in you, you can progress")), id=CurNavi_Hints_TextID)
         CurNavi_Hints_TextID += 1
         
@@ -361,10 +322,7 @@ class Navi_Hints(Rom):
                         locationexact = locTexts[0]
                         locationvague = locTexts[1]
                         
-                        #self.Navi_Hints_patch_TextTableItem(world.settings.Navi_Hints_exact, CurTextPointerBaseA, locationexact, locationvague, rom)
-                        #CurTextPointerBaseA += self.Navi_Hints_DATA_GENERATED_TEXT_INCREMENT_SYM
-                        
-                        
+
                         if world.settings.Navi_Hints_exact:
                             add_message(messages, get_raw_text(lineWrap(locationexact)), id=CurNavi_Hints_TextID)
                         else:
@@ -379,9 +337,6 @@ class Navi_Hints(Rom):
                                 outfile.write('\n %s: %s : %s' % (sphere_nr, location, location.item ) )
                 
                      
-        #self.Navi_Hints_patch_TextTableItem(world.settings.Navi_Hints_exact, CurTextPointerBaseA, "We got everything we need, lets beat Ganon", "We got everything we need, lets beat Ganon", rom) 
-        #CurTextPointerBaseA += self.Navi_Hints_DATA_GENERATED_TEXT_INCREMENT_SYM             
-         
         add_message(messages, get_raw_text(lineWrap("We got everything we need, lets beat Ganon")), id=CurNavi_Hints_TextID)
         CurNavi_Hints_TextID += 1 
           

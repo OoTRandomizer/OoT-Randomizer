@@ -71,7 +71,11 @@ CyclicLogic_ResetText:
  beq t0, a0, @@DONT_RESET_TIMER   
     nop
                           
-    sw r0, 0x0000 (t2)                  
+    sw r0, 0x0000 (t2)  
+    lui t2, 0x8011
+    ori t2, 0xA608
+    ori t3, r0, 0x000D   ;Manipulate OOT Navi Timer
+    sb t3, 0x0000 (t2)                
     
     @@DONT_RESET_TIMER:
                                         
