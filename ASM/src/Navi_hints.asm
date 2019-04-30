@@ -194,7 +194,7 @@ Navi_Hints_cyclicLogic_HOOK:
 
 
 ;______Subroutine_________
-@WNAVI_CL_CHECKSAVEDATA: ;ARGUMENTS: a1=LABEL TO INCREMENT jump LookupTable; a2=LookupTablePointer
+@WNAVI_CL_CHECKSAVEDATA: ;ARGUMENTS: a0=LookupTablePointer
     addiu   sp, sp, -0x24
     sw      ra, 0x0014(sp)
     sw      t1, 0x0018(sp)
@@ -224,6 +224,9 @@ Navi_Hints_cyclicLogic_HOOK:
     sw      t7, 0x001c(sp)
     sw      t0, 0x0020(sp)
 
+
+    la a0, NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM
+    la a1, Navi_Hints_cyclicLogicGlobals 
     jal Navi_has_any_progress_been_made
     nop
     
@@ -244,7 +247,7 @@ Navi_Hints_cyclicLogic_HOOK:
     
     
     
-@WNAVI_CL_SAVEPROGRESS:
+WNAVI_CL_SAVEPROGRESS:
                                              ;global variable 1 (Timer), 2 (showTextFlag), 
     la t1, Navi_Hints_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
                                              ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
