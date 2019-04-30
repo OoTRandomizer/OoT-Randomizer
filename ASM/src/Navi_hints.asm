@@ -155,7 +155,6 @@ Navi_Hints_cyclicLogic_HOOK:
 
 ;_______Subroutines for cyclic logic__________
 
-    
 @WNAVI_CL_TextIDOffset_RESTORE:
     la t3, Navi_Hints_TextIDOffsetGlobal
     la t1, Navi_Hints_cyclicLogicGlobals
@@ -178,6 +177,7 @@ Navi_Hints_cyclicLogic_HOOK:
     nop    
     
     
+    
 @WNAVI_CL_TIMER_NOK:
     la t1, Navi_Hints_cyclicLogicGlobals
     
@@ -193,7 +193,8 @@ Navi_Hints_cyclicLogic_HOOK:
     nop    
 
 
-;______Subroutine_________
+
+
 @WNAVI_CL_CHECKSAVEDATA: ;ARGUMENTS: a0=LookupTablePointer
     addiu   sp, sp, -0x24
     sw      ra, 0x0014(sp)
@@ -215,7 +216,6 @@ Navi_Hints_cyclicLogic_HOOK:
     
     
 
-;_______Subroutine2_______
 @WNAVI_CL_HAS_ANY_PROGRESS_BEEN_MADE:
    
     addiu   sp, sp, -0x24
@@ -244,7 +244,7 @@ Navi_Hints_cyclicLogic_HOOK:
 
    
    
-    
+ ;_______Save and Load__________   
     
     
 WNAVI_CL_SAVEPROGRESS:
@@ -333,95 +333,24 @@ WNAVI_CL_SAVEPROGRESS:
                                              ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
                                              ;6 Timer2
     
-    li   t4, SAVE_CONTEXT 
+    addiu   sp, sp, -0x18
+    sw      ra, 0x0014(sp)
     
-    ; load timer from save  
-    lw  t6, (Navi_Hints_Save_Offset)(t4)
-    sw t6, 0x0000 (t1)       ;save global variable timer
-    ;addiu t4, t4, 4
-    ;here we go to the next unused savedata section
-    addiu t4, t4, 0x1C  
-    
-    ; store show text flag
-    lbu  t6, (Navi_Hints_Save_Offset)(t4)
-    sw t6, 0x0004 (t1)
-    addiu t4, t4, 1
-    
-    
-    ;load progress bits    
-    la t7, NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM
-    lui t5, 0x0000
-    lb  t8, (Navi_Hints_Save_Offset)(t4)
-    
-    J @WNAVI_CL_LOADPROGRESS_INITJUMP
+    la a0, NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM
+    la a1, Navi_Hints_cyclicLogicGlobals 
+    jal Navi_LoadProgress
     nop
     
-    
-@WNAVI_CL_LOADPROGRESS_NEXT:    
-    
-    addiu t7, t7, 0x0008     ; 0x0004     ;Increment LookupTablePointer
-    addiu t5, t5, 1
-    
-@WNAVI_CL_LOADPROGRESS_INITJUMP:     
-
-    ori t3, r0, 0x00ff
-    lb t6, 0x0003 (t7)       ;Load "IsDone" Part of LookupTable-Element
-    andi t6, t6, 0x00ff
-    
- beq t3, t6, @WWNAVI_CL_LOADPROGRESS_END ; Escape at end of loop <= THIS IS THE RETURN OUT
-    nop
-    
-    lui t6, 0x0000
-    sb t6, 0x0003 (t7)       ;Reset "IsDone" Part of LookupTable-Element
-    
-; here we load our progress
-   slti t3, t5, 8     ; t5 bitindex still ok?
- bne t3, r0, @@WNAVI_CL_LOADPROGRESS_NO_NEXTBYTE
-   nop
-   
-   ; if a byte is complete, next one
-   lui t5, 0x0000
-   addiu t4, t4, 1
-   
-   andi t9, t4, 0x0003
- bne t9, r0, @@WNAVI_CL_LOADPROGRESS_NO_NEXTBYTE    ; if t4 bytecount modulo 4 is 0 => next unused savedata section
-   nop
-   ;here we go to the next unused savedata section
-   addiu t4, t4, (0x1C-4)  
-   
-@@WNAVI_CL_LOADPROGRESS_NO_NEXTBYTE:
-
-   lb  t8, (Navi_Hints_Save_Offset)(t4)
-
-;here we check our t8 progress-saveflag-bits
-    ori t9, r0, 1
-    sllv t9, t9, t5
-    and t8, t8, t9
-
- beq r0, t8, @WNAVI_CL_LOADPROGRESS_NEXT  
-    nop
-;bit set for this lookuptableentry
-    ori t6, r0, 0x0003
-    sb t6, 0x0003 (t7)       ;Load "IsDone" Part of LookupTable-Element
-    
-    J @WNAVI_CL_LOADPROGRESS_NEXT
-    nop
-   
-@WWNAVI_CL_LOADPROGRESS_END: 
-
-    ;dont overwrite ff end of lookuptable
-    ;andi t8, t8, 0x00ff      ;BitMaskFilter
-    ;sb t8, 0x0003 (t7)       ;Load "IsDone" Part of LookupTable-Element
-    
-    
-
+    ;Restore RA and return
+    lw      ra, 0x0014(sp)
+    addiu   sp, sp, 0x18
     jr ra
     nop    
     
     
-
-
-
+    
+    
+;_______Other Hooks__________
 
 Navi_Hints_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
     addiu   sp, sp, -0x18
@@ -452,9 +381,7 @@ Navi_Hints_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
     nop
     
     
-    
-    
-    
+        
 Navi_Hints_Activate_Navi_In_Dungeons_HOOK:     ;<= hack, navi in dungeons, see Navi_Hints.py
 
     ori v0, r0, 0x0141       ;0x41 <= Navi activated
@@ -462,8 +389,6 @@ Navi_Hints_Activate_Navi_In_Dungeons_HOOK:     ;<= hack, navi in dungeons, see N
 
     jr ra 
     nop   
-
-
 
 
 
