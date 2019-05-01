@@ -2,10 +2,10 @@
 //==================================================================================================
 #include "z64.h"
 
-const uint32_t C_Saria_Save_Offset = 0xD4 + (58 * 0x1C) +0x10; 
+const uint32_t C_Saria_Save_Offset = 0x73C;//(0xD4 + (58 * 0x1C) +0x10); 
 
 uint16_t get_TextID_ByTextPointer(uint32_t TextAddress);
-
+extern const uint32_t C_SAVE_CONTEXT;  
 
 
 uint8_t get_SariaIndexOffset_ByTextAddress(uint16_t* pSaria_Gossip_TextID_Table, uint32_t ROMTextAddress)
@@ -33,7 +33,8 @@ uint8_t Saria_Gossip_Saveprogress(uint32_t IndexOffset)
     
     //calc byte to save
     uint16_t AddressOffset = PageOffset * 0x1C;
-    uint32_t* pAddress = (uint32_t*)(pSaveDataBase + C_Saria_Save_Offset + AddressOffset);
+    uint32_t* pAddress = (uint32_t*)((uint32_t)pSaveDataBase + C_Saria_Save_Offset);
+    pAddress = (uint32_t*)((uint32_t)pAddress + (uint32_t)AddressOffset);
     
     *pAddress = *pAddress | (0x80000000 >> BitOffset);  
     
@@ -50,9 +51,9 @@ struct stSariaHintGlobals
 };
     
 
-uint16_t get_Next_Gossip_TextID(struct stSariaHintGlobals* pstSariaHintGlobals)
+uint16_t get_Next_Gossip_TextID(struct stSariaHintGlobals* pstSariaHintGlobals, uint16_t* pSaria_Gossip_TextID_Table)
 {
-    const uint8_t* pSaveDataBase = (uint32_t*)C_SAVE_CONTEXT; 
+    const uint8_t* pSaveDataBase = (uint8_t*)C_SAVE_CONTEXT; 
     //C_Saria_Save_Offset
     
     uint8_t* pCurrentAddress = (uint8_t*)(pSaveDataBase + C_Saria_Save_Offset);
@@ -93,14 +94,10 @@ uint16_t get_Next_Gossip_TextID(struct stSariaHintGlobals* pstSariaHintGlobals)
     }
     
     
-    ;set TextID
-    ori v0, r0, 0x00e3  ;Do you want to talk to Saria again?
-    sw r0, 0x0008 (t1)  ;reset activation
-    sw r0, 0x0004 (t1)  ;reset lastIndex
-    ori t2, r0, 0x0001
-    sw t2, 0x000C (t1)  ;set just deactiveted
-    
+    // End of TextLoop => reset globals
+    pstSariaHintGlobals->Activation = 0;
+    pstSariaHintGlobals->intGossipTextIndex = 0;
+    pstSariaHintGlobals->justDeactivated = 1;
 
-
-    return 0;
+    return 0x00e3;  //TextID - Do you want to talk to Saria again?
 }

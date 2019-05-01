@@ -68,12 +68,13 @@ SYMBOL TABLE:
 00002f10 g     F .text	00000018 scale_upgrade
 00000000         *UND*	00000000 NAVI_HINTS_CONDITION
 00000000         *UND*	00000000 CFG_HEART_COLOR
+00003df0 g     F .text	000000c0 get_Next_Gossip_TextID
 00002e1c g     F .text	00000014 hookshot_upgrade
 00001ed4 g     F .text	0000004c lookup_override
 00000000         *UND*	00000000 CyclicLogic_ResetText
 00003c98 g     F .text	000000ac update_color
 00002f44 g     F .text	0000001c stick_upgrade
-00003d8c g     F .text	0000002c text_init
+00003ef8 g     F .text	0000002c text_init
 00000028 g     O .sdata	00000004 beating_no_dd
 00001794 g     F .text	00000290 process_extern_ctxt
 00000034 g     O .sbss	00000004 active_override_is_outgoing
@@ -91,7 +92,7 @@ SYMBOL TABLE:
 00000014 g     O .sdata	00000008 hash_sprites
 00001f20 g     F .text	000000bc activate_override
 000030c8 g     F .text	0000003c before_game_state_update
-00003d44 g     F .text	00000048 store_scarecrow_fix
+00003eb0 g     F .text	00000048 store_scarecrow_fix
 00000000         *UND*	00000000 SARIA_HINTS_GOSSIP_READING
 00000000         *UND*	00000000 OUTGOING_PLAYER
 00002118 g     F .text	00000040 push_delayed_item
@@ -99,8 +100,9 @@ SYMBOL TABLE:
 00000834 g     F .text	000004d0 draw_dpad
 00000010 g     O .sbss	00000004 cfg_file_select_hash
 00000048 g     O .sbss	00000001 pending_freezes
+0000003c g     O .sdata	00000004 C_Saria_Save_Offset
 00002c0c g     F .text	00000008 no_effect
-00003e60 g     F .text	00000148 text_flush
+00003fcc g     F .text	00000148 text_flush
 00000000         *UND*	00000000 CFG_RAINBOW_SWORD_INNER_ENABLED
 00000180 g     O .data	00000010 medals_sprite
 00001718 g     F .text	00000064 interpolate
@@ -121,7 +123,7 @@ SYMBOL TABLE:
 000035d8 g     F .text	0000002c models_reset
 00000160 g     O .data	00000010 quest_items_sprite
 0000218c g     F .text	00000058 after_key_received
-000040a8 g     F .text	00000034 heap_alloc
+00004214 g     F .text	00000034 heap_alloc
 00000030 g     O .sbss	00000004 active_item_row
 00003104 g     F .text	00000028 after_game_state_update
 00000d04 g     F .text	00000a14 draw_dungeon_info
@@ -130,8 +132,9 @@ SYMBOL TABLE:
 00000000         *UND*	00000000 OCARINAS_SHUFFLED
 00002420 g     F .text	0000010c get_item
 00000000         *UND*	00000000 CHEST_SIZE_MATCH_CONTENTS
-00003ff8 g     F .text	0000009c TextLoadLogic_handling
+00004164 g     F .text	0000009c TextLoadLogic_handling
 00000000         *UND*	00000000 CFG_RAINBOW_SWORD_OUTER_ENABLED
+00003d44 g     F .text	00000068 get_SariaIndexOffset_ByTextAddress
 00002cdc g     F .text	0000001c give_magic
 00000028 g     O .sbss	00000004 active_item_text_id
 00002b68 g     F .text	00000010 ice_trap_is_pending
@@ -139,6 +142,7 @@ SYMBOL TABLE:
 00000000         *UND*	00000000 DPAD_TEXTURE
 00002050 g     F .text	00000068 push_pending_item
 00002028 g     F .text	00000028 set_outgoing_override
+00003dac g     F .text	00000044 Saria_Gossip_Saveprogress
 00000118 g     F .text	000000a8 Navi_LoadProgress
 00000024 g     O .sbss	00000004 active_item_object_id
 00002ee0 g     F .text	00000030 wallet_upgrade
@@ -191,7 +195,7 @@ SYMBOL TABLE:
 00000024 g     O .data	0000009c dungeons
 00000010 g     O .data	00000012 medal_colors
 00000040 g     O .sbss	00000004 dummy_actor
-00003db8 g     F .text	000000a8 text_print
+00003f24 g     F .text	000000a8 text_print
 00003604 g     F .text	0000005c lookup_model_by_override
 00002c20 g     F .text	00000010 give_tycoon_wallet
 00000044 g     O .sbss	00000004 item_overrides_count
@@ -224,7 +228,7 @@ SYMBOL TABLE:
 00000000         *UND*	00000000 Navi_Hints_TextID_Base
 0000177c g     F .text	00000018 extern_scene_init
 00003354 g     F .text	0000004c set_object_segment
-00004094 g     F .text	00000014 heap_init
+00004200 g     F .text	00000014 heap_init
 00000000         *UND*	00000000 C_TABLE_START_RAM
 0000378c g     F .text	00000064 heart_container_draw
 00001028 g     O .bss	00000040 object_slots
@@ -232,14 +236,14 @@ SYMBOL TABLE:
 00000004 g     O .sbss	00000004 cfg_dungeon_info_reward_need_compass
 0000000c g     O .sbss	00000004 cfg_dungeon_info_mq_enable
 00000000         *UND*	00000000 C_HEAP
-00003fa8 g     F .text	00000050 get_TextID_ByTextPointer
+00004114 g     F .text	00000050 get_TextID_ByTextPointer
 00001d20 g     F .text	00000110 get_override_search_key
 00000014 g     O .sbss	00000001 NO_ESCAPE_SEQUENCE
 00001fdc g     F .text	0000004c clear_override
 00002158 g     F .text	00000034 pop_pending_item
 00002678 g     F .text	00000028 sprite_bytes_per_tile
 00002d5c g     F .text	0000003c get_item_row
-000040dc g     F .text	00000044 file_init
+00004248 g     F .text	00000044 file_init
 00000000         *UND*	00000000 PLAYER_NAME_ID
 00000000 g     O .sbss	00000004 cfg_dungeon_info_reward_need_altar
 00000004 g     O .sdata	00000004 cfg_dungeon_info_enable

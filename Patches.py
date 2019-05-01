@@ -1559,12 +1559,12 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
         
         #Generate gossip stone TextID table
         index = 0
-        SARIA_GOSSIP_TEXTID_TABLE_SYM = rom.sym('SARIA_GOSSIP_TEXTID_TABLE_SYM')
+        SARIA_GOSSIP_TEXTID_TABLE = rom.sym('SARIA_GOSSIP_TEXTID_TABLE')
         
         for message in messages:
             if (message.id <= 0x04FF) and (message.id >= 0x0401):
                 byteArray = message.id.to_bytes(2, 'big')
-                rom.write_bytes(int(SARIA_GOSSIP_TEXTID_TABLE_SYM)+2*index, byteArray) #is a J, was a jr before, cyclic hack jumps back to previous ret address
+                rom.write_bytes(int(SARIA_GOSSIP_TEXTID_TABLE)+2*index, byteArray) #is a J, was a jr before, cyclic hack jumps back to previous ret address
                 
                 index += 1
                 
