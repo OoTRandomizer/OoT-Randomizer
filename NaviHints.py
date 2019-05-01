@@ -1,4 +1,5 @@
-#Accept86 Navi_Hints
+#Accept86 Navi Hints
+#==================================================================================================
 
 from SaveContext import SaveContext
 from Hints import get_raw_text, lineWrap        
@@ -14,12 +15,13 @@ class Navi_Hints(Rom):
     
     NAVI_HINTS_ROM_GLOBALS = None
     NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_ROM = None
-    Navi_Hints_TextID_Base = 0x7400
+    NAVI_HINTS_TEXTID_BASE = NONE
     
     
     def __init__(self, rom):
         self.NAVI_HINTS_ROM_GLOBALS = rom.sym('NAVI_HINTS_GLOBALS') #0x03490000
         self.NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_ROM = rom.sym('NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE') #self.NAVI_HINTS_ROM + 0x40     #TBD from .json File?
+        self.NAVI_HINTS_TEXTID_BASE = rom.sym('C_NAVI_HINTS_TEXTID_BASE')
     
     lastUpgradeIndexes = [0,0,0,0]
     lastBottleIndex = 0

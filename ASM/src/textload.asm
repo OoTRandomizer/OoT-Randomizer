@@ -16,9 +16,9 @@ C_TEXT_START:
 .word TEXT_START
 
 ;other Navi/Saria constant words
-Navi_Hints_TextID_Base equ 0x7400
-C_Navi_Hints_TextID_Base:
-.word Navi_Hints_TextID_Base
+NAVI_HINTS_TEXTID_BASE equ 0x7400
+C_NAVI_HINTS_TEXTID_BASE:
+.word NAVI_HINTS_TEXTID_BASE
 
 C_SAVE_CONTEXT:
 .word SAVE_CONTEXT
