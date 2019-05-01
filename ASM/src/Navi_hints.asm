@@ -24,6 +24,10 @@ Navi_Hints_cyclicLogic_HOOK:
     sw      a0, 0x0018(sp)
     sw      a1, 0x0024(sp)
     sw      a2, 0x0028(sp)
+    
+    lw t2, NAVI_HINTS_CONDITION
+ beq t2, r0, @@WNAVI_CL_RETURN
+    nop
 
     la a0, NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE
                                             ;global variable 1 (Timer), 2 (showTextFlag), 
@@ -37,7 +41,7 @@ Navi_Hints_cyclicLogic_HOOK:
     nop
 
 ;Restore and Return
-@WNAVI_CL_RETURN:         
+@@WNAVI_CL_RETURN:         
     ;Restore RA and return
     lw      ra, 0x0014(sp)
     lw      a0, 0x0018(sp)
@@ -81,6 +85,10 @@ Navi_Hints_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)
     
+    lw t2, NAVI_HINTS_CONDITION
+ beq t2, r0, @@EXTENDED_INIT_END
+    nop
+    
     ; Init global variables (for cyclic logic)
     la t1, Navi_Hints_TextIDOffsetGlobal
     sw r0, 0x0000 (t1)       ;Store T0 in Global Variable 5 TextID-Offset
@@ -99,6 +107,7 @@ Navi_Hints_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
     jal @WNAVI_CL_LOADPROGRESS  ; Load progress from save
     nop
     
+@@EXTENDED_INIT_END:
     ;Restore RA and return
     lw      ra, 0x0014(sp)
     addiu   sp, sp, 0x18
@@ -109,8 +118,16 @@ Navi_Hints_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
         
 Navi_Hints_Activate_Navi_In_Dungeons_HOOK:     ;<= hack, navi in dungeons, see Navi_Hints.py
 
+    sh v0, 0x0002 (t8)  ; displaced code
+    
+    lw t2, NAVI_HINTS_CONDITION
+ beq t2, r0, @@NAVI_IN_DUNGEONS_END
+    nop
+
     ori v0, r0, 0x0141       ;0x41 <= Navi activated
     sh v0, 0x0002 (t8)  ; displaced code
+    
+@@NAVI_IN_DUNGEONS_END:
 
     jr ra 
     nop   

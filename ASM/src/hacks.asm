@@ -1224,6 +1224,7 @@ skip_GS_BGS_text:
     lw      t9, 0x0000(s0)
       
     
+    
 ; ==================================================================================================
 ; Navi Hints/Saria repeats hints
 ; ==================================================================================================
@@ -1240,32 +1241,21 @@ OOT_Navi_Saria_TextID_Generation:
 ; Navi Hints - see working_navi.py
 ; ==================================================================================================
       
-      
  ;hook for Navi TextID changing
  .orga 0xACF700
     jal NaviHints_TextID_HOOK
     
-      
-      
-;            #I put the hooks here, because I don´t want to change code flow of main rando 
-;            #hook for cyclic call
-;            intAddress =  int((self.WORKING_NAVI_CODE_CYCLICLOGIC_RAM & 0x00FFFFFF)/4)
-;            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
-;            byteArray = [0x08] + byteArray
-;            rom.write_bytes(0xB12A94, bytearray(byteArray)) #is a J, was a jr before, cyclic hack jumps back to previous ret address
-              
-;            #hook for Navi in dungeons
-;            intAddress =  int((self.WORKING_NAVI_CODE_NAVI_IN_DUNGEONS_RAM & 0x00FFFFFF)/4)
-;            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
-;            byteArray = [0x0C] + byteArray
-;            rom.write_bytes(0x00ACF648, bytearray(byteArray)) #LBU V0, 0x0002 (T8) before
-            
-;            #hook for Extended Init on Saveloads
-;            intAddress =  int((self.WORKING_NAVI_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM & 0x00FFFFFF)/4)
-;            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
-;            byteArray = [0x08] + byteArray
-;            rom.write_bytes(0x00B0652C, bytearray(byteArray)) #is a J, was a jr before
-           
+ ;hook for cyclic call
+ .orga 0xB12A94
+    j Navi_Hints_cyclicLogic_HOOK   ;in Vanilla this was a jr
+    
+ ;hook for Navi in dungeons
+ .orga 0x00ACF648    
+    jal Navi_Hints_Activate_Navi_In_Dungeons_HOOK       ;in Vanilla this was a #LBU V0, 0x0002 (T8) before
+         
+ ;hook for Extended Init on Saveloads
+ .orga 0x00B0652C
+    j Navi_Hints_Extended_Init_On_Saveloads_HOOK    ;in Vanilla this was a jr       
            
 
 ; ==================================================================================================
@@ -1276,12 +1266,10 @@ OOT_Navi_Saria_TextID_Generation:
 .orga 0xACF6C4
     jal     Saria_TextBoxBreak_HOOK    ;is a JAL was a jal to DMALoad Text before
     
-
 ;hook for TextBoxBreaks chaining
 .orga 0xB534DC
     j     Saria_TextBoxBreak_Chaining_HOOK
     nop
-    
     
 ;hook2 for TextBoxBreaks chaining
 .orga 0xC269B4
