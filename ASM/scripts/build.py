@@ -85,48 +85,15 @@ os.chdir(run_dir)
 
 data_symbols = {}
 for (name, sym) in symbols.items():
-    if sym['type'] == 'data':           
+    if sym['type'] == 'data':
         addr = int(sym['address'], 16)
-        if 0x80400000 <= addr < 0x80420000:
+        if 0x80400000 <= addr < 0x80410000:
             addr = addr - 0x80400000 + 0x03480000
         else:
             continue
         data_symbols[name] = '{0:08X}'.format(addr)
 with open('../data/generated/symbols.json', 'w') as f:
     json.dump(data_symbols, f, indent=4, sort_keys=True)
-    
-  
-# symbols_RAM.json needed for hooks in Navi_Hints.py
-#I put the hooks there, because I don´t want to change code flow of main rando
-symbols2 = {}
-
-with open('build/asm_symbols.txt', 'r') as f:
-    for line in f:
-        parts = line.strip().split(' ')
-        if len(parts) < 2:
-            continue
-        address, sym_name = parts
-        #if address[0] != '8':
-        #    continue
-        if sym_name[0] in ['.', '@']:
-            continue
-        sym_type = c_sym_types.get(sym_name) or ('data' if sym_name.isupper() else 'code')
-        symbols2[sym_name] = {
-            'type': sym_type,
-            'address': address,
-        }    
-        
-for (name, sym) in symbols2.items():
-    #if sym['type'] == 'data':
-    addr = int(sym['address'], 16)
-    data_symbols[name] = '{0:X}'.format(addr)
-with open('../data/generated/symbols_RAM.json', 'w') as f:
-    json.dump(data_symbols, f, indent=4, sort_keys=True)
-    
-
-
-
-
 
 if pj64_sym_path:
     pj64_sym_path = os.path.realpath(pj64_sym_path)
