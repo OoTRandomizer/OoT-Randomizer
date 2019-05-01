@@ -119,12 +119,13 @@ Navi_Hints_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
 Navi_Hints_Activate_Navi_In_Dungeons_HOOK:     ;<= hack, navi in dungeons, see Navi_Hints.py
 
     LBU V0, 0x0002 (T8)  ; displaced code
+    ORI V0, V0, 0x0100   ; displaced code
     
     lw t2, NAVI_HINTS_CONDITION
  beq t2, r0, @@NAVI_IN_DUNGEONS_END
     nop
 
-    ori v0, r0, 0x0141       ;0x41 <= Navi activated
+    ori v0, r0, 0x0141       ;0x141 <= Navi activated
     sh v0, 0x0002 (t8)  
     
 @@NAVI_IN_DUNGEONS_END:

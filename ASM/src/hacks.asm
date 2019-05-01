@@ -1251,6 +1251,7 @@ OOT_Navi_Saria_TextID_Generation:
  ;hook for Navi in dungeons
  .orga 0x00ACF648    
     jal Navi_Hints_Activate_Navi_In_Dungeons_HOOK       ;in Vanilla this was a #LBU V0, 0x0002 (T8) before
+    nop
          
  ;hook for Extended Init on Saveloads
  .orga 0x00B0652C
