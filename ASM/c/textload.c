@@ -20,22 +20,22 @@ uint16_t get_TextID_ByTextPointer(uint32_t TextAddress);
 extern const uint32_t Navi_Hints_TextID_Base;
 
 
-uint8_t TextLoadLogic_handling(uint32_t unknown, uint32_t TextAddress, uint32_t TextLength)
+uint8_t TextLoadLogic_handling(uint32_t RAMAddress, uint32_t ROMTextAddress, uint32_t TextLength)
 {
     
     if(SARIA_HINTS_CONDITION)
     {
-        uint16_t TextID = get_TextID_ByTextPointer(TextAddress);
+        uint16_t TextID = get_TextID_ByTextPointer(ROMTextAddress);
     
         if((TextID>=0x0401) && (TextID<=0x04FF))        // gossip hints TextID-Borders
         {
-            SARIA_HINTS_GOSSIP_READING(0, TextAddress, TextID);
+            SARIA_HINTS_GOSSIP_READING(0, ROMTextAddress, TextID);
         }
     }
     
     if(NAVI_HINTS_CONDITION)
     {
-        uint16_t TextID = get_TextID_ByTextPointer(TextAddress);
+        uint16_t TextID = get_TextID_ByTextPointer(ROMTextAddress);
     
         if((TextID>=Navi_Hints_TextID_Base) && (TextID<=(Navi_Hints_TextID_Base+100)) )       // Navi Text TextID-Borders
         {

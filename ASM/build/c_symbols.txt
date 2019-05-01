@@ -51,6 +51,7 @@ SYMBOL TABLE:
 00000000 l       .rodata.cst8	00000000 $LC0
 00000020 l       .rodata.cst4	00000000 $LC1
 00000024 l       .rodata.cst4	00000000 $LC2
+00000000 l    df *ABS*	00000000 saria_hints_repeat.c
 00000000 l    df *ABS*	00000000 scarecrow.c
 00000000 l    df *ABS*	00000000 text.c
 00000050 l     O .sbss	00000004 text_buf
