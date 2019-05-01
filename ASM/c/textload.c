@@ -17,7 +17,7 @@ extern uint32_t CyclicLogic_ResetText(uint32_t TextID);
 
 uint16_t get_TextID_ByTextPointer(uint32_t TextAddress);
 
-extern const uint32_t C_Navi_Hints_TextID_Base;
+extern const uint32_t Navi_Hints_TextID_Base;
 
 
 uint8_t TextLoadLogic_handling(uint32_t unknown, uint32_t TextAddress, uint32_t TextLength)
@@ -37,7 +37,7 @@ uint8_t TextLoadLogic_handling(uint32_t unknown, uint32_t TextAddress, uint32_t 
     {
         uint16_t TextID = get_TextID_ByTextPointer(TextAddress);
     
-        if((TextID>=C_Navi_Hints_TextID_Base) && (TextID<=(C_Navi_Hints_TextID_Base+100)) )       // Navi Text TextID-Borders
+        if((TextID>=Navi_Hints_TextID_Base) && (TextID<=(Navi_Hints_TextID_Base+100)) )       // Navi Text TextID-Borders
         {
             //The TextOutput is handled normally  
             //Reset TextIDOffset stuff(cyclic logic), so the message isnt shown twice 

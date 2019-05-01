@@ -16,9 +16,8 @@ C_TEXT_START:
 .word TEXT_START
 
 ;other Navi/Saria constant words
-NAVI_HINTS_TEXTID_BASE equ 0x7400
-C_NAVI_HINTS_TEXTID_BASE:
-.word NAVI_HINTS_TEXTID_BASE
+NAVI_HINTS_TEXTID_BASE:
+.word 0         ;coming from python
 
 C_SAVE_CONTEXT:
 .word SAVE_CONTEXT
@@ -67,7 +66,7 @@ CyclicLogic_ResetText:
                           
     ;if Text says 'I have faith in you..' Textpointer is on base, dont reset timer 
     ;Timer1 Reset                           
-    li t0, Navi_Hints_TextID_Base     
+    lw t0, Navi_Hints_TextID_Base     
  beq t0, a0, @@DONT_RESET_TIMER   
     nop
                           

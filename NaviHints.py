@@ -15,13 +15,13 @@ class Navi_Hints(Rom):
     
     NAVI_HINTS_ROM_GLOBALS = None
     NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_ROM = None
-    NAVI_HINTS_TEXTID_BASE = NONE
-    
+    NAVI_HINTS_TEXTID_BASE = None
+    Navi_TextID_Base = 0x7400
     
     def __init__(self, rom):
         self.NAVI_HINTS_ROM_GLOBALS = rom.sym('NAVI_HINTS_GLOBALS') #0x03490000
         self.NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_ROM = rom.sym('NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE') #self.NAVI_HINTS_ROM + 0x40     #TBD from .json File?
-        self.NAVI_HINTS_TEXTID_BASE = rom.sym('C_NAVI_HINTS_TEXTID_BASE')
+        self.NAVI_HINTS_TEXTID_BASE = rom.sym('NAVI_HINTS_TEXTID_BASE')
     
     lastUpgradeIndexes = [0,0,0,0]
     lastBottleIndex = 0
@@ -275,7 +275,7 @@ class Navi_Hints(Rom):
                  
     def Navi_Hints_patch_internal(self, rom, world, spoiler, save_context, outfile, messages):
         # Save Navi Texts in Rom
-        CurNavi_Hints_TextID = self.Navi_Hints_TextID_Base
+        CurNavi_Hints_TextID = self.Navi_TextID_Base
                   
         add_message(messages, get_raw_text(lineWrap("I have faith in you, you can progress")), id=CurNavi_Hints_TextID)
         CurNavi_Hints_TextID += 1
@@ -345,6 +345,13 @@ class Navi_Hints(Rom):
             byteArray = bytearray( glob1 + glob2 + glob3 + glob4 )
             
             rom.write_bytes(self.NAVI_HINTS_ROM_GLOBALS, byteArray)
+            
+            
+            #write TextIDBase
+            asmglobal5_TextIDBase_initvalue = int(self.Navi_TextID_Base)
+            byteArray = bytearray(asmglobal5_TextIDBase_initvalue.to_bytes(4, 'big'))   
+            
+            rom.write_bytes(self.NAVI_HINTS_TEXTID_BASE, byteArray)
             
             
             

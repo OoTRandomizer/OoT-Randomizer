@@ -1263,7 +1263,7 @@ OOT_Navi_Saria_TextID_Generation:
 
 ;hook for TextBoxBreaks ID Setting
 .orga 0xACF6C4
-    jal     Saria_TextBoxBreak_HOOK    ;is a JAL was a jal to DMALoad Text before
+    jal     Saria_TextBoxBreak_HOOK    ;was a jal to DMALoad Text before in vanilla
     
 ;hook for TextBoxBreaks chaining
 .orga 0xB534DC

@@ -118,14 +118,14 @@ Navi_Hints_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
         
 Navi_Hints_Activate_Navi_In_Dungeons_HOOK:     ;<= hack, navi in dungeons, see Navi_Hints.py
 
-    sh v0, 0x0002 (t8)  ; displaced code
+    LBU V0, 0x0002 (T8)  ; displaced code
     
     lw t2, NAVI_HINTS_CONDITION
  beq t2, r0, @@NAVI_IN_DUNGEONS_END
     nop
 
     ori v0, r0, 0x0141       ;0x41 <= Navi activated
-    sh v0, 0x0002 (t8)  ; displaced code
+    sh v0, 0x0002 (t8)  
     
 @@NAVI_IN_DUNGEONS_END:
 
@@ -163,7 +163,8 @@ NaviHints_TextID_HOOK:
     ;=> Modify r0
     la t2, Navi_Hints_TextIDOffsetGlobal
     lw v0, 0x0000 (t2)       ; Load Global Variable 5 TextIDOffset
-    addiu v0, v0, Navi_Hints_TextID_Base
+    lw t5, Navi_Hints_TextID_Base
+    addu v0, v0, t5
     andi v0, v0, 0xffff
     
     
