@@ -161,7 +161,7 @@ NaviHints_TextID_HOOK:
     nop     
     
     ; OK its a Navi Text
-    ;=> Modify r0
+    ;=> Modify v0
     la t2, Navi_Hints_TextIDOffsetGlobal
     lw v0, 0x0000 (t2)       ; Load Global Variable 5 TextIDOffset
     lw t5, Navi_Hints_TextID_Base
