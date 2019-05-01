@@ -61,8 +61,6 @@ uint16_t get_Next_Gossip_TextID(struct stSariaHintGlobals* pstSariaHintGlobals, 
     uint8_t CurByteIndex = 0;
     uint8_t CurBitIndex = 0;
     
-    uint8_t CurIntGossipTextIndex;
-    
     uint16_t i;
     for(i=0;i<42;i++)
     {    
@@ -79,15 +77,14 @@ uint16_t get_Next_Gossip_TextID(struct stSariaHintGlobals* pstSariaHintGlobals, 
         }
         
         if(pCurrentAddress[CurByteIndex] & (0x80 >> CurBitIndex))
-        {
-            CurIntGossipTextIndex++;
-            
-            if(CurIntGossipTextIndex > pstSariaHintGlobals->intGossipTextIndex)
+        {   
+            if(i >= pstSariaHintGlobals->intGossipTextIndex)
             {
-                pstSariaHintGlobals->intGossipTextIndex = CurIntGossipTextIndex;
+                pstSariaHintGlobals->intGossipTextIndex = i+1;
                 
-                return pSaria_Gossip_TextID_Table[CurIntGossipTextIndex];
+                return pSaria_Gossip_TextID_Table[i];
             }   //TBD reset on Saveload
+            
         }
         
         CurBitIndex++;
