@@ -10,16 +10,11 @@ import os, os.path
                     
 import re
 
-#s = 'a (45:45) b (65:40) ccc (blah$#)'
-#re.sub('\s?\(.*?\)', '', s).strip() # 'a b ccc'  
-
 class Navi_Hints(Rom):
     
-    #Navi_Hints_RAM_GLOBALS = None
     NAVI_HINTS_ROM_GLOBALS = None
     NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_ROM = None
-    #Navi_Hints_DATA_GENERATED_TEXT_ROM = None  #length about 0x1000 hex - to 0x80501700
-    #Navi_Hints_DATA_GENERATED_TEXT_INCREMENT_SYM = None
+    
     NAVI_HINTS_HOOK_CYCLICLOGIC_RAM = None
     NAVI_HINTS_HOOK_TEXTLOADLOGIC_RAM = None
     NAVI_HINTS_HOOK_NAVI_IN_DUNGEONS_RAM = None
@@ -29,15 +24,12 @@ class Navi_Hints(Rom):
     
     
     def __init__(self, rom):
-        #self.Navi_Hints_RAM_GLOBALS = rom.symRAM('Navi_Hints_GLOBALS') #0x80410000
         self.NAVI_HINTS_ROM_GLOBALS = rom.sym('NAVI_HINTS_GLOBALS') #0x03490000
-        self.NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_ROM = rom.sym('NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM') #self.NAVI_HINTS_ROM + 0x40     #TBD from .json File?
-        self.NAVI_HINTS_DATA_GENERATED_TEXT_ROM = rom.sym('NAVI_HINTS_DATA_GENERATED_TEXT_SYM') #self.NAVI_HINTS_ROM + 0x800    #length about 0x1000 hex - to 0x80501700
+        self.NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_ROM = rom.sym('NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE') #self.NAVI_HINTS_ROM + 0x40     #TBD from .json File?
+        
         self.NAVI_HINTS_HOOK_CYCLICLOGIC_RAM = rom.symRAM('Navi_Hints_cyclicLogic_HOOK') #self.NAVI_HINTS_RAM + 0x300
-        #self.Navi_Hints_HOOK_TEXTLOADLOGIC_RAM = rom.symRAM('Navi_Hints_TextLoadLogic_HOOK') #self.Navi_Hints_RAM + 0x600
         self.NAVI_HINTS_HOOK_NAVI_IN_DUNGEONS_RAM = rom.symRAM('Navi_Hints_Activate_Navi_In_Dungeons_HOOK')
         self.NAVI_HINTS_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM = rom.symRAM('Navi_Hints_Extended_Init_On_Saveloads_HOOK')
-        self.NAVI_HINTS_DATA_GENERATED_TEXT_INCREMENT_SYM = rom.symRAM('Navi_Hints_DATA_GENERATED_TEXT_INCREMENT_SYM')
     
     
     lastUpgradeIndexes = [0,0,0,0]
@@ -344,9 +336,7 @@ class Navi_Hints(Rom):
         rom.write_bytes(CurLookupTablePointerB, [0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00])  
                         
     
- 
-                     
-                            
+                        
     
         
     def Navi_Hints_patch(self, rom, world, spoiler, save_context, outfilebase, messages):
@@ -366,15 +356,7 @@ class Navi_Hints(Rom):
             rom.write_bytes(self.NAVI_HINTS_ROM_GLOBALS, byteArray)
             
             
-            #hook for TextLoad - this is done in hacks.asm now
-            
-            #intAddress =  int((self.NAVI_HINTS_HOOK_TEXTLOADLOGIC_RAM & 0x00FFFFFF)/4)
-            #byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
-            #byteArray = [0x0C] + byteArray
-            #rom.write_bytes(0xB52BDC, bytearray(byteArray)) #is a JAL was a jal to DMALoad Text before
-            
             #I put the hooks here, because I don´t want to change code flow of main rando
-            
             #hook for cyclic call
             intAddress =  int((self.NAVI_HINTS_HOOK_CYCLICLOGIC_RAM & 0x00FFFFFF)/4)
             byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
@@ -393,7 +375,6 @@ class Navi_Hints(Rom):
             byteArray = [0x08] + byteArray
             rom.write_bytes(0x00B0652C, bytearray(byteArray)) #is a J, was a jr before
            
-            
             
             
             spoiler_path = ""     

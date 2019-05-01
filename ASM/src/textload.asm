@@ -66,7 +66,7 @@ CyclicLogic_ResetText:
                           
                           
     ;if Text says 'I have faith in you..' Textpointer is on base, dont reset timer 
-    ;Timer1 Reset <= TBD test this                                
+    ;Timer1 Reset                           
     li t0, Navi_Hints_TextID_Base     
  beq t0, a0, @@DONT_RESET_TIMER   
     nop
