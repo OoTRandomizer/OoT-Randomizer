@@ -34,11 +34,6 @@ class Rom(BigStream):
             symbols = json.load(stream)
             self.symbols = { name: int(addr, 16) for name, addr in symbols.items() }
 
-        with open(data_path('generated/symbols_RAM.json'), 'r') as stream:
-            symbols = json.load(stream)
-            self.symbolsRAM = { name: int(addr, 16) for name, addr in symbols.items() }
-
-
         if file == '':
             # if not specified, try to read from the previously decompressed rom
             file = decomp_file
@@ -129,9 +124,6 @@ class Rom(BigStream):
 
     def sym(self, symbol_name):
         return self.symbols.get(symbol_name)
-    
-    def symRAM(self, symbol_name):
-        return self.symbolsRAM.get(symbol_name)
 
 
     def write_to_file(self, file):

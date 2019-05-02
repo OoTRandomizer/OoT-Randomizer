@@ -36,10 +36,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
         keatonBytes = stream.read()
         rom.write_bytes(0x8A7C00, keatonBytes)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> origin/HEAD
     # Force language to be English in the event a Japanese rom was submitted
     rom.write_byte(0x3E, 0x45)
     rom.force_patch.append(0x3E)
@@ -1533,46 +1529,10 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
         wNavi = Navi_Hints(rom)
         wNavi.Navi_Hints_patch(rom, world, spoiler, save_context, outfilebase, messages)
 
-<<<<<<< HEAD
-
-    #EDIT accept86 working_navi/Saria Hints
-    symbol = rom.sym('WORKING_NAVI_CONDITION')
-    if world.settings.working_navi:
-        rom.write_int32(symbol, 1)
-    else:
-        rom.write_int32(symbol, 0)
-        
-    symbol = rom.sym('SARIA_HINTS_CONDITION')
-    if world.settings.saria_repeats_hints:
-        rom.write_int32(symbol, 1)
-        
-        #Generate gossip stone TextID table
-        index = 0
-        SARIA_GOSSIP_TEXTID_TABLE_SYM = rom.sym('SARIA_GOSSIP_TEXTID_TABLE_SYM')
-        
-        for message in messages:
-            if (message.id <= 0x04FF) and (message.id >= 0x0401):
-                byteArray = message.id.to_bytes(2, 'big')
-                rom.write_bytes(int(SARIA_GOSSIP_TEXTID_TABLE_SYM)+2*index, byteArray) #is a J, was a jr before, cyclic hack jumps back to previous ret address
-                
-                index += 1
-                
-                if(index>42):
-                    raise ValueError('ERROR - Saria gossip TextID overflow')
-        
-=======
->>>>>>> origin/HEAD
     else:
         rom.write_int32(symbol, 0)
 
 
-<<<<<<< HEAD
-    #EDIT accept86 working_navi
-    #rom.write_bytes(0x03500400, [0x1, 0x2, 0x3, 0x4])
-    if world.settings.working_navi:
-        wNavi = working_navi(rom)
-        wNavi.working_navi_patch(rom, world, spoiler, save_context, outfilebase)
-=======
     repack_messages(rom, messages)
 
     # text shuffle
@@ -1582,7 +1542,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
         shuffle_messages(rom, except_hints=False)
         
     write_shop_items(rom, shop_item_file.start + 0x1DEC, shop_items)
->>>>>>> origin/HEAD
 
 
     # output a text dump, for testing...
@@ -1600,12 +1559,12 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
         
         #Generate gossip stone TextID table
         index = 0
-        SARIA_GOSSIP_TEXTID_TABLE_SYM = rom.sym('SARIA_GOSSIP_TEXTID_TABLE_SYM')
+        SARIA_GOSSIP_TEXTID_TABLE = rom.sym('SARIA_GOSSIP_TEXTID_TABLE')
         
         for message in messages:
             if (message.id <= 0x04FF) and (message.id >= 0x0401):
                 byteArray = message.id.to_bytes(2, 'big')
-                rom.write_bytes(int(SARIA_GOSSIP_TEXTID_TABLE_SYM)+2*index, byteArray) #is a J, was a jr before, cyclic hack jumps back to previous ret address
+                rom.write_bytes(int(SARIA_GOSSIP_TEXTID_TABLE)+2*index, byteArray) #is a J, was a jr before, cyclic hack jumps back to previous ret address
                 
                 index += 1
                 

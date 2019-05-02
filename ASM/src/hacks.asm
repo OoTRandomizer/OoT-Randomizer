@@ -942,7 +942,7 @@ skip_GS_BGS_text:
 ; Gossip Stone Hints
 ;==================================================================================================
 
-.org 0xEE7B84           ; 0x801EE084
+.org 0xEE7B84
     jal     gossip_hints
     lw      a0, 0x002C(sp) ; global context
     nop
@@ -1212,9 +1212,8 @@ skip_GS_BGS_text:
 ; ==================================================================================================
 .orga 0xAC7AD4
     jal     Static_ctxt_Init
-    
-    
- ; ==================================================================================================
+
+; ==================================================================================================
 ; burning kak from any entrance to kak
 ; ==================================================================================================
 ; Replaces: lw      t9, 0x0000(s0)
@@ -1223,6 +1222,7 @@ skip_GS_BGS_text:
     jal     burning_kak
     lw      t9, 0x0000(s0)
       
+    
     
 ; ==================================================================================================
 ; Navi Hints/Saria repeats hints
@@ -1233,77 +1233,41 @@ skip_GS_BGS_text:
     
   ;for displaced Code
 .org 0x800595D0    ;.orga 0xACF530
-OOT_Navi_Saria_TextID_Generation:    
-    
-;accept86
-; ==================================================================================================
-; working Navi/Saria repeats hints
-; ==================================================================================================
-;hook for TextLoad
-.orga 0xB52BDC
-    jal     TextLoadLogic_HOOK    ;is a JAL was a jal to DMALoad Text before
-    
+    OOT_Navi_Saria_TextID_Generation:
+
+;hook for Extended Init on Saveloads
+ .orga 0x00B0652C
+    j NaviSaria_Hints_Extended_Init_On_Saveloads_HOOK    ;in Vanilla this was a jr         
     
 ; ==================================================================================================
 ; Navi Hints - see working_navi.py
 ; ==================================================================================================
       
-<<<<<<< HEAD
-=======
-      
  ;hook for Navi TextID changing
  .orga 0xACF700
     jal NaviHints_TextID_HOOK
     
-      
-      
->>>>>>> origin/HEAD
-;            #I put the hooks here, because I don´t want to change code flow of main rando 
-;            #hook for cyclic call
-;            intAddress =  int((self.WORKING_NAVI_CODE_CYCLICLOGIC_RAM & 0x00FFFFFF)/4)
-;            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
-;            byteArray = [0x08] + byteArray
-;            rom.write_bytes(0xB12A94, bytearray(byteArray)) #is a J, was a jr before, cyclic hack jumps back to previous ret address
-              
-;            #hook for Navi in dungeons
-;            intAddress =  int((self.WORKING_NAVI_CODE_NAVI_IN_DUNGEONS_RAM & 0x00FFFFFF)/4)
-;            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
-;            byteArray = [0x0C] + byteArray
-;            rom.write_bytes(0x00ACF648, bytearray(byteArray)) #LBU V0, 0x0002 (T8) before
-            
-;            #hook for Extended Init on Saveloads
-;            intAddress =  int((self.WORKING_NAVI_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM & 0x00FFFFFF)/4)
-;            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
-;            byteArray = [0x08] + byteArray
-;            rom.write_bytes(0x00B0652C, bytearray(byteArray)) #is a J, was a jr before
-           
-           
-<<<<<<< HEAD
-           
-;accept86
-=======
+ ;hook for cyclic call
+ .orga 0xB12A94
+    j Navi_Hints_cyclicLogic_HOOK   ;in Vanilla this was a jr
+    
+ ;hook for Navi in dungeons
+ .orga 0x00ACF648    
+    jal Navi_Hints_Activate_Navi_In_Dungeons_HOOK       ;in Vanilla this was a #LBU V0, 0x0002 (T8) before
+    nop          
 
->>>>>>> origin/HEAD
 ; ==================================================================================================
 ; saria repeats hints
 ; ==================================================================================================
 
 ;hook for TextBoxBreaks ID Setting
 .orga 0xACF6C4
-    jal     Saria_TextBoxBreak_HOOK    ;is a JAL was a jal to DMALoad Text before
+    jal     Saria_TextBoxBreak_HOOK    ;was a jal to DMALoad Text before in vanilla
     
-<<<<<<< HEAD
-;for displaced Code
-.org 0x800595D0    ;.orga 0xACF530
-OOT_TextBoxBreak_TextID_Generation: 
-=======
->>>>>>> origin/HEAD
-
 ;hook for TextBoxBreaks chaining
 .orga 0xB534DC
     j     Saria_TextBoxBreak_Chaining_HOOK
     nop
-    
     
 ;hook2 for TextBoxBreaks chaining
 .orga 0xC269B4

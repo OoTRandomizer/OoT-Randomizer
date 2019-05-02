@@ -7,25 +7,8 @@
 
 ; Extended memory map:
 ASM_MEM equ 0x80480000
-
 C_MEM   equ 0x80500000
 
 .definelabel DEBUG_BUFFER, ASM_MEM + 0 ; Size 0x1000
 
 .definelabel C_HEAP, C_MEM + 0
-
-<<<<<<< HEAD
-WORKING_NAVI_ROM_Extended  equ 0x03490000
-.definelabel WORKING_NAVI_DATA_GENERATED_TEXT_ROM, WORKING_NAVI_ROM_Extended
-WORKING_NAVI_RAM_Extended  equ 0x80410000
-.definelabel WORKING_NAVI_DATA_GENERATED_TEXT_SYM, WORKING_NAVI_RAM_Extended
-
-; EDIT ACCEPT86 working NAVI
-.definelabel WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM, 0x0078
-
-;TextTables
-TABLE_START  equ 0xB849EC
-TABLE_START_RAM  equ 0x8010EA8C
-TEXT_START  equ 0x92D000
-=======
->>>>>>> origin/HEAD

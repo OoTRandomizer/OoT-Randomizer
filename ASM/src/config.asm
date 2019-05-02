@@ -49,18 +49,6 @@ RAINBOW_BRIDGE_CONDITION:
 ; 5 = Tokens
 
 
-<<<<<<< HEAD
-;accept86
-SARIA_HINTS_CONDITION:
-.word 0x00
-
-
-WORKING_NAVI_CONDITION:
-.word 0x00
-
-
-
-=======
 SARIA_HINTS_CONDITION:
 .word 0x00
 
@@ -68,7 +56,6 @@ NAVI_HINTS_CONDITION:
 .word 0x00
 
 
->>>>>>> origin/HEAD
 GOSSIP_HINT_CONDITION:
 .word 0x00
 ; 0 = Mask of Truth

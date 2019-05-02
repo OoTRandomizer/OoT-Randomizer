@@ -6,9 +6,7 @@ gossip_hints:
 
     ; Get Message ID
     lh      t7, 0x001C(s0)
-    
     andi    t8, t7, 0x00FF
-
     li      at, 0xFF
     bne     t8, at, @@not_grotto
     addiu   v0, t8, 0x0400

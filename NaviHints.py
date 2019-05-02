@@ -1,4 +1,5 @@
-#Accept86 Navi_Hints
+#Accept86 Navi Hints
+#==================================================================================================
 
 from SaveContext import SaveContext
 from Hints import get_raw_text, lineWrap        
@@ -10,58 +11,17 @@ import os, os.path
                     
 import re
 
-#s = 'a (45:45) b (65:40) ccc (blah$#)'
-#re.sub('\s?\(.*?\)', '', s).strip() # 'a b ccc'  
-
 class Navi_Hints(Rom):
     
-    #Navi_Hints_RAM_GLOBALS = None
     NAVI_HINTS_ROM_GLOBALS = None
     NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_ROM = None
-    #Navi_Hints_DATA_GENERATED_TEXT_ROM = None  #length about 0x1000 hex - to 0x80501700
-    #Navi_Hints_DATA_GENERATED_TEXT_INCREMENT_SYM = None
-    NAVI_HINTS_HOOK_CYCLICLOGIC_RAM = None
-    NAVI_HINTS_HOOK_TEXTLOADLOGIC_RAM = None
-    NAVI_HINTS_HOOK_NAVI_IN_DUNGEONS_RAM = None
-    NAVI_HINTS_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM = None
-    
-    Navi_Hints_TextID_Base = 0x7400
-    
-<<<<<<< HEAD:working_navi.py
-    #WORKING_NAVI_RAM_GLOBALS = None
-    WORKING_NAVI_ROM_GLOBALS = None
-    WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM = None
-    WORKING_NAVI_DATA_GENERATED_TEXT_ROM = None  #length about 0x1000 hex - to 0x80501700
-    WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM = None
-    WORKING_NAVI_HOOK_CYCLICLOGIC_RAM = None
-    WORKING_NAVI_HOOK_TEXTLOADLOGIC_RAM = None
-    WORKING_NAVI_HOOK_NAVI_IN_DUNGEONS_RAM = None
-    WORKING_NAVI_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM = None
+    NAVI_HINTS_TEXTID_BASE = None
+    Navi_TextID_Base = 0x7400
     
     def __init__(self, rom):
-        #self.WORKING_NAVI_RAM_GLOBALS = rom.symRAM('WORKING_NAVI_GLOBALS') #0x80410000
-        self.WORKING_NAVI_ROM_GLOBALS = rom.sym('WORKING_NAVI_GLOBALS') #0x03490000
-        self.WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM = rom.sym('WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_SYM') #self.WORKING_NAVI_ROM + 0x40     #TBD from .json File?
-        self.WORKING_NAVI_DATA_GENERATED_TEXT_ROM = rom.sym('WORKING_NAVI_DATA_GENERATED_TEXT_SYM') #self.WORKING_NAVI_ROM + 0x800    #length about 0x1000 hex - to 0x80501700
-        self.WORKING_NAVI_HOOK_CYCLICLOGIC_RAM = rom.symRAM('working_navi_cyclicLogic_HOOK') #self.WORKING_NAVI_RAM + 0x300
-        #self.WORKING_NAVI_HOOK_TEXTLOADLOGIC_RAM = rom.symRAM('working_navi_TextLoadLogic_HOOK') #self.WORKING_NAVI_RAM + 0x600
-        self.WORKING_NAVI_HOOK_NAVI_IN_DUNGEONS_RAM = rom.symRAM('working_navi_Activate_Navi_In_Dungeons_HOOK')
-        self.WORKING_NAVI_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM = rom.symRAM('working_navi_Extended_Init_On_Saveloads_HOOK')
-        self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM = rom.symRAM('WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM')
-=======
-    
-    def __init__(self, rom):
-        #self.Navi_Hints_RAM_GLOBALS = rom.symRAM('Navi_Hints_GLOBALS') #0x80410000
         self.NAVI_HINTS_ROM_GLOBALS = rom.sym('NAVI_HINTS_GLOBALS') #0x03490000
-        self.NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_ROM = rom.sym('NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM') #self.NAVI_HINTS_ROM + 0x40     #TBD from .json File?
-        self.NAVI_HINTS_DATA_GENERATED_TEXT_ROM = rom.sym('NAVI_HINTS_DATA_GENERATED_TEXT_SYM') #self.NAVI_HINTS_ROM + 0x800    #length about 0x1000 hex - to 0x80501700
-        self.NAVI_HINTS_HOOK_CYCLICLOGIC_RAM = rom.symRAM('Navi_Hints_cyclicLogic_HOOK') #self.NAVI_HINTS_RAM + 0x300
-        #self.Navi_Hints_HOOK_TEXTLOADLOGIC_RAM = rom.symRAM('Navi_Hints_TextLoadLogic_HOOK') #self.Navi_Hints_RAM + 0x600
-        self.NAVI_HINTS_HOOK_NAVI_IN_DUNGEONS_RAM = rom.symRAM('Navi_Hints_Activate_Navi_In_Dungeons_HOOK')
-        self.NAVI_HINTS_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM = rom.symRAM('Navi_Hints_Extended_Init_On_Saveloads_HOOK')
-        self.NAVI_HINTS_DATA_GENERATED_TEXT_INCREMENT_SYM = rom.symRAM('Navi_Hints_DATA_GENERATED_TEXT_INCREMENT_SYM')
->>>>>>> origin/HEAD:NaviHints.py
-    
+        self.NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_ROM = rom.sym('NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE') #self.NAVI_HINTS_ROM + 0x40     #TBD from .json File?
+        self.NAVI_HINTS_TEXTID_BASE = rom.sym('NAVI_HINTS_TEXTID_BASE')
     
     lastUpgradeIndexes = [0,0,0,0]
     lastBottleIndex = 0
@@ -315,17 +275,10 @@ class Navi_Hints(Rom):
                  
     def Navi_Hints_patch_internal(self, rom, world, spoiler, save_context, outfile, messages):
         # Save Navi Texts in Rom
-<<<<<<< HEAD:working_navi.py
-        CurTextPointerBaseA = self.WORKING_NAVI_DATA_GENERATED_TEXT_ROM
-             
-        self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, "I have faith in you, you can progress", "I have faith in you, you can progress", rom)
-        CurTextPointerBaseA += self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM
-=======
-        CurNavi_Hints_TextID = self.Navi_Hints_TextID_Base
+        CurNavi_Hints_TextID = self.Navi_TextID_Base
                   
         add_message(messages, get_raw_text(lineWrap("I have faith in you, you can progress")), id=CurNavi_Hints_TextID)
         CurNavi_Hints_TextID += 1
->>>>>>> origin/HEAD:NaviHints.py
         
         # set LookUp Table for Navi Texts        
         CurLookupTablePointerB = self.NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_ROM
@@ -374,9 +327,7 @@ class Navi_Hints(Rom):
         rom.write_bytes(CurLookupTablePointerB, [0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00])  
                         
     
- 
-                     
-                            
+                        
     
         
     def Navi_Hints_patch(self, rom, world, spoiler, save_context, outfilebase, messages):
@@ -393,50 +344,14 @@ class Navi_Hints(Rom):
             glob4 = list(bytearray(asmglobal4_FlagForAsmHack_initvalue.to_bytes(4, 'big')))
             byteArray = bytearray( glob1 + glob2 + glob3 + glob4 )
             
-<<<<<<< HEAD:working_navi.py
-            rom.write_bytes(self.WORKING_NAVI_ROM_GLOBALS, byteArray)
-=======
             rom.write_bytes(self.NAVI_HINTS_ROM_GLOBALS, byteArray)
             
             
-            #hook for TextLoad - this is done in hacks.asm now
->>>>>>> origin/HEAD:NaviHints.py
+            #write TextIDBase
+            asmglobal5_TextIDBase_initvalue = int(self.Navi_TextID_Base)
+            byteArray = bytearray(asmglobal5_TextIDBase_initvalue.to_bytes(4, 'big'))   
             
-            #intAddress =  int((self.NAVI_HINTS_HOOK_TEXTLOADLOGIC_RAM & 0x00FFFFFF)/4)
-            #byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
-            #byteArray = [0x0C] + byteArray
-            #rom.write_bytes(0xB52BDC, bytearray(byteArray)) #is a JAL was a jal to DMALoad Text before
-            
-<<<<<<< HEAD:working_navi.py
-            #hook for TextLoad - this is done in hacks.asm now
-            
-            #intAddress =  int((self.WORKING_NAVI_HOOK_TEXTLOADLOGIC_RAM & 0x00FFFFFF)/4)
-            #byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
-            #byteArray = [0x0C] + byteArray
-            #rom.write_bytes(0xB52BDC, bytearray(byteArray)) #is a JAL was a jal to DMALoad Text before
-            
-=======
->>>>>>> origin/HEAD:NaviHints.py
-            #I put the hooks here, because I don´t want to change code flow of main rando
-            
-            #hook for cyclic call
-            intAddress =  int((self.NAVI_HINTS_HOOK_CYCLICLOGIC_RAM & 0x00FFFFFF)/4)
-            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
-            byteArray = [0x08] + byteArray
-            rom.write_bytes(0xB12A94, bytearray(byteArray)) #is a J, was a jr before, cyclic hack jumps back to previous ret address
-           
-            #hook for Navi in dungeons
-            intAddress =  int((self.NAVI_HINTS_HOOK_NAVI_IN_DUNGEONS_RAM & 0x00FFFFFF)/4)
-            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
-            byteArray = [0x0C] + byteArray
-            rom.write_bytes(0x00ACF648, bytearray(byteArray)) #LBU V0, 0x0002 (T8) before
-           
-            #hook for Extended Init on Saveloads
-            intAddress =  int((self.NAVI_HINTS_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM & 0x00FFFFFF)/4)
-            byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
-            byteArray = [0x08] + byteArray
-            rom.write_bytes(0x00B0652C, bytearray(byteArray)) #is a J, was a jr before
-           
+            rom.write_bytes(self.NAVI_HINTS_TEXTID_BASE, byteArray)
             
             
             
@@ -452,5 +367,3 @@ class Navi_Hints(Rom):
             else:
                 self.Navi_Hints_patch_internal(rom, world, spoiler, save_context, None)          
             
-     
-        
