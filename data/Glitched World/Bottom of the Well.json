@@ -41,7 +41,7 @@
                 (Small_Key_Bottom_of_the_Well, 3)",
             "GS Well Like Like Cage": "
                 (Small_Key_Bottom_of_the_Well, 3)", #// stick pot makes this default to true
-            "Bottom of the Well Stick Pot": "True"
+            "Stick Pot": "True"
         },
         "exits": {
             "Bottom of the Well" : "True"

@@ -5,6 +5,7 @@ init:
     jal     c_init
     nop
 
+<<<<<<< HEAD
     ; Accept86 DMA in working NAVI - not needed anymore? nows just extended rom for texts
     ;lui a1, 0x0349
     ;lui a0, 0x8041
@@ -16,10 +17,12 @@ init:
     
     
     ; Displaced code - from before the hook
+=======
+    ; Displaced code
+>>>>>>> origin/HEAD
     lui     v0, 0x8012
     addiu   v0, v0, 0xD2A0
     addiu   t6, r0, 0x0140
-    
     lui     at, 0x8010
     sw      t6, 0xE500 (at)
 

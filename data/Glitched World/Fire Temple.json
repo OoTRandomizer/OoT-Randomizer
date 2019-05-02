@@ -9,10 +9,10 @@
             "Fire Temple Boss Key Chest": "(
                 ((Small_Key_Fire_Temple, 8) or not keysanity) and can_use(Hammer)) or (can_mega and can_use(Hookshot))",
             "Volvagia Heart": "
-                (can_use(Goron_Tunic) or (has_bottle and has_explosives)) and can_use(Hammer) and 
+                (can_use(Goron_Tunic) or (has_fairy and has_explosives)) and can_use(Hammer) and 
                 (Boss_Key_Fire_Temple or can_reach(Fire_Temple_Flame_Maze))",
             "Volvagia": "
-                (can_use(Goron_Tunic) or (has_bottle and has_explosives)) and can_use(Hammer) and 
+                (can_use(Goron_Tunic) or (has_fairy and has_explosives)) and can_use(Hammer) and 
                 (Boss_Key_Fire_Temple or can_reach(Fire_Temple_Flame_Maze))",
             "GS Fire Temple Basement": "
                 ((Small_Key_Fire_Temple, 8) or not keysanity)"
@@ -32,7 +32,7 @@
         "exits": {
             "Fire Temple Lower":  "True",
             "Fire Temple Middle": "
-                (can_use(Goron_Tunic) or has_bottle) and (Small_Key_Fire_Temple, 4) and 
+                (can_use(Goron_Tunic) or has_fairy) and (Small_Key_Fire_Temple, 4) and 
                 (has_explosives or can_use(Bow) or can_use(Hookshot))"
         }
     },

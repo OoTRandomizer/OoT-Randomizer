@@ -62,7 +62,7 @@ class Location(object):
         if self.is_disabled():
             return False
 
-        return state.with_spot(self.access_rule, spot=self) and (noparent or state.can_reach(self.parent_region))
+        return state.with_spot(self.access_rule, spot=self) and (noparent or state.can_reach(self.parent_region, keep_tod=True))
 
 
     def is_disabled(self):

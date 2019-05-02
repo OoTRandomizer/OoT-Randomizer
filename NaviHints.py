@@ -1,9 +1,10 @@
-#Accept86 working_navi
+#Accept86 Navi_Hints
 
 from SaveContext import SaveContext
 from Hints import get_raw_text, lineWrap        
 from Utils import default_output_path
 from Rom import Rom
+from Messages import add_message
 
 import os, os.path
                     
@@ -12,8 +13,21 @@ import re
 #s = 'a (45:45) b (65:40) ccc (blah$#)'
 #re.sub('\s?\(.*?\)', '', s).strip() # 'a b ccc'  
 
-class working_navi(Rom):
+class Navi_Hints(Rom):
     
+    #Navi_Hints_RAM_GLOBALS = None
+    NAVI_HINTS_ROM_GLOBALS = None
+    NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_ROM = None
+    #Navi_Hints_DATA_GENERATED_TEXT_ROM = None  #length about 0x1000 hex - to 0x80501700
+    #Navi_Hints_DATA_GENERATED_TEXT_INCREMENT_SYM = None
+    NAVI_HINTS_HOOK_CYCLICLOGIC_RAM = None
+    NAVI_HINTS_HOOK_TEXTLOADLOGIC_RAM = None
+    NAVI_HINTS_HOOK_NAVI_IN_DUNGEONS_RAM = None
+    NAVI_HINTS_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM = None
+    
+    Navi_Hints_TextID_Base = 0x7400
+    
+<<<<<<< HEAD:working_navi.py
     #WORKING_NAVI_RAM_GLOBALS = None
     WORKING_NAVI_ROM_GLOBALS = None
     WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM = None
@@ -34,6 +48,19 @@ class working_navi(Rom):
         self.WORKING_NAVI_HOOK_NAVI_IN_DUNGEONS_RAM = rom.symRAM('working_navi_Activate_Navi_In_Dungeons_HOOK')
         self.WORKING_NAVI_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM = rom.symRAM('working_navi_Extended_Init_On_Saveloads_HOOK')
         self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM = rom.symRAM('WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM')
+=======
+    
+    def __init__(self, rom):
+        #self.Navi_Hints_RAM_GLOBALS = rom.symRAM('Navi_Hints_GLOBALS') #0x80410000
+        self.NAVI_HINTS_ROM_GLOBALS = rom.sym('NAVI_HINTS_GLOBALS') #0x03490000
+        self.NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_ROM = rom.sym('NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_SYM') #self.NAVI_HINTS_ROM + 0x40     #TBD from .json File?
+        self.NAVI_HINTS_DATA_GENERATED_TEXT_ROM = rom.sym('NAVI_HINTS_DATA_GENERATED_TEXT_SYM') #self.NAVI_HINTS_ROM + 0x800    #length about 0x1000 hex - to 0x80501700
+        self.NAVI_HINTS_HOOK_CYCLICLOGIC_RAM = rom.symRAM('Navi_Hints_cyclicLogic_HOOK') #self.NAVI_HINTS_RAM + 0x300
+        #self.Navi_Hints_HOOK_TEXTLOADLOGIC_RAM = rom.symRAM('Navi_Hints_TextLoadLogic_HOOK') #self.Navi_Hints_RAM + 0x600
+        self.NAVI_HINTS_HOOK_NAVI_IN_DUNGEONS_RAM = rom.symRAM('Navi_Hints_Activate_Navi_In_Dungeons_HOOK')
+        self.NAVI_HINTS_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM = rom.symRAM('Navi_Hints_Extended_Init_On_Saveloads_HOOK')
+        self.NAVI_HINTS_DATA_GENERATED_TEXT_INCREMENT_SYM = rom.symRAM('Navi_Hints_DATA_GENERATED_TEXT_INCREMENT_SYM')
+>>>>>>> origin/HEAD:NaviHints.py
     
     
     lastUpgradeIndexes = [0,0,0,0]
@@ -47,17 +74,13 @@ class working_navi(Rom):
 
     def getBitOffsetIndex(self, mask):
         i=0;
-        for i in range(0, (31+16)):
+        for i in range(0, (32+16)):
             if( ((mask>>i)&1)!=0 ):
                 break
             
         return i
     
-    #def getMaskByBitOffsetIndex(self, bitoffset):
-    #    mask = 1 << bitoffset
-            
-    #    return mask
-    
+
     #=> bitshiftcount with 0x80 flag -> 0x84, 0x88 0x8C
     #=> if value from save not smaller than that got item
     #strength: goes 0=>0x40->0x80->0xC0, no bitencoding
@@ -94,7 +117,7 @@ class working_navi(Rom):
         #special handling for Rutos Letter
         #item ID int(0x1B)
         if item.name=='Bottle with Letter':
-            ItemID = int(0x1B)  #theres more special handling in working_navi.asm, if itemID 0x1B, got item if ID correct or King Zora moved
+            ItemID = int(0x1B)  #theres more special handling in Navi_Hints.asm, if itemID 0x1B, got item if ID correct or King Zora moved
         
         
         return [ItemByteOffset,ItemBitOffset,ItemMask,ItemID]
@@ -102,18 +125,7 @@ class working_navi(Rom):
     
     
     def getUpgradeBitmask(self, UpgradeIndex, ItemByteoffset, ItemMask, ItemCategory, name_no_brackets, item ):
-        # Upgrades
-        #'upgrades' : {
-        #    'quiver'                 : Address(0x00A0, mask=0x00000007, max=3),
-        #    'bomb_bag'               : Address(0x00A0, mask=0x00000038, max=3),
-        #    'strength_upgrade'       : Address(0x00A0, mask=0x000001C0, max=3),
-        #    'diving_upgrade'         : Address(0x00A0, mask=0x00000E00, max=2),
-        #    'wallet'                 : Address(0x00A0, mask=0x00003000, max=3),
-        #    'bullet_bag'             : Address(0x00A0, mask=0x0001C000, max=3),
-        #    'stick_upgrade'          : Address(0x00A0, mask=0x000E0000, max=3),
-        #    'nut_upgrade'            : Address(0x00A0, mask=0x00700000, max=3),
-        #},
-                              
+                           
         RealMask = ItemMask 
         
         #'Progressive Strength Upgrade'
@@ -156,7 +168,7 @@ class working_navi(Rom):
                 return -1
             
             
-        ItemByteoffset =  address[0]-address[0]%4   #Accept86 sometimes its not 32bit alligned?
+        ItemByteoffset =  address[0]-address[0]%4   #sometimes its not 32bit alligned?
         ItemMask = int(address[2])
         RealMask = 0   
         ItemCategory = str(address[3])
@@ -209,11 +221,9 @@ class working_navi(Rom):
         ItemID = 0
         return self.OptimizeOffsetAndMask(ItemByteoffset,RealMask,ItemID, Item)
        
-       
-       
 
     
-    def working_navi_patch_LookUpTableItem(self, ItemByteoffset, ItemBitoffset, ItemMask, ItemID, sphere_nr, CurLookupTablePointerB, rom):
+    def Navi_Hints_patch_LookUpTableItem(self, ItemByteoffset, ItemBitoffset, ItemMask, ItemID, sphere_nr, CurLookupTablePointerB, rom):
         bArray = bytearray()
         #bArray.extend(map(ord, itemid))
         bArray = ItemByteoffset.to_bytes(2, 'big')
@@ -230,23 +240,7 @@ class working_navi(Rom):
         bArray = int(sphere_nr).to_bytes(1, 'big')
         rom.write_bytes(CurLookupTablePointerB+7, bArray)
         
-                            
-                            
-    def working_navi_patch_TextTableItem(self, navi_exact_locations, CurTextPointerBaseA, locationstringexact, locationstringvague, rom):
-        bArray = bytearray()
-        if navi_exact_locations:
-            bArray.extend(map(ord, get_raw_text(lineWrap(locationstringexact)) )) 
-        if not navi_exact_locations:
-            bArray.extend(map(ord, get_raw_text(lineWrap(locationstringvague)) )) 
-            
-        CurTextPointerA = CurTextPointerBaseA
-        rom.write_bytes(CurTextPointerA, [0x05, 0x44])
-        CurTextPointerA += 2
-        rom.write_bytes(CurTextPointerA, bArray)
-        CurTextPointerA += len(bArray)
-        rom.write_bytes(CurTextPointerA, [0x20, 0x05, 0x40, 0x02])
-                    
-             
+                                  
              
     def getLocationTests(self, location, spoiler):
         
@@ -312,24 +306,29 @@ class working_navi(Rom):
         #for the others, combine the locations
         #limit string length
         
-        #TBD TBD <= do this for bottles, too
-        
-        maxlen = self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM-6-4
+        maxlen = 0x7C-6-4
         locationexact = (locationexact[:maxlen] + '..') if len(locationexact) > maxlen else locationexact
         locationvague = (locationvague[:maxlen] + '..') if len(locationvague) > maxlen else locationvague
         return [locationexact, locationvague]
                         
                                      
                  
-    def working_navi_patch_internal(self, rom, world, spoiler, save_context, outfile):
+    def Navi_Hints_patch_internal(self, rom, world, spoiler, save_context, outfile, messages):
         # Save Navi Texts in Rom
+<<<<<<< HEAD:working_navi.py
         CurTextPointerBaseA = self.WORKING_NAVI_DATA_GENERATED_TEXT_ROM
              
         self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, "I have faith in you, you can progress", "I have faith in you, you can progress", rom)
         CurTextPointerBaseA += self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM
+=======
+        CurNavi_Hints_TextID = self.Navi_Hints_TextID_Base
+                  
+        add_message(messages, get_raw_text(lineWrap("I have faith in you, you can progress")), id=CurNavi_Hints_TextID)
+        CurNavi_Hints_TextID += 1
+>>>>>>> origin/HEAD:NaviHints.py
         
         # set LookUp Table for Navi Texts        
-        CurLookupTablePointerB = self.WORKING_NAVI_DATA_GENERATED_LOOKUPTABLE_ROM
+        CurLookupTablePointerB = self.NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE_ROM
 
         self.Reset()            
                     
@@ -353,10 +352,14 @@ class working_navi(Rom):
                         locationexact = locTexts[0]
                         locationvague = locTexts[1]
                         
-                        self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, locationexact, locationvague, rom)
-                        CurTextPointerBaseA += self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM
+
+                        if world.settings.Navi_Hints_exact:
+                            add_message(messages, get_raw_text(lineWrap(locationexact)), id=CurNavi_Hints_TextID)
+                        else:
+                            add_message(messages, get_raw_text(lineWrap(locationvague)), id=CurNavi_Hints_TextID)
+                        CurNavi_Hints_TextID += 1
                         
-                        self.working_navi_patch_LookUpTableItem(ItemByteoffset, ItemBitoffset, ItemMask, ItemID, sphere_nr, CurLookupTablePointerB, rom)
+                        self.Navi_Hints_patch_LookUpTableItem(ItemByteoffset, ItemBitoffset, ItemMask, ItemID, sphere_nr, CurLookupTablePointerB, rom)
                         CurLookupTablePointerB += 8
                         
                         if world.settings.create_spoiler:
@@ -364,8 +367,8 @@ class working_navi(Rom):
                                 outfile.write('\n %s: %s : %s' % (sphere_nr, location, location.item ) )
                 
                      
-        self.working_navi_patch_TextTableItem(world.settings.working_navi_exact, CurTextPointerBaseA, "We got everything we need, lets beat Ganon", "We got everything we need, lets beat Ganon", rom) 
-        CurTextPointerBaseA += self.WORKING_NAVI_DATA_GENERATED_TEXT_INCREMENT_SYM             
+        add_message(messages, get_raw_text(lineWrap("We got everything we need, lets beat Ganon")), id=CurNavi_Hints_TextID)
+        CurNavi_Hints_TextID += 1 
           
         #end of LookUp Table
         rom.write_bytes(CurLookupTablePointerB, [0x00, 0x00, 0x00, 0xFF, 0x00, 0x00, 0x00, 0x00])  
@@ -376,13 +379,12 @@ class working_navi(Rom):
                             
     
         
-    def working_navi_patch(self, rom, world, spoiler, save_context, outfilebase):
-        #working navi by accept86 wNavi
-        if world.settings.working_navi:
+    def Navi_Hints_patch(self, rom, world, spoiler, save_context, outfilebase, messages):
+        if world.settings.Navi_Hints:
             #write global variables
             asmglobal1_Timer_initvalue = int(0)
             asmglobal2_LookupTableIndex_initvalue = int(0)
-            asmglobal3_MaxTimer_initvalue = int(0xd90 * int(world.settings.working_navi_delay) ) #0xd90 = 1min TBD over UI # Write Navi Delay Time to ROM TBD TBD
+            asmglobal3_MaxTimer_initvalue = int(0xd90 * int(world.settings.Navi_Hints_delay) ) #0xd90 = 1min TBD over UI # Write Navi Delay Time to ROM TBD TBD
             asmglobal4_FlagForAsmHack_initvalue = int(0)
             
             glob1 = list(bytearray(asmglobal1_Timer_initvalue.to_bytes(4, 'big')))
@@ -391,9 +393,21 @@ class working_navi(Rom):
             glob4 = list(bytearray(asmglobal4_FlagForAsmHack_initvalue.to_bytes(4, 'big')))
             byteArray = bytearray( glob1 + glob2 + glob3 + glob4 )
             
+<<<<<<< HEAD:working_navi.py
             rom.write_bytes(self.WORKING_NAVI_ROM_GLOBALS, byteArray)
+=======
+            rom.write_bytes(self.NAVI_HINTS_ROM_GLOBALS, byteArray)
             
             
+            #hook for TextLoad - this is done in hacks.asm now
+>>>>>>> origin/HEAD:NaviHints.py
+            
+            #intAddress =  int((self.NAVI_HINTS_HOOK_TEXTLOADLOGIC_RAM & 0x00FFFFFF)/4)
+            #byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
+            #byteArray = [0x0C] + byteArray
+            #rom.write_bytes(0xB52BDC, bytearray(byteArray)) #is a JAL was a jal to DMALoad Text before
+            
+<<<<<<< HEAD:working_navi.py
             #hook for TextLoad - this is done in hacks.asm now
             
             #intAddress =  int((self.WORKING_NAVI_HOOK_TEXTLOADLOGIC_RAM & 0x00FFFFFF)/4)
@@ -401,22 +415,24 @@ class working_navi(Rom):
             #byteArray = [0x0C] + byteArray
             #rom.write_bytes(0xB52BDC, bytearray(byteArray)) #is a JAL was a jal to DMALoad Text before
             
+=======
+>>>>>>> origin/HEAD:NaviHints.py
             #I put the hooks here, because I don´t want to change code flow of main rando
             
             #hook for cyclic call
-            intAddress =  int((self.WORKING_NAVI_HOOK_CYCLICLOGIC_RAM & 0x00FFFFFF)/4)
+            intAddress =  int((self.NAVI_HINTS_HOOK_CYCLICLOGIC_RAM & 0x00FFFFFF)/4)
             byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
             byteArray = [0x08] + byteArray
             rom.write_bytes(0xB12A94, bytearray(byteArray)) #is a J, was a jr before, cyclic hack jumps back to previous ret address
            
             #hook for Navi in dungeons
-            intAddress =  int((self.WORKING_NAVI_HOOK_NAVI_IN_DUNGEONS_RAM & 0x00FFFFFF)/4)
+            intAddress =  int((self.NAVI_HINTS_HOOK_NAVI_IN_DUNGEONS_RAM & 0x00FFFFFF)/4)
             byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
             byteArray = [0x0C] + byteArray
             rom.write_bytes(0x00ACF648, bytearray(byteArray)) #LBU V0, 0x0002 (T8) before
            
             #hook for Extended Init on Saveloads
-            intAddress =  int((self.WORKING_NAVI_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM & 0x00FFFFFF)/4)
+            intAddress =  int((self.NAVI_HINTS_HOOK_EXTENDED_INIT_ON_SAVELOAD_RAM & 0x00FFFFFF)/4)
             byteArray = list(bytearray(intAddress.to_bytes(3, 'big')))
             byteArray = [0x08] + byteArray
             rom.write_bytes(0x00B0652C, bytearray(byteArray)) #is a J, was a jr before
@@ -427,14 +443,14 @@ class working_navi(Rom):
             spoiler_path = ""     
             if world.settings.create_spoiler: 
                 output_dir = default_output_path(world.settings.output_dir)      
-                spoiler_path = os.path.join(output_dir, '%s_WorkingNaviSpoiler.txt' % outfilebase)
+                spoiler_path = os.path.join(output_dir, '%s_NaviHintsSpoiler.txt' % outfilebase)
                 with open(spoiler_path, 'w') as outfile:
-                        outfile.write('OoT Randomizer Working Navi\n\n')
+                        outfile.write('OoT Randomizer Navi Hints\n\n')
                         outfile.write('\nPlaythrough:\n\n')
-                        self.working_navi_patch_internal(rom, world, spoiler, save_context, outfile)
+                        self.Navi_Hints_patch_internal(rom, world, spoiler, save_context, outfile, messages)
                         
             else:
-                self.working_navi_patch_internal(rom, world, spoiler, save_context, None)          
+                self.Navi_Hints_patch_internal(rom, world, spoiler, save_context, None)          
             
      
         

@@ -204,16 +204,20 @@ class Playthrough(object):
     # all new items that become accessible with a new item set.
     # This function modifies provided state.
     def collect_locations(self, item_locations=None):
-        # Get all item locations in the worlds that have progression items
-        item_locations = item_locations or [location for state in self.state_list for location in state.world.get_filled_locations() if location.item.advancement]
+        item_locations = item_locations or self.progression_locations()
         for location in self.iter_reachable_locations(item_locations):
             # Collect the item for the state world it is for
             self.collect(location.item)
 
     # A shorthand way to iterate over locations without collecting items.
-    def visit_locations(self, locations):
+    def visit_locations(self, locations=None):
+        locations = locations or self.progression_locations()
         for _ in self.iter_reachable_locations(locations):
             pass
+
+    # Retrieve all item locations in the worlds that have progression items
+    def progression_locations(self):
+        return [location for state in self.state_list for location in state.world.get_filled_locations() if location.item.advancement]
 
 
     # This returns True if every state is beatable. It's important to ensure

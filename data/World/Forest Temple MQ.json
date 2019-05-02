@@ -6,12 +6,13 @@
             #If entrances are shuffled, Adult might lose access to the Kokiri forest
             #Babas for nuts.  As this is sphere 0 for both ages, this case is covered
             #by putting the babas here.
-            "Forest Temple Deku Baba Nuts": "True",
-            "Forest Temple Deku Baba Sticks": "True",
+            "Deku Baba Nuts": "True",
+            "Deku Baba Sticks": "True",
             "Forest Temple MQ First Chest": "True",
             "GS Forest Temple MQ First Hallway": "True"
         },
         "exits": {
+            "Sacred Forest Meadow": "True",
             "Forest Temple Central Area": "(Small_Key_Forest_Temple, 1)"
         }
     },

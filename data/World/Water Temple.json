@@ -3,6 +3,7 @@
         "region_name": "Water Temple Lobby",
         "dungeon": "Water Temple",
         "exits": {
+            "Lake Hylia": "True",
             # Child cannot do anything as the only entrant to Water Temple. So leave child
             # disconnected from here on to simplify logic as assumed adult. Child water assists
             # are still possible with as_child(can_reach(Water_Temple_Lobby) and ... )

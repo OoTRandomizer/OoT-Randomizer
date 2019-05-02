@@ -3,6 +3,7 @@
         "region_name": "Dodongos Cavern Beginning",
         "dungeon": "Dodongos Cavern",
         "exits": {
+            "Dodongos Cavern Entryway": "True",
             "Dodongos Cavern Lobby": "
                 as_either_here(can_blast_or_smash) or Progressive_Strength_Upgrade"
         }
@@ -24,7 +25,8 @@
                 is_adult or has_slingshot or has_sticks or 
                 has_explosives or Kokiri_Sword",
             "DC Deku Scrub Deku Shield": "True",
-            "Dodongos Cavern Gossip Stone": "True"
+            "Dodongos Cavern Gossip Stone": "True",
+            "Gossip Stone Fairy": "can_summon_gossip_fairy and has_bottle"
         },
         "exits": {
             "Dodongos Cavern Beginning": "True",
@@ -77,7 +79,8 @@
             "King Dodongo": "
                 (has_bombs or Progressive_Strength_Upgrade) and 
                 (is_adult or has_sticks or Kokiri_Sword)",
-            "GS Dodongo's Cavern Back Room": "True"
+            "GS Dodongo's Cavern Back Room": "True",
+            "Fairy Pot": "has_bottle"
         },
         "exits": {
             "Dodongos Cavern Lobby": "True"

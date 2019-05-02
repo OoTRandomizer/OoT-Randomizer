@@ -52,9 +52,11 @@ class World(object):
         # rename a few attributes...
         self.keysanity = self.shuffle_smallkeys != 'dungeon'
         self.check_beatable_only = not self.all_reachable
-        self.shuffle_dungeon_entrances = self.entrance_shuffle == 'dungeons' or self.entrance_shuffle == 'indoors'
-        self.shuffle_grotto_entrances = self.entrance_shuffle == 'indoors'
-        self.shuffle_interior_entrances = self.entrance_shuffle == 'indoors'
+        self.shuffle_dungeon_entrances = self.entrance_shuffle != 'off'
+        self.shuffle_grotto_entrances = self.entrance_shuffle in ['simple-indoors', 'all-indoors', 'all']
+        self.shuffle_interior_entrances = self.entrance_shuffle in ['simple-indoors', 'all-indoors', 'all']
+        self.shuffle_special_interior_entrances = self.entrance_shuffle in ['all-indoors', 'all']
+        self.shuffle_overworld_entrances = self.entrance_shuffle == 'all'
 
         # trials that can be skipped will be decided later
         self.skipped_trials = {
@@ -125,6 +127,8 @@ class World(object):
         for region in region_json:
             new_region = Region(region['region_name'])
             new_region.world = self
+            if 'scene' in region:
+                new_region.scene = region['scene']
             if 'hint' in region:
                 new_region.hint = region['hint']
             if 'dungeon' in region:
@@ -422,8 +426,6 @@ class World(object):
         exclude_item_list = [
             'Double Defense',
             'Ice Arrows',
-            'Serenade of Water',
-            'Prelude of Light',
             'Biggoron Sword',
         ]
         if self.damage_multiplier != 'ohko' and self.damage_multiplier != 'quadruple' and self.shuffle_scrubs == 'off':
@@ -432,6 +434,10 @@ class World(object):
         if self.hints != 'agony':
             # Stone of Agony only required if it's used for hints
             exclude_item_list.append('Stone of Agony')
+        if not self.shuffle_special_interior_entrances and not self.shuffle_overworld_entrances:
+            # Serenade and Prelude are never required with vanilla Links House/ToT and overworld entrances
+            exclude_item_list.append('Serenade of Water')
+            exclude_item_list.append('Prelude of Light')
 
         # The idea here is that if an item shows up in woth, then the only way
         # that another copy of that major item could ever be required is if it
@@ -510,7 +516,7 @@ class World(object):
 
                 # If there are sufficient required item known, then the remaining
                 # copies of the items are useless.
-                if max_progressive is True or len(dupe_locations) < max_progressive:
+                if len(dupe_locations) < max_progressive:
                     useless_area = False
                     break
 

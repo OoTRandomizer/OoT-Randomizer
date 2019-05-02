@@ -3,6 +3,7 @@
         "region_name": "Shadow Temple Entryway",
         "dungeon": "Shadow Temple",
         "exits": {
+            "Shadow Temple Warp Region": "True",
             "Shadow Temple Beginning": "
                 can_see_with_lens and
                 (can_use(Hover_Boots) or can_use(Hookshot))"

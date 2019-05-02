@@ -65,7 +65,7 @@ void draw_dungeon_info(z64_disp_buf_t *db) {
         z64_game.pause_ctxt.state == 6 &&
         z64_game.pause_ctxt.screen_idx == 0 &&
         !z64_game.pause_ctxt.changing &&
-        z64_ctxt.input[0].raw.a;
+        z64_ctxt.input[0].raw.pad.a;
     if (!draw) {
         return;
     }

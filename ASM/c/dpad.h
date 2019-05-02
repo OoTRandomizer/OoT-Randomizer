@@ -24,10 +24,6 @@
 
 #define CAN_USE_OCARINA     (z64_game.pause_ctxt.state==0 && z64_file.items[0x07] != -1 && !z64_game.restriction_flags.ocarina && ((z64_link.state_flags_1 & BLOCK_OCARINA) == 0))
 
-#define DPAD_L 0x0200
-#define DPAD_R 0x0100
-#define DPAD_D 0x0400
-
 void handle_dpad();
 void draw_dpad();
 

@@ -3,17 +3,14 @@
         "region_name": "Forest Temple Lobby",
         "dungeon": "Forest Temple",
         "locations": {
-            #If entrances are shuffled, Adult might lose access to the Kokiri forest
-            #Babas for nuts.  As this is sphere 0 for both ages, this case is covered
-            #by putting the babas here.
-            "Forest Temple Deku Baba Nuts": "is_adult",
-            "Forest Temple Deku Baba Sticks": "is_adult",
             "Forest Temple First Chest": "True",
             "Forest Temple Chest Behind Lobby": "is_adult or Kokiri_Sword",
             "GS Forest Temple First Room": "can_use(Dins_Fire) or can_use_projectile",
-            "GS Forest Temple Lobby": "can_use(Hookshot) or can_use(Boomerang)"
+            "GS Forest Temple Lobby": "can_use(Hookshot) or can_use(Boomerang)",
+            "Fairy Pot": "has_bottle and (is_adult or can_child_attack or has_nuts)"
         },
         "exits": {
+            "Sacred Forest Meadow": "True",
             "Forest Temple NW Outdoors": "can_play(Song_of_Time) or is_child",
             "Forest Temple NE Outdoors": "can_use(Bow) or can_use(Slingshot)",
             "Forest Temple Block Push Room": "(Small_Key_Forest_Temple, 1)",
@@ -27,7 +24,11 @@
         "locations": {
             "GS Forest Temple Outdoor West": "
                 can_use(Longshot) or 
-                (can_use(Hookshot) and can_reach(Forest_Temple_Outside_Upper_Ledge))"
+                (can_use(Hookshot) and can_reach(Forest_Temple_Outside_Upper_Ledge))",
+            "Deku Baba Sticks": "is_adult or Kokiri_Sword or Boomerang",
+            "Deku Baba Nuts": "
+                is_adult or has_slingshot or has_sticks or 
+                has_explosives or Kokiri_Sword or can_use(Dins_Fire)"
         },
         "exits": {
             "Forest Temple Outdoors High Balconies": "
@@ -47,7 +48,11 @@
             "GS Forest Temple Outdoor East": "
                 can_use(Hookshot) or 
                 (can_reach(Forest_Temple_Falling_Room) and 
-                 (can_use(Bow) or can_use(Dins_Fire) or has_explosives))"
+                 (can_use(Bow) or can_use(Dins_Fire) or has_explosives))",
+            "Deku Baba Sticks": "is_adult or Kokiri_Sword or Boomerang",
+            "Deku Baba Nuts": "
+                is_adult or has_slingshot or has_sticks or 
+                has_explosives or Kokiri_Sword or can_use(Dins_Fire)"
         },
         "exits": {
             "Forest Temple Outdoors High Balconies": "

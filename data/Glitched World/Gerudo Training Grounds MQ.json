@@ -24,7 +24,7 @@
             "Gerudo Training Grounds MQ Underwater Silver Rupee Chest": "
                 (Hover_Boots or (can_reach(Gerudo_Training_Grounds_Central_Maze_Right) and (can_use(Longshot) or has_bow))) and 
                 has_fire_source and Iron_Boots and (logic_fewer_tunic_requirements or can_use(Zora_Tunic)) and 
-                (damage_multiplier != 'ohko' or (has_bottle or can_use(Nayrus_Love)))"
+                (damage_multiplier != 'ohko' or (has_fairy or can_use(Nayrus_Love)))"
         }
     },
     {
@@ -42,10 +42,11 @@
         "dungeon": "Gerudo Training Grounds",
         "locations": {
             "Gerudo Training Grounds MQ Before Heavy Block Chest": "True",
-            "Gerudo Training Grounds MQ Heavy Block Chest": "can_use(Silver_Gauntlets)"
+            "Gerudo Training Grounds MQ Heavy Block Chest": "can_use(Silver_Gauntlets)",
+            "Blue Fire": "has_bottle"
         },
         "exits": {
-            "Gerudo Training Grounds Back Areas": "can_play(Song_of_Time) and can_see_with_lens and has_bottle"
+            "Gerudo Training Grounds Back Areas": "can_play(Song_of_Time) and can_see_with_lens and has_blue_fire"
         }
     },
     {

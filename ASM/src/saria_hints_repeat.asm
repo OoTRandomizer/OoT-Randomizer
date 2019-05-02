@@ -19,7 +19,11 @@ Saria_TextBoxBreak_HOOK:
     sw      a1, 0x0018(sp)
 
     ;displaced code
+<<<<<<< HEAD
     jal OOT_TextBoxBreak_TextID_Generation
+=======
+    jal OOT_Navi_Saria_TextID_Generation
+>>>>>>> origin/HEAD
     nop
     
     
@@ -143,7 +147,10 @@ Saria_TextBoxBreak_Chaining2_HOOK:      ; On the JalR FunctionPointer settings
 
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/HEAD
 SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = Textpointer, a2 = TextID
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)
@@ -180,6 +187,10 @@ SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = Textpointer, a2 = TextID
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)
     
+<<<<<<< HEAD
+=======
+    move a0, a1
+>>>>>>> origin/HEAD
     jal get_TextID_ByTextPointer ;v0 is TextID now
     nop
     

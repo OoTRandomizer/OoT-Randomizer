@@ -17,7 +17,7 @@ from Messages import read_messages, update_message_by_id, read_shop_items, \
 from OcarinaSongs import replace_songs
 from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
 from SaveContext import SaveContext
-from working_navi import working_navi
+from NaviHints import Navi_Hints
 
 def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
     with open(data_path('generated/rom_patch.txt'), 'r') as stream:
@@ -36,7 +36,10 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
         keatonBytes = stream.read()
         rom.write_bytes(0x8A7C00, keatonBytes)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> origin/HEAD
     # Force language to be English in the event a Japanese rom was submitted
     rom.write_byte(0x3E, 0x45)
     rom.force_patch.append(0x3E)
@@ -44,7 +47,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
     # Increase the instance size of Bombchus prevent the heap from becoming corrupt when
     # a Dodongo eats a Bombchu. Does not fix stale pointer issues with the animation
     rom.write_int32(0xD6002C, 0x1F0)
-
 
     # Can always return to youth
     rom.write_byte(0xCB6844, 0x35)
@@ -713,6 +715,67 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
         if data_index == 0x0028:
             entrance_updates.append((0xAC95C2, target_index))
 
+    def set_entrance_updates(entrances):
+        for entrance in entrances:
+            new_entrance = entrance.data
+            replaced_entrance = entrance.replaces.data
+            write_scenes_exits(replaced_entrance['index'], new_entrance['index'])
+
+            if "dynamic_address" in new_entrance:
+                # Dynamic exits are special and have to be set on a specific address
+                rom.write_int16(new_entrance["dynamic_address"], replaced_entrance['index'])
+
+            if "blue_warp" in new_entrance:
+                if "blue_warp" in replaced_entrance:
+                    blue_out_data =  replaced_entrance["blue_warp"]
+                else:
+                    blue_out_data = replaced_entrance["index"]
+                # Blue warps have multiple hardcodes leading to them. The good news is
+                # the blue warps (excluding deku sprout and lake fill special cases) each
+                # have a nice consistent 4-entry in the table we can just shuffle. So just
+                # catch all the hardcode with entrance table rewrite. This covers the
+                # Forest temple and Water temple blue warp revisits. Deku sprout remains
+                # vanilla as it never took you to the exit and the lake fill is handled
+                # above by removing the cutscene completely. Child has problems with Adult
+                # blue warps, so always use the return entrance if a child.
+                write_entrance(blue_out_data + 2, new_entrance["blue_warp"] + 2, 2)
+                write_entrance(replaced_entrance["index"], new_entrance["blue_warp"], 2)
+
+    if world.shuffle_overworld_entrances:
+        # Prevent the ocarina cutscene from leading straight to hyrule field
+        symbol = rom.sym('OCARINAS_SHUFFLED')
+        rom.write_byte(symbol, 1)
+
+        # Patch all LLR exits by leaping over a fence to lead to the main LLR exit
+        main_entrance = 0x01F9 # Hyrule Field entrance from Lon Lon Ranch (main land entrance)
+        ranch_leap_entrances = [0x028A, 0x028E, 0x0292, 0x0476] # Southern, Western, Eastern, Front Gate
+        for entrance_idx in ranch_leap_entrances:
+            write_scenes_exits(main_entrance, entrance_idx)
+
+        # Patch the water exits between Hyrule Field and Zora River to lead to the land entrance instead of the water entrance
+        write_scenes_exits(0x00EA, 0x01D9) # Hyrule Field -> Zora River
+        write_scenes_exits(0x0181, 0x0311) # Zora River -> Hyrule Field
+
+        for entrance, target in entrance_updates:
+            rom.write_int16(entrance, target)
+        entrance_updates = []
+
+        # Change Impa escort to bring link at the hyrule castle grounds entrance from market, instead of hyrule field
+        write_entrance(0x0138, 0x0594) # After Impa escort (overridden to Hyrule Castle entrance from Market)
+
+        # Change Getting caught cutscene as adult without hookshot to keep Link inside the Fortress
+        write_entrance(0x0129, 0x01A5 + 2, 2) # Thrown out of fortress as adult (overridden to Gerudo Fortress entrance from Valley)
+
+        # Change Getting caught cutscene as child to always throw Link in the stream
+        write_entrance(0x01A5, 0x03B4, 2) # Captured with hookshot 1st time as child (overridden to Thrown out of fortress)
+        write_entrance(0x01A5, 0x05F8, 2) # Captured with hookshot 2nd time as child (overridden to Thrown out of fortress)
+
+        # Patch Owl Drop entrances to their new indexes
+        for entrance in world.get_shuffled_entrances(type='OwlDrop'):
+            write_entrance(entrance.replaces.data['index'], entrance.data['index'])
+
+        set_entrance_updates(world.get_shuffled_entrances(type='Overworld'))
+
     if world.shuffle_dungeon_entrances:
         symbol = rom.sym('CFG_CHILD_CONTROL_LAKE')
         rom.write_int32(symbol, 1)
@@ -723,44 +786,32 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
         # Remove deku sprout and drop player at SFM after forest (SFM blue will then be rewired by ER below)
         rom.write_int16(0xAC9F96, 0x0608)
 
+        #Tell the well water we are always a child.
+        rom.write_int32(0xDD5BF4, 0x00000000)
+
+        #Make the Adult well blocking stone dissappear if the well has been drained by
+        #checking the well drain event flag instead of links age. This actor doesn't need a
+        #code check for links age as the stone is absent for child via the scene alternate
+        #lists. So replace the age logic with drain logic.
+        rom.write_int32(0xE2887C, rom.read_int32(0xE28870)) #relocate this to nop delay slot
+        rom.write_int32(0xE2886C, 0x95CEB4B0) # lhu
+        rom.write_int32(0xE28870, 0x31CE0080) # andi
+
         remove_entrance_blockers(rom)
         #Tell the Deku tree jaw actor we are always a child.
         rom.write_int32(0x0C72C64, 0x240E0000)
         rom.write_int32(0x0C72C74, 0x240F0001)
 
-        for world_entrance in world.get_shuffled_entrances(type='Dungeon'):
-            entrance = world_entrance.addresses
-            dungeon = world_entrance.connected_region.addresses
-            write_scenes_exits(dungeon['forward'], entrance['forward'])
-            write_scenes_exits(entrance['return'], dungeon['return'])
-            if "blue" in dungeon:
-                if "blue" in entrance:
-                    blue_out_data =  entrance["blue"]
-                else:
-                    blue_out_data = entrance["return"]
-                # Blue warps have multiple hardcodes leading to them. The good news is
-                # the blue warps (excluding deku sprout and lake fill special cases) each
-                # have a nice consistent 4-entry in the table we can just shuffle. So just
-                # catch all the hardcode with entrance table rewrite. This covers the
-                # Forest temple and Water temple blue warp revisits. Deku sprout remains
-                # vanilla as it never took you to the exit and the lake fill is handled
-                # above by removing the cutscene completely. Child has problems with Adult
-                # blue warps, so always use the return entrance if a child.
-                write_entrance(blue_out_data + 2, dungeon["blue"] + 2, 2)
-                write_entrance(entrance["return"], dungeon["blue"], 2)
+        set_entrance_updates(world.get_shuffled_entrances(type='Dungeon'))
 
     if world.shuffle_interior_entrances:
         # Disable trade quest timers
         rom.write_byte(rom.sym('DISABLE_TIMERS'), 0x01)
 
-        for world_entrance in world.get_shuffled_entrances(type='Interior'):
-            entrance = world_entrance.addresses
-            interior = world_entrance.connected_region.addresses
-            write_scenes_exits(interior['forward'], entrance['forward'])
-            write_scenes_exits(entrance['return'], interior['return'])
-            if "exit_address" in interior:
-                # Dynamic exits are special and have to be set on a specific address
-                rom.write_int16(interior["exit_address"], entrance['return'])
+        set_entrance_updates(world.get_shuffled_entrances(type='Interior'))
+
+    if world.shuffle_special_interior_entrances:
+        set_entrance_updates(world.get_shuffled_entrances(type='SpecialInterior'))
 
     for entrance, target in entrance_updates:
         rom.write_int16(entrance, target)
@@ -780,7 +831,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
     rom.write_int32(rom.sym('cfg_file_select_hash'), hash_icons)
 
     save_context = SaveContext()
-
 
     # Initial Save Data
 
@@ -1128,15 +1178,15 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
 
     # Set damage multiplier
     if world.damage_multiplier == 'half':
-        rom.write_int32(0xAE808C, 0x00108043)
+        rom.write_byte(rom.sym('CFG_DAMAGE_MULTIPLYER'), -1)
     if world.damage_multiplier == 'normal':
-        rom.write_int32(0xAE808C, 0x00108000)
+        rom.write_byte(rom.sym('CFG_DAMAGE_MULTIPLYER'), 0)
     if world.damage_multiplier == 'double':
-        rom.write_int32(0xAE808C, 0x00108040)
+        rom.write_byte(rom.sym('CFG_DAMAGE_MULTIPLYER'), 1)
     if world.damage_multiplier == 'quadruple':
-        rom.write_int32(0xAE808C, 0x00108080)
+        rom.write_byte(rom.sym('CFG_DAMAGE_MULTIPLYER'), 2)
     if world.damage_multiplier == 'ohko':
-        rom.write_int32(0xAE808C, 0x00108200)
+        rom.write_byte(rom.sym('CFG_DAMAGE_MULTIPLYER'), 3)
 
     # Patch songs and boss rewards
     for location in world.get_filled_locations():
@@ -1454,23 +1504,9 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
     if world.world_count > 1:
        tycoon_message = make_player_message(tycoon_message)
     update_message_by_id(messages, 0x00F8, tycoon_message, 0x23)
-
-    repack_messages(rom, messages)
-    write_shop_items(rom, shop_item_file.start + 0x1DEC, shop_items)
-
-    # text shuffle
-    if world.text_shuffle == 'except_hints':
-        shuffle_messages(rom, except_hints=True)
-    elif world.text_shuffle == 'complete':
-        shuffle_messages(rom, except_hints=False)
-
-    # output a text dump, for testing...
-    #with open('keysanity_' + str(world.seed) + '_dump.txt', 'w', encoding='utf-16') as f:
-    #     messages = read_messages(rom)
-    #     f.write('item_message_strings = {\n')
-    #     for m in messages:
-    #        f.write("\t0x%04X: \"%s\",\n" % (m.id, m.get_python_string()))
-    #     f.write('}\n')
+    
+    #write/shuffle messages was moved down
+    
 
     if world.free_scarecrow:
         # Played song as adult
@@ -1491,7 +1527,13 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
     save_context.write_save_table(rom)
 
 
+    symbol = rom.sym('NAVI_HINTS_CONDITION')
+    if world.settings.Navi_Hints:
+        rom.write_int32(symbol, 1)
+        wNavi = Navi_Hints(rom)
+        wNavi.Navi_Hints_patch(rom, world, spoiler, save_context, outfilebase, messages)
 
+<<<<<<< HEAD
 
     #EDIT accept86 working_navi/Saria Hints
     symbol = rom.sym('WORKING_NAVI_CONDITION')
@@ -1518,18 +1560,63 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, outfilebase):
                 if(index>42):
                     raise ValueError('ERROR - Saria gossip TextID overflow')
         
+=======
+>>>>>>> origin/HEAD
     else:
         rom.write_int32(symbol, 0)
 
 
+<<<<<<< HEAD
     #EDIT accept86 working_navi
     #rom.write_bytes(0x03500400, [0x1, 0x2, 0x3, 0x4])
     if world.settings.working_navi:
         wNavi = working_navi(rom)
         wNavi.working_navi_patch(rom, world, spoiler, save_context, outfilebase)
+=======
+    repack_messages(rom, messages)
+
+    # text shuffle
+    if world.text_shuffle == 'except_hints':
+        shuffle_messages(rom, except_hints=True)
+    elif world.text_shuffle == 'complete':
+        shuffle_messages(rom, except_hints=False)
+        
+    write_shop_items(rom, shop_item_file.start + 0x1DEC, shop_items)
+>>>>>>> origin/HEAD
+
+
+    # output a text dump, for testing...
+    #with open('keysanity_' + str(world.seed) + '_dump.txt', 'w', encoding='utf-16') as f:
+    #     messages = read_messages(rom)
+    #     f.write('item_message_strings = {\n')
+    #     for m in messages:
+    #        f.write("\t0x%04X: \"%s\",\n" % (m.id, m.get_python_string()))
+    #     f.write('}\n')
+
+        
+    symbol = rom.sym('SARIA_HINTS_CONDITION')
+    if world.settings.saria_repeats_hints:
+        rom.write_int32(symbol, 1)
+        
+        #Generate gossip stone TextID table
+        index = 0
+        SARIA_GOSSIP_TEXTID_TABLE_SYM = rom.sym('SARIA_GOSSIP_TEXTID_TABLE_SYM')
+        
+        for message in messages:
+            if (message.id <= 0x04FF) and (message.id >= 0x0401):
+                byteArray = message.id.to_bytes(2, 'big')
+                rom.write_bytes(int(SARIA_GOSSIP_TEXTID_TABLE_SYM)+2*index, byteArray) #is a J, was a jr before, cyclic hack jumps back to previous ret address
+                
+                index += 1
+                
+                if(index>42):
+                    raise ValueError('ERROR - Saria gossip TextID overflow')
+        
+    else:
+        rom.write_int32(symbol, 0)
+
 
     
-
     return rom
 
 
@@ -1705,10 +1792,6 @@ def remove_entrance_blockers(rom):
             actor_var = rom.read_int16(actor + 14);
             if actor_var == 0xFF01:
                 rom.write_int16(actor + 14, 0x0700)
-        if actor_id == 0x0145:
-            rom.write_int16(actor, 0x014E)
-            rom.write_int16(actor + 14, 0x0700)
-
     get_actor_list(rom, remove_entrance_blockers_do)
 
 def set_cow_id_data(rom, world):
@@ -1768,8 +1851,8 @@ def set_grotto_shuffle_data(rom, world):
     # Build the override table based on shuffled grotto entrances
     shuffled_grotto_table = {}
     for entrance in world.get_shuffled_entrances(type='Grotto'):
-        grotto_id = (entrance.addresses['scene'] << 16) + entrance.addresses['grotto_var']
-        grotto_override_id = (entrance.connected_region.addresses['scene'] << 16) + entrance.connected_region.addresses['grotto_var']
+        grotto_id = (entrance.data['scene'] << 16) + entrance.data['grotto_var']
+        grotto_override_id = (entrance.replaces.data['scene'] << 16) + entrance.replaces.data['grotto_var']
         shuffled_grotto_table[grotto_id] = grotto_override_id
 
     grotto_override_table = {}
@@ -1779,7 +1862,6 @@ def set_grotto_shuffle_data(rom, world):
 
     # Override grotto actors data with the new table
     get_actor_list(rom, override_grotto_data)
-
 
 
 def set_deku_salesman_data(rom):
@@ -1939,7 +2021,3 @@ def configure_dungeon_info(rom, world):
     rom.write_int32(rom.sym('cfg_dungeon_info_reward_need_altar'), int(not mapcompass_keysanity))
     rom.write_bytes(rom.sym('cfg_dungeon_rewards'), dungeon_rewards)
     rom.write_bytes(rom.sym('cfg_dungeon_is_mq'), dungeon_is_mq)
-    
-    
-    
-    

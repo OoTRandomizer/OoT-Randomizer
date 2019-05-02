@@ -81,6 +81,16 @@ player.
   * Ability to create a custom seed by placing items where you want them.
   * Spoiler log is now in JSON format.
   * Plan-domizer uses the spoiler log JSON format.
+* Hotrod Rolling Goron no longer checks for Bomb Bag.
+* Wearing bunny hood increases running speed.
+* Duplicate Bottle with Letter added to plentiful item pool.
+* Every generic grotto gossip stone has their own hint.
+* Meg (Purple Forest Temple Poe) dies in one hit.
+* Desert Colossus Hands are now logically part of Spirit Temple
+* Gossip stone added to Lake Hylia to change water level after beating Morpha to keep dungeon entrance accessible with Gold Scales.
+  * Entering Water Temple with Gold Scale and Longshot is now always in logic.
+
+#### New Option
 * Cow Sanity
   * Playing Epona's Song for a cow for the first time gives an item.
 * Starting Age Option
@@ -94,16 +104,6 @@ player.
     * Logic Notes contains notes on how the logic was constructed.
     * Tricks contains video links to tricks that may be required.
     * Oddities contains other miscellaneous oddities of Glitched Logic.
-* Hotrod Rolling Goron no longer checks for Bomb Bag.
-* Wearing bunny hood increases running speed.
-* Duplicate Bottle with Letter added to plentiful item pool.
-* Every generic grotto gossip stone has their own hint.
-* Meg (Purple Forest Temple Poe) dies in one hit.
-* Desert Colossus Hands are now logically part of Spirit Temple
-* Gossip stone added to Lake Hylia to change water level after beating Morpha to keep dungeon entrance accessible with Gold Scales.
-  * Entering Water Temple with Gold Scale and Longshot is now always in logic.
-
-#### New Option
 * Randomize Main Rules option.
 * Filter dropdown to Location Exclusion dropdown.
 * Allow customization of Navi inner and outer glow.

@@ -7,6 +7,7 @@
             "Morpha": "Boss_Key_Water_Temple and can_use(Longshot)"
         },
         "exits": {
+            "Lake Hylia": "True",
             "Water Temple Dive": "
                 (can_use(Zora_Tunic) or logic_fewer_tunic_requirements) and Iron_Boots",
             "Water Temple Dark Link Region": "

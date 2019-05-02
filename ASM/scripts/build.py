@@ -87,7 +87,7 @@ data_symbols = {}
 for (name, sym) in symbols.items():
     if sym['type'] == 'data':           
         addr = int(sym['address'], 16)
-        if 0x80400000 <= addr < 0x80420000: #accept86
+        if 0x80400000 <= addr < 0x80420000:
             addr = addr - 0x80400000 + 0x03480000
         else:
             continue
@@ -95,8 +95,8 @@ for (name, sym) in symbols.items():
 with open('../data/generated/symbols.json', 'w') as f:
     json.dump(data_symbols, f, indent=4, sort_keys=True)
     
-#accept86    
-# symbols_RAM.json needed for hooks in working_navi.py
+  
+# symbols_RAM.json needed for hooks in Navi_Hints.py
 #I put the hooks there, because I don´t want to change code flow of main rando
 symbols2 = {}
 

@@ -27,7 +27,8 @@
             "GC Deku Scrub Bombs": "True",
             "GC Deku Scrub Arrows": "True",
             "GC Deku Scrub Red Potion": "True",
-            "GC Deku Scrub Green Potion": "True"
+            "GC Deku Scrub Green Potion": "True",
+            "Free Fairies": "has_bottle"
         }
     },
     {
@@ -53,7 +54,9 @@
         "locations": {
             "Ganons Castle Water Trial Left Chest": "True",
             "Ganons Castle Water Trial Right Chest": "True",
-            "Ganons Castle Water Trial Clear": "has_bottle and Hammer and can_use(Light_Arrows)"
+            "Ganons Castle Water Trial Clear": "has_blue_fire and Hammer and can_use(Light_Arrows)",
+            "Fairy Pot": "has_blue_fire and has_bottle",
+            "Blue Fire": "has_bottle"
         }
     },
     {
@@ -81,7 +84,8 @@
                 Progressive_Hookshot and has_bombchus and can_see_with_lens",
             "Ganons Castle Spirit Trial Clear": "
                 can_use(Light_Arrows) and Mirror_Shield and 
-                has_bombchus and Progressive_Hookshot"
+                has_bombchus and Progressive_Hookshot",
+            "Nut Pot": "Progressive_Hookshot and has_bombchus and Bow and Mirror_Shield"
         }
     },
     {

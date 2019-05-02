@@ -746,13 +746,12 @@ skip_GS_BGS_text:
 .org 0xAE807C
     bgez    s0, @@continue ; check if damage is negative
     lh      t8, 0x30(a1)   ; load hp for later
-    lbu     t7, 0x3d(a1)   ; check if has double defense
-    beq     t7, zero, @@continue
-    sll     s0, s0, 0      ; damage multiplier (delay slot)
-.skip 4
-.skip 4
-.skip 4
-.skip 4
+    jal     Apply_Damage_Multiplier
+    nop
+    lh      t8, 0x30(a1)   ; load hp for later
+    nop
+    nop
+    nop
 @@continue:
 
 ;==================================================================================================
@@ -1215,7 +1214,26 @@ skip_GS_BGS_text:
     jal     Static_ctxt_Init
     
     
+ ; ==================================================================================================
+; burning kak from any entrance to kak
+; ==================================================================================================
+; Replaces: lw      t9, 0x0000(s0)
+;           addiu   at, 0x01E1
+.orga 0xACCD34
+    jal     burning_kak
+    lw      t9, 0x0000(s0)
+      
     
+; ==================================================================================================
+; Navi Hints/Saria repeats hints
+; ==================================================================================================
+;hook for TextLoad
+.orga 0xB52BDC
+    jal     TextLoadLogic_HOOK    ;is a JAL was a jal to DMALoad Text before
+    
+  ;for displaced Code
+.org 0x800595D0    ;.orga 0xACF530
+OOT_Navi_Saria_TextID_Generation:    
     
 ;accept86
 ; ==================================================================================================
@@ -1227,9 +1245,19 @@ skip_GS_BGS_text:
     
     
 ; ==================================================================================================
-; working Navi - see working_navi.py
+; Navi Hints - see working_navi.py
 ; ==================================================================================================
       
+<<<<<<< HEAD
+=======
+      
+ ;hook for Navi TextID changing
+ .orga 0xACF700
+    jal NaviHints_TextID_HOOK
+    
+      
+      
+>>>>>>> origin/HEAD
 ;            #I put the hooks here, because I don´t want to change code flow of main rando 
 ;            #hook for cyclic call
 ;            intAddress =  int((self.WORKING_NAVI_CODE_CYCLICLOGIC_RAM & 0x00FFFFFF)/4)
@@ -1250,8 +1278,12 @@ skip_GS_BGS_text:
 ;            rom.write_bytes(0x00B0652C, bytearray(byteArray)) #is a J, was a jr before
            
            
+<<<<<<< HEAD
            
 ;accept86
+=======
+
+>>>>>>> origin/HEAD
 ; ==================================================================================================
 ; saria repeats hints
 ; ==================================================================================================
@@ -1260,9 +1292,12 @@ skip_GS_BGS_text:
 .orga 0xACF6C4
     jal     Saria_TextBoxBreak_HOOK    ;is a JAL was a jal to DMALoad Text before
     
+<<<<<<< HEAD
 ;for displaced Code
 .org 0x800595D0    ;.orga 0xACF530
 OOT_TextBoxBreak_TextID_Generation: 
+=======
+>>>>>>> origin/HEAD
 
 ;hook for TextBoxBreaks chaining
 .orga 0xB534DC
