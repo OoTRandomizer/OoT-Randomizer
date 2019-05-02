@@ -306,8 +306,4 @@ uint8_t Navi_CyclicLogic(struct stLookupTableElement* pLookupTableBase, struct s
     }
     
     return 0;
-}
-
-
-
-  
+}  

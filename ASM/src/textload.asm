@@ -87,3 +87,47 @@ CyclicLogic_ResetText:
 
 
 
+NaviSaria_Hints_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
+    addiu   sp, sp, -0x18
+    sw      ra, 0x0014(sp)
+    
+    lw t2, NAVI_HINTS_CONDITION
+ beq t2, r0, @@SARIA_CHECK
+    nop
+    
+    ; Init global variables (for cyclic logic)
+    la t1, Navi_Hints_TextIDOffsetGlobal
+    sw r0, 0x0000 (t1)       ;Store T0 in Global Variable 5 TextID-Offset
+   
+    la t7, NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE
+                                    ;global variable 1 (Timer), 2 (showtextflag), 
+    la t1, Navi_Hints_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
+                                             ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
+                                             ;6 Timer2
+    ori t0, r0, 1  ;The TextID-Offset Backup is not on "I have faith in you..." but on the first real hint
+    sw t0, 0x0010 (t1)
+    sw t7, 0x000C (t1)
+    sw r0, 0x0014 (t1)       ;reset global variable 6 (Timer2)
+    
+    
+    jal WNAVI_CL_LOADPROGRESS  ; Load progress from save
+    nop
+    
+    
+@@SARIA_CHECK:    
+    lw t2, SARIA_HINTS_CONDITION
+ beq t2, r0, @@EXTENDED_INIT_END
+    nop
+    
+    la a0, Saria_Hints_Globals
+    jal Saria_ResetOnSaveload
+    nop
+    
+    
+@@EXTENDED_INIT_END:
+    ;Restore RA and return
+    lw      ra, 0x0014(sp)
+    addiu   sp, sp, 0x18
+    jr ra
+    nop
+

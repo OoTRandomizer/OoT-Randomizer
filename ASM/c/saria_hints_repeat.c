@@ -2,7 +2,8 @@
 //==================================================================================================
 #include "z64.h"
 
-const uint32_t C_Saria_Save_Offset = 0x73C;//(0xD4 + (58 * 0x1C) +0x10); 
+const uint32_t C_Saria_Save_Offset = 0xD4 + (58 * 0x1C) +0x10; 
+
 
 uint16_t get_TextID_ByTextPointer(uint32_t TextAddress);
 extern const uint32_t C_SAVE_CONTEXT;  
@@ -90,11 +91,45 @@ uint16_t get_Next_Gossip_TextID(struct stSariaHintGlobals* pstSariaHintGlobals, 
         CurBitIndex++;
     }
     
-    
     // End of TextLoop => reset globals
     pstSariaHintGlobals->Activation = 0;
     pstSariaHintGlobals->intGossipTextIndex = 0;
     pstSariaHintGlobals->justDeactivated = 1;
 
     return 0x00e3;  //TextID - Do you want to talk to Saria again?
+}
+
+
+
+uint16_t Saria_TextBoxBreak_handling(struct stSariaHintGlobals* pstSariaHintGlobals, uint16_t TextID, uint16_t* pSaria_Gossip_TextID_Table)
+{
+    if(pstSariaHintGlobals->lastTextID == 0x00e0 ||    //ID-You want to talk to Saria, right?
+            pstSariaHintGlobals->lastTextID == 0x00e3) //ID-Do you want to talk to Saria again?
+    {
+        pstSariaHintGlobals->intGossipTextIndex = 0;
+    }        
+    
+    pstSariaHintGlobals->lastTextID = TextID;
+    
+    if(pstSariaHintGlobals->Activation          // Already going through TextBoxBreak chaining?
+        || (TextID>=0x0160 && TextID<=0x016c)   // Saria TextID ?
+        )  
+    {
+        pstSariaHintGlobals->Activation = 1; 
+        return get_Next_Gossip_TextID(pstSariaHintGlobals, pSaria_Gossip_TextID_Table);
+        // Modifying v0 with the new TextID
+    }
+              
+    return TextID;
+}
+
+
+uint8_t Saria_ResetOnSaveload(struct stSariaHintGlobals* pstSariaHintGlobals)
+{
+    pstSariaHintGlobals->lastTextID = 0; 
+    pstSariaHintGlobals->intGossipTextIndex = 0;
+    pstSariaHintGlobals->Activation = 0;
+    pstSariaHintGlobals->justDeactivated = 0;
+
+    return 0;
 }

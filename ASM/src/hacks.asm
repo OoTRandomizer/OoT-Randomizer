@@ -1233,8 +1233,11 @@ skip_GS_BGS_text:
     
   ;for displaced Code
 .org 0x800595D0    ;.orga 0xACF530
-OOT_Navi_Saria_TextID_Generation:    
-    
+    OOT_Navi_Saria_TextID_Generation:
+
+;hook for Extended Init on Saveloads
+ .orga 0x00B0652C
+    j NaviSaria_Hints_Extended_Init_On_Saveloads_HOOK    ;in Vanilla this was a jr         
     
 ; ==================================================================================================
 ; Navi Hints - see working_navi.py
@@ -1251,12 +1254,7 @@ OOT_Navi_Saria_TextID_Generation:
  ;hook for Navi in dungeons
  .orga 0x00ACF648    
     jal Navi_Hints_Activate_Navi_In_Dungeons_HOOK       ;in Vanilla this was a #LBU V0, 0x0002 (T8) before
-    nop
-         
- ;hook for Extended Init on Saveloads
- .orga 0x00B0652C
-    j Navi_Hints_Extended_Init_On_Saveloads_HOOK    ;in Vanilla this was a jr       
-           
+    nop          
 
 ; ==================================================================================================
 ; saria repeats hints

@@ -367,5 +367,3 @@ class Navi_Hints(Rom):
             else:
                 self.Navi_Hints_patch_internal(rom, world, spoiler, save_context, None)          
             
-     
-        

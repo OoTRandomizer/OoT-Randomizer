@@ -24,65 +24,17 @@ Saria_TextBoxBreak_HOOK:
     jal OOT_Navi_Saria_TextID_Generation
     nop
     
-    
     lw t2, SARIA_HINTS_CONDITION
  beq t2, r0, @@Saria_TextID_END
     nop
     
-    ;v0 is the TextID (from the hook!)
-    
-    la t1, Saria_Hints_Globals
-    lw t2, 0x0000 (t1)      ;Load Last TextID
-    
-    ori t3, r0, 0x00e0  ; ID-You want to talk to Saria, right?
- beq t2, t3, @@Saria_TextID_StartNew
-    nop
-    
-    ori t3, r0, 0x00e3  ; ID-Do you want to talk to Saria again?
- beq t2, t3, @@Saria_TextID_StartNew
-    nop
-    
-    J @@Saria_TextID_Continue
-    nop
-    
-@@Saria_TextID_StartNew:
-    sw r0, 0x0004 (t1)          ;Reset Text Index
-    
-@@Saria_TextID_Continue:
-    sw v0, 0x0000 (t1)          ;Save Last TextID
-    
-    
-    lw t2, 0x0008 (t1)          ;Load Activation
- bne t2, r0, @@Saria_TextID_Change
-    nop
-           
-    
-; Is it a Saria Text?    
-    
-    ori t2, r0, (0x0160 -1)                  ;saria Text ID low
-    slt t1, t2, v0        
-
- beq t1, r0, @@Saria_TextID_END      ;BRANCH if reqested Textpointer A1 < Min
-    nop
-    
-    ori t2, r0, (0x016c +1)                  ;saria Text ID high - TBD is this correct? 
-    slt t1, v0, t2   
-    
-  beq t1, r0, @@Saria_TextID_END      ;BRANCH if reqested Textpointer A1 < Min
-    nop    
- 
-@@Saria_TextID_Change: 
-    ori t2, r0, 0x0001
-    la t1, Saria_Hints_Globals
-    sw t2, 0x0008 (t1)          ;save Activation  
-     
+    ;TextID Handling
     la a0, Saria_Hints_Globals
-    la a1, SARIA_GOSSIP_TEXTID_TABLE
-    jal get_Next_Gossip_TextID  ; in __C__
+    move a1, v0                 ;TextID in a1
+    la a2, SARIA_GOSSIP_TEXTID_TABLE
+    jal Saria_TextBoxBreak_handling ; in ___C___ Modifying v0 with the new TextID
     nop
-    ; Modifying v0 with the new TextID
-
-
+    
 @@Saria_TextID_END:    
     ;Restore RA and return
     lw      ra, 0x0014(sp)
@@ -123,7 +75,6 @@ Saria_TextBoxBreak_Chaining2_HOOK:      ; On the JalR FunctionPointer settings
  bne t2, r0, @@Saria_TextBoxBreak_Chaining_JustDeactivated
     nop
 
-    
     lw t2, 0x0008 (t1)      ;Load Activation
     
  bne t2, r0, @@Saria_TextBoxBreak_Chaining_NoChange
@@ -136,7 +87,6 @@ Saria_TextBoxBreak_Chaining2_HOOK:      ; On the JalR FunctionPointer settings
     ;displaced code
     j Saria_TextBoxBreak_Chaining2_HOOK_END
     nop
-
 
 @@Saria_TextBoxBreak_Chaining_JustDeactivated:
     sw r0, 0x000C (t1)      ;reset just deactivated
@@ -159,17 +109,17 @@ SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = ROMTextAddress, a2 = TextID (unused
     la t1, Saria_Hints_Globals
     lw t2, 0x0008 (t1)      ;Load Activation
     
- bne t2, r0, @@SARIA_HINTS_GOSSIP_READING_NOSAVE ;if Saria Text Activation is active, no saving
+ bne t2, r0, @@SARIA_HINTS_GOSSIP_READING_NOSAVE ;if Saria text activation is active, no saving
     nop
     
     ; Get Message Text Index offset
     la a0, SARIA_GOSSIP_TEXTID_TABLE
-    jal get_SariaIndexOffset_ByTextAddress ;in __C__
+    jal get_SariaIndexOffset_ByTextAddress  ;in __C__ get index offset
     nop
     ; v0 has the indexoffset now
 
-    move a0, v0                     ;a1 is indexoffset of gossiptext now
-    jal Saria_Gossip_Saveprogress       ;in __C__
+    move a0, v0                     ;a0 is indexoffset of gossiptext now
+    jal Saria_Gossip_Saveprogress       ;in __C__ - saving progress
     nop
 
 @@SARIA_HINTS_GOSSIP_READING_NOSAVE:    
@@ -179,9 +129,4 @@ SARIA_HINTS_GOSSIP_READING: ;arguments: a1 = ROMTextAddress, a2 = TextID (unused
     addiu   sp, sp, 0x18
     jr ra
     nop    
-    
-    
-    
-    
-    
     

@@ -14,7 +14,7 @@ NAVI_HINTS_GLOBALS:
 
 
 NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE:
-.area 0x300, 0      ;max 768 bytes for lookuptable, 96 Entrys/required items -1
+.area 0x300, 0      ;max 768 bytes for lookuptable, 96 entrys/required items -1
 .endarea
 
 
@@ -37,7 +37,7 @@ Navi_Hints_cyclicLogic_HOOK:
     la a2, Navi_Hints_TextIDOffsetGlobal
 
 
-    jal Navi_CyclicLogic
+    jal Navi_CyclicLogic  ;in ___C___ cyclic logic handling
     nop
 
 ;Restore and Return
@@ -55,7 +55,7 @@ Navi_Hints_cyclicLogic_HOOK:
    
  ;_______LoadProgress________   
     
-@WNAVI_CL_LOADPROGRESS:
+WNAVI_CL_LOADPROGRESS:
     addiu   sp, sp, -0x18
     sw      ra, 0x0014(sp)
     
@@ -67,7 +67,7 @@ Navi_Hints_cyclicLogic_HOOK:
     
     la a0, NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE
     la a1, Navi_Hints_cyclicLogicGlobals 
-    jal Navi_LoadProgress
+    jal Navi_LoadProgress                   ;in ___C___ load progress
     nop
     
     ;Restore RA and return
@@ -80,41 +80,6 @@ Navi_Hints_cyclicLogic_HOOK:
     
     
 ;_______Other Hooks__________
-
-Navi_Hints_Extended_Init_On_Saveloads_HOOK: ;<= Hook on Saveloads
-    addiu   sp, sp, -0x18
-    sw      ra, 0x0014(sp)
-    
-    lw t2, NAVI_HINTS_CONDITION
- beq t2, r0, @@EXTENDED_INIT_END
-    nop
-    
-    ; Init global variables (for cyclic logic)
-    la t1, Navi_Hints_TextIDOffsetGlobal
-    sw r0, 0x0000 (t1)       ;Store T0 in Global Variable 5 TextID-Offset
-   
-    la t7, NAVI_HINTS_DATA_GENERATED_LOOKUPTABLE
-                                    ;global variable 1 (Timer), 2 (showtextflag), 
-    la t1, Navi_Hints_cyclicLogicGlobals   ;3 (Max Time when Navi activated - value comes from python patched ROM Patches.py)
-                                             ;4 (LastLookupTablePointer); 5(LastTextTablePointer)
-                                             ;6 Timer2
-    ori t0, r0, 1  ;The TextID-Offset Backup is not on "I have faith in you..." but on the first real hint
-    sw t0, 0x0010 (t1)
-    sw t7, 0x000C (t1)
-    sw r0, 0x0014 (t1)       ;reset global variable 6 (Timer2)
-    
-    
-    jal @WNAVI_CL_LOADPROGRESS  ; Load progress from save
-    nop
-    
-@@EXTENDED_INIT_END:
-    ;Restore RA and return
-    lw      ra, 0x0014(sp)
-    addiu   sp, sp, 0x18
-    jr ra
-    nop
-    
-    
         
 Navi_Hints_Activate_Navi_In_Dungeons_HOOK:     ;<= hack, navi in dungeons, see Navi_Hints.py
 
@@ -140,7 +105,7 @@ NaviHints_TextID_HOOK:
     sw      ra, 0x0014(sp)
     
     ;displaced code
-    jal OOT_Navi_Saria_TextID_Generation
+    jal OOT_Navi_Saria_TextID_Generation        ;OOT vanilla function
     nop
     
     lw t2, NAVI_HINTS_CONDITION
@@ -162,8 +127,7 @@ NaviHints_TextID_HOOK:
     
     ; OK its a Navi Text
     ;=> Modify v0
-    la t2, Navi_Hints_TextIDOffsetGlobal
-    lw v0, 0x0000 (t2)       ; Load Global Variable 5 TextIDOffset
+    lw v0, Navi_Hints_TextIDOffsetGlobal      ; Load Global Variable 5 TextIDOffset
     lw t5, Navi_Hints_TextID_Base
     addu v0, v0, t5
     andi v0, v0, 0xffff
