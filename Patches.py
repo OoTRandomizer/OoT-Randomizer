@@ -90,14 +90,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
 
     if world.bombchus_in_logic:
         rom.write_int32(rom.sym('BOMBCHUS_IN_LOGIC'), 1)
-		
-    if world.fast_chickens:
-        # All chickens
-        # offsets = [ Entrance: 0x02016206, near Gate 0x02016216, near pen 0x02016226, near windmill 0x02016236, boxed 0x02016246, skulltulla house 0x02016256, backgrotto 0x02016266]
-        offsets = [0x02016246, 0x02016256, 0x02016266, 0x02016206, 0x02016216, 0x02016236]
-        position = [0x01, 0x38, 0x00, 0x50, 0x05, 0xED]
-        for offset in offsets:
-            rom.write_bytes(offset, position)
 
     # Change graveyard graves to not allow grabbing on to the ledge
     rom.write_byte(0x0202039D, 0x20)
@@ -904,6 +896,15 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     save_context.write_bits(0x0EEB, 0x02) # "Entered Lake Hylia"
     save_context.write_bits(0x0EEB, 0x01) # "Entered Dodongo's Cavern"
     save_context.write_bits(0x0F08, 0x08) # "Entered Hyrule Castle"
+
+    if world.fast_chickens:
+        # save_context.write_bits(0x0F2A, 0x08) # "Caught Cucco Near Cucco Pen"
+        save_context.write_bits(0x0F2A, 0x02) # "Caught Cucco Near Hyrule Field Entrance"
+        save_context.write_bits(0x0F2A, 0x04) # "Caught Cucco Near Bazaar"
+        save_context.write_bits(0x0F2A, 0x10) # "Caught Cucco Behind Windmill"
+        save_context.write_bits(0x0F2A, 0x20) # "Caught Cucco In Crate"
+        save_context.write_bits(0x0F2A, 0x40) # "Caught Cucco Near Skulltula House"
+        save_context.write_bits(0x0F2A, 0x80) # "Caught Cucco Behind Potion Shop"
 
     # Make the Kakariko Gate not open with the MS
     if not world.open_kakariko:
