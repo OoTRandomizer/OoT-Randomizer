@@ -1098,8 +1098,7 @@
                 (has_bombs or Progressive_Strength_Upgrade) and 
                 (can_use(Dins_Fire) or (can_reach(Darunias_Chamber) and has_sticks))",
             "Rolling Goron as Child": "
-                is_child and 
-                (has_explosives or (Progressive_Strength_Upgrade and logic_child_rolling_with_strength))",
+                is_child and has_bombs",
             "Link the Goron": "
                 is_adult and 
                 (Progressive_Strength_Upgrade or has_explosives or has_bow)",

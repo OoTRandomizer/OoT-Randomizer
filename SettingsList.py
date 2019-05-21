@@ -134,12 +134,6 @@ def logic_tricks_list_tooltip(widget, pos):
 
 
 logic_tricks = {
-    'Rolling Goron (Hot Rodder Goron) as Child with Strength': {
-        'name'    : 'logic_child_rolling_with_strength',
-        'tooltip' : '''\
-                    Use the bombflower on the stairs or near Medigoron.
-                    Timing is tight, especially without backwalking
-                    '''},
     'Fewer Tunic Requirements': {
         'name'    : 'logic_fewer_tunic_requirements',
         'tooltip' : '''\

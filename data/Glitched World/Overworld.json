@@ -816,8 +816,7 @@
                 (has_explosives or Progressive_Strength_Upgrade) and 
                 (( (can_play(Zeldas_Lullaby) or can_shield) and has_sticks) or can_use(Dins_Fire))",
             "Rolling Goron as Child": "
-                is_child and 
-                (has_explosives or Progressive_Strength_Upgrade)",
+                is_child and has_bombs",
             "Link the Goron": "
                 is_adult and 
                 (Progressive_Strength_Upgrade or has_explosives or has_bow or can_use(Dins_Fire) or has_blue_fire)",
