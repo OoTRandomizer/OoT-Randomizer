@@ -3,23 +3,6 @@
 logic_chus__bowling_lady_1:
 ; Change Bowling Alley check to Bombchus or Bomb Bag (Part 1)
 
-    lw      at, BOMBCHUS_IN_LOGIC
-    beq     at, r0, @@logic_chus_false
-    nop
-
-@@logic_chus_true:
-    lb      t7, lo(0x8011A64C)(t7)
-    li      t8, 0x09; Bombchus
-
-    beq     t7, t8, @@return
-    li      t8, 1
-    li      t8, 0
-
-@@return:
-    jr      ra
-    nop
-
-@@logic_chus_false:
     lw      t7, lo(0x8011A670)(t7)
     andi    t8, t7, 0x18
     jr      ra
@@ -28,24 +11,7 @@ logic_chus__bowling_lady_1:
 
 logic_chus__bowling_lady_2:
 ; Change Bowling Alley check to bombchus or Bomb Bag (Part 2)
-
-    lw      at, BOMBCHUS_IN_LOGIC
-    beq     at, r0, @@logic_chus_false
-    nop
-
-@@logic_chus_true:
-    lb      t3, lo(0x8011A64C)(t3)
-    li      t4, 0x09; Bombchus
-
-    beq     t3, t4, @@return
-    li      t4, 1
-    li      t4, 0
-
-@@return:
-    jr      ra
-    nop
-    
-@@logic_chus_false:
+   
     lw      t3, lo(0x8011A670)(t3)
     andi    t4, t3, 0x18
     jr      ra

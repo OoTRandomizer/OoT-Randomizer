@@ -401,10 +401,8 @@ class State(object):
 
 
     def has_bombchus_item(self):
-        if self.world.bombchus_in_logic:
-            return self.has_any(lambda pritem: pritem.startswith('Bombchus'))
-        else:
-            return self.has('Bomb Bag')
+        return self.has_any(lambda pritem: pritem.startswith('Bombchus')) or self.has('Bomb Bag')
+        
 
 
     def has_explosives(self):

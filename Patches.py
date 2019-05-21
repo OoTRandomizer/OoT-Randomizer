@@ -88,8 +88,8 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     if not world.dungeon_mq['Water Temple']:
         rom.write_byte(0x25B8197, 0x3F)
 
-    if world.bombchus_in_logic:
-        rom.write_int32(rom.sym('BOMBCHUS_IN_LOGIC'), 1)
+    # Flag BOMBCHUS_IN_LOGIC to set up the ASM
+    rom.write_int32(rom.sym('BOMBCHUS_IN_LOGIC'), 1)
 
     # Change graveyard graves to not allow grabbing on to the ledge
     rom.write_byte(0x0202039D, 0x20)
@@ -1453,12 +1453,11 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
             save_context.write_bits(door_byte, door_bits)
 
     # Fix chest animations
-    if world.bombchus_in_logic:
-        bombchu_ids = [0x6A, 0x03, 0x6B]
-        for i in bombchu_ids:
-            item = read_rom_item(rom, i)
-            item['chest_type'] = 0
-            write_rom_item(rom, i, item)
+    bombchu_ids = [0x6A, 0x03, 0x6B]
+    for i in bombchu_ids:
+        item = read_rom_item(rom, i)
+        item['chest_type'] = 0
+        write_rom_item(rom, i, item)
     if world.bridge == 'tokens':
         item = read_rom_item(rom, 0x5B)
         item['chest_type'] = 0
