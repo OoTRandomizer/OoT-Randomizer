@@ -39,7 +39,9 @@
                 has_fire_source and (has_bow or logic_fire_mq_bk_chest) and 
                 Progressive_Hookshot",
             "Fire Temple MQ Big Lava Room Bombable Chest": "
-                has_fire_source and Progressive_Hookshot and has_explosives",
+                has_fire_source and has_explosives and
+                (Progressive_Hookshot or
+                    (logic_fire_mq_bombable_chest and (damage_multiplier != 'ohko' or can_use(Nayrus_Love))))",
             "GS Fire Temple MQ Big Lava Room": "True"
         },
         "exits": {
@@ -80,7 +82,7 @@
             "Fire Temple MQ Freestanding Key": "True",
             "Fire Temple MQ West Tower Top Chest": "(Small_Key_Fire_Temple, 4)",
             "GS Fire Temple MQ Fire Wall Maze Side Room": "
-                can_play(Song_of_Time) or Hover_Boots",
+                can_play(Song_of_Time) or Hover_Boots or logic_fire_mq_flame_maze",
             "GS Fire Temple MQ Fire Wall Maze Center": "has_explosives",
             "GS Fire Temple MQ Above Fire Wall Maze": "(Small_Key_Fire_Temple, 5)"
         }

@@ -108,8 +108,9 @@
         "locations": {
             "Ganons Castle MQ Light Trial Lullaby Chest": "can_play(Zeldas_Lullaby)",
             "Ganons Castle Light Trial Clear": "
-                can_use(Light_Arrows) and Progressive_Hookshot and 
-                (Small_Key_Ganons_Castle, 3)"
+                can_use(Light_Arrows) and (Small_Key_Ganons_Castle, 3) and can_see_with_lens and
+                (Progressive_Hookshot or
+                    (logic_light_trial_mq and (damage_multiplier != 'ohko' or has_fairy or can_use(Nayrus_Love))))"
         }
     }
 ]
