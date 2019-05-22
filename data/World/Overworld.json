@@ -1102,7 +1102,8 @@
                 (has_explosives or (Progressive_Strength_Upgrade and logic_child_rolling_with_strength))",
             "Link the Goron": "
                 is_adult and 
-                (Progressive_Strength_Upgrade or has_explosives or has_bow)",
+                    (Progressive_Strength_Upgrade or has_explosives or has_bow or
+                    (logic_link_goron_dins and can_use(Dins_Fire)))",
             "GS Goron City Boulder Maze": "is_child and has_explosives",
             "GS Goron City Center Platform": "is_adult",
             "Goron City Maze Gossip Stone": "
@@ -1125,7 +1126,9 @@
                 (is_child and (can_use(Dins_Fire) or (can_reach(Darunias_Chamber) and has_sticks)))",
             "Darunias Chamber": "
                 (is_child and can_play(Zeldas_Lullaby)) or 
-                (is_adult and (Progressive_Strength_Upgrade or has_explosives or has_bow))",
+                (is_adult and
+                    (Progressive_Strength_Upgrade or has_explosives or has_bow or
+                    (logic_link_goron_dins and can_use(Dins_Fire))))",
             "Goron City Grotto": "
                 is_adult and 
                 ((can_play(Song_of_Time) and 
@@ -1189,7 +1192,9 @@
         },
         "exits": {
             "Death Mountain Summit": "True",
-            "Death Mountain Crater Lower": "can_use(Hover_Boots)",
+            "Death Mountain Crater Lower": "
+                can_use(Hover_Boots) or
+                (logic_crater_upper_to_lower and can_use(Hammer))",
             "Death Mountain Crater Central": "
                 can_use(Goron_Tunic) and can_use(Distant_Scarecrow) and 
                 ((damage_multiplier != 'ohko' and damage_multiplier != 'quadruple') or 

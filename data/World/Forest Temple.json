@@ -43,7 +43,8 @@
         "locations": {
             "Forest Temple Outside Hookshot Chest": "
                 can_use(Hookshot) or
-                can_reach(Forest_Temple_Falling_Room)",
+                can_reach(Forest_Temple_Falling_Room) or
+                (logic_forest_outdoors_ledge and can_use(Hover_Boots) and can_reach(Forest_Temple_Outdoors_High_Balconies))",
             "GS Forest Temple Outdoor East": "
                 can_use(Hookshot) or 
                 (can_reach(Forest_Temple_Falling_Room) and 
@@ -132,7 +133,7 @@
         },
         "exits": {
             "Forest Temple Falling Room": "
-            (Small_Key_Forest_Temple, 5) and (Bow or can_use(Dins_Fire))"
+            (Small_Key_Forest_Temple, 5) and (has_bow or can_use(Dins_Fire))"
         }
     },
     {

@@ -77,10 +77,14 @@
         "region_name": "Shadow Temple Beyond Boat",
         "dungeon": "Shadow Temple",
         "locations": {
-            "Bongo Bongo Heart": "has_bow and Boss_Key_Shadow_Temple",
-            "Bongo Bongo": "has_bow and Boss_Key_Shadow_Temple",
+            "Bongo Bongo Heart": "
+                (has_bow or (logic_shadow_statue and has_bombchus)) and
+                Boss_Key_Shadow_Temple",
+            "Bongo Bongo": "
+                (has_bow or (logic_shadow_statue and has_bombchus)) and
+                Boss_Key_Shadow_Temple",
             "GS Shadow Temple MQ After Ship": "True",
-            "GS Shadow Temple MQ Near Boss": "has_bow"
+            "GS Shadow Temple MQ Near Boss": "has_bow or (logic_shadow_statue and has_bombchus)"
         },
         "exits": {
             "Shadow Temple Invisible Maze": "

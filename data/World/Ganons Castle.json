@@ -103,7 +103,7 @@
                 can_play(Zeldas_Lullaby) and (Small_Key_Ganons_Castle, 1)",
             "Ganons Castle Light Trial Clear": "
                 can_use(Light_Arrows) and Progressive_Hookshot and 
-                (Small_Key_Ganons_Castle, 2)"
+                (Small_Key_Ganons_Castle, 2) and can_see_with_lens"
         }
     }
 ]
