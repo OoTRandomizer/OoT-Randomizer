@@ -262,16 +262,13 @@ logic_tricks = {
                     flower. You must backwalk with the flower and then
                     quickly throw it toward the wall.
                     '''},
-    'Water Temple Boss Key Chest with No Additional Items': {
+    'Water Temple Boss Key Chest with Iron Boots': {
         'name'    : 'logic_water_bk_chest',
         'tooltip' : '''\
-                    After reaching the Boss Key chest's area with Iron Boots
-                    and Longshot, the chest can be reached with no additional
-                    items aside from Small Keys. Stand on the blue switch
-                    with the Iron Boots, wait for the water to rise all the
-                    way up, and then swim straight to the exit. You should
-                    grab the ledge as you surface. It works best if you don't
-                    mash B.
+                    Stand on the blue switch in the Stinger room with the
+                    Iron Boots, wait for the water to rise all the way up,
+                    and then swim straight to the exit. You should grab the
+                    ledge as you surface. It works best if you don't mash B.
                     '''},
     'Adult Kokiri Forest GS with Hover Boots': {
         'name'    : 'logic_adult_kokiri_gs',
@@ -327,6 +324,17 @@ logic_tricks = {
                     If you move quickly you can sneak past the edge of
                     a flame wall before it can rise up to block you.
                     To do it without taking damage is more precise.
+                    Allows you to progress without needing either a
+                    Small Key or Hover Boots.
+                    '''},
+    'Fire Temple MQ Flame Wall Maze Skip': {
+        'name'    : 'logic_fire_mq_flame_maze',
+        'tooltip' : '''\
+                    If you move quickly you can sneak past the edge of
+                    a flame wall before it can rise up to block you.
+                    To do it without taking damage is more precise.
+                    Allows you to reach a GS without needing either
+                    Song of Time or Hover Boots.
                     '''},
     'Fire Temple MQ Chest Near Boss without Breaking Crate': {
         'name'    : 'logic_fire_mq_near_boss',
@@ -463,15 +471,93 @@ logic_tricks = {
                     on the torches is quite short so you must move
                     quickly in order to light all three.
                     '''},
-
-
-
+    'Forest Temple NE Outdoors Ledge with Hover Boots': {
+        'name'    : 'logic_forest_outdoors_ledge',
+        'tooltip' : '''\
+                    With precise Hover Boots movement you can fall down
+                    to this ledge from upper balconies. If done precisely
+                    enough, it is not necessary to take fall damage.
+                    In MQ, this skips a Longshot requirement.
+                    In Vanilla, this can skip a Hookshot requirement in
+                    entrance randomizer.
+                    '''},
+    'Water Temple Boss Key Region with Hover Boots': {
+        'name'    : 'logic_water_boss_key_region',
+        'tooltip' : '''\
+                    With precise Hover Boots movement it is possible
+                    to reach the boss key chest's region without
+                    needing the Longshot. It is not necessary to take
+                    damage from the spikes. The Gold Skulltula Token
+                    in the following room can also be obtained with
+                    just the Hover Boots.
+                    '''},
+    'Water Temple Falling Platform Room GS with Hookshot': {
+        'name'    : 'logic_water_falling_platform_gs',
+        'tooltip' : '''\
+                    If you stand on the very edge of the platform, this
+                    Gold Skulltula can be obtained with only the Hookshot.
+                    '''},
+    'Death Mountain Crater Upper to Lower with Hammer': {
+        'name'    : 'logic_crater_upper_to_lower',
+        'tooltip' : '''\
+                    With the Hammer, you can jumpslash the rock twice
+                    in the same jump in order to destroy it before you
+                    fall into the lava.
+                    '''},
     'Zora\'s Domain Entry with Hover Boots': {
         'name'    : 'logic_zora_with_hovers',
         'tooltip' : '''\
                     Can hover behind the waterfall as adult.
-                    This is very difficult.
                     '''},
+    'Shadow Temple River Statue with Bombchu': {
+        'name'    : 'logic_shadow_statue',
+        'tooltip' : '''\
+                    By sending a Bombchu around the edge of the
+                    gorge, you can knock down the statue without
+                    needing a Bow.
+                    Applies in both vanilla and MQ Shadow.
+                    '''},
+    'Stop Link the Goron with Din\'s Fire': {
+        'name'    : 'logic_link_goron_dins',
+        'tooltip' : '''\
+                    The timing is quite awkward.
+                    '''},
+    'Fire Temple Song of Time Room GS without Song of Time': {
+        'name'    : 'logic_fire_song_of_time',
+        'tooltip' : '''\
+                    A precise jump can be used to reach this room.
+                    '''},
+    'Climb Fire Temple without Strength': {
+        'name'    : 'logic_fire_strength',
+        'tooltip' : '''\
+                    A precise jump can be used to skip
+                    pushing the block.
+                    '''},
+    'Fire Temple MQ Big Lava Room Bombable Chest without Hookshot': {
+        'name'    : 'logic_fire_mq_bombable_chest',
+        'tooltip' : '''\
+                    A precisely-angled jump can get over the wall
+                    of fire in this room. It's expected that you
+                    will take damage as you do this. As it may
+                    take multiple attempts, you won't be expected
+                    to use a fairy to survive.
+                    '''},
+    'Light Trial MQ without Hookshot': {
+        'name'    : 'logic_light_trial_mq',
+        'tooltip' : '''\
+                    If you move quickly you can sneak past the edge of
+                    a flame wall before it can rise up to block you.
+                    In this case it doesn't seem possible to do it
+                    without taking damage.
+                    '''},
+    'Ice Cavern MQ Scarecrow GS with No Additional Items': {
+        'name'    : 'logic_ice_mq_scarecrow',
+        'tooltip' : '''\
+                    A precise jump can be used to reach this alcove.
+                    '''},
+
+
+
 }
 
 
