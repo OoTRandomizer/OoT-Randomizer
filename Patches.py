@@ -432,6 +432,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         rom.write_byte(symbol,0x01)
 
     if world.child_lake_hylia_control:
+        rom.write_byte(rom.sym('ENTRANCE_RANDO'), 0x01)
         symbol = rom.sym('CFG_CHILD_CONTROL_LAKE')
         rom.write_byte(symbol,0x01)
 
@@ -766,6 +767,9 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     exit_table = generate_exit_lookup_table()
 
     if world.shuffle_overworld_entrances:
+        # For conditionally enabling ASM
+        rom.write_byte(rom.sym('ENTRANCE_RANDO'), 0x01)
+
         # Prevent the ocarina cutscene from leading straight to hyrule field
         rom.write_byte(rom.sym('OCARINAS_SHUFFLED'), 1)
 
@@ -802,6 +806,9 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         set_entrance_updates(world.get_shuffled_entrances(type='Overworld'))
 
     if world.shuffle_dungeon_entrances:
+        # For conditionally enabling ASM
+        rom.write_byte(rom.sym('ENTRANCE_RANDO'), 0x01)
+
         symbol = rom.sym('CFG_CHILD_CONTROL_LAKE')
         rom.write_int32(symbol, 1)
 
@@ -830,6 +837,9 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         set_entrance_updates(world.get_shuffled_entrances(type='Dungeon'))
 
     if world.shuffle_interior_entrances:
+        # For conditionally enabling ASM
+        rom.write_byte(rom.sym('ENTRANCE_RANDO'), 0x01)
+
         # Disable trade quest timers
         rom.write_byte(rom.sym('DISABLE_TIMERS'), 0x01)
 
@@ -839,6 +849,9 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         set_entrance_updates(world.get_shuffled_entrances(type='Interior') + world.get_shuffled_entrances(type='SpecialInterior'))
 
     if world.shuffle_grotto_entrances:
+        # For conditionally enabling ASM
+        rom.write_byte(rom.sym('ENTRANCE_RANDO'), 0x01)
+
         set_entrance_updates(world.get_shuffled_entrances(type='Grave') + world.get_shuffled_entrances(type='SpecialGrave'))
 
     for k, v in [(k,v) for k, v in exit_updates if k in exit_table]:
@@ -1439,6 +1452,9 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         update_message_by_id(messages, text_id, message)
 
     if world.shuffle_grotto_entrances:
+        # For conditionally enabling ASM
+        rom.write_byte(rom.sym('ENTRANCE_RANDO'), 0x01)
+
         # Build the Grotto Load Table based on grotto entrance data
         for entrance in world.get_shuffled_entrances(type='Grotto'):
             if entrance.primary:

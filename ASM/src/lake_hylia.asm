@@ -95,6 +95,13 @@ Fill_Lake_Destroy:
     addiu   t1, t1, lo(Fill_Lake)
     sw      t1, 0x0154(a0)
 
+    ; Conditionally spawn actors   
+    li      t5, ENTRANCE_RANDO
+    lw      t5, 0x00(t5)
+    bnez    t5, @@spawn_actors
+    nop
+
+@@spawn_actors:
     ; Spawn relevant actors
     addiu   sp, sp, -0x20
     sw      ra, 0x10(sp)
