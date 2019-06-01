@@ -306,7 +306,7 @@
                 is_child or can_use(Scarecrow) or can_use(Magic_Bean) or Lake_Refill",
             "Water Temple Lobby": "
                 as_adult_here((can_use(Hookshot) and can_use(Iron_Boots)) or can_use(Longshot)) and
-                ((Progressive_Scale, 2) or can_use(Iron_Boots)) and
+                (((Progressive_Scale, 2) and (shuffle_dungeon_entrances or child_lake_hylia_control or Lake_refill))  or can_use(Iron_Boots)) and
                 (is_adult or (child_lake_hylia_control and Lake_Refill))",
             "Lake Hylia Grotto": "True"
         }
