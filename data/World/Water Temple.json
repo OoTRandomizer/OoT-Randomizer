@@ -18,7 +18,7 @@
         "dungeon":  "Water Temple",
         "locations": {
             "Morpha": "Boss_Key_Water_Temple and can_use(Longshot)",
-            "Morpha Heart": "Boss_Key_Water_Temple and can_use(Longshot)",
+            "Morpha Heart": "Boss_Key_Water_Temple and can_use(Longshot) and (Iron_Boots or child_lake_hylia_control or Lake_Refill)",
             "Water Temple Clear": "Boss_Key_Water_Temple and can_use(Longshot)"
         },
         "exits": {
