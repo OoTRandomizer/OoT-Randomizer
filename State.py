@@ -21,12 +21,6 @@ class State(object):
         self.playthrough = None
 
 
-    ## Ensure that this will always have a value
-    @property
-    def is_glitched(self):
-        return self.world.logic_rules != 'glitchless'
-
-
     def clear_cached_unreachable(self):
         # we only need to invalidate results which were False, places we could reach before we can still reach after adding more items
         for cache_type in self.region_cache:
@@ -380,8 +374,7 @@ class State(object):
         elif item == 'Golden Gauntlets':
             return self.has('Progressive Strength Upgrade', 3) and self.is_adult()
         elif item == 'Epona':
-            # Glitched can steal Epona by hovering over the LLR fences instead of using Epona's Song
-            return self.has('Epona') and self.is_adult() and (self.can_play('Eponas Song') or (self.is_glitched and self.can_hover()))
+            return self.has('Epona') and self.is_adult() and self.can_play('Eponas Song')
         elif item == 'Scarecrow':
             return self.has('Progressive Hookshot') and self.is_adult() and self.can_play('Scarecrow Song')
         elif item == 'Distant Scarecrow':
@@ -480,48 +473,38 @@ class State(object):
 
 
     def can_leave_forest(self):
-        return self.world.open_forest != 'closed' or self.is_adult() or self.is_glitched or self.has('Kokiri Forest Open')
+        return self.world.open_forest != 'closed' or self.is_adult() or self.has('Kokiri Forest Open')
 
 
     def can_finish_adult_trades(self):
-        if self.is_glitched:
-            zora_thawed = self.can_reach('Zoras Domain', age='adult')
-            carpenter_access = self.can_reach('Gerudo Valley Far Side', age='adult')
-            has_low_trade = self.has_any_of(('Poachers Saw', 'Odd Mushroom', 'Cojiro', 'Pocket Cucco', 'Pocket Egg'))
-            has_high_trade = self.has_any_of(('Eyedrops', 'Eyeball Frog', 'Prescription', 'Broken Sword'))
-            return self.can_reach('Death Mountain Crater Upper', age='adult') and (
-                self.has('Claim Check')
-                or (zora_thawed and (has_high_trade or (has_low_trade and carpenter_access))))
-        else:
-            # Require certain warp songs based on ER settings to ensure the player doesn't have to savewarp in order to complete the trade quest
-            # This is meant to avoid possible logical softlocks until either the trade quest is reworked or a better solution is found
-            guaranteed_path = True
-            if self.world.shuffle_special_indoor_entrances:
-                guaranteed_path = self.can_play('Prelude of Light')
-            elif self.world.shuffle_interior_entrances:
-                colossus_fairy_entrance = self.world.get_entrance('Desert Colossus -> Colossus Fairy')
-                if colossus_fairy_entrance.connected_region and colossus_fairy_entrance.connected_region.name == 'Lake Hylia Lab':
-                    guaranteed_path = (self.can_play('Prelude of Light') or self.can_play('Minuet of Forest') or
-                                        self.can_play('Serenade of Water') or self.can_play('Nocturne of Shadow'))
-
-            zora_thawed = self.can_reach('Zoras Domain', age='adult') and self.has_blue_fire()
-            pocket_cucco = self.has_any_of(('Pocket Egg', 'Pocket Cucco'))
-            # Technically also needs access to Lost Woods but we can check that once in odd_poultice
-            odd_mushroom = self.has_any_of(('Odd Mushroom', 'Cojiro')) or (pocket_cucco and self.can_reach('Carpenter Boss House', age='adult'))
-            odd_poultice = odd_mushroom and self.can_reach('Odd Medicine Building', age='adult') and self.can_reach('Lost Woods', age='adult')
-            # Getting the saw from poultice requires access to the Lost Woods that we just checked
-            poachers_saw = self.has('Poachers Saw') or odd_poultice
-            eyeball_frog = self.has_any_of(('Eyeball Frog', 'Prescription', 'Broken Sword')) or (poachers_saw and self.can_reach('Gerudo Valley Far Side', age='adult'))
-            eyedrops = (self.has('Eyedrops') or eyeball_frog) and self.can_reach('Lake Hylia Lab', age='adult') and zora_thawed and guaranteed_path
-            return (self.has('Claim Check')
-                    or (eyedrops and
-                        (self.world.shuffle_interior_entrances
-                            or self.world.logic_biggoron_bolero
-                            # Getting to Biggoron without ER or the trick above involves either
-                            # Darunia's Chamber access or clearing the boulders to get up DMT
-                            or self.has('Progressive Strength Upgrade')
-                            or self.can_blast_or_smash()
-                            or self.has_bow())))
+        # Require certain warp songs based on ER settings to ensure the player doesn't have to savewarp in order to complete the trade quest
+        # This is meant to avoid possible logical softlocks until either the trade quest is reworked or a better solution is found
+        guaranteed_path = True
+        if self.world.shuffle_special_indoor_entrances:
+            guaranteed_path = self.can_play('Prelude of Light')
+        elif self.world.shuffle_interior_entrances:
+            colossus_fairy_entrance = self.world.get_entrance('Desert Colossus -> Colossus Fairy')
+            if colossus_fairy_entrance.connected_region and colossus_fairy_entrance.connected_region.name == 'Lake Hylia Lab':
+                guaranteed_path = (self.can_play('Prelude of Light') or self.can_play('Minuet of Forest') or
+                                    self.can_play('Serenade of Water') or self.can_play('Nocturne of Shadow'))
+        zora_thawed = self.can_reach('Zoras Domain', age='adult') and self.has_blue_fire()
+        pocket_cucco = self.has_any_of(('Pocket Egg', 'Pocket Cucco'))
+        # Technically also needs access to Lost Woods but we can check that once in odd_poultice
+        odd_mushroom = self.has_any_of(('Odd Mushroom', 'Cojiro')) or (pocket_cucco and self.can_reach('Carpenter Boss House', age='adult'))
+        odd_poultice = odd_mushroom and self.can_reach('Odd Medicine Building', age='adult') and self.can_reach('Lost Woods', age='adult')
+        # Getting the saw from poultice requires access to the Lost Woods that we just checked
+        poachers_saw = self.has('Poachers Saw') or odd_poultice
+        eyeball_frog = self.has_any_of(('Eyeball Frog', 'Prescription', 'Broken Sword')) or (poachers_saw and self.can_reach('Gerudo Valley Far Side', age='adult'))
+        eyedrops = (self.has('Eyedrops') or eyeball_frog) and self.can_reach('Lake Hylia Lab', age='adult') and zora_thawed and guaranteed_path
+        return (self.has('Claim Check')
+                or (eyedrops and
+                    (self.world.shuffle_interior_entrances
+                        or self.world.logic_biggoron_bolero
+                        # Getting to Biggoron without ER or the trick above involves either
+                        # Darunia's Chamber access or clearing the boulders to get up DMT
+                        or self.has('Progressive Strength Upgrade')
+                        or self.can_blast_or_smash()
+                        or self.has_bow())))
 
 
     def has_skull_mask(self):
@@ -599,12 +582,11 @@ class State(object):
     def can_finish_GerudoFortress(self):
         if self.world.gerudo_fortress == 'normal':
             return (self.has('Small Key (Gerudo Fortress)', 4) and
-                    (self.is_adult() or self.has('Kokiri Sword') or self.is_glitched) and
+                    (self.is_adult() or self.has('Kokiri Sword')) and
                     (self.can_use('Bow')
                         or self.can_use('Hookshot')
                         or self.can_use('Hover Boots')
-                        or self.world.logic_gerudo_kitchen
-                        or self.is_glitched))
+                        or self.world.logic_gerudo_kitchen))
         elif self.world.gerudo_fortress == 'fast':
             return self.has('Small Key (Gerudo Fortress)', 1)
         else:
@@ -614,26 +596,6 @@ class State(object):
     def can_shield(self):
         return ((self.is_adult() and (self.has('Buy Hylian Shield') or self.has('Mirror Shield')))
                 or (self.is_child() and self.has('Buy Deku Shield')))
-
-
-    def can_mega(self):
-        return self.has_explosives() and self.can_shield()
-
-
-    def can_isg(self):
-        return self.can_shield() and (self.is_adult() or self.has_sticks() or self.has('Kokiri Sword'))
-
-
-    def can_hover(self):
-        return self.can_mega() and self.can_isg()
-
-
-    def can_weirdshot(self):
-        return self.can_mega() and self.can_use('Hookshot')
-
-
-    def can_jumpslash(self):
-        return self.is_adult() or (self.is_child() and (self.has_sticks or self.has('Kokiri Sword')))
 
 
     # Used for fall damage and other situations where damage is unavoidable

@@ -98,12 +98,6 @@ player.
 * Entrance Randomizer
   * Ability to randomize dungeon entrances or all interior entrances.
   * Deku Tree, Fire Temple, and Bottom of the Well dungeon entrances are accessible as both ages.
-* Glitched Logic
-  * New Logic Rules option that takes movement glitches into consideration.
-  * Files included in the Notes folder with information regarding this feature.
-    * Logic Notes contains notes on how the logic was constructed.
-    * Tricks contains video links to tricks that may be required.
-    * Oddities contains other miscellaneous oddities of Glitched Logic.
 * Randomize Main Rules option.
 * Filter dropdown to Location Exclusion dropdown.
 * Allow customization of Navi inner and outer glow.

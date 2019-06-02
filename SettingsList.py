@@ -709,7 +709,6 @@ setting_infos = [
             default        = 'glitchless',
             choices        = {
                 'glitchless': 'Glitchless',
-                'glitched':   'Glitched',
                 'none':       'No Logic',
                 },
             gui_text       = 'Logic Rules',
@@ -721,10 +720,6 @@ setting_infos = [
                              'Glitchless': No glitches are
                              required, but may require some
                              minor tricks
-
-                             'Glitched': Movement oriented
-                             glitches are likely required.
-                             No locations excluded.
         
                              'No Logic': All locations are
                              considered available. May not
@@ -1145,7 +1140,6 @@ setting_infos = [
                 ('all', 1),
             ],
         },
-        dependency     = lambda settings: 'off' if settings.logic_rules == 'glitched' else None,
     ),
     Combobox(
         name           = 'shuffle_scrubs',
@@ -1423,7 +1417,6 @@ setting_infos = [
             If set, a random number of dungeons
             will have Master Quest designs.
         ''',
-        dependency     = lambda settings: False if settings.logic_rules == 'glitched' else None,
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
@@ -1452,7 +1445,7 @@ setting_infos = [
             Master Quest redesigns.
             ''',
 
-        dependency     = lambda settings: 0 if settings.mq_dungeons_random or settings.logic_rules == 'glitched' else None,
+        dependency     = lambda settings: 0 if settings.mq_dungeons_random else None,
 
         shared         = True,
         gui_params     = {
