@@ -1123,7 +1123,8 @@
             "Goron City Woods Warp": "Goron_City_Woods_Warp_Open",
             "Goron Shop": "
                 has_explosives or Progressive_Strength_Upgrade or can_use(Bow) or 
-                (is_child and (can_use(Dins_Fire) or (can_reach(Darunias_Chamber) and has_sticks)))",
+                (can_use(Dins_Fire) and (is_child or logic_link_goron_dins)) or 
+                (is_child and can_reach(Darunias_Chamber) and has_sticks)",
             "Darunias Chamber": "
                 (is_child and can_play(Zeldas_Lullaby)) or 
                 (is_adult and
