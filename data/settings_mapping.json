@@ -285,29 +285,31 @@
       "sections": [
         {
           "name": "generalcosmetics_section",
-          "text": "General",
-          "row_span": 1,
+          "col_span": 12,
+          "row_span": 2,
           "settings": [
             "default_targeting",
             "display_dpad"
           ]
         },
         {
-          "name": "tunics_section",
-          "text": "Tunics",
+          "name": "equipment_section",
+          "text": "Equipment",
           "is_colors": true,
-          "row_span": 1,
+          "row_span": 6,
           "settings": [
             "kokiri_color",
             "goron_color",
-            "zora_color"
+            "zora_color",
+            "silver_gauntlets_color",
+            "golden_gauntlets_color"
           ]
         },
         {
           "name": "swordtrail_section",
           "text": "Sword Trail Colors",
           "is_colors": true,
-          "row_span": 1,
+          "row_span": 6,
           "settings": [
             "sword_trail_duration",
             "sword_trail_color_inner",
@@ -318,32 +320,14 @@
           "name": "ui_section",
           "text": "UI Colors",
           "is_colors": true,
-          "row_span": 1,
+          "row_span": 6,
           "settings": [
             "heart_color",
-            "magic_color"
-          ]
-        },
-        {
-          "name": "navi_section",
-          "text": "Navi Colors",
-          "is_colors": true,
-          "row_span": 1,
-          "settings": [
+            "magic_color",
             "navi_color_default",
             "navi_color_enemy",
             "navi_color_npc",
             "navi_color_prop"
-          ]
-        },
-        {
-          "name": "gauntlet_section",
-          "text": "Gauntlet Colors",
-          "is_colors": true,
-          "row_span": 1,
-          "settings": [
-            "silver_gauntlets_color",
-            "golden_gauntlets_color"
           ]
         }
       ]
