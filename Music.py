@@ -159,6 +159,33 @@ def shuffle_music(sequences, target_sequences, log):
     # Shuffle the sequences
     random.shuffle(sequences)
 
+    # Exclude unwanted sequences
+    excluded_sequences = []
+    if os.path.exists('data/Music/excluded.txt'):
+        try:
+            with open('data/Music/excluded.txt', 'r') as stream:
+                excluded_sequences_raw = stream.readlines()
+            for line in excluded_sequences_raw:
+                excluded_sequences.append(line.rstrip())
+        except FileNotFoundError as ex:
+            raise FileNotFoundError('No exclusion file. This should never happen')
+
+        # Append a different available sequence to the end to avoid list length mismatches if only using vanilla sequences
+        for i in range(len(sequences)):
+            if sequences[i].name in excluded_sequences:
+                replaced = sequences[i]
+                del(sequences[i])
+                retry_count = 0
+                while True:
+                    retry_count += 1
+                    new_choice = random.choice(sequences)
+                    if(new_choice.name not in excluded_sequences):
+                        new_sequence = TableEntry(new_choice.name, new_choice.cosmetic_name, new_choice.type, new_choice.instrument_set, vanilla_id=replaced.vanilla_id)
+                        sequences.append(new_sequence)
+                        break
+                    if(retry_count >= 10):
+                        raise RuntimeError(f'Exceeded maximum attempts to replace excluded sequence {replaced.name}. Remove sequences from exclude.txt or add more custom sequences.')
+
     for i in range(len(target_sequences)):
         sequences[i].replaces = target_sequences[i].replaces
         log[target_sequences[i].cosmetic_name] = sequences[i].cosmetic_name.rstrip()
