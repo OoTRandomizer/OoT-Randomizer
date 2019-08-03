@@ -98,6 +98,13 @@ class World(object):
 
         self.resolve_random_settings()
 
+        # Create attributes for each skull reward amount for logic
+        self.skull_price_10 = self.skull_reward_multiplier * 1
+        self.skull_price_20 = self.skull_reward_multiplier * 2
+        self.skull_price_30 = self.skull_reward_multiplier * 3
+        self.skull_price_40 = self.skull_reward_multiplier * 4
+        self.skull_price_50 = self.skull_reward_multiplier * 5
+
 
     def copy(self):
         new_world = World(self.id, self.settings)
@@ -144,6 +151,9 @@ class World(object):
         if self.chicken_count_random:
             self.chicken_count = random.randint(0, 7)
             self.randomized_list.append('chicken_count')
+        if self.skull_reward_multiplier_random:
+            self.skull_reward_multiplier = random.randint(1, 20)
+            self.randomized_list.append('skull_reward_multiplier')
 
         # Determine Ganon Trials
         trial_pool = list(self.skipped_trials)

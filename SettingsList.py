@@ -1510,6 +1510,33 @@ setting_infos = [
         shared         = True,
     ),
     Checkbutton(
+        name           = 'skull_reward_multiplier_random',
+        gui_text       = 'Random Skull Reward Multiplier',
+        gui_tooltip    = '''\
+            A random skull reward multiplier will be chosed.
+            Talking to the central cursed man in the skull house
+            will reveal how many you need.
+        ''',
+        disable        = {
+            True : {'settings' : ['skull_reward_multiplier']}
+        },
+        shared         = True,
+    ),
+    Scale(
+        name           = 'skull_reward_multiplier',
+        gui_text       = "Skull Reward Multiplier",
+        default        = 10,
+        min            = 1,
+        max            = 20,
+        gui_tooltip    = '''\
+            Changes the amount of skulls required to get an item.
+            For example, setting this to 5 gives you items at
+            5, 10, 15, 20, and 25 skulls instead of the usual 10, 20, 30...
+        ''',
+        disabled_default = 1,
+        shared         = True,
+    ),
+    Checkbutton(
         name           = 'shuffle_kokiri_sword',
         gui_text       = 'Shuffle Kokiri Sword',
         gui_tooltip    = '''\

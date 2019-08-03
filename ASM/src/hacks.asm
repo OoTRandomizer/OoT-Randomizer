@@ -1405,3 +1405,23 @@ skip_GS_BGS_text:
     nop
     nop
     nop
+
+; ==================================================================================================
+; Allow for variable multiple of skull token requirements
+; ==================================================================================================
+; sll t8 v1 2
+; addu t8 t8 v1
+; sll  t8 t8 1
+.org 0xEA3308
+    addiu   t8, r0, 0x16 ; Amount gets written to by patches.py
+    mult    t8, v0
+    mflo    t8
+
+; was sll t8 v1 2
+.org 0xEA21F0
+    addiu   t8, r0, 0x16 ; Amount gets written to by patches.py
+; was addu t8 t8 v1
+;     sll  t8 t8 1
+.org 0xEA2218
+    mult    t8, v1
+    mflo    t8

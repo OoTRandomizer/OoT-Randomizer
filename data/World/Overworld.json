@@ -909,15 +909,15 @@
         "region_name": "House of Skulltula",
         "locations": {
             "10 Gold Skulltula Reward": "
-                (Gold_Skulltula_Token, 10)",
+                (Gold_Skulltula_Token, skull_price_10)",
             "20 Gold Skulltula Reward": "
-                (Gold_Skulltula_Token, 20)",
+                (Gold_Skulltula_Token, skull_price_20)",
             "30 Gold Skulltula Reward": "
-                (Gold_Skulltula_Token, 30) and guarantee_hint",
+                (Gold_Skulltula_Token, skull_price_30) and guarantee_hint",
             "40 Gold Skulltula Reward": "
-                (Gold_Skulltula_Token, 40) and guarantee_hint",
+                (Gold_Skulltula_Token, skull_price_40) and guarantee_hint",
             "50 Gold Skulltula Reward": "
-                (Gold_Skulltula_Token, 50) and guarantee_hint"
+                (Gold_Skulltula_Token, skull_price_50) and guarantee_hint"
         },
         "exits": {
             "Kakariko Village": "True"

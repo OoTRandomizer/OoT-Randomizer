@@ -1216,6 +1216,15 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         new_message = "\x1AWait a minute! WOW!\x04\x1AYou have earned \x05\x41%d points\x05\x40!\x04\x1AYoung man, you are a genuine\x01\x05\x41Ghost Hunter\x05\x40!\x04\x1AIs that what you expected me to\x01say? Heh heh heh!\x04\x1ABecause of you, I have extra\x01inventory of \x05\x41Big Poes\x05\x40, so this will\x01be the last time I can buy a \x01ghost.\x04\x1AYou're thinking about what I \x01promised would happen when you\x01earned %d points. Heh heh.\x04\x1ADon't worry, I didn't forget.\x01Just take this." % (poe_points, poe_points)
         update_message_by_id(messages, 0x70f8, new_message)
 
+    # Set multiplier for skull rewards
+    opcode = 0x24180000 # ADDIU T8, R0, 0x00
+    opcode |= world.skull_reward_multiplier
+
+    rom.write_int32(0xEA3308, opcode)
+    rom.write_int32(0xEA21F0, opcode)
+    new_message = '\x1AIf you break the curse on my family\x01by destroying \x05\x41%d\x05\x40 Spiders of the\x01Curse for each of my kids, we\x01will make you very rich...' % world.skull_reward_multiplier
+    update_message_by_id(messages, 0x27, new_message)
+
     # Update Child Anju's dialogue
     new_message = "\x08What should I do!?\x01My \x05\x41Cuccos\x05\x40 have all flown away!\x04You, little boy, please!\x01Please gather at least \x05\x41%d Cuccos\x05\x40\x01for me.\x02" % world.chicken_count
     update_message_by_id(messages, 0x5036, new_message)
