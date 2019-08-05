@@ -181,9 +181,10 @@ def shuffle_music(sequences, target_sequences, log):
 
         # Remove the excluded sequences
         for i in range(len(excluded_list_elements)):
-            del(sequences[excluded_list_elements[i]])
             new_choice = sequences[random.choice([i for i in range(len(sequences)) if i not in excluded_list_elements])]
-            new_sequence = TableEntry(new_choice.name, new_choice.cosmetic_name, new_choice.type, new_choice.instrument_set)
+            del(sequences[excluded_list_elements[i]])
+            excluded_list_elements[i] = -1
+            new_sequence = TableEntry(new_choice.name, new_choice.cosmetic_name, new_choice.type, new_choice.instrument_set, new_choice.replaces, new_choice.vanilla_id)
             sequences.append(new_sequence)
 
     for i in range(len(target_sequences)):
