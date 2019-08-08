@@ -6,7 +6,7 @@ import itertools
 class Playthrough(object):
 
     def __init__(self, state_list, cached_spheres=None):
-        self.state_list = state_list  # reference, not a copy
+        self.state_list = [state.copy() for state in state_list]
         # Each cached sphere is a dict with 5 values:
         #  child_regions, adult_regions: sets of Region, all the regions in that sphere
         #  child_queue, adult_queue: queue of Entrance, all the exits to try next sphere
@@ -28,10 +28,9 @@ class Playthrough(object):
 
 
     def copy(self):
-        new_state_list = [state.copy() for state in self.state_list]
         # we only need to copy the top sphere since that's what we're starting with and we don't go back
         new_cache = [{k: copy.copy(v) for k,v in self.cached_spheres[-1].items()}]
-        return Playthrough(new_state_list, new_cache)
+        return Playthrough(self.state_list, new_cache)
 
 
     def collect_all(self, itempool):
@@ -47,7 +46,7 @@ class Playthrough(object):
 
     @staticmethod
     def max_explore(state_list, itempool=None):
-        p = Playthrough([s.copy() for s in state_list])
+        p = Playthrough(state_list)
         if itempool:
             p.collect_all(itempool)
         p.collect_locations()
@@ -55,7 +54,7 @@ class Playthrough(object):
 
     @staticmethod
     def with_items(state_list, itempool=None):
-        p = Playthrough([s.copy() for s in state_list])
+        p = Playthrough(state_list)
         if itempool:
             p.collect_all(itempool)
         p.next_sphere()
@@ -114,10 +113,9 @@ class Playthrough(object):
     # as a cache for the exits to try on the next iteration.
     @staticmethod
     def _expand_regions(exit_queue, region_set, validate):
-        new_exit = lambda exit: exit.connected_region and exit.connected_region not in region_set
         failed = []
         for exit in exit_queue:
-            if new_exit(exit):
+            if exit.connected_region and exit.connected_region not in region_set:
                 if validate(exit):
                     region_set.add(exit.connected_region)
                     exit_queue.extend(exit.connected_region.exits)
@@ -173,13 +171,12 @@ class Playthrough(object):
     # has prefiltered (eg. by whether they contain advancement items).
     #
     # Inside the loop, the caller usually wants to collect items at these
-    # locations to see if the game is beatable.
-    # This function does not alter provided state.
+    # locations to see if the game is beatable. Collection should be done
+    # using internal State (recommended to just call playthrough.collect).
     def iter_reachable_locations(self, item_locations):
         # tests reachability, skipping recursive can_reach region check
         def accessible(loc):
             return (loc not in visited_locations
-                    and not loc.is_disabled()
                     # Check adult first; it's the most likely.
                     and (loc.parent_region in adult_regions
                          and self.state_list[loc.world.id].with_age(loc.can_reach_simple, adult=True)
@@ -207,7 +204,6 @@ class Playthrough(object):
     # This collects all item locations available in the state list given that
     # the states have collected items. The purpose is that it will search for
     # all new items that become accessible with a new item set.
-    # This function modifies provided state.
     def collect_locations(self, item_locations=None):
         item_locations = item_locations or self.progression_locations()
         for location in self.iter_reachable_locations(item_locations):
@@ -235,20 +231,19 @@ class Playthrough(object):
         def won(state):
             return state.has('Triforce')
 
-        if scan_for_items:
-            # Check if already beaten
-            if all(map(won, self.state_list)):
-                return True
+        # Check if already beaten
+        if all(map(won, self.state_list)):
+            return True
 
+        if scan_for_items:
             # collect all available items
             # make a new playthrough since we might be iterating over one already
             playthrough = self.copy()
             playthrough.collect_locations()
+            # if every state got the Triforce, then return True
+            return all(map(won, playthrough.state_list))
         else:
-            playthrough = self
-
-        # if every state got the Triforce, then return True
-        return all(map(won, playthrough.state_list))
+            return False
 
 
     # Use the cache in the playthrough to determine region reachability.

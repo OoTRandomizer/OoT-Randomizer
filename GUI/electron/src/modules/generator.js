@@ -135,7 +135,7 @@ function romBuilding(pythonPath, randoPath, settings) {
 
         module.exports.emit('patchJobProgress', { generationIndex: currentGeneration - 1, progressCurrent: Math.floor(84 + (compressionPercentagePerFileLocal * (compressionTotalFiles - filesRemaining))), progressTotal: Math.floor((currentGenerationPercentage + (percentagePerGeneration / 1.2)) + (compressionPercentagePerFileTotal * (compressionTotalFiles - filesRemaining))), message: data.toString().split("\n")[0] });
       }
-      else if (data.toString().includes("Exception:") || data.toString().includes("error:") || data.toString().includes("Error:") || data.toString().includes("PermissionError:") || data.toString().includes("TypeError:") || data.toString().includes("ValueError:")) {
+      else if (data.toString().includes("Exception") || data.toString().includes("error") || data.toString().includes("Error") || data.toString().includes("PermissionError") || data.toString().includes("TypeError") || data.toString().includes("ValueError")) {
         error = true;
 
         //Filter out last line to show to the user provided it is safe to do so
@@ -146,7 +146,7 @@ function romBuilding(pythonPath, randoPath, settings) {
         if (errorRaw.length > 5) {
           let tempErrorMsg = errorRaw[errorRaw.length - 2];
 
-          if (tempErrorMsg.includes("Exception:") || tempErrorMsg.includes("error:") || tempErrorMsg.includes("Error:") || tempErrorMsg.includes("PermissionError:") || tempErrorMsg.includes("TypeError:") || tempErrorMsg.includes("ValueError:")) {
+          if (tempErrorMsg.includes("Exception") || tempErrorMsg.includes("error") || tempErrorMsg.includes("Error") || tempErrorMsg.includes("PermissionError") || tempErrorMsg.includes("TypeError") || tempErrorMsg.includes("ValueError")) {
             errorMsg = tempErrorMsg.trim();
           }
         }

@@ -3,7 +3,7 @@ from collections import defaultdict
 import logging
 import re
 
-from Item import ItemFactory
+from Item import MakeEventItem
 from ItemList import item_table
 from Location import Location
 from State import State
@@ -14,6 +14,9 @@ for item in item_table:
     escaped_items[re.sub(r'[\'()[\]]', '', item.replace(' ', '_'))] = item
 
 event_name = re.compile(r'\w+')
+
+def isliteral(expr):
+    return isinstance(expr, (ast.Num, ast.Str, ast.Bytes, ast.NameConstant))
 
 
 class Rule_AST_Transformer(ast.NodeTransformer):
@@ -37,13 +40,8 @@ class Rule_AST_Transformer(ast.NodeTransformer):
                 args=[ast.Str(escaped_items[node.id])],
                 keywords=[])
         elif node.id in self.world.__dict__:
-            return ast.Attribute(
-                value=ast.Attribute(
-                    value=ast.Name(id='state', ctx=ast.Load()),
-                    attr='world',
-                    ctx=ast.Load()),
-                attr=node.id,
-                ctx=ast.Load())
+            # Settings are constant
+            return ast.parse('%r' % self.world.__dict__[node.id], mode='eval').body
         elif node.id in State.__dict__:
             return ast.Call(
                 func=ast.Attribute(
@@ -95,13 +93,8 @@ class Rule_AST_Transformer(ast.NodeTransformer):
             raise Exception('Parse Error: second value must be a number. Got %s' % item.__class__.__name__, self.current_spot.name, ast.parse(node, False))
 
         if isinstance(count, ast.Name):
-            count = ast.Attribute(
-                value=ast.Attribute(
-                    value=ast.Name(id='state', ctx=ast.Load()),
-                    attr='world',
-                    ctx=ast.Load()),
-                attr=count.id,
-                ctx=ast.Load())
+            # Must be a settings constant
+            count = ast.parse('%r' % self.world.__dict__[count.id], mode='eval').body
 
         if iname in escaped_items:
             iname = escaped_items[iname]
@@ -171,7 +164,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
     def visit_Compare(self, node):
         def escape_or_string(n):
             if isinstance(n, ast.Name) and n.id in escaped_items:
-                return ast.Str(escaped_items[n])
+                return ast.Str(escaped_items[n.id])
             elif not isinstance(n, ast.Str):
                 return self.visit(n)
             return n
@@ -180,6 +173,78 @@ class Rule_AST_Transformer(ast.NodeTransformer):
         node.comparators = list(map(escape_or_string, node.comparators))
         node.ops = list(map(self.visit, node.ops))
 
+        # if all the children are literals now, we can evaluate
+        if isliteral(node.left) and all(map(isliteral, node.comparators)):
+            # either we turn the ops into operator functions to apply (lots of work),
+            # or we compile, eval, and reparse the result
+            res = eval(compile(ast.Expression(node), '<string>', 'eval'))
+            return ast.parse('%r' % res, mode='eval').body
+        return node
+
+
+    def visit_UnaryOp(self, node):
+        # visit the children first
+        self.generic_visit(node)
+        # if all the children are literals now, we can evaluate
+        if isliteral(node.operand):
+            res = eval(compile(ast.Expression(node), '<string>', 'eval'))
+            return ast.parse('%r' % res, mode='eval').body
+        return node
+
+
+    def visit_BinOp(self, node):
+        # visit the children first
+        self.generic_visit(node)
+        # if all the children are literals now, we can evaluate
+        if isliteral(node.left) and isliteral(node.right):
+            res = eval(compile(ast.Expression(node), '<string>', 'eval'))
+            return ast.parse('%r' % res, mode='eval').body
+        return node
+
+
+    def visit_BoolOp(self, node):
+        # Everything else must be visited, then can be removed/reduced to.
+        # visit the children first
+        self.generic_visit(node)
+
+        early_return = isinstance(node.op, ast.Or)
+        items = []
+        new_values = []
+        # if any elt is True(And)/False(Or), we can omit it
+        # if any is False(And)/True(Or), the whole node can be replaced with it
+        for elt in list(node.values):
+            if isinstance(elt, ast.Str):
+                items.append(elt.s)
+            elif isinstance(elt, ast.Name) and elt.id in escaped_items:
+                items.append(escaped_items[elt.id])
+            else:
+                # It's possible this returns a single item check,
+                # but it's already wrapped in a Call.
+                elt = self.visit(elt)
+                if isinstance(elt, ast.NameConstant):
+                    if elt.value == early_return:
+                        return elt
+                    # else omit it
+                else:
+                    new_values.append(elt)
+
+        # package up the remaining items and values
+        if not items and not new_values:
+            # all values were True(And)/False(Or)
+            return ast.NameConstant(not early_return)
+
+        if items:
+            node.values = [ast.Call(
+                func=ast.Attribute(
+                    value=ast.Name(id='state', ctx=ast.Load()),
+                    attr='has_any_of' if early_return else 'has_all_of',
+                    ctx=ast.Load()),
+                args=[ast.Tuple(tuple(items))],
+                keywords=[])] + new_values
+        else:
+            node.values = new_values
+        if len(node.values) == 1:
+            return node.values[0]
         return node
 
 
@@ -213,7 +278,19 @@ class Rule_AST_Transformer(ast.NodeTransformer):
             event.world = self.world
 
             self.current_spot = event
-            newrule = ast.fix_missing_locations(
+            # This could, in theory, create further subrules.
+            event.access_rule = self.make_access_rule(self.visit(node))
+            event.set_rule(event.access_rule)
+            region.locations.append(event)
+
+            MakeEventItem(subrule_name, event)
+        # Safeguard in case this is called multiple times per world
+        self.delayed_rules.clear()
+
+
+    def make_access_rule(self, body):
+        return eval(compile(
+            ast.fix_missing_locations(
                 ast.Expression(ast.Lambda(
                     args=ast.arguments(
                         posonlyargs=[],
@@ -221,18 +298,8 @@ class Rule_AST_Transformer(ast.NodeTransformer):
                         defaults=[],
                         kwonlyargs=[],
                         kw_defaults=[]),
-                    # This could, in theory, create further subrules.
-                    body=self.visit(node))))
-
-            event.access_rule = eval(compile(newrule, '<string>', 'eval'))
-            region.locations.append(event)
-
-            item = ItemFactory(subrule_name, self.world, event=True)
-            self.world.push_item(event, item)
-            event.locked = True
-            self.world.event_items.add(subrule_name)
-        # Safeguard in case this is called multiple times per world
-        self.delayed_rules.clear()
+                    body=body))),
+            '<string>', 'eval'))
 
 
     ## Handlers for specific internal functions used in the json logic.
@@ -257,13 +324,9 @@ class Rule_AST_Transformer(ast.NodeTransformer):
 
 
     def parse_spot_rule(self, spot):
-        if spot.rule_string is None:
-            return lambda state: True
-
-        rule = 'lambda state: ' + spot.rule_string
-        rule = rule.split('#')[0]
+        rule = spot.rule_string.split('#', 1)[0].strip()
 
         self.current_spot = spot
-        rule_ast = ast.parse(rule, mode='eval')
-        rule_ast = ast.fix_missing_locations(self.visit(rule_ast))
-        spot.access_rule = eval(compile(rule_ast, '<string>', 'eval'))
+        rule_ast = ast.parse(rule, mode='eval').body
+        spot.access_rule = self.make_access_rule(self.visit(rule_ast))
+        spot.set_rule(spot.access_rule)

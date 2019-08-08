@@ -785,9 +785,9 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     exit_table = generate_exit_lookup_table()
 
     if world.shuffle_interior_entrances or world.shuffle_overworld_entrances:
-        # Disable trade quest timers and prevent trade items from reverting on save load
+        # Disable trade quest timers and prevent trade items from ever reverting
         rom.write_byte(rom.sym('DISABLE_TIMERS'), 0x01)
-        rom.write_int32(0xB064CC, 0x10000010) # b 0xB06510 (skip trade item revert)
+        rom.write_int16s(0xB6D460, [0x0030, 0x0035, 0x0036]) # Change trade items revert table to prevent all reverts
 
     if world.shuffle_overworld_entrances:
         rom.write_byte(rom.sym('OVERWORLD_SHUFFLED'), 1)
@@ -821,6 +821,8 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         set_entrance_updates(world.get_shuffled_entrances(type='Overworld'))
 
     if world.shuffle_dungeon_entrances:
+        rom.write_byte(rom.sym('DUNGEONS_SHUFFLED'), 1)
+
         # Connect lake hylia fill exit to revisit exit (Hylia blue will then be rewired below)
         rom.write_int16(0xAC995A, 0x060C)
 
@@ -844,9 +846,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         rom.write_int32(0xE28870, 0x31CE0080) # andi
 
         remove_entrance_blockers(rom)
-        #Tell the Deku tree jaw actor we are always a child.
-        rom.write_int32(0x0C72C64, 0x240E0000)
-        rom.write_int32(0x0C72C74, 0x240F0001)
 
         #Purge temp flags on entrance to spirit from colossus through the front
         #door.
@@ -1071,20 +1070,8 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         if world.dungeon_mq['Spirit Temple']:
             save_context.addresses['keys']['spirit'].value = 3
 
-    if world.start_with_wallet:
-        world.distribution.give_item('Progressive Wallet', 3)
     if world.start_with_rupees:
-        world.distribution.give_item('Rupees', 999)
         rom.write_byte(rom.sym('MAX_RUPEES'), 0x01)
-    if world.start_with_deku_equipment:
-        if world.shopsanity == "off":
-            world.distribution.give_item('Deku Shield')
-        world.distribution.give_item('Deku Sticks', 99)
-        world.distribution.give_item('Deku Nuts', 99)
-    if world.start_with_fast_travel:
-        world.distribution.give_item('Prelude of Light')
-        world.distribution.give_item('Serenade of Water')
-        world.distribution.give_item('Farores Wind')
 
     # Set starting time of day
     if world.starting_tod != 'default':
@@ -1549,6 +1536,16 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
             if item['chest_type'] in (1, 3):
                 rom.write_int16(chest_address + 2, 0x0190) # X pos
                 rom.write_int16(chest_address + 6, 0xFABC) # Z pos
+        
+        # Move Silver Gauntlets chest if it is small so it is reachable from Spirit Hover Seam
+        chest_name = 'Silver Gauntlets Chest'
+        chest_address_0 = 0x21A02D0  # Address in setup 0
+        chest_address_2 = 0x21A06E4  # Address in setup 2
+        location = world.get_location(chest_name)
+        item = read_rom_item(rom, location.item.index)
+        if item['chest_type'] in (1, 3):
+            rom.write_int16(chest_address_0 + 6, 0x0172)  # Z pos
+            rom.write_int16(chest_address_2 + 6, 0x0172)  # Z pos
 
     # give dungeon items the correct messages
     add_item_messages(messages, shop_items, world)

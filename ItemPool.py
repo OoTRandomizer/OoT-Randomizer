@@ -1116,9 +1116,6 @@ def get_pool_core(world):
         pool.remove('Prelude of Light')
         pool.remove('Serenade of Water')
         pool.remove('Farores Wind')
-        world.state.collect(ItemFactory('Prelude of Light'))
-        world.state.collect(ItemFactory('Serenade of Water'))
-        world.state.collect(ItemFactory('Farores Wind'))
         pool.extend(get_junk_item(3))
         
     if world.free_scarecrow:
@@ -1207,8 +1204,6 @@ def get_pool_core(world):
 
     if world.start_with_wallet:
         replace_max_item(pool, 'Progressive Wallet', 0)
-        for i in [1, 2, 3]: # collect wallets
-            world.state.collect(ItemFactory('Progressive Wallet'))
 
     # Make sure our pending_junk_pool is empty. If not, remove some random junk here.
     if pending_junk_pool:
@@ -1227,6 +1222,7 @@ def get_pool_core(world):
 
     world.distribution.alter_pool(world, pool)
 
+    world.distribution.configure_stating_items_settings(world)
     world.distribution.collect_starters(world.state)
 
     return (pool, placed_items)

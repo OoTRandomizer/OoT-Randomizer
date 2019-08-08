@@ -29,7 +29,7 @@ def set_rules(world):
             if location.name in world.shop_prices:
                 add_item_rule(location, lambda location, item: item.type != 'Shop')
                 location.price = world.shop_prices[location.name]
-                add_rule(location, create_shop_rule(location))
+                location.add_rule(create_shop_rule(location))
             else:
                 add_item_rule(location, lambda location, item: item.type == 'Shop' and item.world.id == location.world.id)
 
@@ -41,7 +41,7 @@ def set_rules(world):
             forbid_item(location, 'Boss Key (Forest Temple)')
 
         if location.type == 'GossipStone' and world.hints == 'mask':
-            add_rule(location, lambda state: state.is_child())
+            location.add_rule(lambda state: state.is_child())
 
     for location in world.disabled_locations:
         try:
@@ -65,20 +65,9 @@ def set_rule(spot, rule):
     spot.access_rule = rule
 
 
-def add_rule(spot, rule, combine='and'):
-    old_rule = spot.access_rule
-    if combine == 'or':
-        spot.access_rule = lambda state: rule(state) or old_rule(state)
-    else:
-        spot.access_rule = lambda state: rule(state) and old_rule(state)
-
-
-def add_item_rule(spot, rule, combine='and'):
+def add_item_rule(spot, rule):
     old_rule = spot.item_rule
-    if combine == 'or':
-        spot.item_rule = lambda location, item: rule(location, item) or old_rule(location, item)
-    else:
-        spot.item_rule = lambda location, item: rule(location, item) and old_rule(location, item)
+    spot.item_rule = lambda location, item: rule(location, item) and old_rule(location, item)
 
 
 def forbid_item(location, item_name):
@@ -104,13 +93,13 @@ def set_shop_rules(world):
         if location.item.type == 'Shop':
             # Add wallet requirements
             if location.item.name in ['Buy Arrows (50)', 'Buy Fish', 'Buy Goron Tunic', 'Buy Bombchu (20)', 'Buy Bombs (30)']:
-                add_rule(location, lambda state: state.has('Progressive Wallet'))
+                location.add_rule(lambda state: state.has('Progressive Wallet'))
             elif location.item.name in ['Buy Zora Tunic', 'Buy Blue Fire']:
-                add_rule(location, lambda state: state.has('Progressive Wallet', 2))
+                location.add_rule(lambda state: state.has('Progressive Wallet', 2))
 
             # Add adult only checks
             if location.item.name in ['Buy Goron Tunic', 'Buy Zora Tunic']:
-                add_rule(location, lambda state: state.is_adult())
+                location.add_rule(lambda state: state.is_adult())
 
             # Add item prerequisit checks
             if location.item.name in ['Buy Blue Fire',
@@ -123,9 +112,9 @@ def set_shop_rules(world):
                                       'Buy Red Potion [40]',
                                       'Buy Red Potion [50]',
                                       'Buy Fairy\'s Spirit']:
-                add_rule(location, lambda state: state.has_bottle())
+                location.add_rule(lambda state: state.has_bottle())
             if location.item.name in ['Buy Bombchu (10)', 'Buy Bombchu (20)', 'Buy Bombchu (5)']:
-                add_rule(location, lambda state: state.has_bombchus_item())
+                location.add_rule(lambda state: state.has_bombchus_item())
 
 
 # This function should be ran once after setting up entrances and before placing items
@@ -134,7 +123,7 @@ def set_entrances_based_rules(worlds):
 
     # Use the states with all items available in the pools for this seed
     complete_itempool = [item for world in worlds for item in world.get_itempool_with_dungeon_items()]
-    playthrough = Playthrough([world.state.copy() for world in worlds])
+    playthrough = Playthrough([world.state for world in worlds])
     playthrough.collect_all(complete_itempool)
     playthrough.collect_locations()
 

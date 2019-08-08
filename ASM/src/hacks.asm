@@ -1405,3 +1405,13 @@ skip_GS_BGS_text:
     nop
     nop
     nop
+
+; ==================================================================================================
+; In Dungeon ER, open Deku Tree's mouth as adult if Mido has been shown the sword/shield.
+; ==================================================================================================
+.orga 0xC72C64
+    jal     deku_mouth_condition
+    move    a0, s0
+    lui     a1, 0x808D
+    bnez    t7, 0xC72C8C
+    nop

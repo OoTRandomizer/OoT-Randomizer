@@ -617,14 +617,13 @@ class State(object):
 
 
     @staticmethod
-    def can_beat_game(state_list, scan_for_items=True):
-        return Playthrough(state_list).can_beat_game(scan_for_items)
+    def can_beat_game(state_list):
+        return Playthrough(state_list).can_beat_game()
 
 
     @staticmethod
     def update_required_items(spoiler):
         worlds = spoiler.worlds
-        state_list = [world.state for world in worlds]
 
         # get list of all of the progressive items that can appear in hints
         # all_locations: all progressive items. have to collect from these
@@ -644,7 +643,7 @@ class State(object):
 
         required_locations = []
 
-        playthrough = Playthrough(state_list)
+        playthrough = Playthrough([world.state for world in worlds])
         for location in playthrough.iter_reachable_locations(all_locations):
             # Try to remove items one at a time and see if the game is still beatable
             if location in item_locations:
@@ -655,7 +654,7 @@ class State(object):
                 if not playthrough.can_beat_game():
                     required_locations.append(location)
                 location.item = old_item
-            state_list[location.item.world.id].collect(location.item)
+            playthrough.state_list[location.item.world.id].collect(location.item)
 
         # Filter the required location to only include location in the world
         required_locations_dict = {}

@@ -77,67 +77,97 @@ player.
 ### 5.0
 
 #### New Features
-* Plan-domizer
-  * Ability to create a custom seed by placing items, hints and/or entrances where you want them
-  * Also includes the possibility to customize starting items, item pools, active trials and Master Quest dungeons
-  * Spoiler log is now in JSON format
-  * Plan-domizer uses the spoiler log JSON format
-* Hot Rodder Goron no longer checks for Bomb Bag
-* Wearing Bunny Hood increases running speed
-* Duplicate Letter in a Bottle added to plentiful item pool
-* Every generic grotto gossip stone has their own hint.
-* Desert Colossus Hands are now logically part of Spirit Temple.
-* Gossip stone added to Lake Hylia to change water level after beating Morpha to keep dungeon entrance accessible with Gold Scales
-  * Entering Water Temple with Gold Scale and Longshot is now always in logic.
-* Burning Kakariko Cutscene is now triggered when entering Kakariko Village from any entrance once all requirements are met.
-* Speedup Owl Flying cutscenes to be almost instant.
-* Additional Background Music Sequences can now be provided to be shuffled when the Background Music is randomized.
-* The "Very Strong" hint setting can now give multiple barren dungeon hints.
-
-#### New Options
-* Cow Sanity
-  * Playing Epona's Song for a cow for the first time gives a randomized item.
-* Starting Age Option
-  * Can now start as child, adult, or random
-* Entrance Randomizer
-  * Ability to randomize entrances (loading zones) among multiple pools:
-    * Dungeon Entrances: All Dungeons except Ganon's Castle
-    * Interior Entrances: Most Houses and all Great Fairies
-    * Grotto Entrances: All hidden grottos, including small Fairy Foutains and the Lost Woods Stage, along with Graves
-    * Overworld Entrances: Almost all loading zones connecting overworld areas, including Owls
-  * Deku Tree, Fire Temple, and Bottom of the Well dungeon entrances are accessible as both ages.
-  * Entrances are connected bidirectionally, and only shuffled with other entrances of the same pool.
+* New Electron GUI
+  * New GUI now utilizes both Python and Node to bring you an even better interface
+  * Now requires Node (with NPM), in addition to the Python requirement
 * Glitched Logic
   * New Logic Rules option that takes movement glitches into consideration
-  * Files included in the Notes folder with information regarding this feature
-    * Logic Notes contains notes on how the logic was constructed
-    * Tricks contains video links to tricks that may be required
-    * Oddities contains other miscellaneous oddities of Glitched Logic
-* Randomize Main Rules option
-* Filter dropdown to Location Exclusion dropdown
-* Allow customization of Navi inner and outer glow
-* Open Output Directory button
-* Several tricks added to the Enable Tricks dropdown
-* Shuffle Gerudo Card can now be enabled alongside Open Gerudo Fortress.
-* Customizable Heart, Magic Meter, and Gauntlet colors
-* Child may drain Lake Hylia using Gossip Stone
-* With start with max rupees option, finding wallet upgrade fills the wallet
-* Closed Deku
-  * Hybrid of Open Forest and Closed Forest in which Mido only blocks you on the way to the Deku Tree
-* Fast Chickens
-  * All chickens except the one near the pen are already caught from the beginning.
+  * Check out the Wiki for more information
+* Entrance Randomizer
+  * Randomize entrances/loading zones
+  * Entrances are connected bidirectionally, and only shuffled with other entrances of the same pool
+  * Ability to randomize entrances (loading zones) among multiple pools:
+    * `Dungeons Only`: All Dungeons except Ganon's Castle
+    * `Simple Indoors`: Dungeons; as well as Houses, Great Fairies, all Open and Hidden Grottos (including small Fairy Fountains and the Lost Woods Stage), and Graves.
+    * `All Indoors`: Dungeons and Simple Indoors, as well as Link’s House, the Temple of Time, the Windmill, and Dampe’s Grave.
+    * `All Indoors & Overworld Entrances`: Almost all loading zones connecting overworld areas, including Owls
+  * Deku Tree, Fire Temple, and Bottom of the Well dungeon entrances are accessible as both ages
+* Starting Age Option
+  * Can now start as child, adult, or random
+* Plan-domizer
+  * Create a custom seed by placing items, hints and/or entrances where you want them
+  * Customize starting items, item pools, active trials and Master Quest dungeons
+  * Distribution files match the spoiler log JSON format
+* Additional Customization
+  * Additional Background Music Sequences can now be provided to be shuffled in
+  * Fanfares randomization
+  * Customizable Heart, Magic Meter, and Gauntlet colors
+  * Separate inner and outer Navi colors
+* Added `Randomize Main Rules` option
+* Cow Sanity
+  * Playing Epona's Song for a cow for the first time gives a randomized item.
 * Shuffle Magic Beans
   * A pack of 10 beans is shuffled into the pool and the Bean Salesman sells a random item once for 60 rupees.
-* Vanilla Placement for small keys, boss keys and maps/compasses
-* Enable Useful Cutscenes which prevents some useful cutscenes from being skipped
+* Cucco Count
+  * The number of cuccos to be gathered for Anju can be reduced or randomized, and Anju will tell you in-game the target number to catch (similar to 10 Big Poes).
+* Enable Useful Cutscenes prevents some useful cutscenes from being skipped
+  * Re-enables Poes at Forest Temple, Darunia at Fire Temple, and Twinrova at Spirit Temple
+
+#### Major Changes
+* Seeds generation is significantly faster
+* Major refactor of logic for performance and ER
+* Spoiler log is now in JSON format
+* Log files are produced in `Logs` during generation to record any errors.
+* Major Logic Changes
+  * Desert Colossus Hands are now logically part of Spirit Temple
+  * Added the ability to enter drain the Lake Hylia water as Adult after beating Morpha using a new Gossip Stone near the Serenade Warp Pad. Entering Water Temple with Gold Scale and Longshot is now always in logic, however no locations are accessible without additional tricks, Keysanity/Keysy, or Iron Boots.
+  * Disabled Locations will always hold Junk items (except song locations if songs are not shuffled with items)
+* Gameplay Changes
+  * Mechanically, Hot Rodder Goron no longer checks for Bomb Bag
+  * Wearing Bunny Hood increases running speed to match backwalking speed
+  * All Gerudo now check for Gerudo Membership Card instead of Carpenters being freed
+    * This only affects when `Shuffle Gerudo Card` is enabled or in Entrance Randomizer
+    * In the affected modes, a Gerudo is added behind the Wasteland gate who can open the gate
+* Hint Changes
+  * Every generic grotto gossip stone has their own hint.
+  * The "Very Strong" hint setting can now give multiple Foolish dungeon hints.
+* Cutscene Changes
+  * Burning Kakariko Cutscene can be triggered when entering Kakariko Village from any entrance.
+  * Speedup Owl Flying cutscenes to be almost instant.
+  * Enable Useful Cutscenes setting added (see above in New Features)
+
+#### Updated Settings 
+* Filter added to `Location Exclusion` dropdown
+* More tricks added to the `Enable Tricks` dropdown
+* Shuffle Gerudo Card can now be enabled alongside Open Gerudo Fortress.
+* Forest Options
+  * `Closed Deku`: Open Forest except Mido still blocks the Deku Tree
+* Dungeon Item Options
+  * Added `Vanilla` placement option for small keys, boss keys and maps/compasses
+* Ganon's Boss Key 
+  * Split Ganon’s Boss Key settings from the rest of the Boss Keys setting
+  * Added LACS options that place the key there.
+    * This allows playing with open bridge while still requiring dungeon completion
+  * This replaces the Remove Ganon’s Boss Door Lock option
+* Plentiful Item Pool
+  * Duplicate Letter in a Bottle added to plentiful item pool
+* With `Start With Max Rupees` option enabled, wallet upgrades items now fill to max rupees
 
 #### Bug Fixes
 * No longer able to buy Bombchus with only bomb bag when Bombchus in logic
-* Dampé freestanding Piece of Heart no longer checks for chest being opened
+* Dampé freestanding Piece of Heart no longer requires opening the chest
 * Buying Piece of Heart/Heart Container fully heals Link
-* Learning Sun's Song from Malon no longer causes a softlock.
-* Castle and Gerudo guards can no longer cause softlock when catching you.
+* Learning Sun's Song from Malon no longer causes a softlock
+* Castle and Gerudo guards can no longer cause softlock when catching you
 * Vanilla shop items have correct price in spoiler log with shopsanity enabled
+* Fixed Song of Storms not being usable in Sacred Forest Meadow immediately after learning it
+* Improved Bottled Fairy logic rules for OHKO in ER
+* Fixed `Starting Time of Day` times to better reflect their descriptions with the in-game state
+  * `Night` options will spawn Skulltulas
+* Add compatibility support for Python 3.8
+* Improved Spoiler Logs for Multiworlds with differing Random settings between worlds
+* Lab Dive now completable even with Eyedrops in your possession
+* Great Fairy cutscene no longer plays on additional visits for health and magic refills.
 
 
 ### 4.0

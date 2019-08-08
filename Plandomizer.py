@@ -21,7 +21,7 @@ from JSONDump import dump_obj, CollapseList, CollapseDict, AllignedDict, SortedD
 
 
 per_world_keys = (
-    ':randomized_settings',
+    'randomized_settings',
     'starting_items',
     'item_pool',
     'dungeons',
@@ -211,7 +211,7 @@ class WorldDistribution(object):
 
     def update(self, src_dict, update_all=False):
         update_dict = {
-            'randomized_settings': None,
+            'randomized_settings': {name: record for (name, record) in src_dict.get('randomized_settings', {}).items()},
             'dungeons': {name: DungeonRecord(record) for (name, record) in src_dict.get('dungeons', {}).items()},
             'trials': {name: TrialRecord(record) for (name, record) in src_dict.get('trials', {}).items()},
             'item_pool': {name: ItemPoolRecord(record) for (name, record) in src_dict.get('item_pool', {}).items()},
@@ -241,7 +241,7 @@ class WorldDistribution(object):
 
     def to_json(self):
         return {
-            ':randomized_settings': self.randomized_settings,      
+            'randomized_settings': self.randomized_settings,      
             'starting_items': SortedDict({name: record.to_json() for (name, record) in self.starting_items.items()}),
             'dungeons': {name: record.to_json() for (name, record) in self.dungeons.items()},
             'trials': {name: record.to_json() for (name, record) in self.trials.items()},
@@ -286,6 +286,29 @@ class WorldDistribution(object):
                 if record.active:
                     dist_chosen.append(name)
         return dist_chosen
+
+
+    def configure_randomized_settings(self, world):
+        for name, record in self.randomized_settings.items():
+            setattr(world, name, record)
+            if name not in world.randomized_list:
+                world.randomized_list.append(name)
+
+
+    def configure_stating_items_settings(self, world):
+        if world.start_with_wallet:
+            self.give_item('Progressive Wallet', 3)
+        if world.start_with_rupees:
+            self.give_item('Rupees', 999)
+        if world.start_with_deku_equipment:
+            if world.shopsanity == "off":
+                self.give_item('Deku Shield')
+            self.give_item('Deku Sticks', 99)
+            self.give_item('Deku Nuts', 99)
+        if world.start_with_fast_travel:
+            self.give_item('Prelude of Light')
+            self.give_item('Serenade of Water')
+            self.give_item('Farores Wind')
 
 
     def pool_remove_item(self, pools, item_name, count, world_id=None, use_base_pool=True):
@@ -621,7 +644,13 @@ class Distribution(object):
             'file_hash': (src_dict.get('file_hash', []) + [None, None, None, None, None])[0:5],
             'playthrough': None,
             'entrance_playthrough': None,
+            '_settings': src_dict.get('settings', {}),
         }
+
+        self.settings.__dict__.update(update_dict['_settings'])
+        if 'settings' in src_dict:
+            src_dict['_settings'] = src_dict['settings']
+            del src_dict['settings']
 
         if update_all:
             self.__dict__.update(update_dict)
@@ -630,6 +659,7 @@ class Distribution(object):
         else:
             for k in src_dict:
                 setattr(self, k, update_dict[k])
+
 
         for k in per_world_keys:
             if k in src_dict:
@@ -649,7 +679,7 @@ class Distribution(object):
             'file_hash': CollapseList(self.file_hash),
             ':seed': self.settings.seed,
             ':settings_string': self.settings.settings_string,
-            ':settings': self.settings.to_json(),
+            'settings': self.settings.to_json(),
         }
 
         if spoiler:
@@ -680,6 +710,7 @@ class Distribution(object):
 
         if not include_output:
             strip_output_only(self_dict)
+            self_dict['settings'] = dict(self._settings)
         return self_dict
 
 

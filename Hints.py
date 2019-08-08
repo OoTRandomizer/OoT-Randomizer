@@ -6,6 +6,7 @@ import struct
 import random
 
 from HintList import getHint, getHintGroup, Hint, hintExclusions
+from Item import MakeEventItem
 from Messages import update_message_by_id
 from Playthrough import Playthrough
 from TextBox import line_wrap
@@ -97,6 +98,13 @@ def isRestrictedDungeonItem(dungeon, item):
     return False
 
 
+def stone_reachability(world, stone_location):
+    # just name the event item after the gossip stone directly
+    MakeEventItem(stone_location, world.get_location(stone_location))
+
+    return lambda state: state.has(stone_location)
+
+
 def add_hint(spoiler, world, IDs, gossip_text, count, location=None, force_reachable=False):
     random.shuffle(IDs)
     skipped_ids = []
@@ -110,8 +118,9 @@ def add_hint(spoiler, world, IDs, gossip_text, count, location=None, force_reach
                 stone_location = gossipLocations[id].location
                 if not first or can_reach_stone(spoiler.worlds, stone_location, location):
                     if first and location:
-                        old_rule = location.access_rule
-                        location.access_rule = lambda state: state.can_reach(stone_location, resolution_hint='Location') and old_rule(state)
+                        # This mostly guarantees that we don't lock the player out of an item hint
+                        # by establishing a (hint -> item) -> hint -> item -> (first hint) loop
+                        location.add_rule(stone_reachability(world, stone_location))
 
                     count -= 1
                     first = False

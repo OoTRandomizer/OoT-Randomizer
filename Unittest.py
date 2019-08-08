@@ -111,7 +111,7 @@ class TestValidSpoilers(unittest.TestCase):
             {p: never & c.keys() for p, c in items.items()},
             'Non-required items deemed required')
         # No disabled locations
-        disables = set(spoiler[':settings'].get('disabled_locations', []))
+        disables = set(spoiler['settings'].get('disabled_locations', []))
         self.assertEqual(
             expected_none,
             {p: disables & c for p, c in locations.items()},
@@ -154,7 +154,7 @@ class TestValidSpoilers(unittest.TestCase):
         locmap = spoiler['locations']
         if 'World 1' not in locmap:
             locmap = {'World 1': locmap}
-        disables = set(spoiler[':settings'].get('disabled_locations', []))
+        disables = set(spoiler['settings'].get('disabled_locations', []))
         dmap = {k: {loc: v[loc] for loc in disables if loc in v}
                 for k, v in locmap.items()}
         locations, items, locitems = self.loc_item_collection(dmap)

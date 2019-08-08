@@ -173,6 +173,8 @@ class World(object):
             for dung in mqd_picks:
                 self.dungeon_mq[dung] = True
 
+        self.distribution.configure_randomized_settings(self)
+
 
     def load_regions_from_json(self, file_path):
         json_string = ""

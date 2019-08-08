@@ -11,6 +11,8 @@ from Item import ItemFactory
 from Playthrough import Playthrough
 from functools import reduce
 
+logger = logging.getLogger('')
+
 
 class ShuffleError(RuntimeError):
     pass
@@ -79,7 +81,7 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     itempool = progitempool + prioitempool + restitempool
 
     # Start a playthrough cache here.
-    playthrough = Playthrough([world.state.copy() for world in worlds])
+    playthrough = Playthrough([world.state for world in worlds])
 
     # We place all the shop items first. Like songs, they have a more limited
     # set of locations that they can be placed in, so placing them first will
@@ -87,6 +89,7 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     # to create item rules for every location for whether they are a shop item
     # or not. This shouldn't have much affect on item bias.
     if shop_locations:
+        logger.info('Placing shop items.')
         fill_ownworld_restrictive(window, worlds, playthrough, shop_locations, shopitempool, itempool + songitempool + dungeon_items, "shop")
     # Update the shop item access rules
     for world in worlds:
@@ -98,8 +101,10 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     # we must place them first to make sure that there is always a location to
     # place them. This could probably be replaced for more intelligent item
     # placement, but will leave as is for now
-    fill_dungeons_restrictive(window, worlds, playthrough, fill_locations, dungeon_items, itempool + songitempool)
-    playthrough.collect_locations()
+    if dungeon_items:
+        logger.info('Placing dungeon items.')
+        fill_dungeons_restrictive(window, worlds, playthrough, fill_locations, dungeon_items, itempool + songitempool)
+        playthrough.collect_locations()
 
     # places the songs into the world
     # Currently places songs only at song locations. if there's an option
@@ -108,6 +113,7 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     # of failing compared to other item type. So this way we only have retry
     # the song locations only.
     if not worlds[0].shuffle_song_items:
+        logger.info('Placing song items.')
         fill_ownworld_restrictive(window, worlds, playthrough, song_locations, songitempool, progitempool, "song")
         playthrough.collect_locations()
         fill_locations += [location for location in song_locations if location.item is None]
@@ -115,12 +121,14 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     # Put one item in every dungeon, needs to be done before other items are
     # placed to ensure there is a spot available for them
     if worlds[0].one_item_per_dungeon:
+        logger.info('Placing one major item per dungeon.')
         fill_dungeon_unique_item(window, worlds, playthrough, fill_locations, progitempool)
         playthrough.collect_locations()
 
     # Place all progression items. This will include keys in keysanity.
     # Items in this group will check for reachability and will be placed
     # such that the game is guaranteed beatable.
+    logger.info('Placing progression items.')
     fill_restrictive(window, worlds, playthrough, fill_locations, progitempool)
     playthrough.collect_locations()
 
@@ -128,18 +136,20 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     # These items are items that only check if the item is allowed to be
     # placed in the location, not checking reachability. This is important
     # for things like Ice Traps that can't be found at some locations
+    logger.info('Placing priority items.')
     fill_restrictive_fast(window, worlds, fill_locations, prioitempool)
 
     # Place the rest of the items.
     # No restrictions at all. Places them completely randomly. Since they
     # cannot affect the beatability, we don't need to check them
+    logger.info('Placing the rest of the items.')
     fast_fill(window, fill_locations, restitempool)
 
     # Log unplaced item/location warnings
     for item in progitempool + prioitempool + restitempool:
-        logging.getLogger('').error('Unplaced Items: %s [World %d]' % (item.name, item.world.id))
+        logger.error('Unplaced Items: %s [World %d]' % (item.name, item.world.id))
     for location in fill_locations:
-        logging.getLogger('').error('Unfilled Locations: %s [World %d]' % (location.name, location.world.id))
+        logger.error('Unfilled Locations: %s [World %d]' % (location.name, location.world.id))
 
     if progitempool + prioitempool + restitempool:
         raise FillError('Not all items are placed.')
@@ -232,7 +242,7 @@ def fill_dungeon_unique_item(window, worlds, playthrough, fill_locations, itempo
     for location in all_dungeon_locations:
         location.minor_only = True
 
-    logging.getLogger('').info("Unique dungeon items placed")
+    logger.info("Unique dungeon items placed")
 
 
 # Places items restricting placement to the recipient player's own world
@@ -265,14 +275,14 @@ def fill_ownworld_restrictive(window, worlds, playthrough, locations, ownpool, i
                 random.shuffle(prizepool)
                 fill_restrictive(window, worlds, base_playthrough, prize_locs, prizepool)
                 
-                logging.getLogger('').info("%s items placed for world %s", description, (world.id+1))
+                logger.info("Placed %s items for world %s.", description, (world.id+1))
             except FillError as e:
-                logging.getLogger('').info("Failed to place %s items for world %s. Will retry %s more times", description, (world.id+1), world_attempts)
+                logger.info("Failed to place %s items for world %s. Will retry %s more times.", description, (world.id+1), world_attempts)
                 for location in prize_locs_dict[world.id]:
                     location.item = None
                     if location.disabled == DisableType.DISABLED:
                         location.disabled = DisableType.PENDING
-                logging.getLogger('').info('\t%s' % str(e))
+                logger.info('\t%s' % str(e))
                 continue
             break
         else:
@@ -383,7 +393,7 @@ def fill_restrictive(window, worlds, base_playthrough, locations, itempool, coun
                 continue
             else:
                 # we expect all items to be placed
-                raise FillError('Game unbeatable: No more spots to place %s [World %d] from %d locations (%d total); %d other items left to place, plus %d skipped' % (item_to_place, item_to_place.world.id, len(l2cations), len(locations), len(itempool), len(unplaced_items)))
+                raise FillError('Game unbeatable: No more spots to place %s [World %d] from %d locations (%d total); %d other items left to place, plus %d skipped' % (item_to_place, item_to_place.world.id + 1, len(l2cations), len(locations), len(itempool), len(unplaced_items)))
 
         # Place the item in the world and continue
         spot_to_fill.world.push_item(spot_to_fill, item_to_place)
@@ -423,7 +433,7 @@ def fill_restrictive_fast(window, worlds, locations, itempool):
         # at this point
         if spot_to_fill is None:
             if not worlds[0].check_beatable_only:
-                logging.getLogger('').debug('Not all items placed. Game beatable anyway.')
+                logger.debug('Not all items placed. Game beatable anyway.')
             break
 
         # Place the item in the world and continue

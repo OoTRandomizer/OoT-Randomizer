@@ -179,6 +179,14 @@ def ItemFactory(items, world=None, event=False):
     return ret
 
 
+def MakeEventItem(name, location):
+    item = ItemFactory(name, location.world, event=True)
+    location.world.push_item(location, item)
+    location.locked = True
+    location.world.event_items.add(name)
+    return item
+
+
 def IsItem(name):
     return name in item_table
 

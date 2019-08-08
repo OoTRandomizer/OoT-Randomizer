@@ -33,11 +33,6 @@ def start():
         guiMain()
         sys.exit(0)
 
-    # ToDo: Validate files further than mere existance
-    if settings.compress_rom != 'None' and not os.path.isfile(settings.rom):
-        input('Could not find valid base rom for patching at expected path %s. Please run with -h to see help for further information. \nPress Enter to exit.' % settings.rom)
-        sys.exit(1)
-
     # set up logger
     loglevel = {'error': logging.ERROR, 'info': logging.INFO, 'warning': logging.WARNING, 'debug': logging.DEBUG}[args_loglevel]
     logging.basicConfig(format='%(message)s', level=loglevel)
@@ -52,6 +47,7 @@ def start():
             os.makedirs(log_dir)
         log_path = os.path.join(log_dir, '%s.log' % st)
         log_file = logging.FileHandler(log_path)
+        log_file.setFormatter(logging.Formatter('[%(asctime)s] %(message)s', datefmt='%H:%M:%S'))
         logger.addHandler(log_file)
 
     if not settings.check_version:

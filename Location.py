@@ -17,6 +17,7 @@ class Location(object):
         self.recursion_count = { 'child': 0, 'adult': 0 }
         self.staleness_count = 0
         self.access_rule = lambda state: True
+        self.access_rules = []
         self.item_rule = lambda location, item: True
         self.locked = False
         self.price = None
@@ -37,12 +38,23 @@ class Location(object):
             new_location.item.location = new_location
         new_location.spot_type = self.spot_type
         new_location.access_rule = self.access_rule
+        new_location.access_rules = list(self.access_rules)
         new_location.item_rule = self.item_rule
         new_location.locked = self.locked
         new_location.minor_only = self.minor_only
         new_location.disabled = self.disabled
 
         return new_location
+
+
+    def add_rule(self, lambda_rule):
+        self.access_rules.append(lambda_rule)
+        self.access_rule = lambda state: all(rule(state) for rule in self.access_rules)
+
+
+    def set_rule(self, lambda_rule):
+        self.access_rule = lambda_rule
+        self.access_rules = [lambda_rule]
 
 
     def can_fill(self, state, item, check_access=True):

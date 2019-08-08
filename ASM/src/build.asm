@@ -71,6 +71,7 @@ RANDO_CONTEXT:
 .include "damage.asm"
 .include "bean_salesman.asm"
 .include "grotto.asm"
+.include "deku_mouth_condition.asm"
 .importobj "../build/bundle.o"
 .align 8
 FONT_TEXTURE:

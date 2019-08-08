@@ -12,6 +12,7 @@
         "region_name": "Dodongos Cavern Lobby",
         "dungeon": "Dodongos Cavern",
         "locations": {
+            "Deku Baba Sticks": "is_adult or Kokiri_Sword or can_use(Boomerang)",
             "Dodongos Cavern MQ Map Chest": "True",
             "Dodongos Cavern MQ Compass Chest": "is_adult or can_child_attack or has_nuts",
             "Dodongos Cavern MQ Larva Room Chest": "can_use(Sticks) or has_fire_source",

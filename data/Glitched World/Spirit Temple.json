@@ -164,12 +164,8 @@
         "region_name": "Spirit Temple Boss",
         "dungeon": "Spirit Temple",
         "locations": {
-            "Twinrova Heart": "
-                Mirror_Shield and has_explosives and 
-                Progressive_Hookshot and Boss_Key_Spirit_Temple",
-            "Twinrova": "
-                Mirror_Shield and has_explosives and 
-                Progressive_Hookshot and Boss_Key_Spirit_Temple"
+            "Twinrova Heart": "True",
+            "Twinrova": "True"
         }
     }
 ]
