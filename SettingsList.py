@@ -3,6 +3,7 @@ import re
 import math
 import json
 from Cosmetics import get_tunic_color_options, get_navi_color_options, get_sword_color_options, get_gauntlet_color_options, get_magic_color_options, get_heart_color_options
+from Music import get_all_vanilla_sequences
 from Location import LocationIterator
 import Sounds as sfx
 from Utils import data_path
@@ -2969,6 +2970,17 @@ setting_infos = [
                 ('random-choice', 1),
             ]
         }
+    ),
+    Setting_Info(
+        name           = 'excluded_sequences',
+        type           = list,
+        gui_text       = "Exclude Sequences From Shuffle",
+        gui_type       = "SearchBox",
+        shared         = True,
+        choices        = get_all_vanilla_sequences,
+        gui_tooltip    = '''\
+            Choose vanilla sequences you do not want shuffled when music, fanfares, or ocarina sequences are shuffled.
+        ''',
     ),
 ]
 

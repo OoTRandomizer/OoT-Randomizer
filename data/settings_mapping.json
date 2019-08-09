@@ -359,6 +359,7 @@
           "text": "General",
           "is_sfx": true,
           "row_span": 6,
+          "col_span": 2,
           "settings": [
             "background_music",
             "fanfares",
@@ -388,6 +389,16 @@
           "settings": [
             "sfx_navi_overworld",
             "sfx_navi_enemy"
+          ]
+        },
+        {
+          "name": "excludeseq_section",
+          "text": "Exclude Vanilla Music Sequences",
+          "is_sfx": true,
+          "col_span": 4,
+          "row_span": 5,
+          "settings": [
+            "excluded_sequences"
           ]
         }
       ]

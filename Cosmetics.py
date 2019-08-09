@@ -661,6 +661,8 @@ class CosmeticsLog(object):
             #music_padding = 1 + len(max(self.bgm.keys(), key=len))
             music_padding = 40
             output += '\n\nBackground Music:\n'
+            if not self.bgm:
+                output += '\nAll Music Sequences Excluded'
             for key, value in self.bgm.items():
                 output += format_string.format(key=key+':', value=value, width=music_padding)
 

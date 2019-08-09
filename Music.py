@@ -88,6 +88,8 @@ ocarina_sequence_ids = [
     ("Song of Storms", 0x49)
 ]
 
+get_all_vanilla_sequences = [sequence_tuple[0] for sequence_tuple in bgm_sequence_ids + fanfare_sequence_ids + ocarina_sequence_ids]
+
 # Represents the information associated with a sequence, aside from the sequence data itself
 class TableEntry(object):
     def __init__(self, name, cosmetic_name, type = 0x0202, instrument_set = 0x03, replaces = -1, vanilla_id = -1):
@@ -155,18 +157,19 @@ def process_sequences(rom, sequences, target_sequences, ids, seq_type = 'bgm'):
     return sequences, target_sequences
 
 
-def shuffle_music(sequences, target_sequences, log):
+def shuffle_music(sequences, target_sequences, excluded_sequences, log):
     # Shuffle the sequences
     random.shuffle(sequences)
 
     # Exclude unwanted sequences
-    excluded_sequences = []
     if os.path.exists('data/Music/excluded.txt'):
         try:
             with open('data/Music/excluded.txt', 'r') as stream:
                 excluded_sequences_raw = stream.readlines()
             for line in excluded_sequences_raw:
-                excluded_sequences.append(line.rstrip())
+                line = line.rstrip()
+                if line not in excluded_sequences:
+                    excluded_sequences.append(line)
         except FileNotFoundError as ex:
             raise FileNotFoundError('No exclusion file. This should never happen')
 
@@ -175,9 +178,8 @@ def shuffle_music(sequences, target_sequences, log):
         for i in range(len(sequences)):
             if sequences[i].name in excluded_sequences:
                 excluded_list_elements.insert(0, i)
-
-        if len(sequences) == len(excluded_list_elements):
-            raise RuntimeError(f'Too many sequences excluded. Remove sequences from exclude.txt or add more custom sequences.')
+        if len(sequences) >= len(excluded_list_elements):
+            raise RuntimeError(f'Too many sequences excluded. Remove some exclusions from excluded.txt, Exclude Music Sequences, or add more custom sequences')
 
         # Remove the excluded sequences
         for i in range(len(excluded_list_elements)):
@@ -318,7 +320,7 @@ def rebuild_sequences(rom, sequences, log):
     return log
 
 
-def shuffle_pointers_table(rom, ids, log):
+def shuffle_pointers_table(rom, ids, excluded_sequences, log):
     # Read in all the Music data
     bgm_data = []
     for bgm in ids:
@@ -326,8 +328,27 @@ def shuffle_pointers_table(rom, ids, log):
         bgm_instrument = rom.read_int16(0xB89910 + 0xDD + (bgm[1] * 2))
         bgm_data.append((bgm[0], bgm_sequence, bgm_instrument))
 
+    # Exclusions
+    exclude_list_elements = []
+    for i in range(len(bgm_data)):
+        if bgm_data[i][0] in excluded_sequences:
+            exclude_list_elements.insert(0, i)
+
+    if len(exclude_list_elements) >= len(ids):
+        # If everything is excluded, use No Music instead
+        disable_music(rom, ids)
+        return log
+
+    for bgm in exclude_list_elements:
+        del bgm_data[bgm]
+
     # shuffle data
     random.shuffle(bgm_data)
+
+    # Replace excluded sequences
+    for i in range(len(exclude_list_elements)):
+        dupe_bgm = random.choice(bgm_data)
+        bgm_data.append(dupe_bgm)
 
     # Write Music data back in random ordering
     for bgm in ids:
@@ -357,11 +378,11 @@ def randomize_music(rom, settings):
     if settings.compress_rom != 'Patch':
         if settings.background_music == 'random':
             sequences, target_sequences = process_sequences(rom, sequences, target_sequences, bgm_sequence_ids)
-            sequences, log = shuffle_music(sequences, target_sequences, log)
+            sequences, log = shuffle_music(sequences, target_sequences, settings.excluded_sequences, log)
 
         if settings.fanfares == 'random':
             fanfare_sequences, fanfare_target_sequences = process_sequences(rom, fanfare_sequences, fanfare_target_sequences, ff_ids, 'fanfare')
-            fanfare_sequences, log = shuffle_music(fanfare_sequences, fanfare_target_sequences, log)
+            fanfare_sequences, log = shuffle_music(fanfare_sequences, fanfare_target_sequences, settings.excluded_sequences, log)
 
         log = rebuild_sequences(rom, sequences + fanfare_sequences, log)
 
@@ -372,12 +393,12 @@ def randomize_music(rom, settings):
 
     else:
         if settings.background_music == 'random':
-            log = shuffle_pointers_table(rom, bgm_sequence_ids, log)
+            log = shuffle_pointers_table(rom, bgm_sequence_ids, settings.excluded_sequences, log)
         elif settings.background_music == 'off':
             disable_music(rom, bgm_sequence_ids)
 
         if settings.fanfares == 'random':
-            log = shuffle_pointers_table(rom, ff_ids, log)
+            log = shuffle_pointers_table(rom, ff_ids, settings.excluded_sequences, log)
         elif settings.fanfares == 'off':
             disable_music(rom, ff_ids)
 
