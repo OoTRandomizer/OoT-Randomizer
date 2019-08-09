@@ -178,7 +178,7 @@ def shuffle_music(sequences, target_sequences, excluded_sequences, log):
         for i in range(len(sequences)):
             if sequences[i].name in excluded_sequences:
                 excluded_list_elements.insert(0, i)
-        if len(sequences) >= len(excluded_list_elements):
+        if len(sequences) <= len(excluded_list_elements):
             raise RuntimeError(f'Too many sequences excluded. Remove some exclusions from excluded.txt, Exclude Music Sequences, or add more custom sequences')
 
         # Remove the excluded sequences
