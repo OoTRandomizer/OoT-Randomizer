@@ -2,6 +2,7 @@
 
 import random
 import os
+from Utils import data_path
 
 
 # Format: (Title, Sequence ID)
@@ -128,16 +129,25 @@ def process_sequences(rom, sequences, target_sequences, ids, seq_type = 'bgm'):
             sequences.append(seq)
         target_sequences.append(target)
 
+    custom_sequences = get_custom_sequences(seq_type)
+    sequences.extend(custom_sequences)
+
+    return sequences, target_sequences
+
+def get_custom_sequences(seq_type):
+    sequences = []
+    music_path = os.path.join(data_path(), 'Music')
+
     # Process music data in data/Music/
     # Each sequence requires a valid .seq sequence file and a .meta metadata file
     # Current .meta format: Cosmetic Name\nInstrument Set\nPool
-    for f in os.listdir('data/Music'):
+    for f in os.listdir(music_path):
         fname = os.fsdecode(f)
         # Find meta file and check if corresponding seq file exists
-        if fname.endswith('.meta') and os.path.isfile('data/Music/' + fname.split('.')[0] + '.seq'):
+        if fname.endswith('.meta') and os.path.isfile(os.path.join(music_path, fname.split('.')[0] + '.seq')):
             # Read meta info
             try:
-                with open('data/Music/' + fname, 'r') as stream:
+                with open(os.path.join(music_path, fname), 'r') as stream:
                     lines = stream.readlines()
                 # Strip newline(s) which doesn't like to work for some reason
                 for line in lines:
@@ -153,41 +163,28 @@ def process_sequences(rom, sequences, target_sequences, ids, seq_type = 'bgm'):
                     raise Exception('Sequence instrument must be in range [0x00, 0x25]')
 
                 sequences.append(seq)
+    return sequences
 
-    return sequences, target_sequences
-
-
-def shuffle_music(sequences, target_sequences, excluded_sequences, log):
+def shuffle_music(rom, sequences, target_sequences, excluded_sequences, log):
     # Shuffle the sequences
     random.shuffle(sequences)
 
-    # Exclude unwanted sequences
-    if os.path.exists('data/Music/excluded.txt'):
-        try:
-            with open('data/Music/excluded.txt', 'r') as stream:
-                excluded_sequences_raw = stream.readlines()
-            for line in excluded_sequences_raw:
-                line = line.rstrip()
-                if line not in excluded_sequences:
-                    excluded_sequences.append(line)
-        except FileNotFoundError as ex:
-            raise FileNotFoundError('No exclusion file. This should never happen')
+    # Find sequences that need to be removed
+    excluded_list_elements = []
+    for i in range(len(sequences)):
+        if sequences[i].name in excluded_sequences:
+            excluded_list_elements.insert(0, i)
+    if len(sequences) <= len(excluded_list_elements):
+        disable_music(rom, [('', seq.vanilla_id) for seq in target_sequences])
+        return sequences, log
 
-        # Find sequences that need to be removed
-        excluded_list_elements = []
-        for i in range(len(sequences)):
-            if sequences[i].name in excluded_sequences:
-                excluded_list_elements.insert(0, i)
-        if len(sequences) <= len(excluded_list_elements):
-            raise RuntimeError(f'Too many sequences excluded. Remove some exclusions from excluded.txt, Exclude Music Sequences, or add more custom sequences')
-
-        # Remove the excluded sequences
-        for i in range(len(excluded_list_elements)):
-            new_choice = sequences[random.choice([i for i in range(len(sequences)) if i not in excluded_list_elements])]
-            del(sequences[excluded_list_elements[i]])
-            excluded_list_elements[i] = -1
-            new_sequence = TableEntry(new_choice.name, new_choice.cosmetic_name, new_choice.type, new_choice.instrument_set, new_choice.replaces, new_choice.vanilla_id)
-            sequences.append(new_sequence)
+    # Remove the excluded sequences
+    for i in range(len(excluded_list_elements)):
+        new_choice = sequences[random.choice([i for i in range(len(sequences)) if i not in excluded_list_elements])]
+        del(sequences[excluded_list_elements[i]])
+        excluded_list_elements[i] = -1
+        new_sequence = TableEntry(new_choice.name, new_choice.cosmetic_name, new_choice.type, new_choice.instrument_set, new_choice.replaces, new_choice.vanilla_id)
+        sequences.append(new_sequence)
 
     for i in range(len(target_sequences)):
         sequences[i].replaces = target_sequences[i].replaces
@@ -378,11 +375,11 @@ def randomize_music(rom, settings):
     if settings.compress_rom != 'Patch':
         if settings.background_music == 'random':
             sequences, target_sequences = process_sequences(rom, sequences, target_sequences, bgm_sequence_ids)
-            sequences, log = shuffle_music(sequences, target_sequences, settings.excluded_sequences, log)
+            sequences, log = shuffle_music(rom, sequences, target_sequences, settings.excluded_sequences, log)
 
         if settings.fanfares == 'random':
             fanfare_sequences, fanfare_target_sequences = process_sequences(rom, fanfare_sequences, fanfare_target_sequences, ff_ids, 'fanfare')
-            fanfare_sequences, log = shuffle_music(fanfare_sequences, fanfare_target_sequences, settings.excluded_sequences, log)
+            fanfare_sequences, log = shuffle_music(rom, fanfare_sequences, fanfare_target_sequences, settings.excluded_sequences, log)
 
         log = rebuild_sequences(rom, sequences + fanfare_sequences, log)
 

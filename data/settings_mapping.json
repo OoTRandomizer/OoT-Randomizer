@@ -393,7 +393,7 @@
         },
         {
           "name": "excludeseq_section",
-          "text": "Exclude Vanilla Music Sequences",
+          "text": "Exclude Music Sequences",
           "is_sfx": true,
           "col_span": 4,
           "row_span": 5,

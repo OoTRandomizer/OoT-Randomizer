@@ -8,10 +8,6 @@ C
 
 Additionally, if the sequence is to be shuffled with the non-looping fanfares, a third line must exist containing the word 'fanfare'.
 
-If you wish to exclude any sequences, including vanilla sequences, you can create an `exclude.txt` file with a list of all the sequences you wish to have excluded on a new line. If excluding a `.seq` file you must use the filename rather than the cosmetic name.
-
-For example, if you wish to remove the Fire Temple music from appearing in the game at all you add "Fire Temple" to your `exclude.txt` and if you don't have any custom sequences it will duplicate a random vanilla one in its place. If you wish to remove `Foo.seq` from the pool simply add `Foo` to the `exclude.txt` file. Custom sequences will replace any excluded vanilla sequences if available.
-
 Sequences are in the seq64 format. Other known games that use this format and may be compatible are (list from https://github.com/sauraen/seq64)
 ```
 Super Mario 64
