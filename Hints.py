@@ -615,12 +615,12 @@ def buildBossRewardHints(world, messages):
 
     # text that appears at altar as an adult.
     bossRewardsMedallions = [
-        ('Light Medallion',  'Light Blue'),
         ('Forest Medallion', 'Green'),
         ('Fire Medallion',   'Red'),
         ('Water Medallion',  'Blue'),
-        ('Shadow Medallion', 'Pink'),
         ('Spirit Medallion', 'Yellow'),
+        ('Shadow Medallion', 'Pink'),
+        ('Light Medallion',  'Light Blue'),
     ]
     adult_text = '\x08'
     adult_text += getHint('Medallion Text Start', world.clearer_hints).text
