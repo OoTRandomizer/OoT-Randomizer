@@ -286,6 +286,7 @@ class SaveContext():
                     item_value = self.addresses['equip_items'][item].get_value_raw()
                     self.addresses[equip_type]['equips'][equip_item].set_value_raw(item_value)
                     if equip_item == 'sword':
+                        self.addresses['temp_b'].value = item
                         self.addresses[equip_type]['button_items']['b'].value = item
                     break
 
@@ -589,6 +590,8 @@ class SaveContext():
             },
             'defense_hearts'             : Address(size=1, max=20),
             'gs_tokens'                  : Address(size=2, max=100),
+
+            'temp_b'                     : Address(0x13E2, size=1, choices=SaveContext.item_id_map),
         }
 
 
