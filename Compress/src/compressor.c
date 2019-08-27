@@ -8,6 +8,10 @@
 #include "yaz0.c"
 #include "crc.c"
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #define UINTSIZE 0x1000000
 #define COMPSIZE 0x2000000
 #define DCMPSIZE 0x4000000
