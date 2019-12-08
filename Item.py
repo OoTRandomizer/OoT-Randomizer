@@ -51,31 +51,11 @@ class Item(object):
         self.price = self.info.special.get('price')
         self.world = world
         self.looks_like_item = None
-
-
-    @property
-    def advancement(self):
-        return self.info.advancement
-
-
-    @property
-    def priority(self):
-        return self.info.priority
-
-
-    @property
-    def type(self):
-        return self.info.type
-
-
-    @property
-    def special(self):
-        return self.info.special
-
-
-    @property
-    def index(self):
-        return self.info.index
+        self.advancement = self.info.advancement
+        self.priority = self.info.priority
+        self.type = self.info.type
+        self.special = self.info.special
+        self.index = self.info.index
 
 
     item_worlds_to_fix = {}
