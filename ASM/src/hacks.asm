@@ -1300,6 +1300,32 @@ skip_GS_BGS_text:
     addu    at, at, a3
 
 ;==================================================================================================
+; Handle navi grotto attraction
+;==================================================================================================
+
+; Replaces: lw      s0, 0x0018($sp)
+;           addiu   $sp, $sp, 0x0028
+;           jr      $ra
+;           nop
+.orga 0xCF7158 ; 80959AC8
+    or      a0, s0, r0
+    lw      s0, 0x0018(sp)
+    j       door_ana_init_post
+    addiu   sp, sp, 0x0028
+
+
+; Replaces: sw      t8, 0x0014($sp)
+;           sw      a3, 0x0010($sp)
+.orga 0xCF72A8 ; 80959C18
+    jal     door_ana_becomes_visible_hook
+    or      a0, s0, r0
+    
+
+; update Actor Flags
+;.orga 0xCF7C94
+;    .word 0x0A000009
+
+;==================================================================================================
 ; Getting Caught by Gerudo NPCs in ER
 ;==================================================================================================
 ; Replaces: lui     at, 0x0001

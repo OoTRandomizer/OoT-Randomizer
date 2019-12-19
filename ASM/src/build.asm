@@ -77,6 +77,7 @@ RANDO_CONTEXT:
 .include "deku_mouth_condition.asm"
 .include "audio.asm"
 .include "king_zora.asm"
+.include "navi_grotto.asm"
 .importobj "../build/bundle.o"
 .align 8
 FONT_TEXTURE:
