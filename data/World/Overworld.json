@@ -54,7 +54,7 @@
             "Outside Deku Tree": "is_adult or 'Showed Mido Sword & Shield'",
             "Lost Woods": "True",
             "Lost Woods Bridge From Forest": "can_leave_forest",
-            "Kokiri Forest Storms Grotto": "can_play(Song_of_Storms)"
+            "Kokiri Forest Storms Grotto": "can_open_storm_grotto"
         }
     },
     {
@@ -205,7 +205,7 @@
             "Sacred Forest Meadow": "
                 is_adult or Slingshot or Sticks or 
                 Kokiri_Sword or can_use(Dins_Fire)",
-            "Front of Meadow Grotto": "can_blast_or_smash"
+            "Front of Meadow Grotto": "can_open_bomb_grotto"
         }
     },
     {
@@ -225,7 +225,7 @@
             "Sacred Forest Meadow Entryway": "True",
             "Forest Temple Lobby": "can_use(Hookshot)",
             "Meadow Fairy Grotto": "True",
-            "Meadow Storms Grotto": "can_play(Song_of_Storms)"
+            "Meadow Storms Grotto": "can_open_storm_grotto"
         }
     },
     {
@@ -269,13 +269,13 @@
             "Lon Lon Ranch": "True",
             "Remote Southern Grotto": "here(can_blast_or_smash)",
             "Field Near Lake Outside Fence Grotto": "True",
-            "Field Near Lake Inside Fence Grotto": "can_blast_or_smash",
-            "Field Valley Grotto": "can_use(Hammer) or (is_child and has_explosives)",
+            "Field Near Lake Inside Fence Grotto": "can_open_bomb_grotto",
+            "Field Valley Grotto": "can_use(Hammer) or (is_child and can_open_bomb_grotto)",
                                    # There is a hammerable boulder as adult which is not there as child
             "Field West Castle Town Grotto": "here(can_blast_or_smash)",
             "Field Far West Castle Town Grotto": "here(can_blast_or_smash)",
-            "Field Kakariko Grotto": "can_blast_or_smash",
-            "Field North Lon Lon Grotto": "can_blast_or_smash"
+            "Field Kakariko Grotto": "can_open_bomb_grotto",
+            "Field North Lon Lon Grotto": "can_open_bomb_grotto"
         }
     },
     {
@@ -425,7 +425,7 @@
                 is_child or can_ride_epona or can_use(Longshot) or
                 gerudo_fortress == 'open' or 'Carpenter Rescue'",
             "Carpenter Tent": "is_adult", # Invisible as child so not in logic
-            "Gerudo Valley Storms Grotto": "is_adult and can_play(Song_of_Storms)" # Not there as child
+            "Gerudo Valley Storms Grotto": "is_adult and can_open_storm_grotto" # Not there as child
         }
     },
     {
@@ -468,7 +468,7 @@
             "Gerudo Valley Far Side": "True",
             "Gerudo Fortress Outside Gate": "'Gerudo Fortress Gate Open'",
             "Gerudo Training Grounds Lobby": "Gerudo_Membership_Card and is_adult",
-            "Gerudo Fortress Storms Grotto": "is_adult and can_play(Song_of_Storms)" # Not there as child
+            "Gerudo Fortress Storms Grotto": "is_adult and can_open_storm_grotto" # Not there as child
         }
     },
     {
@@ -649,7 +649,7 @@
             "Castle Grounds": "True",
             "Hyrule Castle Garden": "Weird_Egg or (not shuffle_weird_egg)",
             "Hyrule Castle Fairy": "has_explosives",
-            "Castle Storms Grotto": "can_play(Song_of_Storms)"
+            "Castle Storms Grotto": "can_open_storm_grotto"
         }
     },
     {
@@ -850,7 +850,7 @@
             "Bottom of the Well": "
                 'Drain Well' and (is_child or shuffle_dungeon_entrances)",
             "Kakariko Potion Shop Front": "is_child or at_day",
-            "Kakariko Bombable Grotto": "can_blast_or_smash",
+            "Kakariko Bombable Grotto": "can_open_bomb_grotto",
             "Kakariko Impa Ledge": "
                 (is_child and at_day) or (is_adult and logic_visible_collisions) or can_use(Hookshot)",
             "Kakariko Rooftop": "
@@ -1152,7 +1152,7 @@
                 here(can_blast_or_smash) or (is_adult and here(can_plant_bean and Progressive_Strength_Upgrade))",
             "Dodongos Cavern Entryway": "
                 has_explosives or Progressive_Strength_Upgrade or is_adult",
-            "Mountain Storms Grotto": "can_play(Song_of_Storms)"
+            "Mountain Storms Grotto": "can_open_storm_grotto"
         }
     },
     {
@@ -1471,7 +1471,7 @@
             "Zora River Plateau Open Grotto": "True",
             "Zora River Plateau Bombable Grotto": "here(can_blast_or_smash)",
             "Lost Woods": "can_dive or can_use(Iron_Boots)",
-            "Zora River Storms Grotto": "can_play(Song_of_Storms)",
+            "Zora River Storms Grotto": "can_open_storm_grotto",
             "Zora River Behind Waterfall": "
                 can_play(Zeldas_Lullaby) or
                 (can_use(Hover_Boots) and logic_zora_with_hovers) or
@@ -1517,7 +1517,7 @@
                 Deliver_Letter or zora_fountain == 'open' or
                 (zora_fountain == 'adult' and is_adult)",
             "Zora Shop": "is_child or Blue_Fire",
-            "Zoras Domain Storms Grotto": "can_play(Song_of_Storms)"
+            "Zoras Domain Storms Grotto": "can_open_storm_grotto"
         }
     },
     {

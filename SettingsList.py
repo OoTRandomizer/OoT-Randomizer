@@ -129,6 +129,12 @@ logic_tricks = {
                     Silver Rupee Chest. May need to make multiple
                     trips.
                     '''},
+    'Hidden Grottos without Stone of Agony': {
+        'name'    : 'logic_grottos_without_agony',
+        'tooltip' : '''\
+                    Allows entering hidden grottos without the
+                    Stone of Agony.
+                    '''},
     'Pass Through Visible One-Way Collisions': {
         'name'    : 'logic_visible_collisions',
         'tooltip' : '''\

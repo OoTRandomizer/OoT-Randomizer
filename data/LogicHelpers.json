@@ -51,6 +51,8 @@
     "can_summon_gossip_fairy_without_suns": "Ocarina and (Zeldas_Lullaby or Eponas_Song or Song_of_Time)",
     "can_plant_bean": "is_child and (Magic_Bean or Magic_Bean_Pack)",
     "can_play(song)": "Ocarina and song",
+    "can_open_bomb_grotto": "can_blast_or_smash and (Stone_of_Agony or logic_grottos_without_agony)",
+    "can_open_storm_grotto": "can_play(Song_of_Storms) and (Stone_of_Agony or logic_grottos_without_agony)",
     # The last case in a conditional still needs a check, to prevent failure from falling through
     # into what should be the 'else' case.
     "can_use_projectile": "has_explosives or (is_adult and (Bow or Hookshot)) or (is_child and (Slingshot or Boomerang))",
