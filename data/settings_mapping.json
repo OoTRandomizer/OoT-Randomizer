@@ -328,8 +328,7 @@
           "row_span": [6,6,6],
           "settings": [
             "heart_color",
-            "magic_color",
-            "tunic_icons"
+            "magic_color"
           ]
         },
         {

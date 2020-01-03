@@ -3124,29 +3124,6 @@ setting_infos = [
         }
 
     ),
-    Setting_Info(
-        name           = 'tunic_icons',
-        type           = bool,
-        gui_text       = 'Match Tunic Icons',
-        gui_type       = "Checkbutton",
-        shared         = False,
-        choices        = [
-            True,
-            False
-        ],
-        default        = False,
-        gui_tooltip    = '''\
-            True: Recolour in-game tunic icons
-            False: Leave them as default Green, Red, Blue
-        ''',
-        gui_params     = {
-            'randomize_key': 'randomize_all_cosmetics',
-            'distribution': [
-                (True, 1),
-            ]
-        }
-
-    ),
     Checkbutton(
         name           = 'randomize_all_sfx',
         gui_text       = 'Randomize All Sound Effects',

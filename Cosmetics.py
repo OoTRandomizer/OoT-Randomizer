@@ -232,7 +232,7 @@ def patch_tunic_colors(rom, settings, log, symbols):
         rom.write_bytes(address, color)
 
         # patch the tunic icon
-        if settings.tunic_icons:
+        if tunic_option not in ['Kokiri Green', 'Goron Red', 'Zora Blue']:
             patch_tunic_icon(rom, tunic, color)
 
         log.tunic_colors[tunic] = dict(option=tunic_option, color=''.join(['{:02X}'.format(c) for c in color]))
