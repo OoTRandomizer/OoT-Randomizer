@@ -270,7 +270,7 @@
             "Remote Southern Grotto": "here(can_blast_or_smash)",
             "Field Near Lake Outside Fence Grotto": "True",
             "Field Near Lake Inside Fence Grotto": "can_open_bomb_grotto",
-            "Field Valley Grotto": "can_use(Hammer) or (is_child and can_open_bomb_grotto)",
+            "Field Valley Grotto": "(can_use(Hammer) or is_child) and can_open_bomb_grotto",
                                    # There is a hammerable boulder as adult which is not there as child
             "Field West Castle Town Grotto": "here(can_blast_or_smash)",
             "Field Far West Castle Town Grotto": "here(can_blast_or_smash)",
