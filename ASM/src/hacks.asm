@@ -1305,15 +1305,11 @@ skip_GS_BGS_text:
 
 ; Replaces: or      s0, a0, r0
 ;           sw      ra, 0x0024(sp)
+;           sw      a1, 0x0034($sp)
 .orga 0xCF71AC ; 80959B1C
     sw      ra, 0x0024(sp)
     jal     door_ana_update_invisible_pre
-
-; Replaces: sw      t8, 0x0014($sp)
-;           sw      a3, 0x0010($sp)
-.orga 0xCF72A8 ; 80959C18
-    jal     door_ana_becomes_visible_hook
-    or      a0, s0, r0
+    sw      a1, 0x0034($sp)
 
 ;==================================================================================================
 ; Getting Caught by Gerudo NPCs in ER

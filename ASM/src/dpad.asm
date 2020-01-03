@@ -3,8 +3,10 @@ dpad_draw:
     sw      ra, 0(sp)
     jal     draw_dpad
     nop
-    lw      t6, 0x1C44(s6)
-    lui     t8, 0xDB06
+    jal     draw_agony
+    nop
+    lw      t6, 0x1C44(s6) ; displaced code
+    lui     t8, 0xDB06     ; displaced code
     lw      ra, 0(sp)
     jr      ra
     addiu   sp,sp, 0x10
