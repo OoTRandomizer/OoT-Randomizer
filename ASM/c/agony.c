@@ -21,6 +21,10 @@ void update_agony_distance(z64_actor_t* grotto) {
 }
 
 static void draw_agony_graphic(int offset) {
+    uint16_t maxalpha = z64_game.hud_alpha_channels.minimap;
+    if (maxalpha == 0xAA) maxalpha = 0xFF;
+    if (agony_alpha > maxalpha) agony_alpha = (unsigned char)maxalpha;
+
     z64_disp_buf_t *db = &(z64_ctxt.gfx->overlay);
     gSPDisplayList(db->p++, &setup_db);
     gDPPipeSync(db->p++);
