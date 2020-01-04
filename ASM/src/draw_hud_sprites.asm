@@ -1,4 +1,4 @@
-dpad_draw:
+draw_hud_sprites:
     addiu   sp, sp, -0x10
     sw      ra, 0(sp)
     jal     draw_dpad

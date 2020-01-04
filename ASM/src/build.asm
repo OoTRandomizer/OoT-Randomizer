@@ -61,7 +61,7 @@ RANDO_CONTEXT:
 .include "potion_shop.asm"
 .include "jabu_elevator.asm"
 .include "dampe.asm"
-.include "dpad.asm"
+.include "draw_hud_sprites.asm"
 .include "chests.asm"
 .include "bunny_hood.asm"
 .include "magic_color.asm"
