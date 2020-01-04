@@ -1,6 +1,5 @@
 #include "gfx.h"
 #include "agony.h"
-#include "dpad.h"
 
 static signed char amp[20] =  {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1, 0};
 static signed char sign[20] = {1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1};
@@ -10,15 +9,6 @@ static signed char sign[20] = {1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1
 
 static unsigned int best_dist = DIST_THRESHOLD + 1;
 static unsigned int agony_ticks = 0;
-
-//unknown 00 is a pointer to some vector transformation when the sound is tied to an actor. actor + 0x3E, when not tied to an actor (map), always 80104394
-//unknown 01 is always 4 in my testing
-//unknown 02 is a pointer to some kind of audio configuration Always 801043A0 in my testing
-//unknown 03 is always a3 in my testing
-//unknown 04 is always a3 + 0x08 in my testing (801043A8)
-typedef void(*playsfx_t)(uint16_t sfx, z64_xyzf_t *unk_00_, int8_t unk_01_ , float *unk_02_, float *unk_03_, float *unk_04_);
-
-#define z64_playsfx   ((playsfx_t)      0x800C806C)
 
 void update_agony_distance(z64_actor_t* grotto) {
     unsigned int dist = (unsigned int)grotto->xzdist_from_link;
@@ -32,12 +22,10 @@ static void draw_agony_graphic(int offset) {
     gSPDisplayList(db->p++, &setup_db);
     gDPPipeSync(db->p++);
     gDPSetCombineMode(db->p++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
-    uint16_t alpha = z64_game.hud_alpha_channels.minimap;
-    
-    if (alpha == 0xAA) alpha = 0xFF;
+    uint16_t alpha = 0xFF;
     gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, alpha);
-    sprite_load(db, &dpad_sprite, 0, 1);
-    sprite_draw(db, &dpad_sprite, 0, 13, 206+offset, 16, 16);
+    sprite_load(db, &quest_items_sprite, 9, 1);
+    sprite_draw(db, &quest_items_sprite, 0, 13, 206+offset, 16, 16);
 
     gDPPipeSync(db->p++);
 }
