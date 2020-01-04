@@ -1,7 +1,7 @@
 #include "gfx.h"
 #include "agony.h"
 
-static signed char amp[20] =  {0, 1, 2, 3, 4, 5, 6, 7, 7, 7, 7, 7, 7, 6, 5, 4, 3, 2, 1, 0};
+static signed char amp[20] =  {1, 1, 2, 2, 3, 4, 5, 6, 7, 8, 8, 7, 6, 5, 4, 3, 2, 2, 1, 1};
 static signed char sign[20] = {1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1, 1,-1};
 
 #define DIST_THRESHOLD 300
@@ -11,9 +11,10 @@ static unsigned int best_dist = DIST_THRESHOLD + 1;
 static unsigned int agony_ticks = 0;
 
 void update_agony_distance(z64_actor_t* grotto) {
-    unsigned int dist = (unsigned int)grotto->xzdist_from_link;
-    if (dist < best_dist) {
-        best_dist = dist;
+    unsigned int xzdist = (unsigned int)grotto->xzdist_from_link;
+    unsigned int ydist = (unsigned int)grotto->ydist_from_link;
+    if (xzdist < best_dist && ydist <= DIST_THRESHOLD) {
+        best_dist = xzdist;
     }
 }
 
@@ -32,7 +33,7 @@ static void draw_agony_graphic(int offset) {
 
 void draw_agony() {
     if (best_dist <= DIST_THRESHOLD) {
-        unsigned int amp_reduction = (best_dist * DIST_MULT) >> 29;
+        unsigned int amp_reduction = (best_dist * DIST_MULT) >> 29; // 0-7
         int amplitude = amp[agony_ticks] - amp_reduction;
         if (amplitude < 0) {
             amplitude = 0;
