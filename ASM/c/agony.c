@@ -62,7 +62,11 @@ void draw_agony() {
         if (amplitude < 0) {
             amplitude = 0;
         }
-        draw_agony_graphic(amplitude * sign[agony_ticks]); 
+        else {
+            amplitude = (int)(((unsigned int)amplitude + 1) >> 1);
+            amplitude *= sign[agony_ticks];
+        }
+        draw_agony_graphic(amplitude);
         best_dist = DIST_THRESHOLD + 1;
         ++agony_ticks;
         if (agony_ticks >= 20) {
