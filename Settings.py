@@ -267,6 +267,8 @@ class Settings:
         if self.world_count > 255:
             self.world_count = 255
 
+        if self.logic_rules == 'glitched' or self.logic_rules == 'none':
+            self.disabled_locations = None
         self._disabled = set()
         self.settings_string = self.get_settings_string()
         self.distribution = Distribution(self)
