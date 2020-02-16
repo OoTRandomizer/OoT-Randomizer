@@ -2487,27 +2487,6 @@ setting_infos = [
         shared         = True,
     ),
     Combobox(
-        name           = 'text_shuffle',
-        gui_text       = 'Text Shuffle',
-        default        = 'none',
-        choices        = {
-            'none':         'No Text Shuffled',
-            'except_hints': 'Shuffled except Hints and Keys',
-            'complete':     'All Text Shuffled',
-        },
-        gui_tooltip    = '''\
-            Will make things confusing for comedic value.
-
-            'Shuffled except Hints and Keys': Key texts
-            are not shuffled because in keysanity it is
-            inconvenient to figure out which keys are which
-            without the correct text. Similarly, non-shop
-            items sold in shops will also retain standard
-            text for the purpose of accurate price checks.
-        ''',
-        shared         = True,
-    ),
-    Combobox(
         name           = 'ice_trap_appearance',
         gui_text       = 'Ice Trap Appearance',
         default        = 'major_only',
