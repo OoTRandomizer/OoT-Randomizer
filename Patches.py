@@ -1664,10 +1664,10 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
 
     permutation = None
 
-    # text shuffle
-    if world.text_shuffle == 'except_hints':
+    # TODO: remove official support of text shuffling ?
+    if world.settings.text_shuffle == 'except_hints':
         permutation = shuffle_messages(messages, except_hints=True)
-    elif world.text_shuffle == 'complete':
+    elif world.settings.text_shuffle == 'complete':
         permutation = shuffle_messages(messages, except_hints=False)
         
     repack_messages(rom, messages, permutation)
