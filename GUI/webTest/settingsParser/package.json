@@ -1,9 +1,0 @@
-{
-  "name": "settingsParser",
-  "description": "",
-  "version": "1.0.0",
-  "author": "Marwin Misselhorn",
-  "main": "index.js",
-  "private": true,
-  "dependencies": {}
-}
