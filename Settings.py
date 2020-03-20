@@ -193,6 +193,8 @@ class Settings:
             if self.distribution_file:
                 try:
                     self.distribution = Distribution.from_file(self, self.distribution_file)
+                    with open(self.distribution_file) as json_file:
+                        self.distribution_file_values = json.load(json_file)
                     self.using_distribution_file = True
                 except FileNotFoundError:
                     logging.getLogger('').warning("Distribution file not found at %s" % (self.distribution_file))
@@ -218,7 +220,13 @@ class Settings:
         if check_random and 'randomize_key' in info.gui_params and self.__dict__[info.gui_params['randomize_key']]:
             return info.disabled_default
         elif info.dependency != None:
-            return info.disabled_default if info.dependency(self) else None
+            if info.dependency(self):
+                try:
+                    return self.distribution_file_values['settings'][info.name]
+                except (KeyError, AttributeError):
+                    return info.disabled_default
+            else:
+                return None
         else:
             return None
 
@@ -248,10 +256,18 @@ class Settings:
             if self.check_dependency(info.name, check_random=True):
                 continue
 
-            if 'randomize_key' in info.gui_params and self.__dict__[info.gui_params['randomize_key']]:               
+            if 'randomize_key' in info.gui_params and self.__dict__[info.gui_params['randomize_key']]:
+                # TODO: Don't allow invalid choices to have weights > 0 (eg: closed_forest with adult starting_age)
                 choices, weights = zip(*info.gui_params['distribution'])
-                self.__dict__[info.name] = random_choices(choices, weights=weights)[0]
-
+                try:
+                    distribution_setting = self.distribution_file_values['settings'][info.name]
+                    if (distribution_setting in choices
+                            and weights[choices.index(distribution_setting)] != 0):
+                        self.__dict__[info.name] = distribution_setting
+                    else:
+                        self.__dict__[info.name] = random_choices(choices, weights=weights)[0]
+                except (KeyError, AttributeError):
+                    self.__dict__[info.name] = random_choices(choices, weights=weights)[0]
 
     # add the settings as fields, and calculate information based on them
     def __init__(self, settings_dict):

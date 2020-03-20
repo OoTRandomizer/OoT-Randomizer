@@ -1,0 +1,10 @@
+{
+  "settings":            {
+    "triforce_hunt":                           true,
+    "triforce_goal_per_world":                 30,
+    "randomize_settings":                      true
+  },
+  "item_pool":           {
+    "Triforce Piece":                       40
+  }
+}

@@ -274,6 +274,12 @@ class TestPlandomizer(unittest.TestCase):
             for item in distribution_file['starting_items']:
                 self.assertNotIn(item, actual_pool)
 
+    def test_triforce_hunt_count_randomized_settings(self):
+        distribution_file, spoiler = generate_with_plandomizer("plando-triforce-hunt-required-amount-random-settings")
+        self.assertEqual(distribution_file['settings']['triforce_hunt'], spoiler['randomized_settings']['triforce_hunt'])
+        self.assertEqual(distribution_file['item_pool']['Triforce Piece'], spoiler['item_pool']['Triforce Piece'])
+        self.assertEqual(distribution_file['settings']['triforce_goal_per_world'], spoiler['randomized_settings']['triforce_goal_per_world'])
+
 
 class TestValidSpoilers(unittest.TestCase):
 
