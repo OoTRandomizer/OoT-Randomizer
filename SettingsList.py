@@ -1228,6 +1228,12 @@ setting_infos = [
     Setting_Info('open_python_dir',   str, "Open App Directory", "Button", False, {},
         gui_params = {
             'function' : "openPythonDir",
+            'no_line_break' : True,
+        }
+    ),
+    Setting_Info('open_wiki_readme',  str, "Open Wiki Readme", "Button", False, {},
+        gui_params = {
+            'function' : "openWikiReadme",
         }
     ),
     Checkbutton(

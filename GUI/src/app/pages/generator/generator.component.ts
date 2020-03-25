@@ -542,6 +542,10 @@ export class GeneratorComponent implements OnInit {
     });
   }
 
+  openWikiReadme() {
+      window.open("https://wiki.ootrandomizer.com/index.php?title=Readme", "_blank");
+  }
+
   browseForFile(setting: any) { //Electron only
     this.global.browseForFile(setting.file_types).then(res => {
       this.global.generator_settingsMap[setting.name] = res;

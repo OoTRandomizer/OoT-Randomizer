@@ -776,6 +776,7 @@ export class GUIGlobal {
     delete settingsFile["presets"];
     delete settingsFile["open_output_dir"];
     delete settingsFile["open_python_dir"];
+    delete settingsFile["open_wiki_readme"];
     delete settingsFile["generate_from_file"];
 
     //Delete fromPatchFile keys if mode is fromSeed

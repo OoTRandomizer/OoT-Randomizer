@@ -20,7 +20,8 @@
             "create_cosmetics_log",
             "compress_rom",
             "open_output_dir",
-            "open_python_dir"
+            "open_python_dir",
+            "open_wiki_readme"
           ]
         },
         {
