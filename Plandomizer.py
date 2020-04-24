@@ -410,12 +410,30 @@ class WorldDistribution(object):
 
         for item_name, record in self.starting_items.items():
             if bottle_matcher(item_name):
+                if world.zora_fountain != "open" and world.item_pool_value == "plentiful":
+                    if "Bottle with Letter" not in self.starting_items:
+                        if record.count > 2:
+                            record.count -= 1
+                    else:
+                        try:
+                            self.pool_remove_item([pool], "Bottle with Letter", 2)
+                            self.pool_add_item(pool, "#Bottle", 1)
+                        except:
+                            pass
+
                 self.pool_remove_item([pool], "#Bottle", record.count)
             elif trade_matcher(item_name):
                 self.pool_remove_item([pool], "#AdultTrade", record.count)
             elif IsItem(item_name):
                 try:
-                    self.pool_remove_item([pool], item_name, record.count)
+                    if item_name == "Bottle with Letter":
+                        try:
+                            self.pool_remove_item([pool], item_name, 2)
+                            self.pool_add_item(pool, "#Bottle", 1)
+                        except:
+                            pass
+                    else:
+                        self.pool_remove_item([pool], item_name, record.count)
                 except KeyError:
                     pass
                 if item_name in item_groups["Song"]:
