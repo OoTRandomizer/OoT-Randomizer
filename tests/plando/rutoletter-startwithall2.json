@@ -1,0 +1,11 @@
+{
+  "settings": {
+    "item_pool_value": "plentiful",
+    "starting_items": [
+      "letter",
+      "bottle",
+      "bottle2",
+      "bottle3"
+    ]
+  }
+}

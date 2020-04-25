@@ -274,6 +274,44 @@ class TestPlandomizer(unittest.TestCase):
             for item in distribution_file['starting_items']:
                 self.assertNotIn(item, actual_pool)
 
+    def test_rutoletter_startwith(self):
+        filenames = [
+            "rutoletter-startwith",
+            "rutoletter-startwithother",
+            "rutoletter-startwithall",
+            "rutoletter-startwithall2"
+        ]
+
+        for filename in filenames:
+            with self.subTest(filename):
+                _, spoiler = generate_with_plandomizer(filename)
+                bottle_count = 0
+                rutos_count = 0
+                for item in spoiler["item_pool"]:
+                    if "Bottle" in item and item != "Bottle with Letter":
+                        bottle_count += spoiler["item_pool"][item]
+                    if item == "Bottle with Letter":
+                        rutos_count += spoiler["item_pool"][item]
+                if "rutoletter-startwithall" in filename:
+                    self.assertEqual(3, spoiler["starting_items"]["Bottle"],
+                                     "Started with incorrect number of Normal Bottles")
+                    self.assertEqual(1, spoiler["starting_items"]["Bottle with Letter"],
+                                     "Did not start with Bottle with Letter")
+                    self.assertEqual(0, bottle_count, "Incorrect number of Normal Bottle items in item pool")
+                    self.assertEqual(0, rutos_count, "Incorrect number of Bottle with Letter in item pool")
+                elif filename == "rutoletter-startwithother":
+                    self.assertEqual(2, spoiler["starting_items"]["Bottle"],
+                                     "Started with incorrect number of Normal Bottles")
+                    self.assertNotIn("Bottle with Letter", spoiler["starting_items"], "Started with Bottle with Letter")
+                    self.assertEqual(0, bottle_count, "Incorrect number of Normal Bottle items in item pool")
+                    self.assertEqual(2, rutos_count, "Incorrect number of Bottle with Letter in item pool")
+                else:
+                    self.assertNotIn("Bottle", spoiler["starting_items"], "Started with Normal Bottles")
+                    self.assertEqual(1, spoiler["starting_items"]["Bottle with Letter"],
+                                     "Did not start with Bottle with Letter")
+                    self.assertEqual(3, bottle_count, "Incorrect number of Normal Bottle items in item pool")
+                    self.assertEqual(0, rutos_count, "Incorrect number of Bottle with Letter in item pool")
+
 
 class TestValidSpoilers(unittest.TestCase):
 
