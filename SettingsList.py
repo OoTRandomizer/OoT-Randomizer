@@ -1921,7 +1921,7 @@ setting_infos = [
             'randomize_key': 'randomize_settings',
         },
         disable        = {
-            True  : {'settings' : ['shuffle_ganon_bosskey']},
+            True  : {'settings' : ['shuffle_ganon_bosskey', 'lacs_medallions', 'lacs_stones', 'lacs_rewards', 'lacs_tokens']},
             False : {'settings' : ['triforce_goal_per_world']}
         },
     ),
