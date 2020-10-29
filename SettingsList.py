@@ -2832,7 +2832,7 @@ setting_infos = [
         name           = 'shuffle_ganon_bosskey',
         gui_text       = 'Ganon\'s Boss Key',
         default        = 'dungeon',
-        disabled_default = 'triforce',
+        disabled_default = 'remove',
         choices        = {
             'remove':          "Remove (Keysy)",
             'vanilla':         "Vanilla Location",
