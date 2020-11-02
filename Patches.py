@@ -1111,10 +1111,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
             save_context.addresses['dungeon_items'][dungeon]['compass'].value = True
             save_context.addresses['dungeon_items'][dungeon]['map'].value = True
 
-    if world.shuffle_smallkeys == 'vanilla':
-        if world.dungeon_mq['Spirit Temple']:
-            save_context.addresses['keys']['spirit'].value = 3
-
     if world.start_with_rupees:
         rom.write_byte(rom.sym('MAX_RUPEES'), 0x01)
 

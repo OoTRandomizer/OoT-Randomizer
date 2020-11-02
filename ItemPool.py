@@ -1269,17 +1269,6 @@ def get_pool_core(world):
                 placed_items[location] = item
             except KeyError:
                 continue
-        # Logic cannot handle vanilla key layout in some dungeons
-        # this is because vanilla expects the dungeon major item to be
-        # locked behind the keys, which is not always true in rando.
-        # We can resolve this by starting with some extra keys
-        if world.dungeon_mq['Spirit Temple']:
-            # Yes somehow you need 3 keys. This dungeon is bonkers
-            world.state.collect(ItemFactory('Small Key (Spirit Temple)'))
-            world.state.collect(ItemFactory('Small Key (Spirit Temple)'))
-            world.state.collect(ItemFactory('Small Key (Spirit Temple)'))
-        #if not world.dungeon_mq['Fire Temple']:
-        #    world.state.collect(ItemFactory('Small Key (Fire Temple)'))
     if world.shuffle_bosskeys == 'vanilla':
         for location, item in vanillaBK.items():
             try:

@@ -21,20 +21,30 @@
     {
         "region_name": "Child Spirit Temple",
         "dungeon": "Spirit Temple",
+        "events": {
+            "Spirit Temple Room 06 Eye Switch": "
+                has_bombchus and Slingshot and 
+                (can_use(Dins_Fire) or
+                 at('Adult Spirit Temple', (can_use(Fire_Arrows) or
+                                           (logic_spirit_mq_frozen_eye and can_use(Bow) and
+                                            can_play(Song_of_Time)))))"
+        },
         "locations": {
             "Spirit Temple MQ Child Hammer Switch Chest": "
-                at('Adult Spirit Temple', (Small_Key_Spirit_Temple, 7) and Megaton_Hammer)",
+                at('Adult Spirit Temple', Megaton_Hammer) and
+                ((Small_Key_Spirit_Temple, 7) or
+                (shuffle_smallkeys == 'vanilla' and 'Spirit Temple Room 06 Eye Switch'
+                    and can_play(Zeldas_Lullaby) and (Small_Key_Spirit_Temple, 4)))",
             "Spirit Temple MQ Map Room Enemy Chest": "
                 (Sticks or Kokiri_Sword) and 
                 has_bombchus and Slingshot and can_use(Dins_Fire)",
             "Spirit Temple MQ Map Chest": "
                 Sticks or Kokiri_Sword or has_explosives",
             "Spirit Temple MQ Silver Block Hallway Chest": "
-                has_bombchus and (Small_Key_Spirit_Temple, 7) and Slingshot and 
-                (can_use(Dins_Fire) or
-                 at('Adult Spirit Temple', (can_use(Fire_Arrows) or
-                                           (logic_spirit_mq_frozen_eye and can_use(Bow) and
-                                            can_play(Song_of_Time)))))",
+                'Spirit Temple Room 06 Eye Switch' and
+                ((Small_Key_Spirit_Temple, 7) or
+                (shuffle_smallkeys == 'vanilla' and at('Adult Spirit Temple', Megaton_Hammer)
+                    and can_play(Zeldas_Lullaby) and (Small_Key_Spirit_Temple, 4)))",
             "Fairy Pot": "
                 has_bottle and (Sticks or Kokiri_Sword) and
                 has_bombchus and Slingshot"

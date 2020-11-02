@@ -2713,9 +2713,7 @@ setting_infos = [
             mode.
 
             'Vanilla': Small Keys will appear in their 
-            vanilla locations. You start with 3 keys in 
-            Spirit Temple MQ because the vanilla key 
-            layout is not beatable in logic.
+            vanilla locations.
 
             'Dungeon': Small Keys can only appear in their
             respective dungeon. If Fire Temple is not a
