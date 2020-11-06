@@ -1585,7 +1585,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
             item = read_rom_item(rom, i)
             item['chest_type'] = 0
             write_rom_item(rom, i, item)
-    if world.bridge == 'tokens':
+    if world.bridge == 'tokens' or world.lacs_condition == 'tokens':
         item = read_rom_item(rom, 0x5B)
         item['chest_type'] = 0
         write_rom_item(rom, 0x5B, item)
