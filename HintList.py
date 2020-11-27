@@ -136,7 +136,6 @@ def tokens_required_by_settings(world):
 # Hints required under certain settings
 conditional_always = {
     'Market 10 Big Poes':           lambda world: world.big_poe_count > 3,
-    'Deku Theater Skull Mask':      lambda world: world.hint_dist == 'tournament' and not world.complete_mask_quest,
     'Deku Theater Mask of Truth':   lambda world: not world.complete_mask_quest,
     'Song from Ocarina of Time':    lambda world: stones_required_by_settings(world) < 2,
     'HF Ocarina of Time Item':      lambda world: stones_required_by_settings(world) < 2,

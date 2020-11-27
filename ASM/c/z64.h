@@ -608,6 +608,18 @@ typedef struct
 
 typedef struct
 {
+    uint8_t       sound_options;            /* 0x0000 */
+    uint8_t       z_target_options;         /* 0x0001 */
+    uint8_t       language_options;         /* 0x0002 */
+    char          verification_string[9];   /* 0x0003 */
+    char          unk_00_[0x0014];          /* 0x000C */
+    z64_file_t    primary_saves[3];         /* 0x0020 */
+    z64_file_t    backup_saves[3];          /* 0x3D10 */
+                                            /* 0x7A00 */
+} z64_sram_data_t;
+
+typedef struct
+{
   uint32_t seg[16];
 } z64_stab_t;
 
@@ -1116,6 +1128,57 @@ typedef struct
 
 typedef struct
 {
+  char              unk_00_[0x01D8];          /* 0x00000 */
+  z64_sram_data_t  *sram_buffer;              /* 0x001D8 */
+  char              unk_01_[0x1C812];         /* 0x001DC */
+  uint16_t          deaths[3];                /* 0x1C9EE */
+  uint8_t           name[3][8];               /* 0x1C9F4 */
+  uint16_t          hearts[3];                /* 0x1CA0C */
+  uint32_t          quest_items[3];           /* 0x1CA14 */
+  uint16_t          disk_drive[3];            /* 0x1CA20 */
+  uint8_t           double_defense[3];        /* 0x1CA26 */
+  char              unk_02_[0x0001];          /* 0x1CA29 */
+  uint16_t          selected_item;            /* 0x1CA2A */
+  uint16_t          selected_sub_item;        /* 0x1CA2C */
+  uint16_t          menu_depth;               /* 0x1CA2E */
+  char              unk_03_[0x0006];          /* 0x1CA30 */
+  uint16_t          menu_transition;          /* 0x1CA36 */
+  uint16_t          selected_file;            /* 0x1CA38 */
+  char              unk_04_[0x0008];          /* 0x1CA3A */
+  uint16_t          transition_frame;         /* 0x1CA42 */
+  struct {
+    int16_t         file[3];                  /* 0x1CA44 */
+    int16_t         yes;                      /* 0x1CA4A */
+    int16_t         quit;                     /* 0x1CA4C */
+    int16_t         options;                  /* 0x1CA4E */
+  }                 button_offsets;
+  int16_t           unk_05_;                  /* 0x1CA50 */
+  int16_t           disable_copy_erase;       /* 0x1CA52 */
+  int16_t           unk_06_;                  /* 0x1CA54 */
+  int16_t           message_id[2];            /* 0x1CA56 */
+  colorRGB16_t      panel_color;              /* 0x1CA5A */
+  struct {
+    uint16_t        message[2];               /* 0x1CA60 */
+    uint16_t        panel;                    /* 0x1CA64 */
+    uint16_t        file[3];                  /* 0x1CA66 */
+    uint16_t        tag[3];                   /* 0x1CA6C */
+    uint16_t        name_text[3];             /* 0x1CA72 */
+    uint16_t        link[3];                  /* 0x1CA78 */
+    uint16_t        file_details[3];          /* 0x1CA7E */
+    uint16_t        copy_button;              /* 0x1CA84 */
+    uint16_t        erase_button;             /* 0x1CA86 */
+    uint16_t        yes_button;               /* 0x1CA88 */
+    uint16_t        quit_button;              /* 0x1CA8A */
+    uint16_t        options_button;           /* 0x1CA8C */
+    uint16_t        unk_00_;                  /* 0x1CA8E */
+    uint16_t        input_button_text;        /* 0x1CA90 */
+    uint16_t        unk_01_;                  /* 0x1CA92 */
+  } alpha_levels;
+  colorRGB16_t      cursor_color;             /* 0x1CA94 */
+} z64_menudata_t;
+
+typedef struct
+{
   void             *ptr;                      /* 0x0000 */
   uint32_t          vrom_start;               /* 0x0004 */
   uint32_t          vrom_end;                 /* 0x0008 */
@@ -1265,6 +1328,9 @@ typedef struct
 #define z64_file_select_static_vsize            0x000395C0
 #define z64_parameter_static_vaddr              0x01A3C000
 #define z64_parameter_static_vsize              0x00003B00
+#define z64_icon_item_dungeon_static_vaddr      0x0085E000
+#define z64_icon_item_dungeon_static_vsize      0x00001D80
+
 
 /* context info */
 #define z64_ctxt_filemenu_ctor                  0x80812394

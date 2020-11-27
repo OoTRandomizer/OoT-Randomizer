@@ -1,9 +1,11 @@
 #include "file_select.h"
 
+#include "file_icons.h"
 #include "gfx.h"
 #include "text.h"
 #include "util.h"
 #include "z64.h"
+
 
 sprite_t *hash_sprites[2] = {
     &items_sprite,
@@ -50,9 +52,10 @@ hash_symbol_t hash_symbols[32] = {
     { 1, 19 }, // Big Magic
 };
 
+
 uint32_t cfg_file_select_hash = 0;
 
-void draw_file_select_hash(uint32_t fade_out_alpha) {
+void draw_file_select_hash(uint32_t fade_out_alpha, z64_menudata_t* menu_data) {
     z64_disp_buf_t *db = &(z64_ctxt.gfx->poly_opa);
 
     // Call setup display list
@@ -81,6 +84,8 @@ void draw_file_select_hash(uint32_t fade_out_alpha) {
 
         left += icon_size + padding;
     }
+    
+    draw_file_icons(db, menu_data);
 
     // Fade out once a file is selected
 

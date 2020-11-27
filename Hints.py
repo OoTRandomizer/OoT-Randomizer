@@ -8,6 +8,7 @@ from collections import OrderedDict
 import urllib.request
 from urllib.error import URLError, HTTPError
 import json
+from enum import Enum
 
 from HintList import getHint, getHintGroup, Hint, hintExclusions
 from Item import MakeEventItem
@@ -23,6 +24,12 @@ bingoBottlesForHints = (
     "Bottle with Big Poe", "Bottle with Poe",
 )
 
+
+
+class RegionRestriction(Enum):
+    NONE = 0,
+    DUNGEON = 1,
+    OVERWORLD = 2,
 
 
 class GossipStone():
@@ -148,7 +155,7 @@ def add_hint(spoiler, world, groups, gossip_text, count, location=None, force_re
             if any(map(lambda id: gossipLocations[id].reachable, group)):
                 stone_names = [gossipLocations[id].location for id in group]
                 stone_locations = [world.get_location(stone_name) for stone_name in stone_names]
-                if not first or any(map(lambda stone_location: can_reach_stone(spoiler.worlds, stone_location, location), stone_locations)):
+                if not first or any(map(lambda stone_location: can_reach_hint(spoiler.worlds, stone_location, location), stone_locations)):
                     if first and location:
                         # just name the event item after the gossip stone directly
                         event_item = None
@@ -211,7 +218,7 @@ def add_hint(spoiler, world, groups, gossip_text, count, location=None, force_re
     return success
 
 
-def can_reach_stone(worlds, stone_location, location):
+def can_reach_hint(worlds, hint_location, location):
     if location == None:
         return True
 
@@ -220,8 +227,8 @@ def can_reach_stone(worlds, stone_location, location):
     search = Search.max_explore([world.state for world in worlds])
     location.item = old_item
 
-    return (search.spot_access(stone_location)
-            and search.state_list[location.world.id].guarantee_hint())
+    return (search.spot_access(hint_location)
+            and (hint_location.type != 'HintStone' or search.state_list[location.world.id].guarantee_hint()))
 
 
 def writeGossipStoneHints(spoiler, world, messages):
@@ -342,12 +349,41 @@ def get_woth_hint(spoiler, world, checked):
 
 
 def get_barren_hint(spoiler, world, checked):
+    if not hasattr(world, 'get_barren_hint_prev'):
+        world.get_barren_hint_prev = RegionRestriction.NONE
+
     areas = list(filter(lambda area:
-        area not in checked and \
-        not (world.barren_dungeon >= world.hint_dist_user['dungeons_barren_limit'] and \
-        world.empty_areas[area]['dungeon']),
+        area not in checked
+        and not (world.barren_dungeon >= world.hint_dist_user['dungeons_barren_limit'] and world.empty_areas[area]['dungeon']),
         world.empty_areas.keys()))
 
+    if not areas:
+        return None
+
+    # Randomly choose between overworld or dungeon
+    dungeon_areas = list(filter(lambda area: world.empty_areas[area]['dungeon'], areas))
+    overworld_areas = list(filter(lambda area: not world.empty_areas[area]['dungeon'], areas))
+    if not dungeon_areas:
+        # no dungeons left, default to overworld
+        world.get_barren_hint_prev = RegionRestriction.OVERWORLD
+    elif not overworld_areas:
+        # no overworld left, default to dungeons
+        world.get_barren_hint_prev = RegionRestriction.DUNGEON
+    else:
+        if world.get_barren_hint_prev == RegionRestriction.NONE:
+            # 50/50 draw on the first hint
+            world.get_barren_hint_prev = random.choices([RegionRestriction.DUNGEON, RegionRestriction.OVERWORLD], [0.5, 0.5])[0]
+        elif world.get_barren_hint_prev == RegionRestriction.DUNGEON:
+            # weights 75% against drawing dungeon again
+            world.get_barren_hint_prev = random.choices([RegionRestriction.DUNGEON, RegionRestriction.OVERWORLD], [0.25, 0.75])[0]
+        elif world.get_barren_hint_prev == RegionRestriction.OVERWORLD:
+            # weights 75% against drawing overworld again
+            world.get_barren_hint_prev = random.choices([RegionRestriction.DUNGEON, RegionRestriction.OVERWORLD], [0.75, 0.25])[0]
+
+    if world.get_barren_hint_prev == RegionRestriction.DUNGEON:
+        areas = dungeon_areas
+    else:
+        areas = overworld_areas
     if not areas:
         return None
 
@@ -537,17 +573,17 @@ def get_junk_hint(spoiler, world, checked):
 hint_func = {
     'trial':      lambda spoiler, world, checked: None,
     'always':     lambda spoiler, world, checked: None,
-    'woth':       get_woth_hint,
-    'barren':     get_barren_hint,
-    'item':       get_good_item_hint,
-    'sometimes':  get_sometimes_hint,
-    'song':       get_song_hint,
-    'overworld':  get_overworld_hint,
-    'dungeon':    get_dungeon_hint,
-    'entrance':   get_entrance_hint,
-    'random':     get_random_location_hint,
-    'junk':       get_junk_hint,
-    'named-item': get_specific_item_hint
+    'woth':             get_woth_hint,
+    'barren':           get_barren_hint,
+    'item':             get_good_item_hint,
+    'sometimes':        get_sometimes_hint,
+    'song':             get_song_hint,
+    'overworld':        get_overworld_hint,
+    'dungeon':          get_dungeon_hint,
+    'entrance':         get_entrance_hint,
+    'random':           get_random_location_hint,
+    'junk':             get_junk_hint,
+    'named-item':       get_specific_item_hint
 }
 
 hint_dist_keys = {
@@ -569,7 +605,11 @@ hint_dist_keys = {
 
 def buildBingoHintList(boardURL):
     try:
+        if len(boardURL) > 256:
+            raise URLError(f"URL too large {len(boardURL)}")
         with urllib.request.urlopen(boardURL + "/board") as board:
+            if board.length and 0 < board.length < 4096:
+                raise HTTPError(f"Board of invalid size {board.length}")
             goalList = board.read()
     except (URLError, HTTPError) as e:
         logger = logging.getLogger('')
@@ -608,8 +648,7 @@ def buildGossipHints(spoiler, worlds):
         location = world.light_arrow_location
         if location is None:
             continue
-        # Didn't you know that Ganondorf is a gossip stone?
-        if can_reach_stone(worlds, world.get_location("Ganondorf Hint"), location):
+        if can_reach_hint(worlds, world.get_location("Ganondorf Hint"), location):
             light_arrow_world = location.world
             if light_arrow_world.id not in checkedLocations:
                 checkedLocations[light_arrow_world.id] = set()
@@ -674,7 +713,7 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
     # If not (or if the URL is invalid), use generic bingo hints
     if world.hint_dist == "bingo":
         bingoDefaults = read_json(data_path('Bingo/generic_bingo_hints.json'))
-        if world.bingosync_url is not None and "https://bingosync.com" in world.bingosync_url: # Verify that user actually entered a bingosync URL
+        if world.bingosync_url is not None and world.bingosync_url.startswith("https://bingosync.com/"): # Verify that user actually entered a bingosync URL
             logger = logging.getLogger('')
             logger.info("Got Bingosync URL. Building board-specific goals.")
             world.item_hints = buildBingoHintList(world.bingosync_url)

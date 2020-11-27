@@ -6,13 +6,14 @@
 #include "text.h"
 #include "util.h"
 
+extern uint16_t triforce_hunt_enabled;
 extern uint16_t triforce_pieces_requied;
 
 void draw_triforce_count(z64_disp_buf_t* db);
 void set_triforce_render();
 
 #define BLOCK_TRIFORCE (0x00000001 | \
-	                0x00000002 | \
+                    0x00000002 | \
                     0x00000080 | \
                     0x00000400 | \
                     0x10000000 | \

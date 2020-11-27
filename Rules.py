@@ -45,7 +45,7 @@ def set_rules(world):
             # This location needs to be a small key. Make sure the boss key isn't placed here.
             forbid_item(location, 'Boss Key (Forest Temple)')
 
-        if location.type == 'GossipStone' and world.hints == 'mask':
+        if location.type == 'HintStone' and world.hints == 'mask':
             location.add_rule(is_child)
 
         if location.name in world.always_hints:

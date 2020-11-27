@@ -23,6 +23,11 @@ extern sprite_t quest_items_sprite;
 extern sprite_t font_sprite;
 extern sprite_t dpad_sprite;
 extern sprite_t triforce_sprite;
+extern sprite_t song_note_sprite;
+extern sprite_t key_rupee_clock_sprite;
+extern sprite_t item_digit_sprite;
+extern sprite_t linkhead_skull_sprite;
+extern sprite_t heart_sprite;
 
 void gfx_init();
 

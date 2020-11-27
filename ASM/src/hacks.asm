@@ -284,6 +284,7 @@
 ; Replaces: code that draws the fade-out rectangle on file load
 .orga 0xBAF738 ; In memory: 0x803B3538
 .area 0x60, 0
+    or      a1, r0, s0   ; menu data
     jal     draw_file_select_hash
     andi    a0, t8, 0xFF ; a0 = alpha channel of fade-out rectangle
 
@@ -292,6 +293,37 @@
     jr      ra
     addiu   sp, sp, 0x88
 .endarea
+
+;==================================================================================================
+; Hide file details panel
+;==================================================================================================
+; keep death count alpha at 0 instead of using file_detail alpha
+.orga 0xBAC064 ; In memory: 0x803AFE64
+    move    t7, r0 ; was: lh t7, 0x4A7E (t4)
+
+; keep hearts alpha at 0 instead of using file_detail alpha
+.orga 0xBAC1BC ; In memory: 0x803AFFBC
+    move    t7, r0 ; was: lh t7, 0x4A7E (t4)
+
+; keep stones/medals alpha at 0 instead of using file_detail alpha
+.orga 0xBAC3EC ; In memory: 0x803B01EC
+    move    t9, r0 ; was: lh t9, 0x4A7E (t3)
+
+; keep detail panel alpha at 0 instead of using file_detail alpha
+.orga 0xBAC94C ; In memory: 0x803B074C
+    move    t9, r0 ; was: lh t9, 0x4A7E (t9)
+
+; keep file tag alpha at 0xC8 instead of subtracting 0x19 each transition frame
+.orga 0xBAE5A4 ; In memory: 0x803B23A4
+    sh      t3, 0x4A6C (v1) ; was: sh t5, 0x4A6C (v1)
+
+; prevent setting file tag alpha to 0x00 when transition is finished
+.orga 0xBAE5C8 ; In memory: 0x803B23C8
+    nop ; was: sh r0, 0x4A6C (v1)
+
+; prevent increasing alpha when transitioning away from file
+.orga 0xBAE864; In memory: 0x803B2664
+    nop ; was: sh t5, 0x4A6C (v1)
 
 ;==================================================================================================
 ; Special item sources

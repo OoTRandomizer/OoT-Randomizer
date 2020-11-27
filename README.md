@@ -97,6 +97,10 @@ do that.
 ### Dev
 
 #### New Features
+* New save file screen
+  * Relevant items are shown before hitting 'Yes' to load, instead of just the hearts, magic, dungeon rewards, and deaths, solid if the save has the item or faded if not.
+  * Triforce pieces aren't shown unless the save has at least 1.
+  * The death counter is now placed at the bottom next to a skull.
 * New setting `Skip Some Minigame Phases`
   * Allows getting both rewards for Horseback Archery and Dampé Race in a single go!
   * Replaces the `Skip First Dampé Race` setting.
@@ -212,13 +216,13 @@ do that.
   * Many locations that did not previously have item hints now have hints, in case a custom hint distribution makes use of them.
   * Using the hint distribution "Bingo" allows setting a "Bingosync URL" to build hints for the specific OoTR Bingo board. Otherwise it's a generic hint distribution for OoTR Bingo.
 * Hint distributions can configure groups of stones to all have the same hint, and can also disable stones from receiving useful hints (give them junk hints instead).
-* Tournament hint distribution changes <!-- keep updated if there are changes later -->
-  * Temple of Time stones all provide the same hint.
+* Tournament hint distribution changes
   * Grotto stones are disabled and only provide junk hints.
   * Zelda's Lullaby is never considered for Way of the Hero hints.
-  * Deku Theater Skull Mask is an "always" hint.
-  * Only "always" and "WotH" hints have duplicates now.
-  * Number of unique hints of each type are now (not counting seed-dependent hint types like 'always' and 'trial'): 4 WotH, 0 barren, 4(remainder) sometimes.
+  * Only "always", "Barren", and "WotH" hints have duplicates now.
+  * "Barren" hints will typically be split evenly between dungeon and overworld areas.
+  * Number of unique hints of each type are now (not counting seed-dependent hint types like 'always' and 'trial'): 4 WotH, 2 barren, 5(remainder) sometimes.
+* The previous Tournament hint distribution has been renamed "Scrubs Tournament"
 * Added options to `Background Music` and `Fanfares` for randomly selecting only from [custom music](https://wiki.ootrandomizer.com/index.php?title=Readme#Custom_Music_and_Fanfares).
 * Tricks can be filtered in the GUI using a new dropdown.
 * Various Quality of Life improvements
@@ -247,6 +251,7 @@ do that.
 * Move the Stone of Agony indicator above any small keys if both are present.
 * Fix model/icon colors in `Item Model Colors Match Cosmetics` not returning to default with a cosmetic patch setting them to defaults.
 * Ensure Ganondorf always hints one of the first reachable Light Arrows.
+* Don't require that child can reach Ganondorf in order for Light Arrows not to be hinted WotH.
 * Allow playthrough to collect a second 'Bottle with Letter' as its first empty bottle.
 * Fix some issues with `Randomize Main Rules`:
   * Closed Forest implies starting as child.
@@ -254,6 +259,8 @@ do that.
   * Other conflicts are now prevented.
 * Fix a rare issue in ER with using time-passing regions to gain new access.
 * Fix a rare issue where settings strings weren't allocated enough bits.
+* Fix the version number in the ROM header being potentially wrong after patching.
+* Fix the CRC for uncompressed ROMs.
 * The seed generator can now retry a few times in case of failure.
 * Exclude a line from text shuffle so the Malon race is completable.
 * Minor plandomizer fixes and improvements.
@@ -262,11 +269,13 @@ do that.
 #### Other Changes
 * Most locations and a few items have been renamed to improve spoiler output and standardize.
   * This will break settings and distribution files from previous versions that reference these locations and items.
+* Reordered locations more naturally in the locations part of the spoiler.
 * Default for `Shuffle Weird Egg` is now off.
 * In-game hints overhaul.
 * File 3 has been removed from generated ROMs to free up some space.
 * The Zora Sapphire in Jabu Jabu's Big Octo room is now the actual dungeon reward.
 * The number of Triforces available in Triforce Hunt now rounds to the nearest whole number instead of the nearest whole **even** number.
+* "No Logic" seeds can now disable locations.
 * Cosmetic logs contain the display names of SFX instead of their internal key names.
 * Performance improvements to seed generation.
 * Updated development n64 compilation process to use latest available toolchain.

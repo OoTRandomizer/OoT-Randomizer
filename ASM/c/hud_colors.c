@@ -11,8 +11,8 @@ extern colorRGB16_t CFG_A_NOTE_COLOR;
 extern colorRGB16_t CFG_C_NOTE_COLOR;
 extern colorRGB16_t CFG_TEXT_CURSOR_COLOR;
 
-colorRGB16_t defaultHeart   = { 0xFF, 0x46, 0x32 };
-colorRGB16_t defaultDDHeart = { 0xC8, 0x00, 0x00 };
+const colorRGB16_t defaultHeart   = { 0xFF, 0x46, 0x32 };
+const colorRGB16_t defaultDDHeart = { 0xC8, 0x00, 0x00 };
 
 colorRGB16_t* beating_no_dd    = (colorRGB16_t*)0x801D8B92;
 colorRGB16_2_t* normal_no_dd   = (colorRGB16_2_t*)0x801D8B9E;
@@ -102,7 +102,7 @@ void update_hud_colors() {
   (*text_cursor_border_max) = text_cursor_glow_color;
 }
 
-colorRGB8_t rupee_colors[] = {
+const colorRGB8_t rupee_colors[4] = {
   { 0xC8, 0xFF, 0x64 }, // Base Wallet (Green)
   { 0x82, 0x82, 0xFF }, // Adult's Wallet (Blue)
   { 0xFF, 0x64, 0x64 }, // Giant's Wallet (Red)

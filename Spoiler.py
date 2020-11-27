@@ -1,10 +1,12 @@
-from version import __version__
 from collections import OrderedDict
-from Item import Item
-from Hints import gossipLocations
+import json
 import re
 import random
-import json
+
+from version import __version__
+from Hints import gossipLocations
+from Item import Item
+from LocationList import location_sort_order
 
 HASH_ICONS = [
     'Deku Stick',
@@ -71,9 +73,9 @@ class Spoiler(object):
 
         self.locations = {}
         for world in self.worlds:
-            spoiler_locations = [location for location in world.get_locations() if not location.locked and location.type != 'GossipStone']
-            sort_order = {"Song": 0, "Boss": -1}
-            spoiler_locations.sort(key=lambda item: sort_order.get(item.type, 1))
+            spoiler_locations = sorted(
+                    [location for location in world.get_locations() if not location.locked and not location.type.startswith('Hint')],
+                    key=lambda x: location_sort_order.get(x.name, 100000))
             self.locations[world.id] = OrderedDict([(str(location), location.item) for location in spoiler_locations])
 
         entrance_sort_order = {"Spawn": 0, "WarpSong": 1, "OwlDrop": 2, "Overworld": 3, "Dungeon": 4, "SpecialInterior": 5, "Interior": 5, "Grotto": 6, "Grave": 6}

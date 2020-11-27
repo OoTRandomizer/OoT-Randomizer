@@ -894,7 +894,7 @@ def patch_cosmetics(settings, rom):
     # try to detect the cosmetic patch data format
     versioned_patch_set = None
     cosmetic_context = rom.read_int32(rom.sym('RANDO_CONTEXT') + 4)
-    if cosmetic_context >= 0x80000000:
+    if cosmetic_context >= 0x80000000 and cosmetic_context <= 0x80F7FFFC:
         cosmetic_context = (cosmetic_context - 0x80400000) + 0x3480000 # convert from RAM to ROM address
         cosmetic_version = rom.read_int32(cosmetic_context)
         versioned_patch_set = patch_sets.get(cosmetic_version)
