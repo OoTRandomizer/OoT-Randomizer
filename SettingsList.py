@@ -619,7 +619,8 @@ logic_tricks = {
                     expire. You can get extra time to show the Eye Drops if
                     you warp immediately upon receiving them. If you don't
                     have many hearts, you may have to reset the heat timer
-                    by quickly dipping in and out of Darunia's chamber.
+                    by quickly dipping in and out of Darunia's chamber or 
+                    quickly equipping and unequipping the Goron Tunic.
                     This trick does not apply if "Randomize Warp Song
                     Destinations" is enabled, or if the settings are such
                     that trade items do not need to be delivered within a
@@ -2206,7 +2207,7 @@ setting_infos = [
             guarantee that every item is obtainable and every
             location is reachable.
 
-            When disabled, only items and locations required
+            When disabled, only required items and locations
             to beat the game will be guaranteed reachable.
         ''',
         default        = True,
@@ -2244,8 +2245,8 @@ setting_infos = [
         gui_text       = 'Dungeons Have One Major Item',
         gui_tooltip    = '''\
             Dungeons have exactly one major item. 
-            This naturally makes each dungeon similar in value
-            rather than vary based on shuffled locations.
+            This naturally makes each dungeon similar in 
+            value instead of valued based on chest count.
 
             Spirit Temple Colossus hands count as part 
             of the dungeon. Spirit Temple has TWO items 
@@ -2265,10 +2266,6 @@ setting_infos = [
 
             Bombchus only count as major items if they
             are considered in logic.
-
-            This setting has potential to conflict with
-            other randomizer settings. Should seeds continuously
-            fail to generate, consider turning this option off.
         ''',
         shared         = True,
         gui_params     = {

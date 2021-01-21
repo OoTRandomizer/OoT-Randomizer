@@ -76,7 +76,7 @@
     # Biggoron's trade path
     # ER with certain settings disables timers and prevents items from reverting on save warp.
     # Otherwise, to get to Biggoron requires: a trick, clearing boulders on DMT, or Darunia's Chamber
-    "guarantee_trade_path": "disable_trade_revert or can_blast_or_smash or 'Stop GC Rolling Goron as Adult' or (logic_dmt_climb_hovers and can_use(Hover_Boots)) or (logic_biggoron_bolero and not warp_songs and can_play(Bolero_of_Fire) and at('DMC Central Local', can_use(Hookshot) or can_use(Hover_Boots) or can_plant_bean))",
+    "guarantee_trade_path": "disable_trade_revert or can_blast_or_smash or (logic_dmt_climb_hovers and can_use(Hover_Boots)) or at('Death Mountain', can_plant_bean and Progressive_Strength_Upgrade) or ((logic_fewer_tunic_requirements or can_use(Goron_Tunic)) and 'Stop GC Rolling Goron as Adult') or (logic_biggoron_bolero and not warp_songs and can_play(Bolero_of_Fire) and ('Plant Crater Bean' or ((logic_fewer_tunic_requirements or can_use(Goron_Tunic)) and (can_use(Hookshot) or can_use(Hover_Boots)))))",
     "guarantee_hint": "(hints == 'mask' and Mask_of_Truth) or (hints == 'agony' and Stone_of_Agony) or (hints != 'mask' and hints != 'agony')",
     "has_fire_source": "can_use(Dins_Fire) or can_use(Fire_Arrows)",
     "has_fire_source_with_torch": "has_fire_source or (is_child and Sticks)",
