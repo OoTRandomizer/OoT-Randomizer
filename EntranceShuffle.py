@@ -9,7 +9,7 @@ from Rules import set_entrances_based_rules
 from Entrance import Entrance
 from State import State
 from Item import ItemFactory
-from Hints import get_hint_area
+from Hints import get_hint_area, HintAreaNotFound
 
 
 def set_all_entrances_data(world):
@@ -45,11 +45,14 @@ def assume_entrance_pool(entrance_pool):
     return assumed_pool
 
 
-def build_one_way_targets(world, types_to_include, exclude=[]):
+def build_one_way_targets(world, types_to_include, exclude=(), target_region_names=()):
     one_way_entrances = []
     for pool_type in types_to_include:
         one_way_entrances += world.get_shufflable_entrances(type=pool_type)
     valid_one_way_entrances = list(filter(lambda entrance: entrance.name not in exclude, one_way_entrances))
+    if target_region_names:
+        return [entrance.get_new_target() for entrance in valid_one_way_entrances
+                if entrance.connected_region.name in target_region_names]
     return [entrance.get_new_target() for entrance in valid_one_way_entrances]
 
 
@@ -328,6 +331,20 @@ entrance_shuffle_table = [
 ]
 
 
+# Basically, the entrances in the list above that go to:
+# - DMC Bolero Warp Pad (child access for the bean and skull)
+# - Desert Colossus (child access to colossus and spirit)
+# - Graveyard Warp Pad Region (access to shadow, plus the gossip stone)
+# We will always need to pick one from each list to receive a one-way entrance
+# if shuffling warp songs (depending on other settings).
+# Table maps: short key -> ([target regions], [allowed types])
+priority_entrance_table = {
+    'Bolero': (['DMC Bolero Warp Pad'], ['OwlDrop', 'WarpSong']),
+    'Nocturne': (['Graveyard Warp Pad Region'], ['OwlDrop', 'Spawn', 'WarpSong']),
+    'Requiem': (['Desert Colossus', 'Desert Colossus From Spirit Lobby'], ['OwlDrop', 'Spawn', 'WarpSong']),
+}
+
+
 class EntranceShuffleError(ShuffleError):
     pass
 
@@ -362,6 +379,7 @@ def shuffle_random_entrances(worlds):
         # Determine entrance pools based on settings, to be shuffled in the order we set them by
         one_way_entrance_pools = OrderedDict()
         entrance_pools = OrderedDict()
+        one_way_priorities = {}
 
         if worlds[0].owl_drops:
             one_way_entrance_pools['OwlDrop'] = world.get_shufflable_entrances(type='OwlDrop')
@@ -371,6 +389,12 @@ def shuffle_random_entrances(worlds):
 
         if worlds[0].warp_songs:
             one_way_entrance_pools['WarpSong'] = world.get_shufflable_entrances(type='WarpSong')
+            if worlds[0].all_reachable and worlds[0].logic_rules == 'glitchless':
+                # In glitchless, there aren't any other ways to access these areas
+                one_way_priorities['Bolero'] = priority_entrance_table['Bolero']
+                one_way_priorities['Nocturne'] = priority_entrance_table['Nocturne']
+                if not worlds[0].shuffle_dungeon_entrances and not worlds[0].shuffle_overworld_entrances:
+                    one_way_priorities['Requiem'] = priority_entrance_table['Requiem']
 
         if worlds[0].shuffle_dungeon_entrances:
             entrance_pools['Dungeon'] = world.get_shufflable_entrances(type='Dungeon', only_primary=True)
@@ -427,9 +451,33 @@ def shuffle_random_entrances(worlds):
         # Set entrances defined in the distribution
         world.distribution.set_shuffled_entrances(worlds, dict(chain(one_way_entrance_pools.items(), entrance_pools.items())), dict(chain(one_way_target_entrance_pools.items(), target_entrance_pools.items())), locations_to_ensure_reachable, complete_itempool)
 
+        # Check one way entrances and trim.
+        replaced_entrances = [entrance.replaces for entrance in chain.from_iterable(one_way_entrance_pools.values())
+                              if entrance.replaces is not None]
+        for remaining_target in chain.from_iterable(one_way_target_entrance_pools.values()):
+            if remaining_target.replaces and remaining_target.replaces in replaced_entrances:
+                delete_target_entrance(remaining_target)
+        # Remove priority targets if they've been placed
+        for key, (regions, _) in priority_entrance_table.items():
+            if key in one_way_priorities:
+                for entrance in replaced_entrances:
+                    if entrance.replaces.connected_region and entrance.replaces.connected_region.name in regions:
+                        del one_way_priorities[key]
+                        break
+
+        # Place priority entrances
+        shuffle_one_way_priority_entrances(worlds, world, one_way_priorities, one_way_entrance_pools, one_way_target_entrance_pools, locations_to_ensure_reachable, complete_itempool, retry_count=2)
+
+        # Delete all targets that we just placed from one way target pools so multiple one way entrances don't use the same target
+        replaced_entrances = [entrance.replaces for entrance in chain.from_iterable(one_way_entrance_pools.values())]
+        for remaining_target in chain.from_iterable(one_way_target_entrance_pools.values()):
+            if remaining_target.replaces in replaced_entrances:
+                delete_target_entrance(remaining_target)
+
+
         # Shuffle all entrances among the pools to shuffle
         for pool_type, entrance_pool in one_way_entrance_pools.items():
-            shuffle_entrance_pool(world, worlds, entrance_pool, one_way_target_entrance_pools[pool_type], locations_to_ensure_reachable, check_all=True)
+            shuffle_entrance_pool(world, worlds, entrance_pool, one_way_target_entrance_pools[pool_type], locations_to_ensure_reachable, check_all=True, retry_count=5)
             # Delete all targets that we just placed from other one way target pools so multiple one way entrances don't use the same target
             replaced_entrances = [entrance.replaces for entrance in entrance_pool]
             for remaining_target in chain.from_iterable(one_way_target_entrance_pools.values()):
@@ -467,6 +515,29 @@ def shuffle_random_entrances(worlds):
             validate_world(world, worlds, None, locations_to_ensure_reachable, complete_itempool)
         except EntranceShuffleError as error:
             raise EntranceShuffleError('Worlds are not valid after shuffling entrances, Reason: %s' % error)
+
+
+def shuffle_one_way_priority_entrances(worlds, world, one_way_priorities, one_way_entrance_pools, one_way_target_entrance_pools, locations_to_ensure_reachable, complete_itempool, retry_count=2):
+    while retry_count:
+        retry_count -= 1
+        rollbacks = []
+
+        try:
+            for key, (regions, types) in one_way_priorities.items():
+                place_one_way_priority_entrance(worlds, world, key, regions, types, rollbacks, locations_to_ensure_reachable, complete_itempool, one_way_entrance_pools, one_way_target_entrance_pools)
+
+            # If all entrances could be connected without issues, log connections and continue
+            for entrance, target in rollbacks:
+                confirm_replacement(entrance, target)
+            return
+
+        except EntranceShuffleError as error:
+            for entrance, target in rollbacks:
+                restore_connections(entrance, target)
+            logging.getLogger('').info('Failed to place all priority one-way entrances for world %d. Will retry %d more times', world.id, retry_count)
+            logging.getLogger('').info('\t%s' % error)
+
+    raise EntranceShuffleError('Priority one-way entrance placement attempt count exceeded for world %d' % world.id)
 
 
 # Shuffle all entrances within a provided pool
@@ -543,9 +614,55 @@ def split_entrances_by_requirements(worlds, entrances_to_split, assumed_entrance
     return restrictive_entrances, soft_entrances
 
 
+def replace_entrance(worlds, entrance, target, rollbacks, locations_to_ensure_reachable, itempool):
+    try:
+        check_entrances_compatibility(entrance, target, rollbacks)
+        change_connections(entrance, target)
+        validate_world(entrance.world, worlds, entrance, locations_to_ensure_reachable, itempool)
+        rollbacks.append((entrance, target))
+        return True
+    except EntranceShuffleError as error:
+        # If the entrance can't be placed there, log a debug message and change the connections back to what they were previously
+        logging.getLogger('').debug('Failed to connect %s To %s (Reason: %s) [World %d]',
+                                    entrance, entrance.connected_region or target.connected_region, error, entrance.world.id)
+        if entrance.connected_region:
+            restore_connections(entrance, target)
+    return False
+
+
+# Connect one random entrance from entrance pools to one random target in the respective target pool.
+# Entrance chosen will have one of the allowed types.
+# Target chosen will lead to one of the allowed regions.
+def place_one_way_priority_entrance(worlds, world, priority_name, allowed_regions, allowed_types, rollbacks, locations_to_ensure_reachable, complete_itempool, one_way_entrance_pools, one_way_target_entrance_pools):
+    # Combine the entrances for allowed types in one list.
+    # Shuffle this list.
+    # Pick the first one not already set, not adult spawn, that has a valid target entrance.
+    # Assemble then clear entrances from the pool and target pools as appropriate.
+    avail_pool = list(chain.from_iterable(one_way_entrance_pools[t] for t in allowed_types if t in one_way_entrance_pools))
+    random.shuffle(avail_pool)
+    for entrance in avail_pool:
+        if entrance.replaces:
+            continue
+        # Only allow Adult Spawn as sole Nocturne access if hints != mask.
+        # Otherwise, child access is required here (adult access assumed or guaranteed later).
+        if entrance.parent_region.name == 'Adult Spawn':
+            if priority_name != 'Nocturne' or entrance.world.hints == "mask":
+                continue
+        # If not shuffling dungeons, Nocturne requires adult access.
+        if not entrance.world.shuffle_dungeon_entrances and priority_name == 'Nocturne':
+            if entrance.type != 'WarpSong' and entrance.parent_region.name != 'Adult Spawn':
+                continue
+        for target in one_way_target_entrance_pools[entrance.type]:
+            if target.connected_region and target.connected_region.name in allowed_regions:
+                if replace_entrance(worlds, entrance, target, rollbacks, locations_to_ensure_reachable, complete_itempool):
+                    logging.getLogger('').debug(f'Priority placement for {priority_name}: placing {entrance} as {target}')
+                    return
+    raise EntranceShuffleError(f'Unable to place priority one-way entrance for {priority_name} [World {world.id}].')
+
+
 # Shuffle entrances by placing them instead of entrances in the provided target entrances list
 # While shuffling entrances, the algorithm will ensure worlds are still valid based on multiple criterias
-def shuffle_entrances(worlds, entrances, target_entrances, rollbacks, locations_to_ensure_reachable=[]):
+def shuffle_entrances(worlds, entrances, target_entrances, rollbacks, locations_to_ensure_reachable=()):
 
     # Retrieve all items in the itempool, all worlds included
     complete_itempool = [item for world in worlds for item in world.get_itempool_with_dungeon_items()]
@@ -562,25 +679,15 @@ def shuffle_entrances(worlds, entrances, target_entrances, rollbacks, locations_
             if target.connected_region == None:
                 continue
 
-            try:
-                check_entrances_compatibility(entrance, target, rollbacks)
-                change_connections(entrance, target)
-                validate_world(entrance.world, worlds, entrance, locations_to_ensure_reachable, complete_itempool)
-                rollbacks.append((entrance, target))
+            if replace_entrance(worlds, entrance, target, rollbacks, locations_to_ensure_reachable, complete_itempool):
                 break
-            except EntranceShuffleError as error:
-                # If the entrance can't be placed there, log a debug message and change the connections back to what they were previously
-                logging.getLogger('').debug('Failed to connect %s To %s (Reason: %s) [World %d]',
-                                            entrance, entrance.connected_region or target.connected_region, error, entrance.world.id)
-                if entrance.connected_region:
-                    restore_connections(entrance, target)
 
         if entrance.connected_region == None:
             raise EntranceShuffleError('No more valid entrances to replace with %s in world %d' % (entrance, entrance.world.id))
 
 
 # Check and validate that an entrance is compatible to replace a specific target
-def check_entrances_compatibility(entrance, target, rollbacks=[]):
+def check_entrances_compatibility(entrance, target, rollbacks=()):
     # An entrance shouldn't be connected to its own scene, so we fail in that situation
     if entrance.parent_region.get_scene() and entrance.parent_region.get_scene() == target.connected_region.get_scene():
         raise EntranceShuffleError('Self scene connections are forbidden')
@@ -626,16 +733,18 @@ def validate_world(world, worlds, entrance_placed, locations_to_ensure_reachable
 
     if world.shuffle_interior_entrances and \
        (entrance_placed == None or entrance_placed.type in ['Interior', 'SpecialInterior']):
-        # Ensure Kak Potion Shop entrances are in the same hint region so there is no ambiguity as to which entrance is used for hints
+        # Ensure Kak Potion Shop entrances are in the same hint area so there is no ambiguity as to which entrance is used for hints
         potion_front_entrance = get_entrance_replacing(world.get_region('Kak Potion Shop Front'), 'Kakariko Village -> Kak Potion Shop Front')
         potion_back_entrance = get_entrance_replacing(world.get_region('Kak Potion Shop Back'), 'Kak Backyard -> Kak Potion Shop Back')
-        check_same_hint_region(potion_front_entrance, potion_back_entrance)
+        if potion_front_entrance is not None and potion_back_entrance is not None and not same_hint_area(potion_front_entrance, potion_back_entrance):
+            raise EntranceShuffleError('Kak Potion Shop entrances are not in the same hint area')
 
         # When cows are shuffled, ensure the same thing for Impa's House, since the cow is reachable from both sides
         if world.shuffle_cows:
             impas_front_entrance = get_entrance_replacing(world.get_region('Kak Impas House'), 'Kakariko Village -> Kak Impas House')
             impas_back_entrance = get_entrance_replacing(world.get_region('Kak Impas House Back'), 'Kak Impas Ledge -> Kak Impas House Back')
-            check_same_hint_region(impas_front_entrance, impas_back_entrance)
+            if impas_front_entrance is not None and impas_back_entrance is not None and not same_hint_area(impas_front_entrance, impas_back_entrance):
+                raise EntranceShuffleError('Kak Impas House entrances are not in the same hint area')
 
     if (world.shuffle_special_interior_entrances or world.shuffle_overworld_entrances or world.spawn_positions) and \
        (entrance_placed == None or entrance_placed.type in ['SpecialInterior', 'Overworld', 'Spawn', 'WarpSong', 'OwlDrop']):
@@ -701,19 +810,27 @@ def entrance_unreachable_as(entrance, age, already_checked=None):
     return True
 
 
-# Shorthand function to check and validate that two entrances are in the same hint region
-def check_same_hint_region(first, second):
-    if  first.parent_region.hint is not None and second.parent_region.hint is not None and \
-        first.parent_region.hint != second.parent_region.hint:
-        raise EntranceShuffleError('Entrances are not in the same hint region')
+# Returns whether two entrances are in the same hint area
+def same_hint_area(first, second):
+    try:
+        return get_hint_area(first) == get_hint_area(second)
+    except HintAreaNotFound:
+        return False
 
 
 # Shorthand function to find an entrance with the requested name leading to a specific region
 def get_entrance_replacing(region, entrance_name):
+    original_entrance = region.world.get_entrance(entrance_name)
+
+    if not original_entrance.shuffled:
+        return original_entrance
+
     try:
-        return next(filter(lambda entrance: entrance.replaces and entrance.replaces.name == entrance_name, region.entrances))
+        return next(filter(lambda entrance: entrance.replaces and entrance.replaces.name == entrance_name and \
+                                            entrance.parent_region and entrance.parent_region.name != 'Root Exits' and \
+                                            entrance.type not in ('OwlDrop', 'Spawn', 'WarpSong'), region.entrances))
     except StopIteration:
-        return region.world.get_entrance(entrance_name)
+        return None
 
 
 # Change connections between an entrance and a target assumed entrance, in order to test the connections afterwards if necessary
