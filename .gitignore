@@ -28,3 +28,4 @@ tests/Output
 # global git configuration.
 /ASM/build/bundle_r.txt
 /ASM/build/bundle_d.txt
+*.bak
