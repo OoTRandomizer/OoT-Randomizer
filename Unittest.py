@@ -252,6 +252,26 @@ class TestPlandomizer(unittest.TestCase):
                 for location, item_list in distribution_file['locations'].items():
                     self.assertIn(spoiler['locations'][location], item_list)
 
+    def test_location_patterns(self):
+        distribution_file, spoiler = generate_with_plandomizer("plando-location-pattern")
+        for location, item_list in distribution_file['locations'].items():
+            if location == '!Queen Gohma':
+                self.assertNotIn(spoiler['locations']['Queen Gohma'], item_list)
+            if location == "*on*":
+                found_item = False
+                for loc in spoiler['locations']:
+                    if 'on' in loc and 'Spirit Medallion' == spoiler['locations'][loc]:
+                        found_item = True
+                self.assertTrue(found_item)
+            if location == "!KF Kokiri Sword Chest":
+                self.assertFalse(spoiler['locations']['KF Kokiri Sword Chest'] == 'Kokiri Sword')
+            if location == "KF*":
+                found_item = False
+                for loc in spoiler['locations']:
+                    if 'KF' in loc and 'Deku Shield' == spoiler['locations'][loc]:
+                        found_item = True
+                self.assertTrue(found_item)
+
     def test_pool_accuracy(self):
         filenames = [
             "empty",

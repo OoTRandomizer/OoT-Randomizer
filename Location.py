@@ -135,6 +135,7 @@ def LocationFactory(locations, world=None):
 
 
 def LocationIterator(predicate=lambda loc: True):
+    # TODO: cont from pattern_dict_items... Would shuffling location_table cause issues?
     for location_name in location_table:
         location = LocationFactory(location_name)
         if predicate(location):

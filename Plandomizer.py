@@ -225,7 +225,7 @@ class WorldDistribution(object):
             'item_pool': {name: ItemPoolRecord(record) for (name, record) in src_dict.get('item_pool', {}).items()},
             'starting_items': {name: StarterRecord(record) for (name, record) in src_dict.get('starting_items', {}).items()},
             'entrances': {name: EntranceRecord(record) for (name, record) in src_dict.get('entrances', {}).items()},
-            'locations': {name: [LocationRecord(rec) for rec in record] if is_pattern(name) else LocationRecord(record) for (name, record) in src_dict.get('locations', {}).items() if not is_output_only(name)},
+            'locations': {name: LocationRecord(record) for (name, record) in src_dict.get('locations', {}).items() if not is_output_only(name)},
             'woth_locations': None,
             'barren_regions': None,
             'gossip_stones': {name: [GossipRecord(rec) for rec in record] if is_pattern(name) else GossipRecord(record) for (name, record) in src_dict.get('gossip_stones', {}).items()},
@@ -255,7 +255,7 @@ class WorldDistribution(object):
             'trials': {name: record.to_json() for (name, record) in self.trials.items()},
             'item_pool': SortedDict({name: record.to_json() for (name, record) in self.item_pool.items()}),
             'entrances': {name: record.to_json() for (name, record) in self.entrances.items()},
-            'locations': {name: [rec.to_json() for rec in record] if is_pattern(name) else record.to_json() for (name, record) in self.locations.items()},
+            'locations': {name: record.to_json() for (name, record) in self.locations.items()},
             ':woth_locations': None if self.woth_locations is None else {name: record.to_json() for (name, record) in self.woth_locations.items()},
             ':barren_regions': self.barren_regions,
             'gossip_stones': SortedDict({name: [rec.to_json() for rec in record] if is_pattern(name) else record.to_json() for (name, record) in self.gossip_stones.items()}),
@@ -523,7 +523,21 @@ class WorldDistribution(object):
     def fill_bosses(self, world, prize_locs, prizepool):
         count = 0
         used_items = []
-        for (name, record) in pattern_dict_items(self.locations):
+        locations = {}
+        if self.locations:
+            locations = {loc: self.locations[loc] for loc in random.sample(sorted(self.locations), len(self.locations))}
+        for (name, record, was_pattern) in pattern_dict_items(locations):
+            if record.item is None or len(record.item) == 0:
+                continue
+
+            final_record = record.item
+
+            valid_items = get_valid_items_from_record(prizepool, used_items, record)
+            if valid_items:  # Choices still available in the item pool, choose one, mark it as a used item
+                final_record = random_choices(valid_items)[0]
+            elif was_pattern:
+                continue
+
             boss = pull_item_or_location([prize_locs], world, name)
             if boss is None:
                 try:
@@ -531,6 +545,8 @@ class WorldDistribution(object):
                 except KeyError:
                     raise RuntimeError('Unknown location in world %d: %s' % (world.id + 1, name))
                 if location.type == 'Boss':
+                    if was_pattern:
+                        continue
                     raise RuntimeError('Boss or already placed in world %d: %s' % (world.id + 1, name))
                 else:
                     continue
@@ -538,20 +554,19 @@ class WorldDistribution(object):
             if record.player is not None and (record.player - 1) != self.id:
                 raise RuntimeError('A boss can only give rewards in its own world')
 
-            valid_items = get_valid_items_from_record(prizepool, used_items, record)
-            if valid_items:  # Choices still available in the item pool, choose one, mark it as a used item
-                record.item = random_choices(valid_items)[0]
-                if used_items is not None:
-                    used_items.append(record.item)
-
-            reward = pull_item_or_location([prizepool], world, record.item)
+            reward = pull_item_or_location([prizepool], world, final_record)
             if reward is None:
-                if record.item not in item_groups['DungeonReward']:
-                    raise RuntimeError('Cannot place non-dungeon reward %s in world %d on location %s.' % (record.item, self.id + 1, name))
-                if IsItem(record.item):
-                    raise RuntimeError('Reward already placed in world %d: %s' % (world.id + 1, record.item))
+                if final_record not in item_groups['DungeonReward']:
+                    raise RuntimeError('Cannot place non-dungeon reward %s in world %d on location %s.' % (final_record, self.id + 1, name))
+                if IsItem(final_record):
+                    raise RuntimeError('Reward already placed in world %d: %s' % (world.id + 1, final_record))
                 else:
                     raise RuntimeError('Reward unknown in world %d: %s' % (world.id + 1, record.item))
+
+            if valid_items:
+                if used_items is not None:
+                    used_items.append(final_record)
+
             count += 1
             world.push_item(boss, reward, True)
         return count
@@ -578,12 +593,34 @@ class WorldDistribution(object):
         if self.locations:
             locations = {loc: self.locations[loc] for loc in random.sample(sorted(self.locations), len(self.locations))}
         used_items = []
-        for (location_name, record) in pattern_dict_items(locations):
-            if record.item is None:
+        for (location_name, record, was_pattern) in pattern_dict_items(locations):
+            if record.item is None or len(record.item) == 0:
                 continue
 
+            skip = True
+            for pool in location_pools:
+                for location in pool:
+                    if location.name == location_name:
+                        skip = False
+
+            if skip:
+                continue
+
+            # Skip Song Locations for patterns if Songsanity is off
+            if was_pattern and not self.song_as_items and record.item not in item_groups['Song'] and location_name in location_groups['Song']:
+                continue
+
+            mutable_record = record
+
             valid_items = get_valid_items_from_record(world.itempool, used_items, record)
-            if not valid_items:
+            if valid_items:
+                # Choices still available in item pool, choose one, mark it as a used item
+                mutable_record.item = random_choices(valid_items)[0]
+                if used_items is not None:
+                    used_items.append(mutable_record.item)
+            else:
+                if was_pattern:
+                    continue
                 # Item pool values exceeded. Remove limited items from the list and choose a random value from it
                 limited_items = ['Weird Egg', '#AdultTrade', '#Bottle']
                 if isinstance(record.item, list):
@@ -592,11 +629,7 @@ class WorldDistribution(object):
                         if item in limited_items or item in item_groups['AdultTrade'] or item in item_groups['Bottle']:
                             continue
                         allowed_choices.append(item)
-                    record.item = random_choices(allowed_choices)[0]
-            else:  # Choices still available in item pool, choose one, mark it as a used item
-                record.item = random_choices(valid_items)[0]
-                if used_items is not None:
-                    used_items.append(record.item)
+                    mutable_record.item = random_choices(allowed_choices)[0]
 
             player_id = self.id if record.player is None else record.player - 1
 
@@ -607,21 +640,23 @@ class WorldDistribution(object):
                     location = LocationFactory(location_name)
                 except KeyError:
                     raise RuntimeError('Unknown location in world %d: %s' % (world.id + 1, location_name))
-                if location.type == 'Boss':
+                if location.type == 'Boss' or location.name == 'Ganon':
                     continue
                 elif location.name in world.disabled_locations:
                     continue
                 else:
                     raise RuntimeError('Location already filled in world %d: %s' % (self.id + 1, location_name))
 
-            if record.item in item_groups['DungeonReward']:
-                raise RuntimeError('Cannot place dungeon reward %s in world %d in location %s.' % (record.item, self.id + 1, location_name))
+            if mutable_record.item in item_groups['DungeonReward']:
+                if was_pattern:
+                    continue
+                raise RuntimeError('Cannot place dungeon reward %s in world %d in location %s.' % (mutable_record.item, self.id + 1, location_name))
 
-            if record.item == '#Junk' and location.type == 'Song' and world.shuffle_song_items == 'song':
-                record.item = '#JunkSong'
+            if mutable_record.item == '#Junk' and location.type == 'Song' and world.shuffle_song_items == 'song':
+                mutable_record.item = '#JunkSong'
 
             ignore_pools = None
-            is_invert = pattern_matcher(record.item)('!')
+            is_invert = pattern_matcher(mutable_record.item)('!')
             if is_invert and location.type != 'Song' and world.shuffle_song_items == 'song':
                 ignore_pools = [2]
             if is_invert and location.type == 'Song' and world.shuffle_song_items == 'song':
@@ -629,7 +664,7 @@ class WorldDistribution(object):
             if location.type == 'Shop':
                 ignore_pools = [i for i in range(len(item_pools)) if i != 0]
 
-            item = self.get_item(ignore_pools, item_pools, location, player_id, record, worlds)
+            item = self.get_item(ignore_pools, item_pools, location, player_id, mutable_record, worlds)
 
             if record.price is not None and item.type != 'Shop':
                 location.price = record.price
@@ -737,7 +772,10 @@ class WorldDistribution(object):
         return item
 
     def cloak(self, worlds, location_pools, model_pools):
-        for (name, record) in pattern_dict_items(self.locations):
+        for (name, record, was_pattern) in pattern_dict_items(self.locations):
+            if was_pattern:
+                continue
+
             if record.model is None:
                 continue
 
@@ -762,7 +800,10 @@ class WorldDistribution(object):
 
 
     def configure_gossip(self, spoiler, stoneIDs):
-        for (name, record) in pattern_dict_items(self.gossip_stones):
+        for (name, record, was_pattern) in pattern_dict_items(self.gossip_stones):
+            if was_pattern:
+                continue
+
             matcher = pattern_matcher(name)
             stoneID = pull_random_element([stoneIDs], lambda id: matcher(gossipLocations[id].name))
             if stoneID is None:
@@ -1100,17 +1141,16 @@ def pattern_dict_items(pattern_dict):
     :return: tuple:
                 0: the name of the location
                 1: the item to place at the location
+                2: Boolean: is key a pattern
     """
-    # TODO: This has the same issue with the invert pattern as items do.
-    #  It pulls randomly(?) from all locations instead of ones that make sense.
-    #  e.g. "!Queen Gohma" results in "KF Kokiri Sword Chest"
     for (key, value) in pattern_dict.items():
         if is_pattern(key):
             pattern = lambda loc: pattern_matcher(key)(loc.name)
+            # TODO: Locations are iterated in order. A random sample would be preferred here. cont in LocationIterator...
             for location in LocationIterator(pattern):
-                yield location.name, value
+                yield location.name, value, True
         else:
-            yield key, value
+            yield key, value, False
 
 
 def get_valid_items_from_record(itempool, used_items, record):
