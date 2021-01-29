@@ -782,10 +782,6 @@ class WorldDistribution(object):
 
     def cloak(self, worlds, location_pools, model_pools):
         for (name, record, was_pattern) in pattern_dict_items(self.locations):
-            # Cloaking while using location patterns is not supported, skip
-            if was_pattern:
-                continue
-
             if record.model is None:
                 continue
 
