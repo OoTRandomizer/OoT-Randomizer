@@ -11,6 +11,13 @@
       "item": "Deku Shield",
       "model": "Progressive Hookshot"
     }
+  },
+  "gossip_stones": {
+    "!DMC Gossip Stone": {
+      "text": "It's not hot in here! :)"
+    },
+    "Colossus Gossip Stone": {
+      "text": "It's not hot out here either!"
     }
   }
 }

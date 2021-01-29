@@ -228,7 +228,7 @@ class WorldDistribution(object):
             'locations': {name: LocationRecord(record) for (name, record) in src_dict.get('locations', {}).items() if not is_output_only(name)},
             'woth_locations': None,
             'barren_regions': None,
-            'gossip_stones': {name: [GossipRecord(rec) for rec in record] if is_pattern(name) else GossipRecord(record) for (name, record) in src_dict.get('gossip_stones', {}).items()},
+            'gossip_stones': {name: GossipRecord(record) for (name, record) in src_dict.get('gossip_stones', {}).items()},
         }
 
         if update_all:
@@ -258,7 +258,7 @@ class WorldDistribution(object):
             'locations': {name: record.to_json() for (name, record) in self.locations.items()},
             ':woth_locations': None if self.woth_locations is None else {name: record.to_json() for (name, record) in self.woth_locations.items()},
             ':barren_regions': self.barren_regions,
-            'gossip_stones': SortedDict({name: [rec.to_json() for rec in record] if is_pattern(name) else record.to_json() for (name, record) in self.gossip_stones.items()}),
+            'gossip_stones': SortedDict({name: record.to_json() for (name, record) in self.gossip_stones.items()}),
         }
 
 
@@ -806,16 +806,24 @@ class WorldDistribution(object):
 
 
     def configure_gossip(self, spoiler, stoneIDs):
+        placed_hints = []
         for (name, record, was_pattern) in pattern_dict_items(self.gossip_stones):
+            if record in placed_hints:
+                continue
+
             check_location = LocationFactory(name)
             if check_location.type != 'HintStone':
                 continue
 
             matcher = pattern_matcher(name)
-            stoneID = pull_random_element([stoneIDs], lambda id: matcher(gossipLocations[id].name))
+            stoneID = pull_random_element([stoneIDs], lambda id: matcher(gossipLocations[id].location))
             if stoneID is None:
+                if was_pattern:
+                    continue
                 raise RuntimeError('Gossip stone unknown or already assigned in world %d: %s' % (self.id + 1, name))
             spoiler.hints[self.id][stoneID] = GossipText(text=record.text, colors=record.colors, prefix='')
+
+            placed_hints.append(record)
 
 
     def give_item(self, item, count=1):
