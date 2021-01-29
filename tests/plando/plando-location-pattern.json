@@ -1,6 +1,9 @@
 {
+  "settings": {
+    "open_forest": "open"
+  },
   "locations": {
-    "Queen Gohma":    ["Kokiri Emerald", "Goron Ruby", "Zora Sapphire"],
+    "!Queen Gohma":    ["Kokiri Emerald", "Goron Ruby", "Zora Sapphire"],
     "*on*": "Spirit Medallion",
     "!KF Kokiri Sword Chest": "Kokiri Sword",
     "KF*": "Deku Shield"
