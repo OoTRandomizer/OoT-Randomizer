@@ -1,6 +1,8 @@
 from LocationList import location_table, location_is_viewable
 from Region import TimeOfDay
 from enum import Enum
+import random
+from collections import OrderedDict
 
 
 class Location(object):
@@ -134,9 +136,13 @@ def LocationFactory(locations, world=None):
     return ret
 
 
-def LocationIterator(predicate=lambda loc: True):
-    # TODO: cont from pattern_dict_items... Would shuffling location_table cause issues?
-    for location_name in location_table:
+def LocationIterator(predicate=lambda loc: True, randomize=False):
+    locations = location_table
+    if randomize:
+        random_dict = list(locations.items())
+        random.shuffle(random_dict)
+        locations = OrderedDict(random_dict)
+    for location_name in locations:
         location = LocationFactory(location_name)
         if predicate(location):
             yield location
