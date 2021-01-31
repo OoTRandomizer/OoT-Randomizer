@@ -249,7 +249,7 @@ class WorldDistribution(object):
 
     def to_json(self):
         return {
-            'randomized_settings': self.randomized_settings,      
+            'randomized_settings': self.randomized_settings,
             'starting_items': SortedDict({name: record.to_json() for (name, record) in self.starting_items.items()}),
             'dungeons': {name: record.to_json() for (name, record) in self.dungeons.items()},
             'trials': {name: record.to_json() for (name, record) in self.trials.items()},
@@ -486,10 +486,10 @@ class WorldDistribution(object):
 
                 target_region = record.region
 
-                matched_targets_to_region = list(filter(lambda target: target.connected_region and target.connected_region.name == target_region, 
+                matched_targets_to_region = list(filter(lambda target: target.connected_region and target.connected_region.name == target_region,
                                                         target_entrance_pools[pool_type]))
                 if not matched_targets_to_region:
-                    raise RuntimeError('No entrance found to replace with %s that leads to %s in world %d' % 
+                    raise RuntimeError('No entrance found to replace with %s that leads to %s in world %d' %
                                                 (matched_entrance, target_region, self.id + 1))
 
                 if record.origin:
@@ -497,14 +497,14 @@ class WorldDistribution(object):
                     try:
                         matched_target = next(filter(lambda target: target.replaces.parent_region.name == target_parent, matched_targets_to_region))
                     except StopIteration:
-                        raise RuntimeError('No entrance found to replace with %s that leads to %s from %s in world %d' % 
+                        raise RuntimeError('No entrance found to replace with %s that leads to %s from %s in world %d' %
                                                 (matched_entrance, target_region, target_parent, self.id + 1))
                 else:
                     matched_target = matched_targets_to_region[0]
                     target_parent = matched_target.parent_region.name
 
                 if matched_target.connected_region == None:
-                    raise RuntimeError('Entrance leading to %s from %s is already shuffled in world %d' % 
+                    raise RuntimeError('Entrance leading to %s from %s is already shuffled in world %d' %
                                             (target_region, target_parent, self.id + 1))
 
                 try:
@@ -512,7 +512,7 @@ class WorldDistribution(object):
                     change_connections(matched_entrance, matched_target)
                     validate_world(matched_entrance.world, worlds, None, locations_to_ensure_reachable, itempool)
                 except EntranceShuffleError as error:
-                    raise RuntimeError('Cannot connect %s To %s in world %d (Reason: %s)' % 
+                    raise RuntimeError('Cannot connect %s To %s in world %d (Reason: %s)' %
                                             (matched_entrance, matched_entrance.connected_region or matched_target.connected_region, self.id + 1, error))
 
                 confirm_replacement(matched_entrance, matched_target)
@@ -599,12 +599,20 @@ class WorldDistribution(object):
             if record.item is None or len(record.item) == 0:
                 continue
 
-            mutable_record = record
+            skip = True
+            for pool in location_pools:
+                for location in pool:
+                    if location.name == location_name:
+                        skip = False
+            if skip:
+                continue
+
+            original_items = record.item
 
             valid_items = get_valid_items_from_record(world.itempool, used_items, record)
             if valid_items:
                 # Choices still available in item pool, choose one, mark it as a used item
-                mutable_record.item = random_choices(valid_items)[0]
+                record.item = random_choices(valid_items)[0]
             else:
                 # Item pool values exceeded. Remove limited items from the list and choose a random value from it
                 limited_items = ['Weird Egg', '#AdultTrade', '#Bottle']
@@ -614,19 +622,11 @@ class WorldDistribution(object):
                         if item in limited_items or item in item_groups['AdultTrade'] or item in item_groups['Bottle']:
                             continue
                         allowed_choices.append(item)
-                    mutable_record.item = random_choices(allowed_choices)[0]
-
-            skip = True
-            for pool in location_pools:
-                for location in pool:
-                    if location.name == location_name:
-                        skip = False
-            if skip:
-                continue
+                    record.item = random_choices(allowed_choices)[0]
 
             if was_pattern:
                 check_location = LocationFactory(location_name)
-                check_record = ItemFactory(mutable_record.item)
+                check_record = ItemFactory(record.item)
                 if check_record.type == 'DungeonReward':
                     continue
                 # Skip Song Locations for patterns if Songsanity is off
@@ -649,14 +649,14 @@ class WorldDistribution(object):
                 else:
                     raise RuntimeError('Location already filled in world %d: %s' % (self.id + 1, location_name))
 
-            if mutable_record.item in item_groups['DungeonReward']:
-                raise RuntimeError('Cannot place dungeon reward %s in world %d in location %s.' % (mutable_record.item, self.id + 1, location_name))
+            if record.item in item_groups['DungeonReward']:
+                raise RuntimeError('Cannot place dungeon reward %s in world %d in location %s.' % (record.item, self.id + 1, location_name))
 
-            if mutable_record.item == '#Junk' and location.type == 'Song' and world.shuffle_song_items == 'song':
-                mutable_record.item = '#JunkSong'
+            if record.item == '#Junk' and location.type == 'Song' and world.shuffle_song_items == 'song':
+                record.item = '#JunkSong'
 
             ignore_pools = None
-            is_invert = pattern_matcher(mutable_record.item)('!')
+            is_invert = pattern_matcher(record.item)('!')
             if is_invert and location.type != 'Song' and world.shuffle_song_items == 'song':
                 ignore_pools = [2]
             if is_invert and location.type == 'Song' and world.shuffle_song_items == 'song':
@@ -664,16 +664,16 @@ class WorldDistribution(object):
             if location.type == 'Shop':
                 ignore_pools = [i for i in range(len(item_pools)) if i != 0]
 
-            item = self.get_item(ignore_pools, item_pools, location, player_id, mutable_record, worlds)
+            item = self.get_item(ignore_pools, item_pools, location, player_id, record, worlds)
 
             if used_items is not None:
-                used_items.append(mutable_record.item)
+                used_items.append(record.item)
 
             if was_pattern:
-                if isinstance(record.item, list):
-                    record.item.remove(mutable_record.item)
+                if isinstance(original_items, list):
+                    original_items.remove(record.item)
                 else:
-                    record.item = ""
+                    original_items = ""
 
             if record.price is not None and item.type != 'Shop':
                 location.price = record.price
@@ -682,6 +682,8 @@ class WorldDistribution(object):
             if location.type == 'Song' and item.type != 'Song':
                 self.song_as_items = True
             location.world.push_item(location, item, True)
+
+            record.item = original_items
 
             if item.advancement:
                 search = Search.max_explore([world.state for world in worlds], itertools.chain.from_iterable(item_pools))
