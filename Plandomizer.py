@@ -788,6 +788,14 @@ class WorldDistribution(object):
             player_id = self.id if record.player is None else record.player - 1
             world = worlds[player_id]
 
+            skip = True
+            for pool in location_pools:
+                for location in pool:
+                    if location.name == name:
+                        skip = False
+            if skip:
+                continue
+
             try:
                 location = LocationFactory(name)
             except KeyError:
