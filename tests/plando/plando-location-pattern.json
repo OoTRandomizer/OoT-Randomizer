@@ -13,11 +13,11 @@
     }
   },
   "gossip_stones": {
-    "!DMC Gossip Stone": {
+    "!DMC (Bombable Wall)": {
       "text": "It's not hot in here! :)"
     },
-    "Colossus Gossip Stone": {
-      "text": "It's not hot out here either!"
+    "Colossus (Spirit Temple)": {
+      "text": "It's hot out here though!"
     }
   }
 }

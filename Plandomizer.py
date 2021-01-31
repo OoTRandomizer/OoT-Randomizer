@@ -811,12 +811,18 @@ class WorldDistribution(object):
             if record in placed_hints:
                 continue
 
-            check_location = LocationFactory(name)
-            if check_location.type != 'HintStone':
-                continue
-
             matcher = pattern_matcher(name)
-            stoneID = pull_random_element([stoneIDs], lambda id: matcher(gossipLocations[id].location))
+            stoneID = None
+            # HACK: Use gossip location if using patterns, but use gossip name if not.
+            #  This keeps generated spoiler logs valid distribution files, but also allows the pattern functionality
+            #  for advanced plandomizer users.
+            if was_pattern:
+                check_location = LocationFactory(name)
+                if check_location.type != 'HintStone':
+                    continue
+                stoneID = pull_random_element([stoneIDs], lambda id: matcher(gossipLocations[id].location))
+            else:
+                stoneID = pull_random_element([stoneIDs], lambda id: matcher(gossipLocations[id].name))
             if stoneID is None:
                 if was_pattern:
                     continue
