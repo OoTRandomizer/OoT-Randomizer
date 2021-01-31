@@ -131,11 +131,11 @@ class Scale(Setting_Info):
 logic_tricks = {
     'Fewer Tunic Requirements': {
         'name'    : 'logic_fewer_tunic_requirements',
-        'tags'    : ("General", "Fire Temple", "Water Temple", "Gerudo Training Grounds", "Zora's Fountain",),
+        'tags'    : ("General", "Entrance", "Fire Temple", "Water Temple", "Gerudo Training Grounds", "Zora's Fountain", "Death Mountain Crater",),
         'tooltip' : '''\
                     Allows the following possible without Tunics:
-                    - Enter Water Temple. The key below the center
-                    pillar still requires Zora Tunic.
+                    - Inside Water Temple. The chest below the 
+                    center pillar still requires Zora Tunic.
                     - Enter Fire Temple. Only the first floor is
                     accessible, and not Volvagia.
                     - Zora's Fountain Bottom Freestanding PoH.
@@ -143,6 +143,11 @@ logic_tricks = {
                     - Gerudo Training Grounds Underwater
                     Silver Rupee Chest. May need to make multiple
                     trips.
+                    - Exploring most of Death Mountain Crater.                    
+                    Can be relevant for Child Link, with Entrance
+                    Randomizer. Frequently relevant for Adult Link.
+                    Some shorter trips are always logical.
+                    Some longer trips always require Goron Tunic.
                     '''},
     'Hidden Grottos without Stone of Agony': {
         'name'    : 'logic_grottos_without_agony',
@@ -842,6 +847,14 @@ logic_tricks = {
                     With the Hammer, you can jump slash the rock twice
                     in the same jump in order to destroy it before you
                     fall into the lava.
+                    '''},
+    'Death Mountain Crater Upper to Lower without Hammer': {
+        'name'    : 'logic_dmc_boulder_skip',
+        'tags'    : ("Death Mountain Crater",),
+        'tooltip' : '''\
+                    With careful positioning, you can jump to the ledge 
+                    where the boulder is, then use repeated ledge grabs 
+                    to shimmy to a climbable ledge.
                     '''},
     'Zora\'s Domain Entry with Hover Boots': {
         'name'    : 'logic_zora_with_hovers',
@@ -2023,7 +2036,7 @@ setting_infos = [
         choices        = {
             'open':       'Always Open',
             'vanilla':    'Vanilla Requirements',
-            'stones':	  'Spiritual Stones',
+            'stones':      'Spiritual Stones',
             'medallions': 'Medallions',
             'dungeons':   'Dungeons',
             'tokens':     'Gold Skulltula Tokens'

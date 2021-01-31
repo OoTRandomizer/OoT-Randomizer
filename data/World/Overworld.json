@@ -1496,40 +1496,39 @@
         "scene": "Death Mountain Crater",
         "hint": "Death Mountain Crater",
         "events": {
-            "Smash Upper DMC Boulder": "can_use(Megaton_Hammer)",
             "Smash DMC Boulder Near Ladder": "
-                can_use(Megaton_Hammer) and (logic_crater_upper_to_lower)" #Add new crater trick
+                can_use(Megaton_Hammer) and (logic_crater_upper_to_lower or logic_dmc_boulder_skip)"
         },
         "exits": {
             # The last couple lines of some exits from this region are based on going via the warp pad area.
-            # Add new crater trick. This can mean access from Upper to the rest with just tunic and (conditionally) hookshot.
-            "Death Mountain Summit": "True",
-            "GC Darunias Chamber": "
-                is_adult and (Hover_Boots or (Megaton_Hammer and 
-                'Smash DMC Boulder Near Ladder') or 
+            "DMC Death Mountain Summit Exit": "True",
+            "DMC Darunias Chamber Exit": "
+                is_adult and ((Hover_Boots or 'Smash DMC Boulder Near Ladder') or 
+                (Goron_Tunic and logic_dmc_boulder_skip) or 
                 (Goron_Tunic and Longshot and (can_live_dmg(1) or 
                 (Fairy and not entrance_shuffle) or can_use(Nayrus_Love))))",
-            "Fire Temple Lower": "
+            "DMC Fire Temple Exit": "
                 is_adult and Goron_Tunic and (Hover_Boots or 
-                (Hookshot and Megaton_Hammer and 'Smash DMC Boulder Near Ladder') or 
+                (Hookshot and ('Smash DMC Boulder Near Ladder' or logic_dmc_boulder_skip)) or 
                 (Goron_Tunic and Longshot and (can_live_dmg(1) or 
                 (Fairy and not entrance_shuffle) or can_use(Nayrus_Love))))",
-            "DMC Great Fairy Fountain": "
+            "DMC Fairy Fountain Exit": "
                 is_adult and Megaton_Hammer and (Hover_Boots or 
                 'Smash DMC Boulder Near Ladder' or 
                 (Goron_Tunic and Longshot and (can_live_dmg(1) or 
                 (Fairy and not entrance_shuffle) or can_use(Nayrus_Love))))", 
-            "DMC Hammer Grotto": "
+            "DMC Hammer Grotto Exit": "
                 is_adult and (logic_fewer_tunic_requirements or Goron_Tunic) and 
                 Megaton_Hammer and (Hover_Boots or 'Smash DMC Boulder Near Ladder' or 
                 (Goron_Tunic and Longshot and (can_live_dmg(1) or 
                 (Fairy and not entrance_shuffle) or can_use(Nayrus_Love))))",
-            "DMC Upper Grotto": "'Smash Upper DMC Boulder' or has_explosives",
+            #Entering this grotto requires "here(can_blast_or_smash)", and is included as part of the Exit region
+            "DMC Upper Grotto Exit": "True",
             "DMC Near Volcano Heart": "
                 is_adult and (((logic_fewer_tunic_requirements or Goron_Tunic) and 
                 Hover_Boots and logic_crater_bean_poh_with_hovers) or 
                 (Goron_Tunic and 'Plant DMC Bean' and (Hover_Boots or 
-                (Hookshot and 'Smash DMC Boulder Near Ladder') or 
+                (Hookshot and ('Smash DMC Boulder Near Ladder' or logic_dmc_boulder_skip)) or 
                 (Longshot and (can_live_dmg(1) or (Fairy and not entrance_shuffle) or 
                 can_use(Nayrus_Love))))))",
             "DMC Near Wall Heart": "True", # 6s remains with no movement tech as child 
@@ -1537,6 +1536,7 @@
             "DMC Near Sheik": "
                 is_adult and (logic_fewer_tunic_requirements or Goron_Tunic) and 
                 (Hover_Boots or (Hookshot and 'Smash DMC Boulder Near Ladder') or 
+                (Goron_Tunic and logic_dmc_boulder_skip and Hookshot) or 
                 (Goron_Tunic and Longshot and (can_live_dmg(1) or 
                 (Fairy and not entrance_shuffle) or can_use(Nayrus_Love))))",
             "DMC Near Skulltula Crate": "is_child and can_child_attack",
@@ -1550,25 +1550,23 @@
         "scene": "Death Mountain Crater",
         "hint": "Death Mountain Crater",
         "events": {
-            "Smash Upper DMC Boulder": "
-                is_adult and Megaton_Hammer and 
-                (logic_fewer_tunic_requirements or Goron_Tunic)",
             "Smash DMC Boulder Near Ladder": "can_use(Megaton_Hammer)"
         },
         "exits": {
-            "Death Mountain Summit": "
+            "DMC Death Mountain Summit Exit": "
                 is_adult and (logic_fewer_tunic_requirements or Goron_Tunic)",
-            "GC Darunias Chamber": "True",
-            "Fire Temple Lower": "
+            "DMC Darunias Chamber Exit": "True",
+            "DMC Fire Temple Exit": "
                 is_adult and (Hookshot or Hover_Boots) and 
                 (logic_fewer_tunic_requirements or Goron_Tunic)",
-            "DMC Great Fairy Fountain": "can_use(Megaton_Hammer)",
-            "DMC Hammer Grotto": "can_use(Megaton_Hammer)",
-            "DMC Upper Grotto": "
-                ((is_child and ((can_jumpslash and can_live_dmg(0.5)) or Deku_Nut or 
-                (can_stun_deku and Scrubsanity))) or is_adult) and 
-                (logic_fewer_tunic_requirements or can_use(Goron_Tunic)) and 
-                ('Smash Upper DMC Boulder' or has_explosives)", 
+            "DMC Fairy Fountain Exit": "can_use(Megaton_Hammer)",
+            "DMC Hammer Grotto Exit": "can_use(Megaton_Hammer)",
+            #Child link has to handle the deku scrub in some way.
+            #Entering this grotto requires "here(can_blast_or_smash)", and is included as part of the Exit region
+            "DMC Upper Grotto Exit": "
+                ((is_child and (can_jumpslash or Nuts or 
+                (can_stun_deku and shuffle_scrubs != 'off') or damage_multiplier == 'ohko')) or is_adult) and 
+                (logic_fewer_tunic_requirements or can_use(Goron_Tunic))", 
             "DMC Near Volcano Heart": "
                 is_adult and ((Hover_Boots and logic_crater_bean_poh_with_hovers) or 
                 ((Hover_Boots or Hookshot) and 'Plant DMC Bean'))",
@@ -1585,29 +1583,27 @@
         "scene": "Death Mountain Crater",
         "hint": "Death Mountain Crater",
         "events": {
-            "Smash Upper DMC Boulder": "
-                is_adult and Goron_Tunic and Megaton_Hammer and 
-                (Hover_Boots or Hookshot or 'Plant DMC Bean')",
             "Smash DMC Boulder Near Ladder": "
                 is_adult and Goron_Tunic and Megaton_Hammer and 
                 (Hookshot or 'Plant DMC Bean')"
         },
         "exits": {
-            "Death Mountain Summit": "
+            "DMC Death Mountain Summit Exit": "
                 is_adult and Goron_Tunic and 
                 (Hookshot or Hover_Boots or 'Plant DMC Bean')",
-            "GC Darunias Chamber": "
+            "DMC Darunias Chamber Exit": "
                 is_adult and Goron_Tunic and 
                 (Hover_Boots or Hookshot or 'Plant DMC Bean')",
-            "Fire Temple Lower": "True",
-            "DMC Great Fairy Fountain": "
+            "DMC Fire Temple Exit": "True",
+            "DMC Fairy Fountain Exit": "
                 is_adult and Goron_Tunic and Megaton_Hammer and 
                 (Hover_Boots or Hookshot or 'Plant DMC Bean')",
-            "DMC Hammer Grotto": "
+            "DMC Hammer Grotto Exit": "
                 is_adult and Goron_Tunic and Megaton_Hammer and 
                 (Hover_Boots or Hookshot or 'Plant DMC Bean')",
-            "DMC Upper Grotto": "
-                is_adult and Goron_Tunic and can_blast_or_smash and 
+            #Entering this grotto requires "here(can_blast_or_smash)", and is included as part of the Exit region
+            "DMC Upper Grotto Exit": "
+                is_adult and Goron_Tunic and 
                 (Hover_Boots or Hookshot or 'Plant DMC Bean')",
             "DMC Near Volcano Heart": "
                 is_adult and Goron_Tunic and ((Hover_Boots and 
@@ -1626,21 +1622,18 @@
         "scene": "Death Mountain Crater",
         "hint": "Death Mountain Crater",
         "events": {
-            "Smash Upper DMC Boulder": "
-                is_adult and Megaton_Hammer and 
-                (logic_fewer_tunic_requirements or Goron_Tunic)",
             "Smash DMC Boulder Near Ladder": "can_use(Megaton_Hammer)"
         },
         "exits": {
-            "Death Mountain Summit": "
+            "DMC Death Mountain Summit Exit": "
                 logic_fewer_tunic_requirements or can_use(Goron_Tunic)",
-            "GC Darunias Chamber": "True",
-            "Fire Temple Lower": "is_adult and Goron_Tunic and (Hover_Boots or Hookshot)",
-            "DMC Great Fairy Fountain": "can_use(Megaton_Hammer)",
-            "DMC Hammer Grotto": "can_use(Megaton_Hammer)",
-            "DMC Upper Grotto": "
-                (logic_fewer_tunic_requirements or can_use(Goron_Tunic)) and 
-                ('Smash Upper DMC Boulder' or has_explosives)", 
+            "DMC Darunias Chamber Exit": "True",
+            "DMC Fire Temple Exit": "is_adult and Goron_Tunic and (Hover_Boots or Hookshot)",
+            "DMC Fairy Fountain Exit": "can_use(Megaton_Hammer)",
+            "DMC Hammer Grotto Exit": "can_use(Megaton_Hammer)",
+            #Entering this grotto requires "here(can_blast_or_smash)", and is included as part of the Exit region
+            "DMC Upper Grotto Exit": "
+                (logic_fewer_tunic_requirements or can_use(Goron_Tunic))", 
             "DMC Near Volcano Heart": "
                 is_adult and ((Hover_Boots and logic_crater_bean_poh_with_hovers) or 
                 ((Hover_Boots or Hookshot) and 'Plant DMC Bean' and 
@@ -1659,23 +1652,20 @@
         "scene": "Death Mountain Crater",
         "hint": "Death Mountain Crater",
         "events": {
-            "Smash Upper DMC Boulder": "
-                is_adult and Megaton_Hammer and (Goron_Tunic or 
-                (logic_fewer_tunic_requirements and Hookshot))",
             "Smash DMC Boulder Near Ladder": "can_use(Megaton_Hammer)"
         },
         "exits": {
-            "Death Mountain Summit": "
+            "DMC Death Mountain Summit Exit": "
                 is_adult and (Goron_Tunic or (logic_fewer_tunic_requirements and Hookshot))",
-            "GC Darunias Chamber": "True",
-            "Fire Temple Lower": "
+            "DMC Darunias Chamber Exit": "True",
+            "DMC Fire Temple Exit": "
                 is_adult and (Hookshot or Hover_Boots) and 
                 (logic_fewer_tunic_requirements or Goron_Tunic)",
-            "DMC Great Fairy Fountain": "can_use(Megaton_Hammer)",
-            "DMC Hammer Grotto": "can_use(Megaton_Hammer)",
-            "DMC Upper Grotto": "
-                is_adult and can_blast_or_smash and (Goron_Tunic or 
-                (logic_fewer_tunic_requirements and Hookshot))",
+            "DMC Fairy Fountain Exit": "can_use(Megaton_Hammer)",
+            "DMC Hammer Grotto Exit": "can_use(Megaton_Hammer)",
+            #Entering this grotto requires "here(can_blast_or_smash)", and is included as part of the Exit region
+            "DMC Upper Grotto Exit": "
+                is_adult and (Goron_Tunic or (logic_fewer_tunic_requirements and Hookshot))",
             "DMC Near Volcano Heart": "
                 is_adult and ((Hover_Boots and logic_crater_bean_poh_with_hovers) or
                 ('Plant DMC Bean' and (Hookshot or Hover_Boots)))",
@@ -1690,46 +1680,47 @@
         "scene": "Death Mountain Crater",
         "hint": "Death Mountain Crater",
         "events": {
-            "Smash Upper DMC Boulder": "can_use(Megaton_Hammer)",
             "Smash DMC Boulder Near Ladder": "
-                can_use(Megaton_Hammer) and (logic_crater_upper_to_lower)" #Add new crater trick
+                can_use(Megaton_Hammer) and (logic_crater_upper_to_lower or logic_dmc_boulder_skip)"
         },
         "exits": {
             # The last couple lines of some exits from this region are based on going anticlockwise around the crater.
-            # Add new crater trick. This can mean access from Upper to the rest with just tunic and (conditionally) hookshot.
-            "Death Mountain Summit": "True",
-            "GC Darunias Chamber": "
+            "DMC Death Mountain Summit Exit": "True",
+            "DMC Darunias Chamber Exit": "
                 is_adult and (Hover_Boots or 'Smash DMC Boulder Near Ladder' or 
+                (Goron_Tunic and logic_dmc_boulder_skip) or 
                 (Goron_Tunic and Longshot and (can_live_dmg(1) or 
                 (Fairy and not entrance_shuffle) or can_use(Nayrus_Love))))",
-            "Fire Temple Lower": "
+            "DMC Fire Temple Exit": "
                 is_adult and Goron_Tunic and (Hover_Boots or 
-                (Hookshot and 'Smash DMC Boulder Near Ladder') or 
+                (Hookshot and ('Smash DMC Boulder Near Ladder' or logic_dmc_boulder_skip)) or 
                 (Longshot and (can_live_dmg(1) or (Fairy and not entrance_shuffle) 
                 or can_use(Nayrus_Love))))",
-            "DMC Great Fairy Fountain": "
+            "DMC Fairy Fountain Exit": "
                 is_adult and Megaton_Hammer and (Hover_Boots or 
                 'Smash DMC Boulder Near Ladder' or 
                 (Goron_Tunic and Longshot and (can_live_dmg(1) or 
                 (Fairy and not entrance_shuffle) or can_use(Nayrus_Love))))",
-            "DMC Hammer Grotto": "
+            "DMC Hammer Grotto Exit": "
                 is_adult and Megaton_Hammer and (logic_fewer_tunic_requirements or 
                 Goron_Tunic) and ('Smash DMC Boulder Near Ladder' or Hover_Boots or 
                 (Goron_Tunic and Longshot and (can_live_dmg(1) or 
                 (Fairy and not entrance_shuffle) or can_use(Nayrus_Love))))", 
-            "DMC Upper Grotto": "'Smash Upper DMC Boulder' or has_explosives",
+            #Entering this grotto requires "here(can_blast_or_smash)", and is included as part of the Exit region
+            "DMC Upper Grotto Exit": "True",
             "DMC Near Volcano Heart": "
                 is_adult and (((logic_fewer_tunic_requirements or Goron_Tunic) and 
                 Hover_Boots and logic_crater_bean_poh_with_hovers) or 
                 (Goron_Tunic and 'Plant DMC Bean' and (Hover_Boots or 
-                (Hookshot and 'Smash DMC Boulder Near Ladder') or 
+                (Hookshot and ('Smash DMC Boulder Near Ladder' or logic_dmc_boulder_skip)) or 
                 (Longshot and (can_live_dmg(1) or (Fairy and not entrance_shuffle) or 
                 can_use(Nayrus_Love))))))",
             "DMC Near Wall Heart": "True",
             "DMC Near Business Scrub": "is_child and can_stun_deku",
             "DMC Near Sheik": "
                 is_adult and (logic_fewer_tunic_requirements or Goron_Tunic) and 
-                (Hover_Boots or (Hookshot and 'Smash DMC Boulder Near Ladder') or 
+                (Hover_Boots or (Hookshot and 
+                ('Smash DMC Boulder Near Ladder' or logic_dmc_boulder_skip)) or 
                 (Goron_Tunic and Longshot and (can_live_dmg(1) or 
                 (Fairy and not entrance_shuffle) or can_use(Nayrus_Love))))",
             "DMC Near Skulltula Crate": "is_child and can_child_attack",
@@ -1741,28 +1732,26 @@
         "scene": "Death Mountain Crater",
         "hint": "Death Mountain Crater",
         "events": {
-            "Smash Upper DMC Boulder": "
-                is_adult and Megaton_Hammer and ('Plant DMC Bean' or 
-                (Goron_Tunic and (Hookshot or Hover_Boots)))",
             "Smash DMC Boulder Near Ladder": "
                 is_adult and Megaton_Hammer and (Hookshot or 'Plant DMC Bean')"
         },
         "exits": {
-            "Death Mountain Summit": "
+            "DMC Death Mountain Summit Exit": "
                 is_adult and ((Goron_Tunic and (Hookshot or Hover_Boots)) or 
                 'Plant DMC Bean')",
-            "GC Darunias Chamber": "
+            "DMC Darunias Chamber Exit": "
                 is_adult and (Hookshot or Hover_Boots or 'Plant DMC Bean')",
-            "Fire Temple Lower": "is_adult or shuffle_dungeon_entrances",
-            "DMC Great Fairy Fountain": "
+            "DMC Fire Temple Exit": "is_adult or shuffle_dungeon_entrances",
+            "DMC Fairy Fountain Exit": "
                 is_adult and Megaton_Hammer and ('Plant DMC Bean' or
                 ((Hookshot or Hover_Boots) and 
                 (logic_fewer_tunic_requirements or Goron_Tunic)))",
-            "DMC Hammer Grotto": "
+            "DMC Hammer Grotto Exit": "
                 is_adult and Megaton_Hammer and 
                 (Hookshot or Hover_Boots or 'Plant DMC Bean')",
-            "DMC Upper Grotto": "
-                is_adult and can_blast_or_smash and ('Plant DMC Bean' or 
+            #Entering this grotto requires "here(can_blast_or_smash)", and is included as part of the Exit region
+            "DMC Upper Grotto Exit": "
+                is_adult and ('Plant DMC Bean' or 
                 (Goron_Tunic and (Hookshot or Hover_Boots)))",
             "DMC Near Volcano Heart": "
                 is_adult and ((Hover_Boots and logic_crater_bean_poh_with_hovers) or 
@@ -1838,6 +1827,13 @@
             "DMC Wall Freestanding PoH": "True"
         }
     },
+    # These Exits are only used to play the new DMC logic play nice with ER code.
+    {"region_name":"DMC Death Mountain Summit Exit","scene":"Death Mountain Crater","hint":"Death Mountain Crater","exits":{"Death Mountain Summit":"True"}},
+    {"region_name":"DMC Darunias Chamber Exit","scene":"Death Mountain Crater","hint":"Death Mountain Crater","exits":{"GC Darunias Chamber":"True"}},
+    {"region_name":"DMC Fire Temple Exit","scene":"Death Mountain Crater","hint":"Death Mountain Crater","exits":{"Fire Temple Lower":"True"}},
+    {"region_name":"DMC Fairy Fountain Exit","scene":"Death Mountain Crater","hint":"Death Mountain Crater","exits":{"DMC Great Fairy Fountain":"True"}},
+    {"region_name":"DMC Upper Grotto Exit","scene":"Death Mountain Crater","hint":"Death Mountain Crater","exits":{"DMC Upper Grotto":"here(can_blast_or_smash)"}},
+    {"region_name":"DMC Hammer Grotto Exit","scene":"Death Mountain Crater","hint":"Death Mountain Crater","exits":{"DMC Hammer Grotto":"True"}},
     {
         "region_name": "DMC Great Fairy Fountain",
         "scene": "DMC Great Fairy Fountain",
