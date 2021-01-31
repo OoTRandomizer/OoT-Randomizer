@@ -9,8 +9,10 @@ import unittest
 
 from ItemList import item_table
 from ItemPool import remove_junk_items, item_groups
+from Location import LocationIterator
 from LocationList import location_groups, location_is_viewable
 from Main import main, resolve_settings, build_world_graphs
+from Plandomizer import is_pattern, pattern_matcher
 from Settings import Settings
 
 test_dir = os.path.join(os.path.dirname(__file__), 'tests')
@@ -254,23 +256,40 @@ class TestPlandomizer(unittest.TestCase):
 
     def test_location_patterns(self):
         distribution_file, spoiler = generate_with_plandomizer("plando-location-pattern")
-        for location, item_list in distribution_file['locations'].items():
-            if location == '!Queen Gohma':
-                self.assertNotIn(spoiler['locations']['Queen Gohma'], item_list)
-            if location == "*on*":
-                found_item = False
-                for loc in spoiler['locations']:
-                    if 'on' in loc and 'Spirit Medallion' == spoiler['locations'][loc]:
-                        found_item = True
-                self.assertTrue(found_item)
-            if location == "!KF Kokiri Sword Chest":
-                self.assertFalse(spoiler['locations']['KF Kokiri Sword Chest'] == 'Kokiri Sword')
-            if location == "KF*":
-                found_item = False
-                for loc in spoiler['locations']:
-                    if 'KF' in loc and 'Deku Shield' == spoiler['locations'][loc]:
-                        found_item = True
-                self.assertTrue(found_item)
+        for key, value in distribution_file['locations'].items():
+            if is_pattern(key):
+                if pattern_matcher(key)('!'):
+                    location = key[1:]
+                    self.assertNotIn(spoiler['locations'][location], distribution_file['locations'][key])
+                else:
+                    pattern = lambda loc: pattern_matcher(key)(loc.name)
+                    found_item = False
+                    for location in LocationIterator(pattern):
+                        try:
+                            if spoiler['locations'][location.name] == distribution_file['locations'][key]:
+                                found_item = True
+                        except KeyError:
+                            continue
+                    self.assertTrue(found_item)
+
+        for key, value in distribution_file['gossip_stones'].items():
+            if is_pattern(key):
+                if pattern_matcher(key)('!'):
+                    location = key[1:]
+                    self.assertNotIn(spoiler['gossip_stones'][location]['text'], distribution_file['gossip_stones'][key]['text'])
+                else:
+                    pattern = lambda loc: pattern_matcher(key)(loc.name)
+                    found_item = False
+                    for location in LocationIterator(pattern):
+                        try:
+                            if spoiler['gossip_stones'][location.name] == distribution_file['gossip_stones'][key]:
+                                found_item = True
+                        except KeyError:
+                            continue
+                    self.assertTrue(found_item)
+            else:
+                # Ensure non-pattern gossip stones use gossip stone locations and still work
+                self.assertEqual(spoiler['gossip_stones'][key]['text'], distribution_file['gossip_stones'][key]['text'])
 
     def test_pool_accuracy(self):
         filenames = [
