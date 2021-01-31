@@ -7,7 +7,7 @@
     "*on*": "Spirit Medallion",
     "!KF Kokiri Sword Chest": "Kokiri Sword",
     "KF*": "Deku Shield",
-    "*Heart": {
+    "#CanSee": {
       "item": "Ice Trap",
       "model": "Progressive Hookshot"
     }
