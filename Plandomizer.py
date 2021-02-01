@@ -783,6 +783,7 @@ class WorldDistribution(object):
         return item
 
     def cloak(self, worlds, location_pools, model_pools):
+        # TODO: Handle lists of models?
         for (name, record, was_pattern) in pattern_dict_items(self.locations):
             if record.model is None:
                 continue
@@ -813,6 +814,7 @@ class WorldDistribution(object):
                 raise RuntimeError('Unknown model in world %d: %s' % (self.id + 1, record.model))
             if can_cloak(location.item, model):
                 location.item.looks_like_item = model
+                record.model = None
 
 
     def configure_gossip(self, spoiler, stoneIDs):
