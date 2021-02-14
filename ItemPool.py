@@ -95,6 +95,7 @@ item_difficulty_max = {
         'Bombchus (10)': 2,
         'Bombchus (20)': 0,
         'Magic Meter': 1, 
+        'Biggoron Sword': 0,
         'Double Defense': 0, 
         'Deku Stick Capacity': 1, 
         'Deku Nut Capacity': 1, 
