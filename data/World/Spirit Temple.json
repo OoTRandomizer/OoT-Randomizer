@@ -38,6 +38,7 @@
             "Nut Crate": "True"
         },
         "exits": {
+            "Child Spirit Temple": "is_child",
             "Child Spirit Temple Climb": "(Small_Key_Spirit_Temple, 1)"
         }
     },
