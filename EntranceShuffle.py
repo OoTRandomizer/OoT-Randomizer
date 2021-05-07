@@ -288,6 +288,8 @@ entrance_shuffle_table = [
                         ('Zoras Domain -> Lake Hylia',                                      { 'index': 0x0560 })),
     ('Overworld',       ('GV Fortress Side -> Gerudo Fortress',                             { 'index': 0x0129 }),
                         ('Gerudo Fortress -> GV Fortress Side',                             { 'index': 0x022D })),
+    # These entrances can crash on accurate graphics plugins, and trigger seizures on others, depending on what they connect to.
+    # We're leaving them unshuffled until the underlying issue can be fixed.
     # ('Overworld',       ('GF Outside Gate -> Wasteland Near Fortress',                      { 'index': 0x0130 }),
                         # ('Wasteland Near Fortress -> GF Outside Gate',                      { 'index': 0x03AC })),
     # ('Overworld',       ('Wasteland Near Colossus -> Desert Colossus',                      { 'index': 0x0123 }),
