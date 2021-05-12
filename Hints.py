@@ -354,6 +354,37 @@ def get_woth_hint(spoiler, world, checked):
         return (GossipText('#%s# is on the way of the hero.' % location_text, ['Light Blue']), location)
 
 
+def get_last_woth_hint(spoiler, world, checked):
+    locations = spoiler.required_locations[world.id]
+    locations = list(filter(lambda location:
+        location.name not in checked
+        and not (world.woth_dungeon >= world.hint_dist_user['dungeons_woth_limit'] and location.parent_region.dungeon)
+        and location.name not in world.hint_exclusions
+        and location.name not in world.hint_type_overrides['woth']
+        and location.item.name not in world.item_hint_type_overrides['woth'],
+        locations))
+
+    if not locations:
+        return None
+
+    if checked == []:
+        return None
+
+    location = locations[-1]
+    checked.add(location.name)
+
+    if location.parent_region.dungeon:
+        world.woth_dungeon += 1
+        location_text = getHint(location.parent_region.dungeon.name, world.clearer_hints).text
+    else:
+        location_text = get_hint_area(location)
+
+    if world.triforce_hunt:
+        return (GossipText('#%s# is at the end of the path of gold.' % location_text, ['Blue']), location)
+    else:
+        return (GossipText('#%s# is at the end of the way of the hero.' % location_text, ['Blue']), location)
+
+
 def get_barren_hint(spoiler, world, checked):
     if not hasattr(world, 'get_barren_hint_prev'):
         world.get_barren_hint_prev = RegionRestriction.NONE
@@ -597,6 +628,7 @@ def get_junk_hint(spoiler, world, checked):
 hint_func = {
     'trial':      lambda spoiler, world, checked: None,
     'always':     lambda spoiler, world, checked: None,
+    'last_woth':        get_last_woth_hint,
     'woth':             get_woth_hint,
     'barren':           get_barren_hint,
     'item':             get_good_item_hint,
@@ -613,6 +645,7 @@ hint_func = {
 hint_dist_keys = {
     'trial',
     'always',
+    'last_woth',
     'woth',
     'barren',
     'item',

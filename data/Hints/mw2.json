@@ -73,32 +73,33 @@
             "fixed": 0,
             "copies": 2
         },
+        "last_woth":  {"order":  3, "weight": 0.0, "fixed":   0, "copies": 2},
         "woth": {
-            "order": 3,
+            "order": 4,
             "weight": 0.0,
             "fixed": 7,
             "copies": 2
         },
         "barren": {
-            "order": 4,
+            "order": 5,
             "weight": 0.0,
             "fixed": 3,
             "copies": 2
         },
         "entrance": {
-            "order": 5,
+            "order": 6,
             "weight": 0.0,
             "fixed": 0,
             "copies": 2
         },
         "sometimes": {
-            "order": 6,
+            "order": 7,
             "weight": 0.0,
             "fixed": 100,
             "copies": 2
         },
         "random": {
-            "order": 7,
+            "order": 8,
             "weight": 9.0,
             "fixed": 0,
             "copies": 2
@@ -134,7 +135,7 @@
             "copies": 2
         },
         "named-item": {
-            "order": 8,
+            "order": 9,
             "weight": 0.0,
             "fixed": 0,
             "copies": 2
