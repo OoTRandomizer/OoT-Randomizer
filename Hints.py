@@ -326,7 +326,7 @@ def get_hint_area(spot):
     raise HintAreaNotFound('No hint area could be found for %s [World %d]' % (spot, spot.world.id))
 
 
-def get_woth_hint(spoiler, world, checked, last_woth=False):
+def get_woth_hint(spoiler, world, checked):
     locations = spoiler.required_locations[world.id]
     locations = list(filter(lambda location:
         location.name not in checked
@@ -339,9 +339,10 @@ def get_woth_hint(spoiler, world, checked, last_woth=False):
     if not locations:
         return None
 
-    if last_woth:
+    if world.include_last_woth and world.last_woth < 1:
         location = locations[-1]
         hint_text = "at the end of"
+        world.last_woth += 1
     else:
         location = random.choice(locations)
         hint_text = "on"
@@ -602,7 +603,6 @@ def get_junk_hint(spoiler, world, checked):
 hint_func = {
     'trial':      lambda spoiler, world, checked: None,
     'always':     lambda spoiler, world, checked: None,
-    'last_woth':  lambda spoiler, world, checked: get_woth_hint(spoiler, world, checked, last_woth=True),
     'woth':             get_woth_hint,
     'barren':           get_barren_hint,
     'item':             get_good_item_hint,
@@ -619,7 +619,6 @@ hint_func = {
 hint_dist_keys = {
     'trial',
     'always',
-    'last_woth',
     'woth',
     'barren',
     'item',
@@ -699,6 +698,7 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
 
     world.barren_dungeon = 0
     world.woth_dungeon = 0
+    world.last_woth = 0
 
     search = Search.max_explore([w.state for w in spoiler.worlds])
     for stone in gossipLocations.values():
