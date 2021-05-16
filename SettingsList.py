@@ -1873,6 +1873,65 @@ setting_infos = [
         shared         = True,
     ),
     Combobox(
+        name           = 'logic_rules',
+        gui_text       = 'Logic Rules',
+        default        = 'glitchless',
+        choices        = {
+            'glitchless': 'Glitchless',
+            'glitched':   'Glitched',
+            'none':       'No Logic',
+        },
+        gui_tooltip    = '''\
+            Logic provides guiding sets of rules for world generation
+            which the Randomizer uses to ensure the generated seeds 
+            are beatable.
+
+            'Glitchless': No glitches are required, but may require 
+            some minor tricks. Add minor tricks to consider for logic
+            in the 'Detailed Logic' tab.
+
+            'Glitched': Movement-oriented glitches are likely required.
+            No locations excluded.
+
+            'No Logic': Maximize randomization, All locations are 
+            considered available. MAY BE IMPOSSIBLE TO BEAT.
+        ''',
+        disable        = {
+            'glitched'  : {'settings' : ['allowed_tricks', 'shuffle_interior_entrances', 'shuffle_grotto_entrances',
+                                         'shuffle_dungeon_entrances', 'shuffle_overworld_entrances', 'owl_drops',
+                                         'warp_songs', 'spawn_positions', 'mq_dungeons_random', 'mq_dungeons', ]},
+            'none'      : {'settings' : ['allowed_tricks', 'logic_no_night_tokens_without_suns_song', 'reachable_locations']},
+        },
+        shared         = True,
+    ),
+    Combobox(
+        name           = 'reachable_locations',
+        gui_text       = 'Guarantee Reachable Locations',
+        default        = 'all',
+        choices        = {
+            'all':      'All',
+            'goals':    'All Goals',
+            'beatable': 'Required Only',
+        },
+        gui_tooltip    = '''\
+            This determines which items and locations are guaranteed to be reachable.
+
+            'All': The randomizer will guarantee that every item is obtainable and every location is reachable.
+
+            'All Goals': The randomizer will guarantee that every goal item is obtainable, not just the amount required
+            to beat the game, but otherwise behaves like 'Required Only'.
+            Goal items are the items required for the rainbow bridge and/or Ganon's Boss Key, so for example if the bridge is
+            set to 1 Medallion and Ganon's Boss Key to 1 Gold Skulltula Token, all 6 Medallions and all 100 Tokens will
+            be obtainable. In Triforce Hunt, this will also guarantee that all Triforce Pieces can be obtained.
+
+            'Required Only': Only items and locations required to beat the game will be guaranteed reachable.
+        ''',
+        gui_params={
+            "hide_when_disabled": True,
+        },
+        shared         = True
+    ),
+    Combobox(
         name           = 'open_forest',
         gui_text       = 'Forest',
         default        = 'closed',
@@ -2164,65 +2223,6 @@ setting_infos = [
         gui_params     = {
             "hide_when_disabled": True,
         },
-    ),
-    Combobox(
-        name           = 'logic_rules',
-        gui_text       = 'Logic Rules',
-        default        = 'glitchless',
-        choices        = {
-            'glitchless': 'Glitchless',
-            'glitched':   'Glitched',
-            'none':       'No Logic',
-        },
-        gui_tooltip    = '''\
-            Logic provides guiding sets of rules for world generation
-            which the Randomizer uses to ensure the generated seeds 
-            are beatable.
-
-            'Glitchless': No glitches are required, but may require 
-            some minor tricks. Add minor tricks to consider for logic
-            in the 'Detailed Logic' tab.
-
-            'Glitched': Movement-oriented glitches are likely required.
-            No locations excluded.
-
-            'No Logic': Maximize randomization, All locations are 
-            considered available. MAY BE IMPOSSIBLE TO BEAT.
-        ''',
-        disable        = {
-            'glitched'  : {'settings' : ['allowed_tricks', 'shuffle_interior_entrances', 'shuffle_grotto_entrances',
-                                         'shuffle_dungeon_entrances', 'shuffle_overworld_entrances', 'owl_drops',
-                                         'warp_songs', 'spawn_positions', 'mq_dungeons_random', 'mq_dungeons', ]},
-            'none'      : {'settings' : ['allowed_tricks', 'logic_no_night_tokens_without_suns_song', 'reachable_locations']},
-        },
-        shared         = True,
-    ),
-    Combobox(
-        name           = 'reachable_locations',
-        gui_text       = 'Guarantee Reachable Locations',
-        default        = 'all',
-        choices        = {
-            'all':      'All',
-            'goals':    'All Goals',
-            'beatable': 'Required Only',
-        },
-        gui_tooltip    = '''\
-            This determines which items and locations are guaranteed to be reachable.
-
-            'All': The randomizer will guarantee that every item is obtainable and every location is reachable.
-
-            'All Goals': The randomizer will guarantee that every goal item is obtainable, not just the amount required
-            to beat the game, but otherwise behaves like 'Required Only'.
-            Goal items are the items required for the rainbow bridge and/or Ganon's Boss Key, so for example if the bridge is
-            set to 1 Medallion and Ganon's Boss Key to 1 Gold Skulltula Token, all 6 Medallions and all 100 Tokens will
-            be obtainable. In Triforce Hunt, this will also guarantee that all Triforce Pieces can be obtained.
-
-            'Required Only': Only items and locations required to beat the game will be guaranteed reachable.
-        ''',
-        gui_params={
-            "hide_when_disabled": True,
-        },
-        shared         = True
     ),
     Checkbutton(
         name           = 'bombchus_in_logic',
