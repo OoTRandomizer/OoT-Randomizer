@@ -3490,6 +3490,7 @@ setting_infos = [
             'mask':   'Hints; Need Mask of Truth',
             'agony':  'Hints; Need Stone of Agony',
             'always': 'Hints; Need Nothing',
+            'random': 'Random Choice',
         },
         gui_tooltip    = '''\
             Gossip Stones can be made to give hints
@@ -3634,6 +3635,7 @@ setting_infos = [
             'on':        'Extra Ice Traps',
             'mayhem':    'Ice Trap Mayhem',
             'onslaught': 'Ice Trap Onslaught',
+            'random':    'Random Choice',
         },
         gui_tooltip    = '''\
             'Off': All Ice Traps are removed.
@@ -3661,7 +3663,8 @@ setting_infos = [
             'plentiful': 'Plentiful',
             'balanced':  'Balanced',
             'scarce':    'Scarce',
-            'minimal':   'Minimal'
+            'minimal':   'Minimal',
+            'random':    'Random Choice',
         },
         gui_tooltip    = '''\
             Changes the amount of bonus items that
@@ -3688,6 +3691,7 @@ setting_infos = [
             'double':    'Double',
             'quadruple': 'Quadruple',
             'ohko':      'OHKO',
+            'random':    'Random Choice',
         },
         gui_tooltip    = '''\
             Changes the amount of damage taken.

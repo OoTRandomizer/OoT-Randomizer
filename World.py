@@ -241,11 +241,6 @@ class World(object):
         if self.big_poe_count_random:
             self.big_poe_count = random.randint(1, 10)
             self.randomized_list.append('big_poe_count')
-        if self.starting_tod == 'random':
-            setting_info = get_setting_info('starting_tod')
-            choices = [ch for ch in setting_info.choices if ch not in ['default', 'random']]
-            self.starting_tod = random.choice(choices)
-            self.randomized_list.append('starting_tod')
         if self.starting_age == 'random':
             if self.settings.open_forest == 'closed':
                 # adult is not compatible
@@ -256,6 +251,18 @@ class World(object):
         if self.chicken_count_random:
             self.chicken_count = random.randint(0, 7)
             self.randomized_list.append('chicken_count')
+        if self.starting_tod == 'random':
+            self.starting_tod = self.select_random_option_in_setting('starting_tod', ['default', 'random'])
+        if self.hints == 'random':
+            self.hints = self.select_random_option_in_setting('hints', ['random'])
+        if self.junk_ice_traps == 'random':
+            self.junk_ice_traps = self.select_random_option_in_setting('junk_ice_traps', ['random'])
+        if self.item_pool_value == 'random':
+            self.item_pool_value = self.select_random_option_in_setting('item_pool_value', ['random'])
+        if self.damage_multiplier == 'random':
+            self.damage_multiplier = self.select_random_option_in_setting('damage_multiplier', ['random'])
+        if self.hint_dist == 'random':
+            self.hint_dist = self.select_random_option_in_setting('hint_dist', ['random', 'bingo'])
 
         # Determine Ganon Trials
         trial_pool = list(self.skipped_trials)
@@ -286,6 +293,13 @@ class World(object):
                 self.dungeon_mq[dung] = True
 
         self.distribution.configure_randomized_settings(self)
+
+
+    def select_random_option_in_setting(self, setting_name, exclude_options):
+        self.randomized_list.append(setting_name)
+        setting_info = get_setting_info(setting_name)
+        choices = [ch for ch in setting_info.choices if ch not in exclude_options]
+        return random.choice(choices)
 
 
     def load_regions_from_json(self, file_path):

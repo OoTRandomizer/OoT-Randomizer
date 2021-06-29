@@ -1076,6 +1076,7 @@ def HintDistList():
         dist_name = dist['name']
         gui_name = dist['gui_name']
         dists.update({ dist_name: gui_name })
+    dists.update({'random': 'Random Choice'})
     return dists
 
 
