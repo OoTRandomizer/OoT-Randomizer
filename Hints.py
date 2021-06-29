@@ -339,7 +339,20 @@ def get_woth_hint(spoiler, world, checked):
     if not locations:
         return None
 
-    location = random.choice(locations)
+    if world.include_last_woth and world.last_woth < 1:
+        # Look for furthest location in coarse_spheres (order might be more accurate than in required_locations)
+        better_locations = [loc for sphere in reversed(spoiler.coarse_spheres.values()) for loc in sphere]
+        better_locations = [loc for loc in better_locations if loc.name in set(loc2.name for loc2 in locations)]
+        if len(better_locations) == 0:
+            return None
+        location = better_locations[0]
+        hint_text = "at the end of"
+        hint_color = "Blue"
+        world.last_woth += 1
+    else:
+        location = random.choice(locations)
+        hint_text = "on"
+        hint_color = "Light Blue"
     checked.add(location.name)
 
     if location.parent_region.dungeon:
@@ -349,9 +362,9 @@ def get_woth_hint(spoiler, world, checked):
         location_text = get_hint_area(location)
 
     if world.triforce_hunt:
-        return (GossipText('#%s# is on the path of gold.' % location_text, ['Light Blue']), location)
+        return (GossipText('#%s# is %s the path of gold.' % (location_text, hint_text), [hint_color]), location)
     else:
-        return (GossipText('#%s# is on the way of the hero.' % location_text, ['Light Blue']), location)
+        return (GossipText('#%s# is %s the way of the hero.' % (location_text, hint_text), [hint_color]), location)
 
 
 def get_barren_hint(spoiler, world, checked):
@@ -692,6 +705,7 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
 
     world.barren_dungeon = 0
     world.woth_dungeon = 0
+    world.last_woth = 0
 
     search = Search.max_explore([w.state for w in spoiler.worlds])
     for stone in gossipLocations.values():

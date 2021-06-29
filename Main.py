@@ -184,9 +184,12 @@ def make_spoiler(settings, worlds, window=dummy_window()):
         window.update_status('Calculating Spoiler Data')
         logger.info('Calculating playthrough.')
         create_playthrough(spoiler)
-        window.update_progress(50)
+        window.update_progress(45)
     if settings.create_spoiler or settings.hints != 'none':
         window.update_status('Calculating Hint Data')
+        logger.info('Calculating coarse spheres.')
+        compute_coarse_spheres(spoiler)
+        window.update_progress(50)
         logger.info('Calculating hint data.')
         update_required_items(spoiler)
         buildGossipHints(spoiler, worlds)
@@ -553,6 +556,140 @@ def find_light_arrows(spoiler):
         maybe_set_light_arrows(location)
 
 
+def compute_coarse_spheres(spoiler):
+    worlds = spoiler.worlds
+    worlds = copy_worlds(worlds)
+    collection_spheres = []
+    
+    # this function tracks spheres in a simplified way: it increments spheres only when "noteworthy" items are collected
+    # "noteworthy" items are defined as follows
+    def is_noteworthy(item):
+        if item.type == "Song":
+            return True
+        if item.type == "Item" and item.advancement:
+            return item.name not in ["Deliver Letter", "Gerudo Membership Card", "Magic Bean"]
+        return False
+     
+    # to keep a readable and useful spoiler log, we only log certain items:
+    def must_be_logged(item, noteworthy):
+        nonlocal collection_spheres, item_locations, spoiler_locations
+        if noteworthy:
+            if item.location in spoiler_locations:
+                return item.location not in collection_spheres[0]
+        else:
+            if item.type == "DungeonReward":
+                return item.location in spoiler_locations
+        return False
+
+    # get list of all of the progressive items that can appear in hints
+    # all_locations: all progressive items. have to collect from these
+    # item_locations: only the ones that should appear as "required"/WotH
+    all_locations = [location for world in worlds for location in world.get_filled_locations()]
+    item_locations = {location for location in all_locations if location.item.majoritem and not location.locked and location.item.name != 'Triforce Piece'}
+    
+    # if the playthrough was generated, filter the list of locations to the
+    # locations in the playthrough. The required locations is a subset of these
+    # locations. Can't use the locations directly since they are location to the
+    # copied spoiler world, so must compare via name and world id
+    if spoiler.playthrough:
+        translate = lambda loc: worlds[loc.world.id].get_location(loc.name)
+        spoiler_locations = set(map(translate, itertools.chain.from_iterable(spoiler.playthrough.values())))
+        item_locations &= spoiler_locations
+    else:
+        spoiler_locations = all_locations
+    
+    search = Search([world.state for world in worlds])
+
+    # Create "-1" sphere
+    sphere_number = -1
+    collection_spheres.append({})
+    
+    distribution = spoiler.settings.distribution.world_dists[0]
+    for (name, record) in distribution.starting_items.items():
+        item = Item(name, world=worlds[0])
+        search.state_list[0].collect(item)
+
+    item = worlds[0].get_location("Links Pocket").item
+    search.state_list[0].collect(item)
+    collection_spheres[-1][item.location] = item.name
+
+    if spoiler.settings.skip_child_zelda:
+        location = worlds[0].get_location("HC Zeldas Letter")
+        item = location.item
+        search.state_list[0].collect(item)
+        collection_spheres[-1][item.location] = item.name
+        location = worlds[0].get_location("Song from Impa")
+        item = location.item
+        search.state_list[0].collect(item)
+        collection_spheres[-1][item.location] = item.name
+    
+    # Compute next spheres
+    had_reachable_locations = True
+    items_to_delay = []
+    items_to_collect = []
+    increment_sphere = True
+    while had_reachable_locations:
+        child_regions, adult_regions, visited_locations = search.next_sphere()
+        
+        if increment_sphere:
+            sphere_number += 1
+            collection_spheres.append({})
+            had_reachable_locations = False
+
+        location = None
+        for loc in all_locations:
+            if loc in visited_locations:
+                continue
+            # Check adult first; it's the most likely.
+            if (loc.parent_region in adult_regions
+                    and loc.access_rule(search.state_list[loc.world.id], spot=loc, age='adult')):
+                had_reachable_locations = True
+                # Mark it visited for this algorithm
+                visited_locations.add(loc)
+                location = loc
+
+            elif (loc.parent_region in child_regions
+                  and loc.access_rule(search.state_list[loc.world.id], spot=loc, age='child')):
+                had_reachable_locations = True
+                # Mark it visited for this algorithm
+                visited_locations.add(loc)
+                location = loc
+            
+            # If location is reachable, add its item to the right list
+            if location:
+                item = location.item
+                if location in collection_spheres[0]:
+                    # If the location was already in sphere -1, ignore it
+                    pass
+                elif is_noteworthy(item):
+                    items_to_delay.append(location.item)
+                else:
+                    items_to_collect.append(location.item)
+                location = None
+        
+        # If some non-remarkable items have been found, collect them and don't open a new sphere
+        if len(items_to_collect) > 0:
+            for item in items_to_collect:
+                search.state_list[item.world.id].collect(item)
+                if must_be_logged(item, False):
+                    collection_spheres[-1][item.location] = item.name
+            items_to_collect = []
+            increment_sphere = False
+            had_reachable_locations = True
+        # Otherwise collect everything remarkable met in the current sphere and open a new one
+        else:
+            for item in items_to_delay:
+                search.state_list[item.world.id].collect(item)
+                if must_be_logged(item, True):
+                    collection_spheres[-1][item.location] = item.name
+            items_to_delay = []
+            increment_sphere = True
+    
+    # Remove possibly empty spheres at the tail
+    while len(collection_spheres) > 0 and len(collection_spheres[-1]) == 0:
+        del collection_spheres[-1]
+    spoiler.coarse_spheres = OrderedDict((str(i-1), {location: location.item for location in sphere}) for i, sphere in enumerate(collection_spheres))
+    
 def update_required_items(spoiler):
     worlds = spoiler.worlds
 

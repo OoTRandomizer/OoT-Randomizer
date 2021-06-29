@@ -3519,6 +3519,18 @@ setting_infos = [
             '!bingo' : {'settings' : ['bingosync_url']},
         },
     ),
+    Checkbutton(
+        name           = 'include_last_woth',
+        gui_text       = 'Include Last Way of the Hero',
+        gui_tooltip    = '''\
+            Replace the first way of the hero hint generated
+            with a last way of the hero hint. This option
+            does not guarantee the hint if you select a
+            distribution without guaranteed way of the
+            hero hints.
+        ''',
+        shared         = True,
+    ),
     Setting_Info(
         name           = "bingosync_url",
         type           = str,
