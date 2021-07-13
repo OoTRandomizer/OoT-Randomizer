@@ -337,7 +337,7 @@ hintTable = {
     'Spirit Temple MQ GS Symphony Room':                           ("a #spider's symphony in the Colossus# yields", "a #spider's symphony in the Spirit Temple# yields", ['dungeon', 'sometimes']),
     'Shadow Temple Freestanding Key':                              ("#inside a burning skull# lies", "#inside a giant pot in the Shadow Temple# lies", ['dungeon', 'sometimes']),
     'Shadow Temple MQ Bomb Flower Chest':                          ("shadows in an #invisible maze# guard", None, ['dungeon', 'sometimes']),
-    'Ice Cavern Map Chest':                                        ("#winds of ice# surround", None, ['dungeon', 'sometimes']),
+    'Ice Cavern Map Chest':                                        ("#winds of ice# surround", "a lone chest #encased in ice# contains", ['dungeon', 'sometimes']),
     'Ganons Castle Shadow Trial Golden Gauntlets Chest':           ("#light in the test of darkness# unveils", "A #like-like in Ganon's Castle# guards", ['dungeon', 'sometimes']),
 
     'KF Kokiri Sword Chest':                                       ("the #hidden treasure of the Kokiri# is", None, 'exclude'),
