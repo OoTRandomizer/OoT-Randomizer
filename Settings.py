@@ -1,15 +1,16 @@
 import argparse
-import textwrap
-import string
-import re
 import hashlib
-import math
-import sys
 import json
 import logging
+import math
+import os
+import re
+import string
+import sys
+import textwrap
 
 from version import __version__
-from Utils import random_choices, local_path
+from Utils import random_choices, local_path, data_path
 from SettingsList import setting_infos, get_setting_info
 from Plandomizer import Distribution
 
@@ -319,25 +320,41 @@ def get_settings_from_command_line_args():
     parser.add_argument('--settings_string', help='Provide sharable settings using a settings string. This will override all flags that it specifies.')
     parser.add_argument('--convert_settings', help='Only convert the specified settings to a settings string. If a settings string is specified output the used settings instead.', action='store_true')
     parser.add_argument('--settings', help='Use the specified settings file to use for generation')
+    parser.add_argument('--settings_preset', help="Use the given preset for base settings. Anything defined in the --settings file or the --settings_string will override the preset.")
     parser.add_argument('--seed', help='Generate the specified seed.')
     parser.add_argument('--no_log', help='Suppresses the generation of a log file.', action='store_true')
     parser.add_argument('--output_settings', help='Always outputs a settings.json file even when spoiler is enabled.', action='store_true')
 
     args = parser.parse_args()
+    settings_base = {}
+    if args.settings_preset:
+        presetsFiles = [data_path('presets_default.json')] + sorted(
+                os.path.join(data_path('Presets'), fn)
+                for fn in os.listdir(data_path('Presets'))
+                if fn.endswith('.json'))
+        for fn in presetsFiles:
+            with open(fn) as f:
+                presets = json.load(f)
+                if args.settings_preset in presets:
+                    settings_base.update(presets[args.settings_preset])
+                    break
+        else:
+            sys.stderr.write(f'ERROR:No preset found with name {args.settings_preset!r}\n')
+            sys.exit(1)
 
     if args.settings == '-':
-        settings = Settings(json.loads(sys.stdin.read()))
-    else:
+        settings_base.update(json.loads(sys.stdin.read()))
+    elif args.settings or not settings_base:  # avoid implicitly using settings.sav with presets
         settingsFile = local_path(args.settings or 'settings.sav')
 
         try:
             with open(settingsFile) as f:
-                settings = Settings(json.load(f))
+                settings_base.update(json.load(f))
         except Exception as ex:
-            if args.settings is None:
-                settings = Settings({})
-            else:
+            if args.settings is not None:
                 raise ex
+
+    settings = Settings(settings_base)
 
     settings.output_settings = args.output_settings
 

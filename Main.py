@@ -104,6 +104,10 @@ def resolve_settings(settings, window=dummy_window()):
             raise Exception(f'Player Num is {settings.player_num}; must be between (1, {settings.world_count})')
         settings.player_num = settings.world_count
 
+    # Set to a custom hint distribution if plando is overriding the distro
+    if len(settings.hint_dist_user) != 0:
+        settings.hint_dist = 'custom'
+
     logger.info('OoT Randomizer Version %s  -  Seed: %s', __version__, settings.seed)
     settings.remove_disabled()
     logger.info('(Original) Settings string: %s\n', settings.settings_string)
@@ -187,7 +191,7 @@ def make_spoiler(settings, worlds, window=dummy_window()):
         update_required_items(spoiler)
         buildGossipHints(spoiler, worlds)
         window.update_progress(55)
-    else:
+    elif settings.misc_hints:
         # Ganon may still provide the Light Arrows hint
         find_light_arrows(spoiler)
     spoiler.build_file_hash()

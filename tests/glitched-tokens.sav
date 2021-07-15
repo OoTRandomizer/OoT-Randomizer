@@ -15,7 +15,7 @@
 "gerudo_fortress": "fast",
 "bridge": "tokens",
 "logic_rules": "glitched",
-"all_reachable": true,
+"reachable_locations": "all",
 "bombchus_in_logic": false,
 "one_item_per_dungeon": false,
 "trials_random": false,

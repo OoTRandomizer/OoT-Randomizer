@@ -54,6 +54,7 @@ medal_color_t medal_colors[] = {
 uint32_t cfg_dungeon_info_enable = 1;
 uint32_t cfg_dungeon_info_mq_enable = 0;
 uint32_t cfg_dungeon_info_mq_need_map = 0;
+uint32_t cfg_dungeon_info_reward_enable = 1;
 uint32_t cfg_dungeon_info_reward_need_compass = 0;
 uint32_t cfg_dungeon_info_reward_need_altar = 0;
 
@@ -76,8 +77,8 @@ void draw_dungeon_info(z64_disp_buf_t *db) {
     gSPDisplayList(db->p++, &setup_db);
 
     uint16_t altar_flags = z64_file.inf_table[27];
-    int show_medals = !cfg_dungeon_info_reward_need_altar || (altar_flags & 1);
-    int show_stones = !cfg_dungeon_info_reward_need_altar || (altar_flags & 2);
+    int show_medals = cfg_dungeon_info_reward_enable && (!cfg_dungeon_info_reward_need_altar || (altar_flags & 1));
+    int show_stones = cfg_dungeon_info_reward_enable && (!cfg_dungeon_info_reward_need_altar || (altar_flags & 2));
     int show_keys = 1;
     int show_map_compass = 1;
     int show_mq = cfg_dungeon_info_mq_enable;

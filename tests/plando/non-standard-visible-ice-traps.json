@@ -1,0 +1,13 @@
+{
+    "settings": {
+        "shuffle_ocarinas": true
+    },
+    "locations": {
+        "Market Bombchu Bowling First Prize": "Ice Trap",
+        "Market Bombchu Bowling Second Prize": "Ice Trap",
+        "Market Treasure Chest Game Reward": "Ice Trap",
+        "LH Sun": "Ice Trap",
+        "LH Underwater Item": "Ice Trap",
+        "HF Ocarina of Time Item": "Ice Trap"
+    }
+}

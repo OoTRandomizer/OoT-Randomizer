@@ -141,6 +141,24 @@ class Item(object):
         return True
 
 
+    @property
+    def goalitem(self):
+        if self.name == 'Triforce Piece':
+            return self.world.triforce_hunt
+        if self.name == 'Light Arrows':
+            return self.world.bridge == 'vanilla'
+        if self.info.medallion:
+            settings = ['medallions', 'dungeons']
+            if self.name in ['Shadow Medallion', 'Spirit Medallion']:
+                settings.append('vanilla')
+            return self.world.bridge in settings or self.world.lacs_condition in settings
+        if self.info.stone:
+            return self.world.bridge in ['stones', 'dungeons'] or self.world.lacs_condition in ['stones', 'dungeons']
+        if self.type == 'Token':
+            return self.world.bridge == 'tokens' or self.world.lacs_condition == 'tokens'
+        #TODO check Bingo goals
+
+
     def __str__(self):
         return str(self.__unicode__())
 

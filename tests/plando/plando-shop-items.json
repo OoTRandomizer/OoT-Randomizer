@@ -50,7 +50,11 @@
     "GC Shop Item 4":               "Buy Deku Nut (5)",
     "GC Shop Item 5":               "Ice Trap",
     "GC Shop Item 6":               "Ice Trap",
-    "GC Shop Item 7":               "Ice Trap",
+    "GC Shop Item 7":               "Bottle with Red Potion",
     "GC Shop Item 8":               "Goron Tunic"
+  },
+  "item_pool": {
+    "Zora Tunic": 1,
+    "Goron Tunic": 1
   }
 }

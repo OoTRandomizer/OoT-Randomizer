@@ -1870,8 +1870,7 @@ setting_infos = [
 
                          - Logic Rules
                          - (Random) Number of MQ Dungeons
-                         - Rainbow Bridge Requirement: Gold Skulltula Tokens
-                         - Ganon's Boss Key On LACS: Gold Skulltula Tokens
+                         - Rainbow Bridge/LACS Requirements: Gold Skulltula Tokens
                          - Variable numbers of Spiritual Stones, Medallions, or Dungeons
                          for Rainbow Bridge and Ganon's Boss Key on LACS 
                          (you will always be required to obtain all the relevant rewards)
@@ -2151,7 +2150,7 @@ setting_infos = [
             'randomize_key': 'randomize_settings',
         },
         disable        = {
-            True  : {'settings' : ['shuffle_ganon_bosskey', 'lacs_medallions', 'lacs_stones', 'lacs_rewards', 'lacs_tokens']},
+            True  : {'settings' : ['shuffle_ganon_bosskey']},
             False : {'settings' : ['triforce_goal_per_world']}
         },
     ),
@@ -2188,7 +2187,7 @@ setting_infos = [
             'glitchless': 'Glitchless',
             'glitched':   'Glitched',
             'none':       'No Logic',
-            },
+        },
         gui_tooltip    = '''\
             Logic provides guiding sets of rules for world generation
             which the Randomizer uses to ensure the generated seeds 
@@ -2208,22 +2207,32 @@ setting_infos = [
             'glitched'  : {'settings' : ['allowed_tricks', 'shuffle_interior_entrances', 'shuffle_grotto_entrances',
                                          'shuffle_dungeon_entrances', 'shuffle_overworld_entrances', 'owl_drops',
                                          'warp_songs', 'spawn_positions', 'mq_dungeons_random', 'mq_dungeons', ]},
-            'none'      : {'settings' : ['allowed_tricks', 'logic_no_night_tokens_without_suns_song', 'all_reachable']},
+            'none'      : {'settings' : ['allowed_tricks', 'logic_no_night_tokens_without_suns_song', 'reachable_locations']},
         },
         shared         = True,
     ),
-    Checkbutton(
-        name           = 'all_reachable',
-        gui_text       = 'All Locations Reachable',
+    Combobox(
+        name           = 'reachable_locations',
+        gui_text       = 'Guarantee Reachable Locations',
+        default        = 'all',
+        choices        = {
+            'all':      'All',
+            'goals':    'All Goals',
+            'beatable': 'Required Only',
+        },
         gui_tooltip    = '''\
-            When this option is enabled, the randomizer will
-            guarantee that every item is obtainable and every
-            location is reachable.
+            This determines which items and locations are guaranteed to be reachable.
 
-            When disabled, only items and locations required
-            to beat the game will be guaranteed reachable.
+            'All': The randomizer will guarantee that every item is obtainable and every location is reachable.
+
+            'All Goals': The randomizer will guarantee that every goal item is obtainable, not just the amount required
+            to beat the game, but otherwise behaves like 'Required Only'.
+            Goal items are the items required for the rainbow bridge and/or Ganon's Boss Key, so for example if the bridge is
+            set to 1 Medallion and Ganon's Boss Key to 1 Gold Skulltula Token, all 6 Medallions and all 100 Tokens will
+            be obtainable. In Triforce Hunt, this will also guarantee that all Triforce Pieces can be obtained.
+
+            'Required Only': Only items and locations required to beat the game will be guaranteed reachable.
         ''',
-        default        = True,
         gui_params={
             "hide_when_disabled": True,
         },
@@ -3104,11 +3113,7 @@ setting_infos = [
             'overworld':       "Overworld Only",
             'any_dungeon':     "Any Dungeon",
             'keysanity':       "Anywhere (Keysanity)",
-            'lacs_vanilla':    "On LACS: Vanilla",
-            'lacs_stones':     "On LACS: Stones",
-            'lacs_medallions': "On LACS: Medallions",
-            'lacs_dungeons':   "On LACS: Dungeons",
-            'lacs_tokens':     "On LACS: Tokens",
+            'on_lacs':         "Light Arrow Cutscene"
         },
         gui_tooltip    = '''\
             'Remove': Ganon's Castle Boss Key is removed
@@ -3128,24 +3133,11 @@ setting_infos = [
 
             'Anywhere': Ganon's Castle Boss Key can appear
             anywhere in the world.
-            
-            'On LACS': These settings put the boss key on the
-            Light Arrow Cutscene location, from Zelda in Temple
-            of Time as adult, with differing requirements.
-            
-            'On LACS: Vanilla': Shadow and Spirit Medallions.
-            'On LACS: Medallions': A configurable amount of Medallions.
-            'On LACS: Stones': A configurable amount of Spiritual Stones.
-            'On LACS: Dungeons': A configurable amount of Dungeon Rewards.
-            'On LACS: Tokens': A configurable amount of Gold Skulltula Tokens.
+
+            'Light Arrow Cutscene': Ganon's Castle Boss Key will
+            appear on the Light Arrow Cutscene.
         ''',
         shared         = True,
-        disable={
-            '!lacs_stones':  {'settings': ['lacs_stones']},
-            '!lacs_medallions':  {'settings': ['lacs_medallions']},
-            '!lacs_dungeons':  {'settings': ['lacs_rewards']},
-            '!lacs_tokens':  {'settings': ['lacs_tokens']},
-        },
         gui_params     = {
             'randomize_key': 'randomize_settings',
             'distribution': [
@@ -3153,10 +3145,45 @@ setting_infos = [
                 ('dungeon',         2),
                 ('vanilla',         2),
                 ('keysanity',       4),
-                ('lacs_vanilla',    1),
-                ('lacs_medallions', 1),
-                ('lacs_stones',     1),
-                ('lacs_dungeons',   1),
+                ('on_lacs',         1)
+            ],
+        },
+    ),
+    Combobox(
+        name           = 'lacs_condition',
+        gui_text       = 'LACS Condition',
+        default        = 'vanilla',
+        choices        = {
+            'vanilla':    "Vanilla",
+            'stones':     "Stones",
+            'medallions': "Medallions",
+            'dungeons':   "Dungeons",
+            'tokens':     "Tokens",
+        },
+        gui_tooltip    = '''\
+            Sets the condition for the Light Arrow Cutscene
+            check to give you the item from Zelda.
+            
+            'Vanilla': Shadow and Spirit Medallions.
+            'Medallions': A configurable amount of Medallions.
+            'Stones': A configurable amount of Spiritual Stones.
+            'Dungeons': A configurable amount of Dungeon Rewards.
+            'Tokens': A configurable amount of Gold Skulltula Tokens.
+        ''',
+        shared         = True,
+        disable={
+            '!stones':  {'settings': ['lacs_stones']},
+            '!medallions':  {'settings': ['lacs_medallions']},
+            '!dungeons':  {'settings': ['lacs_rewards']},
+            '!tokens':  {'settings': ['lacs_tokens']},
+        },
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+            'distribution': [
+                ('vanilla',    1),
+                ('medallions', 1),
+                ('stones',     1),
+                ('dungeons',   1),
             ],
         },
     ),
@@ -3542,20 +3569,49 @@ setting_infos = [
         default        = 'none',
         choices        = {
             'none':         'No Text Shuffled',
-            'except_hints': 'Shuffled except Hints and Keys',
+            'except_hints': 'Shuffled except Important Text',
             'complete':     'All Text Shuffled',
         },
         gui_tooltip    = '''\
             Will make things confusing for comedic value.
 
-            'Shuffled except Hints and Keys': Key texts
-            are not shuffled because in keysanity it is
-            inconvenient to figure out which keys are which
-            without the correct text. Similarly, non-shop
-            items sold in shops will also retain standard
-            text for the purpose of accurate price checks.
+            'Shuffled except Important Text': For when
+            you want comedy but don't want to impact
+            gameplay. Text that has an impact on gameplay
+            is not shuffled. This includes all hint text,
+            key text, non-shop items sold in shops, random
+            price scrubs, chicken count and poe count.
         ''',
         shared         = True,
+    ),
+    Checkbutton(
+        name           = 'misc_hints',
+        gui_text       = 'Misc. Hints',
+        gui_tooltip    = '''\
+            This setting adds some hints at locations
+            other than Gossip Stones:
+
+            Reading the Temple of Time altar as child
+            will tell you the locations of the
+            Spiritual Stones (unless Maps and Compasses
+            Give Information is enabled).
+
+            Reading the Temple of Time altar as adult
+            will tell you the locations of the Medallions
+            (unless Maps and Compasses Give Information
+            is enabled), as well as the conditions for
+            building the Rainbow Bridge and getting the
+            Boss Key for Ganon's Castle.
+
+            Talking to Ganondorf in his boss room will
+            tell you the location of the Light Arrows.
+
+            If this setting is enabled and Ganondorf
+            is reachable without Light Arrows, Gossip
+            Stones will never hint the Light Arrows.
+        ''',
+        shared         = True,
+        default        = True,
     ),
     Combobox(
         name           = 'ice_trap_appearance',

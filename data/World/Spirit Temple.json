@@ -61,15 +61,13 @@
                     has_projectile(child))",
             "Spirit Temple GS Sun on Floor Room": "
                 has_projectile(both) or can_use(Dins_Fire) or 
-                ((damage_multiplier != 'ohko' or Fairy or can_use(Nayrus_Love)) and 
-                    (Sticks or Kokiri_Sword or has_projectile(child))) or 
+                (can_take_damage and (Sticks or Kokiri_Sword or has_projectile(child))) or 
                 (is_child and 
                     (Small_Key_Spirit_Temple, 5) and has_projectile(child)) or 
                 (((Small_Key_Spirit_Temple, 3) or 
                     ((Small_Key_Spirit_Temple, 2) and bombchus_in_logic and not entrance_shuffle)) and 
                 can_use(Silver_Gauntlets) and
-                (has_projectile(adult) or damage_multiplier != 'ohko' or 
-                    Fairy or can_use(Nayrus_Love)))"
+                (has_projectile(adult) or can_take_damage))"
         },
         "exits": {
             "Spirit Temple Central Chamber": "has_explosives",
@@ -192,4 +190,3 @@
         }
     }
 ]
-
