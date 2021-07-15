@@ -32,12 +32,10 @@
         "exits": {
             "Dodongos Cavern Lower Right Side": "
                 here(can_blast_or_smash or
-                      ((can_use(Sticks) or can_use(Dins_Fire)) and
-                       (damage_multiplier != 'ohko' or Fairy or can_use(Nayrus_Love))))",
+                      ((can_use(Sticks) or can_use(Dins_Fire)) and can_take_damage))",
             "Dodongos Cavern Bomb Bag Area": "
                 is_adult or (here(is_adult) and has_explosives) or
-                (logic_dc_mq_child_bombs and (Kokiri_Sword or Sticks) and
-                    (damage_multiplier != 'ohko' or Fairy or can_use(Nayrus_Love)))",
+                (logic_dc_mq_child_bombs and (Kokiri_Sword or Sticks) and can_take_damage)",
             "Dodongos Cavern Boss Area": "
                 has_explosives or
                 (logic_dc_mq_eyes and Progressive_Strength_Upgrade and

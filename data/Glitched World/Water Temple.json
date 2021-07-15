@@ -8,10 +8,10 @@
             "Boss Area": "can_use(Longshot) or can_hover or (can_use(Hover_Boots) and (can_mega or Megaton_Hammer))",
             "Dark Link Area": "(at('High Alcove', can_play(Zeldas_Lullaby)) or 
                     (can_use(Hover_Boots) and (can_mega or Megaton_Hammer)))
-                and (Small_Key_Water_Temple,5)",
+                and (Small_Key_Water_Temple, 4)",
             "Under Entrance Block": "can_use(Hookshot) and Iron_Boots",
             "Central Pillar from Lobby": "can_use(Hookshot) and Iron_Boots and
-                (Small_Key_Water_Temple,5)",
+                (Small_Key_Water_Temple, 4)",
             "Compass Room": "can_use(Iron_Boots) and can_use(Hookshot)",
             "Ruto Column": "can_use(Iron_Boots) or can_use(Longshot) or can_jumpslash"
         }
@@ -27,7 +27,7 @@
             "Caged Skulltula": "is_adult",
             "Dragon Head Area": "is_adult",
             "Boss Key Area": "is_adult and 
-                (Small_Key_Water_Temple,5)
+                (Small_Key_Water_Temple, 4)
                 and (can_use(Longshot) or can_hover or Hover_Boots)",
             "Boss Area": "can_play(Zeldas_Lullaby) and can_use(Longshot)",
             "Water Temple Lobby": "can_play(Zeldas_Lullaby)"
@@ -68,9 +68,9 @@
         },
         "exits": {
             "Central Pillar": "can_play(Zeldas_Lullaby) and 
-                ((Small_Key_Water_Temple,6)
+                ((Small_Key_Water_Temple, 5)
                 or here(is_child and can_use(Sticks)) or has_fire_source or can_use(Bow))",
-            "Boss Key Area": "(Small_Key_Water_Temple,5) and
+            "Boss Key Area": "(Small_Key_Water_Temple, 4) and
                 (can_use(Longshot) or can_hover or can_use(Hover_Boots)) and can_play(Zeldas_Lullaby)",
             "Dragon Head Area": "Progressive_Strength_Upgrade and (is_adult or can_child_attack) and can_play(Zeldas_Lullaby)",
             "Caged Skulltula": "has_explosives and can_play(Zeldas_Lullaby)",
@@ -112,7 +112,7 @@
         "region_name": "Boss Key Area",
         "dungeon": "Water Temple",
         "locations": {
-            "Water Temple Boss Key Chest": "(Small_Key_Water_Temple,6) and
+            "Water Temple Boss Key Chest": "(Small_Key_Water_Temple, 5) and
                 (is_adult or can_hover)",
             "Water Temple GS Near Boss Key Chest": "(is_adult or can_hover) and
                 (can_use(Hookshot) or can_use(Boomerang) or can_mega)"

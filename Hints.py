@@ -25,7 +25,7 @@ bingoBottlesForHints = (
 )
 
 defaultHintDists = [
-    'balanced.json', 'bingo.json', 'scrubs.json', 'strong.json', 'tournament.json', 'useless.json', 'very_strong.json'
+    'balanced.json', 'bingo.json', 'ddr.json', 'scrubs.json', 'strong.json', 'tournament.json', 'useless.json', 'very_strong.json'
 ]
 
 class RegionRestriction(Enum):
@@ -360,6 +360,7 @@ def get_barren_hint(spoiler, world, checked):
 
     areas = list(filter(lambda area:
         area not in checked
+        and area not in world.hint_type_overrides['barren']
         and not (world.barren_dungeon >= world.hint_dist_user['dungeons_barren_limit'] and world.empty_areas[area]['dungeon']),
         world.empty_areas.keys()))
 
@@ -435,38 +436,51 @@ def get_good_item_hint(spoiler, world, checked):
 
 
 def get_specific_item_hint(spoiler, world, checked):
-    itemname = world.item_hints.pop(0)
-    if itemname == "Bottle" and world.hint_dist == "bingo":
-        locations = [
-            location for location in world.get_filled_locations()
-            if (is_not_checked(location, checked)
-                and location.name not in world.hint_exclusions
-                and location.item.name in bingoBottlesForHints
-                and not location.locked
-                and location.name not in world.hint_type_overrides['named-item'])
-        ]
-    else:
-        locations = [
-            location for location in world.get_filled_locations()
-            if (is_not_checked(location, checked)
-                and location.name not in world.hint_exclusions
-                and location.item.name == itemname
-                and not location.locked
-                and location.name not in world.hint_type_overrides['named-item'])
-        ]
-    if not locations:
-        return None
+    if len(world.named_item_pool) == 0:
+        logger = logging.getLogger('')
+        logger.info("Named item hint requested, but pool is empty.")
+        return None  
+    while True:
+        itemname = world.named_item_pool.pop(0)
+        if itemname == "Bottle" and world.hint_dist == "bingo":
+            locations = [
+                location for location in world.get_filled_locations()
+                if (is_not_checked(location, checked)
+                    and location.name not in world.hint_exclusions
+                    and location.item.name in bingoBottlesForHints
+                    and not location.locked
+                    and location.name not in world.hint_type_overrides['named-item'])
+            ]
+        else:
+            locations = [
+                location for location in world.get_filled_locations()
+                if (is_not_checked(location, checked)
+                    and location.name not in world.hint_exclusions
+                    and location.item.name == itemname
+                    and not location.locked
+                    and location.name not in world.hint_type_overrides['named-item'])
+            ]
+        if len(locations) > 0:
+            break
+        if len(world.named_item_pool) == 0:
+            return None
 
     location = random.choice(locations)
     checked.add(location.name)
-
     item_text = getHint(getItemGenericName(location.item), world.clearer_hints).text
+    
     if location.parent_region.dungeon:
         location_text = getHint(location.parent_region.dungeon.name, world.clearer_hints).text
-        return (GossipText('#%s# hoards #%s#.' % (location_text, item_text), ['Green', 'Red']), location)
+        if world.hint_dist_user.get('vague_named_items', False):
+            return (GossipText('#%s# may be on the hero\'s path.' % (location_text), ['Green']), location)
+        else:
+            return (GossipText('#%s# hoards #%s#.' % (location_text, item_text), ['Green', 'Red']), location)
     else:
         location_text = get_hint_area(location)
-        return (GossipText('#%s# can be found at #%s#.' % (item_text, location_text), ['Red', 'Green']), location)
+        if world.hint_dist_user.get('vague_named_items', False):
+            return (GossipText('#%s# may be on the hero\'s path.' % (location_text), ['Green']), location)
+        else:
+            return (GossipText('#%s# can be found at #%s#.' % (item_text, location_text), ['Red', 'Green']), location)
 
 
 def get_random_location_hint(spoiler, world, checked):
@@ -540,7 +554,9 @@ def get_entrance_hint(spoiler, world, checked):
     shuffled_entrance_hints = list(filter(lambda entrance_hint: world.get_entrance(entrance_hint.name).shuffled, entrance_hints))
 
     regions_with_hint = [hint.name for hint in getHintGroup('region', world)]
-    valid_entrance_hints = list(filter(lambda entrance_hint: world.get_entrance(entrance_hint.name).connected_region.name in regions_with_hint, shuffled_entrance_hints))
+    valid_entrance_hints = list(filter(lambda entrance_hint:
+                                       (world.get_entrance(entrance_hint.name).connected_region.name in regions_with_hint or
+                                        world.get_entrance(entrance_hint.name).connected_region.dungeon), shuffled_entrance_hints))
 
     if not valid_entrance_hints:
         return None
@@ -657,7 +673,7 @@ def buildGossipHints(spoiler, worlds):
         location = world.light_arrow_location
         if location is None:
             continue
-        if can_reach_hint(worlds, world.get_location("Ganondorf Hint"), location):
+        if world.misc_hints and can_reach_hint(worlds, world.get_location("Ganondorf Hint"), location):
             light_arrow_world = location.world
             if light_arrow_world.id not in checkedLocations:
                 checkedLocations[light_arrow_world.id] = set()
@@ -734,6 +750,7 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
 
         if world.shopsanity != "off" and "Progressive Wallet" not in world.item_hints:
             world.item_hints.append("Progressive Wallet")
+        world.named_item_pool = list(world.item_hints)
 
 
     # Load hint distro from distribution file or pre-defined settings
@@ -781,8 +798,8 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
                 always_item = 'Bottle'
             else:
                 always_item = location.item.name
-            if always_item in world.item_hints:
-                world.item_hints.remove(always_item)
+            if always_item in world.named_item_pool:
+                world.named_item_pool.remove(always_item)
 
             if location.name in world.hint_text_overrides:
                 location_text = world.hint_text_overrides[location.name]
@@ -811,11 +828,11 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
 
     # Add user-specified hinted item locations if using a built-in hint distribution
     # Raise error if hint copies is zero
-    if len(world.item_hints) > 0 and world.hint_dist_user['named_items_required']:
+    if len(world.named_item_pool) > 0 and world.hint_dist_user['named_items_required']:
         if hint_dist['named-item'][1] == 0:
             raise Exception('User-provided item hints were requested, but copies per named-item hint is zero')
         else:
-            for i in range(0, len(world.item_hints)):
+            for i in range(0, len(world.named_item_pool)):
                 hint = get_specific_item_hint(spoiler, world, checkedLocations)
                 if hint == None:
                     raise Exception('No valid hints for user-provided item')
@@ -824,6 +841,11 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
                     place_ok = add_hint(spoiler, world, stoneGroups, gossip_text, hint_dist['named-item'][1], location)
                     if not place_ok:
                         raise Exception('Not enough gossip stones for user-provided item hints')
+    
+    # Shuffle named items hints
+    # When all items are not required to be hinted, this allows for
+    # opportunity-style hints to be drawn at random from the defined list.
+    random.shuffle(world.named_item_pool)
 
     hint_types = list(hint_types)
     hint_prob  = list(hint_prob)
@@ -893,7 +915,7 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
 
 
 # builds text that is displayed at the temple of time altar for child and adult, rewards pulled based off of item in a fixed order.
-def buildAltarHints(world, messages, include_rewards=True):
+def buildAltarHints(world, messages, include_rewards=True, include_wincons=True):
     # text that appears at altar as a child.
     child_text = '\x08'
     if include_rewards:
@@ -923,9 +945,12 @@ def buildAltarHints(world, messages, include_rewards=True):
         ]
         for (reward, color) in bossRewardsMedallions:
             adult_text += buildBossString(reward, color, world)
-    adult_text += buildBridgeReqsString(world)
-    adult_text += '\x04'
-    adult_text += buildGanonBossKeyString(world)
+    if include_wincons:
+        adult_text += buildBridgeReqsString(world)
+        adult_text += '\x04'
+        adult_text += buildGanonBossKeyString(world)
+    else:
+        adult_text += getHint('Adult Altar Text End', world.clearer_hints).text
     adult_text += '\x0B'
     update_message_by_id(messages, 0x7057, get_raw_text(adult_text), 0x20)
 
@@ -965,8 +990,8 @@ def buildGanonBossKeyString(world):
     if world.shuffle_ganon_bosskey == 'remove':
         string += "And the door to the \x05\x41evil one\x05\x40's chamber will be left #unlocked#."
     else:
-        if 'lacs_' in world.shuffle_ganon_bosskey:
-            item_req_string = getHint(world.shuffle_ganon_bosskey, world.clearer_hints).text
+        if world.shuffle_ganon_bosskey == 'on_lacs':
+            item_req_string = getHint('lacs_' + world.lacs_condition, world.clearer_hints).text
             if world.lacs_condition == 'medallions':
                 item_req_string = str(world.lacs_medallions) + ' ' + item_req_string
             elif world.lacs_condition == 'stones':

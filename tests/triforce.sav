@@ -15,7 +15,7 @@
 "bridge": "medallions",
 "triforce_hunt": true,
 "logic_rules": "glitchless",
-"all_reachable": true,
+"reachable_locations": "all",
 "bombchus_in_logic": true,
 "one_item_per_dungeon": false,
 "trials_random": false,

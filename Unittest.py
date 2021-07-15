@@ -197,7 +197,8 @@ class TestPlandomizer(unittest.TestCase):
         filenames = [
             "plando-item-pool-matches-items-placed-after-starting-items-replaced",
             "plando-new-placed-ice-traps",
-            "plando-placed-and-added-ice-traps"
+            "plando-placed-and-added-ice-traps",
+            "non-standard-visible-ice-traps",
         ]
         for filename in filenames:
             with self.subTest(filename):
@@ -218,6 +219,10 @@ class TestPlandomizer(unittest.TestCase):
                         # This distribution file should set all junk items to 1 except for ice traps so we will reuse it
                         _, spoiler = generate_with_plandomizer("plando-explicit-item-pool")
                         self.assertGreater(spoiler['item_pool']['Ice Trap'], 6)
+                if filename == "non-standard-visible-ice-traps":
+                    with self.subTest("ice trap models in non-standard visible locations"):
+                        for location in distribution_file['locations']:
+                            self.assertIn('model', spoiler['locations'][location])
 
     def test_should_not_throw_exception(self):
         filenames = [
@@ -235,7 +240,13 @@ class TestPlandomizer(unittest.TestCase):
             "plando-num-bottles-fountain-closed-good",
             "plando-num-bottles-fountain-open-good",
             "plando-change-triforce-piece-count",
-            "plando-use-normal-triforce-piece-count"
+            "plando-use-normal-triforce-piece-count",
+            "plando-egg-not-shuffled-one-pool",
+            "plando-egg-not-shuffled-two-pool",
+            "plando-egg-shuffled-one-pool",
+            "plando-egg-shuffled-two-pool",
+            "no-ice-trap-pending-junk",
+            "disabled-song-location",
         ]
         for filename in filenames:
             with self.subTest(filename):
@@ -259,13 +270,16 @@ class TestPlandomizer(unittest.TestCase):
             "plando-item-pool-matches-items-placed-after-starting-items-replaced",
             "plando-change-triforce-piece-count",
             "plando-use-normal-triforce-piece-count",
+            "plando-shop-items",
+            "no-ice-trap-pending-junk",
         ]
         for filename in filenames:
             with self.subTest(filename + " pool accuracy"):
                 distribution_file, spoiler = generate_with_plandomizer(filename)
                 actual_pool = get_actual_pool(spoiler)
                 for item in spoiler['item_pool']:
-                    self.assertEqual(actual_pool[item], spoiler['item_pool'][item])
+                    self.assertEqual(actual_pool[item], spoiler['item_pool'][item],
+                    f"Pool item {item} count mismatch")
         filename = "plando-list-exhaustion"
         with self.subTest(filename + " pool accuracy"):
             distribution_file, spoiler = generate_with_plandomizer(filename)
@@ -279,6 +293,23 @@ class TestPlandomizer(unittest.TestCase):
             for item in distribution_file['starting_items']:
                 self.assertNotIn(item, actual_pool)
 
+    def test_weird_egg_in_pool(self):
+        # Not shuffled, one in pool: Should remove from pool and not place anywhere
+        not_shuffled_one = "plando-egg-not-shuffled-one-pool"
+        distribution_file, spoiler = generate_with_plandomizer(not_shuffled_one)
+        self.assertNotIn('Weird Egg', spoiler['item_pool'])
+        # Not shuffled, two in pool: Should be the same outcome as previous case
+        not_shuffled_two = "plando-egg-not-shuffled-two-pool"
+        distribution_file, spoiler = generate_with_plandomizer(not_shuffled_two)
+        self.assertNotIn('Weird Egg', spoiler['item_pool'])
+        # Shuffled, one in pool: Valid config, shouldn't have to make any changes, will end with 1 in pool
+        shuffled_one = "plando-egg-shuffled-one-pool"
+        distribution_file, spoiler = generate_with_plandomizer(shuffled_one)
+        self.assertEqual(spoiler['item_pool']['Weird Egg'], 1)
+        # Shuffled, two in pool: Shouldn't have more than one, will remove force to 1 in pool
+        shuffled_two = "plando-egg-shuffled-two-pool"
+        distribution_file, spoiler = generate_with_plandomizer(shuffled_two)
+        self.assertEqual(spoiler['item_pool']['Weird Egg'], 1)
 
 class TestHints(unittest.TestCase):
     def test_skip_zelda(self):
@@ -458,4 +489,3 @@ class TestValidSpoilers(unittest.TestCase):
                         json.dump(d, f, indent=0)
                     logging.getLogger('').exception(f'Failed to generate with these settings:\n{settings.get_settings_display()}\n')
                     raise
-

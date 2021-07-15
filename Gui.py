@@ -7,7 +7,7 @@ for i,v in enumerate(min_python_version):
     if sys.version_info[i] < v:
         print("Randomizer requires at least version 3.6 and you are using %s" % '.'.join([str(i) for i in sys.version_info[0:3]]))
         raw_input("Press enter to exit...")
-        exit(1)
+        sys.exit(1)
     if sys.version_info[i] > v:
         break
 

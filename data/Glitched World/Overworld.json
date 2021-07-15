@@ -1107,7 +1107,7 @@
     },
     {
         "region_name": "LLR Stables",
-		"locations": {
+        "locations": {
             "LLR Stables Left Cow": "can_play(Eponas_Song)",
             "LLR Stables Right Cow": "can_play(Eponas_Song)"
         }
@@ -1258,7 +1258,7 @@
     },
     {
         "region_name": "DMT Cow Grotto",
-		 "locations": {
+        "locations": {
             "DMT Cow Grotto Cow": "can_play(Eponas_Song)"
         }
     },

@@ -8,7 +8,7 @@
             "Forest Temple GS First Room": "
                 (is_adult and (Hookshot or Bow or Bombs)) or (is_child and (Boomerang or Slingshot)) or
                 has_bombchus or can_use(Dins_Fire) or (logic_forest_first_gs and (Bombs or
-                    (can_jumpslash and (damage_multiplier != 'ohko' or Fairy or can_use(Nayrus_Love)))))",
+                    (can_jumpslash and can_take_damage)))",
             "Forest Temple GS Lobby": "can_use(Hookshot) or can_use(Boomerang)",
             "Fairy Pot": "has_bottle and (is_adult or can_child_attack or Nuts)"
         },

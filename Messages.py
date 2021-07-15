@@ -51,7 +51,37 @@ CONTROL_CODES = {
 }
 
 SPECIAL_CHARACTERS = {
+    0x80: 'À',
+    0x81: 'Á',
+    0x82: 'Â',
+    0x83: 'Ä',
+    0x84: 'Ç',
+    0x85: 'È',
+    0x86: 'É',
+    0x87: 'Ê',
+    0x88: 'Ë',
+    0x89: 'Ï',
+    0x8A: 'Ô',
+    0x8B: 'Ö',
+    0x8C: 'Ù',
+    0x8D: 'Û',
+    0x8E: 'Ü',
+    0x8F: 'ß',
+    0x90: 'à',
+    0x91: 'á',
+    0x92: 'â',
+    0x93: 'ä',
+    0x94: 'ç',
+    0x95: 'è',
     0x96: 'é',
+    0x97: 'ê',
+    0x98: 'ë',
+    0x99: 'ï',
+    0x9A: 'ô',
+    0x9B: 'ö',
+    0x9C: 'ù',
+    0x9D: 'û',
+    0x9E: 'ü',
     0x9F: '[A]',
     0xA0: '[B]',
     0xA1: '[C]',
@@ -64,6 +94,40 @@ SPECIAL_CHARACTERS = {
     0xA8: '[C Right]',
     0xA9: '[Triangle]',
     0xAA: '[Control Stick]',
+}
+
+UTF8_TO_OOT_SPECIAL = {
+    (0xc3, 0x80): 0x80,
+    (0xc3, 0xae): 0x81,
+    (0xc3, 0x82): 0x82,
+    (0xc3, 0x84): 0x83,
+    (0xc3, 0x87): 0x84,
+    (0xc3, 0x88): 0x85,
+    (0xc3, 0x89): 0x86,
+    (0xc3, 0x8a): 0x87,
+    (0xc3, 0x8b): 0x88,
+    (0xc3, 0x8f): 0x89,
+    (0xc3, 0x94): 0x8A,
+    (0xc3, 0x96): 0x8B,
+    (0xc3, 0x99): 0x8C,
+    (0xc3, 0x9b): 0x8D,
+    (0xc3, 0x9c): 0x8E,
+    (0xc3, 0x9f): 0x8F,
+    (0xc3, 0xa0): 0x90,
+    (0xc3, 0xa1): 0x91,
+    (0xc3, 0xa2): 0x92,
+    (0xc3, 0xa4): 0x93,
+    (0xc3, 0xa7): 0x94,
+    (0xc3, 0xa8): 0x95,
+    (0xc3, 0xa9): 0x96,
+    (0xc3, 0xaa): 0x97,
+    (0xc3, 0xab): 0x98,
+    (0xc3, 0xaf): 0x99,
+    (0xc3, 0xb4): 0x9A,
+    (0xc3, 0xb6): 0x9B,
+    (0xc3, 0xb9): 0x9C,
+    (0xc3, 0xbb): 0x9D,
+    (0xc3, 0xbc): 0x9E,
 }
 
 GOSSIP_STONE_MESSAGES = list( range(0x0401, 0x04FF) ) # ids of the actual hints
@@ -289,6 +353,15 @@ def parse_control_codes(text):
     else:
         bytes = list(text.encode('utf-8'))
 
+    # Special characters encoded to utf-8 must be re-encoded to OoT's values for them.
+    # Tuple is used due to utf-8 encoding using two bytes.
+    i = 0
+    while i < len(bytes) - 1:
+        if (bytes[i], bytes[i+1]) in UTF8_TO_OOT_SPECIAL:
+            bytes[i] = UTF8_TO_OOT_SPECIAL[(bytes[i], bytes[i+1])]
+            del bytes[i+1]
+        i += 1
+    
     text_codes = []
     index = 0
     while index < len(bytes):
@@ -565,6 +638,17 @@ class Message():
     def from_string(cls, text, id=0, opts=0x00):
         bytes = list(text.encode('utf-8')) + [0x02]
 
+        # Clean up garbage values added when encoding special characters again.
+        bytes = list(filter(lambda a: a != 194, bytes)) # 0xC2 added before each accent char.
+        i = 0
+        while i < len(bytes) - 1:
+            if bytes[i] in SPECIAL_CHARACTERS and bytes[i] not in UTF8_TO_OOT_SPECIAL.values(): # This indicates it's one of the button chars (A button, etc).
+                # Have to delete 2 inserted garbage values.
+                del bytes[i-1]
+                del bytes[i-2]
+                i -= 2
+            i+= 1
+
         return cls(bytes, 0, id, opts, 0, len(bytes) + 1)
 
     @classmethod
@@ -642,7 +726,7 @@ class Shop_Item():
         bytes += int_to_bytes(self.object, 2)
         bytes += int_to_bytes(self.model, 2)
         bytes += int_to_bytes(self.func1, 4)
-        bytes += int_to_bytes(self.price, 2)
+        bytes += int_to_bytes(self.price, 2, signed=True)
         bytes += int_to_bytes(self.pieces, 2)
         bytes += int_to_bytes(self.description_message, 2)
         bytes += int_to_bytes(self.purchase_message, 2)
@@ -871,7 +955,9 @@ def shuffle_messages(messages, except_hints=True, always_allow_skip=True):
     def is_exempt(m):
         hint_ids = (
             GOSSIP_STONE_MESSAGES + TEMPLE_HINTS_MESSAGES + LIGHT_ARROW_HINT +
-            list(KEYSANITY_MESSAGES.keys()) + shuffle_messages.shop_item_messages
+            list(KEYSANITY_MESSAGES.keys()) + shuffle_messages.shop_item_messages +
+            shuffle_messages.scrubs_message_ids +
+            [0x5036, 0x70F5] # Chicken count and poe count respectively
         )
         shuffle_exempt = [
             0x208D,         # "One more lap!" for Cow in House race.

@@ -1,0 +1,10 @@
+{
+  "settings": {
+    "triforce_hunt": true,
+    "triforce_goal_per_world": 5,
+    "junk_ice_traps": "off"
+  },
+  "item_pool": {
+    "Triforce Piece": 10
+  }
+}

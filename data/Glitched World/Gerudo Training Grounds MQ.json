@@ -24,7 +24,7 @@
             "Gerudo Training Grounds MQ Underwater Silver Rupee Chest": "
                 (Hover_Boots or at('Gerudo Training Grounds Central Maze Right', can_use(Longshot) or Bow)) and 
                 has_fire_source and Iron_Boots and (logic_fewer_tunic_requirements or can_use(Zora_Tunic)) and 
-                (damage_multiplier != 'ohko' or (Fairy or can_use(Nayrus_Love)))",
+                can_take_damage",
             "Wall Fairy": "has_bottle and can_use(Bow)" #in the Dinalfos room shoot the Gerudo symbol above the door to the lava room.
         }
     },

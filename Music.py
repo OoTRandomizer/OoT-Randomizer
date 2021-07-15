@@ -177,7 +177,7 @@ def shuffle_music(sequences, target_sequences, music_mapping, log):
 
     # Shuffle the sequences
     if len(sequences) < len(target_sequences):
-        raise Exception("Not enough custom music/fanfares to omit base Ocarina of Time sequences.")
+        raise Exception(f"Not enough custom music/fanfares ({len(sequences)}) to omit base Ocarina of Time sequences ({len(target_sequences)}).")
     random.shuffle(sequence_ids)
 
     sequences = []

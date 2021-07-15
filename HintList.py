@@ -97,11 +97,11 @@ def stones_required_by_settings(world):
     stones = 0
     if world.bridge == 'stones':
         stones = max(stones, world.bridge_stones)
-    if world.shuffle_ganon_bosskey == 'lacs_stones':
+    if world.shuffle_ganon_bosskey == 'on_lacs' and world.lacs_condition == 'stones':
         stones = max(stones, world.lacs_stones)
     if world.bridge == 'dungeons':
         stones = max(stones, world.bridge_rewards - 6)
-    if world.shuffle_ganon_bosskey == 'lacs_dungeons':
+    if world.shuffle_ganon_bosskey == 'on_lacs' and world.lacs_condition == 'dungeons':
         stones = max(stones, world.lacs_rewards - 6)
 
     return stones
@@ -111,11 +111,11 @@ def medallions_required_by_settings(world):
     medallions = 0
     if world.bridge == 'medallions':
         medallions = max(medallions, world.bridge_medallions)
-    if world.shuffle_ganon_bosskey == 'lacs_medallions':
+    if world.shuffle_ganon_bosskey == 'on_lacs' and world.lacs_condition == 'medallions':
         medallions = max(medallions, world.lacs_medallions)
     if world.bridge == 'dungeons':
         medallions = max(medallions, max(world.bridge_rewards - 3, 0))
-    if world.shuffle_ganon_bosskey == 'lacs_dungeons':
+    if world.shuffle_ganon_bosskey == 'on_lacs' and world.lacs_condition == 'dungeons':
         medallions = max(medallions, max(world.lacs_rewards - 3, 0))
 
     return medallions
@@ -125,7 +125,7 @@ def tokens_required_by_settings(world):
     tokens = 0
     if world.bridge == 'tokens':
         tokens = max(tokens, world.bridge_tokens)
-    if world.shuffle_ganon_bosskey == 'lacs_tokens':
+    if world.shuffle_ganon_bosskey == 'on_lacs' and world.lacs_condition == 'tokens':
         tokens = max(tokens, world.lacs_tokens)
 
     return tokens
@@ -158,7 +158,7 @@ hintTable = {
     'Boomerang':                                                (["a banana", "a stun stick"], "the Boomerang", 'item'),
     'Bow':                                                      (["an archery enabler", "a danger dart launcher"], "a Bow", 'item'),
     'Bomb Bag':                                                 (["an explosive container", "a blast bag"], "a Bomb Bag", 'item'),
-    'Progressive Hookshot':                                     (["Dampe's keepsake", "the Grapple Beam", "the BOING! chain"], "a Hookshot", 'item'),
+    'Progressive Hookshot':                                     (["Dampé's keepsake", "the Grapple Beam", "the BOING! chain"], "a Hookshot", 'item'),
     'Progressive Strength Upgrade':                             (["power gloves", "metal mittens", "the heavy lifty"], "a Strength Upgrade", 'item'),
     'Progressive Scale':                                        (["a deeper dive", "a piece of Zora"], "a Zora Scale", 'item'),
     'Megaton Hammer':                                           (["the dragon smasher", "the metal mallet", "the heavy hitter"], "the Megaton Hammer", 'item'),
@@ -344,7 +344,7 @@ hintTable = {
     'GC Maze Right Chest':                                         ("in #Goron City# explosives unlock", None, 'exclude'),
     'GC Maze Center Chest':                                        ("in #Goron City# explosives unlock", None, 'exclude'),
     'ZD Chest':                                                    ("fire #beyond a waterfall# reveals", None, 'exclude'),
-    'Graveyard Hookshot Chest':                                    ("a chest hidden by a #speedy spectre# holds", "#dead Dampe's first prize# is", 'exclude'),
+    'Graveyard Hookshot Chest':                                    ("a chest hidden by a #speedy spectre# holds", "#dead Dampé's first prize# is", 'exclude'),
     'GF Chest':                                                    ("on a #rooftop in the desert# lies", None, 'exclude'),
     'Kak Redead Grotto Chest':                                     ("#zombies beneath the earth# guard", None, 'exclude'),
     'SFM Wolfos Grotto Chest':                                     ("#wolves beneath the earth# guard", None, 'exclude'),
@@ -401,7 +401,7 @@ hintTable = {
     'Kak Impas House Freestanding PoH':                            ("#imprisoned in a house# lies", None, 'exclude'),
     'HF Tektite Grotto Freestanding PoH':                          ("#deep underwater in a hole# is", None, 'exclude'),
     'Kak Windmill Freestanding PoH':                               ("on a #windmill ledge# lies", None, 'exclude'),
-    'Graveyard Dampe Race Freestanding PoH':                       ("#racing a ghost# leads to", "#dead Dampe's second# prize is", 'exclude'),
+    'Graveyard Dampe Race Freestanding PoH':                       ("#racing a ghost# leads to", "#dead Dampé's second# prize is", 'exclude'),
     'LLR Freestanding PoH':                                        ("in a #ranch silo# lies", None, 'exclude'),
     'Graveyard Freestanding PoH':                                  ("a #crate in a graveyard# hides", None, 'exclude'),
     'Graveyard Dampe Gravedigging Tour':                           ("a #gravekeeper digs up#", None, 'exclude'),
@@ -1058,7 +1058,7 @@ hintTable = {
     'Kak Impas House':                                          ("Impa's House", None, 'region'),
     'Kak Impas House Back':                                     ("Impa's cow cage", None, 'region'),
     'Kak Odd Medicine Building':                                ("Granny's Potion Shop", None, 'region'),
-    'Graveyard Dampes House':                                   ("Dampe's Hut", None, 'region'),
+    'Graveyard Dampes House':                                   ("Dampé's Hut", None, 'region'),
     'GC Shop':                                                  ("the #Goron Shop#", None, 'region'),
     'ZD Shop':                                                  ("the #Zora Shop#", None, 'region'),
     'LLR Talons House':                                         ("Talon's House", None, 'region'),
@@ -1079,7 +1079,7 @@ hintTable = {
     'Graveyard Shield Grave':                                   ("a #grave with a free chest#", None, 'region'),
     'Graveyard Heart Piece Grave':                              ("a chest spawned by #Sun's Song#", None, 'region'),
     'Graveyard Composers Grave':                                ("the #Composers' Grave#", None, 'region'),
-    'Graveyard Dampes Grave':                                   ("Dampe's Grave", None, 'region'),
+    'Graveyard Dampes Grave':                                   ("Dampé's Grave", None, 'region'),
     'DMT Cow Grotto':                                           ("a solitary #Cow#", None, 'region'),
     'HC Storms Grotto':                                         ("a sandy grotto with #fragile walls#", None, 'region'),
     'HF Tektite Grotto':                                        ("a pool guarded by a #Tektite#", None, 'region'),
@@ -1226,6 +1226,7 @@ hintTable = {
     'Spiritual Stone Text Start':                               ("3 Spiritual Stones found in Hyrule...", None, 'altar'),
     'Child Altar Text End':                                     ("\x13\x07Ye who may become a Hero...&Stand with the Ocarina and&play the Song of Time.", None, 'altar'),
     'Adult Altar Text Start':                                   ("When evil rules all, an awakening&voice from the Sacred Realm will&call those destined to be Sages,&who dwell in the \x05\x41five temples\x05\x40.", None, 'altar'),
+    'Adult Altar Text End':                                     ("Together with the Hero of Time,&the awakened ones will bind the&evil and return the light of peace&to the world...", None, 'altar'),
 
     'Validation Line':                                          ("Hmph... Since you made it this far,&I'll let you know what glorious&prize of Ganon's you likely&missed out on in my tower.^Behold...^", None, 'validation line'),
     'Light Arrow Location':                                     ("Ha ha ha... You'll never beat me by&reflecting my lightning bolts&and unleashing the arrows from&", None, 'Light Arrow Location'),

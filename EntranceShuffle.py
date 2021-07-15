@@ -389,7 +389,7 @@ def shuffle_random_entrances(worlds):
 
         if worlds[0].warp_songs:
             one_way_entrance_pools['WarpSong'] = world.get_shufflable_entrances(type='WarpSong')
-            if worlds[0].all_reachable and worlds[0].logic_rules == 'glitchless':
+            if worlds[0].reachable_locations != 'beatable' and worlds[0].logic_rules == 'glitchless':
                 # In glitchless, there aren't any other ways to access these areas
                 one_way_priorities['Bolero'] = priority_entrance_table['Bolero']
                 one_way_priorities['Nocturne'] = priority_entrance_table['Nocturne']
@@ -451,17 +451,20 @@ def shuffle_random_entrances(worlds):
         # Set entrances defined in the distribution
         world.distribution.set_shuffled_entrances(worlds, dict(chain(one_way_entrance_pools.items(), entrance_pools.items())), dict(chain(one_way_target_entrance_pools.items(), target_entrance_pools.items())), locations_to_ensure_reachable, complete_itempool)
 
-        # Check one way entrances and trim.
-        replaced_entrances = [entrance.replaces for entrance in chain.from_iterable(one_way_entrance_pools.values())
-                              if entrance.replaces is not None]
+        # Check placed one way entrances and trim.
+        # The placed entrances are already pointing at their new regions.
+        placed_entrances = [entrance for entrance in chain.from_iterable(one_way_entrance_pools.values())
+                            if entrance.replaces is not None]
+        replaced_entrances = [entrance.replaces for entrance in placed_entrances]
+        # Remove replaced entrances so we don't place two in one target.
         for remaining_target in chain.from_iterable(one_way_target_entrance_pools.values()):
             if remaining_target.replaces and remaining_target.replaces in replaced_entrances:
                 delete_target_entrance(remaining_target)
-        # Remove priority targets if they've been placed
+        # Remove priority targets if any placed entrances point at their region(s).
         for key, (regions, _) in priority_entrance_table.items():
             if key in one_way_priorities:
-                for entrance in replaced_entrances:
-                    if entrance.replaces.connected_region and entrance.replaces.connected_region.name in regions:
+                for entrance in placed_entrances:
+                    if entrance.connected_region and entrance.connected_region.name in regions:
                         del one_way_priorities[key]
                         break
 
@@ -731,7 +734,7 @@ def validate_world(world, worlds, entrance_placed, locations_to_ensure_reachable
                 if not max_search.visited(location):
                     raise EntranceShuffleError('%s is unreachable' % location.name)
 
-    if world.shuffle_interior_entrances and \
+    if world.shuffle_interior_entrances and (world.misc_hints or world.hints != 'none') and \
        (entrance_placed == None or entrance_placed.type in ['Interior', 'SpecialInterior']):
         # Ensure Kak Potion Shop entrances are in the same hint area so there is no ambiguity as to which entrance is used for hints
         potion_front_entrance = get_entrance_replacing(world.get_region('Kak Potion Shop Front'), 'Kakariko Village -> Kak Potion Shop Front')

@@ -30,6 +30,17 @@ def set_rules(world):
             if location.name in world.shop_prices:
                 add_item_rule(location, lambda location, item: item.type != 'Shop')
                 location.price = world.shop_prices[location.name]
+                # If price was specified in plando, use it here so access rule is set correctly.
+                if location.name in world.distribution.locations and world.distribution.locations[location.name].price is not None:
+                    price = world.distribution.locations[location.name].price
+                    if price > 999: # Cap positive values above 999 so that they're not impossible.
+                        world.distribution.locations[location.name].price = 999
+                        price = 999
+                    elif price < -32768: # Prices below this will error on patching.
+                        world.distribution.locations[location.name].price = -32768
+                        price = -32768
+                    location.price = price
+                    world.shop_prices[location.name] = price
                 location.add_rule(create_shop_rule(location))
             else:
                 add_item_rule(location, lambda location, item: item.type == 'Shop' and item.world.id == location.world.id)

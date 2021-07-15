@@ -388,8 +388,15 @@ def fill_restrictive(window, worlds, base_search, locations, itempool, count=-1)
         max_search.collect_locations()
 
         # perform_access_check checks location reachability
-        perform_access_check = True
-        if worlds[0].check_beatable_only:
+        if worlds[0].reachable_locations == 'all':
+            perform_access_check = True
+            extra_location_checks = []
+        elif worlds[0].reachable_locations == 'goals':
+            # for All Goals Reachable, we have to track whether any goal items have been placed,
+            # since we then have to start checking their reachability.
+            perform_access_check = item_to_place.goalitem or not max_search.can_beat_game(scan_for_items=False)
+            extra_location_checks = [location for world in worlds for location in world.get_filled_locations() if location.item.goalitem]
+        else:
             # if any world can not longer be beatable with the remaining items
             # then we must check for reachability no matter what.
             # This way the reachability test is monotonic. If we were to later
@@ -397,12 +404,13 @@ def fill_restrictive(window, worlds, base_search, locations, itempool, count=-1)
             # in an unreachable place in another world.
             # scan_for_items would cause an unnecessary copy+collect
             perform_access_check = not max_search.can_beat_game(scan_for_items=False)
+            extra_location_checks = []
 
         # find a location that the item can be placed. It must be a valid location
         # in the world we are placing it (possibly checking for reachability)
         spot_to_fill = None
         for location in l2cations:
-            if location.can_fill(max_search.state_list[location.world.id], item_to_place, perform_access_check):
+            if location.can_fill(max_search.state_list[location.world.id], item_to_place, perform_access_check, extra_location_checks):
                 # for multiworld, make it so that the location is also reachable
                 # in the world the item is for. This is to prevent early restrictions
                 # in one world being placed late in another world. If this is not
@@ -410,7 +418,7 @@ def fill_restrictive(window, worlds, base_search, locations, itempool, count=-1)
                 if location.world.id != item_to_place.world.id:
                     try:
                         source_location = item_to_place.world.get_location(location.name)
-                        if not source_location.can_fill(max_search.state_list[item_to_place.world.id], item_to_place, perform_access_check):
+                        if not source_location.can_fill(max_search.state_list[item_to_place.world.id], item_to_place, perform_access_check, extra_location_checks):
                             # location wasn't reachable in item's world, so skip it
                             continue
                     except KeyError:
