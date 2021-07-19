@@ -534,10 +534,6 @@ class Message:
 
         text_codes = []
 
-        # # speed the text
-        if speed_up_text:
-            text_codes.append(Text_Code(0x08, 0)) # allow instant
-
         # write the message
         for code in self.text_codes:
             # ignore ending codes if it's going to be replaced
@@ -563,6 +559,13 @@ class Message:
                     text_codes.append(Text_Code(0x08, 0))  # allow instant
             else:
                 text_codes.append(code)
+
+        # # speed the text
+        if speed_up_text:
+            if 'icon' in self.text:
+                text_codes.insert(1, Text_Code(0x08, 0)) # put instant text after icon
+            else:
+                text_codes.insert(0, Text_Code(0x08, 0)) # allow instant
 
         if replace_ending:
             if ending:
