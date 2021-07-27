@@ -1512,17 +1512,17 @@
                 can_use(Megaton_Hammer) and (logic_crater_upper_to_lower or logic_dmc_boulder_skip)"
         },
         "exits": {
-            # The last couple lines of some exits from this region are based on going via the warp pad area.
+            # The last couple lines of some exits from this region are based on going counterclockwise around the crater.
             "DMC Exit to Death Mountain Summit": "True",
             "DMC Exit to Darunias Chamber": "
-                is_adult and ((Hover_Boots or 'Smash DMC Boulder Near Ladder') or 
+                is_adult and (Hover_Boots or 'Smash DMC Boulder Near Ladder' or 
                 (Goron_Tunic and logic_dmc_boulder_skip) or 
                 (Goron_Tunic and Longshot and (can_live_dmg(1) or 
                 (Fairy and not entrance_shuffle) or can_use(Nayrus_Love))))",
             "DMC Exit to Fire Temple": "
                 is_adult and Goron_Tunic and (Hover_Boots or 
                 (Hookshot and ('Smash DMC Boulder Near Ladder' or logic_dmc_boulder_skip)) or 
-                (Goron_Tunic and Longshot and (can_live_dmg(1) or 
+                (Longshot and (can_live_dmg(1) or 
                 (Fairy and not entrance_shuffle) or can_use(Nayrus_Love))))",
             "DMC Exit to Fairy Fountain": "
                 is_adult and Megaton_Hammer and (Hover_Boots or 
@@ -1543,7 +1543,7 @@
                 (Hookshot and ('Smash DMC Boulder Near Ladder' or logic_dmc_boulder_skip)) or 
                 (Longshot and (can_live_dmg(1) or (Fairy and not entrance_shuffle) or 
                 can_use(Nayrus_Love))))))",
-            "DMC Near Wall Heart": "True", # 6s remains with no movement tech as child 
+            "DMC Near Wall Heart": "True", 
             "DMC Near Business Scrub": "is_child and can_stun_deku",
             "DMC Near Sheik": "
                 is_adult and (logic_fewer_tunic_requirements or Goron_Tunic) and 
@@ -1696,7 +1696,7 @@
                 can_use(Megaton_Hammer) and (logic_crater_upper_to_lower or logic_dmc_boulder_skip)"
         },
         "exits": {
-            # The last couple lines of some exits from this region are based on going anticlockwise around the crater.
+            # The last couple lines of some exits from this region are based on going counterclockwise around the crater.
             "DMC Exit to Death Mountain Summit": "True",
             "DMC Exit to Darunias Chamber": "
                 is_adult and (Hover_Boots or 'Smash DMC Boulder Near Ladder' or 
@@ -1714,8 +1714,8 @@
                 (Goron_Tunic and Longshot and (can_live_dmg(1) or 
                 (Fairy and not entrance_shuffle) or can_use(Nayrus_Love))))",
             "DMC Exit to Hammer Grotto": "
-                is_adult and Megaton_Hammer and (logic_fewer_tunic_requirements or 
-                Goron_Tunic) and ('Smash DMC Boulder Near Ladder' or Hover_Boots or 
+                is_adult and (logic_fewer_tunic_requirements or Goron_Tunic) and 
+                Megaton_Hammer and (Hover_Boots or 'Smash DMC Boulder Near Ladder' or 
                 (Goron_Tunic and Longshot and (can_live_dmg(1) or 
                 (Fairy and not entrance_shuffle) or can_use(Nayrus_Love))))", 
             #Entering this grotto requires "here(can_blast_or_smash)", and is included as part of the Exit region
