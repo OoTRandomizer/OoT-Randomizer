@@ -131,7 +131,7 @@ class Scale(Setting_Info):
 logic_tricks = {
     'Fewer Tunic Requirements': {
         'name'    : 'logic_fewer_tunic_requirements',
-        'tags'    : ("General", "Fire Temple", "Water Temple", "Gerudo Training Ground", "Zora's Fountain",),
+        'tags'    : ("General", "Fire Temple", "Water Temple", "Gerudo Training Grounds", "Zora's Fountain",),
         'tooltip' : '''\
                     Allows the following possible without Tunics:
                     - Enter Water Temple. The key below the center
@@ -140,7 +140,7 @@ logic_tricks = {
                     accessible, and not Volvagia.
                     - Zora's Fountain Bottom Freestanding PoH.
                     Might not have enough health to resurface.
-                    - Gerudo Training Ground Underwater
+                    - Gerudo Training Grounds Underwater
                     Silver Rupee Chest. May need to make multiple
                     trips.
                     '''},
@@ -315,9 +315,9 @@ logic_tricks = {
                     a particularly egregious example. Logic normally
                     expects Din's Fire and Song of Time.
                     '''},
-    'Gerudo Training Ground MQ Left Side Silver Rupees with Hookshot': {
+    'Gerudo Training Grounds MQ Left Side Silver Rupees with Hookshot': {
         'name'    : 'logic_gtg_mq_with_hookshot',
-        'tags'    : ("Gerudo Training Ground",),
+        'tags'    : ("Gerudo Training Grounds",),
         'tooltip' : '''\
                     The highest silver rupee can be obtained by
                     hookshotting the target and then immediately jump
@@ -1029,9 +1029,9 @@ logic_tricks = {
                     Skulltula and obtain the token by having the Boomerang
                     interact with it along the return path.
                     '''},
-    'Gerudo Training Ground Left Side Silver Rupees without Hookshot': {
+    'Gerudo Training Grounds Left Side Silver Rupees without Hookshot': {
         'name'    : 'logic_gtg_without_hookshot',
-        'tags'    : ("Gerudo Training Ground",),
+        'tags'    : ("Gerudo Training Grounds",),
         'tooltip' : '''\
                     After collecting the rest of the silver rupees in the room,
                     you can reach the final silver rupee on the ceiling by being
@@ -1041,9 +1041,9 @@ logic_tricks = {
                     the edge of a flame wall before it can rise up to block you.
                     To do so without taking damage is more precise.
                     '''},
-    'Gerudo Training Ground MQ Left Side Silver Rupees without Hookshot': {
+    'Gerudo Training Grounds MQ Left Side Silver Rupees without Hookshot': {
         'name'    : 'logic_gtg_mq_without_hookshot',
-        'tags'    : ("Gerudo Training Ground",),
+        'tags'    : ("Gerudo Training Grounds",),
         'tooltip' : '''\
                     After collecting the rest of the silver rupees in the room,
                     you can reach the final silver rupee on the ceiling by being
@@ -1054,18 +1054,18 @@ logic_tricks = {
                     Also included with this trick is that fact that the switch
                     that unbars the door to the final chest of GTG can be hit
                     without a projectile, using a precise jump slash.
-                    This trick supersedes "Gerudo Training Ground MQ Left Side
+                    This trick supersedes "Gerudo Training Grounds MQ Left Side
                     Silver Rupees with Hookshot".
                     '''},
-    'Reach Gerudo Training Ground Fake Wall Ledge with Hover Boots': {
+    'Reach Gerudo Training Grounds Fake Wall Ledge with Hover Boots': {
         'name'    : 'logic_gtg_fake_wall',
-        'tags'    : ("Gerudo Training Ground",),
+        'tags'    : ("Gerudo Training Grounds",),
         'tooltip' : '''\
                     A precise Hover Boots use from the top of the chest can allow
                     you to grab the ledge without needing the usual requirements.
                     In Master Quest, this always skips a Song of Time requirement.
                     In Vanilla, this skips a Hookshot requirement, but is only
-                    relevant if "Gerudo Training Ground Left Side Silver Rupees
+                    relevant if "Gerudo Training Grounds Left Side Silver Rupees
                     without Hookshot" is enabled.
                     '''},
     'Water Temple Cracked Wall with No Additional Items': {
@@ -1421,19 +1421,19 @@ logic_tricks = {
                     Removes the requirements for the Lens of Truth
                     in Ganon's Castle.
                     '''},
-    'Gerudo Training Ground MQ without Lens of Truth': {
+    'Gerudo Training Grounds MQ without Lens of Truth': {
         'name'    : 'logic_lens_gtg_mq',
-        'tags'    : ("Lens of Truth","Gerudo Training Ground",),
+        'tags'    : ("Lens of Truth","Gerudo Training Grounds",),
         'tooltip' : '''\
                     Removes the requirements for the Lens of Truth
-                    in Gerudo Training Ground MQ.
+                    in Gerudo Training Grounds MQ.
                     '''},
-    'Gerudo Training Ground without Lens of Truth': {
+    'Gerudo Training Grounds without Lens of Truth': {
         'name'    : 'logic_lens_gtg',
-        'tags'    : ("Lens of Truth","Gerudo Training Ground",),
+        'tags'    : ("Lens of Truth","Gerudo Training Grounds",),
         'tooltip' : '''\
                     Removes the requirements for the Lens of Truth
-                    in Gerudo Training Ground.
+                    in Gerudo Training Grounds.
                     '''},
     'Jabu MQ without Lens of Truth': {
         'name'    : 'logic_lens_jabu_mq',
@@ -1856,7 +1856,8 @@ setting_infos = [
 
                          - Logic Rules
                          - (Random) Number of MQ Dungeons
-                         - Rainbow Bridge/LACS Requirements: Gold Skulltula Tokens
+                         - Rainbow Bridge Requirement: Gold Skulltula Tokens
+                         - Ganon's Boss Key On LACS: Gold Skulltula Tokens
                          - Variable numbers of Spiritual Stones, Medallions, or Dungeons
                          for Rainbow Bridge and Ganon's Boss Key on LACS 
                          (you will always be required to obtain all the relevant rewards)
@@ -2004,7 +2005,7 @@ setting_infos = [
             'Open Gerudo Fortress': The carpenters are rescued from
             the start of the game, and if 'Shuffle Gerudo Card' is disabled,
             the player starts with the Gerudo Card in the inventory 
-            allowing access to Gerudo Training Ground.
+            allowing access to Gerudo Training Grounds.
         ''',
         shared         = True,
         disable        = {
@@ -2136,7 +2137,7 @@ setting_infos = [
             'randomize_key': 'randomize_settings',
         },
         disable        = {
-            True  : {'settings' : ['shuffle_ganon_bosskey']},
+            True  : {'settings' : ['shuffle_ganon_bosskey', 'lacs_medallions', 'lacs_stones', 'lacs_rewards', 'lacs_tokens']},
             False : {'settings' : ['triforce_goal_per_world']}
         },
     ),
@@ -2173,7 +2174,7 @@ setting_infos = [
             'glitchless': 'Glitchless',
             'glitched':   'Glitched',
             'none':       'No Logic',
-        },
+            },
         gui_tooltip    = '''\
             Logic provides guiding sets of rules for world generation
             which the Randomizer uses to ensure the generated seeds 
@@ -2190,36 +2191,25 @@ setting_infos = [
             considered available. MAY BE IMPOSSIBLE TO BEAT.
         ''',
         disable        = {
-            'glitchless': {'settings' : ['tricks_list_msg']},
             'glitched'  : {'settings' : ['allowed_tricks', 'shuffle_interior_entrances', 'shuffle_grotto_entrances',
                                          'shuffle_dungeon_entrances', 'shuffle_overworld_entrances', 'owl_drops',
                                          'warp_songs', 'spawn_positions', 'mq_dungeons_random', 'mq_dungeons', ]},
-            'none'      : {'settings' : ['allowed_tricks', 'logic_no_night_tokens_without_suns_song', 'reachable_locations']},
+            'none'      : {'settings' : ['allowed_tricks', 'logic_no_night_tokens_without_suns_song', 'all_reachable']},
         },
         shared         = True,
     ),
-    Combobox(
-        name           = 'reachable_locations',
-        gui_text       = 'Guarantee Reachable Locations',
-        default        = 'all',
-        choices        = {
-            'all':      'All',
-            'goals':    'All Goals',
-            'beatable': 'Required Only',
-        },
+    Checkbutton(
+        name           = 'all_reachable',
+        gui_text       = 'All Locations Reachable',
         gui_tooltip    = '''\
-            This determines which items and locations are guaranteed to be reachable.
+            When this option is enabled, the randomizer will
+            guarantee that every item is obtainable and every
+            location is reachable.
 
-            'All': The randomizer will guarantee that every item is obtainable and every location is reachable.
-
-            'All Goals': The randomizer will guarantee that every goal item is obtainable, not just the amount required
-            to beat the game, but otherwise behaves like 'Required Only'.
-            Goal items are the items required for the rainbow bridge and/or Ganon's Boss Key, so for example if the bridge is
-            set to 1 Medallion and Ganon's Boss Key to 1 Gold Skulltula Token, all 6 Medallions and all 100 Tokens will
-            be obtainable. In Triforce Hunt, this will also guarantee that all Triforce Pieces can be obtained.
-
-            'Required Only': Only items and locations required to beat the game will be guaranteed reachable.
+            When disabled, only required items and locations
+            to beat the game will be guaranteed reachable.
         ''',
+        default        = True,
         gui_params={
             "hide_when_disabled": True,
         },
@@ -2254,8 +2244,8 @@ setting_infos = [
         gui_text       = 'Dungeons Have One Major Item',
         gui_tooltip    = '''\
             Dungeons have exactly one major item. 
-            This naturally makes each dungeon similar in value
-            rather than vary based on shuffled locations.
+            This naturally makes each dungeon similar in 
+            value instead of valued based on chest count.
 
             Spirit Temple Colossus hands count as part 
             of the dungeon. Spirit Temple has TWO items 
@@ -2275,10 +2265,6 @@ setting_infos = [
 
             Bombchus only count as major items if they
             are considered in logic.
-
-            This setting has potential to conflict with
-            other randomizer settings. Should seeds continuously
-            fail to generate, consider turning this option off.
         ''',
         shared         = True,
         gui_params     = {
@@ -2321,7 +2307,7 @@ setting_infos = [
         gui_text       = 'Skip Child Zelda',
         gui_tooltip    = '''\
             Start having already met Zelda and obtained
-            Zelda's Letter along with the item from Impa.
+            Zelda's Letter along with the song from Impa.
             Supersedes "Skip Child Stealth" since the whole
             sequence is skipped. Similarly, this is
             incompatible with Shuffle Weird Egg.
@@ -2716,7 +2702,7 @@ setting_infos = [
         gui_text       = 'Shuffle Dungeon Entrances',
         gui_tooltip    = '''\
             Shuffle the pool of dungeon entrances, including Bottom 
-            of the Well, Ice Cavern, and Gerudo Training Ground.
+            of the Well, Ice Cavern, and Gerudo Training Grounds.
             However, Ganon's Castle is not shuffled.
 
             Additionally, the entrances of Deku Tree, Fire Temple and 
@@ -2834,36 +2820,34 @@ setting_infos = [
         default        = 'off',
         choices        = {
             'off':    'Off',
-            '0':      '0 Items Per Shop',
-            '1':      '1 Item Per Shop',
-            '2':      '2 Items Per Shop',
-            '3':      '3 Items Per Shop',
-            '4':      '4 Items Per Shop',
-            'random': 'Random # of Items Per Shop',
+            '0':      'Shuffled Shops (0 Items)',
+            '1':      'Shuffled Shops (1 Items)',
+            '2':      'Shuffled Shops (2 Items)',
+            '3':      'Shuffled Shops (3 Items)',
+            '4':      'Shuffled Shops (4 Items)',
+            'random': 'Shuffled Shops (Random)',
         },
         gui_tooltip    = '''\
-            Randomizes Shop contents.
-            
-            'X Items Per Shop': Each shop will have the
-            specified number of items randomized and they
-            will always appear on the left side
-            (identified by the Special Deal! text).
-            Remaining items will be shuffled between shops.
-            
-            'Random # of Items Per Shop': Each shop will
-            have 0 to 4 Special Deals.
-            
-            The randomized items have no requirements
-            except money, while the remaining items retain
-            normal requirements. Tunics that aren't a
-            Special Deal! will still require you to be an
-            adult to purchase for example.
-            
-            Bombchu Special Deals will unlock the Bombchu
-            slot in your inventory and allow purchase of
-            Bombchu Refills if "Bombchus are considered in
-            logic" is enabled. Otherwise, the Bomb Bag is
-            required to purchase Bombchu Refills.
+            Shop contents are randomized.
+            (X Items): Shops have X random non-shop (Special
+            Deal!) items. They will always be on the left
+            side, and some of the lower value shop items
+            will be replaced to make room for these.
+
+            (Random): Each shop will have a random number
+            of non-shop items up to a maximum of 4.
+
+            The non-shop items have no requirements except
+            money, while the normal shop items (such as
+            200/300 rupee tunics) have normal vanilla
+            requirements. This means that, for example,
+            as a child you cannot buy 200/300 rupee
+            tunics, but you can buy non-shop tunics.
+
+            Non-shop Bombchus will unlock the chu slot
+            in your inventory, which, if Bombchus are in
+            logic, is needed to buy Bombchu refills.
+            Otherwise, the Bomb Bag is required.
         ''',
         shared         = True,
         gui_params     = {
@@ -3103,7 +3087,11 @@ setting_infos = [
             'overworld':       "Overworld Only",
             'any_dungeon':     "Any Dungeon",
             'keysanity':       "Anywhere (Keysanity)",
-            'on_lacs':         "Light Arrow Cutscene"
+            'lacs_vanilla':    "On LACS: Vanilla",
+            'lacs_stones':     "On LACS: Stones",
+            'lacs_medallions': "On LACS: Medallions",
+            'lacs_dungeons':   "On LACS: Dungeons",
+            'lacs_tokens':     "On LACS: Tokens",
         },
         gui_tooltip    = '''\
             'Remove': Ganon's Castle Boss Key is removed
@@ -3123,11 +3111,24 @@ setting_infos = [
 
             'Anywhere': Ganon's Castle Boss Key can appear
             anywhere in the world.
-
-            'Light Arrow Cutscene': Ganon's Castle Boss Key will
-            appear on the Light Arrow Cutscene.
+            
+            'On LACS': These settings put the boss key on the
+            Light Arrow Cutscene location, from Zelda in Temple
+            of Time as adult, with differing requirements.
+            
+            'On LACS: Vanilla': Shadow and Spirit Medallions.
+            'On LACS: Medallions': A configurable amount of Medallions.
+            'On LACS: Stones': A configurable amount of Spiritual Stones.
+            'On LACS: Dungeons': A configurable amount of Dungeon Rewards.
+            'On LACS: Tokens': A configurable amount of Gold Skulltula Tokens.
         ''',
         shared         = True,
+        disable={
+            '!lacs_stones':  {'settings': ['lacs_stones']},
+            '!lacs_medallions':  {'settings': ['lacs_medallions']},
+            '!lacs_dungeons':  {'settings': ['lacs_rewards']},
+            '!lacs_tokens':  {'settings': ['lacs_tokens']},
+        },
         gui_params     = {
             'randomize_key': 'randomize_settings',
             'distribution': [
@@ -3135,45 +3136,10 @@ setting_infos = [
                 ('dungeon',         2),
                 ('vanilla',         2),
                 ('keysanity',       4),
-                ('on_lacs',         1)
-            ],
-        },
-    ),
-    Combobox(
-        name           = 'lacs_condition',
-        gui_text       = 'LACS Condition',
-        default        = 'vanilla',
-        choices        = {
-            'vanilla':    "Vanilla",
-            'stones':     "Stones",
-            'medallions': "Medallions",
-            'dungeons':   "Dungeons",
-            'tokens':     "Tokens",
-        },
-        gui_tooltip    = '''\
-            Sets the condition for the Light Arrow Cutscene
-            check to give you the item from Zelda.
-            
-            'Vanilla': Shadow and Spirit Medallions.
-            'Medallions': A configurable amount of Medallions.
-            'Stones': A configurable amount of Spiritual Stones.
-            'Dungeons': A configurable amount of Dungeon Rewards.
-            'Tokens': A configurable amount of Gold Skulltula Tokens.
-        ''',
-        shared         = True,
-        disable={
-            '!stones':  {'settings': ['lacs_stones']},
-            '!medallions':  {'settings': ['lacs_medallions']},
-            '!dungeons':  {'settings': ['lacs_rewards']},
-            '!tokens':  {'settings': ['lacs_tokens']},
-        },
-        gui_params     = {
-            'randomize_key': 'randomize_settings',
-            'distribution': [
-                ('vanilla',    1),
-                ('medallions', 1),
-                ('stones',     1),
-                ('dungeons',   1),
+                ('lacs_vanilla',    1),
+                ('lacs_medallions', 1),
+                ('lacs_stones',     1),
+                ('lacs_dungeons',   1),
             ],
         },
     ),
@@ -3348,14 +3314,6 @@ setting_infos = [
             
             Tricks are only relevant for Glitchless logic.
         '''
-    ),
-    Setting_Info(
-        name           = 'tricks_list_msg',
-        type           = str,
-        gui_text       = "Your current logic setting does not support the enabling of tricks.",
-        gui_type       = "Textbox",
-        shared         = True,
-        choices        = {},
     ),
     Combobox(
         name           = 'logic_earliest_adult_trade',
@@ -3567,49 +3525,20 @@ setting_infos = [
         default        = 'none',
         choices        = {
             'none':         'No Text Shuffled',
-            'except_hints': 'Shuffled except Important Text',
+            'except_hints': 'Shuffled except Hints and Keys',
             'complete':     'All Text Shuffled',
         },
         gui_tooltip    = '''\
             Will make things confusing for comedic value.
 
-            'Shuffled except Important Text': For when
-            you want comedy but don't want to impact
-            gameplay. Text that has an impact on gameplay
-            is not shuffled. This includes all hint text,
-            key text, Good Deal! items sold in shops, random
-            price scrubs, chicken count and poe count.
+            'Shuffled except Hints and Keys': Key texts
+            are not shuffled because in keysanity it is
+            inconvenient to figure out which keys are which
+            without the correct text. Similarly, non-shop
+            items sold in shops will also retain standard
+            text for the purpose of accurate price checks.
         ''',
         shared         = True,
-    ),
-    Checkbutton(
-        name           = 'misc_hints',
-        gui_text       = 'Misc. Hints',
-        gui_tooltip    = '''\
-            This setting adds some hints at locations
-            other than Gossip Stones:
-
-            Reading the Temple of Time altar as child
-            will tell you the locations of the
-            Spiritual Stones (unless Maps and Compasses
-            Give Information is enabled).
-
-            Reading the Temple of Time altar as adult
-            will tell you the locations of the Medallions
-            (unless Maps and Compasses Give Information
-            is enabled), as well as the conditions for
-            building the Rainbow Bridge and getting the
-            Boss Key for Ganon's Castle.
-
-            Talking to Ganondorf in his boss room will
-            tell you the location of the Light Arrows.
-
-            If this setting is enabled and Ganondorf
-            is reachable without Light Arrows, Gossip
-            Stones will never hint the Light Arrows.
-        ''',
-        shared         = True,
-        default        = True,
     ),
     Combobox(
         name           = 'ice_trap_appearance',
@@ -3675,24 +3604,17 @@ setting_infos = [
             'minimal':   'Minimal'
         },
         gui_tooltip    = '''\
-            Changes the amount of major items that are 
-            available in the game.
+            Changes the amount of bonus items that
+            are available in the game.
 
-            'Plentiful': One additional copy of each major 
-            item is added.
+            'Plentiful': Extra major items are added.
 
             'Balanced': Original item pool.
 
-            'Scarce': An extra copy of major item upgrades 
-            that are not required to open location checks 
-            is removed (e.g. Bow upgrade, Magic upgrade). 
-            Heart Containers are removed as well. Number
-            of Bombchu items is reduced.
+            'Scarce': Some excess items are removed,
+            including health upgrades.
 
-            'Minimal': All major item upgrades not used to 
-            open location checks are removed. All health 
-            upgrades are removed. Only one Bombchu item is 
-            available.
+            'Minimal': Most excess items are removed.
         ''',
         shared         = True,
     ),
@@ -3773,6 +3695,17 @@ setting_infos = [
         choices        = {
             'hold':   'Hold',
             'switch': 'Switch',
+        },
+    ),
+    Combobox(
+        name           = 'default_language',
+        gui_text       = 'Default Language Option',
+        shared         = False,
+        cosmetic       = True,
+        default        = 'english',
+        choices        = {
+            'english':   'English',
+            'japanese':   'Japanese',
         },
     ),
     Combobox(
