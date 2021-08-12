@@ -19,6 +19,12 @@ def patch_targeting(rom, settings, log, symbols):
     else:
         rom.write_byte(0xB71E6D, 0x00)
 
+def patch_language(rom, settings, log, symbols):
+    # Set default Language option to English
+    if settings.default_language == 'english':
+        rom.write_byte(0x3e, 0x4A)
+    else:
+        rom.write_byte(0x3e, 0x45)
 
 def patch_dpad(rom, settings, log, symbols):
     # Display D-Pad HUD
