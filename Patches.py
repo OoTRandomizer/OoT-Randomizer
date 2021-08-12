@@ -81,10 +81,6 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     if world.no_collectible_hearts:
         rom.write_byte(0xA895B7, 0x2E)
 
-    # Force language to be English in the event a Japanese rom was submitted
-    rom.write_byte(0x3E, 0x45)
-    rom.force_patch.append(0x3E)
-
     # Increase the instance size of Bombchus prevent the heap from becoming corrupt when
     # a Dodongo eats a Bombchu. Does not fix stale pointer issues with the animation
     rom.write_int32(0xD6002C, 0x1F0)
