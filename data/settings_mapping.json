@@ -210,7 +210,6 @@
             "shuffle_fortresskeys",
             "shuffle_bosskeys",
             "shuffle_ganon_bosskey",
-            "lacs_condition",
             "lacs_medallions",
             "lacs_stones",
             "lacs_rewards",
@@ -229,9 +228,9 @@
           "name": "main_section",
           "text": "",
           "col_span": 4,
-          "row_span": [2,2,2],
+          "row_span": [1,1,1],
           "settings": [
-            "reachable_locations",
+            "all_reachable",
             "logic_no_night_tokens_without_suns_song"
           ]
         },
@@ -248,8 +247,7 @@
           "text": "Enable Tricks",
           "row_span": [8,10,10],
           "settings": [
-            "allowed_tricks",
-            "tricks_list_msg"
+            "allowed_tricks"
           ]
         }
       ]
@@ -336,7 +334,6 @@
             "hints",
             "hint_dist",
             "bingosync_url",
-            "misc_hints",
             "text_shuffle",
             "damage_multiplier",
 			"no_collectible_hearts",
@@ -365,10 +362,11 @@
       "sections": [
         {
           "name": "generalcosmetics_section",
-          "col_span": 4,
+          "col_span": 5,
           "row_span": [2,2,2],
           "settings": [
             "default_targeting",
+			"default_language",
             "display_dpad",
             "correct_model_colors",
             "randomize_all_cosmetics"
