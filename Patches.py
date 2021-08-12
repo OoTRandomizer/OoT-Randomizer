@@ -82,7 +82,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         rom.write_byte(0xA895B7, 0x2E)
 
     # Force language to be English in the event a Japanese rom was submitted
-    rom.write_byte(0x3E, 0x45)
+    rom.write_byte(0x3E, 0x4A)
     rom.force_patch.append(0x3E)
 
     # Increase the instance size of Bombchus prevent the heap from becoming corrupt when
