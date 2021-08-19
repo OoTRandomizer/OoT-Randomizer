@@ -708,6 +708,10 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
     # rebuild hint exclusion list
     hintExclusions(world, clear_cache=True)
 
+    #rebuild named item pool
+    world.settings.item_hints += world.item_added_hint_types["named-item"]
+
+
     world.barren_dungeon = 0
     world.woth_dungeon = 0
 
