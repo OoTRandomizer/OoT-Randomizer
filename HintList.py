@@ -306,6 +306,8 @@ hintTable = {
     'LW Target in Woods':                                          ("shooting a #target in the woods# grants", None, ['overworld', 'sometimes']),
     'ZR Frogs in the Rain':                                        ("#frogs in a storm# gift", None, ['overworld', 'sometimes']),
     'LH Lab Dive':                                                 ("a #diving experiment# is rewarded with", "#diving in the lab# is rewarded with", ['overworld', 'sometimes']),
+    'HC Great Fairy Reward':                                       ("the #fairy of fire# holds", "a #fairy outside of Hyrule Castle# holds", 'exclude'),
+    'OGC Great Fairy Reward':                                      ("the #fairy of strength# holds", "a #fairy outside of Ganons Castle# holds", 'exclude'),
 
     'Deku Tree MQ After Spinning Log Chest':                       ("a #temporal stone within a tree# contains", "a #temporal stone within the Deku Tree# contains", ['dungeon', 'sometimes']),
     'Deku Tree MQ GS Basement Graves Room':                        ("a #spider on a ceiling in a tree# holds", "a #spider on a ceiling in the Deku Tree# holds", ['dungeon', 'sometimes']),
@@ -319,7 +321,7 @@ hintTable = {
     'Fire Temple MQ Chest On Fire':                                ("the #Flare Dancer atop the volcano# guards a chest containing", "the #Flare Dancer atop the Fire Temple# guards a chest containing", ['dungeon', 'sometimes']),
     'Fire Temple MQ GS Skull On Fire':                             ("a #spider under a block in the volcano# holds", "a #spider under a block in the Fire Temple# holds", ['dungeon', 'sometimes']),
     'Water Temple River Chest':                                    ("beyond the #river under the lake# waits", "beyond the #river in the Water Temple# waits", ['dungeon', 'sometimes']),
-    'Water Temple Central Pillar Chest':                           ("in the #depths of the Water Temple# lies", None, ['dungeon', 'sometimes']),
+    'Water Temple Central Pillar Chest':                           ("in the #depths of the Water Temple# lies", "a chest in the #central pillar of Water Temple# contains", ['dungeon', 'sometimes']),
     'Water Temple GS Behind Gate':                                 ("a spider behind a #gate under the lake# holds", "a spider behind a #gate in the Water Temple# holds", ['dungeon', 'sometimes']),
     'Water Temple MQ Freestanding Key':                            ("hidden in a #box under the lake# lies", "hidden in a #box in the Water Temple# lies", ['dungeon', 'sometimes']),
     'Water Temple MQ GS Freestanding Key Area':                    ("the #locked spider under the lake# holds", "the #locked spider in the Water Temple# holds", ['dungeon', 'sometimes']),
@@ -337,7 +339,7 @@ hintTable = {
     'Spirit Temple MQ GS Symphony Room':                           ("a #spider's symphony in the Colossus# yields", "a #spider's symphony in the Spirit Temple# yields", ['dungeon', 'sometimes']),
     'Shadow Temple Freestanding Key':                              ("#inside a burning skull# lies", "#inside a giant pot in the Shadow Temple# lies", ['dungeon', 'sometimes']),
     'Shadow Temple MQ Bomb Flower Chest':                          ("shadows in an #invisible maze# guard", None, ['dungeon', 'sometimes']),
-    'Ice Cavern Map Chest':                                        ("#winds of ice# surround", "a lone chest #encased in ice# contains", ['dungeon', 'sometimes']),
+    'Ice Cavern Map Chest':                                        ("#winds of ice# surround", "a chest #atop a pillar of ice# contains", ['dungeon', 'sometimes']),
     'Ganons Castle Shadow Trial Golden Gauntlets Chest':           ("#light in the test of darkness# unveils", "A #like-like in Ganon's Castle# guards", ['dungeon', 'sometimes']),
 
     'KF Kokiri Sword Chest':                                       ("the #hidden treasure of the Kokiri# is", None, 'exclude'),
@@ -367,11 +369,9 @@ hintTable = {
     'ToT Light Arrows Cutscene':                                   ("the #final gift of a princess# is", None, 'exclude'),
     'LW Gift from Saria':                                          (["a #potato hoarder# holds", "a rooty tooty #flutey cutey# gifts"], "#Saria's Gift# is", 'exclude'),
     'ZF Great Fairy Reward':                                       ("the #fairy of winds# holds", None, 'exclude'),
-    'HC Great Fairy Reward':                                       ("the #fairy of fire# holds", None, 'exclude'),
     'Colossus Great Fairy Reward':                                 ("the #fairy of love# holds", None, 'exclude'),
     'DMT Great Fairy Reward':                                      ("a #magical fairy# gifts", None, 'exclude'),
     'DMC Great Fairy Reward':                                      ("a #magical fairy# gifts", None, 'exclude'),
-    'OGC Great Fairy Reward':                                      ("the #fairy of strength# holds", None, 'exclude'),
 
     'Song from Impa':                                              ("#deep in a castle#, Impa teaches", None, 'exclude'),
     'Song from Malon':                                             ("#a farm girl# sings", None, 'exclude'),
