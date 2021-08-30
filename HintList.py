@@ -306,8 +306,6 @@ hintTable = {
     'LW Target in Woods':                                          ("shooting a #target in the woods# grants", None, ['overworld', 'sometimes']),
     'ZR Frogs in the Rain':                                        ("#frogs in a storm# gift", None, ['overworld', 'sometimes']),
     'LH Lab Dive':                                                 ("a #diving experiment# is rewarded with", "#diving in the lab# is rewarded with", ['overworld', 'sometimes']),
-    'HC Great Fairy Reward':                                       ("the #fairy of fire# holds", "a #fairy outside of Hyrule Castle# holds", 'exclude'),
-    'OGC Great Fairy Reward':                                      ("the #fairy of strength# holds", "a #fairy outside of Ganons Castle# holds", 'exclude'),
 
     'Deku Tree MQ After Spinning Log Chest':                       ("a #temporal stone within a tree# contains", "a #temporal stone within the Deku Tree# contains", ['dungeon', 'sometimes']),
     'Deku Tree MQ GS Basement Graves Room':                        ("a #spider on a ceiling in a tree# holds", "a #spider on a ceiling in the Deku Tree# holds", ['dungeon', 'sometimes']),
@@ -369,9 +367,11 @@ hintTable = {
     'ToT Light Arrows Cutscene':                                   ("the #final gift of a princess# is", None, 'exclude'),
     'LW Gift from Saria':                                          (["a #potato hoarder# holds", "a rooty tooty #flutey cutey# gifts"], "#Saria's Gift# is", 'exclude'),
     'ZF Great Fairy Reward':                                       ("the #fairy of winds# holds", None, 'exclude'),
+    'HC Great Fairy Reward':                                       ("the #fairy of fire# holds", "a #fairy outside of Hyrule Castle# holds", 'exclude'),
     'Colossus Great Fairy Reward':                                 ("the #fairy of love# holds", None, 'exclude'),
     'DMT Great Fairy Reward':                                      ("a #magical fairy# gifts", None, 'exclude'),
     'DMC Great Fairy Reward':                                      ("a #magical fairy# gifts", None, 'exclude'),
+    'OGC Great Fairy Reward':                                      ("the #fairy of strength# holds", "a #fairy outside of Ganons Castle# holds", 'exclude'),
 
     'Song from Impa':                                              ("#deep in a castle#, Impa teaches", None, 'exclude'),
     'Song from Malon':                                             ("#a farm girl# sings", None, 'exclude'),
