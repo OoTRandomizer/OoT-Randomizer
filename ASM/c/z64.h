@@ -780,8 +780,8 @@ struct z64_actor_s
   char            unk_11_[0x0003];  /* 0x0112 */
   uint8_t         active;           /* 0x0115 */
   char            unk_12_[0x0002];  /* 0x0116 */
-  z64_actor_t    *unk_13_;          /* 0x0118 */
-  char            unk_14_[0x0004];  /* 0x011C */
+  z64_actor_t    *parent;           /* 0x0118 */
+  z64_actor_t    *child;            /* 0x011C */
   z64_actor_t    *prev;             /* 0x0120 */
   z64_actor_t    *next;             /* 0x0124 */
   void           *ctor;             /* 0x0128 */

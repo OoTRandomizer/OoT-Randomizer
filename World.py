@@ -37,6 +37,7 @@ class World(object):
         self.maximum_wallets = 0
         self.light_arrow_location = None
         self.triforce_count = 0
+        self.total_starting_triforce_count = 0
         self.bingosync_url = None
 
         self.parser = Rule_AST_Transformer(self)
@@ -45,32 +46,31 @@ class World(object):
         # dump settings directly into world's namespace
         # this gives the world an attribute for every setting listed in Settings.py
         self.settings = settings
-        self.__dict__.update(settings.__dict__)
         self.distribution = settings.distribution.world_dists[id]
 
         # rename a few attributes...
-        self.keysanity = self.shuffle_smallkeys in ['keysanity', 'remove', 'any_dungeon', 'overworld']
-        self.check_beatable_only = self.reachable_locations != 'all'
+        self.keysanity = settings.shuffle_smallkeys in ['keysanity', 'remove', 'any_dungeon', 'overworld']
+        self.check_beatable_only = settings.reachable_locations != 'all'
 
-        self.shuffle_special_interior_entrances = self.shuffle_interior_entrances == 'all'
-        self.shuffle_interior_entrances = self.shuffle_interior_entrances in ['simple', 'all']
+        self.shuffle_special_interior_entrances = settings.shuffle_interior_entrances == 'all'
+        self.shuffle_interior_entrances = settings.shuffle_interior_entrances in ['simple', 'all']
 
-        self.entrance_shuffle = self.shuffle_interior_entrances or self.shuffle_grotto_entrances or self.shuffle_dungeon_entrances or \
-                                self.shuffle_overworld_entrances or self.owl_drops or self.warp_songs or self.spawn_positions
+        self.entrance_shuffle = self.shuffle_interior_entrances or settings.shuffle_grotto_entrances or settings.shuffle_dungeon_entrances or \
+                                settings.shuffle_overworld_entrances or settings.owl_drops or settings.warp_songs or settings.spawn_positions
 
-        self.ensure_tod_access = self.shuffle_interior_entrances or self.shuffle_overworld_entrances or self.spawn_positions
-        self.disable_trade_revert = self.shuffle_interior_entrances or self.shuffle_overworld_entrances
+        self.ensure_tod_access = self.shuffle_interior_entrances or settings.shuffle_overworld_entrances or settings.spawn_positions
+        self.disable_trade_revert = self.shuffle_interior_entrances or settings.shuffle_overworld_entrances
 
-        if self.open_forest == 'closed' and (self.shuffle_special_interior_entrances or self.shuffle_overworld_entrances or 
-                                             self.warp_songs or self.spawn_positions):
-            self.open_forest = 'closed_deku'
+        if settings.open_forest == 'closed' and (self.shuffle_special_interior_entrances or settings.shuffle_overworld_entrances or 
+                                             settings.warp_songs or settings.spawn_positions):
+            self.settings.open_forest = 'closed_deku'
 
-        self.triforce_goal = self.triforce_goal_per_world * settings.world_count
+        self.triforce_goal = settings.triforce_goal_per_world * settings.world_count
 
-        if self.triforce_hunt:
+        if settings.triforce_hunt:
             # Pin shuffle_ganon_bosskey to 'triforce' when triforce_hunt is enabled
             # (specifically, for randomize_settings)
-            self.shuffle_ganon_bosskey = 'triforce'
+            self.settings.shuffle_ganon_bosskey = 'triforce'
 
         # trials that can be skipped will be decided later
         self.skipped_trials = {
@@ -89,7 +89,7 @@ class World(object):
             'Jabu Jabus Belly': False,
             'Bottom of the Well': False,
             'Ice Cavern': False,
-            'Gerudo Training Grounds': False,
+            'Gerudo Training Ground': False,
             'Forest Temple': False,
             'Fire Temple': False,
             'Water Temple': False,
@@ -103,10 +103,11 @@ class World(object):
         if len(settings.hint_dist_user) == 0:
             for d in HintDistFiles():
                 dist = read_json(d)
-                if dist['name'] == self.hint_dist:
+                if dist['name'] == self.settings.hint_dist:
                     self.hint_dist_user = dist
         else:
-            self.hint_dist = 'custom'
+            self.settings.hint_dist = 'custom'
+            self.hint_dist_user = self.settings.hint_dist_user
             
         # Validate hint distribution format
         # Originally built when I was just adding the type distributions
@@ -128,7 +129,7 @@ class World(object):
         self.added_hint_types = {}
         self.item_added_hint_types = {}
         self.hint_exclusions = set()
-        if self.skip_child_zelda or settings.skip_child_zelda:
+        if settings.skip_child_zelda:
             self.hint_exclusions.add('Song from Impa')
         self.hint_type_overrides = {}
         self.item_hint_type_overrides = {}
@@ -161,7 +162,7 @@ class World(object):
                     raise Exception('Custom hint text too large for %s', loc['location'])
                 self.hint_text_overrides.update({loc['location']: loc['text']})
 
-        self.item_hints = settings.item_hints + self.item_added_hint_types["named-item"]
+        self.item_hints = self.settings.item_hints + self.item_added_hint_types["named-item"]
         self.named_item_pool = list(self.item_hints)
 
         self.always_hints = [hint.name for hint in getRequiredHints(self)]
@@ -174,13 +175,13 @@ class World(object):
                 for item, value in item_table.items()
         }
         max_tokens = 0
-        if self.bridge == 'tokens':
-            max_tokens = max(max_tokens, self.bridge_tokens)
-        if self.lacs_condition == 'tokens':
-            max_tokens = max(max_tokens, self.lacs_tokens)
+        if self.settings.bridge == 'tokens':
+            max_tokens = max(max_tokens, self.settings.bridge_tokens)
+        if self.settings.lacs_condition == 'tokens':
+            max_tokens = max(max_tokens, self.settings.lacs_tokens)
         tokens = [50, 40, 30, 20, 10]
         for t in tokens:
-            if f'{t} Gold Skulltula Reward' not in self.disabled_locations:
+            if f'{t} Gold Skulltula Reward' not in self.settings.disabled_locations:
                 max_tokens = max(max_tokens, t)
         self.max_progressions['Gold Skulltula Token'] = max_tokens
         # Additional Ruto's Letter become Bottle, so we may have to collect two.
@@ -191,12 +192,13 @@ class World(object):
         new_world = World(self.id, self.settings)
         new_world.skipped_trials = copy.copy(self.skipped_trials)
         new_world.dungeon_mq = copy.copy(self.dungeon_mq)
-        new_world.big_poe_count = copy.copy(self.big_poe_count)
-        new_world.starting_tod = self.starting_tod
-        new_world.starting_age = self.starting_age
+        new_world.settings.big_poe_count = copy.copy(self.settings.big_poe_count)
+        new_world.settings.starting_tod = self.settings.starting_tod
+        new_world.settings.starting_age = self.settings.starting_age
         new_world.shop_prices = copy.copy(self.shop_prices)
         new_world.triforce_goal = self.triforce_goal
         new_world.triforce_count = self.triforce_count
+        new_world.total_starting_triforce_count = self.total_starting_triforce_count
         new_world.maximum_wallets = self.maximum_wallets
         new_world.distribution = self.distribution
 
@@ -212,7 +214,7 @@ class World(object):
         # copy any randomized settings to match the original copy
         new_world.randomized_list = list(self.randomized_list)
         for randomized_item in new_world.randomized_list:
-            setattr(new_world, randomized_item, getattr(self, randomized_item))
+            setattr(new_world, randomized_item, getattr(self.settings, randomized_item))
 
         new_world.always_hints = list(self.always_hints)
         new_world.max_progressions = copy.copy(self.max_progressions)
@@ -220,52 +222,76 @@ class World(object):
         return new_world
 
 
+    def set_random_bridge_values(self):
+        if self.settings.bridge == 'medallions':
+            self.settings.bridge_medallions = 6
+            self.randomized_list.append('bridge_medallions')
+        if self.settings.bridge == 'dungeons':
+            self.settings.bridge_rewards = 9
+            self.randomized_list.append('bridge_rewards')
+        if self.settings.bridge == 'stones':
+            self.settings.bridge_stones = 3
+            self.randomized_list.append('bridge_stones')
+
+
     def resolve_random_settings(self):
         # evaluate settings (important for logic, nice for spoiler)
         self.randomized_list = []
-        if self.randomize_settings:
+        dist_keys = []
+        if '_settings' in self.distribution.distribution.src_dict:
+            dist_keys = self.distribution.distribution.src_dict['_settings'].keys()
+        if self.settings.randomize_settings:
             setting_info = get_setting_info('randomize_settings')
             self.randomized_list.extend(setting_info.disable[True]['settings'])
             for section in setting_info.disable[True]['sections']:
                 self.randomized_list.extend(get_settings_from_section(section))
+                # Remove settings specified in the distribution
+                self.randomized_list = [x for x in self.randomized_list if x not in dist_keys]
             for setting in list(self.randomized_list):
-                if (setting == 'bridge_medallions' and self.bridge != 'medallions') \
-                        or (setting == 'bridge_stones' and self.bridge != 'stones') \
-                        or (setting == 'bridge_rewards' and self.bridge != 'dungeons') \
-                        or (setting == 'bridge_tokens' and self.bridge != 'tokens') \
-                        or (setting == 'lacs_medallions' and self.lacs_condition != 'medallions') \
-                        or (setting == 'lacs_stones' and self.lacs_condition != 'stones') \
-                        or (setting == 'lacs_rewards' and self.lacs_condition != 'dungeons') \
-                        or (setting == 'lacs_tokens' and self.lacs_condition != 'tokens'):
+                if (setting == 'bridge_medallions' and self.settings.bridge != 'medallions') \
+                        or (setting == 'bridge_stones' and self.settings.bridge != 'stones') \
+                        or (setting == 'bridge_rewards' and self.settings.bridge != 'dungeons') \
+                        or (setting == 'bridge_tokens' and self.settings.bridge != 'tokens') \
+                        or (setting == 'lacs_medallions' and self.settings.lacs_condition != 'medallions') \
+                        or (setting == 'lacs_stones' and self.settings.lacs_condition != 'stones') \
+                        or (setting == 'lacs_rewards' and self.settings.lacs_condition != 'dungeons') \
+                        or (setting == 'lacs_tokens' and self.settings.lacs_condition != 'tokens'):
                     self.randomized_list.remove(setting)
-        if self.big_poe_count_random:
-            self.big_poe_count = random.randint(1, 10)
+        if self.settings.big_poe_count_random and 'big_poe_count' not in dist_keys:
+            self.settings.big_poe_count = random.randint(1, 10)
             self.randomized_list.append('big_poe_count')
-        if self.starting_tod == 'random':
+        if self.settings.starting_tod == 'random' and 'starting_tod' not in dist_keys:
             setting_info = get_setting_info('starting_tod')
             choices = [ch for ch in setting_info.choices if ch not in ['default', 'random']]
-            self.starting_tod = random.choice(choices)
+            self.settings.starting_tod = random.choice(choices)
             self.randomized_list.append('starting_tod')
-        if self.starting_age == 'random':
+        if self.settings.starting_age == 'random' and 'starting_age' not in dist_keys:
             if self.settings.open_forest == 'closed':
                 # adult is not compatible
-                self.starting_age = 'child'
+                self.settings.starting_age = 'child'
             else:
-                self.starting_age = random.choice(['child', 'adult'])
+                self.settings.starting_age = random.choice(['child', 'adult'])
             self.randomized_list.append('starting_age')
-        if self.chicken_count_random:
-            self.chicken_count = random.randint(0, 7)
+        if self.settings.chicken_count_random and 'chicken_count' not in dist_keys:
+            self.settings.chicken_count = random.randint(0, 7)
             self.randomized_list.append('chicken_count')
+
+        # Handle random Rainbow Bridge condition
+        if self.settings.bridge == 'random':
+            possible_bridge_requirements = ["open", "medallions", "dungeons", "stones", "vanilla"]
+            self.settings.bridge = random.choice(possible_bridge_requirements)
+            self.set_random_bridge_values()
+            self.randomized_list.append('bridge')
 
         # Determine Ganon Trials
         trial_pool = list(self.skipped_trials)
         dist_chosen = self.distribution.configure_trials(trial_pool)
         dist_num_chosen = len(dist_chosen)
 
-        if self.trials_random:
-            self.trials = dist_num_chosen + random.randint(0, len(trial_pool))
+        if self.settings.trials_random and 'trials' not in dist_keys:
+            self.settings.trials = dist_num_chosen + random.randint(0, len(trial_pool))
             self.randomized_list.append('trials')
-        num_trials = int(self.trials)
+        num_trials = int(self.settings.trials)
         choosen_trials = random.sample(trial_pool, num_trials - dist_num_chosen)
         for trial in self.skipped_trials:
             if trial not in choosen_trials and trial not in dist_chosen:
@@ -275,13 +301,13 @@ class World(object):
         dungeon_pool = list(self.dungeon_mq)
         dist_num_mq = self.distribution.configure_dungeons(self, dungeon_pool)
 
-        if self.mq_dungeons_random:
+        if self.settings.mq_dungeons_random and 'mq_dungeons' not in dist_keys:
             for dungeon in dungeon_pool:
                 self.dungeon_mq[dungeon] = random.choice([True, False])
-            self.mq_dungeons = list(self.dungeon_mq.values()).count(True)
+            self.settings.mq_dungeons = list(self.dungeon_mq.values()).count(True)
             self.randomized_list.append('mq_dungeons')
         else:
-            mqd_picks = random.sample(dungeon_pool, self.mq_dungeons - dist_num_mq)
+            mqd_picks = random.sample(dungeon_pool, self.settings.mq_dungeons - dist_num_mq)
             for dung in mqd_picks:
                 self.dungeon_mq[dung] = True
 
@@ -310,7 +336,7 @@ class World(object):
                     new_location = LocationFactory(location)
                     new_location.parent_region = new_region
                     new_location.rule_string = rule
-                    if self.logic_rules != 'none':
+                    if self.settings.logic_rules != 'none':
                         self.parser.parse_spot_rule(new_location)
                     if new_location.never:
                         # We still need to fill the location even if ALR is off.
@@ -323,7 +349,7 @@ class World(object):
                     lname = '%s from %s' % (event, new_region.name)
                     new_location = Location(lname, type='Event', parent=new_region)
                     new_location.rule_string = rule
-                    if self.logic_rules != 'none':
+                    if self.settings.logic_rules != 'none':
                         self.parser.parse_spot_rule(new_location)
                     if new_location.never:
                         logging.getLogger('').debug('Dropping unreachable event: %s', new_location.name)
@@ -336,7 +362,7 @@ class World(object):
                     new_exit = Entrance('%s -> %s' % (new_region.name, exit), new_region)
                     new_exit.connected_region = exit
                     new_exit.rule_string = rule
-                    if self.logic_rules != 'none':
+                    if self.settings.logic_rules != 'none':
                         self.parser.parse_spot_rule(new_exit)
                     if new_exit.never:
                         logging.getLogger('').debug('Dropping unreachable exit: %s', new_exit.name)
@@ -379,10 +405,10 @@ class World(object):
         shop_item_indexes = ['7', '5', '8', '6']
         self.shop_prices = {}
         for region in self.regions:
-            if self.shopsanity == 'random':
+            if self.settings.shopsanity == 'random':
                 shop_item_count = random.randint(0,4)
             else:
-                shop_item_count = int(self.shopsanity)
+                shop_item_count = int(self.settings.shopsanity)
 
             for location in region.locations:
                 if location.type == 'Shop':
@@ -402,9 +428,9 @@ class World(object):
         # Loop through each type of scrub.
         for (scrub_item, default_price, text_id, text_replacement) in business_scrubs:
             price = default_price
-            if self.shuffle_scrubs == 'low':
+            if self.settings.shuffle_scrubs == 'low':
                 price = 10
-            elif self.shuffle_scrubs == 'random':
+            elif self.settings.shuffle_scrubs == 'random':
                 # this is a random value between 0-99
                 # average value is ~33 rupees
                 price = int(random.betavariate(1, 2) * 99)
@@ -513,13 +539,13 @@ class World(object):
     # get a list of items that should stay in their proper dungeon
     def get_restricted_dungeon_items(self):
         itempool = []
-        if self.shuffle_mapcompass == 'dungeon':
+        if self.settings.shuffle_mapcompass == 'dungeon':
             itempool.extend([item for dungeon in self.dungeons for item in dungeon.dungeon_items])
-        if self.shuffle_smallkeys == 'dungeon':
+        if self.settings.shuffle_smallkeys == 'dungeon':
             itempool.extend([item for dungeon in self.dungeons for item in dungeon.small_keys])
-        if self.shuffle_bosskeys == 'dungeon':
+        if self.settings.shuffle_bosskeys == 'dungeon':
             itempool.extend([item for dungeon in self.dungeons if dungeon.name != 'Ganons Castle' for item in dungeon.boss_key])
-        if self.shuffle_ganon_bosskey == 'dungeon':
+        if self.settings.shuffle_ganon_bosskey == 'dungeon':
             itempool.extend([item for dungeon in self.dungeons if dungeon.name == 'Ganons Castle' for item in dungeon.boss_key])
 
         for item in itempool:
@@ -530,13 +556,13 @@ class World(object):
     # get a list of items that don't have to be in their proper dungeon
     def get_unrestricted_dungeon_items(self):
         itempool = []
-        if self.shuffle_mapcompass in ['any_dungeon', 'overworld', 'keysanity']:
+        if self.settings.shuffle_mapcompass in ['any_dungeon', 'overworld', 'keysanity']:
             itempool.extend([item for dungeon in self.dungeons for item in dungeon.dungeon_items])
-        if self.shuffle_smallkeys in ['any_dungeon', 'overworld', 'keysanity']:
+        if self.settings.shuffle_smallkeys in ['any_dungeon', 'overworld', 'keysanity']:
             itempool.extend([item for dungeon in self.dungeons for item in dungeon.small_keys])
-        if self.shuffle_bosskeys in ['any_dungeon', 'overworld', 'keysanity']:
+        if self.settings.shuffle_bosskeys in ['any_dungeon', 'overworld', 'keysanity']:
             itempool.extend([item for dungeon in self.dungeons if dungeon.name != 'Ganons Castle' for item in dungeon.boss_key])
-        if self.shuffle_ganon_bosskey in ['any_dungeon', 'overworld', 'keysanity']:
+        if self.settings.shuffle_ganon_bosskey in ['any_dungeon', 'overworld', 'keysanity']:
             itempool.extend([item for dungeon in self.dungeons if dungeon.name == 'Ganons Castle' for item in dungeon.boss_key])
 
         for item in itempool:
@@ -655,19 +681,22 @@ class World(object):
         exclude_item_list = [
             'Double Defense',
             'Ice Arrows',
-            'Biggoron Sword',
         ]
-        if (self.damage_multiplier != 'ohko' and self.damage_multiplier != 'quadruple' and 
-            self.shuffle_scrubs == 'off' and not self.shuffle_grotto_entrances):
+        if (self.settings.damage_multiplier != 'ohko' and self.settings.damage_multiplier != 'quadruple' and 
+            self.settings.shuffle_scrubs == 'off' and not self.settings.shuffle_grotto_entrances):
             # nayru's love may be required to prevent forced damage
             exclude_item_list.append('Nayrus Love')
-        if self.logic_grottos_without_agony and self.hints != 'agony':
+        if self.settings.logic_grottos_without_agony and self.settings.hints != 'agony':
             # Stone of Agony skippable if not used for hints or grottos
             exclude_item_list.append('Stone of Agony')
-        if not self.shuffle_special_interior_entrances and not self.shuffle_overworld_entrances and not self.warp_songs and not self.spawn_positions:
+        if not self.shuffle_special_interior_entrances and not self.settings.shuffle_overworld_entrances and not self.settings.warp_songs and not self.settings.spawn_positions:
             # Serenade and Prelude are never required unless one of those settings is enabled
             exclude_item_list.append('Serenade of Water')
             exclude_item_list.append('Prelude of Light')
+        if self.settings.logic_rules == 'glitchless':
+            # Both two-handed swords can be required in glitch logic, so only consider them foolish in glitchless
+            exclude_item_list.append('Biggoron Sword')
+            exclude_item_list.append('Giants Knife')
 
         for i in self.item_hint_type_overrides['barren']:
             if i in exclude_item_list:

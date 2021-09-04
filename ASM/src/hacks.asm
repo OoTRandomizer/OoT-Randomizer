@@ -1,3 +1,169 @@
+;==================================================================================================
+; main.c hooks
+;==================================================================================================
+.headersize (0x800110A0 - 0xA87000)
+
+; Runs before the game state update function
+; Replaces:
+;   lw      t6, 0x0018 (sp)
+;   lui     at, 0x8010
+.org 0x8009CAD4
+    jal     before_game_state_update_hook
+    nop
+
+; Runs after the game state update function
+; Replaces:
+;   jr      ra
+;   nop
+.org 0x8009CB00
+    j       after_game_state_update
+    nop
+
+; 
+.org 0x8009CED0
+    jal     before_skybox_init
+
+.org 0x8009CDA0
+Gameplay_InitSkybox:
+
+; Runs after scene init
+; Replaces:
+;   jr      ra
+;   nop
+.org 0x8009CEE4
+    j       after_scene_init
+    nop
+
+;==================================================================================================
+; Expand Audio Thread memory
+;==================================================================================================
+
+//reserve the audio thread's heap
+.org 0x800C7DDC 
+.area 0x1C
+    lui     at, hi(AUDIO_THREAD_INFO_MEM_START)
+    lw      a0, lo(AUDIO_THREAD_INFO_MEM_START)(at)
+    jal     0x800B8654
+    lw      a1, lo(AUDIO_THREAD_INFO_MEM_SIZE)(at)
+    lw      ra, 0x0014(sp)
+    jr      ra
+    addiu   sp, sp, 0x0018
+.endarea
+
+//allocate memory for fanfares and primary/secondary bgm
+.org 0x800B5528
+.area 0x18, 0
+    jal     get_audio_pointers
+.endarea
+
+.org 0x800B5590
+.area (0xE0 - 0x90), 0
+    li      a0, 0x80128A50
+    li      a1, AUDIO_THREAD_INFO
+    jal     0x80057030 //memcopy
+    li      a2, 0x18
+    li      a0, 0x80128A50
+    jal     0x800B3D18
+    nop
+    li      a0, 0x80128A5C
+    jal     0x800B3DDC
+    nop
+.endarea
+
+;==================================================================================================
+; Don't Use Sandstorm Transition if gameplay_field_keep is not loaded
+;==================================================================================================
+
+.org 0x8009A2B0
+.area (0x8009A340 - 0x8009A2B0), 0
+    //a0 = Global Context
+    //a1 = screen transition effect
+    addiu   sp, sp, 0xFFE0
+    sw      ra, 0x0014(sp)
+    sw      a0, 0x0020(sp)
+    andi    t0, a1, -2 //drop least significant bit so that we can test for 0x0E and 0x0F
+    li      at, 0x000E //sandstorm effect
+    bne     t0, at, @skip_check
+    sw      a1, 0x0024(sp)
+
+    b       @check_if_object_loaded
+    nop
+@return_check_if_object_loaded:
+
+    bgez    v0, @skip_check
+    li      at, 0x04            //replacement transition effect
+    sw      at, 0x0024(sp)
+
+@skip_check:
+    lw      a2, 0x0020(sp)
+    li      at, 0x121C8
+    addu    a0, a2, at
+    sw      a0, 0x0018(sp)
+    jal     0x80002E80
+    addiu   a1, r0, 0x0250
+
+    //replacement
+    lw      v0, 0x0024(sp)
+    lw      a0, 0x0018(sp)
+    lw      a2, 0x0020(sp)
+    addiu   at, r0, 0x0001
+    sra     t6, v0, 5
+    bne     t6, at, @b_0x8009A368
+    sw      v0, 0x0228(a0)
+
+    lui     at, 0x800A
+    addiu   t7, at, 0x8DEC
+    addiu   t8, at, 0x8E18
+    addiu   t9, at, 0x8C00
+    addiu   t0, at, 0x9244
+    addiu   t1, at, 0x8FA8
+    addiu   t2, at, 0x8E24
+    addiu   t3, at, 0x9250
+    addiu   t4, at, 0x92A8
+    addiu   t5, at, 0x92B4
+.endarea
+
+.org 0x8009A368
+@b_0x8009A368:
+; Resumes normal execution, hits transition effect jump table
+
+.org 0x8009A390
+.area (0x8009A3D0 - 0x8009A390), 0
+; Here we overwrite part of transition effect case 0
+
+@check_if_object_loaded:
+    
+    li      at, 0x117A4 //object table
+    addu    a0, a0, at
+    jal     0x80081628          //check if object file is loaded
+    addiu   a1, r0, 0x02        //gameplay_field_keep
+    b       @return_check_if_object_loaded
+    nop
+
+; Optimize transition effect 0 so that the routine above still fits in the function 
+@transition_0_jump:
+    lui     at, 0x800A
+    addiu   t7, at, 0x8218
+    addiu   t8, at, 0x82B8
+    addiu   t9, at, 0x81E0
+    addiu   t0, at, 0x8700
+    addiu   t1, at, 0x83FC
+    addiu   t2, at, 0x82C4
+    addiu   t3, at, 0x83E4
+    addiu   t4, at, 0x83D8
+.endarea
+
+; Update the jump table pointer to transition effect 0
+
+.org 0x80108CEC
+.word @transition_0_jump
+
+.headersize 0
+
+;==================================================================================================
+; Remove Kokiri Sword Safety
+;==================================================================================================
+
 ; Prevent Kokiri Sword from being added to inventory on game load
 ; Replaces:
 ;   sh      t9, 0x009C (v0)
@@ -180,39 +346,6 @@
     jal     get_skulltula_token          ; call override_skulltula_token(actor)
     move    a0, s0
 .endarea
-
-;==================================================================================================
-; Every frame hooks
-;==================================================================================================
-
-; Runs before the game state update function
-; Replaces:
-;   lw      t6, 0x0018 (sp)
-;   lui     at, 0x8010
-.orga 0xB12A34 ; In memory: 0x8009CAD4
-    jal     before_game_state_update_hook
-    nop
-
-; Runs after the game state update function
-; Replaces:
-;   jr      ra
-;   nop
-.orga 0xB12A60 ; In memory: 0x8009CB00
-    j       after_game_state_update
-    nop
-
-;==================================================================================================
-; Scene init hook
-;==================================================================================================
-
-; Runs after scene init
-; Replaces:
-;   jr      ra
-;   nop
-.orga 0xB12E44 ; In memory: 0x8009CEE4
-    j       after_scene_init
-    nop
-
 
 ;==================================================================================================
 ; Freestanding models
@@ -1562,135 +1695,6 @@ skip_GS_BGS_text:
     move    at, v0
 
 ;==================================================================================================
-; Expand Audio Thread memory
-;==================================================================================================
-
-.headersize (0x800110A0 - 0xA87000)
-
-//reserve the audio thread's heap
-.org 0x800C7DDC 
-.area 0x1C
-    lui     at, hi(AUDIO_THREAD_INFO_MEM_START)
-    lw      a0, lo(AUDIO_THREAD_INFO_MEM_START)(at)
-    jal     0x800B8654
-    lw      a1, lo(AUDIO_THREAD_INFO_MEM_SIZE)(at)
-    lw      ra, 0x0014(sp)
-    jr      ra
-    addiu   sp, sp, 0x0018
-.endarea
-
-//allocate memory for fanfares and primary/secondary bgm
-.org 0x800B5528
-.area 0x18, 0
-    jal     get_audio_pointers
-.endarea
-
-.org 0x800B5590
-.area (0xE0 - 0x90), 0
-    li      a0, 0x80128A50
-    li      a1, AUDIO_THREAD_INFO
-    jal     0x80057030 //memcopy
-    li      a2, 0x18
-    li      a0, 0x80128A50
-    jal     0x800B3D18
-    nop
-    li      a0, 0x80128A5C
-    jal     0x800B3DDC
-    nop
-.endarea
-
-;==================================================================================================
-; Don't Use Sandstorm Transition if gameplay_field_keep is not loaded
-;==================================================================================================
-
-.org 0x8009A2B0
-.area (0x8009A340 - 0x8009A2B0), 0
-    //a0 = Global Context
-    //a1 = screen transition effect
-    addiu   sp, sp, 0xFFE0
-    sw      ra, 0x0014(sp)
-    sw      a0, 0x0020(sp)
-    andi    t0, a1, -2 //drop least significant bit so that we can test for 0x0E and 0x0F
-    li      at, 0x000E //sandstorm effect
-    bne     t0, at, @skip_check
-    sw      a1, 0x0024(sp)
-
-    b       @check_if_object_loaded
-    nop
-@return_check_if_object_loaded:
-
-    bgez    v0, @skip_check
-    li      at, 0x04            //replacement transition effect
-    sw      at, 0x0024(sp)
-
-@skip_check:
-    lw      a2, 0x0020(sp)
-    li      at, 0x121C8
-    addu    a0, a2, at
-    sw      a0, 0x0018(sp)
-    jal     0x80002E80
-    addiu   a1, r0, 0x0250
-
-    //replacement
-    lw      v0, 0x0024(sp)
-    lw      a0, 0x0018(sp)
-    lw      a2, 0x0020(sp)
-    addiu   at, r0, 0x0001
-    sra     t6, v0, 5
-    bne     t6, at, @b_0x8009A368
-    sw      v0, 0x0228(a0)
-
-    lui     at, 0x800A
-    addiu   t7, at, 0x8DEC
-    addiu   t8, at, 0x8E18
-    addiu   t9, at, 0x8C00
-    addiu   t0, at, 0x9244
-    addiu   t1, at, 0x8FA8
-    addiu   t2, at, 0x8E24
-    addiu   t3, at, 0x9250
-    addiu   t4, at, 0x92A8
-    addiu   t5, at, 0x92B4
-.endarea
-
-.org 0x8009A368
-@b_0x8009A368:
-; Resumes normal execution, hits transition effect jump table
-
-
-.org 0x8009A390
-.area (0x8009A3D0 - 0x8009A390), 0
-; Here we overwrite part of transition effect case 0
-
-@check_if_object_loaded:
-    
-    li      at, 0x117A4 //object table
-    addu    a0, a0, at
-    jal     0x80081628          //check if object file is loaded
-    addiu   a1, r0, 0x02        //gameplay_field_keep
-    b       @return_check_if_object_loaded
-    nop
-
-; Optimize transition effect 0 so that the routine above still fits in the function 
-@transition_0_jump:
-    lui     at, 0x800A
-    addiu   t7, at, 0x8218
-    addiu   t8, at, 0x82B8
-    addiu   t9, at, 0x81E0
-    addiu   t0, at, 0x8700
-    addiu   t1, at, 0x83FC
-    addiu   t2, at, 0x82C4
-    addiu   t3, at, 0x83E4
-    addiu   t4, at, 0x83D8
-.endarea
-
-; Update the jump table pointer to transition effect 0
-
-.org 0x80108CEC
-.word @transition_0_jump
-
-.headersize 0
-
-;==================================================================================================
 ; King Zora Init Moved Check Override
 ;==================================================================================================
 ; Replaces: lhu     t0, 0x0EDA(v0)
@@ -2264,3 +2268,10 @@ skip_GS_BGS_text:
 ; Replaces: sw      a0, 0x18(sp)
 .orga 0xC5A9F0
     jal     clear_boomerang_pointer
+
+;===================================================================================================
+;Kill Door of Time collision when the cutscene starts
+;===================================================================================================
+.orga 0xCCE9A4
+    jal     kill_door_of_time_col ; Replaces lui     $at, 0x3F80 
+    lw      a0, 0x011C(s0) ; replaces mtc1    $at, $f6 

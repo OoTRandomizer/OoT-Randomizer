@@ -207,7 +207,7 @@
           "settings": [
             "shuffle_mapcompass",
             "shuffle_smallkeys",
-            "shuffle_fortresskeys",
+            "shuffle_hideoutkeys",
             "shuffle_bosskeys",
             "shuffle_ganon_bosskey",
             "lacs_condition",
@@ -248,7 +248,8 @@
           "text": "Enable Tricks",
           "row_span": [8,10,10],
           "settings": [
-            "allowed_tricks"
+            "allowed_tricks",
+            "tricks_list_msg"
           ]
         }
       ]

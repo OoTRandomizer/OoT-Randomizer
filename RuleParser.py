@@ -83,8 +83,10 @@ class Rule_AST_Transformer(ast.NodeTransformer):
                 args=[ast.Str(escaped_items[node.id])],
                 keywords=[])
         elif node.id in self.world.__dict__:
-            # Settings are constant
             return ast.parse('%r' % self.world.__dict__[node.id], mode='eval').body
+        elif node.id in self.world.settings.__dict__:
+            # Settings are constant
+            return ast.parse('%r' % self.world.settings.__dict__[node.id], mode='eval').body
         elif node.id in State.__dict__:
             return self.make_call(node, node.id, [], [])
         elif node.id in kwarg_defaults or node.id in allowed_globals:
@@ -133,7 +135,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
 
         if isinstance(count, ast.Name):
             # Must be a settings constant
-            count = ast.parse('%r' % self.world.__dict__[count.id], mode='eval').body
+            count = ast.parse('%r' % self.world.settings.__dict__[count.id], mode='eval').body
 
         if iname in escaped_items:
             iname = escaped_items[iname]
@@ -186,6 +188,17 @@ class Rule_AST_Transformer(ast.NodeTransformer):
                             ctx=ast.Load()),
                         attr=child.id,
                         ctx=ast.Load())
+                elif child.id in self.world.settings.__dict__:
+                    child = ast.Attribute(
+                        value=ast.Attribute(
+                            value=ast.Attribute(
+                                value=ast.Name(id='state', ctx=ast.Load()),
+                                attr='world',
+                                ctx=ast.Load()),
+                            attr='settings',
+                            ctx=ast.Load()),
+                        attr=child.id,
+                        ctx=ast.Load())
                 elif child.id in rule_aliases:
                     child = self.visit(child)
                 elif child.id in escaped_items:
@@ -227,7 +240,8 @@ class Rule_AST_Transformer(ast.NodeTransformer):
         # Fast check for json can_use
         if (len(node.ops) == 1 and isinstance(node.ops[0], ast.Eq)
                 and isinstance(node.left, ast.Name) and isinstance(node.comparators[0], ast.Name)
-                and node.left.id not in self.world.__dict__ and node.comparators[0].id not in self.world.__dict__):
+                and node.left.id not in self.world.__dict__ and node.comparators[0].id not in self.world.__dict__
+                and node.left.id not in self.world.settings.__dict__ and node.comparators[0].id not in self.world.settings.__dict__):
             return ast.NameConstant(node.left.id == node.comparators[0].id)
 
         node.left = escape_or_string(node.left)
@@ -444,7 +458,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
         return ast.NameConstant(True)
 
     def at_night(self, node):
-        if self.current_spot.type == 'GS Token' and self.world.logic_no_night_tokens_without_suns_song:
+        if self.current_spot.type == 'GS Token' and self.world.settings.logic_no_night_tokens_without_suns_song:
             # Using visit here to resolve 'can_play' rule
             return self.visit(ast.parse('can_play(Suns_Song)', mode='eval').body)
         if self.world.ensure_tod_access:

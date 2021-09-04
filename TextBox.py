@@ -1,4 +1,5 @@
 import Messages
+import re
 
 # Least common multiple of all possible character widths. A line wrap must occur when the combined widths of all of the
 # characters on a line reach this value.
@@ -17,14 +18,19 @@ CONTROL_CHARS = {
     'NAME':         ['@', '\x0F'],
     'COLOR':        ['#', '\x05\x00'],
 }
-TEXT_END   = '\x02'
+TEXT_END = '\x02'
 
 
 def line_wrap(text, strip_existing_lines=False, strip_existing_boxes=False, replace_control_chars=True):
     # Replace stand-in characters with their actual control code.
     if replace_control_chars:
+        def replace_bytes(matchobj):
+            return ''.join(chr(x) for x in bytes.fromhex(matchobj[1]))
+
         for char in CONTROL_CHARS.values():
             text = text.replace(char[0], char[1])
+
+        text = re.sub(r"\$\{((?:[0-9a-f][0-9a-f] ?)+)}", replace_bytes, text, flags=re.IGNORECASE)
 
     # Parse the text into a list of control codes.
     text_codes = Messages.parse_control_codes(text)

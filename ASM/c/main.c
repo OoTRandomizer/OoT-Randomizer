@@ -14,7 +14,9 @@
 #include "ganon.h"
 #include "twinrova.h"
 #include "extern_ctxt.h"
-#include "fog.h"
+#include "weather.h"
+
+void Gameplay_InitSkybox(z64_game_t* globalCtx, int16_t skyboxId);
 
 void c_init() {
     heap_init();
@@ -30,12 +32,16 @@ void before_game_state_update() {
     update_misc_colors();
     update_hud_colors();
     process_extern_ctxt();
-    override_fog_state();
 }
 
 void after_game_state_update() {
     draw_dungeon_info(&(z64_ctxt.gfx->overlay));
     draw_triforce_count(&(z64_ctxt.gfx->overlay));
+}
+
+void before_skybox_init(z64_game_t* game, int16_t skyboxId) {
+    override_weather_state();
+    Gameplay_InitSkybox(game, skyboxId);
 }
 
 void after_scene_init() {

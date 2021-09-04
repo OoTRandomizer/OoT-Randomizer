@@ -1,5 +1,6 @@
 # text details: https://wiki.cloudmodding.com/oot/Text_Format
 
+import logging
 import random
 from TextBox import line_wrap
 
@@ -50,38 +51,39 @@ CONTROL_CODES = {
     0x1F: ('time', 0, lambda _: '<current time>' ),
 }
 
+# Maps unicode characters to corresponding bytes in OOTR's character set.
+CHARACTER_MAP = {
+    'Ⓐ': 0x9F,
+    'Ⓑ': 0xA0,
+    'Ⓒ': 0xA1,
+    'Ⓛ': 0xA2,
+    'Ⓡ': 0xA3,
+    'Ⓩ': 0xA4,
+    '⯅': 0xA5,
+    '⯆': 0xA6,
+    '⯇': 0xA7,
+    '⯈': 0xA8,
+    chr(0xA9): 0xA9,  # Down arrow   -- not sure what best supports this
+    chr(0xAA): 0xAA,  # Analog stick -- not sure what best supports this
+}
+# Support other ways of directly specifying controller inputs in OOTR's character set.
+# (This is backwards-compatibility support for ShadowShine57's previous patch.)
+CHARACTER_MAP.update(tuple((chr(v), v) for v in CHARACTER_MAP.values()))
+
+# Characters 0x20 thru 0x7D map perfectly.  range() excludes the last element.
+CHARACTER_MAP.update((chr(c), c) for c in range(0x20, 0x7e))
+
+# Other characters, source: https://wiki.cloudmodding.com/oot/Text_Format
+CHARACTER_MAP.update((c, ix) for ix, c in enumerate(
+        (
+            '\u203e'             # 0x7f
+            'ÀîÂÄÇÈÉÊËÏÔÖÙÛÜß'   # 0x80 .. #0x8f
+            'àáâäçèéêëïôöùûü'    # 0x90 .. #0x9e
+        ),
+        start=0x7f
+))
+
 SPECIAL_CHARACTERS = {
-    0x80: 'À',
-    0x81: 'Á',
-    0x82: 'Â',
-    0x83: 'Ä',
-    0x84: 'Ç',
-    0x85: 'È',
-    0x86: 'É',
-    0x87: 'Ê',
-    0x88: 'Ë',
-    0x89: 'Ï',
-    0x8A: 'Ô',
-    0x8B: 'Ö',
-    0x8C: 'Ù',
-    0x8D: 'Û',
-    0x8E: 'Ü',
-    0x8F: 'ß',
-    0x90: 'à',
-    0x91: 'á',
-    0x92: 'â',
-    0x93: 'ä',
-    0x94: 'ç',
-    0x95: 'è',
-    0x96: 'é',
-    0x97: 'ê',
-    0x98: 'ë',
-    0x99: 'ï',
-    0x9A: 'ô',
-    0x9B: 'ö',
-    0x9C: 'ù',
-    0x9D: 'û',
-    0x9E: 'ü',
     0x9F: '[A]',
     0xA0: '[B]',
     0xA1: '[C]',
@@ -96,39 +98,11 @@ SPECIAL_CHARACTERS = {
     0xAA: '[Control Stick]',
 }
 
-UTF8_TO_OOT_SPECIAL = {
-    (0xc3, 0x80): 0x80,
-    (0xc3, 0xae): 0x81,
-    (0xc3, 0x82): 0x82,
-    (0xc3, 0x84): 0x83,
-    (0xc3, 0x87): 0x84,
-    (0xc3, 0x88): 0x85,
-    (0xc3, 0x89): 0x86,
-    (0xc3, 0x8a): 0x87,
-    (0xc3, 0x8b): 0x88,
-    (0xc3, 0x8f): 0x89,
-    (0xc3, 0x94): 0x8A,
-    (0xc3, 0x96): 0x8B,
-    (0xc3, 0x99): 0x8C,
-    (0xc3, 0x9b): 0x8D,
-    (0xc3, 0x9c): 0x8E,
-    (0xc3, 0x9f): 0x8F,
-    (0xc3, 0xa0): 0x90,
-    (0xc3, 0xa1): 0x91,
-    (0xc3, 0xa2): 0x92,
-    (0xc3, 0xa4): 0x93,
-    (0xc3, 0xa7): 0x94,
-    (0xc3, 0xa8): 0x95,
-    (0xc3, 0xa9): 0x96,
-    (0xc3, 0xaa): 0x97,
-    (0xc3, 0xab): 0x98,
-    (0xc3, 0xaf): 0x99,
-    (0xc3, 0xb4): 0x9A,
-    (0xc3, 0xb6): 0x9B,
-    (0xc3, 0xb9): 0x9C,
-    (0xc3, 0xbb): 0x9D,
-    (0xc3, 0xbc): 0x9E,
-}
+REVERSE_MAP = list(chr(x) for x in range(256))
+
+for char, byte in CHARACTER_MAP.items():
+    SPECIAL_CHARACTERS.setdefault(byte, char)
+    REVERSE_MAP[byte] = char
 
 GOSSIP_STONE_MESSAGES = list( range(0x0401, 0x04FF) ) # ids of the actual hints
 GOSSIP_STONE_MESSAGES += [0x2053, 0x2054] # shared initial stone messages
@@ -304,14 +278,105 @@ KEYSANITY_MESSAGES = {
     0x0094: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x41Fire Temple\x05\x40!\x09",
     0x0095: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x43Water Temple\x05\x40!\x09",
     0x009B: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09",
-    0x009F: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Gerudo Training\x01Grounds\x05\x40!\x09",
-    0x00A0: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Gerudo's Fortress\x05\x40!\x09",
+    0x009F: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Gerudo Training\x01Ground\x05\x40!\x09",
+    0x00A0: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Thieves' Hideout\x05\x40!\x09",
     0x00A1: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for \x05\x41Ganon's Castle\x05\x40!\x09",
     0x00A2: "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09",
     0x00A3: "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09",
     0x00A5: "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09",
     0x00A6: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Spirit Temple\x05\x40!\x09",
     0x00A9: "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09",
+}
+
+#   Styled Name                    Entrance Names       Text Color
+REGION_NAMES = {
+    # Dungeons
+    "the Deku Tree":                  [['Deku Tree Lobby'], '\42'],
+    "Dodongo's Cavern":               [['Dodongos Cavern Beginning'], '\41'],
+    "Jabu Jabu's Belly":              [['Jabu Jabus Belly Beginning'], '\43'],
+    "the Forest Temple":              [['Forest Temple Lobby'], '\42'],
+    "the Fire Temple":                [['Fire Temple Lower'], '\41'],
+    "the Water Temple":               [['Water Temple Lobby'], '\43'],
+    "the Spirit Temple":              [['Spirit Temple Lobby'], '\46'],
+    "the Shadow Temple":              [['Shadow Temple Entryway'], '\45'],
+    "the Bottom of the Well":         [['Bottom of the Well'], '\45'],
+    "the Ice Cavern":                 [['Ice Cavern Beginning'], '\44'],
+    "Gerudo Training Ground":         [['Gerudo Training Ground Lobby'], '\46'],
+
+    # Indoors
+    "Mido's House":                   [['KF Midos House'], '\44'],
+    "Saria's House":                  [['KF Sarias House'], '\44'],
+    "House of Twins":                 [['KF House of Twins'], '\44'],
+    "Know It All House":              [['KF Know It All House'], '\44'],
+    "the Kokiri Shop":                [['KF Kokiri Shop'], '\44'],
+    "the Lakeside Laboratory":        [['LH Lab'], '\44'],
+    "the Fishing Pond":               [['LH Fishing Hole'], '\44'],
+    "the Carpenter's Tent":           [['GV Carpenter Tent'], '\44'],
+    "the Guard House":                [['Market Guard House'], '\44'],
+    "the Mask Shop":                  [['Market Mask Shop'], '\44'],
+    "the Bombchu Bowling Alley":      [['Market Bombchu Bowling'], '\44'],
+    "the Potion Shop":                [['Market Potion Shop', 'Kak Potion Shop Front', 'Kak Potion Shop Back'], '\44'],
+    "the Treasure Chest Game":        [['Market Treasure Chest Game'], '\44'],
+    "the Bombchu Shop":               [['Market Bombchu Shop'], '\44'],
+    "a Back Alley House":             [['Market Man in Green House'], '\44'],
+    "the Carpenter's House":          [['Kak Carpenter Boss House'], '\44'],
+    "the House of Skulltula":         [['Kak House of Skulltula'], '\44'],
+    "Impa's House":                   [['Kak Impas House', 'Kak Impas House Back'], '\44'],
+    "the Oddity Shop":                [['Kak Odd Medicine Building'], '\44'],
+    "Damp\x96's House":               [['Graveyard Dampes House'], '\44'],
+    "the Goron Shop":                 [['GC Shop'], '\44'],
+    "the Zora Shop":                  [['ZD Shop'], '\44'],
+    "Talon's House":                  [['LLR Talons House'], '\44'],
+    "Lon Lon Stable":                 [['LLR Stables'], '\44'],
+    "Lon Lon Tower":                  [['LLR Tower'], '\44'],
+    "the Bazaar":                     [['Market Bazaar', 'Kak Bazaar'], '\44'],
+    "the Shooting Gallery":           [['Market Shooting Gallery', 'Kak Shooting Gallery'], '\44'],
+    "a Great Fairy Fountain":         [['Colossus Great Fairy Fountain', 'HC Great Fairy Fountain', 'OGC Great Fairy Fountain', 'DMC Great Fairy Fountain', 'DMT Great Fairy Fountain', 'ZF Great Fairy Fountain'], '\44'],
+    "\x0F's House":                   [['KF Links House'], '\44'],
+    "the Temple of Time":             [['Temple of Time'], '\44'],
+    "the Windmill":                   [['Kak Windmill'], '\44'],
+
+    # Overworld
+    "Kokiri Forest":                 [['Kokiri Forest'], '\41'],
+    "the Lost Woods Bridge":         [['LW Bridge From Forest', 'LW Bridge'], '\42'],
+    "the Lost Woods":                [['Lost Woods', 'LW Beyond Mido', 'LW Forest Exit'], '\42'],
+    "Goron City":                    [['GC Woods Warp', 'GC Darunias Chamber', 'Goron City'], '\41'],
+    "Zora's River":                  [['Zora River', 'ZR Behind Waterfall', 'ZR Front'], '\43'],
+    "the Sacred Forest Meadow":      [['SFM Entryway'], '\41'],
+    "Hyrule Field":                  [['Hyrule Field'], '\44'],
+    "Lake Hylia":                    [['Lake Hylia'], '\43'],
+    "Gerudo Valley":                 [['Gerudo Valley', 'GV Fortress Side'], '\46'],
+    "the Market Entrance":           [['Market Entrance'], '\44'],
+    "Kakariko Village":              [['Kakariko Village', 'Kak Behind Gate', 'Kak Impas Ledge'], '\45'],
+    "Lon Lon Ranch":                 [['Lon Lon Ranch'], '\46'],
+    "Zora's Domain":                 [['Zoras Domain', 'ZD Behind King Zora'], '\43'],
+    "Gerudo Fortress":               [['Gerudo Fortress', 'GF Outside Gate'], '\41'],
+    "the Haunted Wasteland":         [['Wasteland Near Fortress', 'Wasteland Near Colossus'], '\46'],
+    "the Desert Colossus":           [['Desert Colossus'], '\44'],
+    "the Market":                    [['Market'], '\44'],
+    "the Castle Grounds":            [['Castle Grounds'], '\44'],
+    "the Temple of Time Entrance":   [['ToT Entrance'], '\44'],
+    "the Graveyard":                 [['Graveyard'], '\45'],
+    "Death Mountain Trail":          [['Death Mountain', 'Death Mountain Summit'], '\41'],
+    "Death Mountain Crater":         [['DMC Lower Local', 'DMC Lower Nearby', 'DMC Upper Local', 'DMC Upper Nearby'], '\41'],
+    "Zora's Fountain":               [['Zoras Fountain'], '\43'],
+
+    # Grottos
+    "the Royal Family's Tomb":       [['Graveyard Royal Familys Tomb'], '\44'],
+    "Damp\x96's Grave":              [['Graveyard Dampes Grave'], '\44'],
+    "the Wolfos Grotto":             [['SFM Wolfos Grotto'], '\44'],
+    "the ReDead Grotto":             [['Kak Redead Grotto'], '\44'],
+    "a Deku Scrub Grotto":           [['GV Storms Grotto', 'Colossus Grotto', 'LLR Grotto', 'SFM Storms Grotto', 'HF Inside Fence Grotto', 'GC Grotto', 'DMC Hammer Grotto', 'LW Scrubs Grotto', 'LH Grotto', 'ZR Storms Grotto'], '\44'],
+    "the Tektite Grotto":            [['HF Tektite Grotto'], '\44'],
+    "the Deku Theater":              [['Deku Theater'], '\44'],
+    "a Generic Grotto":              [['KF Storms Grotto', 'HF Near Market Grotto', 'HF Southeast Grotto', 'ZR Open Grotto', 'DMC Upper Grotto', 'Kak Open Grotto', 'DMT Storms Grotto', 'LW Near Shortcuts Grotto', 'HF Open Grotto'], '\44'],
+    "a Fairy Fountain":              [['SFM Fairy Grotto', 'HF Fairy Grotto', 'ZD Storms Grotto', 'GF Storms Grotto', 'ZR Fairy Grotto'], '\44'],
+    "the Octorok Grotto":            [['GV Octorok Grotto'], '\44'],
+    "a Skulltula Grotto":            [['HF Near Kak Grotto', 'HC Storms Grotto'], '\44'],
+    "the Shield Grave":              [['Graveyard Shield Grave'], '\44'],
+    "the ReDead Grave":              [['Graveyard Heart Piece Grave'], '\44'],
+    "the Cow Grotto":                [['DMT Cow Grotto'], '\44'],
+    "the Spider Cow Grotto":         [['HF Cow Grotto'], '\44'],
 }
 
 MISC_MESSAGES = {
@@ -345,23 +410,32 @@ def display_code_list(codes):
     return message
 
 
+def encode_text_string(text):
+    result = []
+    it = iter(text)
+    for ch in it:
+        n = ord(ch)
+        mapped = CHARACTER_MAP.get(ch)
+        if mapped:
+            result.append(mapped)
+            continue
+        if n in CONTROL_CODES:
+            result.append(n)
+            for _ in range(CONTROL_CODES[n][1]):
+                result.append(ord(next(it)))
+            continue
+        raise ValueError(f"While encoding {text!r}: Unable to translate unicode character {ch!r} ({n}).  (Already decoded: {result!r})")
+    return result
+
+
 def parse_control_codes(text):
     if isinstance(text, list):
         bytes = text
     elif isinstance(text, bytearray):
         bytes = list(text)
     else:
-        bytes = list(text.encode('utf-8'))
+        bytes = encode_text_string(text)
 
-    # Special characters encoded to utf-8 must be re-encoded to OoT's values for them.
-    # Tuple is used due to utf-8 encoding using two bytes.
-    i = 0
-    while i < len(bytes) - 1:
-        if (bytes[i], bytes[i+1]) in UTF8_TO_OOT_SPECIAL:
-            bytes[i] = UTF8_TO_OOT_SPECIAL[(bytes[i], bytes[i+1])]
-            del bytes[i+1]
-        i += 1
-    
     text_codes = []
     index = 0
     while index < len(bytes):
@@ -382,8 +456,7 @@ def parse_control_codes(text):
 
 
 # holds a single character or control code of a string
-class Text_Code():
-
+class Text_Code:
     def display(self):
         if self.code in CONTROL_CODES:
             return CONTROL_CODES[self.code][2](self.data)
@@ -420,7 +493,8 @@ class Text_Code():
             ret = chr(self.code) + ret
             return ret
         else:
-            return chr(self.code)
+            # raise ValueError(repr(REVERSE_MAP))
+            return REVERSE_MAP[self.code]
 
     # writes the code to the given offset, and returns the offset of the next byte
     def size(self):
@@ -451,16 +525,18 @@ class Text_Code():
 
     __str__ = __repr__ = display
 
-# holds a single message, and all its data
-class Message():
 
+# holds a single message, and all its data
+class Message:
     def display(self):
-        meta_data = ["#" + str(self.index),
-         "ID: 0x" + "{:04x}".format(self.id),
-         "Offset: 0x" + "{:06x}".format(self.offset),
-         "Length: 0x" + "{:04x}".format(self.unpadded_length) + "/0x" + "{:04x}".format(self.length),
-         "Box Type: " + str(self.box_type),
-         "Postion: " + str(self.position)]
+        meta_data = [
+            "#" + str(self.index),
+            "ID: 0x" + "{:04x}".format(self.id),
+            "Offset: 0x" + "{:06x}".format(self.offset),
+            "Length: 0x" + "{:04x}".format(self.unpadded_length) + "/0x" + "{:04x}".format(self.length),
+            "Box Type: " + str(self.box_type),
+            "Postion: " + str(self.position)
+        ]
         return ', '.join(meta_data) + '\n' + self.text
 
     def get_python_string(self):
@@ -471,14 +547,17 @@ class Message():
 
     # check if this is an unused message that just contains it's own id as text
     def is_id_message(self):
-        if self.unpadded_length == 5:
-            for i in range(4):
-                code = self.text_codes[i].code
-                if not (code in range(ord('0'),ord('9')+1) or code in range(ord('A'),ord('F')+1) or code in range(ord('a'),ord('f')+1) ):
-                    return False
-            return True
-        return False
-
+        if self.unpadded_length != 5:
+            return False
+        for i in range(4):
+            code = self.text_codes[i].code
+            if not (
+                    code in range(ord('0'), ord('9')+1)
+                    or code in range(ord('A'), ord('F')+1)
+                    or code in range(ord('a'), ord('f')+1)
+            ):
+                return False
+        return True
 
     def parse_text(self):
         self.text_codes = parse_control_codes(self.raw_text)
@@ -486,33 +565,32 @@ class Message():
         index = 0
         for text_code in self.text_codes:
             index += text_code.size()
-            if text_code.code == 0x02: # message end code
+            if text_code.code == 0x02:  # message end code
                 break
-            if text_code.code == 0x07: # goto
+            if text_code.code == 0x07:  # goto
                 self.has_goto = True
                 self.ending = text_code
-            if text_code.code == 0x0A: # keep-open
+            if text_code.code == 0x0A:  # keep-open
                 self.has_keep_open = True
                 self.ending = text_code
-            if text_code.code == 0x0B: # event
+            if text_code.code == 0x0B:  # event
                 self.has_event = True
                 self.ending = text_code
-            if text_code.code == 0x0E: # fade out
+            if text_code.code == 0x0E:  # fade out
                 self.has_fade = True
                 self.ending = text_code
-            if text_code.code == 0x10: # ocarina
+            if text_code.code == 0x10:  # ocarina
                 self.has_ocarina = True
                 self.ending = text_code
-            if text_code.code == 0x1B: # two choice
+            if text_code.code == 0x1B:  # two choice
                 self.has_two_choice = True
-            if text_code.code == 0x1C: # three choice
+            if text_code.code == 0x1C:  # three choice
                 self.has_three_choice = True
         self.text = display_code_list(self.text_codes)
         self.unpadded_length = index
 
     def is_basic(self):
         return not (self.has_goto or self.has_keep_open or self.has_event or self.has_fade or self.has_ocarina or self.has_two_choice or self.has_three_choice)
-
 
     # computes the size of a message, including padding
     def size(self):
@@ -527,7 +605,6 @@ class Message():
     
     # applies whatever transformations we want to the dialogs
     def transform(self, replace_ending=False, ending=None, always_allow_skip=True, speed_up_text=True):
-
         ending_codes = [0x02, 0x07, 0x0A, 0x0B, 0x0E, 0x10]
         box_breaks = [0x04, 0x0C]
         slows_text = [0x08, 0x09, 0x14]
@@ -554,29 +631,28 @@ class Message():
                 if (self.id == 0x605A or  # twinrova transformation
                     self.id == 0x706C or  # raru ending text
                     self.id == 0x70DD or  # ganondorf ending text
-                    self.id == 0x7070):   # zelda ending text
+                    self.id == 0x7070
+                ):   # zelda ending text
                     text_codes.append(code)
-                    text_codes.append(Text_Code(0x08, 0)) # allow instant
+                    text_codes.append(Text_Code(0x08, 0))  # allow instant
                 else:
-                    text_codes.append(Text_Code(0x04, 0)) # un-delayed break
-                    text_codes.append(Text_Code(0x08, 0)) # allow instant
+                    text_codes.append(Text_Code(0x04, 0))  # un-delayed break
+                    text_codes.append(Text_Code(0x08, 0))  # allow instant
             else:
                 text_codes.append(code)
 
         if replace_ending:
             if ending:
-                if speed_up_text and ending.code == 0x10: # ocarina
-                    text_codes.append(Text_Code(0x09, 0)) # disallow instant text
-                text_codes.append(ending) # write special ending
-            text_codes.append(Text_Code(0x02, 0)) # write end code
+                if speed_up_text and ending.code == 0x10:  # ocarina
+                    text_codes.append(Text_Code(0x09, 0))  # disallow instant text
+                text_codes.append(ending)  # write special ending
+            text_codes.append(Text_Code(0x02, 0))  # write end code
 
         self.text_codes = text_codes
 
-        
     # writes a Message back into the rom, using the given index and offset to update the table
     # returns the offset of the next message
     def write(self, rom, index, offset):
-
         # construct the table entry
         id_bytes = int_to_bytes(self.id, 2)
         offset_bytes = int_to_bytes(offset, 3)
@@ -595,7 +671,6 @@ class Message():
 
 
     def __init__(self, raw_text, index, id, opts, offset, length):
-
         self.raw_text = raw_text
 
         self.index = index
@@ -620,7 +695,6 @@ class Message():
     # read a single message from rom
     @classmethod
     def from_rom(cls, rom, index):
-
         entry_offset = ENG_TABLE_START + 8 * index
         entry = rom.read_bytes(entry_offset, 8)
         next = rom.read_bytes(entry_offset + 8, 8)
@@ -636,19 +710,7 @@ class Message():
 
     @classmethod
     def from_string(cls, text, id=0, opts=0x00):
-        bytes = list(text.encode('utf-8')) + [0x02]
-
-        # Clean up garbage values added when encoding special characters again.
-        bytes = list(filter(lambda a: a != 194, bytes)) # 0xC2 added before each accent char.
-        i = 0
-        while i < len(bytes) - 1:
-            if bytes[i] in SPECIAL_CHARACTERS and bytes[i] not in UTF8_TO_OOT_SPECIAL.values(): # This indicates it's one of the button chars (A button, etc).
-                # Have to delete 2 inserted garbage values.
-                del bytes[i-1]
-                del bytes[i-2]
-                i -= 2
-            i+= 1
-
+        bytes = text + "\x02"
         return cls(bytes, 0, id, opts, 0, len(bytes) + 1)
 
     @classmethod
@@ -868,7 +930,7 @@ def make_player_message(text):
 def update_item_messages(messages, world):
     new_item_messages = {**ITEM_MESSAGES, **KEYSANITY_MESSAGES}
     for id, text in new_item_messages.items():
-        if world.world_count > 1:
+        if world.settings.world_count > 1:
             update_message_by_id(messages, id, make_player_message(text), 0x23)
         else:
             update_message_by_id(messages, id, text, 0x23)
@@ -993,3 +1055,35 @@ def shuffle_messages(messages, except_hints=True, always_allow_skip=True):
     ]))
 
     return permutation
+
+# Update warp song text boxes for ER
+def update_warp_song_text(messages, world):
+    msg_list = {
+        0x088D: 'Minuet of Forest Warp -> Sacred Forest Meadow',
+        0x088E: 'Bolero of Fire Warp -> DMC Central Local',
+        0x088F: 'Serenade of Water Warp -> Lake Hylia',
+        0x0890: 'Requiem of Spirit Warp -> Desert Colossus',
+        0x0891: 'Nocturne of Shadow Warp -> Graveyard Warp Pad Region',
+        0x0892: 'Prelude of Light Warp -> Temple of Time',
+    }
+
+    for id, entr in msg_list.items():
+        destination_raw = world.get_entrance(entr).connected_region.name
+
+        # Format the region name
+        destination, color = None, None
+        for formatted_region, info in REGION_NAMES.items():
+            raw_region_list, region_color = info
+            if destination_raw in raw_region_list:
+                destination = formatted_region
+                color = region_color
+                break
+
+        # Check if region name isn't found
+        if destination is None:
+            logging.error("MISSING REGION NAME: " + destination_raw)
+            destination = destination_raw
+            color = "\40"
+
+        new_msg = f"\x08\x05{color}Warp to {destination}?\x05\40\x09\x01\x01\x1b\x05{color}OK\x01No\x05\40"
+        update_message_by_id(messages, id, new_msg)

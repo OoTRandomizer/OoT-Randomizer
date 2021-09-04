@@ -6,7 +6,12 @@ min_python_version = [3,6,0]
 for i,v in enumerate(min_python_version):
     if sys.version_info[i] < v:
         print("Randomizer requires at least version 3.6 and you are using %s" % '.'.join([str(i) for i in sys.version_info[0:3]]))
-        raw_input("Press enter to exit...")
+        # raw_input was renamed to input in 3.0, handle both 2.x and 3.x by trying the rename for 2.x
+        try:
+            input = raw_input
+        except NameError:
+            pass
+        input("Press enter to exit...")
         sys.exit(1)
     if sys.version_info[i] > v:
         break

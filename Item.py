@@ -93,7 +93,7 @@ class Item(object):
 
     @property
     def smallkey(self):
-        return self.type == 'SmallKey' or self.type == 'FortressSmallKey'
+        return self.type == 'SmallKey' or self.type == 'HideoutSmallKey'
 
 
     @property
@@ -119,23 +119,23 @@ class Item(object):
     @property
     def majoritem(self):
         if self.type == 'Token':
-            return self.world.bridge == 'tokens' or self.world.lacs_condition == 'tokens'
+            return self.world.settings.bridge == 'tokens' or self.world.settings.lacs_condition == 'tokens'
 
         if self.type in ('Drop', 'Event', 'Shop', 'DungeonReward') or not self.advancement:
             return False
 
-        if self.name.startswith('Bombchus') and not self.world.bombchus_in_logic:
+        if self.name.startswith('Bombchus') and not self.world.settings.bombchus_in_logic:
             return False
 
         if self.map or self.compass:
             return False
-        if self.type == 'SmallKey' and self.world.shuffle_smallkeys in ['dungeon', 'vanilla']:
+        if self.type == 'SmallKey' and self.world.settings.shuffle_smallkeys in ['dungeon', 'vanilla']:
             return False
-        if self.type == 'FortressSmallKey' and self.world.shuffle_fortresskeys == 'vanilla':
+        if self.type == 'HideoutSmallKey' and self.world.settings.shuffle_hideoutkeys == 'vanilla':
             return False
-        if self.type == 'BossKey' and self.world.shuffle_bosskeys in ['dungeon', 'vanilla']:
+        if self.type == 'BossKey' and self.world.settings.shuffle_bosskeys in ['dungeon', 'vanilla']:
             return False
-        if self.type == 'GanonBossKey' and self.world.shuffle_ganon_bosskey in ['dungeon', 'vanilla']:
+        if self.type == 'GanonBossKey' and self.world.settings.shuffle_ganon_bosskey in ['dungeon', 'vanilla']:
             return False
 
         return True
@@ -144,18 +144,18 @@ class Item(object):
     @property
     def goalitem(self):
         if self.name == 'Triforce Piece':
-            return self.world.triforce_hunt
+            return self.world.settings.triforce_hunt
         if self.name == 'Light Arrows':
-            return self.world.bridge == 'vanilla'
+            return self.world.settings.bridge == 'vanilla'
         if self.info.medallion:
             settings = ['medallions', 'dungeons']
             if self.name in ['Shadow Medallion', 'Spirit Medallion']:
                 settings.append('vanilla')
-            return self.world.bridge in settings or self.world.lacs_condition in settings
+            return self.world.settings.bridge in settings or self.world.settings.lacs_condition in settings
         if self.info.stone:
-            return self.world.bridge in ['stones', 'dungeons'] or self.world.lacs_condition in ['stones', 'dungeons']
+            return self.world.settings.bridge in ['stones', 'dungeons'] or self.world.settings.lacs_condition in ['stones', 'dungeons']
         if self.type == 'Token':
-            return self.world.bridge == 'tokens' or self.world.lacs_condition == 'tokens'
+            return self.world.settings.bridge == 'tokens' or self.world.settings.lacs_condition == 'tokens'
         #TODO check Bingo goals
 
 

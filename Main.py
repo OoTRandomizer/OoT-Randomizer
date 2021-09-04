@@ -361,7 +361,7 @@ def from_patch_file(settings, window=dummy_window()):
 
     logger.info('Patching ROM.')
 
-    filename_split = os.path.basename(settings.patch_file).split('.')
+    filename_split = os.path.basename(settings.patch_file).rpartition('.')
 
     if settings.output_file:
         outfilebase = settings.output_file
@@ -455,7 +455,7 @@ def cosmetic_patch(settings, window=dummy_window()):
 
     logger.info('Patching ROM.')
 
-    filename_split = os.path.basename(settings.patch_file).split('.')
+    filename_split = os.path.basename(settings.patch_file).rpartition('.')
 
     if settings.output_file:
         outfilebase = settings.output_file

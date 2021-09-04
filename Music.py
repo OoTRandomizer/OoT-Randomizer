@@ -2,7 +2,7 @@
 
 import random
 import os
-from Utils import compare_version
+from Utils import compare_version, data_path
 
 
 # Format: (Title, Sequence ID)
@@ -133,11 +133,24 @@ def process_sequences(rom, sequences, target_sequences, disabled_source_sequence
         if cosmetic_name not in disabled_target_sequences:
             target_sequences.append(target)
 
+    # If present, load the file containing custom music to exclude
+    try:
+        with open(os.path.join(data_path(), u'custom_music_exclusion.txt')) as excl_in:
+            seq_exclusion_list = excl_in.readlines()
+        seq_exclusion_list = [seq.rstrip() for seq in seq_exclusion_list if seq[0] != '#']
+        seq_exclusion_list = [seq for seq in seq_exclusion_list if seq.endswith('.meta')]
+    except FileNotFoundError:
+        seq_exclusion_list = []
+
     # Process music data in data/Music/
     # Each sequence requires a valid .seq sequence file and a .meta metadata file
     # Current .meta format: Cosmetic Name\nInstrument Set\nPool
-    for dirpath, _, filenames in os.walk(u'./data/Music'):
+    for dirpath, _, filenames in os.walk(u'./data/Music', followlinks=True):
         for fname in filenames:
+            # Skip if included in exclusion file
+            if fname in seq_exclusion_list:
+                continue
+
             # Find meta file and check if corresponding seq file exists
             if fname.endswith('.meta') and os.path.isfile(os.path.join(dirpath, fname.split('.')[0] + '.seq')):
                 # Read meta info

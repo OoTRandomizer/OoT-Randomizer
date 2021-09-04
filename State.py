@@ -12,13 +12,13 @@ class State(object):
         self.prog_items = Counter()
         self.world = parent
         self.search = None
-        self._won = self.won_triforce_hunt if self.world.triforce_hunt else self.won_normal
+        self._won = self.won_triforce_hunt if self.world.settings.triforce_hunt else self.won_normal
 
 
     ## Ensure that this will always have a value
     @property
     def is_glitched(self):
-        return self.world.logic_rules != 'glitchless'
+        return self.world.settings.logic_rules != 'glitchless'
 
 
     def copy(self, new_world=None):
@@ -99,7 +99,7 @@ class State(object):
 
 
     def had_night_start(self):
-        stod = self.world.starting_tod
+        stod = self.world.settings.starting_tod
         # These are all not between 6:30 and 18:00
         if (stod == 'sunset' or         # 18
             stod == 'evening' or        # 21
@@ -112,7 +112,7 @@ class State(object):
 
     # Used for fall damage and other situations where damage is unavoidable
     def can_live_dmg(self, hearts):
-        mult = self.world.damage_multiplier
+        mult = self.world.settings.damage_multiplier
         if hearts*4 >= 3:
             return mult != 'ohko' and mult != 'quadruple'
         elif hearts*4 < 3:

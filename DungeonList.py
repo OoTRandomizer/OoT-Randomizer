@@ -73,7 +73,7 @@ dungeon_table = [
         'dungeon_item': 1,
     },
     {
-        'name': 'Gerudo Training Grounds',
+        'name': 'Gerudo Training Ground',
         'boss_key':     0, 
         'small_key':    9,
         'small_key_mq': 3,
