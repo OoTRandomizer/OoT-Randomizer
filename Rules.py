@@ -56,11 +56,11 @@ def set_rules(world):
                 # and render the game unbeatable, so for simplicity's sake we forbid putting pieces on any world's Song from Impa.
                 forbid_item(location, 'Triforce Piece')
 
-        if location.name == 'Forest Temple MQ First Room Chest' and world.settings.shuffle_bosskeys == 'dungeon' and world.settings.shuffle_smallkeys == 'dungeon' and world.settings.tokensanity == 'off':
-            # This location needs to be a small key. Make sure the boss key isn't placed here.
+        if location.name == 'Forest Temple MQ First Room Chest' and world.settings.shuffle_bosskeys == 'dungeon' and world.settings.shuffle_smallkeys == 'dungeon' and world.settings.tokensanity == 'off' and world.settings.logic_rules != 'none':
+            # This location needs to be a small key. Make sure the boss key isn't placed here except when logic is off.
             forbid_item(location, 'Boss Key (Forest Temple)')
 
-        if location.type == 'HintStone' and world.settings.hints == 'mask':
+        if location.type == 'HintStone' and world.settings.hints == 'mask' and world.settings.logic_rules != 'none':
             location.add_rule(is_child)
 
         if location.name in world.always_hints:
@@ -118,36 +118,38 @@ def item_in_locations(state, item, locations):
 # This function should also be called when a world is copied if the original world
 # had called this function because the world.copy does not copy the rules
 def set_shop_rules(world):
-    found_bombchus = world.parser.parse_rule('found_bombchus')
-    wallet = world.parser.parse_rule('Progressive_Wallet')
-    wallet2 = world.parser.parse_rule('(Progressive_Wallet, 2)')
-    is_adult = world.parser.parse_rule('is_adult')
-    for location in world.get_filled_locations():
-        if location.item.type == 'Shop':
-            # Add wallet requirements
-            if location.item.name in ['Buy Arrows (50)', 'Buy Fish', 'Buy Goron Tunic', 'Buy Bombchu (20)', 'Buy Bombs (30)']:
-                location.add_rule(wallet)
-            elif location.item.name in ['Buy Zora Tunic', 'Buy Blue Fire']:
-                location.add_rule(wallet2)
+    # We want to ignore all of these rules when using no logic, otherwise we're subjecting it to logic.
+    if world.settings.logic_rules != 'none':
+        found_bombchus = world.parser.parse_rule('found_bombchus')
+        wallet = world.parser.parse_rule('Progressive_Wallet')
+        wallet2 = world.parser.parse_rule('(Progressive_Wallet, 2)')
+        is_adult = world.parser.parse_rule('is_adult')
+        for location in world.get_filled_locations():
+            if location.item.type == 'Shop':
+                # Add wallet requirements
+                if location.item.name in ['Buy Arrows (50)', 'Buy Fish', 'Buy Goron Tunic', 'Buy Bombchu (20)', 'Buy Bombs (30)']:
+                    location.add_rule(wallet)
+                elif location.item.name in ['Buy Zora Tunic', 'Buy Blue Fire']:
+                    location.add_rule(wallet2)
 
-            # Add adult only checks
-            if location.item.name in ['Buy Goron Tunic', 'Buy Zora Tunic']:
-                location.add_rule(is_adult)
+                # Add adult only checks
+                if location.item.name in ['Buy Goron Tunic', 'Buy Zora Tunic']:
+                    location.add_rule(is_adult)
 
-            # Add item prerequisite checks
-            if location.item.name in ['Buy Blue Fire',
-                                      'Buy Blue Potion',
-                                      'Buy Bottle Bug',
-                                      'Buy Fish',
-                                      'Buy Green Potion',
-                                      'Buy Poe',
-                                      'Buy Red Potion [30]',
-                                      'Buy Red Potion [40]',
-                                      'Buy Red Potion [50]',
-                                      'Buy Fairy\'s Spirit']:
-                location.add_rule(State.has_bottle)
-            if location.item.name in ['Buy Bombchu (10)', 'Buy Bombchu (20)', 'Buy Bombchu (5)']:
-                location.add_rule(found_bombchus)
+                # Add item prerequisite checks
+                if location.item.name in ['Buy Blue Fire',
+                                          'Buy Blue Potion',
+                                          'Buy Bottle Bug',
+                                          'Buy Fish',
+                                          'Buy Green Potion',
+                                          'Buy Poe',
+                                          'Buy Red Potion [30]',
+                                          'Buy Red Potion [40]',
+                                          'Buy Red Potion [50]',
+                                          'Buy Fairy\'s Spirit']:
+                    location.add_rule(State.has_bottle)
+                if location.item.name in ['Buy Bombchu (10)', 'Buy Bombchu (20)', 'Buy Bombchu (5)']:
+                    location.add_rule(found_bombchus)
 
 
 # This function should be ran once after setting up entrances and before placing items
@@ -164,7 +166,7 @@ def set_entrances_based_rules(worlds):
         for location in world.get_locations():
             if location.type == 'Shop':
                 # If All Locations Reachable is on, prevent shops only ever reachable as child from containing Buy Goron Tunic and Buy Zora Tunic items
-                if not world.check_beatable_only:
+                if not world.check_beatable_only and world.settings.logic_rules != 'none':
                     if not search.can_reach(location.parent_region, age='adult'):
                         forbid_item(location, 'Buy Goron Tunic')
                         forbid_item(location, 'Buy Zora Tunic')
