@@ -708,7 +708,10 @@ def validate_world(world, worlds, entrance_placed, locations_to_ensure_reachable
     # This means we need to hard check that none of the relevant entrances are ever reachable as that age
     # This is mostly relevant when shuffling special interiors (such as windmill or kak potion shop)
     # Warp Songs and Overworld Spawns can also end up inside certain indoors so those need to be handled as well
-    CHILD_FORBIDDEN = ['OGC Great Fairy Fountain -> Castle Grounds', 'GV Carpenter Tent -> GV Fortress Side']
+    # Glitch logic needs to allow child into the carpenter tent because that's a valid entrance
+    CHILD_FORBIDDEN = ['OGC Great Fairy Fountain -> Castle Grounds']
+    if (world.settings.logic_rules == 'glitchless'):
+        CHILD_FORBIDDEN.append('GV Carpenter Tent -> GV Fortress Side')
     ADULT_FORBIDDEN = ['HC Great Fairy Fountain -> Castle Grounds', 'HC Storms Grotto -> Castle Grounds']
 
     for entrance in world.get_shufflable_entrances():
@@ -743,13 +746,15 @@ def validate_world(world, worlds, entrance_placed, locations_to_ensure_reachable
             raise EntranceShuffleError('Kak Potion Shop entrances are not in the same hint area')
 
         # When cows are shuffled, ensure the same thing for Impa's House, since the cow is reachable from both sides
-        if world.settings.shuffle_cows:
+        # Also ensure the same thing for glitch logic, as that is a valid transition.       
+        if world.settings.shuffle_cows or world.settings.logic_rules != 'glitchless':
             impas_front_entrance = get_entrance_replacing(world.get_region('Kak Impas House'), 'Kakariko Village -> Kak Impas House')
             impas_back_entrance = get_entrance_replacing(world.get_region('Kak Impas House Back'), 'Kak Impas Ledge -> Kak Impas House Back')
             if impas_front_entrance is not None and impas_back_entrance is not None and not same_hint_area(impas_front_entrance, impas_back_entrance):
                 raise EntranceShuffleError('Kak Impas House entrances are not in the same hint area')
 
-    if (world.shuffle_special_interior_entrances or world.settings.shuffle_overworld_entrances or world.settings.spawn_positions) and \
+    # Make sure to ignore all of these when no logic is enabled, since these are functionally a kind of logic.
+    if (world.shuffle_special_interior_entrances or world.settings.shuffle_overworld_entrances or world.settings.spawn_positions) and world.settings.logic_rules != 'none' and \
        (entrance_placed == None or entrance_placed.type in ['SpecialInterior', 'Overworld', 'Spawn', 'WarpSong', 'OwlDrop']):
         # At least one valid starting region with all basic refills should be reachable without using any items at the beginning of the seed
         # Note this creates new empty states rather than reuse the worlds' states (which already have starting items)
@@ -773,7 +778,7 @@ def validate_world(world, worlds, entrance_placed, locations_to_ensure_reachable
         elif world.settings.starting_age == 'adult' and not time_travel_search.can_reach(world.get_region('Temple of Time'), age='child'):
             raise EntranceShuffleError('Path to Temple of Time as child is not guaranteed')
 
-    if (world.shuffle_interior_entrances or world.settings.shuffle_overworld_entrances) and \
+    if (world.shuffle_interior_entrances or world.settings.shuffle_overworld_entrances) and world.settings.logic_rules != 'none' and \
        (entrance_placed == None or entrance_placed.type in ['Interior', 'SpecialInterior', 'Overworld', 'Spawn', 'WarpSong', 'OwlDrop']):
         # The Big Poe Shop should always be accessible as adult without the need to use any bottles
         # This is important to ensure that players can never lock their only bottles by filling them with Big Poes they can't sell
