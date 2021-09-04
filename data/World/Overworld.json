@@ -650,7 +650,10 @@
             "Colossus Great Fairy Fountain": "has_explosives",
             "Spirit Temple Lobby": "True",
             "Wasteland Near Colossus": "True",
-            "Colossus Grotto": "can_use(Silver_Gauntlets)"
+            "Colossus Grotto": "can_use(Silver_Gauntlets)",
+            # These, and all other false entrances, exist to loosen the ER requirements for no logic.
+            "Silver Gauntlets Hand": "False",
+            "Mirror Shield Hand": "False"
         }
     },
     {
@@ -1087,7 +1090,8 @@
         "scene": "Kak Impas House",
         "exits": {
             "Kakariko Village": "True",
-            "Kak Impas House Near Cow": "True"
+            "Kak Impas House Near Cow": "True",
+            "Kak Impas House Back": "False"
         }
     },
     {
@@ -1209,7 +1213,8 @@
             "Graveyard Heart Piece Grave": "is_adult or at_night",
             "Graveyard Dampes Grave": "is_adult",
             "Graveyard Dampes House": "is_adult or at_dampe_time",
-            "Kakariko Village": "True"
+            "Kakariko Village": "True",
+            "Graveyard Warp Pad Region": "False"
         }
     },
     {
