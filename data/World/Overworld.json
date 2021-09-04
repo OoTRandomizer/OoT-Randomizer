@@ -26,13 +26,17 @@
     {
         "region_name": "Child Spawn",
         "exits": {
-            "KF Links House": "True"
+            "KF Links House": "True",
+            # This exists for no logic ER purposes
+            "Ganons Castle Tower": "False"
         }
     },
     {
         "region_name": "Adult Spawn",
         "exits": {
-            "Temple of Time": "True"
+            "Temple of Time": "True",
+            # This exists for no logic ER purposes
+            "Ganons Castle Tower": "False"
         }
     },
     {
