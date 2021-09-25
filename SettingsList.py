@@ -132,11 +132,15 @@ class Scale(Setting_Info):
 logic_tricks = {
     'Fewer Tunic Requirements': {
         'name'    : 'logic_fewer_tunic_requirements',
+<<<<<<< HEAD
+        'tags'    : ("General", "Entrance", "Fire Temple", "Water Temple", "Gerudo Training Ground", "Zora's Fountain", "Death Mountain Crater",),
+=======
         'tags'    : ("General", "Fire Temple", "Water Temple", "Gerudo Training Ground", "Zora's Fountain",),
+>>>>>>> c95d62b125a4361351a5d19827ef48e98b56989f
         'tooltip' : '''\
                     Allows the following possible without Tunics:
-                    - Enter Water Temple. The key below the center
-                    pillar still requires Zora Tunic.
+                    - Inside Water Temple. The chest below the 
+                    center pillar still requires Zora Tunic.
                     - Enter Fire Temple. Only the first floor is
                     accessible, and not Volvagia.
                     - Zora's Fountain Bottom Freestanding PoH.
@@ -144,6 +148,11 @@ logic_tricks = {
                     - Gerudo Training Ground Underwater
                     Silver Rupee Chest. May need to make multiple
                     trips.
+                    - Exploring most of Death Mountain Crater.                    
+                    Can be relevant for Child Link, with Entrance
+                    Randomizer. Frequently relevant for Adult Link.
+                    Some shorter trips are always logical.
+                    Some longer trips always require Goron Tunic.
                     '''},
     'Hidden Grottos without Stone of Agony': {
         'name'    : 'logic_grottos_without_agony',
@@ -620,7 +629,8 @@ logic_tricks = {
                     expire. You can get extra time to show the Eye Drops if
                     you warp immediately upon receiving them. If you don't
                     have many hearts, you may have to reset the heat timer
-                    by quickly dipping in and out of Darunia's chamber.
+                    by quickly dipping in and out of Darunia's chamber or 
+                    quickly equipping and unequipping the Goron Tunic.
                     This trick does not apply if "Randomize Warp Song
                     Destinations" is enabled, or if the settings are such
                     that trade items do not need to be delivered within a
@@ -836,12 +846,23 @@ logic_tricks = {
                     midflight, with precise timing and positioning.
                     '''},
     'Death Mountain Crater Upper to Lower with Hammer': {
-        'name'    : 'logic_crater_upper_to_lower',
+        'name'    : 'logic_crater_boulder_jumpslash',
         'tags'    : ("Death Mountain Crater",),
         'tooltip' : '''\
                     With the Hammer, you can jump slash the rock twice
                     in the same jump in order to destroy it before you
                     fall into the lava.
+                    '''},
+    'Death Mountain Crater Upper to Lower Boulder Skip': {
+        'name'    : 'logic_dmc_boulder_skip',
+        'tags'    : ("Death Mountain Crater",),
+        'tooltip' : '''\
+                    With careful positioning, you can jump to the ledge 
+                    where the boulder is, then use repeated ledge grabs 
+                    to shimmy to a climbable ledge.
+                    This trick supersedes "Death Mountain Crater Upper
+                    to Lower with Hammer", so knowledge of that trick 
+                    is assumed.
                     '''},
     'Zora\'s Domain Entry with Hover Boots': {
         'name'    : 'logic_zora_with_hovers',
