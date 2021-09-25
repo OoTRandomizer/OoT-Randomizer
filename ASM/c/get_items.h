@@ -5,6 +5,7 @@
 
 void item_overrides_init();
 void handle_pending_items();
+void push_delayed_item(uint8_t flag);
 void pop_pending_item();
 enum override_type {
     OVR_BASE_ITEM = 0,

@@ -70,7 +70,7 @@
             or (_is_magic_arrow(item) and is_adult and item and Bow and Magic_Meter)
             or (_is_child_item(item) and is_child and item)",
     "_is_magic_item(item)": "item == Dins_Fire or item == Farores_Wind or item == Nayrus_Love or item == Lens_of_Truth",
-    "_is_adult_item(item)": "item == Bow or item == Megaton_Hammer or item == Iron_Boots or item == Hover_Boots or item == Hookshot or item == Longshot or item == Silver_Gauntlets or item == Golden_Gauntlets or item == Goron_Tunic or item == Zora_Tunic or item == Scarecrow or item == Distant_Scarecrow",
+    "_is_adult_item(item)": "item == Bow or item == Megaton_Hammer or item == Iron_Boots or item == Hover_Boots or item == Hookshot or item == Longshot or item == Silver_Gauntlets or item == Golden_Gauntlets or item == Goron_Tunic or item == Zora_Tunic or item == Scarecrow or item == Distant_Scarecrow or item == Mirror_Shield",
     "_is_child_item(item)": "item == Slingshot or item == Boomerang or item == Kokiri_Sword or item == Sticks or item == Deku_Shield",
     "_is_magic_arrow(item)": "item == Fire_Arrows or item == Light_Arrows",
 
@@ -83,8 +83,8 @@
     "has_fire_source_with_torch": "has_fire_source or (is_child and Sticks)",
 
     # Gerudo Fortress
-    "can_finish_GerudoFortress": "(gerudo_fortress == 'normal' and (Small_Key_Gerudo_Fortress, 4) and (is_adult or Kokiri_Sword or is_glitched) and (is_adult and (Bow or Hookshot or Hover_Boots) or Gerudo_Membership_Card or logic_gerudo_kitchen or is_glitched))
-            or (gerudo_fortress == 'fast' and Small_Key_Gerudo_Fortress and (is_adult or Kokiri_Sword or is_glitched))
+    "can_finish_GerudoFortress": "(gerudo_fortress == 'normal' and (Small_Key_Thieves_Hideout, 4) and (is_adult or Kokiri_Sword or is_glitched) and (is_adult and (Bow or Hookshot or Hover_Boots) or Gerudo_Membership_Card or logic_gerudo_kitchen or is_glitched))
+            or (gerudo_fortress == 'fast' and Small_Key_Thieves_Hideout and (is_adult or Kokiri_Sword or is_glitched))
             or (gerudo_fortress != 'normal' and gerudo_fortress != 'fast')",
     # Mirror shield does not count because it cannot reflect scrub attack.
     "has_shield": "(is_adult and Hylian_Shield) or (is_child and Deku_Shield)",
@@ -110,5 +110,12 @@
         (lacs_condition == 'stones' and has_stones(lacs_stones)) or
         (lacs_condition == 'medallions' and has_medallions(lacs_medallions)) or
         (lacs_condition == 'dungeons' and has_dungeon_rewards(lacs_rewards)) or
-        (lacs_condition == 'tokens' and (Gold_Skulltula_Token, lacs_tokens)))"
+        (lacs_condition == 'tokens' and (Gold_Skulltula_Token, lacs_tokens)))",
+    "can_receive_ganon_bosskey": "(
+        (shuffle_ganon_bosskey == 'stones' and has_stones(ganon_bosskey_stones)) or
+        (shuffle_ganon_bosskey == 'medallions' and has_medallions(ganon_bosskey_medallions)) or
+        (shuffle_ganon_bosskey == 'dungeons' and has_dungeon_rewards(ganon_bosskey_rewards)) or
+        (shuffle_ganon_bosskey == 'tokens' and (Gold_Skulltula_Token, ganon_bosskey_tokens))) or
+        (shuffle_ganon_bosskey != 'stones' and shuffle_ganon_bosskey != 'medallions' and
+         shuffle_ganon_bosskey != 'dungeons' and shuffle_ganon_bosskey != 'tokens')"
 }

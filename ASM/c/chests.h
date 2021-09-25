@@ -5,7 +5,6 @@
 #include "get_items.h"
 #include "z64.h"
 
-uint8_t get_chest_override_size(z64_actor_t *actor);
-uint8_t get_chest_override_color(z64_actor_t *actor);
+void get_chest_override(z64_actor_t *actor);
 
 #endif

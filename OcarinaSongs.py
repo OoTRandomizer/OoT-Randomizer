@@ -3,6 +3,24 @@ PLAYBACK_LENGTH = 0xA0
 ACTIVATION_START = 0xB78E5C
 ACTIVATION_LENGTH = 0x09
 
+FORMAT_ACTIVATION = {
+    0: 'A',
+    1: 'v',
+    2: '>',
+    3: '<',
+    4: '^',
+}
+READ_ACTIVATION = { # support both Av><^ and ADRLU
+    'a': 0,
+    'v': 1,
+    'd': 1,
+    '>': 2,
+    'r': 2,
+    '<': 3,
+    'l': 3,
+    '^': 4,
+    'u': 4,
+}
 ACTIVATION_TO_PLAYBACK_NOTE = {
     0: 0x02, # A
     1: 0x05, # Down
@@ -12,7 +30,38 @@ ACTIVATION_TO_PLAYBACK_NOTE = {
     0xFF: 0xFF, # Rest
 }
 
+DIFFICULTY_ORDER = [
+    'Zeldas Lullaby',
+    'Sarias Song',
+    'Eponas Song',
+    'Song of Storms',
+    'Song of Time',
+    'Suns Song',
+    'Prelude of Light',
+    'Minuet of Forest',
+    'Bolero of Fire',
+    'Serenade of Water',
+    'Requiem of Spirit',
+    'Nocturne of Shadow',
+]
+ROM_INDICES = {
+    'Zeldas Lullaby': 8,
+    'Eponas Song': 7,
+    'Sarias Song': 6,
+    'Suns Song': 9,
+    'Song of Time': 10,
+    'Song of Storms': 11,
+    'Minuet of Forest': 0,
+    'Bolero of Fire': 1,
+    'Serenade of Water': 2,
+    'Requiem of Spirit': 3,
+    'Nocturne of Shadow': 4,
+    'Prelude of Light': 5,
+}
+
 import random
+from itertools import chain
+from Fill import ShuffleError
 from Utils import random_choices
 
 # checks if one list is a sublist of the other (in either direction)
@@ -174,7 +223,7 @@ class Song():
         padding = [0] * (PLAYBACK_LENGTH - len(self.playback_data))
         self.playback_data += padding
 
-    def display(self):
+    def __repr__(self):
         activation_string = 'Activation Data:\n\t' + ' '.join( map( "{:02x}".format, self.activation_data) )
         # break playback into groups of 8...
         index = 0
@@ -186,31 +235,39 @@ class Song():
         return activation_string + '\n' + playback_string
 
     # create a song, based on a given scheme
-    def __init__(self, rand_song=True, piece_size=3, extra_position='none', starting_range=range(0,5), activation_transform=identity, playback_transform=identity, activation=None):
+    def __init__(self, rand_song=True, piece_size=3, extra_position='none', starting_range=range(0,5), activation_transform=identity, playback_transform=identity, *, activation=None, playback_fast=False):
         if activation:
             self.length = len(activation)
             self.activation = activation
-            self.playback = fast_playback(self.activation)
-            self.break_repeated_notes(0x03)
-            self.format_playback_data()
-            self.increase_duration_to(45)
-            return
-
-        if rand_song:
+        elif rand_song:
             self.length = random.randint(4, 8)
             self.activation = random_choices(range(0,5), k=self.length)
-            self.playback = random_playback(self.activation)
         else:
             if extra_position != 'none':
                 piece_size = 3
             piece = random_piece(piece_size, starting_range)
             self.two_piece_playback(piece, extra_position, activation_transform, playback_transform)
 
-        self.break_repeated_notes()
+        if playback_fast:
+            self.playback = fast_playback(self.activation)
+            self.break_repeated_notes(0x03)
+        else:
+            if not hasattr(self, 'playback'):
+                self.playback = random_playback(self.activation)
+            self.break_repeated_notes()
+
         self.format_activation_data()
         self.format_playback_data()
 
-    __str__ = __repr__ = display
+        if activation:
+            self.increase_duration_to(45)
+
+    @classmethod
+    def from_str(cls, notes):
+        return cls(activation=[READ_ACTIVATION[note.lower()] for note in notes])
+
+    def __str__(self):
+        return ''.join(FORMAT_ACTIVATION[note] for note in self.activation)
 
 # randomly choose song parameters
 def get_random_song():
@@ -265,77 +322,62 @@ def get_random_song():
 
 
 # create a list of 12 songs, none of which are sub-strings of any other song
-def generate_song_list():
-    songs = []
+def generate_song_list(world):
+    fixed_songs = {name: Song.from_str(notes) for name, notes in world.distribution.configure_songs().items()}
+    for name1, song1 in fixed_songs.items():
+        if name1 not in ROM_INDICES:
+            raise ValueError(f'Unknown song: {name1!r}. Please use one of these: {", ".join(ROM_INDICES)}')
+        if not song1.activation:
+            raise ValueError(f'{name1} is empty')
+        if len(song1.activation) > 8:
+            raise ValueError(f'{name1} is too long (maximum is 8 notes)')
+        for name2, song2 in fixed_songs.items():
+            if name1 != name2 and subsong(song1, song2):
+                raise ValueError(f'{name2} is unplayable because it contains {name1}')
+    random_songs = []
 
-    for _ in range(12):
-        while True:
+    for _ in range(12 - len(fixed_songs)):
+        for _ in range(1000):
             # generate a completely random song
             song = get_random_song()
             # test the song against all existing songs
             is_good = True
 
-            for other_song in songs:
+            for other_song in chain(fixed_songs.values(), random_songs):
                 if subsong(song, other_song):
                     is_good = False
             if is_good:
-                songs.append(song)
+                random_songs.append(song)
                 break
 
+    if len(fixed_songs) + len(random_songs) < 12:
+        # this can happen if the fixed songs are so short that any random set of songs would have them as subsongs
+        raise ShuffleError('Could not generate random songs')
+
     # sort the songs by length
-    songs.sort(key=lambda s: s.difficulty)
-    return songs
+    random_songs.sort(key=lambda s: s.difficulty)
+    for name in DIFFICULTY_ORDER:
+        if name not in fixed_songs:
+            fixed_songs[name] = random_songs.pop(0)
+    return fixed_songs
 
 
 
 # replace the playback and activation requirements for the ocarina songs
-def replace_songs(rom):
-    songs = generate_song_list()
+def replace_songs(world, rom):
+    songs = generate_song_list(world)
+    world.song_notes = songs
 
-    #print('\n\n'.join(map(str, songs)))
-
-    song_order = [
-        8, # zelda's lullaby
-        6, # saria's song
-        7, # epona's song
-        11, # song of storms
-        10, # song of time
-        9, # sun's song
-        5, # prelude of light
-        0, # minuet of forest
-        1, # bolero of fire
-        2, # serenade of water
-        3, # requiem of spirit
-        4, # nocturne of shadow
-    ]
-
-    for index, song in enumerate(songs):
+    for name, song in songs.items():
 
         # fix the song of time
-        if song_order[index] == 10:
+        if name == 'Song of Time':
             song.increase_duration_to(260)
 
         # write the song to the activation table
-        cur_offset = ACTIVATION_START + song_order[index] * ACTIVATION_LENGTH
+        cur_offset = ACTIVATION_START + ROM_INDICES[name] * ACTIVATION_LENGTH
         rom.write_bytes(cur_offset, song.activation_data)
 
         # write the songs to the playback table
-        song_offset = PLAYBACK_START + song_order[index] * PLAYBACK_LENGTH
+        song_offset = PLAYBACK_START + ROM_INDICES[name] * PLAYBACK_LENGTH
         rom.write_bytes(song_offset, song.playback_data)
-
-
-original_songs = [
-    'LURLUR',
-    'ULRULR',
-    'DRLDRL',
-    'RDURDU',
-    'RADRAD',
-    'ADUADU',
-    'AULRLR',
-    'DADALDLD',
-    'ADRRL',
-    'ADALDA',
-    'LRRALRD',
-    'URURLU'
-]
-

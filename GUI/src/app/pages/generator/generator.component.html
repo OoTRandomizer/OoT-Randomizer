@@ -62,12 +62,17 @@
                           <mat-slider class="scale" [disabled]="!global.generator_settingsVisibilityMap[setting.name]" [min]="setting.min" [max]="setting.max" step="1" [(ngModel)]="global.generator_settingsMap[setting.name]"
                                       (ngModelChange)="afterSettingChange()" tickInterval="1" thumbLabel [nbPopover]="tooltipComponent" [nbPopoverContext]="{tooltip: setting.tooltip}" [nbPopoverTrigger]="setting.tooltip && setting.tooltip.length > 0 ? 'hint' : 'noop'" nbPopoverPlacement="right" nbPopoverAdjustment="counterclockwise"></mat-slider>
                         </ng-container>
-                        <!--Text-->
+                        <!--Text Input-->
                         <ng-container *ngSwitchCase="'Textinput'">
                           <span *ngIf="!setting.size || setting.size == 'small' || setting.size == 'medium'" class="numberTextInputLabel" [ngClass]="{'disabled': !global.generator_settingsVisibilityMap[setting.name]}">{{setting.text}}:</span>
                           <p *ngIf="setting.size == 'full'" class="numberTextInputLabel" [ngClass]="{'disabled': !global.generator_settingsVisibilityMap[setting.name]}">{{setting.text}}</p>
                           <input class="numberTextInput" [ngClass]="{numberTextInputSmall: setting.size == 'small', numberTextInputMedium: setting.size == 'medium', numberTextInputFull: setting.size == 'full'}" nbInput [disabled]="!global.generator_settingsVisibilityMap[setting.name]" type="text" [maxlength]="setting.max_length ? setting.max_length : 260" fieldSize="small"
                                  (focus)="inputFocusIn(setting.name)" (focusout)="inputFocusOut(setting.name, false)" [(ngModel)]="global.generator_settingsMap[setting.name]" [nbPopover]="tooltipComponent" [nbPopoverContext]="{tooltip: setting.tooltip}" [nbPopoverTrigger]="setting.tooltip && setting.tooltip.length > 0 ? 'hint' : 'noop'" nbPopoverPlacement="right" nbPopoverAdjustment="counterclockwise">
+                        </ng-container>
+                        <!--Text Box-->
+                        <ng-container *ngSwitchCase="'Textbox'">
+                          <span *ngIf="!setting.size || setting.size == 'small' || setting.size == 'medium'" class="numberTextInputLabel" [ngClass]="{'disabled': !global.generator_settingsVisibilityMap[setting.name]}">{{setting.text}}</span>
+                          <p *ngIf="setting.size == 'full'" class="numberTextInputLabel" [ngClass]="{'disabled': !global.generator_settingsVisibilityMap[setting.name]}">{{setting.text}}</p>
                         </ng-container>
                         <!--Number-->
                         <ng-container *ngSwitchCase="'Numberinput'">

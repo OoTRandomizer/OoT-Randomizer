@@ -1,6 +1,6 @@
 {
   "settings": {
-    "shopsanity": 4,
+    "shopsanity": "4",
     "shuffle_weird_egg": true,
     "junk_ice_traps": "on"
   },
@@ -86,7 +86,7 @@
     "Graveyard Dampe Gravedigging Tour":      "Ice Trap",
     "Graveyard Shield Grave Chest":           "Ice Trap",
     "Graveyard Heart Piece Grave Chest":      "Ice Trap",
-    "Graveyard Composers Grave Chest":        "Ice Trap",
+    "Graveyard Royal Familys Tomb Chest":     "Ice Trap",
     "Graveyard Hookshot Chest":               "Ice Trap",
     "Graveyard Dampe Race Freestanding PoH":  "Ice Trap",
     "DMT Chest":                              "Ice Trap",

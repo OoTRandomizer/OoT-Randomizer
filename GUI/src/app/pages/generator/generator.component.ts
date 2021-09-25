@@ -1245,6 +1245,7 @@ export class GeneratorComponent implements OnInit {
     let isGenerator = this.global.getGlobalVar("appType") == "generator";
     let storageSettingsKey = isGenerator ? "generatorSettings_" : "patcherSettings_";
     let currentVersion = this.global.getGlobalVar("webSourceVersion");
+    let currentBranch = currentVersion.startsWith("dev") && currentVersion.includes("_") ? currentVersion.split("_")[0] : "master";
 
     try {
       userSettings = localStorage.getItem(storageSettingsKey + currentVersion);
@@ -1255,7 +1256,7 @@ export class GeneratorComponent implements OnInit {
 
     if (!userSettings) {
 
-      //Check if we have a prior version settings map and find the closest one
+      //Check if we have a prior version settings map and find the closest one from the same branch (master/dev are compatible with each other)
       if (localStorage.length) {
 
         let closestFoundVersion = "";
@@ -1265,10 +1266,14 @@ export class GeneratorComponent implements OnInit {
 
           if (key && key.startsWith(storageSettingsKey)) {
             let version = key.replace(storageSettingsKey, "");
+            let branch = version.startsWith("dev") && version.includes("_") ? version.split("_")[0] : "master";
 
-            if (this.global.isVersionNewer(version, currentVersion) == false)
-              if (!closestFoundVersion || this.global.isVersionNewer(version, closestFoundVersion))
-                closestFoundVersion = version;
+            if ((branch === currentBranch) || (branch === "master" && currentBranch === "dev") || (branch === "dev" && currentBranch === "master")) {
+
+              if (this.global.isVersionNewer(version, currentVersion) == false)
+                if (!closestFoundVersion || this.global.isVersionNewer(version, closestFoundVersion))
+                  closestFoundVersion = version;
+            }
           }
         }
 

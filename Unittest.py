@@ -5,13 +5,14 @@ import json
 import logging
 import os
 import random
+import re
 import unittest
 
 from ItemList import item_table
 from ItemPool import remove_junk_items, item_groups
 from LocationList import location_groups, location_is_viewable
 from Main import main, resolve_settings, build_world_graphs
-from Settings import Settings
+from Settings import Settings, get_preset_files
 
 test_dir = os.path.join(os.path.dirname(__file__), 'tests')
 output_dir = os.path.join(test_dir, 'Output')
@@ -48,11 +49,23 @@ bottles = {
 junk = set(remove_junk_items)
 
 
+def make_settings_for_test(settings_dict, seed=None, outfilename=None):
+    # Some consistent settings for testability
+    settings_dict.update({
+        'compress_rom': "None",
+        'count': 1,
+        'create_spoiler': True,
+        'output_file': os.path.join(test_dir, 'Output', outfilename),
+    })
+    if seed and 'seed' not in settings_dict:
+        settings_dict['seed'] = seed
+    return Settings(settings_dict, strict=True)
+
+
 def load_settings(settings_file, seed=None, filename=None):
     if isinstance(settings_file, dict):  # Check if settings_file is a distribution file settings dict
         try:
             j = settings_file
-            ofile = os.path.join(test_dir, 'Output', filename)
             j.update({
                 'enable_distribution_file': True,
                 'distribution_file': os.path.join(test_dir, 'plando', filename + '.json')
@@ -61,19 +74,10 @@ def load_settings(settings_file, seed=None, filename=None):
             raise RuntimeError("Running test with in memory file but did not supply a filename for output file.")
     else:
         sfile = os.path.join(test_dir, settings_file)
-        ofile = os.path.join(test_dir, 'Output', os.path.splitext(settings_file)[0])
+        filename = os.path.splitext(settings_file)[0]
         with open(sfile) as f:
             j = json.load(f)
-    # Some consistent settings for testability
-    j.update({
-        'compress_rom': "None",
-        'count': 1,
-        'create_spoiler': True,
-        'output_file': ofile,
-    })
-    if seed and 'seed' not in j:
-        j['seed'] = seed
-    return Settings(j)
+    return make_settings_for_test(j, seed=seed, outfilename=filename)
 
 
 def load_spoiler(json_file):
@@ -448,7 +452,7 @@ class TestValidSpoilers(unittest.TestCase):
             {loc: items - junk for loc, items in locitems.items()},
             'Disabled locations have non-junk')
 
-    def test_spoiler(self):
+    def test_testcases(self):
         test_files = [filename
                       for filename in os.listdir(test_dir)
                       if filename.endswith('.sav')]
@@ -461,6 +465,22 @@ class TestValidSpoilers(unittest.TestCase):
                 self.verify_woth(spoiler)
                 self.verify_playthrough(spoiler)
                 self.verify_disables(spoiler)
+
+    def test_presets(self):
+        presetsFiles = get_preset_files()
+        for fn in presetsFiles:
+            with open(fn, encoding='utf-8') as f:
+                presets = json.load(f)
+            for name, settings_dict in presets.items():
+                ofile = 'preset_' + re.sub(r'[^a-zA-Z0-9_-]+', '_', name)
+                with self.subTest(name, filename=ofile):
+                    settings = make_settings_for_test(
+                            settings_dict, seed='TESTTESTTEST', outfilename=ofile)
+                    main(settings)
+                    spoiler = load_spoiler('%s_Spoiler.json' % settings.output_file)
+                    self.verify_woth(spoiler)
+                    self.verify_playthrough(spoiler)
+                    self.verify_disables(spoiler)
 
     def test_fuzzer(self):
         random.seed()

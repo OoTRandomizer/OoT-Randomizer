@@ -126,8 +126,9 @@ def generate(settings, window=dummy_window()):
 def build_world_graphs(settings, window=dummy_window()):
     logger = logging.getLogger('')
     worlds = []
-    for i in range(0, settings.world_count):
-        worlds.append(World(i, settings))
+    for i in range(1, settings.world_count):
+        worlds.append(World(i, copy.copy(settings)))
+    worlds.insert(0, World(0, settings))
 
     window.update_status('Creating the Worlds')
     for id, world in enumerate(worlds):
@@ -361,7 +362,7 @@ def from_patch_file(settings, window=dummy_window()):
 
     logger.info('Patching ROM.')
 
-    filename_split = os.path.basename(settings.patch_file).split('.')
+    filename_split = os.path.basename(settings.patch_file).rpartition('.')
 
     if settings.output_file:
         outfilebase = settings.output_file
@@ -455,7 +456,7 @@ def cosmetic_patch(settings, window=dummy_window()):
 
     logger.info('Patching ROM.')
 
-    filename_split = os.path.basename(settings.patch_file).split('.')
+    filename_split = os.path.basename(settings.patch_file).rpartition('.')
 
     if settings.output_file:
         outfilebase = settings.output_file

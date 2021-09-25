@@ -62,6 +62,7 @@ songs = dict(chain(
 
 equipment = dict(chain(
     _entry('kokiri_sword', 'Kokiri Sword'),
+    _entry('giants_knife', 'Giants Knife'),
     _entry('biggoron_sword', 'Biggoron Sword'),
     _entry('deku_shield', 'Deku Shield'),
     _entry('hylian_shield', 'Hylian Shield'),

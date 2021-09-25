@@ -23,20 +23,20 @@ class FillError(ShuffleError):
 
 # Places all items into the world
 def distribute_items_restrictive(window, worlds, fill_locations=None):
-    if worlds[0].shuffle_song_items == 'song':
+    if worlds[0].settings.shuffle_song_items == 'song':
         song_location_names = [
-            'Song from Composers Grave', 'Song from Impa', 'Song from Malon', 'Song from Saria',
+            'Song from Royal Familys Tomb', 'Song from Impa', 'Song from Malon', 'Song from Saria',
             'Song from Ocarina of Time', 'Song from Windmill', 'Sheik in Forest', 'Sheik at Temple',
             'Sheik in Crater', 'Sheik in Ice Cavern', 'Sheik in Kakariko', 'Sheik at Colossus']
-    elif worlds[0].shuffle_song_items == 'dungeon':
+    elif worlds[0].settings.shuffle_song_items == 'dungeon':
         song_location_names = [
             'Deku Tree Queen Gohma Heart', 'Dodongos Cavern King Dodongo Heart',
             'Jabu Jabus Belly Barinade Heart', 'Forest Temple Phantom Ganon Heart',
             'Fire Temple Volvagia Heart', 'Water Temple Morpha Heart',
             'Spirit Temple Twinrova Heart', 'Shadow Temple Bongo Bongo Heart',
             'Sheik in Ice Cavern', 'Song from Impa',
-            'Gerudo Training Grounds MQ Ice Arrows Chest',
-            'Gerudo Training Grounds Maze Path Final Chest',
+            'Gerudo Training Ground MQ Ice Arrows Chest',
+            'Gerudo Training Ground Maze Path Final Chest',
             'Bottom of the Well Lens of Truth Chest',
             'Bottom of the Well MQ Lens of Truth Chest']
     else:
@@ -69,7 +69,7 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     songitempool = [item for world in worlds for item in world.itempool if item.type == 'Song']
     itempool =     [item for world in worlds for item in world.itempool if item.type != 'Shop' and item.type != 'Song']
 
-    if worlds[0].shuffle_song_items == 'any':
+    if worlds[0].settings.shuffle_song_items == 'any':
         itempool.extend(songitempool)
         songitempool = []
 
@@ -151,7 +151,7 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
     # Placing songs on their own since they have a relatively high chance
     # of failing compared to other item type. So this way we only have retry
     # the song locations only.
-    if worlds[0].shuffle_song_items != 'any':
+    if worlds[0].settings.shuffle_song_items != 'any':
         logger.info('Placing song items.')
         fill_ownworld_restrictive(window, worlds, search, song_locations, songitempool, progitempool, "song")
         search.collect_locations()
@@ -159,7 +159,7 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
 
     # Put one item in every dungeon, needs to be done before other items are
     # placed to ensure there is a spot available for them
-    if worlds[0].one_item_per_dungeon:
+    if worlds[0].settings.one_item_per_dungeon:
         logger.info('Placing one major item per dungeon.')
         fill_dungeon_unique_item(window, worlds, search, fill_locations, progitempool)
         search.collect_locations()
@@ -388,10 +388,10 @@ def fill_restrictive(window, worlds, base_search, locations, itempool, count=-1)
         max_search.collect_locations()
 
         # perform_access_check checks location reachability
-        if worlds[0].reachable_locations == 'all':
+        if worlds[0].settings.reachable_locations == 'all':
             perform_access_check = True
             extra_location_checks = []
-        elif worlds[0].reachable_locations == 'goals':
+        elif worlds[0].settings.reachable_locations == 'goals':
             # for All Goals Reachable, we have to track whether any goal items have been placed,
             # since we then have to start checking their reachability.
             perform_access_check = item_to_place.goalitem or not max_search.can_beat_game(scan_for_items=False)
@@ -515,7 +515,7 @@ def fast_fill(window, locations, itempool):
         item_to_place = itempool.pop()
         # Impa can't presently hand out refills at the start of the game.
         # Only replace her item with a rupee if it's junk.
-        if spot_to_fill.world.skip_child_zelda and spot_to_fill.name == 'Song from Impa' and item_to_place.name in remove_junk_set:
+        if spot_to_fill.world.settings.skip_child_zelda and spot_to_fill.name == 'Song from Impa' and item_to_place.name in remove_junk_set:
             item_to_place = ItemFactory('Rupee (1)', spot_to_fill.world)
         spot_to_fill.world.push_item(spot_to_fill, item_to_place)
         window.fillcount += 1

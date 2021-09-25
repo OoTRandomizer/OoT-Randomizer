@@ -97,8 +97,8 @@ entrance_shuffle_table = [
                         ('Bottom of the Well -> Kakariko Village',                          { 'index': 0x02A6 })),
     ('Dungeon',         ('ZF Ice Ledge -> Ice Cavern Beginning',                            { 'index': 0x0088 }),
                         ('Ice Cavern Beginning -> ZF Ice Ledge',                            { 'index': 0x03D4 })),
-    ('Dungeon',         ('Gerudo Fortress -> Gerudo Training Grounds Lobby',                { 'index': 0x0008 }),
-                        ('Gerudo Training Grounds Lobby -> Gerudo Fortress',                { 'index': 0x03A8 })),
+    ('Dungeon',         ('Gerudo Fortress -> Gerudo Training Ground Lobby',                 { 'index': 0x0008 }),
+                        ('Gerudo Training Ground Lobby -> Gerudo Fortress',                 { 'index': 0x03A8 })),
 
     ('Interior',        ('Kokiri Forest -> KF Midos House',                                 { 'index': 0x0433 }),
                         ('KF Midos House -> Kokiri Forest',                                 { 'index': 0x0443 })),
@@ -255,8 +255,8 @@ entrance_shuffle_table = [
                         ('Graveyard Shield Grave -> Graveyard',                             { 'index': 0x035D })),
     ('Grave',           ('Graveyard -> Graveyard Heart Piece Grave',                        { 'index': 0x031C }),
                         ('Graveyard Heart Piece Grave -> Graveyard',                        { 'index': 0x0361 })),
-    ('Grave',           ('Graveyard -> Graveyard Composers Grave',                          { 'index': 0x002D }),
-                        ('Graveyard Composers Grave -> Graveyard',                          { 'index': 0x050B })),
+    ('Grave',           ('Graveyard -> Graveyard Royal Familys Tomb',                       { 'index': 0x002D }),
+                        ('Graveyard Royal Familys Tomb -> Graveyard',                       { 'index': 0x050B })),
     ('Grave',           ('Graveyard -> Graveyard Dampes Grave',                             { 'index': 0x044F }),
                         ('Graveyard Dampes Grave -> Graveyard',                             { 'index': 0x0359 })),
 
@@ -381,27 +381,27 @@ def shuffle_random_entrances(worlds):
         entrance_pools = OrderedDict()
         one_way_priorities = {}
 
-        if worlds[0].owl_drops:
+        if worlds[0].settings.owl_drops:
             one_way_entrance_pools['OwlDrop'] = world.get_shufflable_entrances(type='OwlDrop')
 
-        if worlds[0].spawn_positions:
+        if worlds[0].settings.spawn_positions:
             one_way_entrance_pools['Spawn'] = world.get_shufflable_entrances(type='Spawn')
 
-        if worlds[0].warp_songs:
+        if worlds[0].settings.warp_songs:
             one_way_entrance_pools['WarpSong'] = world.get_shufflable_entrances(type='WarpSong')
-            if worlds[0].reachable_locations != 'beatable' and worlds[0].logic_rules == 'glitchless':
+            if worlds[0].settings.reachable_locations != 'beatable' and worlds[0].settings.logic_rules == 'glitchless':
                 # In glitchless, there aren't any other ways to access these areas
                 one_way_priorities['Bolero'] = priority_entrance_table['Bolero']
                 one_way_priorities['Nocturne'] = priority_entrance_table['Nocturne']
-                if not worlds[0].shuffle_dungeon_entrances and not worlds[0].shuffle_overworld_entrances:
+                if not worlds[0].settings.shuffle_dungeon_entrances and not worlds[0].settings.shuffle_overworld_entrances:
                     one_way_priorities['Requiem'] = priority_entrance_table['Requiem']
 
-        if worlds[0].shuffle_dungeon_entrances:
+        if worlds[0].settings.shuffle_dungeon_entrances:
             entrance_pools['Dungeon'] = world.get_shufflable_entrances(type='Dungeon', only_primary=True)
             # The fill algorithm will already make sure gohma is reachable, however it can end up putting
             # a forest escape via the hands of spirit on Deku leading to Deku on spirit in logic. This is
             # not really a closed forest anymore, so specifically remove Deku Tree from closed forest.
-            if worlds[0].open_forest == 'closed':
+            if worlds[0].settings.open_forest == 'closed':
                 entrance_pools['Dungeon'].remove(world.get_entrance('KF Outside Deku Tree -> Deku Tree Lobby'))
 
         if worlds[0].shuffle_interior_entrances:
@@ -409,11 +409,11 @@ def shuffle_random_entrances(worlds):
             if worlds[0].shuffle_special_interior_entrances:
                 entrance_pools['Interior'] += world.get_shufflable_entrances(type='SpecialInterior', only_primary=True)
 
-        if worlds[0].shuffle_grotto_entrances:
+        if worlds[0].settings.shuffle_grotto_entrances:
             entrance_pools['GrottoGrave'] = world.get_shufflable_entrances(type='Grotto', only_primary=True)
             entrance_pools['GrottoGrave'] += world.get_shufflable_entrances(type='Grave', only_primary=True)
 
-        if worlds[0].shuffle_overworld_entrances:
+        if worlds[0].settings.shuffle_overworld_entrances:
             entrance_pools['Overworld'] = world.get_shufflable_entrances(type='Overworld')
 
         # Set shuffled entrances as such
@@ -649,10 +649,10 @@ def place_one_way_priority_entrance(worlds, world, priority_name, allowed_region
         # Only allow Adult Spawn as sole Nocturne access if hints != mask.
         # Otherwise, child access is required here (adult access assumed or guaranteed later).
         if entrance.parent_region.name == 'Adult Spawn':
-            if priority_name != 'Nocturne' or entrance.world.hints == "mask":
+            if priority_name != 'Nocturne' or entrance.world.settings.hints == "mask":
                 continue
         # If not shuffling dungeons, Nocturne requires adult access.
-        if not entrance.world.shuffle_dungeon_entrances and priority_name == 'Nocturne':
+        if not entrance.world.settings.shuffle_dungeon_entrances and priority_name == 'Nocturne':
             if entrance.type != 'WarpSong' and entrance.parent_region.name != 'Adult Spawn':
                 continue
         for target in one_way_target_entrance_pools[entrance.type]:
@@ -734,7 +734,7 @@ def validate_world(world, worlds, entrance_placed, locations_to_ensure_reachable
                 if not max_search.visited(location):
                     raise EntranceShuffleError('%s is unreachable' % location.name)
 
-    if world.shuffle_interior_entrances and (world.misc_hints or world.hints != 'none') and \
+    if world.shuffle_interior_entrances and (world.settings.misc_hints or world.settings.hints != 'none') and \
        (entrance_placed == None or entrance_placed.type in ['Interior', 'SpecialInterior']):
         # Ensure Kak Potion Shop entrances are in the same hint area so there is no ambiguity as to which entrance is used for hints
         potion_front_entrance = get_entrance_replacing(world.get_region('Kak Potion Shop Front'), 'Kakariko Village -> Kak Potion Shop Front')
@@ -743,13 +743,13 @@ def validate_world(world, worlds, entrance_placed, locations_to_ensure_reachable
             raise EntranceShuffleError('Kak Potion Shop entrances are not in the same hint area')
 
         # When cows are shuffled, ensure the same thing for Impa's House, since the cow is reachable from both sides
-        if world.shuffle_cows:
+        if world.settings.shuffle_cows:
             impas_front_entrance = get_entrance_replacing(world.get_region('Kak Impas House'), 'Kakariko Village -> Kak Impas House')
             impas_back_entrance = get_entrance_replacing(world.get_region('Kak Impas House Back'), 'Kak Impas Ledge -> Kak Impas House Back')
             if impas_front_entrance is not None and impas_back_entrance is not None and not same_hint_area(impas_front_entrance, impas_back_entrance):
                 raise EntranceShuffleError('Kak Impas House entrances are not in the same hint area')
 
-    if (world.shuffle_special_interior_entrances or world.shuffle_overworld_entrances or world.spawn_positions) and \
+    if (world.shuffle_special_interior_entrances or world.settings.shuffle_overworld_entrances or world.settings.spawn_positions) and \
        (entrance_placed == None or entrance_placed.type in ['SpecialInterior', 'Overworld', 'Spawn', 'WarpSong', 'OwlDrop']):
         # At least one valid starting region with all basic refills should be reachable without using any items at the beginning of the seed
         # Note this creates new empty states rather than reuse the worlds' states (which already have starting items)
@@ -768,12 +768,12 @@ def validate_world(world, worlds, entrance_placed, locations_to_ensure_reachable
 
         # The player should be able to get back to ToT after going through time, without having collected any items
         # This is important to ensure that the player never loses access to the pedestal after going through time
-        if world.starting_age == 'child' and not time_travel_search.can_reach(world.get_region('Temple of Time'), age='adult'):
+        if world.settings.starting_age == 'child' and not time_travel_search.can_reach(world.get_region('Temple of Time'), age='adult'):
             raise EntranceShuffleError('Path to Temple of Time as adult is not guaranteed')
-        elif world.starting_age == 'adult' and not time_travel_search.can_reach(world.get_region('Temple of Time'), age='child'):
+        elif world.settings.starting_age == 'adult' and not time_travel_search.can_reach(world.get_region('Temple of Time'), age='child'):
             raise EntranceShuffleError('Path to Temple of Time as child is not guaranteed')
 
-    if (world.shuffle_interior_entrances or world.shuffle_overworld_entrances) and \
+    if (world.shuffle_interior_entrances or world.settings.shuffle_overworld_entrances) and \
        (entrance_placed == None or entrance_placed.type in ['Interior', 'SpecialInterior', 'Overworld', 'Spawn', 'WarpSong', 'OwlDrop']):
         # The Big Poe Shop should always be accessible as adult without the need to use any bottles
         # This is important to ensure that players can never lock their only bottles by filling them with Big Poes they can't sell

@@ -16,11 +16,11 @@ def set_rules(world):
     is_child = world.parser.parse_rule('is_child')
 
     for location in world.get_locations():
-        if world.shuffle_song_items == 'song':
+        if world.settings.shuffle_song_items == 'song':
             if location.type == 'Song':
                 # allow junk items, but songs must still have matching world
                 add_item_rule(location, lambda location, item: 
-                    ((location.world.distribution.song_as_items or world.starting_songs)
+                    ((location.world.distribution.song_as_items or world.settings.starting_songs)
                         and item.type != 'Song')
                     or (item.type == 'Song' and item.world.id == location.world.id))
             else:
@@ -49,20 +49,24 @@ def set_rules(world):
         else:
             add_item_rule(location, lambda location, item: item.type != 'Shop')
 
-        if world.skip_child_zelda and location.name == 'Song from Impa':
+        if world.settings.skip_child_zelda and location.name == 'Song from Impa':
             limit_to_itemset(location, SaveContext.giveable_items)
+            if world.settings.triforce_hunt and world.total_starting_triforce_count >= world.triforce_goal - world.settings.world_count:
+                # We have enough starting Triforce pieces that putting a piece on every world's Song from Impa would hit the goal count
+                # and render the game unbeatable, so for simplicity's sake we forbid putting pieces on any world's Song from Impa.
+                forbid_item(location, 'Triforce Piece')
 
-        if location.name == 'Forest Temple MQ First Room Chest' and world.shuffle_bosskeys == 'dungeon' and world.shuffle_smallkeys == 'dungeon' and world.tokensanity == 'off':
+        if location.name == 'Forest Temple MQ First Room Chest' and world.settings.shuffle_bosskeys == 'dungeon' and world.settings.shuffle_smallkeys == 'dungeon' and world.settings.tokensanity == 'off':
             # This location needs to be a small key. Make sure the boss key isn't placed here.
             forbid_item(location, 'Boss Key (Forest Temple)')
 
-        if location.type == 'HintStone' and world.hints == 'mask':
+        if location.type == 'HintStone' and world.settings.hints == 'mask':
             location.add_rule(is_child)
 
         if location.name in world.always_hints:
             location.add_rule(guarantee_hint)
 
-    for location in world.disabled_locations:
+    for location in world.settings.disabled_locations:
         try:
             world.get_location(location).disabled = DisableType.PENDING
         except:

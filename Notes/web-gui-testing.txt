@@ -1,0 +1,16 @@
+Guide to test changes to the GUI / generator page code
+------------
+Within this repo, there is a small testing suite for website compatibility. 
+After having compiled all code, for example by calling Gui.py, one can use the GUI/webTest folder to spin up a stripped down instance of the OoTR web server.
+Both Python3 and NodeJS v10+ are required.
+
+Instructions
+------------
+
+Step 1: Go to GUI/webTest/settingsParser and run node index.js
+  This will generate the settingslist.json required for the GUI to function
+
+Step 2: Drop back into GUI/webTest and run node server.js
+  This will spin up a small web server on http://localhost:80/ and start your browser (if compatible)
+
+From there, one can check their code changes as they would look like on ootrandomizer.com

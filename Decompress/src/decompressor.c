@@ -161,13 +161,6 @@ void loadROM(char* name)
     size = ftell(romFile);
     fseek(romFile, 0, SEEK_SET);
 
-    /* If it's not the right size, exit */
-    if(size != COMPSIZE)
-    {
-        fprintf(stderr, "Error, %s is not the correct size", name);
-        exit(1);
-    }
-
     /* Read to inROM, close romFile, and copy to outROM */
     fread(inROM, sizeof(char), size, romFile);
     tempROM = (uint16_t*)inROM;
