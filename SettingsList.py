@@ -841,20 +841,23 @@ logic_tricks = {
                     midflight, with precise timing and positioning.
                     '''},
     'Death Mountain Crater Upper to Lower with Hammer': {
-        'name'    : 'logic_crater_upper_to_lower',
+        'name'    : 'logic_crater_boulder_jumpslash',
         'tags'    : ("Death Mountain Crater",),
         'tooltip' : '''\
                     With the Hammer, you can jump slash the rock twice
                     in the same jump in order to destroy it before you
                     fall into the lava.
                     '''},
-    'Death Mountain Crater Upper to Lower without Hammer': {
+    'Death Mountain Crater Upper to Lower Boulder Skip': {
         'name'    : 'logic_dmc_boulder_skip',
         'tags'    : ("Death Mountain Crater",),
         'tooltip' : '''\
                     With careful positioning, you can jump to the ledge 
                     where the boulder is, then use repeated ledge grabs 
                     to shimmy to a climbable ledge.
+                    This trick supersedes "Death Mountain Crater Upper
+                    to Lower with Hammer", so knowledge of that trick 
+                    is assumed.
                     '''},
     'Zora\'s Domain Entry with Hover Boots': {
         'name'    : 'logic_zora_with_hovers',
