@@ -2731,21 +2731,33 @@ setting_infos = [
             'randomize_key': 'randomize_settings',
         },
     ),
-    Checkbutton(
+    Combobox(
         name           = 'shuffle_dungeon_entrances',
         gui_text       = 'Shuffle Dungeon Entrances',
+		default		   = 'off',
+		choices		   = {
+			'off':		 'Off',
+			'simple':	 'Dungeon',
+			'all':		 'Dungeon and Ganon',
+		},
         gui_tooltip    = '''\
-            Shuffle the pool of dungeon entrances, including Bottom 
-            of the Well, Ice Cavern, and Gerudo Training Ground.
-            However, Ganon's Castle and Thieves' Hideout are not shuffled.
-
+            Dungeon Shuffle will the pool of dungeon entrances, including 
+			Bottom of the Well, Ice Cavern, and Gerudo Training Ground.
+            
+			With Dungeon and Ganon selected, all dungeon's including Ganons
+			castle will be shuffled.
+			
             Additionally, the entrances of Deku Tree, Fire Temple and 
             Bottom of the Well are opened for both adult and child.
         ''',
-        default        = False,
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
+			'distribution': [
+				('off', 2),
+				('simple', 1),
+				('all', 1),
+			]
         },
     ),
     Checkbutton(

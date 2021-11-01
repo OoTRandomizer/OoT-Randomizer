@@ -99,6 +99,8 @@ entrance_shuffle_table = [
                         ('Ice Cavern Beginning -> ZF Ice Ledge',                            { 'index': 0x03D4 })),
     ('Dungeon',         ('Gerudo Fortress -> Gerudo Training Ground Lobby',                 { 'index': 0x0008 }),
                         ('Gerudo Training Ground Lobby -> Gerudo Fortress',                 { 'index': 0x03A8 })),
+    ('DungeonSpecial',  ('Ganons Castle Grounds -> Ganons Castle Lobby',                    { 'index': 0x0467 }),
+                        ('Ganons Castle Lobby -> Castle Grounds',                    		{ 'index': 0x023D })),
 
     ('Interior',        ('Kokiri Forest -> KF Midos House',                                 { 'index': 0x0433 }),
                         ('KF Midos House -> Kokiri Forest',                                 { 'index': 0x0443 })),
@@ -403,6 +405,8 @@ def shuffle_random_entrances(worlds):
             # not really a closed forest anymore, so specifically remove Deku Tree from closed forest.
             if worlds[0].settings.open_forest == 'closed':
                 entrance_pools['Dungeon'].remove(world.get_entrance('KF Outside Deku Tree -> Deku Tree Lobby'))
+            if worlds[0].shuffle_special_dungeon_entrances:
+                entrance_pools['Dungeon'] += world.get_shufflable_entrances(type='DungeonSpecial', only_primary=True)
 
         if worlds[0].shuffle_interior_entrances:
             entrance_pools['Interior'] = world.get_shufflable_entrances(type='Interior', only_primary=True)
@@ -708,7 +712,7 @@ def validate_world(world, worlds, entrance_placed, locations_to_ensure_reachable
     # This means we need to hard check that none of the relevant entrances are ever reachable as that age
     # This is mostly relevant when shuffling special interiors (such as windmill or kak potion shop)
     # Warp Songs and Overworld Spawns can also end up inside certain indoors so those need to be handled as well
-    CHILD_FORBIDDEN = ['OGC Great Fairy Fountain -> Castle Grounds', 'GV Carpenter Tent -> GV Fortress Side']
+    CHILD_FORBIDDEN = ['OGC Great Fairy Fountain -> Castle Grounds', 'GV Carpenter Tent -> GV Fortress Side', 'Ganons Castle Lobby -> Castle Grounds']
     ADULT_FORBIDDEN = ['HC Great Fairy Fountain -> Castle Grounds', 'HC Storms Grotto -> Castle Grounds']
 
     for entrance in world.get_shufflable_entrances():

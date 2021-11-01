@@ -24,10 +24,10 @@
         "region_name": "Ganons Castle Deku Scrubs",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Castle Deku Scrub Center-Left": "True",
-            "Ganons Castle Deku Scrub Center-Right": "True",
-            "Ganons Castle Deku Scrub Right": "True",
-            "Ganons Castle Deku Scrub Left": "True",
+            "Ganons Castle Deku Scrub Center-Left": "can_stun_deku",
+            "Ganons Castle Deku Scrub Center-Right": "can_stun_deku",
+            "Ganons Castle Deku Scrub Right": "can_stun_deku",
+            "Ganons Castle Deku Scrub Left": "can_stun_deku",
             "Free Fairies": "has_bottle"
         }
     },
@@ -38,7 +38,8 @@
             "Forest Trial Clear": "can_use(Light_Arrows) and (Fire_Arrows or Dins_Fire)"
         },
         "locations": {
-            "Ganons Castle Forest Trial Chest": "True"
+            "Ganons Castle Forest Trial Chest": "is_adult or Slingshot or Sticks or 
+                Kokiri_Sword or can_use(Dins_Fire)"
         }
     },
     {
@@ -75,7 +76,7 @@
         "locations": {
             "Ganons Castle Shadow Trial Front Chest": "
                 can_use(Fire_Arrows) or Progressive_Hookshot or 
-                Hover_Boots or can_play(Song_of_Time)",
+                Hover_Boots or can_play(Song_of_Time) or is_child",
             "Ganons Castle Shadow Trial Golden Gauntlets Chest": "
                 can_use(Fire_Arrows) or 
                 (can_use(Longshot) and (Hover_Boots or can_use(Dins_Fire)))"

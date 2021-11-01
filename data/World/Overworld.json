@@ -1868,7 +1868,7 @@
         "region_name": "Ganons Castle Tower",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Tower Boss Key Chest": "True",
+            "Ganons Tower Boss Key Chest": "is_adult or Kokiri_Sword",
             "Ganondorf Hint": "Boss_Key_Ganons_Castle",
             "Ganon": "Boss_Key_Ganons_Castle and can_use(Light_Arrows)"
         }
