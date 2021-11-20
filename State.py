@@ -108,6 +108,14 @@ class State(object):
         return self.prog_items[item_goal['name']] >= per_world_max_quantity
 
 
+    def has_all_item_goals(self):
+        for category in self.world.goal_categories.values():
+            for goal in category.goals:
+                if not all(map(lambda i: self.has_full_item_goal(category, goal, i), goal.items)):
+                    return False
+        return True
+
+
     def had_night_start(self):
         stod = self.world.settings.starting_tod
         # These are all not between 6:30 and 18:00

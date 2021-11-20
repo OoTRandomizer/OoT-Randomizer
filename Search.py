@@ -218,12 +218,11 @@ class Search(object):
     # conditions are possible, such as in Triforce Hunt, where only the total
     # amount of an item across all worlds matter, not specifcally who has it
     #
-    # Win condition can be a string that gets mapped to a function(state_list) here
-    # or just a function(state_list)
-    def can_beat_game(self, scan_for_items=True):
+    # predicate must be a function (state) -> bool, that will be applied to all states
+    def can_beat_game(self, scan_for_items=True, predicate=State.won):
 
         # Check if already beaten
-        if all(map(State.won, self.state_list)):
+        if all(map(predicate, self.state_list)):
             return True
 
         if scan_for_items:
@@ -232,12 +231,12 @@ class Search(object):
             search = self.copy()
             search.collect_locations()
             # if every state got the Triforce, then return True
-            return all(map(State.won, search.state_list))
+            return all(map(predicate, search.state_list))
         else:
             return False
 
 
-    def can_beat_goals_fast(self, goal_categories, world_filter = None):
+    def beatable_goals_fast(self, goal_categories, world_filter = None):
         valid_goals = self.test_category_goals(goal_categories, world_filter)
         if all(map(State.won, self.state_list)):
             valid_goals['way of the hero'] = True
@@ -246,7 +245,7 @@ class Search(object):
         return valid_goals
 
 
-    def can_beat_goals(self, goal_categories):
+    def beatable_goals(self, goal_categories):
         # collect all available items
         # make a new search since we might be iterating over one already
         search = self.copy()
@@ -273,11 +272,12 @@ class Search(object):
                 if world_filter is not None and state.world.id != world_filter:
                     continue
                 valid_goals[category_name]['stateReverse'][state.world.id] = []
-                for goal in category.goals:
+                world_category = state.world.goal_categories[category_name]
+                for goal in world_category.goals:
                     if goal.name not in valid_goals[category_name]:
                         valid_goals[category_name][goal.name] = []
                     # Check if already beaten
-                    if all(map(lambda i: state.has_full_item_goal(category, goal, i), goal.items)):
+                    if all(map(lambda i: state.has_full_item_goal(world_category, goal, i), goal.items)):
                         valid_goals[category_name][goal.name].append(state.world.id)
                         # Reverse lookup for checking if the category is already beaten.
                         # Only used to check if starting items satisfy the category.

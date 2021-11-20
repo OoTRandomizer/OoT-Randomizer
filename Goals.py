@@ -40,7 +40,7 @@ class Goal(object):
         self._item_cache = {}
     
     def copy(self):
-        new_goal = Goal(self.world, self.name, self.hint_text, self.color, self.items, self.locations, self.lock_locations, self.lock_entrances, self.required_locations)
+        new_goal = Goal(self.world, self.name, self.hint_text, self.color, self.items, self.locations, self.lock_locations, self.lock_entrances, self.required_locations, True)
         return new_goal
 
     def get_item(self, item):
@@ -98,7 +98,7 @@ class GoalCategory(object):
     def is_beaten(self, search):
         # if the category requirements are already satisfied by starting items (such as Links Pocket),
         # do not generate hints for other goals in the category
-        starting_goals = search.can_beat_goals_fast({ self.name: self })
+        starting_goals = search.beatable_goals_fast({ self.name: self })
         return all(map(lambda s: len(starting_goals[self.name]['stateReverse'][s.world.id]) >= self.minimum_goals, search.state_list))
 
 
@@ -190,7 +190,7 @@ def update_goal_items(spoiler):
                 reachable_goals = {}
                 # Goals are changed for beatable-only accessibility per-world
                 category.update_reachable_goals(search, full_search)
-                reachable_goals = full_search.can_beat_goals_fast({ cat_name: category }, cat_world.id)
+                reachable_goals = full_search.beatable_goals_fast({ cat_name: category }, cat_world.id)
                 identified_locations = search_goals({ cat_name: category }, reachable_goals, search, priority_locations, all_locations, item_locations, always_locations, _maybe_set_light_arrows)
                 # Multiworld can have all goals for one player's bridge entirely
                 # locked by another player's bridge. Therefore, we can't assume
@@ -214,7 +214,7 @@ def update_goal_items(spoiler):
         full_search.collect_locations()
         for cat_name, category in worlds[0].unlocked_goal_categories.items():
             category.update_reachable_goals(search, full_search)
-        reachable_goals = full_search.can_beat_goals_fast(worlds[0].unlocked_goal_categories)
+        reachable_goals = full_search.beatable_goals_fast(worlds[0].unlocked_goal_categories)
     identified_locations = search_goals(worlds[0].unlocked_goal_categories, reachable_goals, search, priority_locations, all_locations, item_locations, always_locations, _maybe_set_light_arrows, search_woth=True)
     required_locations.update(identified_locations)
     woth_locations = list(required_locations['way of the hero'])
@@ -306,7 +306,7 @@ def search_goals(categories, reachable_goals, search, priority_locations, all_lo
             location.item = None
             # copies state! This is very important as we're in the middle of a search
             # already, but beneficially, has search it can start from
-            valid_goals = search.can_beat_goals(categories)
+            valid_goals = search.beatable_goals(categories)
             for cat_name, category in categories.items():
                 # Exit early if no goals are beatable with category locks
                 if category.name in reachable_goals and reachable_goals[category.name]:

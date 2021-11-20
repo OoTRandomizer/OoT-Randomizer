@@ -101,6 +101,11 @@ do that.
 
 ### Dev
 
+#### Bug fixes
+
+* Fix seed generation for multiworld with random trials.
+* Fix seed generation for All Goals Reachable.
+
 ### 6.1
 
 #### New Features

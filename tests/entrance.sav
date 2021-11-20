@@ -10,7 +10,7 @@
 "gerudo_fortress": "fast",
 "bridge": "medallions",
 "logic_rules": "glitchless",
-"reachable_locations": "all",
+"reachable_locations": "goals",
 "bombchus_in_logic": false,
 "one_item_per_dungeon": false,
 "trials_random": false,

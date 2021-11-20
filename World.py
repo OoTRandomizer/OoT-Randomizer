@@ -760,7 +760,10 @@ class World(object):
                 trials.goal_count += 1
 
             # Trials category is finalized and saved only if at least one trial is on
-            if self.settings.trials > 0:
+            # If random trials are on and one world in multiworld gets 0 trials, still
+            # add the goal to prevent key errors. Since no items fulfill the goal, it
+            # will always be invalid for that world and not generate hints.
+            if self.settings.trials > 0 or self.settings.trials_random:
                 trials.add_goal(trial_goal)
                 self.goal_categories[trials.name] = trials
 
