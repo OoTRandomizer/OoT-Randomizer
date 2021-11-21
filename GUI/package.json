@@ -1,7 +1,7 @@
 {
   "name": "ootr-electron-gui",
   "description": "GUI for Ocarina of Time Randomizer",
-  "version": "6.0.0",
+  "version": "6.1.0",
   "homepage": "https://www.ootrandomizer.com",
   "author": "ZeldaSpeedRuns <zsrstaff@gmail.com>",
   "main": "electron/dist/main.js",
@@ -81,6 +81,9 @@
     "dmg": {
       "internetEnabled": true
     }
+  },
+  "engines": {
+    "node": ">=10 <=15"
   },
   "dependencies": {
     "commander": "2.20.0",
