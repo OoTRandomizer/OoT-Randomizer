@@ -515,7 +515,7 @@ export class GUIGlobal {
 
         this.globalEmitter.emit({ name: "local_version_checked", version: res });
 
-        let branch = res.includes("Release") ? "master" : "Dev";
+        let branch = res.includes("Release") ? "release" : "Dev";
         var remoteFile = await this.http.get("https://raw.githubusercontent.com/TestRunnerSRL/OoT-Randomizer/" + branch + "/version.py", { responseType: "text" }).toPromise();
 
         let remoteVersion = remoteFile.substr(remoteFile.indexOf("'") + 1);

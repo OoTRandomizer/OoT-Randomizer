@@ -61,7 +61,7 @@ export class FooterComponent {
 
   promptUpdate() {
     this.dialogService.open(ConfirmationWindow, {
-      autoFocus: true, closeOnBackdropClick: true, closeOnEsc: true, hasBackdrop: true, hasScroll: false, context: { dialogHeader: "New Version Available!", dialogMessage: "You are on version " + this.localVersion + ", and the latest is version " + this.remoteVersion + ". Do you want to download the latest version now?" }
+      autoFocus: true, closeOnBackdropClick: true, closeOnEsc: true, hasBackdrop: true, hasScroll: false, context: { dialogHeader: "New Version Available!", dialogMessage: "You are using version " + this.localVersion + ", and the latest is version " + this.remoteVersion + ". Do you want to download the latest version now?" + ((this.remoteVersion.includes("Release")) ? "" : " (Note that you are using a development build and therefore will have to redownload and compile the source off GitHub yourself)") }
     }).onClose.subscribe(confirmed => {
 
       if (confirmed) {
