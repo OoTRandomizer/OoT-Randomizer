@@ -4,7 +4,7 @@ import logging
 import random
 import os
 from TextBox import line_wrap, linewrapJP
-
+from Utils import local_path
 TEXT_START = 0x92D000
 TEXT_START_JP = 0x8EB000
 ENG_TEXT_SIZE_LIMIT = 0x39000
@@ -20,6 +20,7 @@ ENG_TABLE_SIZE = CREDITS_TABLE_START - ENG_TABLE_START
 EXTENDED_TABLE_START = JPN_TABLE_START # start writing entries to the jp table instead of english for more space
 EXTENDED_TABLE_SIZE = JPN_TABLE_SIZE + ENG_TABLE_SIZE # 0x8360 bytes, 4204 entries
 
+temporal = local_path("temporal.py")
 # name of type, followed by number of additional bytes to read, follwed by a function that prints the code
 CONTROL_CODES = {
     0x00: ('pad', 0, lambda _: '<pad>' ),
@@ -847,7 +848,7 @@ def jp_start(rom, mode = 0):
     NULLTABLE = bytes([0x00] * JPN_TABLE_SIZE)
     if mode == 1:
         rom.write_bytes(EXTENDED_TABLE_START,NULLTABLE)
-    lines = open('textJP.py',encoding='utf-8').readlines()
+    lines = open(local_path('textJP.py'),encoding='utf-8').readlines()
     NewLines = []
     increments = 1
 
@@ -856,11 +857,11 @@ def jp_start(rom, mode = 0):
         NewLines.append(line.replace(' :',a))
         increments += 1
         
-    with open("temporal.py","w",encoding="utf-8")as new:
+    with open(temporal,"w",encoding="utf-8")as new:
         new.write(''.join(NewLines))
 
         
-    with open("temporal.py",'a') as new:
+    with open(temporal,'a') as new:
         new.write("\n")
         new.write("MESTEXT = {\n")
 
@@ -1183,7 +1184,7 @@ def update_message_jp(messages, id, text, opts=None, mode = 0, align = "left"):
         text = linewrapJP(text, 1, align)
         text = text + "||"
         jptext = (JPencode(text, 2))
-    with open("temporal.py",'a') as new:
+    with open(temporal,'a') as new:
         new.write('    0x')
         new.write(str(f'{id:04x}'))
         new.write(":    (r'")
@@ -1493,7 +1494,7 @@ def repack_messages(rom, messages, permutation=None, always_allow_skip=True, spe
     rom.write_bytes(entry_offset, [0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
 
 def reproduce_messages_jp(messages):
-    with open("temporal.py",'a') as new:
+    with open(temporal,'a') as new:
         new.write("}\n")
         new.write("new_jp = {**RAWTEXT_JP,**MESTEXT}\n")
         new.write("mes_sorted = sorted(new_jp.items(), key=lambda x:x[0])")
@@ -1530,7 +1531,7 @@ def write_messages(rom, shuffle = False, shuffle_group = None, mode = 0):
     opts = int_to_bytes(0,1)
     tex = None
     text_size_limit = JPN_TEXT_SIZE_LIMIT
-    with open("temporal.py", "r+")as red:
+    with open(temporal, "r+")as red:
         for id, (text, opt, tag, ending) in new_jp.items():
             for idr, offs in destinate_ids:
                 if idr == id:
@@ -1610,7 +1611,7 @@ def write_messages(rom, shuffle = False, shuffle_group = None, mode = 0):
     entry_offset = EXTENDED_TABLE_START + 8 * index
     if mode == 1:
         rom.write_bytes(entry_offset, [0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
-        os.remove("temporal.py")
+        os.remove(temporal)
 
 def get_destination(id, mode=0):
     from temporal import new_jp, destinate_ids, MESTEXT, RAWTEXT_JP
@@ -1712,7 +1713,7 @@ def shuffle_messages_jp(messages, except_hints=True, always_allow_skip=True):
         )
         is_destin = (str(id) == str(destination_ids))
         return (is_destin)
-    with open("temporal.py","r+") as dec:
+    with open(temporal,"r+") as dec:
         from temporal import new_jp
         for id, (text, opt, tag, ending) in new_jp.items():
             if "g" in tag :
