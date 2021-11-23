@@ -72,7 +72,7 @@ location_table = OrderedDict([
     ("KF Midos Bottom Right Chest",                                  ("Chest",        0x28,  0x03, None,                        'Recovery Heart',                        ("Kokiri Forest", "Forest",))),
     ("KF Kokiri Sword Chest",                                        ("Chest",        0x55,  0x00, None,                        'Kokiri Sword',                          ("Kokiri Forest", "Forest",))),
     ("KF Storms Grotto Chest",                                       ("Chest",        0x3E,  0x0C, None,                        'Rupees (20)',                           ("Kokiri Forest", "Forest", "Grottos"))),
-    ("KF Links House Cow",                                           ("NPC",          0x34,  0x15, None,                        'Milk',                                  ("KF Links House", "Forest", "Cow", "Minigames"))),
+    ("KF Links House Cow",                                           ("NPC",          0x34,  0x15, None,                        'Milk',                                  ("Kokiri Forest", "Forest", "Cow", "Minigames"))),
     ("KF GS Know It All House",                                      ("GS Token",     0x0C,  0x02, None,                        'Gold Skulltula Token',                  ("Kokiri Forest", "Skulltulas",))),
     ("KF GS Bean Patch",                                             ("GS Token",     0x0C,  0x01, None,                        'Gold Skulltula Token',                  ("Kokiri Forest", "Skulltulas",))),
     ("KF GS House of Twins",                                         ("GS Token",     0x0C,  0x04, None,                        'Gold Skulltula Token',                  ("Kokiri Forest", "Skulltulas",))),
@@ -165,7 +165,7 @@ location_table = OrderedDict([
     ("HC GS Storms Grotto",                                          ("GS Token",     0x0E,  0x02, None,                        'Gold Skulltula Token',                  ("Hyrule Castle", "Skulltulas", "Grottos"))),
 
     # Lon Lon Ranch
-    ("LLR Talons Chickens",                                          ("NPC",          0x4C,  0x14, None,                        'Bottle with Milk',                      ("Lon Lon Ranch", "Kakariko", "Minigames"))),
+    ("LLR Talons Chickens",                                          ("NPC",          0x4C,  0x14, None,                        'Bottle with Milk',                      ("Lon Lon Ranch", "Minigames"))),
     ("LLR Freestanding PoH",                                         ("Collectable",  0x4C,  0x01, None,                        'Piece of Heart',                        ("Lon Lon Ranch",))),
     ("LLR Deku Scrub Grotto Left",                                   ("GrottoNPC",    0xFC,  0x30, None,                        'Buy Deku Nut (5)',                      ("Lon Lon Ranch", "Deku Scrub", "Grottos"))),
     ("LLR Deku Scrub Grotto Center",                                 ("GrottoNPC",    0xFC,  0x33, None,                        'Buy Deku Seeds (30)',                   ("Lon Lon Ranch", "Deku Scrub", "Grottos"))),
@@ -368,8 +368,8 @@ location_table = OrderedDict([
     ("Colossus GS Hill",                                             ("GS Token",     0x15,  0x04, None,                        'Gold Skulltula Token',                  ("Desert Colossus", "Skulltulas",))),
 
     # Outside Ganon's Castle
-    ("OGC Great Fairy Reward",                                       ("Cutscene",     0xFF,  0x15, None,                        'Double Defense',                        ("outside Ganon's Castle", "Market", "Fairies"))),
-    ("OGC GS",                                                       ("GS Token",     0x0E,  0x01, None,                        'Gold Skulltula Token',                  ("outside Ganon's Castle", "Skulltulas",))),
+    ("OGC Great Fairy Reward",                                       ("Cutscene",     0xFF,  0x15, None,                        'Double Defense',                        ("Outside Ganon's Castle", "Market", "Fairies"))),
+    ("OGC GS",                                                       ("GS Token",     0x0E,  0x01, None,                        'Gold Skulltula Token',                  ("Outside Ganon's Castle", "Skulltulas",))),
 
     ## Dungeons
     # Deku Tree vanilla
