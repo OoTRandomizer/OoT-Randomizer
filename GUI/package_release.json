@@ -78,13 +78,10 @@
     "mac": {
       "target": "dmg",
       "category": "public.app-category.utilities"
-    },
-    "dmg": {
-      "internetEnabled": true
     }
   },
   "engines": {
-    "node": ">=10 <=15"
+    "node": ">=10 <15"
   },
   "dependencies": {
     "commander": "2.20.0",
