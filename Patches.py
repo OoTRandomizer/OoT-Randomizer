@@ -2226,25 +2226,99 @@ def h2k(char):
 
 def k2h(char):
     return ''.join([chr(n-96) if (12448 < n and n < 12535) or n==12541 or n==12542 else chr(n) for n in [ord(c) for c in char]])
-
+    
 def create_fake_name_jp(name):
-    list_name = list(name)
-    index = len(name)
+    fake_words_1 = [
+        ["ア", "マ"],
+        ["カ", "ガ"],
+        ["キ", "ギ"],
+        ["ク", "グ"],
+        ["ケ", "ゲ"],
+        ["コ", "ゴ"],
+        ["サ", "ザ"],
+        ["シ", "ツ", "ジ", "ヅ"],
+        ["ス", "ヌ", "ズ"],
+        ["セ", "ゼ"],
+        ["ソ", "ゾ"],
+        ["タ", "ダ"],
+        ["チ", "ヂ"],
+        ["テ", "デ"],
+        ["ト", "ド"],
+        ["ハ", "バ", "パ"],
+        ["ヒ", "ビ", "ピ"],
+        ["フ", "ブ", "プ"],
+        ["ヘ", "ベ", "ペ"],
+        ["ホ", "ボ", "ポ"],
+        ["ロ", "口"],
+        ["か", "が"],
+        ["き", "ぎ"],
+        ["く", "ぐ"],
+        ["け", "げ"],
+        ["こ", "ご"],
+        ["さ", "ざ"],
+        ["し", "じ"],
+        ["す", "ず"],
+        ["せ", "ぜ"],
+        ["そ", "ぞ"],
+        ["た", "だ"],
+        ["ち", "ぢ"],
+        ["つ", "づ"],
+        ["て", "で"],
+        ["と", "ど"],
+        ["ぬ", "め"],
+        ["は", "ば", "ぱ"],
+        ["ひ", "び", "ぴ"],
+        ["ふ", "ぶ", "ぷ"],
+        ["へ", "べ", "ぺ"],
+        ["ほ", "ぼ", "ぽ"],
+    ]
+    fake_words_2 = {
+        "力":    "カ",
+        "本":    "木",
+        "巨":    "臣",
+        "矢":    "失",
+        "太":    "大",
+        "牛":    "午",
+        "議":    "儀",
+        "刀":    "カ",
+        "目":    "日",
+        "薬":    "楽",
+    }
     n = 0
     z = 0
+    for a, b in fake_words_2.items():
+        if a in name:
+            n += name.count(a)
+            name = name.replace(a, b)
+    
+    list_name = list(name)
+    index = len(name)         
     while n <= index / 5:
         k = random.randrange(index)
         if z + 1 == k or z - 1 == k:
             pass
-        else:
+        else: 
+            f = 0
+            for a in fake_words_1:
+                if list_name[k] in a:
+                    r = random.choice(a)
+                    if list_name[k] == r:
+                        f = 1
+                    elif list_name[k] != r:
+                        list_name[k] = r
+                        n += 1
+                        f = 1
             p = re.compile('[ぁ-らりるれろわをん]+')
             q = re.compile('[\ァ-ラリルレロワヲン]+')
-            if p.fullmatch(list_name[k]):
-                list_name[k] = h2k(list_name[k])
-                n += 1
-            elif q.fullmatch(list_name[k]):
-                list_name[k] = k2h(list_name[k])
-                n += 1
+            if f == 0:
+                if p.fullmatch(list_name[k]):
+                    list_name[k] = h2k(list_name[k])
+                    n += 1
+                elif q.fullmatch(list_name[k]):
+                    list_name[k] = k2h(list_name[k])
+                    n += 1
+            elif f == 1:
+                pass
             z = k
     new_name = ''.join(list_name)
     return new_name
