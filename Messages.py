@@ -1509,7 +1509,10 @@ def update_item_messages(messages, world):
         ntext = "<$痛いッピ！勘弁ッピ！{"
         update_message_jp(messages, 0x101A, ntext, 0x00, 1, align = "center")
         for id, (text, textJP) in new_item_messages.items():
-            update_message_jp(messages, id, textJP, 0x23, 2, align = "left")
+            if "~" in textJP:
+                update_message_jp(messages, id, textJP, 0x23, 2, align = "left")
+            elif "~" not in textJP:
+                update_message_jp(messages, id, textJP, 0x23, 2, align = "center")
             
         for id, text in shop_mes.items():
             update_message_jp(messages, id, text, 0x03, align = "left")
