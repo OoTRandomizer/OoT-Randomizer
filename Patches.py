@@ -2278,6 +2278,7 @@ def create_fake_name_jp(name, redo=0):
         ["わ", "れ", "ね"],
     ]
     fake_words_2 = {
+        "体":    "休",
         "力":    "カ",
         "本":    "木",
         "巨":    "臣",

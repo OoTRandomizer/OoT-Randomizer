@@ -1281,15 +1281,18 @@ def add_message(messages, text, id=0, opts=0x00):
 messages = []
 def update_message_jp(messages, id, text, opts=None, mode = 0, align = "left"):
     if mode == 0:
-        text = linewrapJP(text, 0, align)
+        if align != "custom":
+            text = linewrapJP(text, 0, align)
         text = text + "|"
         jptext = (JPencode(text))
     elif mode == 1:
-        text = linewrapJP(text, 0, align)
+        if align != "custom":
+            text = linewrapJP(text, 0, align)
         text = text + "|"
         jptext = (JPencode(text, 1))
     elif mode == 2:
-        text = linewrapJP(text, 1, align)
+        if align != "custom":
+            text = linewrapJP(text, 1, align)
         text = text + "||"
         jptext = (JPencode(text, 2))
     jptext = name_replace(jptext)
