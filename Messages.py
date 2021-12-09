@@ -651,7 +651,6 @@ SHOP_MESSAGES = {
     0x8062: "<赤いクスリ　４０ルピー&:2#\x02かう&やめとく#\x00>",
     0x8065: "<#\x01赤いクスリ　５０ルピー#\x00&飲むと　体力が　回復する。>*O",
     0x8063: "<赤いクスリ　５０ルピー&:2#\x02かう&やめとく#\x00>",
-    0x80BD: "<#\x01売り切れ#\x00>*O",
 }
 
 COLOR_MAP = {
@@ -814,6 +813,7 @@ MISC_MESSAGES = {
     0x70FC:    (None, "<<わたし、夢を　見たのです。&&##\x02みどりに光る石##\x00を　かかげた&&人の姿に　変わったのです。{{", 0x03, "center"),
     0x7123:    (None, "<<よかった。あなたが　来てくれて…{{", 0x03, "center"),
     0x71AF:    (None, "<<パーフェクト～ッ！！！{{", 0x00, "center"),
+    0x80BD:    (None, "<<##\x01売り切れ##\x00>>*O", 0x03, "center"),
     0x9100:    ("I am out of goods now.\x01Sorry!\x04The mark that will lead you to\x01the Spirit Temple is the \x05\x41flag on\x01the left \x05\x40outside the shop.\x01Be seeing you!\x02", "<<マタ　来テネ～。", 0x00, "center"),
 }
 
@@ -1193,6 +1193,8 @@ class Message:
 
         self.index = index
         self.id = id
+        if opts is None:
+            opts = 0x00
         self.opts = opts  # Textbox type and y position
         self.box_type = (self.opts & 0xF0) >> 4
         self.position = (self.opts & 0x0F)
