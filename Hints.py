@@ -1086,7 +1086,7 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
 
     if checkedLocations is None:
         checkedLocations = set()
-
+    checkedAlwaysLocations = set()
     stoneIDs = list(gossipLocations.keys())
 
     world.distribution.configure_gossip(spoiler, stoneIDs)
@@ -1210,7 +1210,7 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
         alwaysLocations = getHintGroup('always', world)
         for hint in alwaysLocations:
             location = world.get_location(hint.name)
-            checkedLocations.add(hint.name)
+            checkedAlwaysLocations.add(hint.name)
             if location.item.name in bingoBottlesForHints and world.settings.hint_dist == 'bingo':
                 always_item = 'Bottle'
             else:
@@ -1289,7 +1289,7 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
             raise Exception('User-provided item hints were requested, but copies per named-item hint is zero')
         else:
             for i in range(0, len(world.named_item_pool)):
-                hint = get_specific_item_hint(spoiler, world, checkedLocations)
+                hint = get_specific_item_hint(spoiler, world, checkedLocations | checkedAlwaysLocations)
                 if hint:
                     gossip_text, location = hint
                     place_ok = add_hint(spoiler, world, stoneGroups, gossip_text, hint_dist['named-item'][1], location)
@@ -1346,7 +1346,12 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
             except IndexError:
                 raise Exception('Not enough valid hints to fill gossip stone locations.')
 
-        hint = hint_func[hint_type](spoiler, world, checkedLocations)
+        allCheckedLocations = checkedLocations | checkedAlwaysLocations
+        if hint_type == 'barren':
+            hint = hint_func[hint_type](spoiler, world, checkedLocations)
+        else:
+            hint = hint_func[hint_type](spoiler, world, allCheckedLocations)
+            checkedLocations.update(allCheckedLocations - checkedAlwaysLocations)
 
         if hint == None:
             index = hint_types.index(hint_type)
