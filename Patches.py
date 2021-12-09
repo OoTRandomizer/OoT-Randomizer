@@ -2329,10 +2329,11 @@ def create_fake_name_jp(name, redo=0):
                 if list_name[k] in a:
                     r = random.choice(a)
                     if list_name[k] == r:
-                        pass
+                        break
                     elif list_name[k] != r:
                         list_name[k] = r
                         n += 1
+                        break
             else:
                 n += 1
             z = k
