@@ -31,6 +31,8 @@ class Hint(object):
 
         if isinstance(text, str):
             self.text = text
+        elif text is None:
+            self.text = name
         else:
             if choice == None:
                 self.text = random.choice(text)
