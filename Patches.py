@@ -2305,6 +2305,7 @@ def create_fake_name_jp(name, redo=0):
         "実":    "害",
         "種":    "鐘",
         "棒":    "捧",
+        "ー":    "一",
     }
     ignore_words = ["０", "１", "２", "３", "５", "（", "）", "９"]
     n = 0
@@ -2332,6 +2333,8 @@ def create_fake_name_jp(name, redo=0):
                     elif list_name[k] != r:
                         list_name[k] = r
                         n += 1
+            else:
+                n += 1
             z = k
     new_name = ''.join(list_name)
     if new_name == name:
