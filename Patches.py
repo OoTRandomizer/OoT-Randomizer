@@ -2221,15 +2221,11 @@ def create_fake_name(name):
         if cuss in new_name_az:
             return create_fake_name(name)
     return new_name
-def h2k(char):
-    return ''.join([chr(n+96) if (12352 < n and n < 12439) or n==12445 or n==12446 else chr(n) for n in [ord(c) for c in char]])
 
-def k2h(char):
-    return ''.join([chr(n-96) if (12448 < n and n < 12535) or n==12541 or n==12542 else chr(n) for n in [ord(c) for c in char]])
-    
-def create_fake_name_jp(name):
+def create_fake_name_jp(name, redo=False):
     fake_words_1 = [
         ["ア", "マ"],
+        ["ウ", "ワ", "ヴ"],
         ["カ", "ガ"],
         ["キ", "ギ"],
         ["ク", "グ"],
@@ -2249,7 +2245,11 @@ def create_fake_name_jp(name):
         ["フ", "ブ", "プ"],
         ["ヘ", "ベ", "ペ"],
         ["ホ", "ボ", "ポ"],
+        ["ヤ", "ャ"],
+        ["ユ", "ュ"],
+        ["ヨ", "ョ"],
         ["ロ", "口"],
+        ["い", "り"],
         ["か", "が"],
         ["き", "ぎ"],
         ["く", "ぐ"],
@@ -2271,6 +2271,11 @@ def create_fake_name_jp(name):
         ["ふ", "ぶ", "ぷ"],
         ["へ", "べ", "ぺ"],
         ["ほ", "ぼ", "ぽ"],
+        ["や", "ゃ"],
+        ["ゆ", "ゅ"],
+        ["よ", "ょ"],
+        ["る", "ろ"],
+        ["わ", "れ", "ね"],
     ]
     fake_words_2 = {
         "力":    "カ",
@@ -2283,45 +2288,60 @@ def create_fake_name_jp(name):
         "刀":    "カ",
         "目":    "日",
         "薬":    "楽",
+        "輪":    "輸",
+        "復":    "複",
+        "回":    "同",
+        "地":    "池",
+        "人":    "入",
+        "炎":    "災",
+        "券":    "劵",
+        "青":    "靑",
+        "時":    "待",
+        "嵐":    "颪",
+        "魂":    "塊",
+        "闇":    "間",
+        "光":    "元",
+        "法":    "怯",
+        "実":    "害",
+        "種":    "鐘",
+        "棒":    "捧",
     }
+    ignore_words = ["０", "１", "２", "３", "５", "（", "）", "９"]
     n = 0
     z = 0
     for a, b in fake_words_2.items():
         if a in name:
             n += name.count(a)
             name = name.replace(a, b)
-    
+    c = 0
+    for g in ignore_words:
+        if g in name:
+            c += name.count(g)
     list_name = list(name)
-    index = len(name)         
+    index = len(name) - c         
     while n <= index / 5:
         k = random.randrange(index)
         if z + 1 == k or z - 1 == k:
             pass
         else: 
-            f = 0
             for a in fake_words_1:
                 if list_name[k] in a:
                     r = random.choice(a)
                     if list_name[k] == r:
-                        f = 1
+                        pass
                     elif list_name[k] != r:
                         list_name[k] = r
                         n += 1
-                        f = 1
-            p = re.compile('[ぁ-らりるれろわをん]+')
-            q = re.compile('[\ァ-ラリルレロワヲン]+')
-            if f == 0:
-                if p.fullmatch(list_name[k]):
-                    list_name[k] = h2k(list_name[k])
-                    n += 1
-                elif q.fullmatch(list_name[k]):
-                    list_name[k] = k2h(list_name[k])
-                    n += 1
-            elif f == 1:
-                pass
             z = k
     new_name = ''.join(list_name)
-    return new_name
+    if new_name == name:
+        if redo != 3:
+            o = redo + 1
+            return create_fake_name_jp(new_name, redo=o)
+        elif redo == 3:
+            return new_name
+    else:
+        return new_name
 
 def place_shop_items(rom, world, shop_items, messages, messages_jp, locations, init_shop_id=False):
     if init_shop_id:
