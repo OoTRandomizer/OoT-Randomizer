@@ -2222,7 +2222,7 @@ def create_fake_name(name):
             return create_fake_name(name)
     return new_name
 
-def create_fake_name_jp(name, redo=False):
+def create_fake_name_jp(name, redo=0):
     fake_words_1 = [
         ["ア", "マ"],
         ["ウ", "ワ", "ヴ"],
