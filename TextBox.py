@@ -386,8 +386,11 @@ def charlen(text, leng=0, mode=0):
 def linewrapJP(text, mode=0, align="left"):
     LINE = 15
     instant = 0
+    alone = align
     if "~" in text:
         LINE = 12
+        if align == "center":
+            alone = "left"
     if text.startswith("<<"):
         text = text.replace("<<","<",1)
     if text.startswith("<"):
@@ -413,12 +416,12 @@ def linewrapJP(text, mode=0, align="left"):
                     if charlen(splitline[i-1])-2 <= LINE:
                         if i % 3 == 0:
                             if "~" not in text:
-                                if align == "left":
+                                if alone == "left":
                                     if "+T" in splitline[i-1]:
                                         splitline[i-1] = splitline[i-1][3:] + "^<"
                                     elif "+T" not in splitline[i-1]:
                                         splitline[i-1] = splitline[i-1] + "^<"
-                                elif align == "center":
+                                elif alone == "center":
                                     w = format((LINE - charlen(splitline[i-1]))*8 + int(halflen(splitline[i-1]) / 2),"02x")
                                     if w != "00" and not "-" in w:
                                         shift = r"+T\x{}".format(w)
@@ -428,7 +431,7 @@ def linewrapJP(text, mode=0, align="left"):
                                         splitline[i-1] = shift + splitline[i-1][3:] + "^<"
                                     elif "+T" not in splitline[i-1]:
                                         splitline[i-1] = shift + splitline[i-1] + "^<"
-                                elif align == "right":
+                                elif alone == "right":
                                     w = format((LINE - charlen(splitline[i-1]))*16 + halflen(splitline[i-1]),"02x")
                                     if w != "00" and not "-" in w:
                                         shift = r"+T\x{}".format(w)
@@ -442,12 +445,12 @@ def linewrapJP(text, mode=0, align="left"):
                                 splitline[i-1] = splitline[i-1] + "^<"
                         elif i % 3 != 0:
                             if "~" not in text:
-                                if align == "left":
+                                if alone == "left":
                                     if "+T" in splitline[i-1]:
                                         splitline[i-1] = splitline[i-1][3:] + "&"
                                     elif "+T" not in splitline[i-1]:
                                         splitline[i-1] = splitline[i-1] + "&"
-                                elif align == "center":
+                                elif alone == "center":
                                     w = format((LINE - charlen(splitline[i-1]))*8 + int(halflen(splitline[i-1]) / 2),"02x")
                                     if w != "00" and not "-" in w:
                                         shift = r"+T\x{}".format(w)
@@ -457,7 +460,7 @@ def linewrapJP(text, mode=0, align="left"):
                                         splitline[i-1] = shift + splitline[i-1][3:] + "&"
                                     elif "+T" not in splitline[i-1]:
                                         splitline[i-1] = shift + splitline[i-1] + "&"
-                                elif align == "right":
+                                elif alone == "right":
                                     w = format((LINE - charlen(splitline[i-1]))*16 + halflen(splitline[i-1]),"02x")
                                     if w != "00" and not "-" in w:
                                         shift = r"+T\x{}".format(w)
@@ -476,12 +479,12 @@ def linewrapJP(text, mode=0, align="left"):
                         while LINE * (p - 1) <= charlen(splitline[i-1]):
                             if (i + p) % 3 == 0:
                                 if "~" not in text:
-                                    if align == "left":
+                                    if alone == "left":
                                         if "+T" in splitline[i-1][k:j]:
                                             tex[p] = splitline[i-1][k+3:j] + "^<"
                                         elif "+T" not in splitline[i-1][k:j]:
                                             tex[p] = splitline[i-1][k:j] + "^<"
-                                    elif align == "center":
+                                    elif alone == "center":
                                         w = format((LINE - charlen(splitline[i-1][k:j]))*8 + int(halflen(splitline[i-1][k:j]) / 2),"02x")
                                         if w != "00" and not "-" in w:
                                             shift = r"+T\x{}".format(w)
@@ -491,7 +494,7 @@ def linewrapJP(text, mode=0, align="left"):
                                             tex[p] = shift + splitline[i-1][k+3:j] + "^<"
                                         elif "+T" not in splitline[i-1][k:j]:
                                             tex[p] = shift + splitline[i-1][k:j] + "^<"
-                                    elif align == "right":
+                                    elif alone == "right":
                                         w = format((LINE - charlen(splitline[i-1][k:j]))*16 + halflen(splitline[i-1][k:j]),"02x")
                                         if w != "00" and not "-" in w:
                                             shift = r"+T\x{}".format(w)
@@ -505,12 +508,12 @@ def linewrapJP(text, mode=0, align="left"):
                                     tex[p] = splitline[i-1][k:j] + "^<"
                             elif (i + p) % 3 != 0:
                                 if "~" not in text:
-                                    if align == "left":
+                                    if alone == "left":
                                         if "+T" in splitline[i-1][k:j]:
                                             tex[p] = splitline[i-1][k+3:j] + "&"
                                         elif "+T" not in splitline[i-1][k:j]:
                                             tex[p] = splitline[i-1][k:j] + "&"
-                                    elif align == "center":
+                                    elif alone == "center":
                                         w = format((LINE - charlen(splitline[i-1][k:j]))*8 + int(halflen(splitline[i-1][k:j]) / 2),"02x")
                                         if w != "00" and not "-" in w:
                                             shift = r"+T\x{}".format(w)
@@ -520,7 +523,7 @@ def linewrapJP(text, mode=0, align="left"):
                                             tex[p] = shift + splitline[i-1][k+3:j] + "&"
                                         elif "+T" not in splitline[i-1][k:j]:
                                             tex[p] = shift + splitline[i-1][k:j] + "&"
-                                    elif align == "right":
+                                    elif alone == "right":
                                         w = format((LINE - charlen(splitline[i-1][k:j]))*16 + halflen(splitline[i-1][k:j]),"02x")
                                         if w != "00" and not "-" in w:
                                             shift = r"+T\x{}".format(w)
@@ -541,12 +544,12 @@ def linewrapJP(text, mode=0, align="left"):
             elif "&" not in splitbox[n-1] and (":2" or ":3" or ":O" )not in splitbox[n-1]:
                 if charlen(splitbox[n-1])-2 <= LINE:
                     if "~" not in text:
-                        if align == "left":
+                        if alone == "left":
                             if "T+" in splitbox[n-1]:
                                 splitbox[n-1] = splitbox[n-1][3:] + "^<"
                             elif "T+" not in splitbox[n-1]:
                                 splitbox[n-1] = splitbox[n-1] + "^<"
-                        elif align == "center":
+                        elif alone == "center":
                             w = format((LINE - charlen(splitbox[n-1]))*8 + int(halflen(splitbox[n-1][k:j]) / 2),"02x")
                             if w != "00" and not "-" in w:
                                 shift = r"+T\x{}".format(w)
@@ -556,7 +559,7 @@ def linewrapJP(text, mode=0, align="left"):
                                 splitbox[n-1] = shift + splitbox[n-1][3:] + "^<"
                             elif "T+" not in splitbox[n-1]:
                                 splitbox[n-1] = shift + splitbox[n-1] + "^<"
-                        elif align == "right":
+                        elif alone == "right":
                             w = format((LINE - charlen(splitbox[n-1]))*16 + halflen(splitbox[n-1][k:j]),"02x")
                             if w != "00" and not "-" in w:
                                 shift = r"+T\x{}".format(w)
@@ -575,12 +578,12 @@ def linewrapJP(text, mode=0, align="left"):
                     while LINE * (p - 1) <= charlen(splitbox[n-1]):
                         if (n + p) % 3 == 0:
                             if "~" not in text:
-                                if align == "left":
+                                if alone == "left":
                                     if "T+" in splitbox[n-1][k:j]:
                                         box[p] = splitbox[n-1][k+3:j] + "^<"
                                     elif "T+" not in splitbox[n-1][k:j]:
                                         box[p] = splitbox[n-1][k:j] + "^<"
-                                elif align == "center":
+                                elif alone == "center":
                                     w = format((LINE - charlen(splitbox[n-1][k:j]))*8 + int(halflen(splitbox[n-1][k:j]) / 2),"02x")
                                     if w != "00" and not "-" in w:
                                         shift = r"+T\x{}".format(w)
@@ -590,7 +593,7 @@ def linewrapJP(text, mode=0, align="left"):
                                         box[p] = shift + splitbox[n-1][k+3:j] + "^<"
                                     elif "+T" not in splitbox[n-1][k:j]:
                                         box[p] = shift + splitbox[n-1][k:j] + "^<"
-                                elif align == "right":
+                                elif alone == "right":
                                     w = format((LINE - charlen(splitbox[n-1][k:j]))*16 + halflen(splitbox[n-1][k:j]),"02x")
                                     if w != "00" and not "-" in w:
                                         shift = r"+T\x{}".format(w)
@@ -604,12 +607,12 @@ def linewrapJP(text, mode=0, align="left"):
                                 box[p] = splitbox[n-1][k:j] + "^<"
                         elif (n + p) % 3 != 0:
                             if "~" not in text:
-                                if align == "left":
+                                if alone == "left":
                                     if "T+" in splitbox[n-1][k:j]:
                                         box[p] = splitbox[n-1][k+3:j] + "&"
                                     elif "T+" not in splitbox[n-1][k:j]:
                                         box[p] = splitbox[n-1][k:j] + "&"
-                                elif align == "center":
+                                elif alone == "center":
                                     w = format((LINE - charlen(splitbox[n-1][k:j]))*8 + int(halflen(splitbox[n-1][k:j]) / 2),"02x")
                                     if w != "00" and not "-" in w:
                                         shift = r"+T\x{}".format(w)
@@ -619,7 +622,7 @@ def linewrapJP(text, mode=0, align="left"):
                                         box[p] = shift + splitbox[n-1][k+3:j] + "&"
                                     elif "+T" not in splitbox[n-1][k:j]:
                                         box[p] = shift + splitbox[n-1][k:j] + "&"
-                                elif align == "right":
+                                elif alone == "right":
                                     w = format((LINE - charlen(splitbox[n-1][k:j])) * 16 + halflen(splitbox[n-1][k:j]),"02x")
                                     if w != "00" and not "-" in w:
                                         shift = r"+T\x{}".format(w)
@@ -667,12 +670,12 @@ def linewrapJP(text, mode=0, align="left"):
                     if charlen(splitline[i-1],mode = 1)-2 <= LINE:
                         if i % 3 == 0:
                             if "~" not in text:
-                                if align == "left":
+                                if alone == "left":
                                     if "+T" in splitline[i-1]:
                                         splitline[i-1] = splitline[i-1][3:] + "^^<<"
                                     elif "+T" not in splitline[i-1]:
                                         splitline[i-1] = splitline[i-1] + "^^<<"
-                                elif align == "center":
+                                elif alone == "center":
                                     w = format((LINE - charlen(splitline[i-1],mode = 1))*8 + int(halflen(splitline[i-1],1) / 2),"02x")
                                     if w != "00" and not "-" in w:
                                         shift = r"+T\x{}".format(w)
@@ -682,7 +685,7 @@ def linewrapJP(text, mode=0, align="left"):
                                         splitline[i-1] = shift + splitline[i-1][3:] + "^^<<"
                                     elif "+T" not in splitline[i-1]:
                                         splitline[i-1] = shift + splitline[i-1] + "^^<<"
-                                elif align == "right":
+                                elif alone == "right":
                                     w = format((LINE - charlen(splitline[i-1],mode = 1))*16 + halflen(splitline[i-1],1),"02x")
                                     if w != "00" and not "-" in w:
                                         shift = r"+T\x{}".format(w)
@@ -696,12 +699,12 @@ def linewrapJP(text, mode=0, align="left"):
                                 splitline[i-1] = splitline[i-1] + "^^<<"
                         elif i % 3 != 0:
                             if "~" not in text:
-                                if align == "left":
+                                if alone == "left":
                                     if "+T" in splitline[i-1]:
                                         splitline[i-1] = splitline[i-1][3:] + "&&"
                                     elif "+T" not in splitline[i-1]:
                                         splitline[i-1] = splitline[i-1] + "&&"
-                                elif align == "center":
+                                elif alone == "center":
                                     w = format((LINE - charlen(splitline[i-1],mode = 1))*8 + int(halflen(splitline[i-1],1) / 2),"02x")
                                     if w != "00" and not "-" in w:
                                         shift = r"+T\x{}".format(w)
@@ -711,7 +714,7 @@ def linewrapJP(text, mode=0, align="left"):
                                         splitline[i-1] = shift + splitline[i-1][3:] + "&&"
                                     elif "+T" not in splitline[i-1]:
                                         splitline[i-1] = shift + splitline[i-1] + "&&"
-                                elif align == "right":
+                                elif alone == "right":
                                     w = format((LINE - charlen(splitline[i-1],mode = 1))*16 + halflen(splitline[i-1],1),"02x")
                                     if w != "00" and not "-" in w:
                                         shift = r"+T\x{}".format(w)
@@ -729,12 +732,12 @@ def linewrapJP(text, mode=0, align="left"):
                         while LINE * (p - 1) <= charlen(splitline[i-1],mode = 1):
                             if (i + p) % 3 == 0:
                                 if "~" not in text:
-                                    if align == "left":
+                                    if alone == "left":
                                         if "+T" in splitline[i-1][k:j]:
                                             tex[p] = splitline[i-1][k+3:j] + "^^<<"
                                         elif "+T" not in splitline[i-1][k:j]:
                                             tex[p] = splitline[i-1][k:j] + "^^<<"
-                                    elif align == "center":
+                                    elif alone == "center":
                                         w = format((LINE - charlen(splitline[i-1][k:j],mode = 1))*8 + int(halflen(splitline[i-1][k:j],1) / 2),"02x")
                                         if w != "00" and not "-" in w:
                                             shift = r"+T\x{}".format(w)
@@ -744,7 +747,7 @@ def linewrapJP(text, mode=0, align="left"):
                                             tex[p] = shift + splitline[i-1][k+3:j] + "^^<<"
                                         elif "+T" not in splitline[i-1][k:j]:
                                             tex[p] = shift + splitline[i-1][k:j] + "^^<<"
-                                    elif align == "right":
+                                    elif alone == "right":
                                         w = format((LINE - charlen(splitline[i-1][k:j],mode = 1))*16 + halflen(splitline[i-1][k:j],1),"02x")
                                         if w != "00" and not "-" in w:
                                             shift = r"+T\x{}".format(w)
@@ -758,12 +761,12 @@ def linewrapJP(text, mode=0, align="left"):
                                     tex[p] = splitline[i-1][k:j] + "^^<<"
                             elif (i + p) % 3 != 0:
                                 if "~" not in text:
-                                    if align == "left":
+                                    if alone == "left":
                                         if "+T" in splitline[i-1][k:j]:
                                             tex[p] = splitline[i-1][k+3:j] + "&&"
                                         elif "+T" not in splitline[i-1][k:j]:
                                             tex[p] = splitline[i-1][k:j] + "&&"
-                                    elif align == "center":
+                                    elif alone == "center":
                                         w = format((LINE - charlen(splitline[i-1][k:j],mode = 1))*8 + int(halflen(splitline[i-1][k:j],1) / 2),"02x")
                                         if w != "00" and not "-" in w:
                                             shift = r"+T\x{}".format(w)
@@ -773,7 +776,7 @@ def linewrapJP(text, mode=0, align="left"):
                                             tex[p] = shift + splitline[i-1][k+3:j] + "&&"
                                         elif "+T" not in splitline[i-1][k:j]:
                                             tex[p] = shift + splitline[i-1][k:j] + "&&"
-                                    elif align == "right":
+                                    elif alone == "right":
                                         w = format((LINE - charlen(splitline[i-1][k:j],mode = 1))*16 + halflen(splitline[i-1][k:j],1),"02x")
                                         if w != "00" and not "-" in w:
                                             shift = r"+T\x{}".format(w)
@@ -794,12 +797,12 @@ def linewrapJP(text, mode=0, align="left"):
             elif "&&" not in splitbox[n-1] and (":2" or ":3" or ":O") not in splitbox[n-1]:
                 if charlen(splitbox[n-1],mode = 1)-2 <= LINE:
                     if "~" not in text:
-                        if align == "left":
+                        if alone == "left":
                             if "T+" in splitbox[n-1]:
                                 splitbox[n-1] = splitbox[n-1][3:] + "^^<<"
                             elif "T+" not in splitbox[n-1]:
                                 splitbox[n-1] = splitbox[n-1] + "^^<<"
-                        elif align == "center":
+                        elif alone == "center":
                             w = format((LINE - charlen(splitbox[n-1],mode = 1))*8 + int(halflen(splitbox[n-1],1) / 2),"02x")
                             if w != "00" and not "-" in w:
                                 shift = r"+T\x{}".format(w)
@@ -809,7 +812,7 @@ def linewrapJP(text, mode=0, align="left"):
                                 splitbox[n-1] = shift + splitbox[n-1][3:] + "^^<<"
                             elif "T+" not in splitbox[n-1]:
                                 splitbox[n-1] = shift + splitbox[n-1] + "^^<<"
-                        elif align == "right":
+                        elif alone == "right":
                             w = format((LINE - charlen(splitbox[n-1],mode = 1))*16 + halflen(splitbox[n-1],1),"02x")
                             if w != "00" and not "-" in w:
                                 shift = r"+T\x{}".format(w)
@@ -828,12 +831,12 @@ def linewrapJP(text, mode=0, align="left"):
                     while LINE * (p - 1) <= charlen(splitbox[n-1],mode = 1):
                         if (n + p) % 3 == 0:
                             if "~" not in text:
-                                if align == "left":
+                                if alone == "left":
                                     if "T+" in splitbox[n-1][k:j]:
                                         box[p] = splitbox[n-1][k+3:j] + "^^<<"
                                     elif "T+" not in splitbox[n-1][k:j]:
                                         box[p] = splitbox[n-1][k:j] + "^^<<"
-                                elif align == "center":
+                                elif alone == "center":
                                     w = format((LINE - charlen(splitbox[n-1][k:j],mode = 1))*8 + int(halflen(splitbox[n-1][k:j],1) / 2),"02x")
                                     if w != "00" and not "-" in w:
                                         shift = r"+T\x{}".format(w)
@@ -843,7 +846,7 @@ def linewrapJP(text, mode=0, align="left"):
                                         box[p] = shift + splitbox[n-1][k+3:j] + "^^<<"
                                     elif "+T" not in splitbox[n-1][k:j]:
                                         box[p] = shift + splitbox[n-1][k:j] + "^^<<"
-                                elif align == "right":
+                                elif alone == "right":
                                     w = format((LINE - charlen(splitbox[n-1][k:j],mode = 1))*16 + halflen(splitbox[n-1][k:j],1),"02x")
                                     if w != "00" and not "-" in w:
                                         shift = r"+T\x{}".format(w)
@@ -857,12 +860,12 @@ def linewrapJP(text, mode=0, align="left"):
                                 box[p] = splitbox[n-1][k:j] + "^^<<"
                         elif (n + p) % 3 != 0:
                             if "~" not in text:
-                                if align == "left":
+                                if alone == "left":
                                     if "T+" in splitbox[n-1][k:j]:
                                         box[p] = splitbox[n-1][k+3:j] + "&&"
                                     elif "T+" not in splitbox[n-1][k:j]:
                                         box[p] = splitbox[n-1][k:j] + "&&"
-                                elif align == "center":
+                                elif alone == "center":
                                     w = format((LINE - charlen(splitbox[n-1][k:j],mode = 1))*8 + int(halflen(splitbox[n-1][k:j],1) / 2),"02x")
                                     if w != "00" and not "-" in w:
                                         shift = r"+T\x{}".format(w)
@@ -872,7 +875,7 @@ def linewrapJP(text, mode=0, align="left"):
                                         box[p] = shift + splitbox[n-1][k+3:j] + "&&"
                                     elif "+T" not in splitbox[n-1][k:j]:
                                         box[p] = shift + splitbox[n-1][k:j] + "&&"
-                                elif align == "right":
+                                elif alone == "right":
                                     w = format((LINE - charlen(splitbox[n-1][k:j],mode = 1))*16 + halflen(splitbox[n-1][k:j],1),"02x")
                                     if w != "00" and not "-" in w:
                                         shift = r"+T\x{}".format(w)

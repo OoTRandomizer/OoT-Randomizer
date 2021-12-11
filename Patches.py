@@ -1799,10 +1799,10 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, lang = 'eng'):
                 dungeon_name_jp, boss_name_jp, compass_id_jp, map_id_jp = dungeon_list_jp[dungeon]
                 if world.settings.world_count > 1:
                     map_message = "\x13\x76\x08\x05\x42\x0F\x05\x40 found the \x05\x41Dungeon Map\x05\x40\x01for %s\x05\x40!\x09" % (dungeon_name)
-                    map_message_jp = "~~\x76<<%sの&&##\x01地図##\x00を入手！" % (dungeon_name_jp)
+                    map_message_jp = "~~\x76<<%sの##\x01地図##\x00を入手！" % (dungeon_name_jp)
                 else:
                     map_message = "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for %s\x05\x40!\x01It\'s %s!\x09" % (dungeon_name, "masterful" if world.dungeon_mq[dungeon] else "ordinary")
-                    map_message_jp = "~~\x76<<%sの&&##\x01地図##\x00を入手！&&%s向きに巻かれている！" % (dungeon_name_jp, "##\x01裏##\x00" if world.dungeon_mq[dungeon] else "##\x01表##\x00")
+                    map_message_jp = "~~\x76<<%sの##\x01地図##\x00を入手！&&%s向きに巻かれている！" % (dungeon_name_jp, "##\x01裏##\x00" if world.dungeon_mq[dungeon] else "##\x01表##\x00")
 
 
                 if world.settings.mq_dungeons_random or world.settings.mq_dungeons != 0 and world.settings.mq_dungeons != 12:
@@ -1815,19 +1815,19 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, lang = 'eng'):
                 dungeon_reward_jp = reward_list_jp[world.get_location(boss_name_jp).item.name]
                 if world.settings.world_count > 1:
                     compass_message = "\x13\x75\x08\x05\x42\x0F\x05\x40 found the \x05\x41Compass\x05\x40\x01for %s\x05\x40!\x09" % (dungeon_name)
-                    compass_message_jp = "~~\x75<<%sの&&##\x01コンパス##\x00を入手！" % (dungeon_name_jp)
+                    compass_message_jp = "~~\x75<<%sの##\x01コンパス##\x00を入手！" % (dungeon_name_jp)
                 else:
                     compass_message = "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for %s\x05\x40!\x01It holds the %s!\x09" % (dungeon_name, dungeon_reward)
-                    compass_message_jp = "~~\x75<<%sの&&##\x01コンパス##\x00を入手！&&%sがあるようだ！" % (dungeon_name_jp, dungeon_reward_jp)
+                    compass_message_jp = "~~\x75<<%sの##\x01コンパス##\x00を入手！&&%sがあるようだ！" % (dungeon_name_jp, dungeon_reward_jp)
                 update_message_by_id(messages, compass_id, compass_message)
                 update_message_jp(messages_jp, compass_id_jp, compass_message_jp, mode = 2, align = "left")
                 if world.settings.mq_dungeons_random or world.settings.mq_dungeons != 0 and world.settings.mq_dungeons != 12:
                     if world.settings.world_count > 1:
                         map_message = "\x13\x76\x08\x05\x42\x0F\x05\x40 found the \x05\x41Dungeon Map\x05\x40\x01for %s\x05\x40!\x09" % (dungeon_name)
-                        map_message_jp = "~~\x76<<%sの&&##\x01地図##\x00を入手！" % (dungeon_name_jp)
+                        map_message_jp = "~~\x76<<%sの##\x01地図##\x00を入手！" % (dungeon_name_jp)
                     else:
                         map_message = "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for %s\x05\x40!\x01It\'s %s!\x09" % (dungeon_name, "masterful" if world.dungeon_mq[dungeon] else "ordinary")
-                        map_message_jp = "~~\x76<<%sの&&##\x01地図##\x00を入手！&&%s向きに巻かれている！" % (dungeon_name_jp, "##\x01裏##\x00" if world.dungeon_mq[dungeon] else "##\x01表##\x00")
+                        map_message_jp = "~~\x76<<%sの##\x01地図##\x00を入手！&&%s向きに巻かれている！" % (dungeon_name_jp, "##\x01裏##\x00" if world.dungeon_mq[dungeon] else "##\x01表##\x00")
 
                     update_message_by_id(messages, map_id, map_message)
                     update_message_jp(messages_jp, map_id_jp, map_message_jp, mode = 2, align = "left")
@@ -2307,6 +2307,7 @@ def create_fake_name_jp(name, redo=0):
         "種":    "鐘",
         "棒":    "捧",
         "ー":    "一",
+        "剣":    "剱",
     }
     ignore_words = ["０", "１", "２", "３", "５", "（", "）", "９"]
     n = 0
@@ -2345,7 +2346,7 @@ def create_fake_name_jp(name, redo=0):
             return create_fake_name_jp(new_name, redo=o)
         elif redo == 3:
             return new_name
-    else:
+    elif new_name != name:
         return new_name
 
 def place_shop_items(rom, world, shop_items, messages, messages_jp, locations, init_shop_id=False):
