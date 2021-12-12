@@ -41,11 +41,13 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom, lang = 'eng'):
             titleBytes = bytearray([a ^ b for a, b in zip(titleBytesDiff, originalBytes)])
             rom.write_bytes(writeAddress, titleBytes)
     elif lang == 'jap':
-        with open(data_path('titleJP.bin'), 'rb') as stream:
+        with open(data_path('JP.bin'), 'rb') as stream:
             writeAddress = 0x01795300
             titleBytesComp = stream.read()
+            titleBytesDiff = zlib.decompress(titleBytesComp)
 
-            titleBytes = bytes(titleBytesComp)
+            originalBytes = rom.original.buffer[writeAddress: writeAddress+ len(titleBytesDiff)]
+            titleBytes = bytearray([a ^ b for a, b in zip(titleBytesDiff, originalBytes)])
             rom.write_bytes(writeAddress, titleBytes)
 
     # Fixes the typo of keatan mask in the item select screen
