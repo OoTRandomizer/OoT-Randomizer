@@ -1536,7 +1536,7 @@ def update_item_messages(messages, world):
         update_message_jp(messages, 0x101A, ntext, 0x00, 1, align = "center")
                 
         if t == 0:    
-            for id, text in new_item_messages.items():
+            for id, (text, textJP) in new_item_messages.items():
                 if "~" in textJP:
                     update_message_jp(messages, id, textJP, 0x23, 2, align = "left")
                 elif "~" not in textJP:
