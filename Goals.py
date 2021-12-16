@@ -3,7 +3,7 @@ import logging
 
 from HintList import goalTable, getHintGroup, hintExclusions
 from Search import Search
-
+from Language import getLang
 
 validColors = [
     'White',
@@ -141,6 +141,13 @@ def replace_goal_names(worlds):
                                     goal.hint_text = clearTextJP
                                 else:
                                     goal.hint_text = flavorTextJP
+                            elif world.settings.language_selection == "extra":
+                                goalX = getLang(world, "goal")
+                                fT, cT = goalX[boss.name]
+                                if world.settings.clearer_hints:
+                                    goal.hint_text = cT
+                                else:
+                                    goal.hint_text = fT
                             goal.color = color
                             break
 

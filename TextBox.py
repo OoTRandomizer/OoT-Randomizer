@@ -387,6 +387,8 @@ def linewrapJP(text, mode=0, align="left"):
     LINE = 15
     instant = 0
     alone = align
+    if not isinstance(text, str):
+        text = str(text).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
     if "~" in text:
         LINE = 12
         if align == "center":

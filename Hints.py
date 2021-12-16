@@ -19,7 +19,7 @@ from Search import Search
 from StartingItems import everything
 from TextBox import line_wrap, linewrapJP
 from Utils import random_choices, data_path, read_json
-
+from Language import getLang
 
 bingoBottlesForHints = (
     "Bottle", "Bottle with Red Potion","Bottle with Green Potion", "Bottle with Blue Potion",
@@ -144,49 +144,51 @@ def has_eng(text):
     return re.search(r'[a-z]+', text) is not None
     
 reject_end = ("たたえて","と","により")
-def loctextJ(text, mode = 0):
+def loctextJ(world, text, mode = 0):
     location_text_J = None
-    if not (has_eng(text)):
-        location_text_J = text
-    elif has_eng(text) or has_eng(location_text_J):
-        for region, (opten, clearen, opt, clear, type) in HT.items():
-            if ((clear == text) is True and not(has_eng(clear))):
-                location_text_J = clear
-                break
-            if ((text in opt) is True and (opt == text) is False and not (has_eng(opt[opt.find(text)]))):
-                if len(opt[opt.find(text)]) == 1:
+    if world.settings.language_selection == "japanese":
+        if not (has_eng(text)):
+            location_text_J = text
+        elif has_eng(text) or has_eng(location_text_J):
+            for region, (opten, clearen, opt, clear, type) in HT.items():
+                if ((clear == text) is True and not(has_eng(clear))):
+                    location_text_J = clear
+                    break
+                if ((text in opt) is True and (opt == text) is False and not (has_eng(opt[opt.find(text)]))):
+                    if len(opt[opt.find(text)]) == 1:
+                        location_text_J = opt
+                        if (int(len(location_text_J)) - int(location_text_J.find("は"))) < 2 and int(location_text_J.find("は")) != 0:
+                            count = location_text_J.rfind('は')
+                            list_loc = list(location_text_J)
+                            list_loc[count] = ""
+                            location_text_J = "".join(list_loc)
+                        break
+                    else:
+                        location_text_J = opt[opt.find(text)]
+                        break
+                if ((opt == text) is True and (has_eng(opt)) == False):
                     location_text_J = opt
-                    if (int(len(location_text_J)) - int(location_text_J.find("は"))) < 2 and int(location_text_J.find("は")) != 0:
-                        count = location_text_J.rfind('は')
-                        list_loc = list(location_text_J)
-                        list_loc[count] = ""
-                        location_text_J = "".join(list_loc)
                     break
-                else:
-                    location_text_J = opt[opt.find(text)]
-                    break
-            if ((opt == text) is True and (has_eng(opt)) == False):
-                location_text_J = opt
-                break
-        if location_text_J is None:
-            raise TypeError('%s' % text)
-
-    if has_eng(location_text_J):
-        return loctextJ(location_text_J)
-    counts = int(location_text_J.rfind('は'))
-    if (int(len(location_text_J) - counts) > 2) or ((int(len(location_text_J)) - counts) is ((int(len(location_text_J)) + 1))):
-        if location_text_J.endswith(reject_end):
-            pass
+            if location_text_J is None:
+                raise TypeError('%s' % text)
+        if has_eng(location_text_J):
+            return loctextJ(world, location_text_J)
+        counts = int(location_text_J.rfind('は'))
+        if (int(len(location_text_J) - counts) > 2) or ((int(len(location_text_J)) - counts) is ((int(len(location_text_J)) + 1))):
+            if location_text_J.endswith(reject_end):
+                pass
+            else:
+                location_text_J = location_text_J + "は"
         else:
-            location_text_J = location_text_J + "は"
-    else:
-        pass
-    if mode == 1:
-        counta = location_text_J.rfind('は')
-        list_locx = list(location_text_J)
-        if (len(location_text_J) - counta) < 2:
-            list_locx[counta] = ""
-            location_text_J = "".join(list_locx)
+            pass
+        if mode == 1:
+            counta = location_text_J.rfind('は')
+            list_locx = list(location_text_J)
+            if (len(location_text_J) - counta) < 2:
+                list_locx[counta] = ""
+                location_text_J = "".join(list_locx)
+    elif world.settings.language_selection != "japanese":
+        location_text_J = text
     return location_text_J
     
 def getItemGenericName(item):
@@ -303,10 +305,13 @@ def can_reach_hint(worlds, hint_location, location):
 
 
 def writeGossipStoneHints(spoiler, world, messages):
-    if world.settings.language_selection == "english":
+    lang = world.settings.language_selection
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+    if lang == "english":
         for id, gossip_text in spoiler.hints[world.id].items():
             update_message_by_id(messages, id, str(gossip_text), 0x23)
-    elif world.settings.language_selection == "japanese":
+    elif lang == "japanese":
         for id, gossip_text in spoiler.hints[world.id].items():
             update_message_jp(messages, id, str(gossip_text), 0x23, align="center")
 
@@ -328,8 +333,8 @@ hintPrefixes = [
     '',
 ]
 
-def getSimpleHintNoPrefix(item):
-    hint = getHint(item.name, True).text
+def getSimpleHintNoPrefix(world, item):
+    hint = getHint(world, item.name, True).text
 
     for prefix in hintPrefixes:
         if hint.startswith(prefix):
@@ -410,6 +415,12 @@ def get_hint_area(spot):
 
 
 def get_woth_hint(spoiler, world, checked):
+    lang = world.settings.language_selection
+    t = 0
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+        t = 1
+        get = getLang(world, "return", "way hero")
     locations = spoiler.required_locations[world.id]
     locations = list(filter(lambda location:
         location.name not in checked
@@ -427,18 +438,25 @@ def get_woth_hint(spoiler, world, checked):
 
     if location.parent_region.dungeon:
         world.woth_dungeon += 1
-        location_text = getHint(location.parent_region.dungeon.name, world.settings.clearer_hints, world.settings.language_selection).text
+        location_text = getHint(world, location.parent_region.dungeon.name, world.settings.clearer_hints, world.settings.language_selection).text
     else:
         location_text = get_hint_area(location)
-        if world.settings.language_selection == "japanese":
-            location_text = getHint(location_text, world.settings.clearer_hints, world.settings.language_selection).text
-    if world.settings.language_selection == "english":
-        return (GossipText('#%s# is on the way of the hero.' % location_text, ['Light Blue']), location)
-    elif world.settings.language_selection == "japanese":
-        location_text_J = loctextJ(location_text).replace("には","は")  
+        if world.settings.language_selection != "english":
+            location_text = getHint(world, location_text, world.settings.clearer_hints, world.settings.language_selection).text
+    if lang == "english":
+        if t == 0:
+            return (GossipText('#%s# is on the way of the hero.' % location_text, ['Light Blue']), location)
+        elif t == 1:
+            pref = getLang(world, "return", "prefix")
+            return (GossipText(get % location_text, ['Light Blue'], prefix=pref), location)
+    elif lang == "japanese":
+        location_text_J = loctextJ(world, location_text).replace("には","は")  
         if 'C' not in location_text_J:
             location_text_J = 'C%sC' % location_text_J
-        return (GossipTextJP('<%s&勇者を導く' % location_text_J, ['Light Blue']), location)
+        if t == 0:
+            return (GossipTextJP('<%s&勇者を導く' % location_text_J, ['Light Blue']), location)
+        elif t == 1:
+            return (GossipTextJP(get % location_text_J, ['Light Blue']), location)
 
 def get_checked_areas(world, checked):
     def get_area_from_name(check):
@@ -479,6 +497,12 @@ def get_goal_category(spoiler, world, goal_categories):
     return goal_category
 
 def get_goal_hint(spoiler, world, checked):
+    lang = world.settings.language_selection
+    t = 0
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+        t = 1
+        get = getLang(world, "return", "is on")
     goal_category = get_goal_category(spoiler, world, world.goal_categories)
 
     # check if no goals were generated (and thus no categories available)
@@ -533,11 +557,11 @@ def get_goal_hint(spoiler, world, checked):
     checked.add(location.name)
 
     if location.parent_region.dungeon:
-        location_text = getHint(location.parent_region.dungeon.name, world.settings.clearer_hints, world.settings.language_selection).text
+        location_text = getHint(world, location.parent_region.dungeon.name, world.settings.clearer_hints, world.settings.language_selection).text
     else:
         location_text = get_hint_area(location)
-        if world.settings.language_selection == "japanese":
-            location_text = getHint(location_text, world.settings.clearer_hints, world.settings.language_selection).text
+        if world.settings.language_selection != "english":
+            location_text = getHint(world, location_text, world.settings.clearer_hints, world.settings.language_selection).text
     if world_id == world.id:
         player_text = "the"
         player_text_J = ""
@@ -545,17 +569,30 @@ def get_goal_hint(spoiler, world, checked):
     else:
         player_text = "Player %s's" % (world_id + 1)
         p_id = str(format(world.id + 1,"02")).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
-        player_text_J = "Ｐ%sの" % p_id
+        player_text_J = "Ｐ%s" % p_id
         goal_text = spoiler.goal_categories[world_id][goal_category.name].get_goal(goal.name).hint_text
-    if world.settings.language_selection == "english":
-        return (GossipText('#%s# is on %s %s.' % (location_text, player_text, goal_text), [goal.color, 'Light Blue']), location)
-    elif world.settings.language_selection == "japanese":
-        location_text_J = loctextJ(location_text)
+    if lang == "english":
+        if t == 0:
+            return (GossipText('#%s# is on %s %s.' % (location_text, player_text, goal_text), [goal.color, 'Light Blue']), location)
+        elif t == 1:
+            pref = getLang(world, "return", "prefix")
+            return (GossipText(get % (location_text, player_text, goal_text), [goal.color, 'Light Blue'], prefix=pref), location)
+    elif lang == "japanese":
+        location_text_J = loctextJ(world, location_text)
         if 'C' not in location_text_J:
             location_text_J = 'C%sC' % location_text_J
-        return (GossipTextJP('%s&%s%s' % (location_text_J, player_text_J, goal_text), [goal.color, 'Light Blue']), location)
+        if t == 0:
+            return (GossipTextJP('%s&%s　%s' % (location_text_J, player_text_J, goal_text), [goal.color, 'Light Blue']), location)
+        elif t == 1:
+            return (GossipTextJP(get % (location_text_J, player_text_J, goal_text), [goal.color, 'Light Blue']), location)
 
 def get_barren_hint(spoiler, world, checked):
+    lang = world.settings.language_selection
+    t = 0
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+        t = 1
+        get = getLang(world, "return", "foolish")
     if not hasattr(world, 'get_barren_hint_prev'):
         world.get_barren_hint_prev = RegionRestriction.NONE
 
@@ -601,16 +638,24 @@ def get_barren_hint(spoiler, world, checked):
     area = random_choices(areas, weights=area_weights)[0]
     if world.empty_areas[area]['dungeon']:
         world.barren_dungeon += 1
-
+    if world.settings.language_selection != "english":
+        area_text = getHint(world, area, world.settings.clearer_hints, world.settings.language_selection).text
     checked.add(area)
-    if world.settings.language_selection == "english":
-        return (GossipText("plundering #%s# is a foolish choice." % area, ['Pink']), None)
-    elif world.settings.language_selection == "japanese":
-        area_text = getHint(area, world.settings.clearer_hints, world.settings.language_selection).text
-        area_J = loctextJ(area_text, 1)  
+    if lang == "english":
+        if t == 0:
+            return (GossipText("plundering #%s# is a foolish choice." % area, ['Pink']), None)
+        elif t == 1:
+            pref = getLang(world, "return", "prefix")
+            return (GossipText(get % area_text, ['Pink'], prefix=pref), None)
+    elif lang == "japanese":
+        area_text = getHint(world, area, world.settings.clearer_hints, world.settings.language_selection).text
+        area_J = loctextJ(world, area_text, 1)  
         if 'C' not in area_J:
             area_J = 'C%sC' % area_J
-        return (GossipTextJP("<%sへ&行くことはおろかな選択だ" % area_J, ['Pink']), None)
+        if t == 0:
+            return (GossipTextJP("<%sへ&行くことはおろかな選択だ" % area_J, ['Pink']), None)
+        elif t == 1:
+            return (GossipTextJP(get % area_J, ['Pink']), None)
 
 
 def is_not_checked(location, checked):
@@ -618,6 +663,13 @@ def is_not_checked(location, checked):
 
 
 def get_good_item_hint(spoiler, world, checked):
+    lang = world.settings.language_selection
+    t = 0
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+        t = 1
+        get1 = getLang(world, "return", "hoards")
+        get2 = getLang(world, "return", "can found")
     locations = list(filter(lambda location:
         is_not_checked(location, checked)
         and (location.item.majoritem
@@ -634,30 +686,55 @@ def get_good_item_hint(spoiler, world, checked):
     location = random.choice(locations)
     checked.add(location.name)
 
-    item_text = getHint(getItemGenericName(location.item), world.settings.clearer_hints, world.settings.language_selection).text
+    item_text = getHint(world, getItemGenericName(location.item), world.settings.clearer_hints, world.settings.language_selection).text
     if location.parent_region.dungeon:
-        location_text = getHint(location.parent_region.dungeon.name, world.settings.clearer_hints, world.settings.language_selection).text
-        if world.settings.language_selection == "english":
-            return (GossipText('#%s# hoards #%s#.' % (location_text, item_text), ['Green', 'Red']), location)
-        elif world.settings.language_selection == "japanese":
-            location_text_J = loctextJ(location_text).replace("には","は")  
+        location_text = getHint(world, location.parent_region.dungeon.name, world.settings.clearer_hints, world.settings.language_selection).text
+        if lang == "english":
+            if t == 0:
+                return (GossipText('#%s# hoards #%s#.' % (location_text, item_text), ['Green', 'Red']), location)
+            elif t == 1:
+                pref = getLang(world, "return", "prefix")
+                return (GossipText(get1 % (location_text, item_text), ['Green', 'Red'], prefix=pref), location)
+        elif lang == "japanese":
+            location_text_J = loctextJ(world, location_text).replace("には","は")  
             if 'C' not in location_text_J:
                 location_text_J = 'C%sC' % location_text_J
-            return (GossipTextJP('<%s&C%sCを&つかさどる' % (location_text_J, item_text), ['Green', 'Red']), location)
+            if t == 0:
+                return (GossipTextJP('<%s&C%sCを&つかさどる' % (location_text_J, item_text), ['Green', 'Red']), location)
+            elif t == 1:
+                return (GossipTextJP(get1 % (location_text_J, item_text), ['Green', 'Red']), location)
     else:
         location_text = get_hint_area(location)
-        if world.settings.language_selection == "english":
-            return (GossipText('#%s# can be found at #%s#.' % (item_text, location_text), ['Red', 'Green']), location)
-        elif world.settings.language_selection == "japanese":
-            location_text_J = getHint(location_text, world.settings.clearer_hints, world.settings.language_selection).text
-            location_text_J = loctextJ(location_text_J).replace("には","は")  
+        if lang == "english":
+            if t == 0:
+                return (GossipText('#%s# can be found at #%s#.' % (item_text, location_text), ['Red', 'Green']), location)
+            elif t == 1:
+                location_text = getHint(world, location_text, world.settings.clearer_hints, world.settings.language_selection).text
+                pref = getLang(world, "return", "prefix")
+                return (GossipText(get2 % (location_text, item_text), ['Red', 'Green'], prefix=pref), location)
+        elif lang == "japanese":
+            location_text_J = getHint(world, location_text, world.settings.clearer_hints, world.settings.language_selection).text
+            location_text_J = loctextJ(world, location_text_J).replace("には","は")  
             if 'C' not in location_text_J:
                 location_text_J = 'C%sC' % location_text_J
-            return (GossipTextJP('<%s&C%sCを&もたらす' % (location_text_J, item_text), ['Green', 'Red']), location)
-            
+            if t == 0:
+                return (GossipTextJP('<%s&C%sCを&もたらす' % (location_text_J, item_text), ['Green', 'Red']), location)
+            elif t == 1:
+                return (GossipTextJP(get2 % (location_text_J, item_text), ['Green', 'Red']), location)
 
 
 def get_specific_item_hint(spoiler, world, checked):
+    lang = world.settings.language_selection
+    t = 0
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+        t = 1
+        get1 = getLang(world, "return", "may be")
+        get2 = getLang(world, "return", "hoards")
+        get3 = getLang(world, "return", "can found")
+        get4 = getLang(world, "return", "may player")
+        get5 = getLang(world, "return", "hoards P")
+        get6 = getLang(world, "return", "can found P")
     if len(world.named_item_pool) == 0:
         logger = logging.getLogger('')
         logger.info("Named item hint requested, but pool is empty.")
@@ -701,39 +778,67 @@ def get_specific_item_hint(spoiler, world, checked):
 
         location = random.choice(locations)
         checked.add(location.name)
-        item_text = getHint(getItemGenericName(location.item), world.settings.clearer_hints, world.settings.language_selection).text
+        item_text = getHint(world, getItemGenericName(location.item), world.settings.clearer_hints, world.settings.language_selection).text
     
         if location.parent_region.dungeon:
-            location_text = getHint(location.parent_region.dungeon.name, world.settings.clearer_hints, world.settings.language_selection).text
-            if world.settings.language_selection == "english":
-                if world.hint_dist_user.get('vague_named_items', False):
-                    return (GossipText('#%s# may be on the hero\'s path.' % (location_text), ['Green']), location)
-                else:
-                    return (GossipText('#%s# hoards #%s#.' % (location_text, item_text), ['Green', 'Red']), location)
-            elif world.settings.language_selection == "japanese":
-                location_text_J = loctextJ(location_text).replace("には","は")  
+            location_text = getHint(world, location.parent_region.dungeon.name, world.settings.clearer_hints, world.settings.language_selection).text
+            if lang == "english":
+                if t == 0:
+                    if world.hint_dist_user.get('vague_named_items', False):
+                        return (GossipText('#%s# may be on the hero\'s path.' % (location_text), ['Green']), location)
+                    else:
+                        return (GossipText('#%s# hoards #%s#.' % (location_text, item_text), ['Green', 'Red']), location)
+                elif t == 1:
+                    pref = getLang(world, "return", "prefix")
+                    if world.hint_dist_user.get('vague_named_items', False):
+                        return (GossipText(get1 % (location_text), ['Green'], prefix=pref), location)
+                    else:
+                        return (GossipText(get2 % (location_text, item_text), ['Green', 'Red'], prefix=pref), location)
+
+            elif lang == "japanese":
+                location_text_J = loctextJ(world, location_text).replace("には","は")  
                 if 'C' not in location_text_J:
                     location_text_J = 'C%sC' % location_text_J
-                if world.hint_dist_user.get('vague_named_items', False):
-                    return (GossipTextJP('<%s&勇者を導く' % (location_text_J), ['Green']), location)
-                else:
-                    return (GossipTextJP('<%s&C%sCを&つかさどる' % (location_text_J, item_text), ['Green', 'Red']), location)
+                if t == 0:
+                    if world.hint_dist_user.get('vague_named_items', False):
+                        return (GossipTextJP('<%s&勇者を導く' % (location_text_J), ['Green']), location)
+                    else:
+                        return (GossipTextJP('<%s&C%sCを&つかさどる' % (location_text_J, item_text), ['Green', 'Red']), location)
+                elif t == 1:        
+                    if world.hint_dist_user.get('vague_named_items', False):
+                        return (GossipTextJP(get1 % (location_text_J), ['Green']), location)
+                    else:
+                        return (GossipTextJP(get2 % (location_text_J, item_text), ['Green', 'Red']), location)
         else:
             location_text = get_hint_area(location)
-            if world.settings.language_selection == "english":
-                if world.hint_dist_user.get('vague_named_items', False):
-                    return (GossipText('#%s# may be on the hero\'s path.' % (location_text), ['Green']), location)
-                else:
-                    return (GossipText('#%s# can be found at #%s#.' % (item_text, location_text), ['Red', 'Green']), location)
-            elif world.settings.language_selection == "japanese":
-                location_text_J = getHint(location_text, world.settings.clearer_hints, world.settings.language_selection).text
-                location_text_J = loctextJ(location_text_J).replace("には","は") 
+            if lang == "english":
+                if t == 0:
+                    if world.hint_dist_user.get('vague_named_items', False):
+                        return (GossipText('#%s# may be on the hero\'s path.' % (location_text), ['Green']), location)
+                    else:
+                        return (GossipText('#%s# can be found at #%s#.' % (item_text, location_text), ['Red', 'Green']), location)
+                elif t == 1:
+                    location_text = getHint(world, location_text, world.settings.clearer_hints, world.settings.language_selection).text
+                    pref = getLang(world, "return", "prefix")
+                    if world.hint_dist_user.get('vague_named_items', False):
+                        return (GossipText(get1 % (location_text), ['Green'], prefix=pref), location)
+                    else:
+                        return (GossipText(get3 % (item_text, location_text), ['Red', 'Green'], prefix=pref), location)
+            elif lang == "japanese":
+                location_text_J = getHint(world, location_text, world.settings.clearer_hints, world.settings.language_selection).text
+                location_text_J = loctextJ(world, location_text_J).replace("には","は") 
                 if 'C' not in location_text_J:
                     location_text_J = 'C%sC' % location_text_J
-                if world.hint_dist_user.get('vague_named_items', False):
-                    return (GossipTextJP('<%s&勇者を導く' % (location_text_J), ['Green']), location)
-                else:
-                    return (GossipTextJP('<%s&C%sCを&もたらす' % (location_text_J, item_text), ['Green', 'Red']), location)
+                if t == 0:
+                    if world.hint_dist_user.get('vague_named_items', False):
+                        return (GossipTextJP('<%s&勇者を導く' % (location_text_J), ['Green']), location)
+                    else:
+                        return (GossipTextJP('<%s&C%sCを&もたらす' % (location_text_J, item_text), ['Green', 'Red']), location)
+                elif t == 1:
+                    if world.hint_dist_user.get('vague_named_items', False):
+                        return (GossipTextJP(get1 % (location_text_J), ['Green']), location)
+                    else:
+                        return (GossipTextJP(get3 % (location_text_J, item_text), ['Green', 'Red']), location)
     else:
         while True:
             #This operation is likely to be costly (especially for large multiworlds), so cache the result for later
@@ -803,43 +908,79 @@ def get_specific_item_hint(spoiler, world, checked):
 
         location = random.choice(locations)
         checked.add(location.name)
-        item_text = getHint(getItemGenericName(location.item), world.settings.clearer_hints, world.settings.language_selection).text
+        item_text = getHint(world, getItemGenericName(location.item), world.settings.clearer_hints, world.settings.language_selection).text
     
         if location.parent_region.dungeon:
-            location_text = getHint(location.parent_region.dungeon.name, world.settings.clearer_hints, world.settings.language_selection).text
-            if world.settings.language_selection == "english":
-                if world.hint_dist_user.get('vague_named_items', False):
-                    return (GossipText('#Player %d\'s %s# may be on the hero\'s path.' % (location.world.id+1, location_text), ['Green']), location)
-                else:
-                    return (GossipText('#Player %d\'s %s# hoards #%s#.' % (location.world.id+1, location_text, item_text), ['Green', 'Red']), location)
-            elif world.settings.language_selection == "japanese":
-                location_text_J = loctextJ(location_text).replace("には","は")  
+            location_text = getHint(world, location.parent_region.dungeon.name, world.settings.clearer_hints, world.settings.language_selection).text
+            if lang == "english":
+                if t == 0:
+                    if world.hint_dist_user.get('vague_named_items', False):
+                        return (GossipText('#Player %d\'s %s# may be on the hero\'s path.' % (location.world.id+1, location_text), ['Green']), location)
+                    else:
+                        return (GossipText('#Player %d\'s %s# hoards #%s#.' % (location.world.id+1, location_text, item_text), ['Green', 'Red']), location)
+                elif t == 1:
+                    pref = getLang(world, "return", "prefix")
+                    p = str(location.world.id+1)
+                    if world.hint_dist_user.get('vague_named_items', False):
+                        return (GossipText(get4 % (p, location_text), ['Green'], prefix=pref), location)
+                    else:
+                        return (GossipText(get5 % (p, location_text, item_text), ['Green', 'Red'], prefix=pref), location)
+            elif lang == "japanese":
+                location_text_J = loctextJ(world, location_text).replace("には","は")  
                 p_id = str(format(location.world.id + 1,"02")).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
                 if 'C' not in location_text_J:
                     location_text_J = 'C%sC' % location_text_J
-                if world.hint_dist_user.get('vague_named_items', False):
-                    return (GossipTextJP('<%s&Ｐ%sを導く' % (location_text_J, p_id), ['Green']), location)
-                else:
-                    return (GossipTextJP('<Ｐ%sの%s&C%sCを&つかさどる' % (p_id, location_text_J, item_text), ['Green', 'Red']), location)
+                if t == 0:
+                    if world.hint_dist_user.get('vague_named_items', False):
+                        return (GossipTextJP('<%s&Ｐ%sを導く' % (location_text_J, p_id), ['Green']), location)
+                    else:
+                        return (GossipTextJP('<Ｐ%sの%s&C%sCを&つかさどる' % (p_id, location_text_J, item_text), ['Green', 'Red']), location)
+                elif t == 1:
+                    if world.hint_dist_user.get('vague_named_items', False):
+                        return (GossipTextJP(get4 % (location_text_J, p_id), ['Green']), location)
+                    else:
+                        return (GossipTextJP(get5 % (p_id, location_text_J, item_text), ['Green', 'Red']), location)
         else:
             location_text = get_hint_area(location)
-            if world.settings.language_selection == "english":
-                if world.hint_dist_user.get('vague_named_items', False):
-                    return (GossipText('#Player %d\'s %s# may be on the hero\'s path.' % (location.world.id+1 , location_text), ['Green']), location)
-                else:
-                    return (GossipText('#%s# can be found in #Player %d\'s %s#.' % (item_text, location.world.id+1, location_text), ['Red', 'Green']), location)
+            if lang == "english":
+                if t == 0:
+                    if world.hint_dist_user.get('vague_named_items', False):
+                        return (GossipText('#Player %d\'s %s# may be on the hero\'s path.' % (location.world.id+1 , location_text), ['Green']), location)
+                    else:
+                        return (GossipText('#%s# can be found in #Player %d\'s %s#.' % (item_text, location.world.id+1, location_text), ['Red', 'Green']), location)
+                elif t == 1:
+                    location_text = getHint(world, location_text, world.settings.clearer_hints, world.settings.language_selection).text
+                    pref = getLang(world, "return", "prefix")
+                    p = str(location.world.id+1)
+                    if world.hint_dist_user.get('vague_named_items', False):
+                        return (GossipText(get4 % (p , location_text), ['Green'], prefix=pref), location)
+                    else:
+                        return (GossipText(get6 % (item_text, p, location_text), ['Red', 'Green'], prefix=pref), location)
             elif world.settings.language_selection == "japanese":
-                location_text_J = getHint(location_text, world.settings.clearer_hints, world.settings.language_selection).text
-                location_text_J = loctextJ(location_text_J).replace("には","は") 
+                location_text_J = getHint(world, location_text, world.settings.clearer_hints, world.settings.language_selection).text
+                location_text_J = loctextJ(world, location_text_J).replace("には","は") 
                 p_id = str(format(location.world.id + 1,"02")).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
                 if 'C' not in location_text_J:
                     location_text_J = 'C%sC' % location_text_J
-                if world.hint_dist_user.get('vague_named_items', False):
-                    return (GossipTextJP('<%s&Ｐ%sを導く' % (location_text_J, p_id), ['Green']), location)
-                else:
-                    return (GossipTextJP('<Ｐ%sの%s&C%sCを&もたらす' % (p_id, location_text_J, item_text), ['Green', 'Red']), location)
+                if t == 0:
+                    if world.hint_dist_user.get('vague_named_items', False):
+                        return (GossipTextJP('<%s&Ｐ%sを導く' % (location_text_J, p_id), ['Green']), location)
+                    else:
+                        return (GossipTextJP('<Ｐ%sの%s&C%sCを&もたらす' % (p_id, location_text_J, item_text), ['Green', 'Red']), location)
+                elif t == 1:
+                    if world.hint_dist_user.get('vague_named_items', False):
+                        return (GossipTextJP(get4 % (location_text_J, p_id), ['Green']), location)
+                    else:
+                        return (GossipTextJP(get6 % (p_id, location_text_J, item_text), ['Green', 'Red']), location)
 
 def get_random_location_hint(spoiler, world, checked):
+    lang = world.settings.language_selection
+    t = 0
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+        t = 1
+        get1 = getLang(world, "return", "hoards")
+        get2 = getLang(world, "return", "can found")
     locations = list(filter(lambda location:
         is_not_checked(location, checked)
         and location.item.type not in ('Drop', 'Event', 'Shop', 'DungeonReward')
@@ -856,28 +997,48 @@ def get_random_location_hint(spoiler, world, checked):
     checked.add(location.name)
     dungeon = location.parent_region.dungeon
 
-    item_text = getHint(getItemGenericName(location.item), world.settings.clearer_hints, world.settings.language_selection).text
+    item_text = getHint(world, getItemGenericName(location.item), world.settings.clearer_hints, world.settings.language_selection).text
     if dungeon:
-        location_text = getHint(dungeon.name, world.settings.clearer_hints, world.settings.language_selection).text
-        if world.settings.language_selection == "english":
-            return (GossipText('#%s# hoards #%s#.' % (location_text, item_text), ['Green', 'Red']), location)
-        elif world.settings.language_selection == "japanese":
-            location_text_J = loctextJ(location_text).replace("には","は")
+        location_text = getHint(world, dungeon.name, world.settings.clearer_hints, world.settings.language_selection).text
+        if lang == "english":
+            if t == 0:
+                return (GossipText('#%s# hoards #%s#.' % (location_text, item_text), ['Green', 'Red']), location)
+            elif t == 1:
+                pref = getLang(world, "return", "prefix")
+                return (GossipText(get1 % (location_text, item_text), ['Green', 'Red'], prefix=pref), location)
+        elif lang == "japanese":
+            location_text_J = loctextJ(world, location_text).replace("には","は")
             if 'C' not in location_text_J:
                 location_text_J = 'C%sC' % location_text_J
-            return (GossipTextJP('<%s&C%sCを&つかさどる' % (location_text_J, item_text), ['Green', 'Red']), location)
+            if t == 0:
+                return (GossipTextJP('<%s&C%sCを&つかさどる' % (location_text_J, item_text), ['Green', 'Red']), location)
+            elif t == 1:
+                return (GossipTextJP(get1 % (location_text_J, item_text), ['Green', 'Red']), location)
     else:
         location_text = get_hint_area(location)
         if world.settings.language_selection == "english":
-            return (GossipText('#%s# can be found at #%s#.' % (item_text, location_text), ['Red', 'Green']), location)
+            if t == 0:
+                return (GossipText('#%s# can be found at #%s#.' % (item_text, location_text), ['Red', 'Green']), location)
+            elif t == 1:
+                pref = getLang(world, "return", "prefix")
+                location_text = getHint(world, location_text, world.settings.clearer_hints, world.settings.language_selection).text
+                return (GossipText(get2 % (item_text, location_text), ['Red', 'Green'], prefix=pref), location)
         elif world.settings.language_selection == "japanese":
-            location_text_J = getHint(location_text, world.settings.clearer_hints, world.settings.language_selection).text
-            location_text_J = loctextJ(location_text_J).replace("には","は")  
+            location_text_J = getHint(world, location_text, world.settings.clearer_hints, world.settings.language_selection).text
+            location_text_J = loctextJ(world, location_text_J).replace("には","は")  
             if 'C' not in location_text_J:
                 location_text_J = 'C%sC' % location_text_J
-            return (GossipTextJP('<%s&C%sCを&もたらす' % (location_text_J, item_text), ['Green', 'Red']), location)
+            if t == 0:
+                return (GossipTextJP('<%s&C%sCを&もたらす' % (location_text_J, item_text), ['Green', 'Red']), location)
+            elif t == 1:
+                return (GossipTextJP(get2 % (location_text_J, item_text), ['Green', 'Red']), location)
 
 def get_specific_hint(spoiler, world, checked, type):
+    lang = world.settings.language_selection
+    t = 0
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+        t = 1
     hintGroup = getHintGroup(type, world)
     hintGroup = list(filter(lambda hint: is_not_checked(world.get_location(hint.name), checked), hintGroup))
     if not hintGroup:
@@ -891,13 +1052,17 @@ def get_specific_hint(spoiler, world, checked, type):
         location_text = world.hint_text_overrides[location.name]
     else:
         location_text = hint.text
-    item_text = getHint(getItemGenericName(location.item), world.settings.clearer_hints, world.settings.language_selection).text
-    if world.settings.language_selection == "english":
+    item_text = getHint(world, getItemGenericName(location.item), world.settings.clearer_hints, world.settings.language_selection).text
+    if lang == "english":
         if '#' not in location_text:
             location_text = '#%s#' % location_text
-        return (GossipText('%s #%s#.' % (location_text, item_text), ['Green', 'Red']), location)
-    elif world.settings.language_selection == "japanese":
-        location_text_J = loctextJ(location_text)
+        if t == 0:
+            pref = "They say that "
+        elif t == 1:
+            pref = getLang(world, "return", "prefix")
+        return (GossipText('%s #%s#.' % (location_text, item_text), ['Green', 'Red'], prefix=pref), location)
+    elif lang == "japanese":
+        location_text_J = loctextJ(world, location_text)
         if 'C' not in location_text_J:
             location_text_J = 'C%sC' % location_text_J
         return (GossipTextJP('<%s&C%sC' % (location_text_J, item_text), ['Green', 'Red']), location)
@@ -920,6 +1085,11 @@ def get_dungeon_hint(spoiler, world, checked):
 
 
 def get_entrance_hint(spoiler, world, checked):
+    lang = world.settings.language_selection
+    t = 0
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+        t = 1
     if not world.entrance_shuffle:
         return None
 
@@ -942,17 +1112,21 @@ def get_entrance_hint(spoiler, world, checked):
 
     connected_region = entrance.connected_region
     if connected_region.dungeon:
-        region_text = getHint(connected_region.dungeon.name, world.settings.clearer_hints, world.settings.language_selection).text
+        region_text = getHint(world, connected_region.dungeon.name, world.settings.clearer_hints, world.settings.language_selection).text
     else:
-        region_text = getHint(connected_region.name, world.settings.clearer_hints, world.settings.language_selection).text
+        region_text = getHint(world, connected_region.name, world.settings.clearer_hints, world.settings.language_selection).text
 
-    if world.settings.language_selection == "english":
+    if lang == "english":
         if '#' not in entrance_text:
             entrance_text = '#%s#' % entrance_text
         if '#' not in region_text:
             region_text = '#%s#' % region_text
-        return (GossipText('%s %s.' % (entrance_text, region_text), ['Light Blue', 'Green']), None)
-    elif world.settings.language_selection == "japanese":
+        if t == 0:
+            pref = "They say that "
+        elif t == 1:
+            pref = getLang(world, "return", "prefix")
+        return (GossipText('%s %s.' % (entrance_text, region_text), ['Light Blue', 'Green'], prefix=pref), None)
+    elif lang == "japanese":
         if 'C' not in entrance_text:
             entrance_text = 'C%sC' % entrance_text
         if 'C' not in region_text:
@@ -962,6 +1136,9 @@ def get_entrance_hint(spoiler, world, checked):
 
 
 def get_junk_hint(spoiler, world, checked):
+    lang = world.settings.language_selection
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
     hints = getHintGroup('junk', world)
     hints = list(filter(lambda hint: hint.name not in checked, hints))
     if not hints:
@@ -969,9 +1146,9 @@ def get_junk_hint(spoiler, world, checked):
 
     hint = random.choice(hints)
     checked.add(hint.name)
-    if world.settings.language_selection == "english":
+    if lang == "english":
         return (GossipText(hint.text, prefix=''), None)
-    elif world.settings.language_selection == "japanese":
+    elif lang == "japanese":
         return (GossipTextJP(hint.text, prefix=''), None)
 
 
@@ -1074,7 +1251,16 @@ def buildGossipHints(spoiler, worlds):
 
 # builds out general hints based on location and whether an item is required or not
 def buildWorldGossipHints(spoiler, world, checkedLocations=None):
-
+    lang = world.settings.language_selection
+    t = 0
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+        t = 1
+        get1 = getLang(world, "return", "protected")
+        get2 = getLang(world, "return", "break")
+        get3 = getLang(world, "return", "protected c")
+        get4 = getLang(world, "return", "break c")
+        trialT = getLang(world, "trial")
     world.barren_dungeon = 0
     world.woth_dungeon = 0
 
@@ -1086,7 +1272,7 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
 
     if checkedLocations is None:
         checkedLocations = set()
-    checkedAlwaysLocations = set()
+
     stoneIDs = list(gossipLocations.keys())
 
     world.distribution.configure_gossip(spoiler, stoneIDs)
@@ -1210,7 +1396,7 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
         alwaysLocations = getHintGroup('always', world)
         for hint in alwaysLocations:
             location = world.get_location(hint.name)
-            checkedAlwaysLocations.add(hint.name)
+            checkedLocations.add(hint.name)
             if location.item.name in bingoBottlesForHints and world.settings.hint_dist == 'bingo':
                 always_item = 'Bottle'
             else:
@@ -1221,65 +1407,111 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
                 if world.settings.language_selection == "english":
                     location_text = world.hint_text_overrides[location.name]
             else:
-                location_text = getHint(location.name, world.settings.clearer_hints, world.settings.language_selection).text
-            item_text = getHint(getItemGenericName(location.item), world.settings.clearer_hints, world.settings.language_selection).text
-            if world.settings.language_selection == "english":
+                location_text = getHint(world, location.name, world.settings.clearer_hints, world.settings.language_selection).text
+            item_text = getHint(world, getItemGenericName(location.item), world.settings.clearer_hints, world.settings.language_selection).text
+            if lang == "english":
                 if '#' not in location_text:
                     location_text = '#%s#' % location_text
-                add_hint(spoiler, world, stoneGroups, GossipText('%s #%s#.' % (location_text, item_text), ['Green', 'Red']), hint_dist['always'][1], location, force_reachable=True)
-            elif world.settings.language_selection == "japanese":
-                location_text_J = loctextJ(location_text)  
+                if t == 0:
+                    pref = "They say that "
+                elif t == 1:
+                    pref = getLang(world, "return", "prefix")
+                add_hint(spoiler, world, stoneGroups, GossipText('%s #%s#.' % (location_text, item_text), ['Green', 'Red'], prefix=pref), hint_dist['always'][1], location, force_reachable=True)
+            elif lang == "japanese":
+                location_text_J = loctextJ(world, location_text)  
                 if 'C' not in location_text_J:
                     location_text_J = 'C%sC' % location_text_J
                 add_hint(spoiler, world, stoneGroups, GossipTextJP('<%s&C%sC' % (location_text_J, item_text), ['Green', 'Red']), hint_dist['always'][1], location, force_reachable=True)
             logging.getLogger('').debug('Placed always hint for %s.', location.name)
-    trial_translate = [
-        ('Light',  '光の力'),
-        ('Forest', '森の力'),
-        ('Fire',   '炎の力'),
-        ('Water',  '水の力'),
-        ('Shadow', '闇の力'),
-        ('Spirit', '魂の力'),
-    ]
+    trial_translate = {
+        'Light':    '光の力',
+        'Forest':   '森の力',
+        'Fire':     '炎の力',
+        'Water':    '水の力',
+        'Shadow':   '闇の力',
+        'Spirit':   '魂の力',
+    }
     # Add trial hints, only if hint copies > 0
     if hint_dist['trial'][1] > 0:
         if world.settings.trials_random and world.settings.trials == 6:
-            if world.settings.language_selection == "english":
-                GT = GossipText("#Ganon's Tower# is protected by a powerful barrier.", ['Pink'])
-            elif world.settings.language_selection == "japanese":
-                GT = GossipTextJP("<Cガノン城Cは強力な力で守られている", ['Pink'])
+            if lang == "english":
+                if t == 0:
+                    GT = GossipText("#Ganon's Tower# is protected by a powerful barrier.", ['Pink'])
+                elif t == 1:                   
+                    pref = getLang(world, "return", "prefix")
+                    GT = GossipText(get1, ['Pink'], prefix=pref)
+            elif lang == "japanese":
+                if t == 0:
+                    GT = GossipTextJP("<Cガノン城Cは強力な力で守られている", ['Pink'])
+                elif t == 1:
+                    GT = GossipTextJP(get1, ['Pink'])
             add_hint(spoiler, world, stoneGroups, GT, hint_dist['trial'][1], force_reachable=True)
         elif world.settings.trials_random and world.settings.trials == 0:
-            if world.settings.language_selection == "english":
-                GT = GossipText("Sheik dispelled the barrier around #Ganon's Tower#.", ['Yellow'])
-            elif world.settings.language_selection == "japanese":
-                GT = GossipTextJP("<シークはCガノン城Cのバリアを破壊した", ['Yellow'])
+            if lang == "english":
+                if t == 0:
+                    GT = GossipText("Sheik dispelled the barrier around #Ganon's Tower#.", ['Yellow'])
+                elif t == 1:
+                    pref = getLang(world, "return", "prefix")
+                    GT = GossipText(get2, ['Yellow'], prefix=pref)
+            elif lang == "japanese":
+                if t == 0:
+                    GT = GossipTextJP("<シークはCガノン城Cのバリアを破壊した", ['Yellow'])
+                elif t == 1:
+                    GT = GossipTextJP(get2, ['Yellow'])
             add_hint(spoiler, world, stoneGroups, GT, hint_dist['trial'][1], force_reachable=True)
         elif world.settings.trials < 6 and world.settings.trials > 3:
             for trial,skipped in world.skipped_trials.items():
-                trialjp = "どこか"
                 if skipped:
-                    if world.settings.language_selection == "english":
-                        GT = GossipText("the #%s Trial# was dispelled by Sheik." % trial, ['Yellow'])
-                    elif world.settings.language_selection == "japanese":
-                        for (en, jp) in trial_translate:
-                            if trial == en:
-                                trialjp = jp
-                                break
-                        GT = GossipTextJP("<シークはC%sCのバリアを破壊した" % trialjp, ['Yellow'])
+                    if lang == "english":
+                        if t == 0:
+                            GT = GossipText("the #%s Trial# was dispelled by Sheik." % trial, ['Yellow'])
+                        elif t == 1:
+                            try:
+                                trialX = trialT[trial]
+                            except KeyError:
+                                trialX = trialT["other"]
+                            pref = getLang(world, "return", "prefix")
+                            GT = GossipText(get4 % trialX, ['Yellow'], prefix=pref)
+                    elif lang == "japanese":
+                        if t == 0:
+                            try:
+                                trialjp = trial_translate[trial]
+                            except KeyError:
+                                trialjp = "どこか"
+                            GT = GossipTextJP("<シークはC%sCのバリアを破壊した" % trialjp, ['Yellow'])
+                        elif t == 1:
+                            try:
+                                trialX = trialT[trial]
+                            except KeyError:
+                                trialX = trialT["other"]
+                            GT = GossipTextJP(get4 % trialX, ['Yellow'])
                     add_hint(spoiler, world, stoneGroups, GT, hint_dist['trial'][1], force_reachable=True)
         elif world.settings.trials <= 3 and world.settings.trials > 0:
             for trial,skipped in world.skipped_trials.items():
-                trialjp = "どこか"
                 if not skipped:
-                    if world.settings.language_selection == "english":
-                        GT = GossipText("the #%s Trial# protects Ganon's Tower." % trial, ['Pink'])
-                    elif world.settings.language_selection == "japanese":
-                        for (en, jp) in trial_translate:
-                            if trial == en:
-                                trialjp = jp
-                                break
-                        GT = GossipTextJP("<ガノン城はC%sCに守られている" % trialjp, ['Pink'])
+                    if lang == "english":
+                        if t == 0:
+                            GT = GossipText("the #%s Trial# protects Ganon's Tower." % trial, ['Pink'])
+                        elif t == 1:
+                            try:
+                                trialX = trialT[trial]
+                            except KeyError:
+                                trialX = trialT["other"]
+                            pref = getLang(world, "return", "prefix")
+                            GT = GossipText(get3 % trialX, ['Pink'], prefix = pref)
+                    elif lang == "japanese":
+                        if t == 0:
+                            try:
+                                trialjp = trial_translate[trial]
+                            except KeyError:
+                                trialjp = "どこか"
+                            GT = GossipTextJP("<ガノン城はC%sCに守られている" % trialjp, ['Pink'])
+                        elif t == 1:
+                            try:
+                                trialX = trialT[trial]
+                            except KeyError:
+                                trialX = trialT["other"]
+                            GT = GossipTextJP(get3 % trialX, ['Pink'])
                     add_hint(spoiler, world, stoneGroups, GT, hint_dist['trial'][1], force_reachable=True)
 
     # Add user-specified hinted item locations if using a built-in hint distribution
@@ -1289,7 +1521,7 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
             raise Exception('User-provided item hints were requested, but copies per named-item hint is zero')
         else:
             for i in range(0, len(world.named_item_pool)):
-                hint = get_specific_item_hint(spoiler, world, checkedLocations | checkedAlwaysLocations)
+                hint = get_specific_item_hint(spoiler, world, checkedLocations)
                 if hint:
                     gossip_text, location = hint
                     place_ok = add_hint(spoiler, world, stoneGroups, gossip_text, hint_dist['named-item'][1], location)
@@ -1346,12 +1578,7 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
             except IndexError:
                 raise Exception('Not enough valid hints to fill gossip stone locations.')
 
-        allCheckedLocations = checkedLocations | checkedAlwaysLocations
-        if hint_type == 'barren':
-            hint = hint_func[hint_type](spoiler, world, checkedLocations)
-        else:
-            hint = hint_func[hint_type](spoiler, world, allCheckedLocations)
-            checkedLocations.update(allCheckedLocations - checkedAlwaysLocations)
+        hint = hint_func[hint_type](spoiler, world, checkedLocations)
 
         if hint == None:
             index = hint_types.index(hint_type)
@@ -1375,11 +1602,14 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
 
 # builds text that is displayed at the temple of time altar for child and adult, rewards pulled based off of item in a fixed order.
 def buildAltarHints(world, messages, include_rewards=True, include_wincons=True):
+    lang = world.settings.language_selection
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
     # text that appears at altar as a child.
     child_text = ""
-    if world.settings.language_selection == "english":
+    if lang == "english":
         child_text = '\x08'
-    elif world.settings.language_selection == "japanese":
+    elif lang == "japanese":
         child_text = '<'
     if include_rewards:
         bossRewardsSpiritualStones = [
@@ -1387,32 +1617,36 @@ def buildAltarHints(world, messages, include_rewards=True, include_wincons=True)
             ('Goron Ruby',       'Red'), 
             ('Zora Sapphire',    'Blue'),
         ]
-        child_text += linewrapJP(getHint('Spiritual Stone Text Start', world.settings.clearer_hints, world.settings.language_selection).text, align="center")
-        if world.settings.language_selection == "english":
+        
+        
+        if lang == "english":
+            child_text += getHint(world, 'Spiritual Stone Text Start', world.settings.clearer_hints, world.settings.language_selection).text
             child_text += '\x04'
-        elif world.settings.language_selection == "japanese":
+        elif lang == "japanese":
+            child_text += linewrapJP(getHint(world, 'Spiritual Stone Text Start', world.settings.clearer_hints, world.settings.language_selection).text, align="center")
             child_text += '^'
         for (reward, color) in bossRewardsSpiritualStones:
             child_text += buildBossString(reward, color, world)
-    child_text += linewrapJP(getHint('Child Altar Text End', world.settings.clearer_hints, world.settings.language_selection).text, align="left")
-    if world.settings.language_selection == "english":
+    if lang == "english":
+        child_text += getHint(world, 'Child Altar Text End', world.settings.clearer_hints, world.settings.language_selection).text
         child_text += '\x0B'
         update_message_by_id(messages, 0x707A, get_raw_text(child_text, world.settings.language_selection), 0x20)
-    elif world.settings.language_selection == "japanese":
+    elif lang == "japanese":
+        child_text += linewrapJP(getHint(world, 'Child Altar Text End', world.settings.clearer_hints, world.settings.language_selection).text, align="left")
         child_text += '{'
         update_message_jp(messages, 0x707A, get_raw_text(child_text, world.settings.language_selection), 0x20, align = "custom")
 
     # text that appears at altar as an adult.
     adult_text = ""
-    if world.settings.language_selection == "english":
+    if lang == "english":
         adult_text = '\x08'
-    elif world.settings.language_selection == "japanese":
+    elif lang == "japanese":
         adult_text = '<'
-    adult_text += getHint('Adult Altar Text Start', world.settings.clearer_hints, world.settings.language_selection).text
-    if world.settings.language_selection == "english":
+    if lang == "english":
+        adult_text += getHint(world, 'Adult Altar Text Start', world.settings.clearer_hints, world.settings.language_selection).text
         adult_text += '\x04'
-    elif world.settings.language_selection == "japanese":
-        adult_text = linewrapJP(adult_text, align="center")
+    elif lang == "japanese":
+        adult_text = linewrapJP(getHint(world, 'Adult Altar Text Start', world.settings.clearer_hints, world.settings.language_selection).text, align="center")
         adult_text += '^'
     if include_rewards:
         bossRewardsMedallions = [
@@ -1427,31 +1661,37 @@ def buildAltarHints(world, messages, include_rewards=True, include_wincons=True)
             adult_text += buildBossString(reward, color, world)
     if include_wincons:
         adult_text += buildBridgeReqsString(world)
-        if world.settings.language_selection == "english":
+        if lang == "english":
             adult_text += '\x04'
-        elif world.settings.language_selection == "japanese":
+        elif lang == "japanese":
             adult_text += '^'
         adult_text += buildGanonBossKeyString(world)
     else:
-        adult_text += linewrapJP(getHint('Adult Altar Text End', world.settings.clearer_hints, world.settings.language_selection).text, align="left")
-    if world.settings.language_selection == "english":
+        if lang == "english":
+            adult_text += getHint(world, 'Adult Altar Text End', world.settings.clearer_hints, world.settings.language_selection).text
+        elif lang == "japanese":
+            adult_text += linewrapJP(getHint(world, 'Adult Altar Text End', world.settings.clearer_hints, world.settings.language_selection).text, align="left")
+    if lang == "english":
         adult_text += '\x0B'
         update_message_by_id(messages, 0x7057, get_raw_text(adult_text, world.settings.language_selection), 0x20)
-    elif world.settings.language_selection == "japanese":
+    elif lang == "japanese":
         adult_text += '{'
         update_message_jp(messages, 0x7057, get_raw_text(adult_text, world.settings.language_selection), 0x20, align = "custom")
 
 
 # pulls text string from hintlist for reward after sending the location to hintlist.
 def buildBossString(reward, color, world):
+    lang = world.settings.language_selection
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
     for location in world.get_filled_locations():
         if location.item.name == reward:
             item_icon = chr(location.item.special['item_id'])
-            location_text = getHint(location.name, world.settings.clearer_hints, world.settings.language_selection).text
-            if world.settings.language_selection == "english":
+            location_text = getHint(world, location.name, world.settings.clearer_hints, world.settings.language_selection).text
+            if lang == "english":
                 return str(GossipText("\x08\x13%s%s" % (item_icon, location_text), [color], prefix='')) + '\x04'
-            elif world.settings.language_selection == "japanese":
-                location_text_J = loctextJ(location_text)  
+            elif lang == "japanese":
+                location_text_J = loctextJ(world, location_text)  
                 if 'C' not in location_text_J:
                     location_text_J = 'C%sC' % location_text_J
                 return linewrapJP(str(GossipTextJP("<~%s%s" % (item_icon, location_text_J), [color], prefix='')), align="left") + '^'
@@ -1459,14 +1699,29 @@ def buildBossString(reward, color, world):
 
 
 def buildBridgeReqsString(world):
+    lang = world.settings.language_selection
+    t = 0
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+        t = 1
+        get1 = getLang(world, "return", "already")
+        get2 = getLang(world, "return", "waiting")
     string = "\x13\x12" # Light Arrow Icon
     string_j = "<~\x12" # Light Arrow Icon
+    stringX = ""
+    if t == 1:
+        if lang == "english":
+            stringX = string
+        elif lang == "japanese":
+            stringX = string_j
     if world.settings.bridge == 'open':
         string += "The awakened ones will have #already created a bridge# to the castle where the evil dwells."
         string_j += "賢者たちはCガノン城Cへの橋をすでにかけた。"
+        if t == 1:
+            stringX += get1
     else:
-        item_req_string = getHint('bridge_' + world.settings.bridge, world.settings.clearer_hints, world.settings.language_selection).text
-        if world.settings.language_selection == "english":
+        item_req_string = getHint(world, 'bridge_' + world.settings.bridge, world.settings.clearer_hints, world.settings.language_selection).text
+        if lang == "english":
             if world.settings.bridge == 'medallions':
                 item_req_string = str(world.settings.bridge_medallions) + ' ' + item_req_string
             elif world.settings.bridge == 'stones':
@@ -1477,35 +1732,60 @@ def buildBridgeReqsString(world):
                 item_req_string = str(world.settings.bridge_tokens) + ' ' + item_req_string
             if '#' not in item_req_string:
                 item_req_string = '#%s#' % item_req_string
-        elif world.settings.language_selection == "japanese":
+        elif lang == "japanese":
             if world.settings.bridge == 'medallions':
-                item_req_string = str(world.settings.bridge_medallions).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個の' + item_req_string
+                item_req_string += str(world.settings.bridge_medallions).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個'
             elif world.settings.bridge == 'stones':
-                item_req_string = str(world.settings.bridge_stones).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個の' +item_req_string
+                item_req_string += str(world.settings.bridge_stones).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個'
             elif world.settings.bridge == 'dungeons':
-                item_req_string = str(world.settings.bridge_rewards).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + 'つの' +item_req_string
+                item_req_string += str(world.settings.bridge_rewards).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個'
             elif world.settings.bridge == 'tokens':
-                item_req_string = str(world.settings.bridge_tokens).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個の' +item_req_string
+                item_req_string += str(world.settings.bridge_tokens).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個'
             if 'C' not in item_req_string:
                 item_req_string = 'C%sC' % item_req_string
         string += "The awakened ones will await for the Hero to collect %s." % item_req_string
         string_j += "賢者たちは勇者が%sを集めるのを待っている。" % item_req_string
-    if world.settings.language_selection == "english":
-        return str(GossipText(string, ['Green'], prefix=''))
-    elif world.settings.language_selection == "japanese":
-        return linewrapJP(str(GossipTextJP(string_j, ['Green'], prefix='')), align="left")
+        if t == 1:
+            stringX += get2 % item_req_string
+    if lang == "english":
+        if t == 0:
+            return str(GossipText(string, ['Green'], prefix=''))
+        elif t == 1:
+            return str(GossipText(stringX, ['Green'], prefix=''))
+    elif lang == "japanese":
+        if t == 0:
+            return linewrapJP(str(GossipTextJP(string_j, ['Green'], prefix='')), align="left")
+        elif t == 1:
+            return linewrapJP(str(GossipTextJP(stringX, ['Green'], prefix='')), align="left")
 
 
 def buildGanonBossKeyString(world):
+    lang = world.settings.language_selection
+    t = 0
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+        t = 1
+        get1 = getLang(world, "return", "g remove")
+        get2 = getLang(world, "return", "p zelda")
+        get3 = getLang(world, "return", "auto grant")
+        get4 = getLang(world, "return", "g remove c")
     string = "\x13\x74" # Boss Key Icon
     string_j = "<~\x74" # Boss Key Icon
+    stringX = ""
+    if t == 1:
+        if lang == "english":
+            stringX = string
+        elif lang == "japanese":
+            stringX = string_j
     if world.settings.shuffle_ganon_bosskey == 'remove':
         string += "And the door to the \x05\x41evil one\x05\x40's chamber will be left #unlocked#."
         string_j += "#\x01心悪しき者#\x00への扉はC開かれているC。"
+        if t == 1:
+            stringX += get1
     else:
         if world.settings.shuffle_ganon_bosskey == 'on_lacs':
-            item_req_string = getHint('lacs_' + world.settings.lacs_condition, world.settings.clearer_hints, world.settings.language_selection).text
-            if world.settings.language_selection == "english":
+            item_req_string = getHint(world, 'lacs_' + world.settings.lacs_condition, world.settings.clearer_hints, world.settings.language_selection).text
+            if lang == "english":
                 if world.settings.lacs_condition == 'medallions':
                     item_req_string = str(world.settings.lacs_medallions) + ' ' + item_req_string
                 elif world.settings.lacs_condition == 'stones':
@@ -1516,22 +1796,28 @@ def buildGanonBossKeyString(world):
                     item_req_string = str(world.settings.lacs_tokens) + ' ' + item_req_string
                 if '#' not in item_req_string:
                     item_req_string = '#%s#' % item_req_string
-                bk_location_string = "provided by Zelda once %s are retrieved" % item_req_string
-            elif world.settings.language_selection == "japanese":
+                if t == 0:
+                    bk_location_string = "provided by Zelda once %s are retrieved" % item_req_string
+                elif t == 1:
+                    bk_location_string = get2 % item_req_string
+            elif lang == "japanese":
                 if world.settings.lacs_condition == 'medallions':
-                    item_req_string = str(world.settings.lacs_medallions).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個の' +item_req_string
+                    item_req_string += str(world.settings.lacs_medallions).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個'
                 elif world.settings.lacs_condition == 'stones':
-                    item_req_string = str(world.settings.lacs_stones).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個の' +item_req_string
+                    item_req_string += str(world.settings.lacs_stones).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個'
                 elif world.settings.lacs_condition == 'dungeons':
-                    item_req_string = str(world.settings.lacs_rewards).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + 'つの' +item_req_string
+                    item_req_string += str(world.settings.lacs_rewards).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個'
                 elif world.settings.lacs_condition == 'tokens':
-                    item_req_string = str(world.settings.lacs_tokens).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個の' +item_req_string
+                    item_req_string += str(world.settings.lacs_tokens).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個'
                 if 'C' not in item_req_string:
                     item_req_string = 'C%sC' % item_req_string
-                bk_location_string = "%sすることで開かれる" % item_req_string
+                if t == 0:
+                    bk_location_string = "%sすることで開かれる" % item_req_string
+                elif t == 1:
+                    bk_location_string = get2 % item_req_string
         elif world.settings.shuffle_ganon_bosskey in ['stones', 'medallions', 'dungeons', 'tokens']:
-            item_req_string = getHint('ganonBK_' + world.settings.shuffle_ganon_bosskey, world.settings.clearer_hints, world.settings.language_selection).text
-            if world.settings.language_selection == "english":
+            item_req_string = getHint(world, 'ganonBK_' + world.settings.shuffle_ganon_bosskey, world.settings.clearer_hints, world.settings.language_selection).text
+            if lang == "english":
                 if world.settings.shuffle_ganon_bosskey == 'medallions':
                     item_req_string = str(world.settings.ganon_bosskey_medallions) + ' ' + item_req_string
                 elif world.settings.shuffle_ganon_bosskey == 'stones':
@@ -1542,37 +1828,60 @@ def buildGanonBossKeyString(world):
                     item_req_string = str(world.settings.ganon_bosskey_tokens) + ' ' + item_req_string
                 if '#' not in item_req_string:
                     item_req_string = '#%s#' % item_req_string
-                bk_location_string = "automatically granted once %s are retrieved" % item_req_string
-            elif world.settings.language_selection == "japanese":
+                if t == 0:
+                    bk_location_string = "automatically granted once %s are retrieved" % item_req_string
+                elif t == 1:
+                    bk_location_string = get3 % item_req_string
+            elif lang == "japanese":
                 if world.settings.shuffle_ganon_bosskey == 'medallions':
-                    item_req_string = str(world.settings.ganon_bosskey_medallions).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個の' +item_req_string
+                    item_req_string += str(world.settings.ganon_bosskey_medallions).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個'
                 elif world.settings.shuffle_ganon_bosskey == 'stones':
-                    item_req_string = str(world.settings.ganon_bosskey_stones).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個の' +item_req_string
+                    item_req_string += str(world.settings.ganon_bosskey_stones).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個'
                 elif world.settings.shuffle_ganon_bosskey == 'dungeons':
-                    item_req_string = str(world.settings.ganon_bosskey_rewards).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + 'つの' +item_req_string
+                    item_req_string += str(world.settings.ganon_bosskey_rewards).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個'
                 elif world.settings.shuffle_ganon_bosskey == 'tokens':
-                    item_req_string = str(world.settings.ganon_bosskey_tokens).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個の' +item_req_string
+                    item_req_string += str(world.settings.ganon_bosskey_tokens).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)})) + '個'
                 if 'C' not in item_req_string:
                     item_req_string = 'C%sC' % item_req_string
-                bk_location_string = "%sすることで開かれる" % item_req_string
+                if t == 0:
+                    bk_location_string = "%sすることで開かれる" % item_req_string
+                elif t == 1:
+                    bk_location_string = get3 % item_req_string
         else:
-            bk_location_string = getHint('ganonBK_' + world.settings.shuffle_ganon_bosskey, world.settings.clearer_hints, world.settings.language_selection).text
+            bk_location_string = getHint(world, 'ganonBK_' + world.settings.shuffle_ganon_bosskey, world.settings.clearer_hints, world.settings.language_selection).text
         string += "And the \x05\x41evil one\x05\x40's key will be %s." % bk_location_string
         string_j += "#\x01心悪しき者#\x00への扉は%s。" % bk_location_string
-    if world.settings.language_selection == "english":
-        return str(GossipText(string, ['Yellow'], prefix=''))
-    elif world.settings.language_selection == "japanese":
-        return linewrapJP(str(GossipTextJP(string_j, ['Yellow'], prefix='')), align="left")
+        if t == 1:
+            stringX += get4 % bk_location_string
+    if lang == "english":
+        if t == 0:  
+            return str(GossipText(string, ['Yellow'], prefix=''))
+        elif t == 1:  
+            return str(GossipText(stringX, ['Yellow'], prefix=''))
+    elif lang == "japanese":
+        if t == 0:
+            return linewrapJP(str(GossipTextJP(string_j, ['Yellow'], prefix='')), align="left")
+        elif t == 1:
+            return linewrapJP(str(GossipTextJP(stringX, ['Yellow'], prefix='')), align="left")
 
 
 # fun new lines for Ganon during the final battle
 def buildGanonText(world, messages):
+    lang = world.settings.language_selection
+    t = 0
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+        t = 1
+        hintX = getLang(world, "hint")
+        get1 = getLang(world, "return", "pocket")
+        get2 = getLang(world, "return", "players ganon")
+        get3 = getLang(world, "return", "without light")
     # empty now unused messages to make space for ganon lines
-    if world.settings.language_selection == "english":
+    if lang == "english":
         update_message_by_id(messages, 0x70C8, " ")
         update_message_by_id(messages, 0x70C9, " ")
         update_message_by_id(messages, 0x70CA, " ")
-    elif world.settings.language_selection == "japanese":
+    elif lang == "japanese":
         update_message_jp(messages, 0x70C8, "")
         update_message_jp(messages, 0x70C9, "")
         update_message_jp(messages, 0x70CA, "")
@@ -1580,25 +1889,27 @@ def buildGanonText(world, messages):
     # lines before battle
     ganonLines = getHintGroup('ganonLine', world)
     random.shuffle(ganonLines)
-    text = get_raw_text(ganonLines.pop().text, world.settings.language_selection)
-    if world.settings.language_selection == "english":
+    text = get_raw_text(ganonLines.pop().text, lang)
+    if lang == "english":
         update_message_by_id(messages, 0x70CB, text)
-    elif world.settings.language_selection == "japanese":
+    elif lang == "japanese":
         update_message_jp(messages, 0x70CB, text, align = "center")
     p_id = ""
     # light arrow hint or validation chest item
     if world.distribution.get_starting_item('Light Arrows') > 0:
-        text = get_raw_text(getHint('Light Arrow Location', world.settings.clearer_hints, world.settings.language_selection).text, world.settings.language_selection)
+        text = get_raw_text(getHint(world, 'Light Arrow Location', world.settings.clearer_hints, world.settings.language_selection).text, lang)
         if world.settings.language_selection == "english":
             text += "\x05\x42your pocket\x05\x40"
         elif world.settings.language_selection == "japanese":
             text += "#\x02手元#\x00にある"
+        elif world.settings.language_selection == "extra":
+            text += get1
     elif world.light_arrow_location:
-        text = get_raw_text(getHint('Light Arrow Location', world.settings.clearer_hints, world.settings.language_selection).text, world.settings.language_selection)
+        text = get_raw_text(getHint(world, 'Light Arrow Location', world.settings.clearer_hints, world.settings.language_selection).text, lang)
         location = world.light_arrow_location
         location_hint = get_hint_area(location)
         try:
-            location_hint_J = loctextJ(location_hint)
+            location_hint_J = loctextJ(world, location_hint)
         except TypeError:
             try:
                 t, o, tj, oj, d = hintTable[location_hint]
@@ -1617,30 +1928,72 @@ def buildGanonText(world, messages):
                 location_hint_J = splitText[1]
         if 'C' in location_hint_J:
             location_hint_J = location_hint_J.replace('C', '')
+        if t == 1:
+            try:
+                t, o = hintX[location_hint]
+            except KeyError:
+                if location_hint.startswith("the "):
+                   location_hint = location_hint[4:] 
+                   t, o = hintX[location_hint]
+            if o is None:
+                location_hint_X = t
+            else:
+                location_hint_X = o
+            if isinstance(location_hint_X,list):
+                location_hint_X = location_hint_X[0]
+            if lang == "english":
+                if '#' in location_hint_X:
+                    splitText = location_hint_X.split("#")
+                    location_hint_X = splitText[1]
+            elif lang == "japanese":
+                if 'C' in location_hint_X:
+                    splitText = location_hint_X.split("C")
+                    location_hint_X = splitText[1]
+            if lang == "english":
+                if '#' in location_hint_X:
+                    location_hint_X = location_hint_X.replace('#', '') 
+            elif lang == "japanese":
+                if 'C' in location_hint_X:
+                    location_hint_X = location_hint_X.replace('C', '')        
         p_id = str(format(location.world.id + 1,"02")).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
         if world.id != location.world.id:
-            if world.settings.language_selection == "english":
-                text += "\x05\x42Player %d's\x05\x40 %s" % (location.world.id +1, get_raw_text(location_hint, world.settings.language_selection))
-            elif world.settings.language_selection == "japanese":
-                text += "Ｐ%sの　#\x02%s#\x00" % (p_id, get_raw_text(location_hint_J, world.settings.language_selection))
+            if lang == "english":
+                if t == 0: 
+                    text += "\x05\x42Player %d's\x05\x40 %s" % (location.world.id +1, get_raw_text(location_hint, lang))
+                elif t == 1: 
+                    p = str(location.world.id +1)
+                    text += get2 % (p, get_raw_text(location_hint_X, lang))
+            elif lang == "japanese":
+                if t == 0:
+                    text += "Ｐ%sの　#\x02%s#\x00" % (p_id, get_raw_text(location_hint_J, lang))
+                elif t == 1:
+                    text += get2 % (p_id, get_raw_text(location_hint_X, lang))
         else:
             location_hint = location_hint.replace('Ganon\'s Castle', 'my castle')
             location_hint_J = location_hint_J.replace('ガノン城', '私の城')
             if world.settings.language_selection == "english":
-                text += get_raw_text(location_hint, world.settings.language_selection)
+                text += get_raw_text(location_hint, lang)
             elif world.settings.language_selection == "japanese":
-                text += get_raw_text(location_hint_J, world.settings.language_selection)
+                text += get_raw_text(location_hint_J, lang)
+            elif world.settings.language_selection == "extra":
+                text += get_raw_text(location_hint_X, lang)
     else:
-        text = get_raw_text(getHint('Validation Line', world.settings.clearer_hints, world.settings.language_selection).text, world.settings.language_selection)
+        text = get_raw_text(getHint(world, 'Validation Line', world.settings.clearer_hints, world.settings.language_selection).text, lang)
         for location in world.get_filled_locations():
             if location.name == 'Ganons Tower Boss Key Chest':
-                text += get_raw_text(getHint(getItemGenericName(location.item), world.settings.clearer_hints, world.settings.language_selection).text, world.settings.language_selection)
+                text += get_raw_text(getHint(world, getItemGenericName(location.item), world.settings.clearer_hints, world.settings.language_selection).text, lang)
                 break
-    if world.settings.language_selection == "english":
-        text += '!'
+    if lang == "english":
+        if t == 0:
+            text += '!'
+        elif t == 1:
+            text += get3
         update_message_by_id(messages, 0x70CC, text)
-    elif world.settings.language_selection == "japanese":
-        text += '#\x06矢#\x00無しでは不可能！'
+    elif lang == "japanese":
+        if t == 0:
+            text += '#\x06矢#\x00無しでは不可能！'
+        elif t == 1:
+            text += get3
         update_message_jp(messages, 0x70CC, text, align = "center")
 
 
