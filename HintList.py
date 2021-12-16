@@ -1,5 +1,5 @@
 import random
-
+from Language import getLang
 #   Abbreviations
 #       DMC     Death Mountain Crater
 #       DMT     Death Mountain Trail
@@ -40,7 +40,7 @@ class Hint(object):
                 self.text = text[choice]
 
 
-def getHint(name, clearer_hint=False, lang="english"):
+def getHint(world, name, clearer_hint=False, lang="english"):
     try:
         textOptions, clearText, textOptionsJP, clearTextJP, type = hintTable[name]
     except KeyError:
@@ -61,13 +61,26 @@ def getHint(name, clearer_hint=False, lang="english"):
             return Hint(name, clearTextJP, type)
         else:
             return Hint(name, textOptionsJP, type)
-
+    elif lang == "extra":
+        hint = getLang(world, "hint")
+        try:
+            textOptions, clearText = hint[name]
+        except KeyError:
+            if name.startswith("the "):
+                name = name[4:]
+            textOptions, clearText = hint[name]
+        if clearer_hint:
+            if clearText == None:
+                return Hint(name, textOptions, type, 0)
+            return Hint(name, clearText, type)
+        else:
+            return Hint(name, textOptions, type)
 
 def getHintGroup(group, world):
     ret = []
     for name in hintTable:
 
-        hint = getHint(name, world.settings.clearer_hints, world.settings.language_selection)
+        hint = getHint(world, name, world.settings.clearer_hints, world.settings.language_selection)
 
         if hint.name in world.always_hints and group == 'always':
             hint.type = 'always'
@@ -109,7 +122,7 @@ def getHintGroup(group, world):
 def getRequiredHints(world):
     ret = []
     for name in hintTable:
-        hint = getHint(name, lang = world.settings.language_selection)
+        hint = getHint(world, name, lang = world.settings.language_selection)
         if 'always' in hint.type or hint.name in conditional_always and conditional_always[hint.name](world):
             ret.append(hint)
     return ret
@@ -183,7 +196,7 @@ conditional_sometimes = {
     'OGC Great Fairy Reward':       lambda world: world.settings.shuffle_interior_entrances == 'off',
 }
 
-# table of hints, format is (name, hint text, clear hint text, type of hint) there are special characters that are read for certain in game commands:
+# table of hints, format is (name, hint text english, clear hint text english, hint text japanese, clear hint text japanese, type of hint) there are special characters that are read for certain in game commands:
 # ^ is a box break
 # & is a new line
 # @ will print the player name
@@ -1274,7 +1287,7 @@ def hintExclusions(world, clear_cache=False):
 
     location_hints = []
     for name in hintTable:
-        hint = getHint(name, world.settings.clearer_hints, world.settings.language_selection)
+        hint = getHint(world, name, world.settings.clearer_hints, world.settings.language_selection)
         if any(item in hint.type for item in 
                 ['always',
                  'sometimes',

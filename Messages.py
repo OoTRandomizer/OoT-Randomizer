@@ -5,6 +5,7 @@ import random
 import os
 from TextBox import line_wrap, linewrapJP
 from Utils import local_path
+from Language import getLang
 TEXT_START = 0x92D000
 TEXT_START_JP = 0x8EB000
 ENG_TEXT_SIZE_LIMIT = 0x39000
@@ -1495,54 +1496,95 @@ def make_player_message(text):
 # reduce item message sizes and add new item messages
 # make sure to call this AFTER move_shop_item_messages()
 def update_item_messages(messages, world):
+    lang = world.settings.language_selection
+    t = 0
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+        t = 1
     new_item_messages = {**ITEM_MESSAGES, **KEYSANITY_MESSAGES}
     shop_mes = {**SHOP_MESSAGES}
-    if world.settings.language_selection == "english":
-        for id, (text, textJP) in new_item_messages.items():
-            if world.settings.world_count > 1:
-                update_message_by_id(messages, id, make_player_message(text), 0x23)
-            else:
+    if lang == "english":
+        if t == 0:
+            for id, (text, textJP) in new_item_messages.items():
+                if world.settings.world_count > 1:
+                    update_message_by_id(messages, id, make_player_message(text), 0x23)
+                else:
+                    update_message_by_id(messages, id, text, 0x23)
+            for id, (text, textJP, opt, align) in MISC_MESSAGES.items():
+                if text is None:
+                    pass
+                else:
+                    update_message_by_id(messages, id, text, opt)
+        elif t == 1:
+            misc = getLang(world, "misc")
+            shop = getLang(world, "shop")
+            navi = getLang(world, "navi")
+            items = getLang(world, "items")
+            for id, text in items.items():
                 update_message_by_id(messages, id, text, 0x23)
-
-        for id, (text, textJP, opt, align) in MISC_MESSAGES.items():
-            if text is None:
-                pass
-            else:
+            for id, (text, opt, align) in misc.items():
                 update_message_by_id(messages, id, text, opt)
-                
-    elif world.settings.language_selection == "japanese":
-        ntext = "<$痛いッピ！勘弁ッピ！{"
+            for id, (text, opt) in navi.items():
+                update_message_by_id(messages, id, text, opt)
+            for id, text in shop.items():
+                update_message_by_id(messages, id, text, 0x03)
+    elif lang == "japanese":
+        if t == 0:
+            ntext = "<$痛いッピ！勘弁ッピ！{"
+        elif t == 1:
+            ntext = getLang(world, "text", 0x101A)
         update_message_jp(messages, 0x101A, ntext, 0x00, 1, align = "center")
-        for id, (text, textJP) in new_item_messages.items():
-            if "~" in textJP:
-                update_message_jp(messages, id, textJP, 0x23, 2, align = "left")
-            elif "~" not in textJP:
-                update_message_jp(messages, id, textJP, 0x23, 2, align = "center")
-            
-        for id, text in shop_mes.items():
-            update_message_jp(messages, id, text, 0x03, align = "left")
-            
-        for id, (text, textJP, opt, align) in MISC_MESSAGES.items():
-            update_message_jp(messages, id, textJP, opt, 2, align = align)
-            
-        for id, (text, opt) in NAVI_MESSAGES.items():
-            update_message_jp(messages, id, text, opt, align = "center")
+                
+        if t == 0:    
+            for id, text in new_item_messages.items():
+                if "~" in textJP:
+                    update_message_jp(messages, id, textJP, 0x23, 2, align = "left")
+                elif "~" not in textJP:
+                    update_message_jp(messages, id, textJP, 0x23, 2, align = "center")
+            for id, (text, textJP, opt, align) in MISC_MESSAGES.items():
+                update_message_jp(messages, id, textJP, opt, 2, align = align)
+            for id, text in shop_mes.items():
+                update_message_jp(messages, id, text, 0x03, align = "left")
+            for id, (text, opt) in NAVI_MESSAGES.items():
+                update_message_jp(messages, id, text, opt, align = "center")
+        elif t == 1:
+            misc = getLang(world, "misc")
+            shop = getLang(world, "shop")
+            navi = getLang(world, "navi")
+            items = getLang(world, "items")
+            for id, text in items.items():
+                if "~" in text:
+                    update_message_jp(messages, id, text, 0x23, 2, align = "left")
+                elif "~" not in text:
+                    update_message_jp(messages, id, text, 0x23, 2, align = "center")
+            for id, (text, opt) in navi.items():
+                update_message_jp(messages, id, text, opt, align = "center")
+            for id, text in shop.items():
+                update_message_jp(messages, id, text, 0x03, align = "left")
+            for id, (textJP, opt, align) in misc.items():
+                update_message_jp(messages, id, textJP, opt, 2, align = align)
             
         for id in MASK_MESSAGES:
-            select = random.randrange(3)
-            if select == 0:
-                text = "<ひいいっ！！"
-            elif select == 1:
-                text = "<うわぁ！！"
-            elif select == 2:
+            if t == 0:
+                select = random.randrange(3)
+                if select == 0:
+                    text = "<ひいいっ！！"
+                elif select == 1:
+                    text = "<うわぁ！！"
+                elif select == 2:
+                    text = "<！！"
+            elif t == 1:
                 text = "<！！"
             update_message_jp(messages, id, text, 0x00, align = "center")
     
 # run all keysanity related patching to add messages for dungeon specific items
 def add_item_messages(messages, shop_items, world):
-    if world.settings.language_selection == "english":
+    lang = world.settings.language_selection
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+    if lang == "english":
         move_shop_item_messages(messages, shop_items)
-    elif world.settings.language_selection == "japanese":
+    elif lang == "japanese":
         move_shop_item_messages_jp(messages, shop_items)
     update_item_messages(messages, world)
 
@@ -1873,6 +1915,11 @@ def shuffle_messages_jp(messages, except_hints=True, always_allow_skip=True):
 
 # Update warp song text boxes for ER
 def update_warp_song_text(messages, world):
+    lang = world.settings.language_selection
+    t = 0
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+        t = 1
     msg_list = {
         0x088D: 'Minuet of Forest Warp -> Sacred Forest Meadow',
         0x088E: 'Bolero of Fire Warp -> DMC Central Local',
@@ -1881,7 +1928,7 @@ def update_warp_song_text(messages, world):
         0x0891: 'Nocturne of Shadow Warp -> Graveyard Warp Pad Region',
         0x0892: 'Prelude of Light Warp -> Temple of Time',
     }
-    if world.settings.language_selection == "english":
+    if lang == "english":
         for id, entr in msg_list.items():
             destination = world.get_entrance(entr).connected_region
 
@@ -1894,25 +1941,39 @@ def update_warp_song_text(messages, world):
             else:
                 destination_name = destination.name
             color = COLOR_MAP[destination.font_color or 'White']
-
-            new_msg = f"\x08\x05{color}Warp to {destination_name}?\x05\40\x09\x01\x01\x1b\x05{color}OK\x01No\x05\40"
+            if t == 0:
+                new_msg = f"\x08\x05{color}Warp to {destination_name}?\x05\40\x09\x01\x01\x1b\x05{color}OK\x01No\x05\40"
+            elif t == 1:
+                new_msg = getLang(world, "special", "Warp") % (color, destination_name, color)
             update_message_by_id(messages, id, new_msg)
-    elif world.settings.language_selection == "japanese":
+    elif lang == "japanese":
         for id, entr in msg_list.items():
             destination = world.get_entrance(entr).connected_region
-
-            if destination.pretty_name_JP:
-                destination_name = destination.pretty_name_JP
-            elif destination.hint_JP:
-                destination_name = destination.hint_JP
-            elif destination.dungeon:
-                destination_name = destination.dungeon.hint_JP
-            elif destination.name_JP:
-                destination_name = destination.name_JP
-            else:
-                destination_name = destination.name
+            if t == 0:
+                if destination.pretty_name_JP:
+                    destination_name = destination.pretty_name_JP
+                elif destination.hint_JP:
+                    destination_name = destination.hint_JP
+                elif destination.dungeon:
+                    destination_name = destination.dungeon.hint_JP
+                elif destination.name_JP:
+                    destination_name = destination.name_JP
+                else:
+                    destination_name = destination.name
+                    destination_name = destination_name.translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
+            elif t == 1:
+                if destination.pretty_name:
+                    destination_name = destination.pretty_name
+                elif destination.hint:
+                    destination_name = destination.hint
+                elif destination.dungeon:
+                    destination_name = destination.dungeon.hint
+                else:
+                    destination_name = destination.name
                 destination_name = destination_name.translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
             color = COLOR_MAP_JP[destination.font_color or 'White']
-
-            new_msg = f"<#{color}{destination_name}へワープ！#\x00>&:2#{color}はい&いいえ#\x00"
+            if t == 0:
+                new_msg = f"<#{color}{destination_name}へワープ！#\x00>&:2#{color}はい&いいえ#\x00"
+            elif t == 1:
+                new_msg = getLang(world, "special", "Warp") % (color, destination_name, color)
             update_message_jp(messages, id, new_msg, align = "left")

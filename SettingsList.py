@@ -1745,6 +1745,16 @@ setting_infos = [
             "web:hide_when_disabled" : True,
         }),
     Setting_Info('output_dir',        str, "Output Directory", "Directoryinput", False, {}),
+    Setting_Info('lang_path',          str, "Extra Language Directory", "Directoryinput", False, {},
+        gui_params = {
+            "file_types": [
+                {
+                  "name": "All Files",
+                  "extensions": [ "*" ]
+                }
+            ],
+            "hide_when_disabled" : True,
+        }),
     Setting_Info('output_file',       str, None, None, False, {}),
     Setting_Info('seed',              str, None, None, False, {}),
     Setting_Info('patch_file',        str, "Patch File", "Fileinput", False, {},
@@ -1844,6 +1854,11 @@ setting_infos = [
         choices        = {
             'english':   'English',
             'japanese': 'Japanese',
+            'extra': 'Extra',
+        },
+        disable        = {
+            'english'  : {'settings' : ['lang_path']},
+            'japanese' : {'settings' : ['lang_path']}
         },
     ),
     Setting_Info(
@@ -2413,12 +2428,11 @@ setting_infos = [
     ),
     Checkbutton(
         name           = 'useful_cutscenes',
-        gui_text       = 'Enable Specific Glitch-Useful Cutscenes',
+        gui_text       = 'Enable Useful Cutscenes',
         gui_tooltip    = '''\
-            The cutscenes of the Poes in Forest Temple and Darunia in
-            Fire Temple will not be skipped. These cutscenes are useful
-            in glitched gameplay only and do not provide any timesave
-            for glitchless playthroughs.
+            The cutscenes of the Poes in Forest Temple,
+            Darunia in Fire Temple, and the introduction
+            to Twinrova will not be skipped.
         ''',
         shared         = True,
     ),
