@@ -562,10 +562,10 @@ class Message:
 
         # # speed the text
         if speed_up_text:
-            if 'icon' in self.text:
-                text_codes.insert(1, Text_Code(0x08, 0)) # put instant text after icon
+            if text_codes[0].code == 19:  # Check if first text_code is icon
+                text_codes.insert(1, Text_Code(0x08, 0))  # put instant text after icon
             else:
-                text_codes.insert(0, Text_Code(0x08, 0)) # allow instant
+                text_codes.insert(0, Text_Code(0x08, 0))  # allow instant
 
         if replace_ending:
             if ending:
