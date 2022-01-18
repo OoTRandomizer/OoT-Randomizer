@@ -201,7 +201,7 @@
         },
         "exits": {
             "Spirit Temple Boss Door": "
-                has_explosives and Mirror_Shield and Hookshot"
+                (spirit_temple_shortcuts or (has_explosives and Mirror_Shield)) and Hookshot"
         }
     },
     {
