@@ -20,7 +20,7 @@ from Messages import read_messages, update_message_by_id, read_shop_items, updat
         get_message_by_id, update_message_jp, jp_start, write_messages, shuffle_messages_jp, reproduce_messages_jp
 from OcarinaSongs import replace_songs
 from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
-from SaveContext import SaveContext
+from SaveContext import SaveContext, Scenes, FlagType
 import StartingItems
 from Language import getLang, dataList
 
@@ -111,6 +111,27 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     update_dmadata(rom, dd_obj_file)
     # Add it to the extended object table
     add_to_extended_object_table(rom, 0x194, dd_obj_file)
+
+    # Apply chest texture diffs to vanilla wooden chest texture for Chest Texture Matches Content setting
+    # new texture, vanilla texture, num bytes
+    textures = [(rom.sym('SILVER_CHEST_FRONT_TEXTURE'), 0xFEC798, 4096),
+                (rom.sym('SILVER_CHEST_BASE_TEXTURE'), 0xFED798, 2048),
+                (rom.sym('GILDED_CHEST_FRONT_TEXTURE'), 0xFEC798, 4096),
+                (rom.sym('GILDED_CHEST_BASE_TEXTURE'), 0xFED798, 2048),
+                (rom.sym('SKULL_CHEST_FRONT_TEXTURE'), 0xFEC798, 4096),
+                (rom.sym('SKULL_CHEST_BASE_TEXTURE'), 0xFED798, 2048)]
+    # Diff texture is the new texture minus the vanilla texture with byte overflow.
+    # This is done to avoid distributing copyrighted material with the randomizer,
+    # as the new textures are derivations of the wood chest textures.
+    # The following rebuilds the texture from the diff.
+    for diff_tex, vanilla_tex, size in textures:
+        db = rom.read_bytes(diff_tex, size)
+        vb = rom.read_bytes(vanilla_tex, size)
+        # bytes are immutable in python, can't edit in place
+        new_tex = bytearray(size)
+        for i in range(len(vb)):
+            new_tex[i] = (db[i] + vb[i]) & 0xFF
+        rom.write_bytes(diff_tex, new_tex)
 
     # Create an option so that recovery hearts no longer drop by changing the code which checks Link's health when an item is spawned.
     if world.settings.no_collectible_hearts:
@@ -627,6 +648,14 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     # Speed up Death Mountain Trail Owl Flight
     rom.write_bytes(0x223B6B2, [0x00, 0x01])
 
+    # Speed up magic arrow equips
+    rom.write_int16(0xBB84CE, 0x0000) # Skips the initial growing glowing orb phase
+    rom.write_byte(0xBB84B7, 0xFF) # Set glowing orb above magic arrow to be small sized immediately
+    rom.write_byte(0xBB84CB, 0x01) # Sets timer for holding icon above magic arrow (1 frame)
+    rom.write_byte(0xBB7E67, 0x04) # speed up magic arrow icon -> bow icon interpolation (4 frames)
+    rom.write_byte(0xBB8957, 0x01) # Sets timer for holding icon above bow (1 frame)
+    rom.write_byte(0xBB854B, 0x05) # speed up bow icon -> c button interpolation (5 frames)
+
     # Poacher's Saw no longer messes up Forest Stage
     rom.write_bytes(0xAE72CC, [0x00, 0x00, 0x00, 0x00])
 
@@ -945,8 +974,73 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     save_context = SaveContext()
 
     # Initial Save Data
-    if not world.settings.useful_cutscenes:
+    if not world.settings.useful_cutscenes and 'forest_temple' not in world.settings.dungeon_shortcuts:
         save_context.write_bits(0x00D4 + 0x03 * 0x1C + 0x04 + 0x0, 0x08) # Forest Temple switch flag (Poe Sisters cutscene)
+
+    if 'deku_tree' in world.settings.dungeon_shortcuts:
+        # Deku Tree, flags are the same between vanilla/MQ
+        save_context.write_permanent_flag(Scenes.DEKU_TREE, FlagType.SWITCH, 0x1, 0x01) # Deku Block down
+        save_context.write_permanent_flag(Scenes.DEKU_TREE, FlagType.CLEAR,  0x2, 0x02) # Deku 231/312
+        save_context.write_permanent_flag(Scenes.DEKU_TREE, FlagType.SWITCH, 0x3, 0x20) # Deku 1st Web
+        save_context.write_permanent_flag(Scenes.DEKU_TREE, FlagType.SWITCH, 0x3, 0x40) # Deku 2nd Web
+
+    if 'dodongos_cavern' in world.settings.dungeon_shortcuts:
+        # Dodongo's Cavern, flags are the same between vanilla/MQ
+        save_context.write_permanent_flag(Scenes.DODONGOS_CAVERN, FlagType.SWITCH, 0x3, 0x80) # DC Entrance Mud Wall
+        save_context.write_permanent_flag(Scenes.DODONGOS_CAVERN, FlagType.SWITCH, 0x0, 0x04) # DC Mouth
+        save_context.write_permanent_flag(Scenes.KING_DODONGO_LOBBY, FlagType.SWITCH, 0x3, 0x02) # DC Boss Floor
+        # Extra permanent flag in MQ for the child route
+        if world.dungeon_mq['Dodongos Cavern']:
+            save_context.write_permanent_flag(Scenes.DODONGOS_CAVERN, FlagType.SWITCH, 0x0, 0x02) # Armos wall switch
+
+    if 'jabu_jabus_belly' in world.settings.dungeon_shortcuts:
+        # Jabu
+        if not world.dungeon_mq['Jabu Jabus Belly']:
+            save_context.write_permanent_flag(Scenes.JABU_JABU, FlagType.SWITCH, 0x0, 0x20) # Jabu Pathway down
+        else:
+            save_context.write_permanent_flag(Scenes.JABU_JABU, FlagType.SWITCH, 0x1, 0x20) # Jabu Lobby Slingshot Door open
+            save_context.write_permanent_flag(Scenes.JABU_JABU, FlagType.SWITCH, 0x0, 0x20) # Jabu Pathway down
+            save_context.write_permanent_flag(Scenes.JABU_JABU, FlagType.CLEAR,  0x2, 0x01) # Jabu Red Slimy Thing defeated
+            save_context.write_permanent_flag(Scenes.JABU_JABU, FlagType.SWITCH, 0x2, 0x08) # Jabu Red Slimy Thing not in front of boss lobby
+            save_context.write_permanent_flag(Scenes.JABU_JABU, FlagType.SWITCH, 0x1, 0x10) # Jabu Boss Door Switch Activated
+        
+    if 'forest_temple' in world.settings.dungeon_shortcuts:
+        # Forest, flags are the same between vanilla/MQ
+        save_context.write_permanent_flag(Scenes.FOREST_TEMPLE, FlagType.SWITCH, 0x0, 0x10) # Forest Elevator up
+        save_context.write_permanent_flag(Scenes.FOREST_TEMPLE, FlagType.SWITCH, 0x1, 0x01 + 0x02 + 0x04) # Forest Basement Puzzle Done
+
+    if 'fire_temple' in world.settings.dungeon_shortcuts:
+        # Fire, flags are the same between vanilla/MQ
+        save_context.write_permanent_flag(Scenes.FIRE_TEMPLE, FlagType.SWITCH, 0x2, 0x40) # Fire Pillar down
+
+    if 'spirit_temple' in world.settings.dungeon_shortcuts:
+        # Spirit
+        if not world.dungeon_mq['Spirit Temple']:
+            save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x1, 0x80) # Spirit Chains
+            save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x2, 0x02 + 0x08 + 0x10) # Spirit main room elevator (N block, Rusted Switch, E block)
+            save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x3, 0x10) # Spirit Face
+        else:
+            save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x2, 0x10) # Spirit Bombchu Boulder
+            save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x2, 0x02) # Spirit Silver Block
+            save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x1, 0x80) # Spirit Chains
+            save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x3, 0x10) # Spirit Face
+        
+    if 'shadow_temple' in world.settings.dungeon_shortcuts:
+        # Shadow
+        if not world.dungeon_mq['Shadow Temple']:
+            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.SWITCH, 0x0, 0x08) # Shadow Truthspinner
+            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.SWITCH, 0x0, 0x20) # Shadow Boat Block
+            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.SWITCH, 0x1, 0x01) # Shadow Bird Bridge
+        else:
+            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.SWITCH, 0x2, 0x08) # Shadow Truthspinner
+            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.SWITCH, 0x3, 0x20) # Shadow Fire Arrow Platform
+            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.SWITCH, 0x3, 0x80) # Shadow Spinning Blades room Skulltulas defeated
+            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.CLEAR,  0x3, 0x40) # Shadow Spinning Blades room Skulltulas defeated
+            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.SWITCH, 0x0, 0x20) # Shadow Boat Block
+            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.SWITCH, 0x1, 0x01) # Shadow Bird Bridge
+
+    set_spirit_shortcut_actors(rom) # Change elevator starting position to avoid waiting a half cycle from the temple entrance
+
     save_context.write_bits(0x00D4 + 0x05 * 0x1C + 0x04 + 0x1, 0x01) # Water temple switch flag (Ruto)
     save_context.write_bits(0x00D4 + 0x51 * 0x1C + 0x04 + 0x2, 0x08) # Hyrule Field switch flag (Owl)
     save_context.write_bits(0x00D4 + 0x55 * 0x1C + 0x04 + 0x0, 0x80) # Kokiri Forest switch flag (Owl)
@@ -1014,6 +1108,9 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     save_context.write_bits(0x0EEB, 0x02) # "Entered Lake Hylia"
     save_context.write_bits(0x0EEB, 0x01) # "Entered Dodongo's Cavern"
     save_context.write_bits(0x0F08, 0x08) # "Entered Hyrule Castle"
+
+    if world.dungeon_mq['Shadow Temple']:
+        save_context.write_bits(0x019F, 0x80) # "Turn On Clear Wall Blocking Hover Boots Room"
 
     # Set the number of chickens to collect
     rom.write_byte(0x00E1E523, world.settings.chicken_count)
@@ -1189,6 +1286,8 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     if world.settings.shuffle_smallkeys == 'vanilla':
         if world.dungeon_mq['Spirit Temple']:
             save_context.addresses['keys']['spirit'].value = 3
+        if 'shadow_temple' in world.settings.dungeon_shortcuts:
+            save_context.addresses['keys']['shadow'].value = 2
 
     if world.settings.start_with_rupees:
         rom.write_byte(rom.sym('MAX_RUPEES'), 0x01)
@@ -1215,6 +1314,13 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         save_context.addresses['equip_items']['kokiri_tunic'].value = True  # Equip Kokiri Tunic & Kokiri Boots by default
         save_context.addresses['equip_items']['kokiri_boots'].value = True  # (to avoid issues when going back child for the first time)
         save_context.write_byte(0x0F33, 0x00)                               # Unset Swordless Flag (to avoid issues with sword getting unequipped)
+
+    # For Inventory_SwapAgeEquipment going child -> adult:
+    # Change range in which items are read from slot instead of items
+    # Extended to include hookshot and ocarina
+    rom.write_byte(0xAE5867, 0x07) # >= ITEM_OCARINA_FAIRY
+    rom.write_byte(0xAE5873, 0x0C) # <= ITEM_LONGSHOT
+    rom.write_byte(0xAE587B, 0x14) # >= ITEM_BOTTLE
 
     # Revert change that Skips the Epona Race
     if not world.settings.no_epona_race:
@@ -1447,6 +1553,10 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
                 update_message_by_id(messages, 0x6040, new_message)
             elif langdef == 1:
                 update_message_jp(messages_jp, 0x6040, new_message, align = "center")
+
+    # Fix HBA to not wait for the fanfare to complete before transitioning to claim reward
+    rom.write_byte(0xC1C00B, 0x2)
+    rom.write_byte(0xC1C01B, 0x2)
 
     # Sets hooks for gossip stone changes
 
@@ -1934,24 +2044,37 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
             save_context.write_bits(door_byte, door_bits)
 
     # Fix chest animations
+    BROWN_CHEST = 0
+    GOLD_CHEST = 2
+    GILDED_CHEST = 12
+    SILVER_CHEST = 13
+    SKULL_CHEST_SMALL = 14
+    SKULL_CHEST_BIG =  15
     if world.settings.bombchus_in_logic:
         bombchu_ids = [0x6A, 0x03, 0x6B]
         for i in bombchu_ids:
             item = read_rom_item(rom, i)
-            item['chest_type'] = 0
+            item['chest_type'] = GILDED_CHEST
             write_rom_item(rom, i, item)
     if world.settings.bridge == 'tokens' or world.settings.lacs_condition == 'tokens' or world.settings.shuffle_ganon_bosskey == 'tokens':
         item = read_rom_item(rom, 0x5B)
-        item['chest_type'] = 0
+        item['chest_type'] = SKULL_CHEST_BIG
         write_rom_item(rom, 0x5B, item)
 
-    # Update chest type sizes
-    if world.settings.correct_chest_sizes:
+    # Update chest type appearance
+    if world.settings.correct_chest_appearances == 'textures':
+        symbol = rom.sym('CHEST_TEXTURE_MATCH_CONTENTS')
+        rom.write_int32(symbol, 0x00000001)
+    if world.settings.correct_chest_appearances == 'sizes':
         symbol = rom.sym('CHEST_SIZE_MATCH_CONTENTS')
         rom.write_int32(symbol, 0x00000001)
         # Move Ganon's Castle's Zelda's Lullaby Chest back so is reachable if large
         if not world.dungeon_mq['Ganons Castle']:
-            rom.write_int16(0x321B176, 0xFC40) # original 0xFC48
+            chest_name = 'Ganons Castle Light Trial Lullaby Chest'
+            location = world.get_location(chest_name)
+            item = read_rom_item(rom, location.item.index)
+            if item['chest_type'] in (GOLD_CHEST, GILDED_CHEST, SKULL_CHEST_BIG):
+                rom.write_int16(0x321B176, 0xFC40) # original 0xFC48
 
         # Move Spirit Temple Compass Chest if it is a small chest so it is reachable with hookshot
         if not world.dungeon_mq['Spirit Temple']:
@@ -1959,7 +2082,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
             chest_address = 0x2B6B07C
             location = world.get_location(chest_name)
             item = read_rom_item(rom, location.item.index)
-            if item['chest_type'] in (1, 3):
+            if item['chest_type'] in (BROWN_CHEST, SILVER_CHEST, SKULL_CHEST_SMALL):
                 rom.write_int16(chest_address + 2, 0x0190) # X pos
                 rom.write_int16(chest_address + 6, 0xFABC) # Z pos
 
@@ -1970,7 +2093,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
             chest_address_2 = 0x21A06E4  # Address in setup 2
             location = world.get_location(chest_name)
             item = read_rom_item(rom, location.item.index)
-            if item['chest_type'] in (1, 3):
+            if item['chest_type'] in (BROWN_CHEST, SILVER_CHEST, SKULL_CHEST_SMALL):
                 rom.write_int16(chest_address_0 + 6, 0x0172)  # Z pos
                 rom.write_int16(chest_address_2 + 6, 0x0172)  # Z pos
 
@@ -2118,6 +2241,15 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         jabu_stone_object = world.get_location('Barinade').item.special['object_id']
         rom.write_int16(0x277D068, jabu_stone_object)
         rom.write_int16(0x277D168, jabu_stone_object)
+
+    # Fix Dead Hand spawn coordinates in vanilla shadow temple and bottom of the well to be the exact centre of the room
+    # This prevents the extremely small possibility of Dead Hand spawning outside of collision
+    if not world.dungeon_mq['Shadow Temple']:
+        rom.write_int16(0x27DC0AE, 0xF67E) # x-coordinate spawn in shadow temple
+        rom.write_int16(0x27DC0B2, 0xFE6B) # z-coordinate spawn in shadow temple
+    if not world.dungeon_mq['Bottom of the Well']:
+        rom.write_int16(0x32FB08E, 0x0500) # x-coordinate spawn in bottom of the well
+        rom.write_int16(0x32FB092, 0x00D2) # z-coordinate spawn in bottom of the well
 
     # update happy mask shop to use new SOLD OUT text id
     rom.write_int16(shop_item_file.start + 0x1726, shop_items[0x26].description_message)
@@ -2523,6 +2655,15 @@ def set_jabu_stone_actors(rom, jabu_actor_type):
                 rom.write_byte(actor + 15, jabu_actor_type)
 
     get_actor_list(rom, set_jabu_stone_actor)
+
+
+def set_spirit_shortcut_actors(rom):
+    def set_spirit_shortcut(rom, actor_id, actor, scene):
+        if actor_id == 0x018e and scene == 6: # raise initial elevator height
+            rom.write_int16(actor + 4, 0x015E)
+
+    get_actor_list(rom, set_spirit_shortcut)
+
 
 
 def get_locked_doors(rom, world):
@@ -2933,11 +3074,11 @@ def configure_dungeon_info(rom, world):
              'Gerudo Training Ground', 'Hideout (N/A)', 'Ganons Castle']
     dungeon_is_mq = [1 if world.dungeon_mq.get(c) else 0 for c in codes]
 
-    rom.write_int32(rom.sym('cfg_dungeon_info_enable'), 1)
-    rom.write_int32(rom.sym('cfg_dungeon_info_mq_enable'), int(mq_enable))
-    rom.write_int32(rom.sym('cfg_dungeon_info_mq_need_map'), int(enhance_map_compass))
-    rom.write_int32(rom.sym('cfg_dungeon_info_reward_enable'), int(world.settings.misc_hints or enhance_map_compass))
-    rom.write_int32(rom.sym('cfg_dungeon_info_reward_need_compass'), int(enhance_map_compass))
-    rom.write_int32(rom.sym('cfg_dungeon_info_reward_need_altar'), int(not enhance_map_compass))
-    rom.write_bytes(rom.sym('cfg_dungeon_rewards'), dungeon_rewards)
-    rom.write_bytes(rom.sym('cfg_dungeon_is_mq'), dungeon_is_mq)
+    rom.write_int32(rom.sym('CFG_DUNGEON_INFO_ENABLE'), 1)
+    rom.write_int32(rom.sym('CFG_DUNGEON_INFO_MQ_ENABLE'), int(mq_enable))
+    rom.write_int32(rom.sym('CFG_DUNGEON_INFO_MQ_NEED_MAP'), int(enhance_map_compass))
+    rom.write_int32(rom.sym('CFG_DUNGEON_INFO_REWARD_ENABLE'), int(world.settings.misc_hints or enhance_map_compass))
+    rom.write_int32(rom.sym('CFG_DUNGEON_INFO_REWARD_NEED_COMPASS'), int(enhance_map_compass))
+    rom.write_int32(rom.sym('CFG_DUNGEON_INFO_REWARD_NEED_ALTAR'), int(not enhance_map_compass))
+    rom.write_bytes(rom.sym('CFG_DUNGEON_REWARDS'), dungeon_rewards)
+    rom.write_bytes(rom.sym('CFG_DUNGEON_IS_MQ'), dungeon_is_mq)

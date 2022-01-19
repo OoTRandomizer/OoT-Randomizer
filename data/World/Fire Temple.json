@@ -11,11 +11,11 @@
                 ((Small_Key_Fire_Temple, 8) or not keysanity) and can_use(Megaton_Hammer)",
             "Fire Temple Volvagia Heart": "
                 can_use(Goron_Tunic) and can_use(Megaton_Hammer) and Boss_Key_Fire_Temple and 
-                (logic_fire_boss_door_jump or Hover_Boots or
+                (logic_fire_boss_door_jump or Hover_Boots or fire_temple_shortcuts or
                     at('Fire Temple Upper', can_play(Song_of_Time) or has_explosives))",
             "Volvagia": "
                 can_use(Goron_Tunic) and can_use(Megaton_Hammer) and Boss_Key_Fire_Temple and 
-                (logic_fire_boss_door_jump or Hover_Boots or
+                (logic_fire_boss_door_jump or Hover_Boots or fire_temple_shortcuts or
                     at('Fire Temple Upper', can_play(Song_of_Time) or has_explosives))",
             "Fire Temple GS Boss Key Loop": "
                 ((Small_Key_Fire_Temple, 8) or not keysanity) and can_use(Megaton_Hammer)",

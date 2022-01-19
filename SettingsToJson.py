@@ -10,7 +10,7 @@ import copy
 tab_keys     = ['text', 'app_type', 'footer']
 section_keys = ['text', 'is_colors', 'is_sfx', 'col_span', 'row_span', 'subheader']
 setting_keys = ['hide_when_disabled', 'min', 'max', 'size', 'max_length', 'file_types', 'no_line_break', 'function', 'option_remove']
-types_with_options = ['Checkbutton', 'Radiobutton', 'Combobox', 'SearchBox']
+types_with_options = ['Checkbutton', 'Radiobutton', 'Combobox', 'SearchBox', 'MultipleSelect']
 
 
 def RemoveTrailingLines(text):

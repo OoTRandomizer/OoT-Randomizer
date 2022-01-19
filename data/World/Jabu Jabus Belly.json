@@ -16,13 +16,15 @@
             "Jabu Jabus Belly GS Lobby Basement Lower": "can_use(Boomerang) or can_use(Hookshot)",
             "Jabu Jabus Belly GS Lobby Basement Upper": "can_use(Boomerang) or can_use(Hookshot)",
             "Jabu Jabus Belly Deku Scrub": "
-                can_dive or is_child or logic_jabu_scrub_jump_dive or can_use(Iron_Boots)",
+                can_dive or is_child or logic_jabu_alcove_jump_dive or can_use(Iron_Boots)",
             "Fairy Pot": "has_bottle"
         },
         "exits": {
             "Jabu Jabus Belly Beginning": "True",
             "Jabu Jabus Belly Depths": "can_use(Boomerang)",
-            "Jabu Jabus Belly Boss Area": "logic_jabu_boss_gs_adult and can_use(Hover_Boots)"
+            "Jabu Jabus Belly Boss Area": "
+                (logic_jabu_boss_gs_adult and can_use(Hover_Boots)) or
+                jabu_shortcuts"
         }
     },
     {
@@ -30,7 +32,8 @@
         "dungeon": "Jabu Jabus Belly",
         "locations": {
             "Jabu Jabus Belly Map Chest": "True",
-            "Jabu Jabus Belly Compass Chest": "True"
+            "Jabu Jabus Belly Compass Chest": "True",
+            "Nut Pot": "Sticks or Kokiri_Sword"
         },
         "exits": {
             "Jabu Jabus Belly Main": "True",
@@ -41,10 +44,9 @@
         "region_name": "Jabu Jabus Belly Boss Area",
         "dungeon": "Jabu Jabus Belly",
         "locations": {
-            "Jabu Jabus Belly Barinade Heart": "can_use(Boomerang)",
-            "Barinade": "can_use(Boomerang)",
-            "Jabu Jabus Belly GS Near Boss": "True",
-            "Nut Pot": "True"
+            "Jabu Jabus Belly Barinade Heart": "can_use(Boomerang) and (Sticks or Kokiri_Sword)",
+            "Barinade": "can_use(Boomerang) and (Sticks or Kokiri_Sword)",
+            "Jabu Jabus Belly GS Near Boss": "True"
         },
         "exits": {
             "Jabu Jabus Belly Main": "True"

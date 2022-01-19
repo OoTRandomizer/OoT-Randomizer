@@ -38,6 +38,9 @@ def patch_music(rom, settings, log, symbols):
         log.errors.extend(errors)
     else:
         music.restore_music(rom)
+    # Remove battle music
+    if settings.disable_battle_music:
+        rom.write_byte(0xBE447F, 0x00)
 
 
 def patch_model_colors(rom, color, model_addresses):

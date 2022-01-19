@@ -826,7 +826,7 @@ def get_pool_core(world):
     if world.settings.zora_fountain == 'open':
         ruto_bottles = 0
     elif world.settings.item_pool_value == 'plentiful':
-        ruto_bottles += 1
+        pending_junk_pool.append('Rutos Letter')
 
     if world.settings.skip_child_zelda:
         placed_items['HC Malon Egg'] = 'Recovery Heart'
@@ -1291,6 +1291,10 @@ def get_pool_core(world):
             world.state.collect(ItemFactory('Small Key (Spirit Temple)'))
             world.state.collect(ItemFactory('Small Key (Spirit Temple)'))
             world.state.collect(ItemFactory('Small Key (Spirit Temple)'))
+        if 'shadow_temple' in world.settings.dungeon_shortcuts:
+            # Reverse Shadow is broken with vanilla keys in both vanilla/MQ
+            world.state.collect(ItemFactory('Small Key (Shadow Temple)'))
+            world.state.collect(ItemFactory('Small Key (Shadow Temple)'))
         #if not world.dungeon_mq['Fire Temple']:
         #    world.state.collect(ItemFactory('Small Key (Fire Temple)'))
     if world.settings.shuffle_bosskeys == 'vanilla':

@@ -144,5 +144,30 @@ OVERWORLD_SHUFFLED:
 .byte 0x00
 FAST_BUNNY_HOOD_ENABLED:
 .byte 0x00
+.align 4
+
+; These configuration values are given fixed addresses to aid auto-trackers.
+AUTO_TRACKER_CONTEXT:
+AUTO_TRACKER_VERSION:
+.word 1 ; Increment this if the auto-tracker context layout changes
+
+CFG_DUNGEON_INFO_ENABLE:
+.word 1
+CFG_DUNGEON_INFO_MQ_ENABLE:
+.word 0
+CFG_DUNGEON_INFO_MQ_NEED_MAP:
+.word 0
+CFG_DUNGEON_INFO_REWARD_ENABLE:
+.word 0
+CFG_DUNGEON_INFO_REWARD_NEED_COMPASS:
+.word 0
+CFG_DUNGEON_INFO_REWARD_NEED_ALTAR:
+.word 0
+.area 14, 0xff
+CFG_DUNGEON_REWARDS:
+.endarea
+.area 14, 0x00
+CFG_DUNGEON_IS_MQ:
+.endarea
 
 .align 4

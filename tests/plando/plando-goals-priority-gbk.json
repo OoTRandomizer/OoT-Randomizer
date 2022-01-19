@@ -88,7 +88,7 @@
     "starting_items":                          [],
     "starting_songs":                          [],
     "ocarina_songs":                           false,
-    "correct_chest_sizes":                     false,
+    "correct_chest_appearances":               "off",
     "clearer_hints":                           true,
     "no_collectible_hearts":                   false,
     "hints":                                   "always",

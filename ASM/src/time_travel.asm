@@ -70,7 +70,6 @@ after_time_travel:
 @@going_back:
     jal     after_going_back
     nop
-@@done:
 
     jal     update_c_button
     li      a0, 0
@@ -81,6 +80,7 @@ after_time_travel:
     jal     update_c_button
     li      a0, 2
 
+@@done:
     lw      s0, 0x10 (sp)
     lw      s1, 0x14 (sp)
     lw      ra, 0x18 (sp)

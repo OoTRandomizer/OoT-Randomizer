@@ -149,9 +149,7 @@
     },
     {
         "region_name": "KF Links House",
-		"name_jp": "コ森　自宅",
-        "pretty_name": "your house",
-		"pretty_name_jp": "あなたの家",
+		    "name_jp": "コ森　自宅",
         "scene": "KF Links House",
         "locations": {
             "KF Links House Cow": "is_adult and can_play(Eponas_Song) and 'Links Cow'"
@@ -162,9 +160,7 @@
     },
     {
         "region_name": "KF Midos House",
-		"name_jp": "コ森　ミド",
-        "pretty_name": "Mido's House",
-		"pretty_name_jp": "ミドの家",
+		    "name_jp": "コ森　ミド",
         "scene": "KF Midos House",
         "locations": {
             "KF Midos Top Left Chest": "True",
@@ -178,9 +174,7 @@
     },
     {
         "region_name": "KF Sarias House",
-		"name_jp": "コ森　サリア",
-        "pretty_name": "Saria's House",
-		"pretty_name_jp": "サリアの家",
+		    "name_jp": "コ森　サリア",
         "scene": "KF Sarias House",
         "exits": {
             "Kokiri Forest": "True"
@@ -188,9 +182,7 @@
     },
     {
         "region_name": "KF House of Twins",
-		"name_jp": "コ森　双子",
-        "pretty_name": "the House of Twins",
-		"pretty_name_jp": "双子の家",
+		    "name_jp": "コ森　双子",
         "scene": "KF House of Twins",
         "exits": {
             "Kokiri Forest": "True"
@@ -198,9 +190,7 @@
     },
     {
         "region_name": "KF Know It All House",
-		"name_jp": "コ森　物知り",
-        "pretty_name": "the Know-it-All House",
-		"pretty_name_jp": "物知りの家",
+		    "name_jp": "コ森　物知り",
         "scene": "KF Know it All House",
         "exits": {
             "Kokiri Forest": "True"
@@ -208,9 +198,7 @@
     },
     {
         "region_name": "KF Kokiri Shop",
-		"name_jp": "コ森　店",
-        "pretty_name": "the Kokiri Shop",
-		"pretty_name_jp": "コキリの店",
+		    "name_jp": "コ森　店",
         "scene": "KF Kokiri Shop",
         "locations": {
             "KF Shop Item 1": "True",
@@ -491,9 +479,7 @@
     },
     {
         "region_name": "LH Lab",
-		"name_jp": "湖畔　研究所",
-        "pretty_name": "the Lakeside Laboratory",
-		"pretty_name_jp": "みずうみ研究所",
+		    "name_jp": "湖畔　研究所",
         "scene": "LH Lab",
         "events": {
             "Eyedrops Access": "
@@ -512,9 +498,7 @@
     },
     {
         "region_name": "LH Fishing Hole",
-		"name_jp": "湖畔　釣り堀",
-        "pretty_name": "the Fishing Pond",
-		"pretty_name_jp": "釣り堀",
+		    "name_jp": "湖畔　釣り堀",
         "scene": "LH Fishing Hole",
         "locations": {
             "LH Child Fishing": "is_child",
@@ -637,9 +621,7 @@
     },
     {
         "region_name": "GV Carpenter Tent",
-		"name_jp": "ゲ谷　テント",
-        "pretty_name": "the Carpenter's Tent",
-		"pretty_name_jp": "大工のテント",
+		    "name_jp": "ゲ谷　テント",
         "scene": "GV Carpenter Tent",
         "exits": {
             "GV Fortress Side": "True"
@@ -788,9 +770,7 @@
     },
     {
         "region_name": "Colossus Great Fairy Fountain",
-		"name_jp": "巨像　泉",
-        "pretty_name": "a Great Fairy Fountain",
-		"pretty_name_jp": "大妖精の泉",
+		    "name_jp": "巨像　泉",
         "scene": "Colossus Great Fairy Fountain",
         "locations": {
             "Colossus Great Fairy Reward": "can_play(Zeldas_Lullaby)"
@@ -801,10 +781,7 @@
     },
     {
         "region_name": "Market Entrance",
-		"name_jp": "城下町入口",
-        "pretty_name": "the Market Entrance",
-		"pretty_name_jp": "城下町入口",
-        "font_color": "Light Blue",
+		    "name_jp": "城下町入口",
         "scene": "Market Entrance",
         "hint": "the Market",
         "exits": {
@@ -849,10 +826,7 @@
     },
     {
         "region_name": "ToT Entrance",
-		"name_jp": "時の神殿　入口",
-        "pretty_name": "the Temple of Time Entrance",
-		"pretty_name_jp": "時の神殿入口",
-        "font_color": "Light Blue",
+		    "name_jp": "時の神殿　入口",
         "scene": "ToT Entrance",
         "hint": "the Market",
 		"hint_jp": "城下町",
@@ -900,11 +874,10 @@
     },
     {
         "region_name": "Castle Grounds",
-		"name_jp": "城",
-        "pretty_name": "the Castle Grounds",
-		"pretty_name_jp": "城",
+		    "name_jp": "城",
         "font_color": "Light Blue",
         "scene": "Castle Grounds",
+        "hint": "the Castle Grounds",
         "exits": {
             "Market": "is_child or at_dampe_time",
             "Hyrule Castle Grounds": "is_child",
@@ -913,13 +886,11 @@
     },
     {
         "region_name": "Hyrule Castle Grounds",
-		"name_jp": "ハイラル城",
-        "pretty_name": "the Castle Grounds",
-		"pretty_name_jp": "城",
+		    "name_jp": "ハイラル城",
         "font_color": "Light Blue",
         "scene": "Castle Grounds",
         "hint": "Hyrule Castle",
-		"hint_jp": "ハイラル城",
+		    "hint_jp": "ハイラル城",
         "time_passes": true,
         "locations": {
             "HC Malon Egg": "True",
@@ -939,9 +910,7 @@
     },
     {
         "region_name": "HC Garden",
-		"name_jp": "ハ城　庭",
-        "pretty_name": "the Castle Grounds",
-		"pretty_name_jp": "城",
+		    "name_jp": "ハ城　庭",
         "font_color": "Light Blue",
         "scene": "Castle Grounds",
         "hint": "Hyrule Castle",
@@ -954,9 +923,7 @@
     {
         # Directly reachable from Root in "Free Zelda"
         "region_name": "HC Garden Locations",
-		"name_jp": "ハ城　庭園",
-        "pretty_name": "the Castle Grounds",
-		"pretty_name_jp": "城",
+		    "name_jp": "ハ城　庭園",
         "font_color": "Light Blue",
         "scene": "Castle Grounds",
         "hint": "Hyrule Castle",
@@ -968,9 +935,7 @@
     },
     {
         "region_name": "HC Great Fairy Fountain",
-		"name_jp": "ハ城　泉",
-        "pretty_name": "a Great Fairy Fountain",
-		"pretty_name_jp": "大妖精の泉",
+		    "name_jp": "ハ城　泉",
         "scene": "HC Great Fairy Fountain",
         "locations": {
             "HC Great Fairy Reward": "can_play(Zeldas_Lullaby)"
@@ -981,9 +946,7 @@
     },
     {
         "region_name": "Ganons Castle Grounds",
-		"name_jp": "ガノン城",
-        "pretty_name": "the Castle Grounds",
-		"pretty_name_jp": "城",
+		    "name_jp": "ガノン城",
         "font_color": "Light Blue",
         "scene": "Castle Grounds",
         "hint": "outside Ganon's Castle",
@@ -999,9 +962,7 @@
     },
     {
         "region_name": "OGC Great Fairy Fountain",
-		"name_jp": "ガ城外　泉",
-        "pretty_name": "a Great Fairy Fountain",
-		"pretty_name_jp": "大妖精の泉",
+		    "name_jp": "ガ城外　泉",
         "scene": "OGC Great Fairy Fountain",
         "locations": {
             "OGC Great Fairy Reward": "can_play(Zeldas_Lullaby)"
@@ -1012,9 +973,7 @@
     },
     {
         "region_name": "Market Guard House",
-		"name_jp": "城町　兵士",
-        "pretty_name": "the Guard House",
-		"pretty_name_jp": "兵士の家",
+		    "name_jp": "城町　兵士",
         "scene": "Market Guard House",
         "events": {
             "Sell Big Poe": "is_adult and Bottle_with_Big_Poe"
@@ -1031,9 +990,7 @@
     },
     {
         "region_name": "Market Bazaar",
-		"name_jp": "城町　バザー",
-        "pretty_name": "a Bazaar",
-		"pretty_name_jp": "バザー",
+		    "name_jp": "城町　バザー",
         "scene": "Market Bazaar",
         "locations": {
             "Market Bazaar Item 1": "True",
@@ -1051,9 +1008,7 @@
     },
     {
         "region_name": "Market Mask Shop",
-		"name_jp": "城町　お面屋",
-        "pretty_name": "the Mask Shop",
-		"pretty_name_jp": "お面屋",
+		    "name_jp": "城町　お面屋",
         "scene": "Market Mask Shop",
         "events": {
             "Skull Mask": "Zeldas_Letter and (complete_mask_quest or at('Kakariko Village', is_child))",
@@ -1069,9 +1024,7 @@
     },
     {
         "region_name": "Market Shooting Gallery",
-		"name_jp": "城町　射的屋",
-        "pretty_name": "a Shooting Gallery",
-		"pretty_name_jp": "射的屋",
+		    "name_jp": "城町　射的屋",
         "scene": "Market Shooting Gallery",
         "locations": {
             "Market Shooting Gallery Reward": "is_child"
@@ -1082,9 +1035,7 @@
     },
     {
         "region_name": "Market Bombchu Bowling",
-		"name_jp": "城町　ボーリング",
-        "pretty_name": "the Bombchu Bowling Alley",
-		"pretty_name_jp": "ボムチュウボーリング",
+		    "name_jp": "城町　ボーリング",
         "scene": "Market Bombchu Bowling",
         "locations": {
             "Market Bombchu Bowling First Prize": "found_bombchus",
@@ -1097,9 +1048,7 @@
     },
     {
         "region_name": "Market Potion Shop",
-		"name_jp": "城町　薬屋",
-        "pretty_name": "a Potion Shop",
-		"pretty_name_jp": "クスリ屋",
+		    "name_jp": "城町　薬屋",
         "scene": "Market Potion Shop",
         "locations": {
             "Market Potion Shop Item 1": "True",
@@ -1117,9 +1066,7 @@
     },
     {
         "region_name": "Market Treasure Chest Game",
-		"name_jp": "城町　クジ屋",
-        "pretty_name": "the Treasure Chest Game",
-		"pretty_name_jp": "クジ屋",
+		    "name_jp": "城町　クジ屋",
         "scene": "Market Treasure Chest Game",
         "locations": {
             "Market Treasure Chest Game Reward": "can_use(Lens_of_Truth)"
@@ -1130,9 +1077,7 @@
     },
     {
         "region_name": "Market Bombchu Shop",
-		"name_jp": "城町　ボムチュウ屋",
-        "pretty_name": "the Bombchu Shop",
-		"pretty_name_jp": "ボムチュウ屋",
+		    "name_jp": "城町　ボムチュウ屋",
         "scene": "Market Bombchu Shop",
         "locations": {
             "Market Bombchu Shop Item 1": "True",
@@ -1150,9 +1095,7 @@
     },
     {
         "region_name": "Market Dog Lady House",
-		"name_jp": "城町　犬好きの家",
-        "pretty_name": "the Dog Lady House",
-		"pretty_name_jp": "犬好きの家",
+		    "name_jp": "城町　犬好きの家",
         "scene": "Market Dog Lady House",
         "locations": {
             "Market Lost Dog": "is_child and at_night"
@@ -1163,9 +1106,7 @@
     },
     {
         "region_name": "Market Man in Green House",
-		"name_jp": "城町　緑の民家",
-        "pretty_name": "the Man in Green House",
-		"pretty_name_jp": "ミドリの民家",
+		    "name_jp": "城町　緑の民家",
         "scene": "Market Man in Green House",
         "exits": {
             "Market Back Alley": "True"
@@ -1281,9 +1222,7 @@
     },
     {
         "region_name": "Kak Carpenter Boss House",
-		"name_jp": "カ村　大工の家",
-        "pretty_name": "the Carpenter's House",
-		"pretty_name_jp": "大工の家",
+		    "name_jp": "カ村　大工の家",
         "scene": "Kak Carpenter Boss House",
         "events": {
             "Wake Up Adult Talon": "is_adult and (Pocket_Egg or Pocket_Cucco)"
@@ -1294,9 +1233,7 @@
     },
     {
         "region_name": "Kak House of Skulltula",
-		"name_jp": "カ村　スタルハウス",
-        "pretty_name": "the House of Skulltula",
-		"pretty_name_jp": "スタルチュラハウス",
+		    "name_jp": "カ村　スタルハウス",
         "scene": "Kak House of Skulltula",
         "locations": {
             "Kak 10 Gold Skulltula Reward": "(Gold_Skulltula_Token, 10)",
@@ -1311,9 +1248,7 @@
     },
     {
         "region_name": "Kak Impas House",
-		"name_jp": "カ村　インパ家",
-        "pretty_name": "Impa's House",
-		"pretty_name_jp": "インパの家",
+		    "name_jp": "カ村　インパ家",
         "scene": "Kak Impas House",
         "exits": {
             "Kakariko Village": "True",
@@ -1322,9 +1257,7 @@
     },
     {
         "region_name": "Kak Impas House Back",
-		"name_jp": "カ村　インパ裏",
-        "pretty_name": "Impa's House",
-		"name_jp": "インパの家",
+		    "name_jp": "カ村　インパ裏",
         "scene": "Kak Impas House",
         "locations": {
             "Kak Impas House Freestanding PoH": "True"
@@ -1336,9 +1269,7 @@
     },
     {
         "region_name": "Kak Impas House Near Cow",
-		"name_jp": "カ村　インパ牛",
-        "pretty_name": "Impa's House",
-		"pretty_name_jp": "インパの家",
+		    "name_jp": "カ村　インパ牛",
         "scene": "Kak Impas House",
         "locations": {
             "Kak Impas House Cow": "can_play(Eponas_Song)"
@@ -1346,9 +1277,7 @@
     },
     {
         "region_name": "Kak Windmill",
-		"name_jp": "カ村　風車",
-        "pretty_name": "the Windmill",
-		"pretty_name_jp": "風車",
+		    "name_jp": "カ村　風車",
         "scene": "Windmill and Dampes Grave",
         "events": {
             "Drain Well": "is_child and can_play(Song_of_Storms)"
@@ -1365,9 +1294,7 @@
     },
     {
         "region_name": "Kak Bazaar",
-		"name_jp": "カ村　バザー",
-        "pretty_name": "a Bazaar",
-		"pretty_name_jp": "バザー",
+		    "name_jp": "カ村　バザー",
         "scene": "Kak Bazaar",
         "locations": {
             "Kak Bazaar Item 1": "True",
@@ -1385,9 +1312,7 @@
     },
     {
         "region_name": "Kak Shooting Gallery",
-		"name_jp": "カ村　射的屋",
-        "pretty_name": "a Shooting Gallery",
-		"pretty_name_jp": "射的屋",
+		    "name_jp": "カ村　射的屋",
         "scene": "Kak Shooting Gallery",
         "locations": {
             "Kak Shooting Gallery Reward": "is_adult and Bow"
@@ -1398,9 +1323,7 @@
     },
     {
         "region_name": "Kak Potion Shop Front",
-		"name_jp": "カ村　薬屋",
-        "pretty_name": "a Potion Shop",
-		"pretty_name_jp": "薬屋",
+		    "name_jp": "カ村　薬屋",
         "scene": "Kak Potion Shop",
         "locations": {
             "Kak Potion Shop Item 1": "is_adult",
@@ -1419,9 +1342,7 @@
     },
     {
         "region_name": "Kak Potion Shop Back",
-		"name_jp": "カ村　薬屋裏",
-        "pretty_name": "a Potion Shop",
-		"pretty_name_jp": "薬屋",
+		    "name_jp": "カ村　薬屋裏",
         "scene": "Kak Potion Shop",
         "exits": {
             "Kak Backyard": "is_adult",
@@ -1430,9 +1351,7 @@
     },
     {
         "region_name": "Kak Odd Medicine Building",
-		"name_jp": "カ村　怪しい薬屋",
-        "pretty_name": "the Oddity Shop",
-		"pretty_name_jp": "フシギなクスリ屋",
+		    "name_jp": "カ村　怪しい薬屋",
         "scene": "Kak Odd Medicine Building",
         "events": {
             "Odd Potion Access": "
@@ -1472,9 +1391,7 @@
     },
     {
         "region_name": "Graveyard Shield Grave",
-		"name_jp": "墓地　盾",
-        "pretty_name": "the Shield Grave",
-		"pretty_name_jp": "盾の墓",
+		    "name_jp": "墓地　盾",
         "scene": "Graveyard Shield Grave",
         "locations": {
             "Graveyard Shield Grave Chest": "True",
@@ -1486,9 +1403,7 @@
     },
     {
         "region_name": "Graveyard Heart Piece Grave",
-		"name_jp": "墓地　ハート",
-        "pretty_name": "the Heart Piece Grave",
-		"pretty_name_jp": "リーデッドの墓",
+		    "name_jp": "墓地　ハート",
         "scene": "Graveyard Heart Piece Grave",
         "locations": {
             "Graveyard Heart Piece Grave Chest": "can_play(Suns_Song)"
@@ -1499,9 +1414,7 @@
     },
     {
         "region_name": "Graveyard Royal Familys Tomb",
-		"name_jp": "墓地　王家",
-        "pretty_name": "the Royal Family's Tomb",
-		"pretty_name_jp": "王家の墓",
+		    "name_jp": "墓地　王家",
         "scene": "Graveyard Royal Familys Tomb",
         "locations": {
             "Graveyard Royal Familys Tomb Chest": "has_fire_source",
@@ -1516,9 +1429,7 @@
     },
     {
         "region_name": "Graveyard Dampes Grave",
-		"name_jp": "墓地　ダンペイ墓",
-        "pretty_name": "Damp\u00e9's Grave",
-		"pretty_name_jp": "ダンペイの墓",
+		    "name_jp": "墓地　ダンペイ墓",
         "scene": "Windmill and Dampes Grave",
         "events": {
             "Dampes Windmill Access": "is_adult and can_play(Song_of_Time)"
@@ -1535,9 +1446,7 @@
     },
     {
         "region_name": "Graveyard Dampes House",
-		"name_jp": "墓地　ダンペイ",
-        "pretty_name": "Damp\u00e9's House",
-		"pretty_name_jp": "ダンペイの家",
+		    "name_jp": "墓地　ダンペイ",
         "scene": "Graveyard Dampes House",
         "exits": {
             "Graveyard": "True"
@@ -1772,9 +1681,7 @@
     },
     {
         "region_name": "GC Shop",
-		"name_jp": "ゴシ　店",
-        "pretty_name": "the Goron Shop",
-		"pretty_name_jp": "ゴロンの店",
+		    "name_jp": "ゴシ　店",
         "scene": "GC Shop",
         "locations": {
             "GC Shop Item 1": "True",
@@ -1927,9 +1834,7 @@
     },
     {
         "region_name": "DMC Great Fairy Fountain",
-		"name_jp": "火口　泉",
-        "pretty_name": "a Great Fairy Fountain",
-		"pretty_name_jp": "大妖精の泉",
+		    "name_jp": "火口　泉",
         "scene": "DMC Great Fairy Fountain",
         "locations": {
             "DMC Great Fairy Reward": "can_play(Zeldas_Lullaby)"
@@ -1940,9 +1845,7 @@
     },
     {
         "region_name": "DMT Great Fairy Fountain",
-		"name_jp": "登道　泉",
-        "pretty_name": "a Great Fairy Fountain",
-		"pretty_name_jp": "大妖精の泉",
+		    "name_jp": "登道　泉",
         "scene": "DMT Great Fairy Fountain",
         "locations": {
             "DMT Great Fairy Reward": "can_play(Zeldas_Lullaby)"
@@ -2139,9 +2042,7 @@
     },
     {
         "region_name": "ZD Shop",
-		"name_jp": "ゾ里　店",
-        "pretty_name": "the Zora Shop",
-		"pretty_name_jp": "ゾーラの店",
+		    "name_jp": "ゾ里　店",
         "scene": "ZD Shop",
         "locations": {
             "ZD Shop Item 1": "True",
@@ -2159,9 +2060,7 @@
     },
     {
         "region_name": "ZF Great Fairy Fountain",
-		"name_jp": "ゾ泉　泉",
-        "pretty_name": "a Great Fairy Fountain",
-		"pretty_name_jp": "大妖精の泉",
+		    "name_jp": "ゾ泉　泉",
         "scene": "ZF Great Fairy Fountain",
         "locations": {
             "ZF Great Fairy Reward": "can_play(Zeldas_Lullaby)"
@@ -2198,9 +2097,7 @@
     },
     {
         "region_name": "LLR Talons House",
-		"name_jp": "牧場　タロン",
-        "pretty_name": "Talon's House",
-		"pretty_name_jp": "タロンの家",
+		    "name_jp": "牧場　タロン",
         "scene": "LLR Talons House",
         "locations": {
             "LLR Talons Chickens": "is_child and at_day and Zeldas_Letter"
@@ -2211,9 +2108,7 @@
     },
     {
         "region_name": "LLR Stables",
-		"name_jp": "牧場　馬小屋",
-        "pretty_name": "Lon Lon Stable",
-		"pretty_name_jp": "馬小屋",
+		    "name_jp": "牧場　馬小屋",
         "scene": "LLR Stables",
         "locations": {
             "LLR Stables Left Cow": "can_play(Eponas_Song)",
@@ -2225,9 +2120,7 @@
     },
     {
         "region_name": "LLR Tower",
-		"name_jp": "牧場　塔",
-        "pretty_name": "Lon Lon Tower",
-		"pretty_name_jp": "納屋",
+		    "name_jp": "牧場　塔",
         "scene": "LLR Tower",
         "locations": {
             "LLR Freestanding PoH": "is_child",
@@ -2240,9 +2133,7 @@
     },
     {
         "region_name": "Ganons Castle Tower",
-		"name_jp": "ガノン城塔",
-        "pretty_name": "Ganon's Castle",
-		"pretty_name_jp": "ガノン城",
+		    "name_jp": "ガノン城塔",
         "dungeon": "Ganons Castle",
         "locations": {
             "Ganons Tower Boss Key Chest": "True",
@@ -2252,9 +2143,7 @@
     },
     {
         "region_name": "GF Storms Grotto",
-		"name_jp": "ゲ砦　嵐穴",
-        "pretty_name": "a Fairy Fountain",
-		"pretty_name_jp": "妖精の泉",
+		    "name_jp": "ゲ砦　嵐穴",
         "scene": "GF Storms Grotto",
         "locations": {
             "Free Fairies": "has_bottle"
@@ -2265,9 +2154,7 @@
     },
     {
         "region_name": "ZD Storms Grotto",
-		"name_jp": "ゾ里　嵐穴",
-        "pretty_name": "a Fairy Fountain",
-		"pretty_name_jp": "妖精の泉",
+		    "name_jp": "ゾ里　嵐穴",
         "scene": "ZD Storms Grotto",
         "locations": {
             "Free Fairies": "has_bottle"
@@ -2278,9 +2165,7 @@
     },
     {
         "region_name": "KF Storms Grotto",
-		"name_jp": "コ森　嵐穴",
-        "pretty_name": "a Generic Grotto",
-		"pretty_name_jp": "穴",
+		    "name_jp": "コ森　嵐穴",
         "scene": "KF Storms Grotto",
         "locations": {
             "KF Storms Grotto Chest": "True",
@@ -2296,9 +2181,7 @@
     },
     {
         "region_name": "LW Near Shortcuts Grotto",
-		"name_jp": "迷森　近道穴",
-        "pretty_name": "a Generic Grotto",
-		"pretty_name_jp": "穴",
+		    "name_jp": "迷森　近道穴",
         "scene": "LW Near Shortcuts Grotto",
         "locations": {
             "LW Near Shortcuts Grotto Chest": "True",
@@ -2314,9 +2197,7 @@
     },
     {
         "region_name": "Deku Theater",
-		"name_jp": "お面品評会",
-        "pretty_name": "the Deku Theater",
-		"pretty_name_jp": "お面品評会",
+		    "name_jp": "お面品評会",
         "scene": "Deku Theater",
         "locations": {
             "Deku Theater Skull Mask": "is_child and 'Skull Mask'",
@@ -2328,9 +2209,7 @@
     },
     {
         "region_name": "LW Scrubs Grotto",
-		"name_jp": "迷森　アキンド穴",
-        "pretty_name": "a Deku Scrub Grotto",
-		"pretty_name_jp": "アキンド穴",
+		    "name_jp": "迷森　アキンド穴",
         "scene": "LW Scrubs Grotto",
         "locations": {
             "LW Deku Scrub Grotto Rear": "can_stun_deku",
@@ -2342,9 +2221,7 @@
     },
     {
         "region_name": "SFM Fairy Grotto",
-		"name_jp": "聖森　泉",
-        "pretty_name": "a Fairy Fountain",
-		"pretty_name_jp": "妖精の泉",
+		    "name_jp": "聖森　泉",
         "scene": "SFM Fairy Grotto",
         "locations": {
             "Free Fairies": "has_bottle"
@@ -2355,9 +2232,7 @@
     },
     {
         "region_name": "SFM Storms Grotto",
-		"name_jp": "聖森　嵐穴",
-        "pretty_name": "a Deku Scrub Grotto",
-		"pretty_name_jp": "アキンド穴",
+		    "name_jp": "聖森　嵐穴",
         "scene": "SFM Storms Grotto",
         "locations": {
             "SFM Deku Scrub Grotto Rear": "can_stun_deku",
@@ -2369,9 +2244,7 @@
     },
     {
         "region_name": "SFM Wolfos Grotto",
-		"name_jp": "聖森　狼穴",
-        "pretty_name": "the Wolfos Grotto",
-		"pretty_name_jp": "ウルフォス穴",
+		    "name_jp": "聖森　狼穴",
         "scene": "SFM Wolfos Grotto",
         "locations": {
             "SFM Wolfos Grotto Chest": "
@@ -2384,9 +2257,7 @@
     },
     {
         "region_name": "LLR Grotto",
-		"name_jp": "牧場　穴",
-        "pretty_name": "a Deku Scrub Grotto",
-		"pretty_name_jp": "アキンド穴",
+		    "name_jp": "牧場　穴",
         "scene": "LLR Grotto",
         "locations": {
             "LLR Deku Scrub Grotto Left": "can_stun_deku",
@@ -2399,9 +2270,7 @@
     },
     {
         "region_name": "HF Southeast Grotto",
-		"name_jp": "平原　南穴",
-        "pretty_name": "a Generic Grotto",
-		"pretty_name_jp": "穴",
+		    "name_jp": "平原　南穴",
         "scene": "HF Southeast Grotto",
         "locations": {
             "HF Southeast Grotto Chest": "True",
@@ -2417,9 +2286,7 @@
     },
     {
         "region_name": "HF Open Grotto",
-		"name_jp": "平原　穴",
-        "pretty_name": "a Generic Grotto",
-		"pretty_name_jp": "穴",
+		    "name_jp": "平原　穴",
         "scene": "HF Open Grotto",
         "locations": {
             "HF Open Grotto Chest": "True",
@@ -2435,9 +2302,7 @@
     },
     {
         "region_name": "HF Inside Fence Grotto",
-		"name_jp": "平原　柵穴",
-        "pretty_name": "a Deku Scrub Grotto",
-		"pretty_name_jp": "アキンド穴",
+		    "name_jp": "平原　柵穴",
         "scene": "HF Inside Fence Grotto",
         "locations": {
             "HF Deku Scrub Grotto": "can_stun_deku"
@@ -2448,9 +2313,7 @@
     },
     {
         "region_name": "HF Cow Grotto",
-		"name_jp": "平原　牛穴",
-        "pretty_name": "the Spider Cow Grotto",
-		"pretty_name_jp": "牛とクモのいる穴",
+		    "name_jp": "平原　牛穴",
         "scene": "HF Cow Grotto",
         "locations": {
             "HF GS Cow Grotto": "
@@ -2467,9 +2330,7 @@
     },
     {
         "region_name": "HF Near Market Grotto",
-		"name_jp": "平原　町穴",
-        "pretty_name": "a Generic Grotto",
-		"pretty_name_jp": "穴",
+		    "name_jp": "平原　町穴",
         "scene": "HF Near Market Grotto",
         "locations": {
             "HF Near Market Grotto Chest": "True",
@@ -2485,9 +2346,7 @@
     },
     {
         "region_name": "HF Fairy Grotto",
-		"name_jp": "平原　泉",
-        "pretty_name": "a Fairy Fountain",
-		"pretty_name_jp": "妖精の泉",
+		    "name_jp": "平原　泉",
         "scene": "HF Fairy Grotto",
         "locations": {
             "Free Fairies": "has_bottle"
@@ -2498,9 +2357,7 @@
     },
     {
         "region_name": "HF Near Kak Grotto",
-		"name_jp": "平原　村穴",
-        "pretty_name": "a Skulltula Grotto",
-		"pretty_name_jp": "クモ穴",
+		    "name_jp": "平原　村穴",
         "scene": "HF Near Kak Grotto",
         "locations": {
             "HF GS Near Kak Grotto": "can_use(Boomerang) or can_use(Hookshot)"
@@ -2511,9 +2368,7 @@
     },
     {
         "region_name": "HF Tektite Grotto",
-		"name_jp": "平原　テクタイト穴",
-        "pretty_name": "the Tektite Grotto",
-		"pretty_name_jp": "テクタイト穴",
+		    "name_jp": "平原　テクタイト穴",
         "scene": "HF Tektite Grotto",
         "locations": {
             "HF Tektite Grotto Freestanding PoH": "
@@ -2525,9 +2380,7 @@
     },
     {
         "region_name": "HC Storms Grotto",
-		"name_jp": "ハ城　嵐穴",
-        "pretty_name": "a Skulltula Grotto",
-		"pretty_name_jp": "クモ穴",
+		    "name_jp": "ハ城　嵐穴",
         "scene": "HC Storms Grotto",
         "locations": {
             "HC GS Storms Grotto": "
@@ -2544,9 +2397,7 @@
     },
     {
         "region_name": "Kak Redead Grotto",
-		"name_jp": "カ村　リーデッド穴",
-        "pretty_name": "the ReDead Grotto",
-		"pretty_name_jp": "リーデッド穴",
+		    "name_jp": "カ村　リーデッド穴",
         "scene": "Kak Redead Grotto",
         "locations": {
             "Kak Redead Grotto Chest": "
@@ -2559,9 +2410,7 @@
     },
     {
         "region_name": "Kak Open Grotto",
-		"name_jp": "カ村　穴",
-        "pretty_name": "a Generic Grotto",
-		"pretty_name_jp": "穴",
+		    "name_jp": "カ村　穴",
         "scene": "Kak Open Grotto",
         "locations": {
             "Kak Open Grotto Chest": "True",
@@ -2577,9 +2426,7 @@
     },
     {
         "region_name": "DMT Cow Grotto",
-		"name_jp": "登道　牛穴",
-        "pretty_name": "the Cow Grotto",
-		"pretty_name_jp": "牛穴",
+		    "name_jp": "登道　牛穴",
         "scene": "DMT Cow Grotto",
         "locations": {
             "DMT Cow Grotto Cow": "can_play(Eponas_Song)"
@@ -2590,9 +2437,7 @@
     },
     {
         "region_name": "DMT Storms Grotto",
-		"name_jp": "登道　嵐穴",
-        "pretty_name": "a Generic Grotto",
-		"pretty_name_jp": "穴",
+		    "name_jp": "登道　嵐穴",
         "scene": "DMT Storms Grotto",
         "locations": {
             "DMT Storms Grotto Chest": "True",
@@ -2608,9 +2453,7 @@
     },
     {
         "region_name": "GC Grotto",
-		"name_jp": "ゴシ　穴",
-        "pretty_name": "a Deku Scrub Grotto",
-		"pretty_name_jp": "アキンド穴",
+		    "name_jp": "ゴシ　穴",
         "scene": "GC Grotto",
         "locations": {
             "GC Deku Scrub Grotto Left": "can_stun_deku",
@@ -2623,9 +2466,7 @@
     },
     {
         "region_name": "DMC Upper Grotto",
-		"name_jp": "火口　上穴",
-        "pretty_name": "a Generic Grotto",
-		"pretty_name_jp": "穴",
+		    "name_jp": "火口　上穴",
         "scene": "DMC Upper Grotto",
         "locations": {
             "DMC Upper Grotto Chest": "True",
@@ -2641,9 +2482,7 @@
     },
     {
         "region_name": "DMC Hammer Grotto",
-		"name_jp": "火口　ハンマー穴",
-        "pretty_name": "a Deku Scrub Grotto",
-		"pretty_name_jp": "アキンド穴",
+		    "name_jp": "火口　ハンマー穴",
         "scene": "DMC Hammer Grotto",
         "locations": {
             "DMC Deku Scrub Grotto Left": "can_stun_deku",
@@ -2656,9 +2495,7 @@
     },
     {
         "region_name": "ZR Open Grotto",
-		"name_jp": "ゾ川　穴",
-        "pretty_name": "a Generic Grotto",
-		"pretty_name_jp": "穴",
+		    "name_jp": "ゾ川　穴",
         "scene": "ZR Open Grotto",
         "locations": {
             "ZR Open Grotto Chest": "True",
@@ -2674,9 +2511,7 @@
     },
     {
         "region_name": "ZR Fairy Grotto",
-		"name_jp": "ゾ川　泉",
-        "pretty_name": "a Fairy Fountain",
-		"pretty_name_jp": "妖精の泉",
+		    "name_jp": "ゾ川　泉",
         "scene": "ZR Fairy Grotto",
         "locations": {
             "Free Fairies": "has_bottle"
@@ -2687,9 +2522,7 @@
     },
     {
         "region_name": "ZR Storms Grotto",
-		"name_jp": "ゾ川　嵐穴",
-        "pretty_name": "a Deku Scrub Grotto",
-		"pretty_name_jp": "アキンド穴",
+		    "name_jp": "ゾ川　嵐穴",
         "scene": "ZR Storms Grotto",
         "locations": {
             "ZR Deku Scrub Grotto Rear": "can_stun_deku",
@@ -2701,9 +2534,7 @@
     },
     {
         "region_name": "LH Grotto",
-		"name_jp": "湖畔　穴",
-        "pretty_name": "a Deku Scrub Grotto",
-		"pretty_name_jp": "アキンド穴",
+		    "name_jp": "湖畔　穴",
         "scene": "LH Grotto",
         "locations": {
             "LH Deku Scrub Grotto Left": "can_stun_deku",
@@ -2716,9 +2547,7 @@
     },
     {
         "region_name": "Colossus Grotto",
-		"name_jp": "巨像　穴",
-        "pretty_name": "a Deku Scrub Grotto",
-		"pretty_name_jp": "アキンド穴",
+		    "name_jp": "巨像　穴",
         "scene": "Colossus Grotto",
         "locations": {
             "Colossus Deku Scrub Grotto Rear": "can_stun_deku",
@@ -2730,9 +2559,7 @@
     },
     {
         "region_name": "GV Octorok Grotto",
-		"name_jp": "ゲ谷　タコ穴",
-        "pretty_name": "the Octorok Grotto",
-		"pretty_name_jp": "オクタン穴",
+		    "name_jp": "ゲ谷　タコ穴",
         "scene": "GV Octorok Grotto",
         "exits": {
             "GV Grotto Ledge": "True"
@@ -2740,9 +2567,7 @@
     },
     {
         "region_name": "GV Storms Grotto",
-		"name_jp": "ゲ谷　嵐穴",
-        "pretty_name": "a Deku Scrub Grotto",
-		"pretty_name_jp": "アキンド穴",
+		    "name_jp": "ゲ谷　嵐穴",
         "scene": "GV Storms Grotto",
         "locations": {
             "GV Deku Scrub Grotto Rear": "can_stun_deku",

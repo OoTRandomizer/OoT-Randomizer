@@ -157,7 +157,7 @@ rainbow_bridge:
     li        t2, 0x12 ; light arrow item id
     beq       t2, t7, @@return
     nop
-    li        at, 0xFFFF
+    li        at, 0xFFFFFFFF
 
 @@return:
     jr        ra

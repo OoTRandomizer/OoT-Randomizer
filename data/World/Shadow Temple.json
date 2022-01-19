@@ -30,7 +30,17 @@
             "Shadow Temple Early Silver Rupee Chest": "True"
         },
         "exits": {
-            "Shadow Temple Huge Pit": "has_explosives and (Small_Key_Shadow_Temple, 1)"
+            # If the shortcut is open, reverse shadow becomes an option, so we need to check for 4 keys with Lens/trick
+            # or all 5 keys. If the moving platform lens trick is off, forward shadow is the only way to access
+            # the huge pit checks without Lens of Truth. Getting to the invisible blades room in reverse uses the falling
+            # elevator near the Beamos.
+            # Also, we only need to check shortcut keys here and at boat, since key requirements are always the same.
+            "Shadow Temple Huge Pit": "
+                has_explosives and
+                    (((Small_Key_Shadow_Temple, 1) and not shadow_temple_shortcuts) or
+                    (Small_Key_Shadow_Temple, 5) or
+                    ((Small_Key_Shadow_Temple, 4) and (logic_lens_shadow_platform or can_use(Lens_of_Truth))))",
+            "Shadow Temple Boat": "shadow_temple_shortcuts"
         }
     },
     {
@@ -42,36 +52,64 @@
             "Shadow Temple Falling Spikes Lower Chest": "True",
             "Shadow Temple Falling Spikes Upper Chest": "logic_shadow_umbrella or Progressive_Strength_Upgrade",
             "Shadow Temple Falling Spikes Switch Chest": "logic_shadow_umbrella or Progressive_Strength_Upgrade",
-            "Shadow Temple Invisible Spikes Chest": "
-                (Small_Key_Shadow_Temple, 2) and (logic_lens_shadow_back or can_use(Lens_of_Truth))",
+            "Shadow Temple GS Like Like Room": "True",
+            "Shadow Temple GS Falling Spikes Room": "logic_shadow_umbrella_gs or Progressive_Hookshot"
+        },
+        "exits": {
+            "Shadow Temple Invisible Spikes": "
+                (Small_Key_Shadow_Temple, 2) and (logic_lens_shadow_platform or can_use(Lens_of_Truth))"
+        }
+    },
+    {
+        "region_name": "Shadow Temple Invisible Spikes",
+        "dungeon": "Shadow Temple",
+        "locations": {
+            "Shadow Temple Invisible Spikes Chest": "True",
             "Shadow Temple Freestanding Key": "
-                (Small_Key_Shadow_Temple, 2) and (logic_lens_shadow_back or can_use(Lens_of_Truth)) 
-                and Progressive_Hookshot and 
+                Progressive_Hookshot and 
                 (Bombs or Progressive_Strength_Upgrade or
                     (logic_shadow_freestanding_key and has_bombchus))",
-            "Shadow Temple GS Like Like Room": "True",
-            "Shadow Temple GS Falling Spikes Room": "logic_shadow_umbrella_gs or Progressive_Hookshot",
-            "Shadow Temple GS Single Giant Pot": "
-                (Small_Key_Shadow_Temple, 2) and (logic_lens_shadow_back or can_use(Lens_of_Truth)) 
-                and Progressive_Hookshot"
+            "Shadow Temple GS Single Giant Pot": "Progressive_Hookshot"
         },
         "exits": {
             "Shadow Temple Wind Tunnel": "
-                (logic_lens_shadow_back or can_use(Lens_of_Truth)) and 
-                Progressive_Hookshot and (Small_Key_Shadow_Temple, 3)"
+                Progressive_Hookshot and (Small_Key_Shadow_Temple, 3)",
+            "Shadow Temple Huge Pit": "logic_lens_shadow_platform or can_use(Lens_of_Truth)"
         }
     },
     {
         "region_name": "Shadow Temple Wind Tunnel",
         "dungeon": "Shadow Temple",
         "locations": {
-            "Shadow Temple Wind Hint Chest": "True",
-            "Shadow Temple After Wind Enemy Chest": "True",
-            "Shadow Temple After Wind Hidden Chest": "True",
-            "Shadow Temple GS Near Ship": "can_use(Longshot) and (Small_Key_Shadow_Temple, 4)"
+            "Shadow Temple Wind Hint Chest": "True"
         },
         "exits": {
-            "Shadow Temple Beyond Boat": "can_play(Zeldas_Lullaby) and (Small_Key_Shadow_Temple, 4)"
+            "Shadow Temple After Wind": "True",
+            # Reverse Shadow assumes 4 keys at both ends, so no need to check keys here
+            "Shadow Temple Invisible Spikes": "Progressive_Hookshot"
+        }
+    },
+    {
+        "region_name": "Shadow Temple After Wind",
+        "dungeon": "Shadow Temple",
+        "locations": {
+            "Shadow Temple After Wind Enemy Chest": "True",
+            "Shadow Temple After Wind Hidden Chest": "has_explosives"
+        },
+        "exits": {
+            "Shadow Temple Boat": "(Small_Key_Shadow_Temple, 4)",
+            "Shadow Temple Wind Tunnel": "True"
+        }
+    },
+    {
+        "region_name": "Shadow Temple Boat",
+        "dungeon": "Shadow Temple",
+        "locations": {
+            "Shadow Temple GS Near Ship": "can_use(Longshot)"
+        },
+        "exits": {
+            "Shadow Temple After Wind": "(Small_Key_Shadow_Temple, 4)",
+            "Shadow Temple Beyond Boat": "can_play(Zeldas_Lullaby)"
         }
     },
     {
@@ -81,13 +119,21 @@
             "Shadow Temple Spike Walls Left Chest": "can_use(Dins_Fire)",
             "Shadow Temple Boss Key Chest": "can_use(Dins_Fire)",
             "Shadow Temple Invisible Floormaster Chest": "True",
-            "Shadow Temple Bongo Bongo Heart": "
-                (Small_Key_Shadow_Temple, 5) and Boss_Key_Shadow_Temple and
-                (Bow or can_use(Distant_Scarecrow) or (logic_shadow_statue and has_bombchus))",
-            "Bongo Bongo": "
-                (Small_Key_Shadow_Temple, 5) and Boss_Key_Shadow_Temple and
-                (Bow or can_use(Distant_Scarecrow) or (logic_shadow_statue and has_bombchus))",
             "Shadow Temple GS Triple Giant Pot": "True"
+        },
+        "exits": {
+            "Shadow Temple Boss Room": "
+                (Small_Key_Shadow_Temple, 5) and Boss_Key_Shadow_Temple and
+                (Bow or can_use(Distant_Scarecrow) or (logic_shadow_statue and has_bombchus) or
+                shadow_temple_shortcuts)"
+        }
+    },
+    {
+        "region_name": "Shadow Temple Boss Room",
+        "dungeon": "Shadow Temple",
+        "locations": {
+            "Shadow Temple Bongo Bongo Heart": "logic_shadow_bongo or Bow or Hookshot",
+            "Bongo Bongo": "logic_shadow_bongo or Bow or Hookshot"
         }
     }
 ]

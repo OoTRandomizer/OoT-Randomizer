@@ -42,8 +42,6 @@ class Region(object):
         self.time_passes = False
         self.provides_time = TimeOfDay.NONE
         self.scene = None
-        self.pretty_name = None
-        self.pretty_name_JP = None
         self.font_color = None
 
 
@@ -57,8 +55,6 @@ class Region(object):
         new_region.time_passes = self.time_passes
         new_region.provides_time = self.provides_time
         new_region.scene = self.scene
-        new_region.pretty_name = self.pretty_name
-        new_region.pretty_name_JP = self.pretty_name_JP
         new_region.font_color = self.font_color
 
         if self.dungeon:

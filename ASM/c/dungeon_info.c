@@ -51,18 +51,18 @@ medal_color_t medal_colors[] = {
     { 0xC8, 0xC8, 0x00 }, // Light
 };
 
-uint32_t cfg_dungeon_info_enable = 1;
-uint32_t cfg_dungeon_info_mq_enable = 0;
-uint32_t cfg_dungeon_info_mq_need_map = 0;
-uint32_t cfg_dungeon_info_reward_enable = 1;
-uint32_t cfg_dungeon_info_reward_need_compass = 0;
-uint32_t cfg_dungeon_info_reward_need_altar = 0;
+extern uint32_t CFG_DUNGEON_INFO_ENABLE;
+extern uint32_t CFG_DUNGEON_INFO_MQ_ENABLE;
+extern uint32_t CFG_DUNGEON_INFO_MQ_NEED_MAP;
+extern uint32_t CFG_DUNGEON_INFO_REWARD_ENABLE;
+extern uint32_t CFG_DUNGEON_INFO_REWARD_NEED_COMPASS;
+extern uint32_t CFG_DUNGEON_INFO_REWARD_NEED_ALTAR;
 
-int8_t cfg_dungeon_rewards[] = { 0, 1, 2, 3, 4, 5, 6, 7, -1, -1, -1, -1, -1, -1 };
-uint8_t cfg_dungeon_is_mq[] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+extern int8_t CFG_DUNGEON_REWARDS[14];
+extern uint8_t CFG_DUNGEON_IS_MQ[14];
 
 void draw_dungeon_info(z64_disp_buf_t *db) {
-    int draw = cfg_dungeon_info_enable &&
+    int draw = CFG_DUNGEON_INFO_ENABLE &&
         z64_game.pause_ctxt.state == 6 &&
         z64_game.pause_ctxt.screen_idx == 0 &&
         !z64_game.pause_ctxt.changing &&
@@ -77,11 +77,11 @@ void draw_dungeon_info(z64_disp_buf_t *db) {
     gSPDisplayList(db->p++, &setup_db);
 
     uint16_t altar_flags = z64_file.inf_table[27];
-    int show_medals = cfg_dungeon_info_reward_enable && (!cfg_dungeon_info_reward_need_altar || (altar_flags & 1));
-    int show_stones = cfg_dungeon_info_reward_enable && (!cfg_dungeon_info_reward_need_altar || (altar_flags & 2));
+    int show_medals = CFG_DUNGEON_INFO_REWARD_ENABLE && (!CFG_DUNGEON_INFO_REWARD_NEED_ALTAR || (altar_flags & 1));
+    int show_stones = CFG_DUNGEON_INFO_REWARD_ENABLE && (!CFG_DUNGEON_INFO_REWARD_NEED_ALTAR || (altar_flags & 2));
     int show_keys = 1;
     int show_map_compass = 1;
-    int show_mq = cfg_dungeon_info_mq_enable;
+    int show_mq = CFG_DUNGEON_INFO_MQ_ENABLE;
 
     // Set up dimensions
 
@@ -124,11 +124,11 @@ void draw_dungeon_info(z64_disp_buf_t *db) {
 
         for (int i = 0; i < dungeon_count; i++) {
             dungeon_entry_t *d = &(dungeons[i]);
-            if (cfg_dungeon_info_reward_need_compass &&
+            if (CFG_DUNGEON_INFO_REWARD_NEED_COMPASS &&
                     !z64_file.dungeon_items[d->index].compass) {
                 continue;
             }
-            int reward = cfg_dungeon_rewards[d->index];
+            int reward = CFG_DUNGEON_REWARDS[d->index];
             if (reward < 3) continue;
             reward -= 3;
 
@@ -150,11 +150,11 @@ void draw_dungeon_info(z64_disp_buf_t *db) {
 
         for (int i = 0; i < dungeon_count; i++) {
             dungeon_entry_t *d = &(dungeons[i]);
-            if (cfg_dungeon_info_reward_need_compass &&
+            if (CFG_DUNGEON_INFO_REWARD_NEED_COMPASS &&
                     !z64_file.dungeon_items[d->index].compass) {
                 continue;
             }
-            int reward = cfg_dungeon_rewards[d->index];
+            int reward = CFG_DUNGEON_REWARDS[d->index];
             if (reward < 0 || reward >= 3) continue;
 
             int top = start_top + ((icon_size + padding) * i);
@@ -269,11 +269,11 @@ void draw_dungeon_info(z64_disp_buf_t *db) {
     if (show_mq) {
         for (int i = 0; i < dungeon_count; i++) {
             dungeon_entry_t *d = &(dungeons[i]);
-            if (cfg_dungeon_info_mq_need_map && d->has_map &&
+            if (CFG_DUNGEON_INFO_MQ_NEED_MAP && d->has_map &&
                     !z64_file.dungeon_items[d->index].map) {
                 continue;
             }
-            char *str = cfg_dungeon_is_mq[d->index] ? "MQ" : "Normal";
+            char *str = CFG_DUNGEON_IS_MQ[d->index] ? "MQ" : "Normal";
             int top = start_top + ((icon_size + padding) * i) + 1;
             text_print(str, left, top);
         }

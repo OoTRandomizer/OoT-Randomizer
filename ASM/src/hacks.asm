@@ -186,7 +186,7 @@ Gameplay_InitSkybox:
     jal     give_master_sword
 
 ; Replaces:
-;   lui/addiu a1, 0x8011A5D0
+;   lui/addiu a1, 0x8011A5D0 (start of Inventory_SwapAgeEquipment)
 .orga 0xAE5764
     j       before_time_travel
     nop
@@ -194,7 +194,7 @@ Gameplay_InitSkybox:
 ; After time travel
 ; Replaces:
 ;   jr      ra
-.orga 0xAE59E0 ; In memory: 0x8006FA80
+.orga 0xAE59E0 ; In memory: 0x8006FA80 (end of Inventory_SwapAgeEquipment)
     j       after_time_travel
 
 ;==================================================================================================
@@ -1206,12 +1206,37 @@ skip_GS_BGS_text:
 .orga 0xC07230
     lbu     v0,0x01EC(s0)
 
-; Chest Color
-; Replaces lbu   t9,0x01E9(t8)
-.orga 0xC075A8
-    lbu     t9,0x01ED(t8)
-.orga 0xC07648
-    lbu     t9,0x01ED(t8)
+;==================================================================================================
+; Draw Chest Base and Lid
+;==================================================================================================
+
+.org 0xC0754C
+    j   draw_chest
+    nop
+
+; set chest_base front texture
+.org 0xFEB000 + 0x6F0 - 0x3296C0 + 0x3296D8
+.word   0xDE000000, 0x09000000
+
+.org 0xFEB000 + 0x6F0 - 0x3296C0 + 0x3297B8
+.word   0xDE000000, 0x09000000
+
+; set chest_base base texture
+.org 0xFEB000 + 0x6F0 - 0x3296C0 + 0x329758
+.word   0xDE000000, 0x09000010
+
+.org 0xFEB000 + 0x6F0 - 0x3296C0 + 0x329810
+.word   0xDE000000, 0x09000010
+
+; set chest_lid front texture
+.org 0xFEB000 + 0x10C0 - 0x32A090 + 0x32A0A8
+.word   0xDE000000, 0x09000000
+.org 0xFEB000 + 0x10C0 - 0x32A090 + 0x32A1C8
+.word   0xDE000000, 0x09000000
+
+; set chest_lid base texture
+.org 0xFEB000 + 0x10C0 - 0x32A090 + 0x32A158
+.word   0xDE000000, 0x09000010
 
 ;==================================================================================================
 ; Cast Fishing Rod without B Item

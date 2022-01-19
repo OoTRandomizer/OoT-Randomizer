@@ -15,6 +15,7 @@ import itertools
 from HintList import getHint, getHintGroup, Hint, hintExclusions, HT, hintTable
 from Item import MakeEventItem
 from Messages import COLOR_MAP, COLOR_MAP_JP, update_message_by_id, update_message_jp
+from Region import Region
 from Search import Search
 from StartingItems import everything
 from TextBox import line_wrap, linewrapJP
@@ -392,9 +393,14 @@ class HintAreaNotFound(RuntimeError):
     pass
 
 
-# Peforms a breadth first search to find the closest hint area from a given spot (location or entrance)
+# Peforms a breadth first search to find the closest hint area from a given spot (region, location, or entrance)
+# and returns the name and color of that area.
 # May fail to find a hint if the given spot is only accessible from the root and not from any other region with a hint area
-def get_hint_area(spot):
+def get_hint_area(spot, lang="english"):
+    if isinstance(spot, Region):
+        original_parent = spot
+    else:
+        original_parent = spot.parent_region
     already_checked = []
     spot_queue = [spot]
 
@@ -402,12 +408,21 @@ def get_hint_area(spot):
         current_spot = spot_queue.pop(0)
         already_checked.append(current_spot)
 
-        parent_region = current_spot.parent_region
-    
+        if isinstance(current_spot, Region):
+            parent_region = current_spot
+        else:
+            parent_region = current_spot.parent_region
+
         if parent_region.dungeon:
-            return parent_region.dungeon.hint
-        elif parent_region.hint and (spot.parent_region.name == 'Root' or parent_region.name != 'Root'):
-            return parent_region.hint
+            if lang == "english":
+                return parent_region.dungeon.hint, parent_region.dungeon.font_color
+            elif lang == "japanese":
+                return parent_region.dungeon.hint_JP, parent_region.dungeon.font_color
+        elif parent_region.hint and (original_parent.name == 'Root' or parent_region.name != 'Root'):
+            if lang == "english":
+                return parent_region.hint, parent_region.font_color or 'White'
+            elif lang == "japanese":
+                return parent_region.hint_JP, parent_region.font_color or 'White'
 
         spot_queue.extend(list(filter(lambda ent: ent not in already_checked, parent_region.entrances)))
 
@@ -440,7 +455,7 @@ def get_woth_hint(spoiler, world, checked):
         world.woth_dungeon += 1
         location_text = getHint(world, location.parent_region.dungeon.name, world.settings.clearer_hints, world.settings.language_selection).text
     else:
-        location_text = get_hint_area(location)
+        location_text, _ = get_hint_area(location)
         if world.settings.language_selection != "english":
             location_text = getHint(world, location_text, world.settings.clearer_hints, world.settings.language_selection).text
     if lang == "english":
@@ -464,7 +479,7 @@ def get_checked_areas(world, checked):
             location = world.get_location(check)
         except Exception as e:
             return check
-        return get_hint_area(location)
+        return get_hint_area(location)[0]
 
     return set(get_area_from_name(check) for check in checked)
 
@@ -559,7 +574,7 @@ def get_goal_hint(spoiler, world, checked):
     if location.parent_region.dungeon:
         location_text = getHint(world, location.parent_region.dungeon.name, world.settings.clearer_hints, world.settings.language_selection).text
     else:
-        location_text = get_hint_area(location)
+        location_text, _ = get_hint_area(location)
         if world.settings.language_selection != "english":
             location_text = getHint(world, location_text, world.settings.clearer_hints, world.settings.language_selection).text
     if world_id == world.id:
@@ -659,7 +674,7 @@ def get_barren_hint(spoiler, world, checked):
 
 
 def is_not_checked(location, checked):
-    return not (location.name in checked or get_hint_area(location) in checked)
+    return not (location.name in checked or get_hint_area(location)[0] in checked)
 
 
 def get_good_item_hint(spoiler, world, checked):
@@ -704,7 +719,7 @@ def get_good_item_hint(spoiler, world, checked):
             elif t == 1:
                 return (GossipTextJP(get1 % (location_text_J, item_text), ['Green', 'Red']), location)
     else:
-        location_text = get_hint_area(location)
+        location_text, _ = get_hint_area(location)
         if lang == "english":
             if t == 0:
                 return (GossipText('#%s# can be found at #%s#.' % (item_text, location_text), ['Red', 'Green']), location)
@@ -810,7 +825,7 @@ def get_specific_item_hint(spoiler, world, checked):
                     else:
                         return (GossipTextJP(get2 % (location_text_J, item_text), ['Green', 'Red']), location)
         else:
-            location_text = get_hint_area(location)
+            location_text, _ = get_hint_area(location)
             if lang == "english":
                 if t == 0:
                     if world.hint_dist_user.get('vague_named_items', False):
@@ -941,7 +956,7 @@ def get_specific_item_hint(spoiler, world, checked):
                     else:
                         return (GossipTextJP(get5 % (p_id, location_text_J, item_text), ['Green', 'Red']), location)
         else:
-            location_text = get_hint_area(location)
+            location_text, _ = get_hint_area(location)
             if lang == "english":
                 if t == 0:
                     if world.hint_dist_user.get('vague_named_items', False):
@@ -1015,7 +1030,7 @@ def get_random_location_hint(spoiler, world, checked):
             elif t == 1:
                 return (GossipTextJP(get1 % (location_text_J, item_text), ['Green', 'Red']), location)
     else:
-        location_text = get_hint_area(location)
+        location_text, _ = get_hint_area(location)
         if world.settings.language_selection == "english":
             if t == 0:
                 return (GossipText('#%s# can be found at #%s#.' % (item_text, location_text), ['Red', 'Green']), location)
@@ -1907,7 +1922,7 @@ def buildGanonText(world, messages):
     elif world.light_arrow_location:
         text = get_raw_text(getHint(world, 'Light Arrow Location', world.settings.clearer_hints, world.settings.language_selection).text, lang)
         location = world.light_arrow_location
-        location_hint = get_hint_area(location)
+        location_hint, _ = get_hint_area(location)
         try:
             location_hint_J = loctextJ(world, location_hint)
         except TypeError:

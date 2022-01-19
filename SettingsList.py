@@ -439,6 +439,16 @@ logic_tricks = {
                     - Spirit Temple Statue Room Northeast Chest
                     - Spirit Temple GS Lobby
                     '''},
+    'Spirit Temple Main Room Hookshot to Boss Platform': {
+        'name'    : 'logic_spirit_platform_hookshot',
+        'tags'    : ("Spirit Temple",),
+        'tooltip' : '''\
+                    Precise hookshot aiming at the platform chains can be
+                    used to reach the boss platform from the middle landings.
+                    Using a jumpslash immediately after reaching a chain
+                    makes aiming more lenient. Relevant only when Spirit
+                    Temple boss shortcuts are on.
+                    '''},
     'Spirit Temple MQ Sun Block Room GS with Boomerang': {
         'name'    : 'logic_spirit_mq_sun_block_gs',
         'tags'    : ("Spirit Temple", "Skulltulas",),
@@ -447,13 +457,25 @@ logic_tricks = {
                     curves through the side of the glass block
                     to hit the Gold Skulltula.
                     '''},
-    'Jabu Scrub as Adult with Jump Dive': {
-        'name'    : 'logic_jabu_scrub_jump_dive',
+    'Jabu Underwater Alcove as Adult with Jump Dive': {
+        'name'    : 'logic_jabu_alcove_jump_dive',
         'tags'    : ("Jabu Jabu's Belly", "Entrance",),
         'tooltip' : '''\
                     Standing above the underwater tunnel leading to the scrub,
                     jump down and swim through the tunnel. This allows adult to
-                    access the scrub with no Scale or Iron Boots.
+                    access the alcove with no Scale or Iron Boots. In vanilla Jabu,
+                    this alcove has a business scrub. In MQ Jabu, it has the compass
+                    chest and a door switch for the main floor.
+                    '''},
+    'Jabu MQ Compass Chest with Boomerang': {
+        'name'    : 'logic_jabu_mq_rang_jump',
+        'tags'    : ("Jabu Jabu's Belly",),
+        'tooltip' : '''\
+                    Boomerang can reach the cow switch to spawn the chest by
+                    targeting the cow, jumping off of the ledge where the
+                    chest spawns, and throwing the Boomerang in midair. This
+                    is only relevant with Jabu Jabu's Belly dungeon shortcuts
+                    enabled.
                     '''},
     'Jabu MQ Song of Time Block GS with Boomerang': {
         'name'    : 'logic_jabu_mq_sot_gs',
@@ -585,6 +607,26 @@ logic_tricks = {
                     that you can use to climb down, but there's actually
                     a small piece of ground that you can stand on that
                     you can just jump down to.
+                    '''},
+    'Shadow Temple MQ Windy Walkway Reverse without Hover Boots': {
+        'name'    : 'logic_shadow_mq_windy_walkway',
+        'tags'    : ("Shadow Temple",),
+        'tooltip' : '''\
+                    With shadow dungeon shortcuts enabled, it is possible
+                    to jump from the alcove in the windy hallway to the
+                    middle platform. There are two methods: wait out the fan
+                    opposite the door and hold forward, or jump to the right
+                    to be pushed by the fan there towards the platform ledge.
+                    Note that jumps of this distance are inconsistent, but
+                    still possible.
+                    '''},
+    'Shadow Temple MQ After Wind Gold Skulltula with Nothing': {
+        'name'    : 'logic_shadow_mq_after_wind_gs',
+        'tags'    : ("Shadow Temple","Skulltulas",),
+        'tooltip' : '''\
+                    The Gold Skulltula in the rubble pile can be killed
+                    with a sword slash without blowing up the rubble. The
+                    reward will appear above the rubble pile.
                     '''},
     'Backflip over Mido as Adult': {
         'name'    : 'logic_mido_backflip',
@@ -879,6 +921,14 @@ logic_tricks = {
                     gorge, you can knock down the statue without
                     needing a Bow.
                     Applies in both vanilla and MQ Shadow.
+                    '''},
+    'Shadow Temple Bongo Bongo with Nothing': {
+        'name'    : 'logic_shadow_bongo',
+        'tags'    : ("Shadow Temple",),
+        'tooltip' : '''\
+                    If Shadow Temple dungeon shortcuts are enabled, 
+                    Bongo Bongo can be fought without projectiles
+                    using precise sword slashes.
                     '''},
     'Stop Link the Goron with Din\'s Fire': {
         'name'    : 'logic_link_goron_dins',
@@ -1276,31 +1326,34 @@ logic_tricks = {
                     you also enable the Adult variant: "Dodongo's
                     Cavern Spike Trap Room Jump without Hover Boots".
                     '''},
-    'Dodongo\'s Cavern MQ Light the Eyes with Strength': {
-        'name'    : 'logic_dc_mq_eyes',
+    'Dodongo\'s Cavern MQ Light the Eyes with Strength as Adult': {
+        'name'    : 'logic_dc_mq_eyes_adult',
+        'tags'    : ("Dodongo's Cavern",),
+        'tooltip' : '''\
+                    If you move very quickly, it is possible to use
+                    the bomb flower at the top of the room to light
+                    the eyes.
+                    '''},
+    'Dodongo\'s Cavern MQ Smash the Boss Lobby Floor': {
+        'name'    : 'logic_dc_mq_hammer_floor',
+        'tags'    : ("Dodongo's Cavern",),
+        'tooltip' : '''\
+                    The bombable floor before King Dodongo can be destroyed
+                    with Hammer if hit in the very center. This is only
+                    relevant if either the adult or child variant of
+                    "Dodongo's Cavern MQ Light the Eyes with Strength" are on.
+                    '''},
+    'Dodongo\'s Cavern MQ Light the Eyes with Strength as Child': {
+        'name'    : 'logic_dc_mq_eyes_child',
         'tags'    : ("Dodongo's Cavern",),
         'tooltip' : '''\
                     If you move very quickly, it is possible to use
                     the bomb flower at the top of the room to light
                     the eyes. To perform this trick as child is
-                    significantly more difficult, but child will never
-                    be expected to do so unless "Dodongo's Cavern MQ
-                    Back Areas as Child without Explosives" is enabled.
-                    Also, the bombable floor before King Dodongo can be
-                    destroyed with Hammer if hit in the very center.
-                    '''},
-    'Dodongo\'s Cavern MQ Back Areas as Child without Explosives': {
-        'name'    : 'logic_dc_mq_child_back',
-        'tags'    : ("Dodongo's Cavern",),
-        'tooltip' : '''\
-                    Child can progress through the back areas without
-                    explosives by throwing a pot at a switch to lower a
-                    fire wall, and by defeating Armos to detonate bomb
-                    flowers (among other methods). While these techniques
-                    themselves are relatively simple, they're not
-                    relevant unless "Dodongo's Cavern MQ Light the Eyes
-                    with Strength" is enabled, which is a trick that
-                    is particularly difficult for child to perform.
+                    significantly more difficult than adult. The
+                    player is also expected to complete the DC back
+                    area without explosives, including getting past
+                    the Armos wall to the switch for the boss door.
                     '''},
     'Rolling Goron (Hot Rodder Goron) as Child with Strength': {
         'name'    : 'logic_child_rolling_with_strength',
@@ -1456,33 +1509,59 @@ logic_tricks = {
                     Removes the requirements for the Lens of Truth
                     in Jabu MQ.
                     '''},
-    'Shadow Temple MQ before Invisible Moving Platform without Lens of Truth': {
+    'Shadow Temple MQ Stationary Objects without Lens of Truth': {
         'name'    : 'logic_lens_shadow_mq',
         'tags'    : ("Lens of Truth","Shadow Temple",),
         'tooltip' : '''\
                     Removes the requirements for the Lens of Truth
-                    in Shadow Temple MQ before the invisible moving platform.
+                    in Shadow Temple MQ for most areas in the dungeon.
+                    See "Shadow Temple MQ Invisible Moving Platform
+                    without Lens of Truth", "Shadow Temple MQ Invisible
+                    Blades Silver Rupees without Lens of Truth", and
+                    "Shadow Temple MQ 2nd Dead Hand without Lens of Truth"
+                    for exceptions.
                     '''},
-    'Shadow Temple MQ beyond Invisible Moving Platform without Lens of Truth': {
-        'name'    : 'logic_lens_shadow_mq_back',
+    'Shadow Temple MQ Invisible Moving Platform without Lens of Truth': {
+        'name'    : 'logic_lens_shadow_mq_platform',
         'tags'    : ("Lens of Truth","Shadow Temple",),
         'tooltip' : '''\
                     Removes the requirements for the Lens of Truth
-                    in Shadow Temple MQ beyond the invisible moving platform.
+                    in Shadow Temple MQ to cross the invisible moving
+                    platform in the huge pit room in either direction.
                     '''},
-    'Shadow Temple before Invisible Moving Platform without Lens of Truth': {
+    'Shadow Temple MQ Invisible Blades Silver Rupees without Lens of Truth': {
+        'name'    : 'logic_lens_shadow_mq_invisible_blades',
+        'tags'    : ("Lens of Truth","Shadow Temple",),
+        'tooltip' : '''\
+                    Removes the requirement for the Lens of Truth or
+                    Nayru's Love in Shadow Temple MQ for the Invisible
+                    Blades room silver rupee collection.
+                    '''},
+    'Shadow Temple MQ 2nd Dead Hand without Lens of Truth': {
+        'name'    : 'logic_lens_shadow_mq_dead_hand',
+        'tags'    : ("Lens of Truth","Shadow Temple",),
+        'tooltip' : '''\
+                    Dead Hand can spawn out of bounds in the back room of
+                    Shadow Temple, making him unreachable until the room
+                    is reloaded. The only way to tell if this happened is
+                    with Lens of Truth. This trick removes that safety net.
+                    '''},
+    'Shadow Temple Stationary Objects without Lens of Truth': {
         'name'    : 'logic_lens_shadow',
         'tags'    : ("Lens of Truth","Shadow Temple",),
         'tooltip' : '''\
                     Removes the requirements for the Lens of Truth
-                    in Shadow Temple before the invisible moving platform.
+                    in Shadow Temple for most areas in the dungeon
+                    except for crossing the moving platform in the huge
+                    pit room.
                     '''},
-    'Shadow Temple beyond Invisible Moving Platform without Lens of Truth': {
-        'name'    : 'logic_lens_shadow_back',
+    'Shadow Temple Invisible Moving Platform without Lens of Truth': {
+        'name'    : 'logic_lens_shadow_platform',
         'tags'    : ("Lens of Truth","Shadow Temple",),
         'tooltip' : '''\
                     Removes the requirements for the Lens of Truth
-                    in Shadow Temple beyond the invisible moving platform.
+                    in Shadow Temple to cross the invisible moving
+                    platform in the huge pit room in either direction.
                     '''},
     'Spirit Temple MQ without Lens of Truth': {
         'name'    : 'logic_lens_spirit_mq',
@@ -2242,7 +2321,7 @@ setting_infos = [
             'glitchless': {'settings' : ['tricks_list_msg']},
             'glitched'  : {'settings' : ['allowed_tricks', 'shuffle_interior_entrances', 'shuffle_grotto_entrances',
                                          'shuffle_dungeon_entrances', 'shuffle_overworld_entrances', 'owl_drops',
-                                         'warp_songs', 'spawn_positions', 'mq_dungeons_random', 'mq_dungeons', ]},
+                                         'warp_songs', 'spawn_positions', 'mq_dungeons_random', 'mq_dungeons', 'dungeon_shortcuts']},
             'none'      : {'settings' : ['allowed_tricks', 'logic_no_night_tokens_without_suns_song', 'reachable_locations']},
         },
         shared         = True,
@@ -2379,6 +2458,46 @@ setting_infos = [
         disable = {
             True: {'settings': ['shuffle_weird_egg']},
         },
+    ),
+    Setting_Info(
+        name           = 'dungeon_shortcuts',
+        type           = list,
+        gui_text       = 'Dungeon Boss Shortcuts',
+        gui_type       = "MultipleSelect",
+        choices        = {
+            'deku_tree': 'Deku Tree',
+            'dodongos_cavern': 'Dodongo\'s Cavern',
+            'jabu_jabus_belly': 'Jabu Jabu\'s Belly',
+            'forest_temple': 'Forest Temple',
+            'fire_temple': 'Fire Temple',
+            'water_temple': 'Water Temple', # doesn't do anything, but added to prevent confusion
+            'shadow_temple': 'Shadow Temple',
+            'spirit_temple': 'Spirit Temple'
+        },
+        default        = [],
+        gui_tooltip    = '''\
+            Shortcuts to dungeon bosses are available
+            without any requirements.
+            Incompatible with glitched logic.
+
+            Changes include (vanilla shown, MQ similar):
+            <b>Deku Tree</b>: webs burned, block in the
+            basement moved, 231 scrubs defeated
+            <b>Dodongo's Cavern</b>: mud wall bombed,
+            mouth opened and boss lobby floor bombed
+            <b>Jabu Jabu</b>: pathway lowered
+            <b>Forest Temple</b>: elevator raised and
+            basement gates open
+            <b>Fire Temple</b>: pillar knocked down
+            <b>Shadow Temple</b>: Truthspinner solved, boat
+            block moved, and statue bridge moved. You start
+            with 2 small keys if Shuffle Small Keys is set
+            to Vanilla.
+            <b>Spirit Temple</b>: lobby elevator activated,
+            shortcut silver blocks moved, central room
+            platform lowered, and statue face melted
+        ''',
+        shared         = True,
     ),
     Checkbutton(
         name           = 'no_escape_sequence',
@@ -2891,6 +3010,9 @@ setting_infos = [
             '4':      '4 Items Per Shop',
             'random': 'Random # of Items Per Shop',
         },
+        disable        = {
+            'off':  {'settings': ['shopsanity_prices']},
+        },
         gui_tooltip    = '''\
             Randomizes Shop contents.
             
@@ -2927,6 +3049,42 @@ setting_infos = [
                 ('4',      1),
                 ('random', 1),
             ],
+        },
+    ),
+    Combobox(
+        name           = 'shopsanity_prices',
+        gui_text       = 'Shopsanity Prices',
+        default        = 'random',
+        choices        = {
+            'random':          'Random',
+            'random_starting':    'Starting Wallet',
+            'random_adult':   'Adult\'s Wallet',
+            'random_giant':    'Giant\'s Wallet',
+            'random_tycoon':   'Tycoon\'s Wallet',
+            'affordable':      'Affordable',
+        },
+        disable        = {
+        },
+        gui_tooltip    = '''\
+            Controls the randomization of prices for shopsanity items.
+            For more control, utilize the plandomizer.
+
+            'Random': The default randomization. Shop prices for
+            shopsanity items will range between 0 to 300 rupees,
+            with a bias towards values slightly below the middle of the
+            range, in multiples of 5.
+
+            'X Wallet': Shop prices for shopsanity items will range
+            between 0 and the specified wallet's maximum capacity,
+            in multiples of 5.
+
+            'Affordable': Shop prices for shopsanity items will be
+            fixed to 10 rupees.
+        ''',
+        disabled_default =  'random',
+        shared         = True,
+        gui_params     = {
+            "hide_when_disabled": True,
         },
     ),
     Combobox(
@@ -3028,7 +3186,9 @@ setting_infos = [
             'Vanilla': Small Keys will appear in their 
             vanilla locations. You start with 3 keys in 
             Spirit Temple MQ because the vanilla key 
-            layout is not beatable in logic.
+            layout is not beatable in logic. You start with
+            2 keys in Vanilla/MQ Shadow Temple with its
+            dungeon shortcut enabled to prevent softlocks.
 
             'Own Dungeon': Small Keys can only appear in their
             respective dungeon. If Fire Temple is not a
@@ -3056,7 +3216,7 @@ setting_infos = [
             for a milder Keysanity experience.
         ''',
         disable        = {
-            'any_dungeon': {'settings': ['one_item_per_dungeon']},
+            'any_dungeon': {'settings': ['one_item_per_dungeon']}
         },
         shared         = True,
         gui_params     = {
@@ -3601,16 +3761,27 @@ setting_infos = [
                          ''',
         shared         = True,
     ),
-    Checkbutton(
-        name           = 'correct_chest_sizes',
-        gui_text       = 'Chest Size Matches Contents',
+    Combobox(
+        name           = 'correct_chest_appearances',
+        gui_text       = 'Chest Appearance Matches Contents',
+        default        = 'off',
+        choices        = {
+            'off': 'Off',
+            'textures': 'Texture',
+            'sizes': 'Size and Texture'
+        },
         gui_tooltip    = '''\
-            Chests will be large if they contain a major
-            item and small if they don't. Boss keys will
-            be in gold chests. This allows skipping
-            chests if they are small. However, skipping
-            small chests will mean having low health,
-            ammo, and rupees, so doing so is a risk.
+            If enabled, chest texture will reflect its contents
+            regardless of size.  Fancy chests will contain keys,
+            Gilded chests will contain major items, shuffled
+            tokens will be in Webbed chests, and Wooden chests
+            will contain the rest.
+            This allows skipping chests if they are wooden. 
+            However, skipping wooden chests will mean having 
+            low health, ammo, and rupees, so doing so is a risk.
+            "Size and Texture" will change chests with major
+            items and boss keys into big chests, and everything
+            else into small chests.
         ''',
         shared         = True,
     ),
@@ -3951,6 +4122,19 @@ setting_infos = [
             ],
             'web:option_remove': ['random_custom_only'],
         },
+    ),
+    Checkbutton(
+        name           = 'disable_battle_music',
+        gui_text       = 'Disable battle music',
+        shared         = False,
+        cosmetic       = True,
+        gui_tooltip    = '''\
+            Disable standard battle music.
+	    This prevents background music from being
+	    interrupted by the battle theme when being
+	    near enemies.
+        ''',
+        default        = False,
     ),
     Combobox(
         name           = 'fanfares',

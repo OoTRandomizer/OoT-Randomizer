@@ -48,7 +48,7 @@
     "big_poe_count_random": false,
     "big_poe_count": 1,
     "ocarina_songs": false,
-    "correct_chest_sizes": false,
+    "correct_chest_appearances": "off",
     "clearer_hints": true,
     "hints": "always",
     "hint_dist": "very_strong",

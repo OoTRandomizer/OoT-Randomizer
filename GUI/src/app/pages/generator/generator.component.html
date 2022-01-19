@@ -53,6 +53,16 @@
                             </nb-select>
                           </ng-container>
                         </ng-container>
+                        <!--Multiple Select-->
+                        <ng-container *ngSwitchCase="'MultipleSelect'">
+                          <span class="comboBoxLabel" [ngClass]="{'disabled': !global.generator_settingsVisibilityMap[setting.name], 'oneLineComboBox': getColumnCount(refEl) > 2 && (setting.no_line_break || (itemIndex > 0 && section.settings[itemIndex-1].no_line_break)), 'oLCBLabelFirst': getColumnCount(refEl) > 2 && setting.no_line_break, 'oLCBLabelSecond': getColumnCount(refEl) > 2 && itemIndex > 0 && section.settings[itemIndex-1].no_line_break}">{{setting.text}}</span>
+                          <nb-select multiple placeholder="None" class="selectXSmall" [ngClass]="{'oneLineComboBox oLCBSelect': getColumnCount(refEl) > 2 && setting.no_line_break}" [disabled]="!global.generator_settingsVisibilityMap[setting.name]" [(selected)]="global.generator_settingsMap[setting.name]" (selectedChange)="checkVisibility($event, setting, findOption(setting.options, $event))"
+                            [nbPopover]="tooltipComponent" [nbPopoverContext]="{tooltip: setting.tooltip}" [nbPopoverTrigger]="setting.tooltip && setting.tooltip.length > 0 ? 'click' : 'noop'" nbPopoverPlacement="right" nbPopoverAdjustment="counterclockwise" size="xsmall">
+                              <nb-select-label *ngIf="global.generator_settingsMap[setting.name].length !== setting.options.length && global.generator_settingsMap[setting.name].length > 2">Selected: {{global.generator_settingsMap[setting.name].length}}</nb-select-label>
+                              <nb-select-label *ngIf="global.generator_settingsMap[setting.name].length === setting.options.length">All</nb-select-label>
+                              <nb-option *ngFor="let option of setting.options; index as optionIndex" [value]="option.name">{{option.text}}</nb-option>
+                            </nb-select>
+                        </ng-container>
                         <!--Scale-->
                         <ng-container *ngSwitchCase="'Scale'">
                           <span *ngIf="!setting.size || setting.size == 'small' || setting.size == 'medium'" class="numberTextInputLabel" [ngClass]="{'disabled': !global.generator_settingsVisibilityMap[setting.name]}">{{setting.text}}:</span>

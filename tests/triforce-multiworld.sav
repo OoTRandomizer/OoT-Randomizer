@@ -52,7 +52,7 @@
 "logic_earliest_adult_trade": "prescription",
 "logic_latest_adult_trade": "claim_check",
 "ocarina_songs": false,
-"correct_chest_sizes": false,
+"correct_chest_appearances": "off",
 "clearer_hints": true,
 "hints": "always",
 "hint_dist": "tournament",

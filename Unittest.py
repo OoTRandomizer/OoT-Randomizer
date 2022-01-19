@@ -209,7 +209,7 @@ class TestPlandomizer(unittest.TestCase):
         for filename in filenames:
             with self.subTest(filename):
                 distribution_file, spoiler = generate_with_plandomizer(filename)
-                csmc = spoiler['settings'].get('correct_chest_sizes')
+                csmc = spoiler['settings'].get('correct_chest_appearances')
                 for location in spoiler['locations']:
                     if location_is_viewable(location, csmc):
                         item = spoiler['locations'][location]
@@ -425,10 +425,15 @@ class TestValidSpoilers(unittest.TestCase):
         # No more than one of any 'once' item
         multi = {p: {it for it, ct in c.items() if ct > 1}
                  for p, c in items.items()}
+        bottles_collected = {p: bottles & c.keys() for p, c in items.items()}
         self.assertEqual(
             expected_none,
             {p: once & multi[p] for p in items},
             'Collected unexpected items more than once')
+        for p in items:
+            if 'Rutos Letter' in multi[p]:
+                multi[p].remove('Rutos Letter')
+                bottles_collected[p].add('Rutos Letter')
         # Any item more than once is special['progressive']
         self.assertEqual(
             expected_none,

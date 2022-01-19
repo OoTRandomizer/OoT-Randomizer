@@ -1915,6 +1915,7 @@ def shuffle_messages_jp(messages, except_hints=True, always_allow_skip=True):
 
 # Update warp song text boxes for ER
 def update_warp_song_text(messages, world):
+    from Hints import get_hint_area
     lang = world.settings.language_selection
     t = 0
     if lang == "extra":
@@ -1928,50 +1929,18 @@ def update_warp_song_text(messages, world):
         0x0891: 'Nocturne of Shadow Warp -> Graveyard Warp Pad Region',
         0x0892: 'Prelude of Light Warp -> Temple of Time',
     }
-    if lang == "english":
-        for id, entr in msg_list.items():
-            destination = world.get_entrance(entr).connected_region
-
-            if destination.pretty_name:
-                destination_name = destination.pretty_name
-            elif destination.hint:
-                destination_name = destination.hint
-            elif destination.dungeon:
-                destination_name = destination.dungeon.hint
-            else:
-                destination_name = destination.name
-            color = COLOR_MAP[destination.font_color or 'White']
+    for id, entr in msg_list.items():
+        destination = world.get_entrance(entr).connected_region
+        destination_name, color = get_hint_area(destination, lang)
+        if lang == "english":
+            color = COLOR_MAP[color]
             if t == 0:
-                new_msg = f"\x08\x05{color}Warp to {destination_name}?\x05\40\x09\x01\x01\x1b\x05{color}OK\x01No\x05\40"
+                new_msg = f"\x08\x05{color}Warp to {destination_name}?\x05\40\x09\x01\x01\x1b\x05\x42OK\x01No\x05\40"
             elif t == 1:
                 new_msg = getLang(world, "special", "Warp") % (color, destination_name, color)
             update_message_by_id(messages, id, new_msg)
-    elif lang == "japanese":
-        for id, entr in msg_list.items():
-            destination = world.get_entrance(entr).connected_region
-            if t == 0:
-                if destination.pretty_name_JP:
-                    destination_name = destination.pretty_name_JP
-                elif destination.hint_JP:
-                    destination_name = destination.hint_JP
-                elif destination.dungeon:
-                    destination_name = destination.dungeon.hint_JP
-                elif destination.name_JP:
-                    destination_name = destination.name_JP
-                else:
-                    destination_name = destination.name
-                    destination_name = destination_name.translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
-            elif t == 1:
-                if destination.pretty_name:
-                    destination_name = destination.pretty_name
-                elif destination.hint:
-                    destination_name = destination.hint
-                elif destination.dungeon:
-                    destination_name = destination.dungeon.hint
-                else:
-                    destination_name = destination.name
-                destination_name = destination_name.translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
-            color = COLOR_MAP_JP[destination.font_color or 'White']
+        elif lang == "japanese":
+            color = COLOR_MAP_JP[color]
             if t == 0:
                 new_msg = f"<#{color}{destination_name}へワープ！#\x00>&:2#{color}はい&いいえ#\x00"
             elif t == 1:
