@@ -233,11 +233,7 @@ def patch_and_output(settings, window, spoiler, rom):
                 patchfilename = '%s.zpf' % outfilebase
 
             random.setstate(rng_state)
-            if settings.language_selection == 'english':
-                patch_rom(spoiler, world, rom)
-            elif settings.language_selection == 'japanese':
-                #patch_rom_jp(spoiler, world, rom)
-                patch_rom(spoiler, world, rom, 'jap')
+            patch_rom(spoiler, world, rom)
             cosmetics_log = patch_cosmetics(settings, rom)
             rom.update_header()
 
@@ -274,11 +270,7 @@ def patch_and_output(settings, window, spoiler, rom):
 
     elif settings.compress_rom not in ['None', 'Temp']:
         window.update_status('Patching ROM')
-        if settings.language_selection == 'english':
-            patch_rom(spoiler, worlds[settings.player_num - 1], rom)
-        elif settings.language_selection == 'japanese':
-            #patch_rom_jp(spoiler, worlds[settings.player_num - 1], rom)
-            patch_rom(spoiler, worlds[settings.player_num - 1], rom, 'jap')
+        patch_rom(spoiler, worlds[settings.player_num - 1], rom)
         cosmetics_log = patch_cosmetics(settings, rom)
         window.update_progress(65)
 
