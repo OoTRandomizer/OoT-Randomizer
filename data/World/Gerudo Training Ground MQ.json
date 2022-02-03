@@ -71,7 +71,7 @@
         "locations": {
             "Gerudo Training Ground MQ Eye Statue Chest": "Bow",
             "Gerudo Training Ground MQ Second Iron Knuckle Chest": "True",
-            "Gerudo Training Ground MQ Flame Circle Chest": "can_use(Hookshot) or Bow or has_explosives"
+            "Gerudo Training Ground MQ Flame Circle Chest": "(can_use(Hookshot) or Bow or has_explosives) or (can_take_damage and logic_flaming_circles)"
         },
         "exits": {
             "Gerudo Training Ground Central Maze Right": "Megaton_Hammer",

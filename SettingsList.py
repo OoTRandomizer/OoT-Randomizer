@@ -252,6 +252,15 @@ logic_tricks = {
                     - MQ Fire Temple Lizalfos Maze.
                     - MQ Spirit Trial.
                     '''},
+    'Open Chests Through Flaming Circles': {
+        'name'    : 'logic_flaming_circles',
+        'tags'    : ("Spirit Temple", "Gerudo Training Ground",),
+        'tooltip' : '''\
+                    The chests encircled in flames in Gerudo
+                    Training Ground and Spirit Temple can be
+                    opened by running into the flames while
+                    Link is invincible after taking damage.
+                    '''},
     'Bottom of the Well Map Chest with Strength & Sticks': {
         'name'    : 'logic_botw_basement',
         'tags'    : ("Bottom of the Well",),

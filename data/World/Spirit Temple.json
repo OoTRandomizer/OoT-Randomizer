@@ -197,8 +197,7 @@
         "dungeon": "Spirit Temple",
         "locations": {
             "Spirit Temple Boss Key Chest": "
-                can_play(Zeldas_Lullaby) and Bow and 
-                Progressive_Hookshot",
+                can_play(Zeldas_Lullaby) and ((Bow and Progressive_Hookshot) or (can_take_damage and logic_flaming_circles))",
             "Spirit Temple Topmost Chest": "Mirror_Shield"
         },
         "exits": {
