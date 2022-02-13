@@ -346,7 +346,7 @@ hintTable = {
     'Market Treasure Chest Game Reward':                           (["#gambling# grants", "there is a #1/32 chance# to win"], "the #treasure chest game# grants", ['overworld', 'sometimes']),
     'GF HBA 1500 Points':                                          ("mastery of #horseback archery# grants", "scoring 1500 in #horseback archery# grants", ['overworld', 'sometimes']),
     'Graveyard Heart Piece Grave Chest':                           ("playing #Sun's Song# in a grave spawns", None, ['overworld', 'sometimes']),
-    'GC Maze Left Chest':                                          ("in #Goron City# the hammer unlocks", None, ['overworld', 'sometimes']),
+    'GC Maze Left Chest':                                          ("the leftmost chest in #Goron City's# maze holds", None, ['overworld', 'sometimes']),
     'GV Chest':                                                    ("in #Gerudo Valley# the hammer unlocks", None, ['overworld', 'sometimes']),
     'GV Cow':                                                      ("a #cow in Gerudo Valley# gifts", None, ['overworld', 'sometimes']),
     'HC GS Storms Grotto':                                         ("a #spider behind a muddy wall# in a grotto holds", None, ['overworld', 'sometimes']),
