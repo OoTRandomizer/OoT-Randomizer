@@ -2,6 +2,7 @@ from itertools import chain
 from enum import IntEnum
 
 class Scenes(IntEnum):
+    # Dungeons
     DEKU_TREE = 0x00
     DODONGOS_CAVERN = 0x01
     KING_DODONGO_LOBBY = 0x12
@@ -11,6 +12,16 @@ class Scenes(IntEnum):
     WATER_TEMPLE = 0x05
     SPIRIT_TEMPLE = 0x06
     SHADOW_TEMPLE = 0x07
+    # Bean patch scenes
+    GRAVEYARD = 0x53
+    ZORAS_RIVER = 0x54
+    KOKIRI_FOREST = 0x55
+    LAKE_HYLIA = 0x57
+    GERUDO_VALLEY = 0x5A
+    LOST_WOODS = 0x5B
+    DESERT_COLOSSUS = 0x5C
+    DEATH_MOUNTAIN_TRAIL = 0x60
+    DEATH_MOUNTAIN_CRATER = 0x61
 
 class FlagType(IntEnum):
     CHEST = 0x00

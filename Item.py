@@ -27,6 +27,7 @@ class ItemInfo(object):
         self.bottle = self.special.get('bottle', False)
         self.medallion = self.special.get('medallion', False)
         self.stone = self.special.get('stone', False)
+        self.alias = self.special.get('alias', None)
 
 
 for item_name in item_table:
@@ -59,6 +60,7 @@ class Item(object):
         self.type = self.info.type
         self.special = self.info.special
         self.index = self.info.index
+        self.alias = self.info.alias
 
 
     item_worlds_to_fix = {}

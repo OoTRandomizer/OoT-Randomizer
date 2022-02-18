@@ -1,0 +1,10 @@
+{
+  "settings":                  {
+    "item_pool_value":                         "balanced",
+    "gerudo_fortress":                         "fast",
+    "shuffle_hideoutkeys":                     "vanilla",
+    "key_rings":                               [
+      "Thieves Hideout"
+    ]
+  }
+}

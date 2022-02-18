@@ -59,7 +59,6 @@ extern uint32_t CFG_DUNGEON_INFO_REWARD_NEED_COMPASS;
 extern uint32_t CFG_DUNGEON_INFO_REWARD_NEED_ALTAR;
 
 extern int8_t CFG_DUNGEON_REWARDS[14];
-extern uint8_t CFG_DUNGEON_IS_MQ[14];
 
 void draw_dungeon_info(z64_disp_buf_t *db) {
     int draw = CFG_DUNGEON_INFO_ENABLE &&

@@ -48,7 +48,7 @@ def start():
 
     try:
         if gui:
-            guiMain(settings)
+            guiMain()
         elif settings.cosmetics_only:
             cosmetic_patch(settings)
         elif settings.patch_file != '':

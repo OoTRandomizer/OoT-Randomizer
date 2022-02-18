@@ -1866,7 +1866,27 @@ setting_infos = [
     # GUI Settings
     Setting_Info('presets',           str, "", "Presetinput", False, {},
         default        = "[New Preset]",
-        gui_tooltip    = 'Select a setting preset to apply.',
+        gui_tooltip    = '''\
+            Select a setting preset to apply.
+
+            Default/Beginner is aimed at those familiar with vanilla who desire a similar progression.
+            Uses base glitchless logic. No timesavers (See the tab "Other") are enabled in this preset 
+            and the world begins closed. Expect a long playthrough.
+
+            Easy Mode is aimed and those who have perhaps seen a few randomizer runs previously and/or 
+            wish to dive right in. Uses base glitchless logic. Most timesavers (See the tab "Other") 
+            are enabled and the world is more open after leaving Kokiri Forest.
+
+            Hell Mode enables every setting to provide maximum randomness, but still uses glitchless
+            logic to ensure a beatable seed. However, be aware that all glitchless "tricks" are enabled
+            which have the potential to require the player to perform difficult techniques. 
+            Expect a long playthrough, even with good note-taking.
+
+            The other presets are for racing and/or touranments. 
+
+            After a preset is loaded, the settings can be viewed/changed in the other tabs before
+            generating a seed.
+            ''',
     ),
     Setting_Info('open_output_dir',   str, "Open Output Directory", "Button", False, {},
         gui_params = {
@@ -2133,14 +2153,11 @@ setting_infos = [
             'Random': A random Rainbow Bridge requirement excluding Gold Skulltula Tokens.
         ''',
         shared         = True,
-        disable={
-            'open':       {'settings': ['bridge_medallions', 'bridge_stones', 'bridge_rewards', 'bridge_tokens']},
-            'vanilla':    {'settings': ['bridge_medallions', 'bridge_stones', 'bridge_rewards', 'bridge_tokens']},
-            'stones':     {'settings': ['bridge_medallions', 'bridge_rewards', 'bridge_tokens']},
-            'medallions': {'settings': ['bridge_stones', 'bridge_rewards', 'bridge_tokens']},
-            'dungeons':   {'settings': ['bridge_medallions', 'bridge_stones', 'bridge_tokens']},
-            'tokens':     {'settings': ['bridge_medallions', 'bridge_stones', 'bridge_rewards']},
-            'random':     {'settings': ['bridge_medallions', 'bridge_stones', 'bridge_rewards', 'bridge_tokens']}
+        disable        = {
+            '!stones':     {'settings': ['bridge_stones']},
+            '!medallions': {'settings': ['bridge_medallions']},
+            '!dungeons':   {'settings': ['bridge_rewards']},
+            '!tokens':     {'settings': ['bridge_tokens']},
         },
         gui_params     = {
             'randomize_key': 'randomize_settings',
@@ -2609,6 +2626,20 @@ setting_infos = [
         ''',
         disabled_default = 1,
         shared         = True,
+    ),
+    Checkbutton(
+        name           = 'plant_beans',
+        gui_text       = 'Plant Magic Beans',
+        gui_tooltip    = '''\
+            Enabling this plants all 10 magic beans in soft soil
+            causing the bean plants to be available as adult. You
+            can still get beans normally.
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
     ),
     Checkbutton(
         name           = 'chicken_count_random',
@@ -3223,6 +3254,41 @@ setting_infos = [
         gui_params     = {
             'randomize_key': 'randomize_settings',
         },
+    ),
+    Setting_Info(
+        name           = 'key_rings',
+        type           = list,
+        gui_text       = 'Key Rings',
+        gui_type       = "MultipleSelect",
+        choices        = {
+            'Thieves Hideout':        "Thieves' Hideout",
+            'Forest Temple':          "Forest Temple",
+            'Fire Temple':            "Fire Temple",
+            'Water Temple':           "Water Temple",
+            'Shadow Temple':          "Shadow Temple",
+            'Spirit Temple':          "Spirit Temple",
+            'Bottom of the Well':     "Bottom of the Well",
+            'Gerudo Training Ground': "Gerudo Training Ground",
+            'Ganons Castle':          "Ganon's Castle"
+        },
+        default        = [],
+        gui_tooltip    = '''\
+            Selected dungeons will have all of their keys found 
+            at once in a ring rather than individually. 
+
+            For example, instead of shuffling 5 Forest Temple 
+            small keys into the pool, you will find a single
+            key ring which will give you all 5 keys at once.
+
+            Selecting key ring for dungeons will have no effect
+            if Small Keys are set to Remove or Vanilla.
+
+            Selecting key ring for Thieves' Hideout will have 
+            no effect if Thieves' Hideout keys are in vanilla 
+            locations or Gerudo's Fortress is set to Rescue
+            One Carpenter.
+        ''',
+        shared         = True,
     ),
     Combobox(
         name           = 'shuffle_bosskeys',
@@ -4096,14 +4162,14 @@ setting_infos = [
     ),
     Checkbutton(
         name           = 'disable_battle_music',
-        gui_text       = 'Disable battle music',
+        gui_text       = 'Disable Battle Music',
         shared         = False,
         cosmetic       = True,
         gui_tooltip    = '''\
             Disable standard battle music.
-	    This prevents background music from being
-	    interrupted by the battle theme when being
-	    near enemies.
+	        This prevents background music from being
+	        interrupted by the battle theme when being
+	        near enemies.
         ''',
         default        = False,
     ),

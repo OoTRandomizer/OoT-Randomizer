@@ -370,8 +370,8 @@ def replace_songs(world, rom):
 
     for name, song in songs.items():
 
-        # fix the song of time
-        if name == 'Song of Time':
+        # fix the song of time and sun's song
+        if name == 'Song of Time' or name == 'Suns Song':
             song.increase_duration_to(260)
 
         # write the song to the activation table

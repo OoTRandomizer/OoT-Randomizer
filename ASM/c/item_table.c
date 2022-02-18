@@ -5,23 +5,6 @@
 #include "util.h"
 #include "z64.h"
 
-enum dungeon {
-    DEKU_ID    = 0,
-    DODONGO_ID = 1,
-    JABU_ID    = 2,
-    FOREST_ID  = 3,
-    FIRE_ID    = 4,
-    WATER_ID   = 5,
-    SPIRIT_ID  = 6,
-    SHADOW_ID  = 7,
-    BOTW_ID    = 8,
-    ICE_ID     = 9,
-    TOWER_ID   = 10,
-    GTG_ID     = 11,
-    FORT_ID    = 12,
-    CASTLE_ID  = 13,
-};
-
 #define ITEM_ROW( \
         base_item_id_, chest_type_, action_id_,  text_id_, object_id_, graphic_id_, \
         upgrade_, effect_, effect_arg1_, effect_arg2_) \
@@ -247,6 +230,16 @@ item_row_t item_table[] = {
     [0xC8] = ITEM_ROW(0x53,      GILDED_CHEST, 0x14, 0x9099, 0x010B, 0x45, no_upgrade, no_effect, -1, -1), // Redundant Letter Bottle
     [0xC9] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, 0x9048, 0x00F3, 0x3E, no_upgrade, give_bean_pack, -1, -1), // Magic Bean Pack
     [0xCA] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, 0x9003, 0x0193, 0x35, no_upgrade, give_triforce_piece, -1, -1), // Triforce piece
+
+    [0xCB] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, 0x9010, 0x00AA, 0x02, no_upgrade, give_small_key_ring, FOREST_ID, -1), // Forest Temple Small Key Ring
+    [0xCC] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, 0x9011, 0x00AA, 0x02, no_upgrade, give_small_key_ring, FIRE_ID,   -1), // Fire Temple Small Key Ring
+    [0xCD] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, 0x9012, 0x00AA, 0x02, no_upgrade, give_small_key_ring, WATER_ID,  -1), // Water Temple Small Key Ring
+    [0xCE] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, 0x9013, 0x00AA, 0x02, no_upgrade, give_small_key_ring, SPIRIT_ID, -1), // Spirit Temple Small Key Ring
+    [0xCF] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, 0x9014, 0x00AA, 0x02, no_upgrade, give_small_key_ring, SHADOW_ID, -1), // Shadow Temple Small Key Ring
+    [0xD0] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, 0x9015, 0x00AA, 0x02, no_upgrade, give_small_key_ring, BOTW_ID,   -1), // Bottom of the Well Small Key Ring
+    [0xD1] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, 0x9016, 0x00AA, 0x02, no_upgrade, give_small_key_ring, GTG_ID,    -1), // Gerudo Training Small Key Ring
+    [0xD2] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, 0x9017, 0x00AA, 0x02, no_upgrade, give_small_key_ring, FORT_ID,   -1), // Gerudo Fortress Small Key Ring
+    [0xD3] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, 0x9018, 0x00AA, 0x02, no_upgrade, give_small_key_ring, CASTLE_ID, -1), // Ganon's Castle Small Key Ring
 
 };
 
