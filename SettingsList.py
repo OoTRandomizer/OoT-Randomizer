@@ -3572,6 +3572,35 @@ setting_infos = [
         ''',
         shared         = True,
     ),
+    Scale(
+        name           = 'logical_skulls_needed',
+        gui_text       = "Gold Skulltula Token Multiplier(x10)",
+        default        = 0,
+        min            = 0,
+        max            = 10,
+        gui_tooltip    = '''\
+            Multiplies the number of 
+            Gold Skulltula Tokens needed
+            in logic to place an item on a 
+            Gold Skulltula Token reward.
+
+            0: No additional Gold Skulltula 
+            Tokens are needed for the game
+            to put an item on a Gold 
+            Skulltula Token Reward.
+
+            5: 50% more Gold Skulltula Tokens
+            need to be in logic. (Ex: there 
+            needs to be 15 Skulls in logic
+            to put an item on 10 skulls)
+
+            10: 100% more Gold Skulltula Tokens
+            need to be in logic. (Ex: All 
+            Skulls must be in logic to place
+            an item on 50 Skulls)
+        ''',
+        shared         = True,
+    ),
     Setting_Info(
         name           = 'disabled_locations',
         type           = list,

@@ -180,7 +180,8 @@
             "bombchus_in_logic",
             "one_item_per_dungeon",
             "mq_dungeons_random",
-            "mq_dungeons"
+            "mq_dungeons",
+            "logical_skulls_needed"
           ]
         },
         {
