@@ -3577,7 +3577,7 @@ setting_infos = [
         gui_text       = "Gold Skulltula Token Multiplier(x10)",
         default        = 0,
         min            = 0,
-        max            = 10,
+        max            = 100,
         gui_tooltip    = '''\
             Multiplies the number of 
             Gold Skulltula Tokens needed
@@ -3589,12 +3589,12 @@ setting_infos = [
             to put an item on a Gold 
             Skulltula Token Reward.
 
-            5: 50% more Gold Skulltula Tokens
+            50: 50% more Gold Skulltula Tokens
             need to be in logic. (Ex: there 
             needs to be 15 Skulls in logic
             to put an item on 10 skulls)
 
-            10: 100% more Gold Skulltula Tokens
+            100: 100% more Gold Skulltula Tokens
             need to be in logic. (Ex: All 
             Skulls must be in logic to place
             an item on 50 Skulls)
