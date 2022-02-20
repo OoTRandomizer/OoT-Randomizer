@@ -3574,7 +3574,7 @@ setting_infos = [
     ),
     Scale(
         name           = 'logical_skulls_needed',
-        gui_text       = "Gold Skulltula Token Multiplier(x10)",
+        gui_text       = "Gold Skulltula Token Multiplier",
         default        = 0,
         min            = 0,
         max            = 100,
@@ -3583,6 +3583,7 @@ setting_infos = [
             Gold Skulltula Tokens needed
             in logic to place an item on a 
             Gold Skulltula Token reward.
+            Rounds down to nearest Token.
 
             0: No additional Gold Skulltula 
             Tokens are needed for the game
