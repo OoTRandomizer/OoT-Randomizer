@@ -146,11 +146,11 @@ def build_world_graphs(settings, window=dummy_window()):
         else:
             overworld_data = os.path.join(data_path('World'), 'Overworld.json')
 
-        overworld_data.replace("(Gold_Skulltula_Token, 10)","(Gold_Skulltula_Token, " + str(10 * (1 + int(settings.logical_skulls_needed/100))) + ")")
-        overworld_data.replace("(Gold_Skulltula_Token, 20)","(Gold_Skulltula_Token, " + str(20 * (1 + int(settings.logical_skulls_needed/100))) + ")")
-        overworld_data.replace("(Gold_Skulltula_Token, 30)","(Gold_Skulltula_Token, " + str(30 * (1 + int(settings.logical_skulls_needed/100))) + ")")
-        overworld_data.replace("(Gold_Skulltula_Token, 40)","(Gold_Skulltula_Token, " + str(40 * (1 + int(settings.logical_skulls_needed/100))) + ")")
-        overworld_data.replace("(Gold_Skulltula_Token, 50)","(Gold_Skulltula_Token, " + str(50 * (1 + int(settings.logical_skulls_needed/100))) + ")")
+        overworld_data.replace("(Gold_Skulltula_Token, 10)","(Gold_Skulltula_Token, " + str(int(10 * (1 + settings.logical_skulls_needed/100))) + ")")
+        overworld_data.replace("(Gold_Skulltula_Token, 20)","(Gold_Skulltula_Token, " + str(int(20 * (1 + settings.logical_skulls_needed/100))) + ")")
+        overworld_data.replace("(Gold_Skulltula_Token, 30)","(Gold_Skulltula_Token, " + str(int(30 * (1 + settings.logical_skulls_needed/100))) + ")")
+        overworld_data.replace("(Gold_Skulltula_Token, 40)","(Gold_Skulltula_Token, " + str(int(40 * (1 + settings.logical_skulls_needed/100))) + ")")
+        overworld_data.replace("(Gold_Skulltula_Token, 50)","(Gold_Skulltula_Token, " + str(int(50 * (1 + settings.logical_skulls_needed/100))) + ")")
 
         # Compile the json rules based on settings
         world.load_regions_from_json(overworld_data)
