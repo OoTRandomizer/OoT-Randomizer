@@ -389,9 +389,16 @@ class World(object):
 
 
     def load_regions_from_json(self, file_path):
-        region_json = read_json(file_path)
-            
+        region_json = read_json(file_path)  
         for region in region_json:
+            if region['region_name'] == "Kak House of Skulltula":
+                region['locations'] = {
+                    "Kak 10 Gold Skulltula Reward": "(Gold_Skulltula_Token, " + str(int(10 * (1 + self.settings.logical_skulls_needed/100))) + ")",
+                    "Kak 20 Gold Skulltula Reward": "(Gold_Skulltula_Token, " + str(int(20 * (1 + self.settings.logical_skulls_needed/100))) + ")",
+                    "Kak 30 Gold Skulltula Reward": "(Gold_Skulltula_Token, " + str(int(30 * (1 + self.settings.logical_skulls_needed/100))) + ")",
+                    "Kak 40 Gold Skulltula Reward": "(Gold_Skulltula_Token, " + str(int(40 * (1 + self.settings.logical_skulls_needed/100))) + ")",
+                    "Kak 50 Gold Skulltula Reward": "(Gold_Skulltula_Token, " + str(int(50 * (1 + self.settings.logical_skulls_needed/100))) + ")"
+                }
             new_region = Region(region['region_name'])
             new_region.world = self
             if 'font_color' in region:
