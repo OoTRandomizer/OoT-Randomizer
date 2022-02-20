@@ -3572,35 +3572,73 @@ setting_infos = [
         ''',
         shared         = True,
     ),
+        Combobox(
+        name           = 'increase_logical_skulls',
+        gui_text       = 'Increase Logical Skulls',
+        default        = 'off',
+        choices        = {
+            'off':       'Off',
+            'buffer':    'Buffered',
+            'scale':     'Scaled',
+        },
+        gui_tooltip    = '''\
+            'Off': Normal number of GS Tokens needed for each check.
+            'Buffered': Adds a set number of GS Tokens needed in logic for each GS reward.
+            'Scaled': Scales the number of GS Tokens needed in logic for each GS reward.
+        ''',
+        shared         = True,
+        disable={
+            'off':       {'settings': ['logical_skulls_buffered', 'logical_skulls_scalled']},
+            'buffer':    {'settings': ['logical_skulls_scalled']},
+            'scale':     {'settings': ['logical_skulls_buffered']}
+        },
+    ),
     Scale(
-        name           = 'logical_skulls_needed',
-        gui_text       = "Gold Skulltula Token Multiplier",
+        name           = 'logical_skulls_scalled',
+        gui_text       = "Gold Skulltula Token Scale Factor",
         default        = 0,
         min            = 0,
         max            = 100,
         gui_tooltip    = '''\
-            Multiplies the number of 
-            Gold Skulltula Tokens needed
-            in logic to place an item on a 
-            Gold Skulltula Token reward.
-            Rounds down to nearest Token.
+            Multiplies the number of GS Tokens 
+            neededin logic to place an item on a 
+            GS reward. Rounds down to 
+            nearest Token.
 
-            0: No additional Gold Skulltula 
+            0: No additional GS 
             Tokens are needed for the game
-            to put an item on a Gold 
-            Skulltula Token Reward.
+            to put an item on a GS Token Reward.
 
-            50: 50% more Gold Skulltula Tokens
-            need to be in logic. (Ex: there 
-            needs to be 15 Skulls in logic
-            to put an item on 10 skulls)
+            50: 50% more GS Tokens need to be 
+            in logic. (Ex: there needs to 
+            be 15 Skulls in logic to put 
+            an item on 10 skulls)
 
-            100: 100% more Gold Skulltula Tokens
-            need to be in logic. (Ex: All 
-            Skulls must be in logic to place
-            an item on 50 Skulls)
+            100: 100% more GS Tokens need to 
+            be in logic. (Ex: All Skulls must 
+            be in logic to placean item 
+            on 50 Skulls)
         ''',
         shared         = True,
+        gui_params     = {
+            "hide_when_disabled": True,
+        },
+    ),
+    Scale(
+        name           = 'logical_skulls_buffered',
+        gui_text       = "Gold Skulltula Token Buffer",
+        default        = 0,
+        min            = 0,
+        max            = 50,
+        gui_tooltip    = '''\
+            Adds to the number of GS Tokens
+            needed in logic for each GS
+            Token reward.
+        ''',
+        shared         = True,
+        gui_params     = {
+            "hide_when_disabled": True,
+        },
     ),
     Setting_Info(
         name           = 'disabled_locations',

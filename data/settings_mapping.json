@@ -181,7 +181,9 @@
             "one_item_per_dungeon",
             "mq_dungeons_random",
             "mq_dungeons",
-            "logical_skulls_needed"
+            "increase_logical_skulls",
+            "logical_skulls_scalled",
+            "logical_skulls_buffered"
           ]
         },
         {
