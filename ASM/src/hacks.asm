@@ -2308,3 +2308,11 @@ skip_GS_BGS_text:
 .orga 0xCCE9A4
     jal     kill_door_of_time_col ; Replaces lui     $at, 0x3F80 
     lw      a0, 0x011C(s0) ; replaces mtc1    $at, $f6 
+
+;===================================================================================================
+; Don't grey out Goron's Bracelet as adult.
+;===================================================================================================
+.orga 0xBB66DC
+    sh      zero, 0x025E(s6) ; Replaces: sh      v1, 0x025E(s6)
+.orga 0xBC780C
+    .byte 0x09               ; Replaces: 0x01

@@ -346,8 +346,10 @@ hintTable = {
    'Deku Nuts (10)':        (["lots-o-nuts", "plenty of flashbangs", "plenty of scrub spit"], "Deku Nuts (10 pieces)", ["多くの実", "多くの目くらまし"], "デクの実（１０コ）", "item"),
    'Deku Seeds (30)':        (["catapult ammo", "lots-o-seeds"], "Deku Seeds (30 pieces)", ["カタパルトの玉", "多くの種"], "デクの種（３０コ）", "item"),
    'Gold Skulltula Token':        (["proof of destruction", "an arachnid chip", "spider remains", "one percent of a curse"], "a Gold Skulltula Token", ["破壊の証拠", "クモの金", "クモの残し物", "呪いの欠片"], "トークン", "item"),
+
    'ZR Frogs Ocarina Game':        (["an #amphibian feast# yields", "the #croaking choir's magnum opus# awards", "the #froggy finale# yields"], "the final reward from the #Frogs of Zora's River# is", ["C両生類の合唱Cは", "C聖歌隊の歌Cは", "C歌のフィナーレCは"], "Cカエルの歌Cは", "always"),
    'KF Links House Cow':        ("the #bovine bounty of a horseback hustle# gifts", "#Malon's obstacle course# leads to", "C乗馬の恵みCは", "C障害物走後の牛Cは", "always"),
+  
    'Song from Ocarina of Time':        ("the #Ocarina of Time# teaches", None, "Cオカリナの歌Cは", None, ["song", "sometimes"]),
    'Song from Royal Familys Tomb':        (["#ReDead in the royal tomb# guard", "the #Composer Brothers wrote#"], None, ["C墓のリーデッドCは", "C作曲家の兄弟Cは"], None, ["song", "sometimes"]),
    'Sheik in Forest':        ("#in a meadow# Sheik teaches", None, "C牧草地Cでシークは", None, ["song", "sometimes"]),
@@ -356,6 +358,7 @@ hintTable = {
    'Sheik in Ice Cavern':        ("the #frozen cavern# echoes with", None, "C氷の洞窟Cで響くのは", None, ["song", "sometimes"]),
    'Sheik in Kakariko':        ("a #ravaged village# mourns with", None, "C廃村Cで聞こえるのは", None, ["song", "sometimes"]),
    'Sheik at Colossus':        ("a hero ventures #beyond the wasteland# to learn", None, "C荒れ地の先Cで習うのは", None, ["song", "sometimes"]),
+  
    'Market 10 Big Poes':        ("#ghost hunters# will be rewarded with", "catching #Big Poes# leads to", "CゴーストハンターCは", "C１０匹のビッグポーCを売ると", ["overworld", "sometimes"]),
    'Deku Theater Skull Mask':        ("the #Skull Mask# yields", None, "Cドクロのお面の評価Cは", None, ["overworld", "sometimes"]),
    'Deku Theater Mask of Truth':        ("showing a #truthful eye to the crowd# rewards", "the #Mask of Truth# yields", "Cウソ無きお面の世論Cは", "Cまことのお面の評価Cは", ["overworld", "sometimes"]),
@@ -447,6 +450,7 @@ hintTable = {
    'DMT Great Fairy Reward':        ("a #magical fairy# gifts", None, "C魔法の大妖精Cは", None, "exclude"),
    'DMC Great Fairy Reward':        ("a #magical fairy# gifts", None, "C魔法の大妖精Cは", None, "exclude"),
    'OGC Great Fairy Reward':        ("the #fairy of strength# holds", "a #fairy outside Ganon's Castle# holds", "C力の大妖精Cは", None, "exclude"),
+  
    'Song from Impa':        ("#deep in a castle#, Impa teaches", None, "C城奥でCインパは", None, "exclude"),
    'Song from Malon':        ("#a farm girl# sings", None, "C農娘Cの歌は", None, "exclude"),
    'Song from Saria':        ("#deep in the forest#, Saria teaches", None, "C森の奥でCサリアは", None, "exclude"),
@@ -1252,7 +1256,7 @@ hintTable = {
    '2009':        ("Many tricks are up my sleeve,&to save yourself&you'd better leave!", None, "<私は色んなことができる、&助かりたいのなら&手を近づけないのだな！", None, "ganonLine"),
    '2010':        ("After what you did to&Koholint Island, how can&you call me the bad guy?", None, "<コホリント島で君がしたことに&比べればこんなこと&ちっぽけだろう？", None, "ganonLine"),
    '2011':        ("Today, let's begin down&'The Hero is Defeated' timeline.", None, "<今、勇者のいない&時間軸が出来上がる！", None, "ganonLine"),
-}
+}  
 HT = {**hintTable}
 
 # Separate table for goal names to avoid duplicates in the hint table.

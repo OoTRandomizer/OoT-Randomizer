@@ -194,3 +194,10 @@ def check_python_version():
     python_version = '.'.join([str(num) for num in sys.version_info[0:3]])
     if compare_version(python_version, '3.6.0') < 0:
         raise VersionError('Randomizer requires at least version 3.6 and you are using %s' % python_version, "https://www.python.org/downloads/")
+
+
+# https://stackoverflow.com/a/23146126
+def find_last(source_list, sought_element):
+    for reverse_index, element in enumerate(reversed(source_list)):
+        if element == sought_element:
+            return len(source_list) - 1 - reverse_index

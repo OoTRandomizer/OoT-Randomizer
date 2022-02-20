@@ -3,4 +3,6 @@
 
 void draw_dungeon_info();
 
+extern unsigned char CFG_DUNGEON_IS_MQ[14];
+
 #endif

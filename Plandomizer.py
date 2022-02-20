@@ -302,16 +302,48 @@ class WorldDistribution(object):
                     if self.distribution.settings.triforce_hunt:
                         self.major_group.append('Triforce Piece')
                     major_tokens = ((self.distribution.settings.shuffle_ganon_bosskey == 'on_lacs' and
-                            self.distribution.settings.lacs_condition == 'tokens') or 
+                            self.distribution.settings.lacs_condition == 'tokens') or
                             self.distribution.settings.shuffle_ganon_bosskey == 'tokens' or self.distribution.settings.bridge == 'tokens')
                     if self.distribution.settings.tokensanity == 'all' and major_tokens:
                         self.major_group.append('Gold Skulltula Token')
                     if self.distribution.settings.shuffle_smallkeys == 'keysanity':
-                        keys = [name for (name, data) in item_table.items() if data[0] == 'SmallKey' and name != 'Small Key']
-                        self.major_group.extend(keys)
+                        if 'Bottom of the Well' in self.distribution.settings.key_rings:
+                            self.major_group.append('Small Key Ring (Bottom of the Well)')
+                        else:
+                            self.major_group.append('Small Key (Bottom of the Well)')
+                        if 'Forest Temple' in self.distribution.settings.key_rings:
+                            self.major_group.append('Small Key Ring (Forest Temple)')
+                        else:
+                            self.major_group.append('Small Key (Forest Temple)')
+                        if 'Fire Temple' in self.distribution.settings.key_rings:
+                            self.major_group.append('Small Key Ring (Fire Temple)')
+                        else:
+                            self.major_group.append('Small Key (Fire Temple)')
+                        if 'Water Temple' in self.distribution.settings.key_rings:
+                            self.major_group.append('Small Key Ring (Water Temple)')
+                        else:
+                            self.major_group.append('Small Key (Water Temple)')
+                        if 'Shadow Temple' in self.distribution.settings.key_rings:
+                            self.major_group.append('Small Key Ring (Shadow Temple)')
+                        else:
+                            self.major_group.append('Small Key (Shadow Temple)')
+                        if 'Spirit Temple' in self.distribution.settings.key_rings:
+                            self.major_group.append('Small Key Ring (Spirit Temple)')
+                        else:
+                            self.major_group.append('Small Key (Spirit Temple)')
+                        if 'Gerudo Training Ground' in self.distribution.settings.key_rings:
+                            self.major_group.append('Small Key Ring (Gerudo Training Ground)')
+                        else:
+                            self.major_group.append('Small Key (Gerudo Training Ground)')
+                        if 'Ganons Castle' in self.distribution.settings.key_rings:
+                            self.major_group.append('Small Key Ring (Ganons Castle)')
+                        else:
+                            self.major_group.append('Small Key (Ganons Castle)')
                     if self.distribution.settings.shuffle_hideoutkeys == 'keysanity':
-                        keys = [name for (name, data) in item_table.items() if data[0] == 'HideoutSmallKey']
-                        self.major_group.extend(keys)
+                        if 'Thieves Hideout' in self.distribution.settings.key_rings:
+                            self.major_group.append('Small Key Ring (Thieves Hideout)')
+                        else:
+                            self.major_group.append('Small Key (Thieves Hideout)')
                     if self.distribution.settings.shuffle_bosskeys == 'keysanity':
                         keys = [name for (name, data) in item_table.items() if data[0] == 'BossKey' and name != 'Boss Key']
                         self.major_group.extend(keys)
@@ -921,7 +953,12 @@ class WorldDistribution(object):
             matcher = self.pattern_matcher(name)
             stoneID = pull_random_element([stoneIDs], lambda id: matcher(gossipLocations[id].name))
             if stoneID is None:
-                raise RuntimeError('Gossip stone unknown or already assigned in world %d: %r. %s' % (self.id + 1, name, build_close_match(name, 'stone')))
+                # Allow planning of explicit textids
+                match = re.match(r"^(?:\$|x|0x)?([0-9a-f]{4})$", name, flags=re.IGNORECASE)
+                if match:
+                    stoneID = int(match[1], base=16)
+                else:
+                    raise RuntimeError('Gossip stone unknown or already assigned in world %d: %r. %s' % (self.id + 1, name, build_close_match(name, 'stone')))
             spoiler.hints[self.id][stoneID] = GossipText(text=record.text, colors=record.colors, prefix='')
 
 
@@ -1188,7 +1225,13 @@ class Distribution(object):
                             else:
                                 world_dist.goal_locations[cat_name][goal_text]['from World ' + str(location_world + 1)] = {loc.name: LocationRecord.from_item(loc.item).to_json() for loc in locations}
             world_dist.barren_regions = [*world.empty_areas]
-            world_dist.gossip_stones = {gossipLocations[loc].name: GossipRecord(spoiler.hints[world.id][loc].to_json()) for loc in spoiler.hints[world.id]}
+            world_dist.gossip_stones = {}
+            for loc in spoiler.hints[world.id]:
+                hint = GossipRecord(spoiler.hints[world.id][loc].to_json())
+                if loc in gossipLocations:
+                    world_dist.gossip_stones[gossipLocations[loc].name] = hint
+                else:
+                    world_dist.gossip_stones["0x{:04X}".format(loc)] = hint
 
         self.playthrough = {}
         for (sphere_nr, sphere) in spoiler.playthrough.items():

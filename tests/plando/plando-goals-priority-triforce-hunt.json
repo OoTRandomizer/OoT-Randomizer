@@ -33,6 +33,7 @@
     "start_with_rupees":                       false,
     "start_with_consumables":                  true,
     "starting_hearts":                         3,
+    "plant_beans":                             false,
     "chicken_count_random":                    false,
     "chicken_count":                           7,
     "big_poe_count_random":                    false,

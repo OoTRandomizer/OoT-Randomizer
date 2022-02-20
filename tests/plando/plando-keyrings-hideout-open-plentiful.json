@@ -1,0 +1,10 @@
+{
+  "settings":                  {
+    "item_pool_value":                         "plentiful",
+    "gerudo_fortress":                         "open",
+    "shuffle_hideoutkeys":                     "keysanity",
+    "key_rings":                               [
+      "Thieves Hideout"
+    ]
+  }
+}

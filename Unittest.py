@@ -253,6 +253,15 @@ class TestPlandomizer(unittest.TestCase):
             "plando-egg-shuffled-two-pool",
             "no-ice-trap-pending-junk",
             "disabled-song-location",
+            "plando-keyrings-all-anydungeon-allmq",
+            "plando-keyrings-all-anydungeon-halfmq",
+            "plando-keyrings-all-anydungeon-nomq",
+            "plando-keyrings-all-anywhere-allmq",
+            "plando-keyrings-all-anywhere-halfmq",
+            "plando-keyrings-all-anywhere-nomq",
+            "plando-keyrings-all-dungeon-allmq",
+            "plando-keyrings-all-dungeon-halfmq",
+            "plando-keyrings-all-dungeon-nomq",
         ]
         for filename in filenames:
             with self.subTest(filename):
@@ -316,6 +325,61 @@ class TestPlandomizer(unittest.TestCase):
         shuffled_two = "plando-egg-shuffled-two-pool"
         distribution_file, spoiler = generate_with_plandomizer(shuffled_two)
         self.assertEqual(spoiler['item_pool']['Weird Egg'], 1)
+
+    def test_key_rings(self):
+        # Checking dungeon keys using forest temple
+        # Minimal and balanced pools: Should be one key ring
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-forest-anywhere-minimal")
+        self.assertNotIn('Small Key (Forest Temple)', spoiler['locations'].values())
+        self.assertEqual(get_actual_pool(spoiler)['Small Key Ring (Forest Temple)'], 1)
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-forest-anywhere-balanced")
+        self.assertNotIn('Small Key (Forest Temple)', spoiler['locations'].values())
+        self.assertEqual(get_actual_pool(spoiler)['Small Key Ring (Forest Temple)'], 1)
+        # Plentiful pool: Should be two key rings
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-forest-anywhere-plentiful")
+        self.assertNotIn('Small Key (Forest Temple)', spoiler['locations'].values())
+        self.assertEqual(get_actual_pool(spoiler)['Small Key Ring (Forest Temple)'], 2)
+        # Keysy: Should be no small keys or key rings (regardless of item pool)
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-forest-keysy-plentiful")
+        self.assertNotIn('Small Key (Forest Temple)', spoiler['locations'].values())
+        self.assertNotIn('Small Key Ring (Forest Temple)', spoiler['locations'].values())
+        # Vanilla: Should be no keys of either type in vanilla (small keys will be placed but not listed in locations)
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-forest-vanilla-plentiful")
+        self.assertNotIn('Small Key (Forest Temple)', spoiler['locations'].values())
+        self.assertNotIn('Small Key Ring (Forest Temple)', spoiler['locations'].values())
+
+        # Checking hideout keys
+        # If fortress is fast or keys are vanilla, should be no key rings
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-hideout-default-vanilla")
+        self.assertNotIn('Small Key (Thieves Hideout)', spoiler['locations'].values())
+        self.assertNotIn('Small Key Ring (Thieves Hideout)', spoiler['locations'].values())
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-hideout-fast-vanilla")
+        self.assertNotIn('Small Key (Thieves Hideout)', spoiler['locations'].values())
+        self.assertNotIn('Small Key Ring (Thieves Hideout)', spoiler['locations'].values())
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-hideout-fast-anywhere-balanced")
+        self.assertEqual(get_actual_pool(spoiler)['Small Key (Thieves Hideout)'], 1)
+        self.assertNotIn('Small Key Ring (Thieves Hideout)', spoiler['locations'].values())
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-hideout-fast-anywhere-plentiful")
+        self.assertEqual(get_actual_pool(spoiler)['Small Key (Thieves Hideout)'], 2)
+        self.assertNotIn('Small Key Ring (Thieves Hideout)', spoiler['locations'].values())
+        # If default behaviour (so 4 keys necessary) and keys not vanilla, should be 1 or 2 keyrings (balanced or plentiful)
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-hideout-default-anywhere-balanced")
+        self.assertNotIn('Small Key (Thieves Hideout)', spoiler['locations'].values())
+        self.assertEqual(get_actual_pool(spoiler)['Small Key Ring (Thieves Hideout)'], 1)
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-hideout-default-anywhere-plentiful")
+        self.assertNotIn('Small Key (Thieves Hideout)', spoiler['locations'].values())
+        self.assertEqual(get_actual_pool(spoiler)['Small Key Ring (Thieves Hideout)'], 2)
+        # Should be neither if fortress is open, regardless of item pool
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-hideout-open-plentiful")
+        self.assertNotIn('Small Key (Thieves Hideout)', spoiler['locations'].values())
+        self.assertNotIn('Small Key Ring (Thieves Hideout)', spoiler['locations'].values())
+
+        # No key rings: Make sure none in item pool on plentiful
+        distribution_file, spoiler = generate_with_plandomizer("plando-keyrings-none-anywhere-plentiful")
+        self.assertEqual(get_actual_pool(spoiler)['Small Key (Forest Temple)'], 6)
+        self.assertNotIn('Small Key Ring (Forest Temple)', spoiler['locations'].values())
+        self.assertEqual(get_actual_pool(spoiler)['Small Key (Thieves Hideout)'], 5)
+        self.assertNotIn('Small Key Ring (Thieves Hideout)', spoiler['locations'].values())
 
 class TestHints(unittest.TestCase):
     def test_skip_zelda(self):
