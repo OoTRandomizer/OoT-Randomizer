@@ -44,19 +44,21 @@ DIFFICULTY_ORDER = [
     'Requiem of Spirit',
     'Nocturne of Shadow',
 ]
-ROM_INDICES = {
-    'Zeldas Lullaby': 8,
-    'Eponas Song': 7,
-    'Sarias Song': 6,
-    'Suns Song': 9,
-    'Song of Time': 10,
-    'Song of Storms': 11,
-    'Minuet of Forest': 0,
-    'Bolero of Fire': 1,
-    'Serenade of Water': 2,
-    'Requiem of Spirit': 3,
-    'Nocturne of Shadow': 4,
-    'Prelude of Light': 5,
+
+#    Song name:    (rom index, warp,   vanilla activation),
+SONG_TABLE = {
+    'Zeldas Lullaby':     ( 8, False, '<^><^>'),
+    'Eponas Song':        ( 7, False, '^<>^<>'),
+    'Sarias Song':        ( 6, False, 'v><v><'),
+    'Suns Song':          ( 9, False, '>v^>v^'),
+    'Song of Time':       (10, False, '>Av>Av'),
+    'Song of Storms':     (11, False, 'Av^Av^'),
+    'Minuet of Forest':   ( 0, True,  'A^<><>'),
+    'Bolero of Fire':     ( 1, True,  'vAvA>v>v'),
+    'Serenade of Water':  ( 2, True,  'Av>><'),
+    'Requiem of Spirit':  ( 3, True,  'AvA>vA'),
+    'Nocturne of Shadow': ( 4, True,  '<>>A<>v'),
+    'Prelude of Light':   ( 5, True,  '^>^><^'),
 }
 
 import random
@@ -322,11 +324,16 @@ def get_random_song():
 
 
 # create a list of 12 songs, none of which are sub-strings of any other song
-def generate_song_list(world):
-    fixed_songs = {name: Song.from_str(notes) for name, notes in world.distribution.configure_songs().items()}
+def generate_song_list(world, frog, warp):
+    fixed_songs = {}
+    if not frog:
+        fixed_songs.update({name: Song.from_str(notes) for name, (_, is_warp, notes) in SONG_TABLE.items() if not is_warp})
+    if not warp:
+        fixed_songs.update({name: Song.from_str(notes) for name, (_, is_warp, notes) in SONG_TABLE.items() if is_warp})
+    fixed_songs.update({name: Song.from_str(notes) for name, notes in world.distribution.configure_songs().items()})
     for name1, song1 in fixed_songs.items():
-        if name1 not in ROM_INDICES:
-            raise ValueError(f'Unknown song: {name1!r}. Please use one of these: {", ".join(ROM_INDICES)}')
+        if name1 not in SONG_TABLE:
+            raise ValueError(f'Unknown song: {name1!r}. Please use one of these: {", ".join(SONG_TABLE)}')
         if not song1.activation:
             raise ValueError(f'{name1} is empty')
         if len(song1.activation) > 8:
@@ -364,20 +371,22 @@ def generate_song_list(world):
 
 
 # replace the playback and activation requirements for the ocarina songs
-def replace_songs(world, rom):
-    songs = generate_song_list(world)
+def replace_songs(world, rom, *, frog, warp):
+    songs = generate_song_list(world, frog, warp)
     world.song_notes = songs
 
     for name, song in songs.items():
+        if str(song) == SONG_TABLE[name][2]:
+            continue # song activation is vanilla (possibly because this row wasn't randomized), don't randomize playback
 
         # fix the song of time and sun's song
         if name == 'Song of Time' or name == 'Suns Song':
             song.increase_duration_to(260)
 
         # write the song to the activation table
-        cur_offset = ACTIVATION_START + ROM_INDICES[name] * ACTIVATION_LENGTH
+        cur_offset = ACTIVATION_START + SONG_TABLE[name][0] * ACTIVATION_LENGTH
         rom.write_bytes(cur_offset, song.activation_data)
 
         # write the songs to the playback table
-        song_offset = PLAYBACK_START + ROM_INDICES[name] * PLAYBACK_LENGTH
+        song_offset = PLAYBACK_START + SONG_TABLE[name][0] * PLAYBACK_LENGTH
         rom.write_bytes(song_offset, song.playback_data)

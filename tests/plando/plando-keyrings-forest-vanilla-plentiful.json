@@ -5,6 +5,6 @@
     "key_rings":                               [
       "Forest Temple"
     ],
-    "mq_dungeons":                             0
+    "mq_dungeons_mode":                        "vanilla"
   }
 }

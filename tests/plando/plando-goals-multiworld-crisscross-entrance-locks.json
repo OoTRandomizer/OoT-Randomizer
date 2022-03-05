@@ -62,8 +62,7 @@
     "ganon_bosskey_medallions":                6,
     "lacs_condition":                          "vanilla",
     "enhance_map_compass":                     false,
-    "mq_dungeons_random":                      false,
-    "mq_dungeons":                             0,
+    "mq_dungeons_mode":                        "vanilla",
     "disabled_locations":                      [
       "Deku Theater Mask of Truth"
     ],
@@ -93,7 +92,6 @@
       "ocarina"
     ],
     "starting_songs":                          [],
-    "ocarina_songs":                           false,
     "correct_chest_appearances":               "off",
     "clearer_hints":                           true,
     "no_collectible_hearts":                   false,

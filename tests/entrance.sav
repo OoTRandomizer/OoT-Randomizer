@@ -1,7 +1,10 @@
 {
 "seed": "TESTTESTTEST",
 "create_spoiler": true,
-"compress_rom": "None",
+"create_patch_file": false,
+"create_compressed_rom": false,
+"create_wad_file": false,
+"create_uncompressed_rom": false,
 "randomize_settings": false,
 "open_forest": "open",
 "open_kakariko": "open",
@@ -40,8 +43,7 @@
 "shuffle_bosskeys": "dungeon",
 "enhance_map_compass": false,
 "shuffle_ganon_bosskey": "remove",
-"mq_dungeons_random": false,
-"mq_dungeons": 0,
+"mq_dungeons_mode": "vanilla",
 "disabled_locations": [
   "Deku Theater Mask of Truth"
 ],
@@ -68,12 +70,10 @@
   "logic_lens_spirit"
 ],
 "starting_equipment": [],
-"starting_items": [],
 "starting_songs": [],
 "start_with_consumables": false,
 "logic_earliest_adult_trade": "prescription",
 "logic_latest_adult_trade": "claim_check",
-"ocarina_songs": false,
 "clearer_hints": true,
 "hints": "always",
 "hint_dist": "tournament",

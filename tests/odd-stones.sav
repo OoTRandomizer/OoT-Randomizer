@@ -1,6 +1,9 @@
 {
 "create_spoiler": true,
-"compress_rom": "None",
+"create_patch_file": false,
+"create_compressed_rom": false,
+"create_wad_file": false,
+"create_uncompressed_rom": false,
 "trials": 4,
 "hints": "always",
 "hint_dist": "tournament"

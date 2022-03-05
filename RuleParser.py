@@ -4,8 +4,7 @@ from inspect import signature, _ParameterKind
 import logging
 import re
 
-from Item import MakeEventItem
-from ItemList import item_table
+from Item import ItemInfo, MakeEventItem
 from Location import Location
 from Region import TimeOfDay
 from State import State
@@ -13,7 +12,7 @@ from Utils import data_path, read_json
 
 
 escaped_items = {}
-for item in item_table:
+for item in ItemInfo.items:
     escaped_items[re.sub(r'[\'()[\]]', '', item.replace(' ', '_'))] = item
 
 event_name = re.compile(r'\w+')
@@ -140,7 +139,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
         if iname in escaped_items:
             iname = escaped_items[iname]
 
-        if iname not in item_table:
+        if iname not in ItemInfo.items:
             self.events.add(iname)
 
         return ast.Call(

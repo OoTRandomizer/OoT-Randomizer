@@ -1,4 +1,5 @@
 {
+"settings": {
   "starting_items": {
         "Boomerang": 1,
         "Lens of Truth": 1,
@@ -45,4 +46,5 @@
         "Goron Tunic": 1,
         "Mirror Shield": 1
     }
+}
 }

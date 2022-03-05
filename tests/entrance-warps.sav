@@ -1,6 +1,9 @@
 {
 "create_spoiler": true,
-"compress_rom": "None",
+"create_patch_file": false,
+"create_compressed_rom": false,
+"create_wad_file": false,
+"create_uncompressed_rom": false,
 "randomize_settings": false,
 "open_forest": "open",
 "open_door_of_time": false,
@@ -37,8 +40,7 @@
 "shuffle_bosskeys": "dungeon",
 "enhance_map_compass": false,
 "shuffle_ganon_bosskey": "remove",
-"mq_dungeons_random": false,
-"mq_dungeons": 0,
+"mq_dungeons_mode": "vanilla",
 "clearer_hints": true,
 "hints": "mask",
 "hint_dist": "tournament"

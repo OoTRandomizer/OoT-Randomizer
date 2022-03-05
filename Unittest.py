@@ -1,4 +1,6 @@
 # Run unittests with python -m unittest Unittest[.ClassName[.test_func]]
+# With python3.10, you can instead run pytest Unittest.py
+# See `python -m unittest -h` or `pytest -h` for more options.
 
 from collections import Counter, defaultdict
 import json
@@ -9,7 +11,7 @@ import re
 import unittest
 
 from EntranceShuffle import EntranceShuffleError
-from ItemList import item_table
+from Item import ItemInfo
 from ItemPool import remove_junk_items, item_groups
 from LocationList import location_groups, location_is_viewable
 from Main import main, resolve_settings, build_world_graphs, place_items
@@ -29,8 +31,8 @@ never_suffix = ['Capacity']
 never = {
     'Bunny Hood', 'Recovery Heart', 'Milk', 'Ice Arrows', 'Ice Trap',
     'Double Defense', 'Biggoron Sword', 'Giants Knife',
-} | {item for item, (t, adv, _, special) in item_table.items() if adv is False
-     or any(map(item.startswith, never_prefix)) or any(map(item.endswith, never_suffix))}
+} | {name for name, item in ItemInfo.items.items() if item.priority
+     or any(map(name.startswith, never_prefix)) or any(map(name.endswith, never_suffix))}
 
 # items required at most once, specifically things with multiple possible names
 # (except bottles)
@@ -38,23 +40,18 @@ once = {
     'Goron Tunic', 'Zora Tunic',
 }
 
-progressive = {
-    item for item, (_, _, _, special) in item_table.items()
-    if special and 'progressive' in special
-}
-
-bottles = {
-    item for item, (_, _, _, special) in item_table.items()
-    if special and 'bottle' in special and item != 'Deliver Letter'
-}
-
+progressive = {name for name, item in ItemInfo.items.items() if item.special.get('progressive', None)}
+bottles = {name for name, item in ItemInfo.items.items() if item.special.get('bottle', None) and name != 'Deliver Letter'}
 junk = set(remove_junk_items)
 
 
 def make_settings_for_test(settings_dict, seed=None, outfilename=None):
     # Some consistent settings for testability
     settings_dict.update({
-        'compress_rom': "None",
+        'create_patch_file': False,
+        'create_compressed_rom': False,
+        'create_wad_file': False,
+        'create_uncompressed_rom': False,
         'count': 1,
         'create_spoiler': True,
         'output_file': os.path.join(test_dir, 'Output', outfilename),
@@ -95,7 +92,10 @@ def generate_with_plandomizer(filename, live_copy=False):
         settings = Settings({
             'enable_distribution_file': True,
             'distribution_file': os.path.join(test_dir, 'plando', filename + '.json'),
-            'compress_rom': "None",
+            'create_patch_file': False,
+            'create_compressed_rom': False,
+            'create_wad_file': False,
+            'create_uncompressed_rom': False,
             'count': 1,
             'create_spoiler': True,
             'output_file': os.path.join(test_dir, 'Output', filename),
@@ -175,7 +175,7 @@ class TestPlandomizer(unittest.TestCase):
 
     def test_excess_starting_items(self):
         distribution_file, spoiler = generate_with_plandomizer("plando-excess-starting-items")
-        excess_item = list(distribution_file['starting_items'])[0]
+        excess_item = list(distribution_file['settings']['starting_items'])[0]
         for location, item in spoiler['locations'].items():
             if isinstance(item, dict):
                 test_item = spoiler['locations'][location]['item']
@@ -190,7 +190,11 @@ class TestPlandomizer(unittest.TestCase):
         settings = Settings({
             'enable_distribution_file': True,
             'distribution_file': os.path.join(test_dir, 'plando', filename + '.json'),
-            'compress_rom': "Patch",
+            'patch_without_output': True,
+            'create_patch_file': False,
+            'create_compressed_rom': False,
+            'create_wad_file': False,
+            'create_uncompressed_rom': False,
             'count': 1,
             'create_spoiler': True,
             'create_cosmetics_log': False,
@@ -305,7 +309,7 @@ class TestPlandomizer(unittest.TestCase):
         with self.subTest("starting items not in actual_pool"):
             distribution_file, spoiler = generate_with_plandomizer(filename)
             actual_pool = get_actual_pool(spoiler)
-            for item in distribution_file['starting_items']:
+            for item in distribution_file['settings']['starting_items']:
                 self.assertNotIn(item, actual_pool)
 
     def test_weird_egg_in_pool(self):
@@ -580,16 +584,21 @@ class TestValidSpoilers(unittest.TestCase):
                     self.verify_playthrough(spoiler)
                     self.verify_disables(spoiler)
 
+    # remove this to run the fuzzer
+    @unittest.skip("generally slow and failures can be ignored")
     def test_fuzzer(self):
         random.seed()
         fuzz_settings = [Settings({
             'randomize_settings': True,
-            'compress_rom': "None",
+            'create_patch_file': False,
+            'create_compressed_rom': False,
+            'create_wad_file': False,
+            'create_uncompressed_rom': False,
             'create_spoiler': True,
             'output_file': os.path.join(output_dir, 'fuzz-%d' % i),
         }) for i in range(10)]
-        out_keys = ['randomize_settings', 'compress_rom',
-                    'create_spoiler', 'output_file', 'seed']
+        out_keys = ['randomize_settings', 'create_patch_file', 'create_compressed_rom', 'create_wad_file',
+                    'create_uncompressed_rom', 'patch_without_output', 'create_spoiler', 'output_file', 'seed']
         for settings in fuzz_settings:
             output_file = '%s_Spoiler.json' % settings.output_file
             settings_file = '%s_%s_Settings.json' % (settings.output_file, settings.seed)

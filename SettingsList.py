@@ -11,13 +11,12 @@ from Colors import get_tunic_color_options, get_navi_color_options, get_sword_tr
     get_magic_color_options, get_heart_color_options, get_shield_frame_color_options, get_a_button_color_options,\
     get_b_button_color_options, get_c_button_color_options, get_start_button_color_options
 from Hints import HintDistList, HintDistTips, gossipLocations
-from Item import item_table
+from Item import ItemInfo
 from Location import LocationIterator
 from LocationList import location_table
 import Sounds as sfx
 import StartingItems
 from Utils import data_path
-from ItemList import item_table
 
 # holds the info for a single setting
 class Setting_Info():
@@ -108,10 +107,12 @@ class Checkbutton(Setting_Info):
 
 class Combobox(Setting_Info):
 
-    def __init__(self, name, gui_text, choices, default, gui_tooltip=None,
-            disable=None, disabled_default=None, shared=False, gui_params=None, cosmetic=False):
+    def __init__(self, name, gui_text, choices, default, gui_tooltip=None, disable=None,
+            disabled_default=None, shared=False, gui_params=None, cosmetic=False, multiple_select=False):
 
-        super().__init__(name, str, gui_text, 'Combobox', shared, choices, default, disabled_default, disable, gui_tooltip, gui_params, cosmetic)
+        gui_type = 'Combobox' if not multiple_select else 'MultipleSelect'
+        type = str if not multiple_select else list
+        super().__init__(name, type, gui_text, gui_type, shared, choices, default, disabled_default, disable, gui_tooltip, gui_params, cosmetic)
 
 
 class Scale(Setting_Info):
@@ -1716,6 +1717,8 @@ setting_infos = [
     Checkbutton('cosmetics_only', None),
     Checkbutton('check_version', None),
     Checkbutton('output_settings', None),
+    Checkbutton('patch_without_output', None),
+    Checkbutton('disable_custom_music', None),
     Checkbutton(
         name           = 'generate_from_file',
         gui_text       = 'Generate From Patch File',
@@ -1724,7 +1727,7 @@ setting_infos = [
             True : {
                 'tabs' : ['main_tab', 'detailed_tab', 'starting_tab', 'other_tab'],
                 'sections' : ['preset_section'],
-                'settings' : ['count', 'create_spoiler', 'world_count', 'enable_distribution_file', 'distribution_file'],
+                'settings' : ['count', 'create_spoiler', 'world_count', 'enable_distribution_file', 'distribution_file', 'create_patch_file'],
             },
             False : {
                 'settings' : ['repatch_cosmetics'],
@@ -1938,6 +1941,9 @@ setting_infos = [
     Checkbutton(
         name           = 'create_cosmetics_log',
         gui_text       = 'Create Cosmetics Log',
+        gui_tooltip='''\
+                 Cosmetics Logs are only output if one of the output types below are enabled.
+                 ''',
         default        = True,
         disabled_default = False,
     ),
@@ -1961,34 +1967,118 @@ setting_infos = [
         },
     ),
     Setting_Info(
-        name           = 'compress_rom',
+        name           = 'output_types',
         type           = str,
-        gui_text       = "Output Type",
-        gui_type       = "Radiobutton",
+        gui_text       = "Output Types",
+        gui_type       = "Textbox",
         shared         = False,
-        choices        = {
-            'True':  'Compressed [Stable]',
-            'False': 'Uncompressed [Crashes]',
-            'Patch': 'Patch File',
-            'None':  'No Output',
-        },
-        default        = 'True',
-        disable        = {
-            'None'  : {'settings' : ['player_num', 'create_cosmetics_log', 'enable_cosmetic_file', 'cosmetic_file', 'rom']},
-            'Patch' : {'settings' : ['player_num']}
-        },
-        gui_tooltip = '''\
-            The first time compressed generation will take a while,
-            but subsequent generations will be quick. It is highly
-            recommended to compress or the game will crash
-            frequently except on real N64 hardware.
-
+        choices        = {},
+    ),
+    Checkbutton(
+        name           = 'create_patch_file',
+        gui_text       = '.zpf (Patch File)',
+        gui_tooltip    = '''\
             Patch files are used to send the patched data to other
             people without sending the ROM file.
         ''',
-        gui_params={
-            'horizontal': True
+        shared         = False,
+        gui_params     = {
+            "no_line_break": True,
         },
+    ),
+    Checkbutton(
+        name           = 'create_compressed_rom',
+        gui_text       = '.z64 (N64/Emulator)',
+        default        = True,
+        gui_tooltip    = '''\
+            A "compressed" .z64 ROM file for use on
+            N64 emulators or with an N64 flash cart.
+        ''',
+        shared         = False,
+        gui_params     = {
+            "no_line_break": True,
+        },
+    ),
+    Checkbutton(
+        name           = 'create_wad_file',
+        gui_text       = '.wad (Wii VC)',
+        gui_tooltip    = '''\
+            .wad files are used to play on Wii Virtual Console or Dolphin Emulator.
+        ''',
+        shared         = False,
+        disable        = {
+            False: {'settings' : ['wad_file', 'wad_channel_title', 'wad_channel_id']},
+        },
+        gui_params     = {
+            "no_line_break": True,
+        },
+    ),
+    Checkbutton(
+        name           = 'create_uncompressed_rom',
+        gui_text       = 'Uncompressed ROM (Development)',
+        gui_tooltip    = '''\
+            Uncompressed ROMs may be helpful for developers
+            but should not be used to play through a seed
+            normally as it will very likely cause crashes.
+            Use a compressed ROM instead.
+        ''',
+        shared         = False,
+    ),
+    Setting_Info(
+        name        = 'wad_file',
+        type        = str,
+        gui_text    = "Base WAD File",
+        gui_type    = "Fileinput",
+        shared      = False,
+        choices     = {},
+        gui_tooltip = "Your original OoT 1.2 NTSC-U / NTSC-J WAD file (.wad)",
+        gui_params  = {
+            "file_types": [
+                {
+                  "name": "WAD Files",
+                  "extensions": [ "wad" ]
+                },
+                {
+                  "name": "All Files",
+                  "extensions": [ "*" ]
+                }
+            ],
+            "hide_when_disabled": True,
+        }
+    ),
+    Setting_Info(
+        name        = 'wad_channel_id',
+        type        = str,
+        gui_text    = "WAD Channel ID",
+        gui_type    = "Textinput",
+        shared      = False,
+        choices     = {},
+        default     = "NICE",
+        gui_tooltip = """\
+            4 characters, should end with E to ensure Dolphin compatibility.
+            Note: If you have multiple OoTR WAD files with different Channel IDs installed, the game can crash on a soft reset. Use a Title Deleter to remove old WADs.
+        """,
+        gui_params  = {
+            "size"               : "small",
+            "max_length"         : 4,
+            "no_line_break": True,
+            "hide_when_disabled" : True,
+        }
+    ),
+    Setting_Info(
+        name        = 'wad_channel_title',
+        type        = str,
+        gui_text    = "WAD Channel Title",
+        gui_type    = "Textinput",
+        shared      = False,
+        choices     = {},
+        default     = "OoTRandomizer",
+        gui_tooltip = "20 characters max",
+        gui_params  = {
+            "size"               : "medium",
+            "max_length"         : 20,
+            "hide_when_disabled" : True,
+        }
     ),
     Checkbutton(
         name           = 'randomize_settings',
@@ -2010,7 +2100,7 @@ setting_infos = [
                 'sections' : ['open_section', 'shuffle_section', 'shuffle_dungeon_section'],
                 'settings': ['starting_age', 'shuffle_interior_entrances', 'shuffle_grotto_entrances', 'shuffle_dungeon_entrances',
                              'shuffle_overworld_entrances', 'owl_drops', 'warp_songs', 'spawn_positions',
-                             'triforce_hunt', 'triforce_goal_per_world', 'bombchus_in_logic', 'one_item_per_dungeon'],
+                             'triforce_hunt', 'triforce_count_per_world', 'triforce_goal_per_world', 'bombchus_in_logic', 'one_item_per_dungeon'],
             }
         },
         shared         = True,
@@ -2256,14 +2346,16 @@ setting_infos = [
         gui_text       = "Skulltulas Required for Bridge",
         default        = 100,
         min            = 1,
-        max            = 100,
+        max            = 999,
         gui_tooltip    = '''\
             Select the amount of Gold Skulltula Tokens required to spawn the rainbow bridge.
         ''',
         shared         = True,
         disabled_default = 0,
         gui_params     = {
-            "hide_when_disabled": True,
+            'hide_when_disabled': True,
+            'web:max': 100,
+            'electron:max': 100,
         },
     ),
     Checkbutton(
@@ -2282,7 +2374,28 @@ setting_infos = [
         },
         disable        = {
             True  : {'settings' : ['shuffle_ganon_bosskey', 'ganon_bosskey_stones', 'ganon_bosskey_medallions', 'ganon_bosskey_rewards', 'ganon_bosskey_tokens']},
-            False : {'settings' : ['triforce_goal_per_world']}
+            False : {'settings' : ['triforce_count_per_world', 'triforce_goal_per_world']}
+        },
+    ),
+    Scale(
+        name           = 'triforce_count_per_world',
+        gui_text       = 'Triforces Per World',
+        default        = 30,
+        min            = 1,
+        max            = 200,
+        shared         = True,
+        gui_tooltip    = '''\
+            Select the amount of Triforce Pieces placed in each world.
+            Each world will have the same number of triforces.
+
+            A good number to choose is 1.5 times the amount of
+            Triforce Pieces required per world, for example 30
+            Triforces placed with a goal of 20. Higher ratios will
+            result in easier and shorter seeds, while a ratio closer
+            to 1 will generally be longer and more difficult.
+        ''',
+        gui_params     = {
+            "hide_when_disabled": True,
         },
     ),
     Scale(
@@ -2295,16 +2408,9 @@ setting_infos = [
         gui_tooltip    = '''\
             Select the amount of Triforce Pieces required to beat the game.
 
-            In multiworld, each world will have the same number of triforces 
-            in them. The required amount will be per world collectively. 
+            In multiworld, the required amount will be per world collectively. 
             For example, if this is set to 20 in a 2 player multiworld, players 
             need 40 total, but one player could obtain 30 and the other 10. 
-
-            Extra pieces are determined by the the Item Pool setting:
-            'Plentiful': 100% Extra
-            'Balanced': 50% Extra
-            'Scarce': 25% Extra
-            'Minimal: No Extra
         ''',
         gui_params     = {
             "hide_when_disabled": True,
@@ -2337,8 +2443,8 @@ setting_infos = [
         disable        = {
             'glitchless': {'settings' : ['tricks_list_msg']},
             'glitched'  : {'settings' : ['allowed_tricks', 'shuffle_interior_entrances', 'shuffle_grotto_entrances',
-                                         'shuffle_dungeon_entrances', 'shuffle_overworld_entrances', 'owl_drops',
-                                         'warp_songs', 'spawn_positions', 'mq_dungeons_random', 'mq_dungeons', 'dungeon_shortcuts']},
+                                         'shuffle_dungeon_entrances', 'shuffle_overworld_entrances', 'owl_drops', 'warp_songs',
+                                         'spawn_positions', 'mq_dungeons_mode', 'mq_dungeons_specific', 'mq_dungeons_count', 'dungeon_shortcuts']},
             'none'      : {'settings' : ['allowed_tricks', 'logic_no_night_tokens_without_suns_song', 'reachable_locations']},
         },
         shared         = True,
@@ -2476,22 +2582,16 @@ setting_infos = [
             True: {'settings': ['shuffle_weird_egg']},
         },
     ),
-    Setting_Info(
-        name           = 'dungeon_shortcuts',
-        type           = list,
-        gui_text       = 'Dungeon Boss Shortcuts',
-        gui_type       = "MultipleSelect",
+    Combobox(
+        name           = 'dungeon_shortcuts_choice',
+        gui_text       = 'Dungeon Boss Shortcuts Mode',
+        default        = 'off',
         choices        = {
-            'deku_tree': 'Deku Tree',
-            'dodongos_cavern': 'Dodongo\'s Cavern',
-            'jabu_jabus_belly': 'Jabu Jabu\'s Belly',
-            'forest_temple': 'Forest Temple',
-            'fire_temple': 'Fire Temple',
-            'water_temple': 'Water Temple', # doesn't do anything, but added to prevent confusion
-            'shadow_temple': 'Shadow Temple',
-            'spirit_temple': 'Spirit Temple'
+            'off':       'Off',
+            'choice':    'Choose dungeons',
+            'all':       'All dungeons',
+            'random':    'Random dungeons'
         },
-        default        = [],
         gui_tooltip    = '''\
             Shortcuts to dungeon bosses are available
             without any requirements.
@@ -2513,8 +2613,40 @@ setting_infos = [
             <b>Spirit Temple</b>: lobby elevator activated,
             shortcut silver blocks moved, central room
             platform lowered, and statue face melted
+
+            Choose: Select dungeons with shortcuts
+            All: Enable all dungeons shortcuts
+            Random: Random dungeon shortcuts
         ''',
         shared         = True,
+        disable={
+            'off': {'settings' : ['dungeon_shortcuts']},
+            'all': {'settings' : ['dungeon_shortcuts']},
+            'random': {'settings' : ['dungeon_shortcuts']},
+        },
+    ),
+    Combobox(
+        name            = 'dungeon_shortcuts',
+        multiple_select = True,
+        gui_text        = 'Dungeon Boss Shortcuts',
+        choices         = {
+            'deku_tree':        "Deku Tree",
+            'dodongos_cavern':  "Dodongo's Cavern",
+            'jabu_jabus_belly': "Jabu Jabu's Belly",
+            'forest_temple':    "Forest Temple",
+            'fire_temple':      "Fire Temple",
+            'water_temple':     "Water Temple",  # doesn't do anything, but added to prevent confusion
+            'shadow_temple':    "Shadow Temple",
+            'spirit_temple':    "Spirit Temple",
+        },
+        default        = [],
+        gui_params     = {
+            "hide_when_disabled": True,
+        },
+        gui_tooltip    = '''\
+            Select dungeons with shortcuts
+        ''',
+        shared          = True,
     ),
     Checkbutton(
         name           = 'no_escape_sequence',
@@ -3284,12 +3416,11 @@ setting_infos = [
             'randomize_key': 'randomize_settings',
         },
     ),
-    Setting_Info(
-        name           = 'key_rings',
-        type           = list,
-        gui_text       = 'Key Rings',
-        gui_type       = "MultipleSelect",
-        choices        = {
+    Combobox(
+        name            = 'key_rings',
+        multiple_select = True,
+        gui_text        = 'Key Rings',
+        choices         = {
             'Thieves Hideout':        "Thieves' Hideout",
             'Forest Temple':          "Forest Temple",
             'Fire Temple':            "Fire Temple",
@@ -3300,8 +3431,8 @@ setting_infos = [
             'Gerudo Training Ground': "Gerudo Training Ground",
             'Ganons Castle':          "Ganon's Castle"
         },
-        default        = [],
-        gui_tooltip    = '''\
+        default         = [],
+        gui_tooltip     = '''\
             Selected dungeons will have all of their keys found 
             at once in a ring rather than individually. 
 
@@ -3317,7 +3448,7 @@ setting_infos = [
             locations or Gerudo's Fortress is set to Rescue
             One Carpenter.
         ''',
-        shared         = True,
+        shared          = True,
     ),
     Combobox(
         name           = 'shuffle_bosskeys',
@@ -3494,7 +3625,7 @@ setting_infos = [
         gui_text       = "Gold Skulltula Tokens Required for Ganon's BK",
         default        = 100,
         min            = 1,
-        max            = 100,
+        max            = 999,
         gui_tooltip    = '''\
             Select the amount of Gold Skulltula Tokens
             required to receive Ganon's Castle Boss Key.
@@ -3503,6 +3634,8 @@ setting_infos = [
         disabled_default = 0,
         gui_params     = {
             "hide_when_disabled": True,
+            'web:max': 100,
+            'electron:max': 100,
         },
     ),
     Combobox(
@@ -3600,7 +3733,7 @@ setting_infos = [
         gui_text       = "Gold Skulltula Tokens Required for LACS",
         default        = 100,
         min            = 1,
-        max            = 100,
+        max            = 999,
         gui_tooltip    = '''\
             Select the amount of Gold Skulltula Tokens
             required to trigger the Light Arrow Cutscene.
@@ -3610,6 +3743,8 @@ setting_infos = [
         gui_params     = {
             'optional': True,
             "hide_when_disabled": True,
+            'web:max': 100,
+            'electron:max': 100,
         },
     ),
     Checkbutton(
@@ -3634,20 +3769,70 @@ setting_infos = [
             'randomize_key': 'randomize_settings',
         },
     ),
-    Checkbutton(
-        name           = 'mq_dungeons_random',
-        gui_text       = 'Random Number of MQ Dungeons',
+    Combobox(
+        name           = 'mq_dungeons_mode',
+        gui_text       = 'MQ Dungeon Mode',
+        default        = 'vanilla',
+        choices        = {
+            'vanilla':    "Vanilla",
+            'mq':         "Master Quest",
+            'specific':   "Specific Dungeons",
+            'count':      "Count",
+            'random':     "Completely Random",
+        },
         gui_tooltip    = '''\
-            If set, a random number of dungeons
-            will have Master Quest designs.
+            'Vanilla': All dungeons will be the original versions.
+            'Master Quest': All dungeons will be the MQ versions.
+            'Specific Dungeons': Choose which specific dungeons will be MQ versions.
+            'Count': Choose how many MQ dungeons will be randomly chosen.
+            'Completely Random': Each dungeon will vanilla or MQ at random.
         ''',
         shared         = True,
         disable        = {
-            True : {'settings' : ['mq_dungeons']}
+            'vanilla':  {'settings': ['mq_dungeons_count', 'mq_dungeons_specific']},
+            'mq':       {'settings': ['mq_dungeons_count', 'mq_dungeons_specific']},
+            'specific': {'settings': ['mq_dungeons_count']},
+            'count':    {'settings': ['mq_dungeons_specific']},
+            'random':   {'settings': ['mq_dungeons_count', 'mq_dungeons_specific']},
+        },
+        gui_params     = {
+            'distribution': [
+                ('random', 1),
+            ],
+        },
+    ),
+    Combobox(
+        name            = 'mq_dungeons_specific',
+        multiple_select = True,
+        gui_text        = 'MQ Dungeons',
+        choices         = {
+            'Deku Tree':              "Deku Tree",
+            'Dodongos Cavern':        "Dodongo's Cavern",
+            'Jabu Jabus Belly':       "Jabu Jabu's Belly",
+            'Forest Temple':          "Forest Temple",
+            'Fire Temple':            "Fire Temple",
+            'Water Temple':           "Water Temple",
+            'Shadow Temple':          "Shadow Temple",
+            'Spirit Temple':          "Spirit Temple",
+            'Bottom of the Well':     "Bottom of the Well",
+            'Ice Cavern':             "Ice Cavern",
+            'Gerudo Training Ground': "Gerudo Training Ground",
+            'Ganons Castle':          "Ganon's Castle",
+        },
+        default         = [],
+        gui_tooltip     = '''\
+            Select the specific dungeons you would
+            like the Master Quest version of.
+            The unselected dungeons will be
+            the original version.
+        ''',
+        shared          = True,
+        gui_params     = {
+            "hide_when_disabled": True,
         },
     ),
     Scale(
-        name           = 'mq_dungeons',
+        name           = 'mq_dungeons_count',
         gui_text       = "MQ Dungeon Count",
         default        = 0,
         min            = 0,
@@ -3655,17 +3840,11 @@ setting_infos = [
         gui_tooltip    = '''\
             Specify the number of Master Quest
             dungeons to appear in the game.
-
-            0: All dungeon will have their
-            original designs. (default)
-
-            6: Half of all dungeons will
-            be from Master Quest.
-
-            12: All dungeons will have
-            Master Quest redesigns.
         ''',
         shared         = True,
+        gui_params     = {
+            "hide_when_disabled": True,
+        },
     ),
     Setting_Info(
         name           = 'disabled_locations',
@@ -3816,15 +3995,22 @@ setting_infos = [
             Begin the game with the selected songs already learnt.
         ''',
     ),
-    Checkbutton(
+    Combobox(
         name           = 'ocarina_songs',
         gui_text       = 'Randomize Ocarina Song Notes',
+        default        = 'off',
+        choices        = {
+            'off': 'Off',
+            'frog': 'Frog Songs Only',
+            'warp': 'Warp Songs Only',
+            'all':  'All Songs',
+        },
         gui_tooltip    = '''\
-                         Will need to memorize a new set of songs.
-                         Can be silly, but difficult. Songs are
-                         generally sensible, and warp songs are
-                         typically more difficult.
-                         ''',
+            Will need to memorize a new set of songs.
+            Can be silly, but difficult. All songs are
+            generally sensible, but warp songs are
+            typically more difficult than frog songs.
+            ''',
         shared         = True,
     ),
     Combobox(
@@ -3946,7 +4132,7 @@ setting_infos = [
         gui_type       = None,
         gui_text       = None,
         shared         = True,
-        choices        = [i for i in item_table if item_table[i][0] == 'Item']
+        choices        = [name for name, item in ItemInfo.items.items() if item.type == 'Item']
     ),
     Setting_Info('hint_dist_user',    dict, None, None, True, {}),
     Combobox(
@@ -5137,7 +5323,7 @@ def is_mapped(setting_name):
 def build_close_match(name, value_type, source_list=None):
     source = []
     if value_type == 'item':
-        source = item_table.keys()
+        source = ItemInfo.items.keys()
     elif value_type == 'location':
         source = location_table.keys()
     elif value_type == 'entrance':
@@ -5165,7 +5351,8 @@ def validate_settings(settings_dict):
         info = get_setting_info(setting)
         # Ensure the type of the supplied choice is correct
         if type(choice) != info.type:
-            raise TypeError('Supplied choice %r for setting %r is of type %r, expecting %r' % (choice, setting, type(choice).__name__, info.type.__name__))
+            if setting != 'starting_items' or type(choice) != dict: # allow dict (plando syntax) for starting items in addition to the list syntax used by the GUI
+                raise TypeError('Supplied choice %r for setting %r is of type %r, expecting %r' % (choice, setting, type(choice).__name__, info.type.__name__))
         # If setting is a list, must check each element
         if isinstance(choice, list):
             for element in choice:
@@ -5176,8 +5363,6 @@ def validate_settings(settings_dict):
             continue
         # Ensure that the given choice is a valid choice for the setting
         elif info.choice_list and choice not in info.choice_list:
-            if setting == 'compress_rom' and choice == 'Temp':
-                continue
             raise ValueError('%r is not a valid choice for setting %r. %s' % (choice, setting, build_close_match(choice, 'choice', info.choice_list)))
 
 class UnmappedSettingError(Exception):

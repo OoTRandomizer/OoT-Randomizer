@@ -1348,18 +1348,11 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
     #Removes items from item_hints list if they are included in starting gear.
     #This method ensures that the right number of copies are removed, e.g.
     #if you start with one strength and hints call for two, you still get
-    #one hint for strength
-    for item in itertools.chain(world.settings.starting_items, world.settings.starting_equipment, world.settings.starting_songs):
-        itemname = everything[item].itemname
-        if itemname in world.item_hints:
-            world.item_hints.remove(itemname)
-
-    #Skip_child_zelda can cause the same problem, but needs to be handled separately since
-    #it doesn't update the starting gear lists
-    if world.settings.skip_child_zelda:
-        itemname = world.get_location('Song from Impa').item.name 
-        if itemname in world.item_hints:
-            world.item_hints.remove(itemname)
+    #one hint for strength. This also handles items from Skip Child Zelda.
+    for itemname, record in world.distribution.effective_starting_items.items():
+        for _ in range(record.count):
+            if itemname in world.item_hints:
+                world.item_hints.remove(itemname)
 
     world.named_item_pool = list(world.item_hints)
 

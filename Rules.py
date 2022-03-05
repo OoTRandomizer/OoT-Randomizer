@@ -44,7 +44,7 @@ def set_rules(world):
                 location.add_rule(create_shop_rule(location))
             else:
                 add_item_rule(location, lambda location, item: item.type == 'Shop' and item.world.id == location.world.id)
-        elif 'Deku Scrub' in location.name:
+        elif location.type in ['Scrub', 'GrottoScrub']:
             location.add_rule(create_shop_rule(location))
         else:
             add_item_rule(location, lambda location, item: item.type != 'Shop')

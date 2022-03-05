@@ -55,6 +55,7 @@ def main(settings, window=dummy_window(), max_attempts=10):
     rom = resolve_settings(settings, window=window)
 
     max_attempts = max(max_attempts, 1)
+    spoiler = None
     for attempt in range(1, max_attempts + 1):
         try:
             spoiler = generate(settings, window=window)
@@ -86,10 +87,12 @@ def resolve_settings(settings, window=dummy_window()):
         settings.__dict__[trick['name']] = trick['name'] in settings.allowed_tricks
 
     # we load the rom before creating the seed so that errors get caught early
-    if settings.compress_rom == 'None' and not settings.create_spoiler:
-        raise Exception('`No Output` must have spoiler enabled to produce anything.')
+    outputting_specific_world = settings.create_uncompressed_rom or settings.create_compressed_rom or settings.create_wad_file
+    using_rom = outputting_specific_world or settings.create_patch_file or settings.patch_without_output
+    if not (using_rom or settings.patch_without_output) and not settings.create_spoiler:
+        raise Exception('You must have at least one output type or spoiler log enabled to produce anything.')
 
-    if settings.compress_rom not in ['None', 'Temp']:
+    if using_rom:
         window.update_status('Loading ROM')
         rom = Rom(settings.rom)
     else:
@@ -104,7 +107,7 @@ def resolve_settings(settings, window=dummy_window()):
     if settings.player_num < 1:
         raise Exception(f'Invalid player num: {settings.player_num}; must be between (1, {settings.world_count})')
     if settings.player_num > settings.world_count:
-        if settings.compress_rom not in ['None', 'Patch', 'Temp']:
+        if outputting_specific_world:
             raise Exception(f'Player Num is {settings.player_num}; must be between (1, {settings.world_count})')
         settings.player_num = settings.world_count
 
@@ -124,6 +127,8 @@ def resolve_settings(settings, window=dummy_window()):
 def generate(settings, window=dummy_window()):
     worlds = build_world_graphs(settings, window=window)
     place_items(settings, worlds, window=window)
+    for world in worlds:
+        world.distribution.configure_effective_starting_items(worlds, world)
     if worlds[0].enable_goal_hints:
         replace_goal_names(worlds)
     return make_spoiler(settings, worlds, window=window)
@@ -204,136 +209,222 @@ def make_spoiler(settings, worlds, window=dummy_window()):
     return spoiler
 
 
+def prepare_rom(spoiler, world, rom, settings, rng_state=None, restore=True):
+    if restore:
+        rom.restore()
+    if rng_state:
+        random.setstate(rng_state)
+    patch_rom(spoiler, world, rom)
+    cosmetics_log = patch_cosmetics(settings, rom)
+    rom.update_header()
+    return cosmetics_log
+
+
+def log_and_update_window(window, message):
+    logger = logging.getLogger('')
+    window.update_status(message)
+    logger.info(message)
+
+
+def compress_rom(input_file, output_file, window=dummy_window(), delete_input=False):
+    logger = logging.getLogger('')
+    compressor_path = "./" if is_bundled() else "bin/Compress/"
+    if platform.system() == 'Windows':
+        if 8 * struct.calcsize("P") == 64:
+            compressor_path += "Compress.exe"
+        else:
+            compressor_path += "Compress32.exe"
+    elif platform.system() == 'Linux':
+        if platform.machine() in ['arm64', 'aarch64', 'aarch64_be', 'armv8b', 'armv8l']:
+            compressor_path += "Compress_ARM64"
+        elif platform.machine() in ['arm', 'armv7l', 'armhf']:
+            compressor_path += "Compress_ARM32"
+        else:
+            compressor_path += "Compress"
+    elif platform.system() == 'Darwin':
+        if platform.machine() == 'arm64':
+            compressor_path += "Compress_ARM64.out"
+        else:
+            compressor_path += "Compress.out"
+    else:
+        logger.info("OS not supported for ROM compression.")
+        raise Exception("This operating system does not support ROM compression. You may only output patch files or uncompressed ROMs.")
+
+    run_process(window, logger, [compressor_path, input_file, output_file])
+    if delete_input:
+        os.remove(input_file)
+
+
+def generate_wad(wad_file, rom_file, output_file, channel_title, channel_id, window=dummy_window(), delete_input=False):
+    logger = logging.getLogger('')
+    if wad_file == "" or wad_file == None:
+        raise Exception("Unspecified base WAD file.")
+    if not os.path.isfile(wad_file):
+        raise Exception("Cannot open base WAD file.")
+
+    gzinject_path = "./" if is_bundled() else "bin/gzinject/"
+    gzinject_patch_path = gzinject_path + "ootr.gzi"
+    if platform.system() == 'Windows':
+        if 8 * struct.calcsize("P") == 64:
+            gzinject_path += "gzinject.exe"
+        else:
+            gzinject_path += "gzinject32.exe"
+    elif platform.system() == 'Linux':
+        if platform.machine() in ['arm64', 'aarch64', 'aarch64_be', 'armv8b', 'armv8l']:
+            gzinject_path += "gzinject_ARM64"
+        elif platform.machine() in ['arm', 'armv7l', 'armhf']:
+            gzinject_path += "gzinject_ARM32"
+        else:
+            gzinject_path += "gzinject"
+    elif platform.system() == 'Darwin':
+        if platform.machine() == 'arm64':
+            gzinject_path += "gzinject_ARM64.out"
+        else:
+            gzinject_path += "gzinject.out"
+    else:
+        logger.info("OS not supported for WAD generation.")
+        raise Exception("This operating system does not support outputting .wad files.")
+
+    run_process(window, logger, [gzinject_path, "-a", "genkey"], b'45e')
+    run_process(window, logger, [gzinject_path, "-a", "inject", "--rom", rom_file, "--wad", wad_file,
+                                 "-o", output_file, "-i", channel_id, "-t", channel_title,
+                                 "-p", gzinject_patch_path, "--cleanup"])
+    os.remove("common-key.bin")
+    if delete_input:
+        os.remove(rom_file)
+
+
 def patch_and_output(settings, window, spoiler, rom):
     logger = logging.getLogger('')
-    logger.info('Patching ROM.')
     worlds = spoiler.worlds
     cosmetics_log = None
 
     settings_string_hash = hashlib.sha1(settings.settings_string.encode('utf-8')).hexdigest().upper()[:5]
     if settings.output_file:
-        outfilebase = settings.output_file
-    elif settings.world_count > 1:
-        outfilebase = 'OoT_%s_%s_W%d' % (settings_string_hash, settings.seed, settings.world_count)
+        output_filename_base = settings.output_file
     else:
-        outfilebase = 'OoT_%s_%s' % (settings_string_hash, settings.seed)
+        output_filename_base = f"OoT_{settings_string_hash}_{settings.seed}"
+        if settings.world_count > 1:
+            output_filename_base += f"_W{settings.world_count}"
 
     output_dir = default_output_path(settings.output_dir)
 
-    if settings.compress_rom == 'Patch':
+    compressed_rom = settings.create_compressed_rom or settings.create_wad_file
+    uncompressed_rom = compressed_rom or settings.create_uncompressed_rom
+    generate_rom = uncompressed_rom or settings.create_patch_file or settings.patch_without_output
+    separate_cosmetics = settings.create_patch_file and uncompressed_rom
+
+    if generate_rom:
         rng_state = random.getstate()
         file_list = []
         window.update_progress(65)
+        restore_rom = False
         for world in worlds:
             if settings.world_count > 1:
-                window.update_status('Patching ROM: Player %d' % (world.id + 1))
-                patchfilename = '%sP%d.zpf' % (outfilebase, world.id + 1)
+                log_and_update_window(window, f"Patching ROM: Player {world.id + 1}")
+                player_filename_suffix = f"P{world.id + 1}"
             else:
-                window.update_status('Patching ROM')
-                patchfilename = '%s.zpf' % outfilebase
+                log_and_update_window(window, 'Patching ROM')
+                player_filename_suffix = ""
 
-            random.setstate(rng_state)
-            patch_rom(spoiler, world, rom)
-            cosmetics_log = patch_cosmetics(settings, rom)
-            rom.update_header()
+            # If we aren't creating a patch file and this world isn't the one being outputted, move to the next world.
+            if not (settings.create_patch_file or world.id == settings.player_num - 1):
+                continue
 
+            settings.disable_custom_music = settings.create_patch_file
+            patch_cosmetics_log = prepare_rom(spoiler, world, rom, settings, rng_state, restore_rom)
+            restore_rom = True
             window.update_progress(65 + 20*(world.id + 1)/settings.world_count)
 
-            window.update_status('Creating Patch File')
-            output_path = os.path.join(output_dir, patchfilename)
-            file_list.append(patchfilename)
-            create_patch_file(rom, output_path)
-            rom.restore()
-            window.update_progress(65 + 30*(world.id + 1)/settings.world_count)
+            if settings.create_patch_file:
+                patch_filename = f"{output_filename_base}{player_filename_suffix}.zpf"
+                log_and_update_window(window, f"Creating Patch File: {patch_filename}")
+                output_path = os.path.join(output_dir, patch_filename)
+                file_list.append(patch_filename)
+                create_patch_file(rom, output_path)
+                window.update_progress(65 + 30*(world.id + 1)/settings.world_count)
 
-            if settings.create_cosmetics_log and cosmetics_log:
-                window.update_status('Creating Cosmetics Log')
-                if settings.world_count > 1:
-                    cosmetics_log_filename = "%sP%d_Cosmetics.json" % (outfilebase, world.id + 1)
-                else:
-                    cosmetics_log_filename = '%s_Cosmetics.json' % outfilebase
-                cosmetics_log.to_file(os.path.join(output_dir, cosmetics_log_filename))
-                file_list.append(cosmetics_log_filename)
-            cosmetics_log = None
+                # Cosmetics Log for patch file only.
+                if settings.create_cosmetics_log and patch_cosmetics_log:
+                    if separate_cosmetics:
+                        cosmetics_log_filename = f"{output_filename_base}{player_filename_suffix}.zpf_Cosmetics.json"
+                    else:
+                        cosmetics_log_filename = f"{output_filename_base}{player_filename_suffix}_Cosmetics.json"
+                    log_and_update_window(window, f"Creating Cosmetics Log: {cosmetics_log_filename}")
+                    patch_cosmetics_log.to_file(os.path.join(output_dir, cosmetics_log_filename))
+                    file_list.append(cosmetics_log_filename)
 
-        if settings.world_count > 1:
-            window.update_status('Creating Patch Archive')
-            output_path = os.path.join(output_dir, '%s.zpfz' % outfilebase)
-            with zipfile.ZipFile(output_path, mode="w") as patch_archive:
+            # If we aren't outputting an uncompressed ROM, move to the next world.
+            if not uncompressed_rom or world.id != settings.player_num - 1:
+                continue
+
+            uncompressed_filename = f"{output_filename_base}{player_filename_suffix}_uncompressed.z64"
+            uncompressed_path = os.path.join(output_dir, uncompressed_filename)
+            log_and_update_window(window, f"Saving Uncompressed ROM: {uncompressed_filename}")
+            if separate_cosmetics:
+                settings.disable_custom_music = False
+                cosmetics_log = prepare_rom(spoiler, world, rom, settings, rng_state, restore_rom)
+            else:
+                cosmetics_log = patch_cosmetics_log
+            rom.write_to_file(uncompressed_path)
+            logger.info("Created uncompressed ROM at: %s" % uncompressed_path)
+
+            # If we aren't compressing the ROM, we're done with this world.
+            if not compressed_rom:
+                continue
+
+            compressed_filename = f"{output_filename_base}{player_filename_suffix}.z64"
+            compressed_path = os.path.join(output_dir, compressed_filename)
+            log_and_update_window(window, f"Compressing ROM: {compressed_filename}")
+            compress_rom(uncompressed_path, compressed_path, window, not settings.create_uncompressed_rom)
+            logger.info("Created compressed ROM at: %s" % compressed_path)
+
+            # If we aren't generating a WAD, we're done with this world.
+            if not settings.create_wad_file:
+                continue
+
+            wad_filename = f"{output_filename_base}{player_filename_suffix}.wad"
+            wad_path = os.path.join(output_dir, wad_filename)
+            log_and_update_window(window, f"Generating WAD file: {wad_filename}")
+            channel_title = settings.wad_channel_title if settings.wad_channel_title != "" and settings.wad_channel_title is not None else "OoTRandomizer"
+            channel_id = settings.wad_channel_id if settings.wad_channel_id != "" and settings.wad_channel_id is not None else "OOTE"
+            generate_wad(settings.wad_file, compressed_path, wad_path, channel_title, channel_id, window, not settings.create_compressed_rom)
+            logger.info("Created WAD file at: %s" % wad_path)
+
+        # World loop over, make the patch archive if applicable.
+        if settings.world_count > 1 and settings.create_patch_file:
+            patch_archive_filename = f"{output_filename_base}.zpfz"
+            patch_archive_path = os.path.join(output_dir, patch_archive_filename)
+            log_and_update_window(window, f"Creating Patch Archive: {patch_archive_filename}")
+            with zipfile.ZipFile(patch_archive_path, mode="w") as patch_archive:
                 for file in file_list:
                     file_path = os.path.join(output_dir, file)
-                    patch_archive.write(file_path, file.replace(outfilebase, ''), compress_type=zipfile.ZIP_DEFLATED)
+                    patch_archive.write(file_path, file.replace(output_filename_base, '').replace('.zpf_Cosmetics', '_Cosmetics'), compress_type=zipfile.ZIP_DEFLATED)
             for file in file_list:
                 os.remove(os.path.join(output_dir, file))
-        logger.info("Created patchfile at: %s" % output_path)
-        window.update_progress(95)
+            logger.info("Created patch file archive at: %s" % patch_archive_path)
 
-    elif settings.compress_rom not in ['None', 'Temp']:
-        window.update_status('Patching ROM')
-        patch_rom(spoiler, worlds[settings.player_num - 1], rom)
-        cosmetics_log = patch_cosmetics(settings, rom)
-        window.update_progress(65)
-
-        window.update_status('Saving Uncompressed ROM')
-        if settings.world_count > 1:
-            filename = "%sP%d.z64" % (outfilebase, settings.player_num)
-        else:
-            filename = '%s.z64' % outfilebase
-        output_path = os.path.join(output_dir, filename)
-        rom.write_to_file(output_path)
-        if settings.compress_rom == 'True':
-            window.update_status('Compressing ROM')
-            logger.info('Compressing ROM.')
-
-            if is_bundled():
-                compressor_path = "."
-            else:
-                compressor_path = "Compress"
-
-            if platform.system() == 'Windows':
-                if 8 * struct.calcsize("P") == 64:
-                    compressor_path += "\\Compress.exe"
-                else:
-                    compressor_path += "\\Compress32.exe"
-            elif platform.system() == 'Linux':
-                if platform.uname()[4] == 'aarch64' or platform.uname()[4] == 'arm64':
-                    compressor_path += "/Compress_ARM64"
-                else:
-                    compressor_path += "/Compress"
-            elif platform.system() == 'Darwin':
-                compressor_path += "/Compress.out"
-            else:
-                compressor_path = ""
-                logger.info('OS not supported for compression')
-
-            output_compress_path = output_path[:output_path.rfind('.')] + '-comp.z64'
-            if compressor_path != "":
-                run_process(window, logger, [compressor_path, output_path, output_compress_path])
-            os.remove(output_path)
-            logger.info("Created compressed rom at: %s" % output_compress_path)
-        else:
-            logger.info("Created uncompressed rom at: %s" % output_path)
-        window.update_progress(95)
+    window.update_progress(95)
 
     if not settings.create_spoiler or settings.output_settings:
         settings.distribution.update_spoiler(spoiler, False)
         window.update_status('Creating Settings Log')
-        settings_path = os.path.join(output_dir, '%s_Settings.json' % outfilebase)
+        settings_path = os.path.join(output_dir, '%s_Settings.json' % output_filename_base)
         settings.distribution.to_file(settings_path, False)
-        logger.info("Created settings log at: %s" % ('%s_Settings.json' % outfilebase))
+        logger.info("Created settings log at: %s" % ('%s_Settings.json' % output_filename_base))
     if settings.create_spoiler:
         settings.distribution.update_spoiler(spoiler, True)
         window.update_status('Creating Spoiler Log')
-        spoiler_path = os.path.join(output_dir, '%s_Spoiler.json' % outfilebase)
+        spoiler_path = os.path.join(output_dir, '%s_Spoiler.json' % output_filename_base)
         settings.distribution.to_file(spoiler_path, True)
-        logger.info("Created spoiler log at: %s" % ('%s_Spoiler.json' % outfilebase))
+        logger.info("Created spoiler log at: %s" % ('%s_Spoiler.json' % output_filename_base))
 
     if settings.create_cosmetics_log and cosmetics_log:
         window.update_status('Creating Cosmetics Log')
         if settings.world_count > 1 and not settings.output_file:
-            filename = "%sP%d_Cosmetics.json" % (outfilebase, settings.player_num)
+            filename = "%sP%d_Cosmetics.json" % (output_filename_base, settings.player_num)
         else:
-            filename = '%s_Cosmetics.json' % outfilebase
+            filename = '%s_Cosmetics.json' % output_filename_base
         cosmetic_path = os.path.join(output_dir, filename)
         cosmetics_log.to_file(cosmetic_path)
         logger.info("Created cosmetic log at: %s" % cosmetic_path)
@@ -341,7 +432,7 @@ def patch_and_output(settings, window, spoiler, rom):
     if settings.enable_distribution_file:
         window.update_status('Copying Distribution File')
         try:
-            filename = os.path.join(output_dir, '%s_Distribution.json' % outfilebase)
+            filename = os.path.join(output_dir, '%s_Distribution.json' % output_filename_base)
             shutil.copyfile(settings.distribution_file, filename)
             logger.info("Copied distribution file to: %s" % filename)
         except:
@@ -359,9 +450,12 @@ def from_patch_file(settings, window=dummy_window()):
     start = time.process_time()
     logger = logging.getLogger('')
 
+    compressed_rom = settings.create_compressed_rom or settings.create_wad_file
+    uncompressed_rom = compressed_rom or settings.create_uncompressed_rom
+
     # we load the rom before creating the seed so that error get caught early
-    if settings.compress_rom in ['None', 'Patch', 'Temp']:
-        raise Exception('Output Type must be a ROM when patching from a patch file.')
+    if not uncompressed_rom:
+        raise Exception('You must select a valid Output Type when patching from a patch file.')
     window.update_status('Loading ROM')
     rom = Rom(settings.rom)
 
@@ -370,14 +464,14 @@ def from_patch_file(settings, window=dummy_window()):
     filename_split = os.path.basename(settings.patch_file).rpartition('.')
 
     if settings.output_file:
-        outfilebase = settings.output_file
+        output_filename_base = settings.output_file
     else:
-        outfilebase = filename_split[0]
+        output_filename_base = filename_split[0]
 
     extension = filename_split[-1]
 
     output_dir = default_output_path(settings.output_dir)
-    output_path = os.path.join(output_dir, outfilebase)
+    output_path = os.path.join(output_dir, output_filename_base)
 
     window.update_status('Patching ROM')
     if extension == 'zpf':
@@ -392,47 +486,34 @@ def from_patch_file(settings, window=dummy_window()):
         cosmetics_log = patch_cosmetics(settings, rom)
     window.update_progress(65)
 
-    window.update_status('Saving Uncompressed ROM')
-    uncompressed_output_path = output_path + '.z64'
-    rom.write_to_file(uncompressed_output_path)
-    if settings.compress_rom == 'True':
-        window.update_status('Compressing ROM')
-        logger.info('Compressing ROM.')
+    log_and_update_window(window, 'Saving Uncompressed ROM')
+    uncompressed_path = output_path + '_uncompressed.z64'
+    rom.write_to_file(uncompressed_path)
+    logger.info("Created uncompressed rom at: %s" % uncompressed_path)
 
-        if is_bundled():
-            compressor_path = "."
-        else:
-            compressor_path = "Compress"
+    if compressed_rom:
+        log_and_update_window(window, 'Compressing ROM')
+        compressed_path = output_path + '.z64'
+        compress_rom(uncompressed_path, compressed_path, window, not settings.create_uncompressed_rom)
+        logger.info("Created compressed rom at: %s" % compressed_path)
 
-        if platform.system() == 'Windows':
-            if 8 * struct.calcsize("P") == 64:
-                compressor_path += "\\Compress.exe"
-            else:
-                compressor_path += "\\Compress32.exe"
-        elif platform.system() == 'Linux':
-            compressor_path += "/Compress"
-        elif platform.system() == 'Darwin':
-            compressor_path += "/Compress.out"
-        else:
-            compressor_path = ""
-            logger.info('OS not supported for compression')
-
-        output_compress_path = output_path + '-comp.z64'
-        if compressor_path != "":
-            run_process(window, logger, [compressor_path, uncompressed_output_path, output_compress_path])
-        os.remove(uncompressed_output_path)
-        logger.info("Created compressed rom at: %s" % output_compress_path)
-    else:
-        logger.info("Created uncompressed rom at: %s" % output_path)
+        if settings.create_wad_file:
+            window.update_progress(90)
+            wad_path = output_path + '.wad'
+            channel_title = settings.wad_channel_title if settings.wad_channel_title != "" and settings.wad_channel_title is not None else "OoTRandomizer"
+            channel_id = settings.wad_channel_id if settings.wad_channel_id != "" and settings.wad_channel_id is not None else "OOTE"
+            generate_wad(settings.wad_file, compressed_path, wad_path, channel_title, channel_id, window,
+                         not settings.create_compressed_rom)
+            logger.info("Created WAD file at: %s" % wad_path)
 
     window.update_progress(95)
 
     if settings.create_cosmetics_log and cosmetics_log:
         window.update_status('Creating Cosmetics Log')
         if settings.world_count > 1 and not settings.output_file:
-            filename = "%sP%d_Cosmetics.json" % (outfilebase, settings.player_num)
+            filename = "%sP%d_Cosmetics.json" % (output_filename_base, settings.player_num)
         else:
-            filename = '%s_Cosmetics.json' % outfilebase
+            filename = '%s_Cosmetics.json' % output_filename_base
         cosmetic_path = os.path.join(output_dir, filename)
         cosmetics_log.to_file(cosmetic_path)
         logger.info("Created cosmetic log at: %s" % cosmetic_path)
@@ -523,21 +604,24 @@ def cosmetic_patch(settings, window=dummy_window()):
     return True
 
 
-def run_process(window, logger, args):
-    process = subprocess.Popen(args, **subprocess_args(True))
+def run_process(window, logger, args, stdin=None):
+    process = subprocess.Popen(args, bufsize=1, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     filecount = None
-    while True:
-        line = process.stdout.readline()
-        if line != b'':
-            find_index = line.find(b'files remaining')
-            if find_index > -1:
-                files = int(line[:find_index].strip())
-                if filecount == None:
-                    filecount = files
-                window.update_progress(65 + 30*(1 - files/filecount))
-            logger.info(line.decode('utf-8').strip('\n'))
-        else:
-            break
+    if stdin is not None:
+        process.communicate(input=stdin)
+    else:
+        while True:
+            line = process.stdout.readline()
+            if line != b'':
+                find_index = line.find(b'files remaining')
+                if find_index > -1:
+                    files = int(line[:find_index].strip())
+                    if filecount == None:
+                        filecount = files
+                    window.update_progress(65 + 30*(1 - files/filecount))
+                logger.info(line.decode('utf-8').strip('\n'))
+            else:
+                break
 
 
 def copy_worlds(worlds):

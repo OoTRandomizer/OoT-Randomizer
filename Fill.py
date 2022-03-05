@@ -4,9 +4,8 @@ from State import State
 from Rules import set_shop_rules
 from Location import DisableType
 from LocationList import location_groups
-from ItemPool import songlist, get_junk_item, item_groups, remove_junk_items, remove_junk_set
-from ItemList import item_table
-from Item import ItemFactory
+from ItemPool import song_list, get_junk_item, item_groups, remove_junk_items
+from Item import ItemFactory, ItemInfo
 from Search import Search
 from functools import reduce
 
@@ -98,7 +97,7 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
             and location.item.looks_like_item is None))
     junk_items = remove_junk_items.copy()
     junk_items.remove('Ice Trap')
-    major_items = [item for (item, data) in item_table.items() if data[0] == 'Item' and data[1] and data[2] is not None]
+    major_items = [name for name, item in ItemInfo.items.items() if item.type == 'Item' and item.advancement and item.index is not None]
     fake_items = []
     if worlds[0].settings.ice_trap_appearance == 'major_only':
         model_items = [item for item in itempool if item.majoritem]
@@ -510,7 +509,7 @@ def fast_fill(window, locations, itempool):
         item_to_place = itempool.pop()
         # Impa can't presently hand out refills at the start of the game.
         # Only replace her item with a rupee if it's junk.
-        if spot_to_fill.world.settings.skip_child_zelda and spot_to_fill.name == 'Song from Impa' and item_to_place.name in remove_junk_set:
+        if spot_to_fill.world.settings.skip_child_zelda and spot_to_fill.name == 'Song from Impa' and item_to_place.name in set(remove_junk_items):
             item_to_place = ItemFactory('Rupee (1)', spot_to_fill.world)
         spot_to_fill.world.push_item(spot_to_fill, item_to_place)
         window.fillcount += 1

@@ -6,6 +6,6 @@
     "shuffle_hideoutkeys":                     "keysanity",
     "key_rings":                               [
     ],
-    "mq_dungeons":                             0
+    "mq_dungeons_mode":                        "vanilla"
   }
 }

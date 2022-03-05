@@ -111,30 +111,39 @@ do that.
   * New cosmetic setting `Disable Battle Music` turns off the battle music from being near enemies, allowing the background music to continue uninterrupted.
   * New setting `Plant Magic Beans` automatically plants all the Magic Beans from the start.
   * New setting `Key Rings` which can be enabled per-dungeon to replace all of its individual Small Keys into a singular Small Key Ring containing all the small keys for that dungeon.
+  * Setting `Randomize Ocarina Song Notes` can now be set to either "row" of songs individually, i.e. "Frog Songs" or "Warp Songs", in additional to the "Off" and "All Songs" options.
+  * MQ Dungeon settings have been replaced with `MQ Dungeons Mode` which allows finer selection of which dungeons are MQ, or how many are at random.
 
 * **Gameplay**
   * Shortened the animation for equipping magic arrows.
 
 
 #### Bug fixes
-  * Return the color of the "OK" and "No" options of the warp song prompts to their correct colors in Warp Song Shuffle.
-  * Horseback Archery will no longer delay ending based on the fanfare.
-  * Prevent Dead Hand from spawning outside the room collision.
-  * Magic arrows equipped as adult no longer revert to the Bow after traveling through time to child and back.
-  * Rainbow Bridge set to vanilla no longer spawns without Light Arrows.
-  * Fix MQ Shadow Temple making use of shared flags.
-  * Fix MQ Fire Temple missing the Hammer chest from the map and minimap.
-  * Add correct default Goals for Ganon's Boss Key when Light Arrow Cutscene is non-vanilla.
-  * Fix a softlock caused by 8-note Sun's Songs when using `Randomize Ocarina Song Notes`.
-  * Fix slow text when acquiring certain items (Hookshot, Bombchus, etc.)
-  * Using Farore's Wind as both ages should no longer result in the wrong temporary flags being loaded.
+* Return the color of the "OK" and "No" options of the warp song prompts to their correct colors in Warp Song Shuffle.
+* Horseback Archery will no longer delay ending based on the fanfare.
+* Prevent Dead Hand from spawning outside the room collision.
+* Magic arrows equipped as adult no longer revert to the Bow after traveling through time to child and back.
+* Rainbow Bridge set to vanilla no longer spawns without Light Arrows.
+* Fix MQ Shadow Temple making use of shared flags.
+* Fix MQ Fire Temple missing the Hammer chest from the map and minimap.
+* Add correct default Goals for Ganon's Boss Key when Light Arrow Cutscene is non-vanilla.
+* Fix a softlock caused by 8-note Sun's Songs when using `Randomize Ocarina Song Notes`.
+* Fix slow text when acquiring certain items (Hookshot, Bombchus, etc.)
+* Using Farore's Wind as both ages should no longer result in the wrong temporary flags being loaded.
+* Fixed issues where `Skip Child Zelda` could give a weapon with no ammo or overwrite starting Triforce Pieces.
 
 #### Other changes
-  * Added an auto-tracker context area to memory, so auto-trackers can find certain symbols much easier.
-  * Improve some error messages when running the generator.
-  * Fix logic parser shortcuts not working right in newer Python versions.
-  * `Goron Bracelet` is no longer greyed out as adult on the Equipment subscreen of the pause menu.
-  * Plandomizer: You can now specify an arbitrary 4-character hexadecimal text ID as a "Gossip Stone" to overwrite text in the game.
+* Added an auto-tracker context area to memory, so auto-trackers can find certain symbols much easier.
+* Improve some error messages when running the generator.
+* Fix logic parser shortcuts not working right in newer Python versions.
+* `Goron Bracelet` is no longer greyed out as adult on the Equipment subscreen of the pause menu.
+* Plandomizer
+  * You can now specify an arbitrary 4-character hexadecimal text ID as a "Gossip Stone" to overwrite text in the game.
+  * Adjusted how `starting_items` works in order to remove some redundancy. Spoiler output now includes a section `:skipped_locations` instead which is not used by Plandomizer.
+  * Gold Skulltula Token requirements can be increased above 100 (the pool must also have at least that many).
+* Triforce Hunt changes
+  * The number of Triforce pieces available per world, which was previously tied to the item pool setting, is now a separate setting.
+* Replaced old output option `compress_rom` with four separate options for outputting a patch file, compressed ROM, uncompressed ROM, and a WAD file.
 
 ### 6.2
 

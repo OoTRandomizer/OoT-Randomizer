@@ -7,6 +7,7 @@ class ItemInfo(object):
     bottles = set()
     medallions = set()
     stones = set()
+    junk = {}
 
     def __init__(self, name='', event=False):
         if event:
@@ -18,8 +19,8 @@ class ItemInfo(object):
             (type, progressive, itemID, special) = item_table[name]
 
         self.name = name
-        self.advancement = (progressive == True)
-        self.priority = (progressive == False)
+        self.advancement = (progressive is True)
+        self.priority = (progressive is False)
         self.type = type
         self.special = special or {}
         self.index = itemID
@@ -28,6 +29,7 @@ class ItemInfo(object):
         self.medallion = self.special.get('medallion', False)
         self.stone = self.special.get('stone', False)
         self.alias = self.special.get('alias', None)
+        self.junk = self.special.get('junk', None)
 
 
 for item_name in item_table:
@@ -38,6 +40,8 @@ for item_name in item_table:
         ItemInfo.medallions.add(item_name)
     if ItemInfo.items[item_name].stone:
         ItemInfo.stones.add(item_name)
+    if ItemInfo.items[item_name].junk is not None:
+        ItemInfo.junk[item_name] = ItemInfo.items[item_name].junk
 
 
 class Item(object):

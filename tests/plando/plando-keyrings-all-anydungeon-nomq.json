@@ -13,6 +13,6 @@
       "Gerudo Training Ground",
       "Bottom of the Well"
     ],
-    "mq_dungeons":                             0
+    "mq_dungeons_mode":                        "vanilla"
   }
 }

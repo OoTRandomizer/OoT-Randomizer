@@ -13,6 +13,7 @@
       "Gerudo Training Ground",
       "Bottom of the Well"
     ],
-    "mq_dungeons":                             6
+    "mq_dungeons_mode":                        "count",
+    "mq_dungeons_count":                       6
   }
 }

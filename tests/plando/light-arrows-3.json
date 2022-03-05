@@ -1,7 +1,11 @@
 {
 "settings": {
     "create_spoiler": false,
-    "compress_rom": "Temp",
+    "patch_without_output": true,
+    "create_patch_file": false,
+    "create_compressed_rom": false,
+    "create_wad_file": false,
+    "create_uncompressed_rom": false,
     "hints": "none"
 },
 "item_pool": {
