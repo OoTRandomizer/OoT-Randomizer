@@ -507,7 +507,7 @@
     "clearer_hints": true,
     "no_collectible_hearts": false,
     "hints": "always",
-    "hint_dist": "scrubs",
+    "hint_dist": "tournament",
     "misc_hints": true,
     "text_shuffle": "none",
     "damage_multiplier": "normal",
