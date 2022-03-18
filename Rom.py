@@ -68,7 +68,7 @@ class Rom(BigStream):
         return new_rom
 
 
-    def decompress_rom_file(self, file, decomp_file):
+    def decompress_rom_file(self, file, decomp_file, verify_crc=True):
         validCRC = [
             [0xEC, 0x70, 0x11, 0xB7, 0x76, 0x16, 0xD7, 0x2B], # Compressed
             [0x70, 0xEC, 0xB7, 0x11, 0x16, 0x76, 0x2B, 0xD7], # Byteswap compressed
@@ -78,7 +78,7 @@ class Rom(BigStream):
         # Validate ROM file
         file_name = os.path.splitext(file)
         romCRC = list(self.buffer[0x10:0x18])
-        if romCRC not in validCRC:
+        if verify_crc and romCRC not in validCRC:
             # Bad CRC validation
             raise RuntimeError('ROM file %s is not a valid OoT 1.0 US ROM.' % file)
         elif len(self.buffer) < 0x2000000 or len(self.buffer) > (0x4000000) or file_name[1].lower() not in ['.z64', '.n64']:
@@ -255,9 +255,9 @@ class Rom(BigStream):
 
 
     # This will scan for any changes that have been made to the DMA table
-    # This assumes any changes here are new files, so this should only be called
+    # By default, this assumes any changes here are new files, so this should only be called
     # after patching in the new files, but before vanilla files are repointed
-    def scan_dmadata_update(self):
+    def scan_dmadata_update(self, preserve_from_file=False, assume_move=False):
         cur = DMADATA_START
         dma_data_end = None
         dma_index = 0
@@ -271,12 +271,33 @@ class Rom(BigStream):
 
             # If the entries do not match, the flag the changed entry
             if not (dma_start == old_dma_start and dma_end == old_dma_end):
-                self.changed_dma[dma_index] = (-1, dma_start, dma_end - dma_start)
+                from_file = -1
+                if preserve_from_file and dma_index in self.changed_dma:
+                    from_file = self.changed_dma[dma_index][0]
+                elif assume_move and dma_index < 1496:
+                    from_file = old_dma_start
+                self.changed_dma[dma_index] = (from_file, dma_start, dma_end - dma_start)
 
             cur += 0x10
             dma_index += 1
             dma_start, dma_end, dma_size = self._get_dmadata_record(cur)
             old_dma_start, old_dma_end, old_dma_size = self.original._get_dmadata_record(cur)
+
+
+    # This will rescan the entire ROM, compare to original ROM, and repopulate changed_address.
+    def rescan_changed_bytes(self):
+        self.changed_address = {}
+        size = len(self.buffer)
+        original_size = len(self.original.buffer)
+        for i, byte in enumerate(self.buffer):
+            if i >= original_size:
+                self.changed_address[i] = byte
+                continue
+            orig_byte = self.original.read_byte(i)
+            if byte != orig_byte:
+                self.changed_address[i] = byte
+        if size < original_size:
+            self.changed_address.update(zip(range(size, original_size-1), [0]*(original_size-size)))
 
 
     # gets the last used byte of rom defined in the DMA table

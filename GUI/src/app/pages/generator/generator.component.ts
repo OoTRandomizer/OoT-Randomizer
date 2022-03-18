@@ -676,7 +676,7 @@ export class GeneratorComponent implements OnInit {
   }
 
   browseForPatchFile() { //Electron only
-    this.global.browseForFile([{ name: 'Patch File Archive', 'extensions': ['zpfz', 'zpf'] }, { 'name': 'All Files', 'extensions': ['*'] }]).then(res => {
+    this.global.browseForFile([{ name: 'Patch File Archive', 'extensions': ['zpfz', 'zpf', 'patch'] }, { 'name': 'All Files', 'extensions': ['*'] }]).then(res => {
       this.global.generator_settingsMap['patch_file'] = res;
       this.cd.markForCheck();
       this.afterSettingChange(true);

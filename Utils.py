@@ -196,6 +196,26 @@ def check_python_version():
         raise VersionError('Randomizer requires at least version 3.6 and you are using %s' % python_version, "https://www.python.org/downloads/")
 
 
+def run_process(window, logger, args, stdin=None):
+    process = subprocess.Popen(args, bufsize=1, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+    filecount = None
+    if stdin is not None:
+        process.communicate(input=stdin)
+    else:
+        while True:
+            line = process.stdout.readline()
+            if line != b'':
+                find_index = line.find(b'files remaining')
+                if find_index > -1:
+                    files = int(line[:find_index].strip())
+                    if filecount == None:
+                        filecount = files
+                    window.update_progress(65 + 30*(1 - files/filecount))
+                logger.info(line.decode('utf-8').strip('\n'))
+            else:
+                break
+
+
 # https://stackoverflow.com/a/23146126
 def find_last(source_list, sought_element):
     for reverse_index, element in enumerate(reversed(source_list)):

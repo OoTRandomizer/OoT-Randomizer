@@ -911,7 +911,7 @@ class WorldDistribution(object):
             if location.type == 'Boss':
                 continue
 
-            location = self.pull_item_or_location(location_pools, world, name)
+            location = self.pull_item_or_location(location_pools, world, name, remove=False)
             if location is None:
                 raise RuntimeError('Location already cloaked in world %d: %s' % (self.id + 1, name))
             model = self.pull_item_or_location(model_pools, world, record.model, remove=False)
@@ -1128,9 +1128,6 @@ class Distribution(object):
 
         # add hearts
         if self.settings.starting_hearts > 3:
-            if not data['Piece of Heart (Treasure Chest Game)'].count:
-                data['Piece of Heart (Treasure Chest Game)'].count += 1
-                data['Piece of Heart'].count -= 1
             num_hearts_to_collect = self.settings.starting_hearts - 3
             if num_hearts_to_collect % 2 == 1:
                 data['Piece of Heart'].count += 4
@@ -1138,6 +1135,11 @@ class Distribution(object):
             for i in range(0, num_hearts_to_collect, 2):
                 data['Piece of Heart'].count += 4
                 data['Heart Container'].count += 1
+            if self.settings.starting_hearts >= 20:
+                data['Piece of Heart'].count -= 1
+            if self.settings.item_pool_value == 'plentiful':
+                data['Heart Container'].count += data['Piece of Heart'].count // 4
+                data['Piece of Heart'].count = data['Piece of Heart'].count % 4
 
         return data
 

@@ -345,6 +345,7 @@ def get_settings_from_command_line_args():
     parser.add_argument('--seed', help='Generate the specified seed.')
     parser.add_argument('--no_log', help='Suppresses the generation of a log file.', action='store_true')
     parser.add_argument('--output_settings', help='Always outputs a settings.json file even when spoiler is enabled.', action='store_true')
+    parser.add_argument('--diff_rom', help='Generates a ZPF patch from the specified ROM file.')
 
     args = parser.parse_args()
     settings_base = {}
@@ -389,4 +390,4 @@ def get_settings_from_command_line_args():
             print(settings.get_settings_string())
         sys.exit(0)
         
-    return settings, args.gui, args.loglevel, args.no_log
+    return settings, args.gui, args.loglevel, args.no_log, args.diff_rom

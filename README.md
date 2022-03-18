@@ -131,6 +131,7 @@ do that.
 * Fix slow text when acquiring certain items (Hookshot, Bombchus, etc.)
 * Using Farore's Wind as both ages should no longer result in the wrong temporary flags being loaded.
 * Fixed issues where `Skip Child Zelda` could give a weapon with no ammo or overwrite starting Triforce Pieces.
+* Fixed an issue where `Plentiful` item pool combined with `Starting Hearts` would result in more Heart Containers being in the item pool than intended.
 
 #### Other changes
 * Added an auto-tracker context area to memory, so auto-trackers can find certain symbols much easier.
@@ -144,6 +145,7 @@ do that.
 * Triforce Hunt changes
   * The number of Triforce pieces available per world, which was previously tied to the item pool setting, is now a separate setting.
 * Replaced old output option `compress_rom` with four separate options for outputting a patch file, compressed ROM, uncompressed ROM, and a WAD file.
+* Patch files from the web version of OoT Randomizer version 3.0 can now be used in the offline build. A `.zpf` patch file will be output in addition to the selected output types.
 
 ### 6.2
 

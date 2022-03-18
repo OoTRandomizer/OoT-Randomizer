@@ -70,9 +70,9 @@
             "Dodongos Cavern Far Bridge": "
                 (is_adult and (Hover_Boots or can_use(Longshot) or logic_dc_jump)) or
                 ((here(can_blast_or_smash) or Progressive_Strength_Upgrade) and
-                (is_child and (Slingshot or
-                    (logic_dc_slingshot_skip and (Sticks or Bombs or Kokiri_Sword)))) or 
-                (is_adult and Bow))"
+                    ((is_child and (Slingshot or
+                        (logic_dc_slingshot_skip and (Sticks or Bombs or Kokiri_Sword)))) or
+                    (is_adult and Bow)))"
         }
     },
     {

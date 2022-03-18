@@ -4,7 +4,7 @@ import hashlib
 import io
 import itertools
 import logging
-import os, os.path
+import os
 import platform
 import random
 import shutil
@@ -25,8 +25,9 @@ from Item import Item
 from ItemPool import generate_itempool
 from Hints import buildGossipHints
 from HintList import clearHintExclusionCache
-from Utils import default_output_path, is_bundled, subprocess_args, data_path
+from Utils import default_output_path, is_bundled, run_process, data_path
 from N64Patch import create_patch_file, apply_patch_file
+from MBSDIFFPatch import apply_ootr_3_web_patch
 from SettingsList import setting_infos, logic_tricks
 from Rules import set_rules, set_shop_rules
 from Plandomizer import Distribution
@@ -473,13 +474,16 @@ def from_patch_file(settings, window=dummy_window()):
     output_path = os.path.join(output_dir, output_filename_base)
 
     window.update_status('Patching ROM')
-    if extension == 'zpf':
-        subfile = None
+    if extension == 'patch':
+        apply_ootr_3_web_patch(settings, rom, window)
+        create_patch_file(rom, output_path + '.zpf')
     else:
-        subfile = 'P%d.zpf' % (settings.player_num)
-        if not settings.output_file:
-            output_path += 'P%d' % (settings.player_num)
-    apply_patch_file(rom, settings.patch_file, subfile)
+        subfile = None
+        if extension == 'zpfz':
+            subfile = f"P{settings.player_num}.zpf"
+            if not settings.output_file:
+                output_path += f"P{settings.player_num}"
+        apply_patch_file(rom, settings.patch_file, subfile)
     cosmetics_log = None
     if settings.repatch_cosmetics:
         cosmetics_log = patch_cosmetics(settings, rom)
@@ -603,24 +607,36 @@ def cosmetic_patch(settings, window=dummy_window()):
     return True
 
 
-def run_process(window, logger, args, stdin=None):
-    process = subprocess.Popen(args, bufsize=1, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
-    filecount = None
-    if stdin is not None:
-        process.communicate(input=stdin)
-    else:
-        while True:
-            line = process.stdout.readline()
-            if line != b'':
-                find_index = line.find(b'files remaining')
-                if find_index > -1:
-                    files = int(line[:find_index].strip())
-                    if filecount == None:
-                        filecount = files
-                    window.update_progress(65 + 30*(1 - files/filecount))
-                logger.info(line.decode('utf-8').strip('\n'))
-            else:
-                break
+def diff_roms(settings, diff_rom_file):
+    start = time.process_time()
+    logger = logging.getLogger('')
+
+    logger.info('Loading base ROM.')
+    rom = Rom(settings.rom)
+    rom.force_patch = []
+
+    filename_split = os.path.basename(diff_rom_file).rpartition('.')
+    output_filename_base = settings.output_file if settings.output_file else filename_split[0]
+    output_dir = default_output_path(settings.output_dir)
+    output_path = os.path.join(output_dir, output_filename_base)
+
+    logger.info('Loading patched ROM.')
+    rom.read_rom(diff_rom_file)
+    rom.decompress_rom_file(diff_rom_file, f"{output_path}_decomp.z64", verify_crc=False)
+    try:
+        os.remove(f"{output_path}_decomp.z64")
+    except FileNotFoundError:
+        pass
+
+    logger.info('Searching for changes.')
+    rom.rescan_changed_bytes()
+    rom.scan_dmadata_update(assume_move=True)
+
+    logger.info('Creating patch file.')
+    create_patch_file(rom, f"{output_path}.zpf")
+    logger.info(f"Created patchfile at: {output_path}.zpf")
+    logger.info('Done. Enjoy.')
+    logger.debug('Total Time: %s', time.process_time() - start)
 
 
 def copy_worlds(worlds):

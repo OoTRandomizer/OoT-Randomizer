@@ -8,7 +8,7 @@ import datetime
 import sys
 
 from Gui import guiMain
-from Main import main, from_patch_file, cosmetic_patch
+from Main import main, from_patch_file, cosmetic_patch, diff_roms
 from Utils import check_version, VersionError, check_python_version, local_path
 from Settings import get_settings_from_command_line_args
 
@@ -21,7 +21,7 @@ class ArgumentDefaultsHelpFormatter(argparse.RawTextHelpFormatter):
 
 def start():
 
-    settings, gui, args_loglevel, no_log_file = get_settings_from_command_line_args()
+    settings, gui, args_loglevel, no_log_file, diff_rom = get_settings_from_command_line_args()
 
     # set up logger
     loglevel = {'error': logging.ERROR, 'info': logging.INFO, 'warning': logging.WARNING, 'debug': logging.DEBUG}[args_loglevel]
@@ -49,6 +49,8 @@ def start():
     try:
         if gui:
             guiMain()
+        elif diff_rom:
+            diff_roms(settings, diff_rom)
         elif settings.cosmetics_only:
             cosmetic_patch(settings)
         elif settings.patch_file != '':
