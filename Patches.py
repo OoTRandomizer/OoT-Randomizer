@@ -3,6 +3,7 @@ import struct
 import itertools
 import re
 import zlib
+import os
 from collections import defaultdict
 
 from World import World
@@ -11,18 +12,28 @@ from Spoiler import Spoiler
 from LocationList import business_scrubs
 from Hints import writeGossipStoneHints, buildAltarHints, \
         buildGanonText, getSimpleHintNoPrefix
+from HintList import HT, hintTable
 from Utils import data_path
 from Messages import read_messages, update_message_by_id, read_shop_items, update_warp_song_text, \
         write_shop_items, remove_unused_messages, make_player_message, \
         add_item_messages, repack_messages, shuffle_messages, \
-        get_message_by_id
+        get_message_by_id, update_message_jp, jp_start, write_messages, shuffle_messages_jp, reproduce_messages_jp
 from OcarinaSongs import replace_songs
 from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
 from SaveContext import SaveContext, Scenes, FlagType
 import StartingItems
-
+from Language import getLang, dataList
 
 def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
+    lang = world.settings.language_selection
+    langdef = 0
+    t = 0
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+        t = 1
+    # if the language takes full width characters, include it to the line 1855.
+    if lang == 'japanese':
+        langdef = 1
     with open(data_path('generated/rom_patch.txt'), 'r') as stream:
         for line in stream:
             address, value = [int(x, 16) for x in line.split(',')]
@@ -30,24 +41,48 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     rom.scan_dmadata_update()
 
     # Write Randomizer title screen logo
-    with open(data_path('title.bin'), 'rb') as stream:
-        writeAddress = 0x01795300
-        titleBytesComp = stream.read()
-        titleBytesDiff = zlib.decompress(titleBytesComp)
+    if world.settings.language_selection == 'english':
+        with open(data_path('title.bin'), 'rb') as stream:
+            writeAddress = 0x01795300
+            titleBytesComp = stream.read()
+            titleBytesDiff = zlib.decompress(titleBytesComp)
 
-        originalBytes = rom.original.buffer[writeAddress: writeAddress+ len(titleBytesDiff)]
-        titleBytes = bytearray([a ^ b for a, b in zip(titleBytesDiff, originalBytes)])
-        rom.write_bytes(writeAddress, titleBytes)
+            originalBytes = rom.original.buffer[writeAddress: writeAddress+ len(titleBytesDiff)]
+            titleBytes = bytearray([a ^ b for a, b in zip(titleBytesDiff, originalBytes)])
+            rom.write_bytes(writeAddress, titleBytes)
+        # Fixes the typo of keatan mask in the item select screen
+        with open(data_path('keaton.bin'), 'rb') as stream:
+            writeAddress = 0x8A7C00
+            keatonBytesComp = stream.read()
+            keatonBytesDiff = zlib.decompress(keatonBytesComp)
 
-    # Fixes the typo of keatan mask in the item select screen
-    with open(data_path('keaton.bin'), 'rb') as stream:
-        writeAddress = 0x8A7C00
-        keatonBytesComp = stream.read()
-        keatonBytesDiff = zlib.decompress(keatonBytesComp)
+            originalBytes = rom.original.buffer[writeAddress: writeAddress+ len(keatonBytesDiff)]
+            keatonBytes = bytearray([a ^ b for a, b in zip(keatonBytesDiff, originalBytes)])
+            rom.write_bytes(writeAddress, keatonBytes)
+    elif world.settings.language_selection == 'japanese':
+        with open(data_path('JP.bin'), 'rb') as stream:
+            writeAddress = 0x01795300
+            titleBytesComp = stream.read()
+            titleBytesDiff = zlib.decompress(titleBytesComp)
 
-        originalBytes = rom.original.buffer[writeAddress: writeAddress+ len(keatonBytesDiff)]
-        keatonBytes = bytearray([a ^ b for a, b in zip(keatonBytesDiff, originalBytes)])
-        rom.write_bytes(writeAddress, keatonBytes)
+            originalBytes = rom.original.buffer[writeAddress: writeAddress+ len(titleBytesDiff)]
+            titleBytes = bytearray([a ^ b for a, b in zip(titleBytesDiff, originalBytes)])
+            rom.write_bytes(writeAddress, titleBytes)
+    elif world.settings.language_selection == 'extra':
+        # Write datas inside lang data file
+        langPath = world.settings.lang_path
+        data = os.path.join(langPath, "data")
+        for n in os.listdir(data):
+            file_name = str(n).replace(".bin", "")
+            writeAddress = dataList[file_name]
+            filePath = os.path.join(data, n)
+            with open(filePath, "rb") as stream:
+                dataBytesComp = stream.read()
+                dataBytesDiff = zlib.decompress(dataBytesComp)
+
+                originalBytes = rom.original.buffer[writeAddress: writeAddress+ len(dataBytesDiff)]
+                dataBytes = bytearray([a ^ b for a, b in zip(dataBytesDiff, originalBytes)])
+                rom.write_bytes(writeAddress, dataBytes)
 
     # Load Triforce model into a file
     triforce_obj_file = File({ 'Name': 'object_gi_triforce' })
@@ -102,9 +137,13 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     if world.settings.no_collectible_hearts:
         rom.write_byte(0xA895B7, 0x2E)
 
-    # Force language to be English in the event a Japanese rom was submitted
-    rom.write_byte(0x3E, 0x45)
-    rom.force_patch.append(0x3E)
+    # Force language 
+    if lang == 'english':
+        rom.write_byte(0x3E, 0x45)
+        rom.force_patch.append(0x3E)
+    elif lang == 'japanese':
+        rom.write_byte(0x3E, 0x4A)
+        rom.force_patch.append(0x3E)
 
     # Increase the instance size of Bombchus prevent the heap from becoming corrupt when
     # a Dodongo eats a Bombchu. Does not fix stale pointer issues with the animation
@@ -1379,27 +1418,81 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     rom.write_int16s(0x28E3080, [0x0000, 0x0001]) # entrance list
     rom.write_int16(0x28E4076, 0x0005) # Change shop to Kakariko Bazaar
     #rom.write_int16(0x3489076, 0x0005) # Change shop to Kakariko Bazaar
-
+    
+        
     # Load Message and Shop Data
     messages = read_messages(rom)
     remove_unused_messages(messages)
+    messages_jp = []
+    jp_start(rom, mode = langdef)
     shop_items = read_shop_items(rom, shop_item_file.start + 0x1DEC)
 
     # Set Big Poe count to get reward from buyer
     poe_points = world.settings.big_poe_count * 100
+    poe_points_jp = str(poe_points).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
+
     rom.write_int16(0xEE69CE, poe_points)
     # update dialogue
-    new_message = "\x08Hey, young man. What's happening \x01today? If you have a \x05\x41Poe\x05\x40, I will \x01buy it.\x04\x1AIf you earn \x05\x41%d points\x05\x40, you'll\x01be a happy man! Heh heh.\x04\x08Your card now has \x05\x45\x1E\x01 \x05\x40points.\x01Come back again!\x01Heh heh heh!\x02" % poe_points
-    update_message_by_id(messages, 0x70F5, new_message)
+    if langdef == 0:
+        if t == 0:
+            new_message = "\x08Hey, young man. What's happening \x01today? If you have a \x05\x41Poe\x05\x40, I will \x01buy it.\x04\x1AIf you earn \x05\x41%d points\x05\x40, you'll\x01be a happy man! Heh heh.\x04\x08Your card now has \x05\x45\x1E\x01 \x05\x40points.\x01Come back again!\x01Heh heh heh!\x02" % poe_points
+        elif t == 1:
+            new_message = getLang(world, "text", 0x70F5) % poe_points
+        update_message_by_id(messages, 0x70F5, new_message)
+    elif langdef == 1:
+        if t == 0:
+            new_message = "<…ああ　ニイさん。&今日は　なんだい？？&#\x01ポウ#\x00があるなら　買ってやるよ。^<#\x01%sポイント#\x00たまると&幸せになれるぞ！^<今&#\x05@H\x01#\x00あるからね。&またよろしく。　イーッヒッヒ！" % poe_points_jp
+        elif t == 1:
+            new_message = getLang(world, "text", 0x70F5) % poe_points_jp
+        update_message_jp(messages_jp, 0x70F5, new_message, align = "center")
     if world.settings.big_poe_count != 10:
-        new_message = "\x1AOh, you brought a Poe today!\x04\x1AHmmmm!\x04\x1AVery interesting!\x01This is a \x05\x41Big Poe\x05\x40!\x04\x1AI'll buy it for \x05\x4150 Rupees\x05\x40.\x04On top of that, I'll put \x05\x41100\x01points \x05\x40on your card.\x04\x1AIf you earn \x05\x41%d points\x05\x40, you'll\x01be a happy man! Heh heh." % poe_points
-        update_message_by_id(messages, 0x70f7, new_message)
-        new_message = "\x1AWait a minute! WOW!\x04\x1AYou have earned \x05\x41%d points\x05\x40!\x04\x1AYoung man, you are a genuine\x01\x05\x41Ghost Hunter\x05\x40!\x04\x1AIs that what you expected me to\x01say? Heh heh heh!\x04\x1ABecause of you, I have extra\x01inventory of \x05\x41Big Poes\x05\x40, so this will\x01be the last time I can buy a \x01ghost.\x04\x1AYou're thinking about what I \x01promised would happen when you\x01earned %d points. Heh heh.\x04\x1ADon't worry, I didn't forget.\x01Just take this." % (poe_points, poe_points)
-        update_message_by_id(messages, 0x70f8, new_message)
+        if langdef == 0:
+            if t == 0:
+                new_message1 = "\x1AOh, you brought a Poe today!\x04\x1AHmmmm!\x04\x1AVery interesting!\x01This is a \x05\x41Big Poe\x05\x40!\x04\x1AI'll buy it for \x05\x4150 Rupees\x05\x40.\x04On top of that, I'll put \x05\x41100\x01points \x05\x40on your card.\x04\x1AIf you earn \x05\x41%d points\x05\x40, you'll\x01be a happy man! Heh heh." % poe_points
+                new_message2 = "\x1AWait a minute! WOW!\x04\x1AYou have earned \x05\x41%d points\x05\x40!\x04\x1AYoung man, you are a genuine\x01\x05\x41Ghost Hunter\x05\x40!\x04\x1AIs that what you expected me to\x01say? Heh heh heh!\x04\x1ABecause of you, I have extra\x01inventory of \x05\x41Big Poes\x05\x40, so this will\x01be the last time I can buy a \x01ghost.\x04\x1AYou're thinking about what I \x01promised would happen when you\x01earned %d points. Heh heh.\x04\x1ADon't worry, I didn't forget.\x01Just take this." % (poe_points, poe_points)
+            elif t == 1:
+                new_message1 = getLang(world, "text", 0x70f7) % poe_points
+                new_message2 = getLang(world, "text", 0x70f8) % (poe_points, poe_points)
+            update_message_by_id(messages, 0x70f7, new_message1)
+            update_message_by_id(messages, 0x70f8, new_message2)
+        elif langdef == 1:
+            if t == 0:
+                new_message1 = "<今日は　ポウを&つかまえてきたんだね？^<オオ～ッ！&こいつは#\x01ビッグポウ#\x00じゃないか！^<#\x01５０ルピー#\x00で　買い取ろう。^お店のクーポン&#\x01１００ポイント#\x00もつけとくよ。^<#\x01%sポイント#\x00たまると&幸せになれる　クーポンだ！&ヒッヒッヒ！" % poe_points_jp
+                new_message2 = "<オオオオオ～ッ！！^<ついに　#\x01%sポイント#\x00&集めたか！！^<ニイさんこそ&本物の　#\x01ゴーストハンター#\x00^<とでも　言うと　思ったか？&イーッヒッヒッヒ。^<ニイさんの　おかげで&#\x01ビッグポウ#\x00が　余っちゃったよ…&買い取るのも　これで　最後だ。^<約束のことか？　心配すんな、&コレでも　持っていきな。" % poe_points_jp
+            elif t == 1:
+                new_message1 = getLang(world, "text", 0x70f7) % poe_points_jp
+                new_message2 = getLang(world, "text", 0x70f8) % poe_points_jp
+            update_message_jp(messages_jp, 0x70f7, new_message1, align = "center")
+            update_message_jp(messages_jp, 0x70f8, new_message2, align = "center")
+    elif world.settings.big_poe_count == 10:
+        if t == 0:
+            pass
+        elif t == 1:
+            if langdef == 0:
+                new_message1 = getLang(world, "text", 0x70f7) % poe_points
+                new_message2 = getLang(world, "text", 0x70f8) % (poe_points, poe_points)
+                update_message_by_id(messages, 0x70f7, new_message1)
+                update_message_by_id(messages, 0x70f8, new_message2)
+            elif langdef == 1:
+                new_message1 = getLang(world, "text", 0x70f7) % poe_points_jp
+                new_message2 = getLang(world, "text", 0x70f8) % poe_points_jp
+                update_message_jp(messages_jp, 0x70f7, new_message1, align = "center")
+                update_message_jp(messages_jp, 0x70f8, new_message2, align = "center")
 
     # Update Child Anju's dialogue
-    new_message = "\x08What should I do!?\x01My \x05\x41Cuccos\x05\x40 have all flown away!\x04You, little boy, please!\x01Please gather at least \x05\x41%d Cuccos\x05\x40\x01for me.\x02" % world.settings.chicken_count
-    update_message_by_id(messages, 0x5036, new_message)
+    chick = str(world.settings.chicken_count).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
+    if langdef == 0:
+        if t == 0:
+            new_message = "\x08What should I do!?\x01My \x05\x41Cuccos\x05\x40 have all flown away!\x04You, little boy, please!\x01Please gather at least \x05\x41%d Cuccos\x05\x40\x01for me.\x02" % world.settings.chicken_count
+        elif t == 1:
+            new_message = getLang(world, "text", 0x5036) % world.settings.chicken_count
+        update_message_by_id(messages, 0x5036, new_message)
+    elif langdef == 1:
+        if t == 0:
+            new_message = "<どうしましょ！&#\x01コッコ#\x00が&とんでいっちゃった！^<ぼうや、お願い。&#\x01%s羽#\x00でいいから&つれてきて！" % chick
+        elif t == 1:
+            new_message = getLang(world, "text", 0x5036) % chick
+        update_message_jp(messages_jp, 0x5036, new_message, align = "center")
 
     # Update "Princess Ruto got the Spiritual Stone!" text before the midboss in Jabu
     reward_text = {'Kokiri Emerald':   "\x05\x42Kokiri Emerald\x05\x40",
@@ -1412,8 +1505,30 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
                    'Shadow Medallion': "\x05\x45Shadow Medallion\x05\x40",
                    'Light Medallion':  "\x05\x44Light Medallion\x05\x40"
     }
-    new_message = "\x1a\x08Princess Ruto got the \x01%s!\x09\x01\x14\x02But\x14\x00 why Princess Ruto?\x02" % reward_text[world.get_location('Barinade').item.name]
-    update_message_by_id(messages, 0x4050, new_message)
+    reward_text_jp = {'Kokiri Emerald':   "#\x02コキリのヒスイ#\x00",
+                      'Goron Ruby':       "#\x01ゴロンのルビー#\x00",
+                      'Zora Sapphire':    "#\x03ゾーラのサファイア#\x00",
+                      'Forest Medallion': "#\x02森のメダル#\x00",
+                      'Fire Medallion':   "#\x01炎のメダル#\x00",
+                      'Water Medallion':  "#\x03水のメダル#\x00",
+                      'Spirit Medallion': "#\x06魂のメダル#\x00",
+                      'Shadow Medallion': "#\x05闇のメダル#\x00",
+                      'Light Medallion':  "#\x04光のメダル#\x00"
+    }
+    if langdef == 0:
+        if t == 0:
+            new_message = "\x1a\x08Princess Ruto got the \x01%s!\x09\x01\x14\x02But\x14\x00 why Princess Ruto?\x02" % reward_text[world.get_location('Barinade').item.name]
+        elif t == 1:
+            rewardX = getLang(world, "reward text")
+            new_message = getLang(world, "text", 0x4050) % rewardX[world.get_location('Barinade').item.name]
+        update_message_by_id(messages, 0x4050, new_message)
+    elif langdef == 1:
+        if t == 0:
+            new_message = "]<ルト姫が%sを入手！>&+S\x02…って、+S\x00　なんで　ルト姫なの？" % reward_text_jp[world.get_location('Barinade').item.name]
+        elif t == 1:
+            rewardX = getLang(world, "reward text")
+            new_message = getLang(world, "text", 0x4050) % rewardX[world.get_location('Barinade').item.name]
+        update_message_jp(messages_jp, 0x4050, new_message, align = "left")
 
     # use faster jabu elevator
     if not world.dungeon_mq['Jabu Jabus Belly'] and world.settings.shuffle_scrubs == 'off':
@@ -1424,7 +1539,27 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         save_context.write_bits(0x00D4 + 0x48 * 0x1C + 0x08 + 0x3, 0x10) # Beat First Dampe Race (& Chest Spawned)
         rom.write_byte(rom.sym('CHAIN_HBA_REWARDS'), 1)
         # Update the first horseback archery text to make it clear both rewards are available from the start
-        update_message_by_id(messages, 0x6040, "Hey newcomer, you have a fine \x01horse!\x04I don't know where you stole \x01it from, but...\x04OK, how about challenging this \x01\x05\x41horseback archery\x05\x40?\x04Once the horse starts galloping,\x01shoot the targets with your\x01arrows. \x04Let's see how many points you \x01can score. You get 20 arrows.\x04If you can score \x05\x411,000 points\x05\x40, I will \x01give you something good! And even \x01more if you score \x05\x411,500 points\x05\x40!\x0B\x02")
+        if langdef == 0:
+            if t == 0:
+                new_message = "Hey newcomer, you have a fine \x01horse!\x04I don't know where you stole \x01it from, but...\x04OK, how about challenging this \x01\x05\x41horseback archery\x05\x40?\x04Once the horse starts galloping,\x01shoot the targets with your\x01arrows. \x04Let's see how many points you \x01can score. You get 20 arrows.\x04If you can score \x05\x411,000 points\x05\x40, I will \x01give you something good! And even \x01more if you score \x05\x411,500 points\x05\x40!\x0B\x02"
+            elif t == 1:
+                new_message = getLang(world, "text", 0x6040)
+            update_message_by_id(messages, 0x6040, new_message)
+        elif langdef == 1:
+            if t == 0:
+                new_message = "<よぉ、新入り！&いい馬に　乗ってるじゃないか！^<どうだい、#\x01やぶさめ#\x00に&挑戦してみないか？^<行きと帰りで　何ポイントとれるか。&使える矢は　２０本だ。^<#\x01１０００ポイント#\x00　獲れれば&イイものを　やろう。^<そして　#\x01１５００ポイント#\x00　獲れれば&もっとイイものを　やろう！{"
+            elif t == 1:
+                new_message = getLang(world, "text", 0x6040)
+            update_message_jp(messages_jp, 0x6040, new_message, align = "center")
+    elif not world.settings.skip_some_minigame_phases:
+        if t == 0:
+            pass
+        elif t == 1:
+            new_message = getLang(world, "text", 0x9040)
+            if langdef == 0:
+                update_message_by_id(messages, 0x6040, new_message)
+            elif langdef == 1:
+                update_message_jp(messages_jp, 0x6040, new_message, align = "center")
 
     # Fix HBA to not wait for the fanfare to complete before transitioning to claim reward
     rom.write_byte(0xC1C00B, 0x2)
@@ -1437,7 +1572,10 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     if world.settings.hints == 'none':
         rom.write_int32(symbol, 0)
     else:
-        writeGossipStoneHints(spoiler, world, messages)
+        if lang == 'english':
+            writeGossipStoneHints(spoiler, world, messages)
+        elif lang == 'japanese':
+            writeGossipStoneHints(spoiler, world, messages_jp)
 
         if world.settings.hints == 'mask':
             rom.write_int32(symbol, 0)
@@ -1449,8 +1587,28 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
 
     # build silly ganon lines
     if world.settings.misc_hints:
-        buildGanonText(world, messages)
-
+        if langdef == 0:
+            buildGanonText(world, messages)
+        elif langdef == 1:
+            buildGanonText(world, messages_jp)
+    elif not world.settings.misc_hints:
+        text1 = getLang(world, "text", 0x70C8)
+        text2 = getLang(world, "text", 0x70C9)
+        text3 = getLang(world, "text", 0x70CA)
+        text4 = getLang(world, "text", 0x70CB)
+        text5 = getLang(world, "text", 0x70CC)
+        if langdef == 0:
+            update_message_by_id(messages, 0x70C8, text1)
+            update_message_by_id(messages, 0x70C9, text2)
+            update_message_by_id(messages, 0x70CA, text3)
+            update_message_by_id(messages, 0x70CB, text4)
+            update_message_by_id(messages, 0x70CC, text5)
+        elif langdef == 1:
+            update_message_jp(messages_jp, 0x70C8, text1, align = "center")
+            update_message_jp(messages_jp, 0x70C9, text2, align = "center")
+            update_message_jp(messages_jp, 0x70CA, text3, align = "center")
+            update_message_jp(messages_jp, 0x70CB, text4, align = "center")
+            update_message_jp(messages_jp, 0x70CC, text, align = "center")
     # Write item overrides
     override_table = get_override_table(world)
     rom.write_bytes(rom.sym('cfg_item_overrides'), get_override_table_bytes(override_table))
@@ -1542,9 +1700,37 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
 
     # add a cheaper bombchu pack to the bombchu shop
     # describe
-    update_message_by_id(messages, 0x80FE, '\x08\x05\x41Bombchu   (5 pieces)   60 Rupees\x01\x05\x40This looks like a toy mouse, but\x01it\'s actually a self-propelled time\x01bomb!\x09\x0A', 0x03)
+    if langdef == 0:
+        if t == 0:
+            new_message1 = '\x08\x05\x41Bombchu   (5 pieces)   60 Rupees\x01\x05\x40This looks like a toy mouse, but\x01it\'s actually a self-propelled time\x01bomb!\x09\x0A'
+            new_message2 = '\x08Bombchu    5 Pieces    60 Rupees\x01\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x09'
+            new_message3 = "\x08\x05\x41Bombchu  (10 pieces)  99 Rupees\x01\x05\x40This looks like a toy mouse, but\x01it's actually a self-propelled time\x01bomb!\x09\x0A"
+            new_message4 = "\x08Bombchu  10 pieces   99 Rupees\x09\x01\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40"
+        elif t == 1:
+            new_message1 = getLang(world, "text", 0x80FE)
+            new_message2 = getLang(world, "text", 0x80FF)
+            new_message3 = getLang(world, "text", 0x80BC)
+            new_message4 = getLang(world, "text", 0x808C)
+        update_message_by_id(messages, 0x80FE, new_message1, 0x03)
+        update_message_by_id(messages, 0x80FF, new_message2, 0x03)
+        update_message_by_id(messages, shop_items[0x001C].description_message, new_message3)
+        update_message_by_id(messages, shop_items[0x001C].purchase_message, new_message4)
+    elif langdef == 1:
+        if t == 0:
+            new_message1 = '<#\x01ボムチュウ（５コ）　６０ルピー&#\x00自分で走る　新型バクダン。>*O'
+            new_message2 = '<ボムチュウ（５コ）　６０ルピー&:2#\x02かう&やめとく#\x00>'
+            new_message3 = "<#\x01ボムチュウ（１０コ）９９ルピー#\x00&自分で走る　新型バクダン。>*O"
+            new_message4 = "<ボムチュウ（１０コ）９９ルピー&:2#\x02かう&やめとく#\x00>"
+        elif t == 1:
+            new_message1 = getLang(world, "text", 0x80FE)
+            new_message2 = getLang(world, "text", 0x80FF)
+            new_message3 = getLang(world, "text", 0x80BC)
+            new_message4 = getLang(world, "text", 0x808C)
+        update_message_jp(messages_jp, 0x80FE, new_message1, 0x03, align = "left")
+        update_message_jp(messages_jp, 0x80FF, new_message2, 0x03, align = "left")
+        update_message_jp(messages_jp, 0x80BC, new_message3, 0x00, align = "left")
+        update_message_jp(messages_jp, 0x808C, new_message4, 0x00, align = "left")
     # purchase
-    update_message_by_id(messages, 0x80FF, '\x08Bombchu    5 Pieces    60 Rupees\x01\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x09', 0x03)
     rbl_bombchu = shop_items[0x0018]
     rbl_bombchu.price = 60
     rbl_bombchu.pieces = 5
@@ -1556,13 +1742,11 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     shop_items[0x0015].price = 99
     shop_items[0x0019].price = 99
     shop_items[0x001C].price = 99
-    update_message_by_id(messages, shop_items[0x001C].description_message, "\x08\x05\x41Bombchu  (10 pieces)  99 Rupees\x01\x05\x40This looks like a toy mouse, but\x01it's actually a self-propelled time\x01bomb!\x09\x0A")
-    update_message_by_id(messages, shop_items[0x001C].purchase_message, "\x08Bombchu  10 pieces   99 Rupees\x09\x01\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40")
 
     shuffle_messages.shop_item_messages = []
 
     # kokiri shop
-    shop_objs = place_shop_items(rom, world, shop_items, messages,
+    shop_objs = place_shop_items(rom, world, shop_items, messages, messages_jp,
         world.get_region('KF Kokiri Shop').locations, True)
     shop_objs |= {0x00FC, 0x00B2, 0x0101, 0x0102, 0x00FD, 0x00C5} # Shop objects
     rom.write_byte(0x2587029, len(shop_objs))
@@ -1570,7 +1754,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     rom.write_int16s(0x2596600, list(shop_objs))
 
     # kakariko bazaar
-    shop_objs = place_shop_items(rom, world, shop_items, messages,
+    shop_objs = place_shop_items(rom, world, shop_items, messages, messages_jp,
         world.get_region('Kak Bazaar').locations)
     shop_objs |= {0x005B, 0x00B2, 0x00C5, 0x0107, 0x00C9, 0x016B} # Shop objects
     rom.write_byte(0x28E4029, len(shop_objs))
@@ -1578,7 +1762,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     rom.write_int16s(0x28EBA40, list(shop_objs))
 
     # castle town bazaar
-    shop_objs = place_shop_items(rom, world, shop_items, messages,
+    shop_objs = place_shop_items(rom, world, shop_items, messages, messages_jp,
         world.get_region('Market Bazaar').locations)
     shop_objs |= {0x005B, 0x00B2, 0x00C5, 0x0107, 0x00C9, 0x016B} # Shop objects
     rom.write_byte(bazaar_room_file.start + 0x29, len(shop_objs))
@@ -1586,7 +1770,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     rom.write_int16s(bazaar_room_file.start + 0x7A40, list(shop_objs))
 
     # goron shop
-    shop_objs = place_shop_items(rom, world, shop_items, messages,
+    shop_objs = place_shop_items(rom, world, shop_items, messages, messages_jp,
         world.get_region('GC Shop').locations)
     shop_objs |= {0x00C9, 0x00B2, 0x0103, 0x00AF} # Shop objects
     rom.write_byte(0x2D33029, len(shop_objs))
@@ -1594,7 +1778,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     rom.write_int16s(0x2D37340, list(shop_objs))
 
     # zora shop
-    shop_objs = place_shop_items(rom, world, shop_items, messages,
+    shop_objs = place_shop_items(rom, world, shop_items, messages, messages_jp,
         world.get_region('ZD Shop').locations)
     shop_objs |= {0x005B, 0x00B2, 0x0104, 0x00FE} # Shop objects
     rom.write_byte(0x2D5B029, len(shop_objs))
@@ -1602,7 +1786,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     rom.write_int16s(0x2D5FB40, list(shop_objs))
 
     # kakariko potion shop
-    shop_objs = place_shop_items(rom, world, shop_items, messages,
+    shop_objs = place_shop_items(rom, world, shop_items, messages, messages_jp,
         world.get_region('Kak Potion Shop Front').locations)
     shop_objs |= {0x0159, 0x00B2, 0x0175, 0x0122} # Shop objects
     rom.write_byte(0x2D83029, len(shop_objs))
@@ -1610,7 +1794,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     rom.write_int16s(0x2D8D500, list(shop_objs))
 
     # market potion shop
-    shop_objs = place_shop_items(rom, world, shop_items, messages,
+    shop_objs = place_shop_items(rom, world, shop_items, messages, messages_jp,
         world.get_region('Market Potion Shop').locations)
     shop_objs |= {0x0159, 0x00B2, 0x0175, 0x00C5, 0x010C, 0x016B} # Shop objects
     rom.write_byte(0x2DB0029, len(shop_objs))
@@ -1618,7 +1802,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     rom.write_int16s(0x2DB4E40, list(shop_objs))
 
     # bombchu shop
-    shop_objs = place_shop_items(rom, world, shop_items, messages,
+    shop_objs = place_shop_items(rom, world, shop_items, messages, messages_jp,
         world.get_region('Market Bombchu Shop').locations)
     shop_objs |= {0x0165, 0x00B2} # Shop objects
     rom.write_byte(0x2DD8029, len(shop_objs))
@@ -1638,6 +1822,35 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
             message = message.replace(b'mysterious item', item_name.encode())
         return message
 
+    def update_scrub_text_jp(id, default_price, price, item_name=None):
+        cnge = str(price).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
+        dflt = str(default_price).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
+        text = "<$まいったピー！&アイテム　売るッピー！^<%sルピー&:2#\x02かう&やめとく#\x00>"% dflt
+        if default_price != price:
+            text = "<$まいったピー！&アイテム　売るッピー！^<%sルピー&:2#\x02かう&やめとく#\x00>"% cnge
+        if item_name is not None:
+            textOptions, clearText, textOptionsJP, clearTextJP, type = hintTable[item_name]
+            text = text.replace('アイテム', clearTextJP)
+        return text
+    
+    def update_scrub_text_X(langc, message, id, default_price, price, item_name=None):
+        cnge = str(price).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
+        dflt = str(default_price).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
+        hintX = getLang(world, "hint")
+        if langc == 0:
+            text = getLang(world, "special", "Scrub Text") % default_price
+            if default_price != price:
+                text = getLang(world, "special", "Scrub Text") % price
+        elif langc == 1:
+            text = getLang(world, "special", "Scrub Text") % dflt
+            if default_price != price:
+                text = getLang(world, "special", "Scrub Text") % cnge
+        if item_name is not None:
+            item_u = getLang(world, "special", "Item")
+            textOptions, clearText = hintX[item_name]
+            text = text.replace(item_u, clearText)
+        return text
+        
     single_item_scrubs = {
         0x3E: world.get_location("HF Deku Scrub Grotto"),
         0x77: world.get_location("LW Deku Scrub Near Bridge"),
@@ -1645,6 +1858,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     }
 
     scrub_message_dict = {}
+    scrub_message_dict_jp = {}
     if world.settings.shuffle_scrubs == 'off':
         # Revert Deku Scrubs changes
         rom.write_int32s(0xEBB85C, [
@@ -1660,7 +1874,17 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         for (scrub_item, default_price, text_id, text_replacement) in business_scrubs:
             if scrub_item not in single_item_scrubs.keys():
                 continue
-            scrub_message_dict[text_id] = update_scrub_text(get_message_by_id(messages, text_id).raw_text, text_replacement, default_price, default_price)
+            if t == 0:
+                scrub_message_dict[text_id] = update_scrub_text(get_message_by_id(messages, text_id).raw_text, text_replacement, default_price, default_price)
+                scrub_message_dict_jp[text_id] = update_scrub_text_jp(text_id, default_price, default_price)
+            elif t == 1:
+                if langdef == 0:
+                    scrub_message_dict[text_id] = update_scrub_text_X(langdef, get_message_by_id(messages, text_id).raw_text, text_id, default_price, default_price)
+                    scrub_message_dict_jp[text_id] = update_scrub_text_jp(text_id, default_price, default_price)
+                elif langdef == 1:
+                    scrub_message_dict[text_id] = update_scrub_text(get_message_by_id(messages, text_id).raw_text, text_replacement, default_price, default_price)
+                    scrub_message_dict_jp[text_id] = update_scrub_text_X(langdef, get_message_by_id(messages, text_id).raw_text, text_id, default_price, default_price)
+
     else:
         # Rebuild Business Scrub Item Table
         rom.seek_address(0xDF8684)
@@ -1671,13 +1895,23 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
             rom.write_int32(None, scrub_item)  # Item
             rom.write_int32(None, 0x80A74FF8)  # Can_Buy_Func
             rom.write_int32(None, 0x80A75354)  # Buy_Func
-
-            scrub_message_dict[text_id] = update_scrub_text(get_message_by_id(messages, text_id).raw_text, text_replacement, default_price, price)
+            if t == 0:
+                scrub_message_dict[text_id] = update_scrub_text(get_message_by_id(messages, text_id).raw_text, text_replacement, default_price, price)
+                scrub_message_dict_jp[text_id] = update_scrub_text_jp(text_id, default_price, price)
+            elif t == 1:
+                if langdef == 0:
+                    scrub_message_dict[text_id] = update_scrub_text_X(langdef, get_message_by_id(messages, text_id).raw_text, text_id, default_price, price)
+                    scrub_message_dict_jp[text_id] = update_scrub_text_jp(text_id, default_price, price)
+                elif langdef == 1:
+                    scrub_message_dict[text_id] = update_scrub_text(get_message_by_id(messages, text_id).raw_text, text_replacement, default_price, price)
+                    scrub_message_dict_jp[text_id] = update_scrub_text_X(langdef, get_message_by_id(messages, text_id).raw_text, text_id, default_price, price)
 
         # update actor IDs
         set_deku_salesman_data(rom)
 
     # Update scrub messages.
+    for text_id, message in scrub_message_dict_jp.items():
+        update_message_jp(messages_jp, text_id, message, mode = 1)
     shuffle_messages.scrubs_message_ids = []
     for text_id, message in scrub_message_dict.items():
         update_message_by_id(messages, text_id, message)
@@ -1705,24 +1939,109 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     if world.settings.shuffle_beans:
         rom.write_byte(rom.sym('SHUFFLE_BEANS'), 0x01)
         # Update bean salesman messages to better fit the fact that he sells a randomized item
-        update_message_by_id(messages, 0x405E, "\x1AChomp chomp chomp...\x01We have... \x05\x41a mysterious item\x05\x40! \x01Do you want it...huh? Huh?\x04\x05\x41\x0860 Rupees\x05\x40 and it's yours!\x01Keyahahah!\x01\x1B\x05\x42Yes\x01No\x05\x40\x02")
-        update_message_by_id(messages, 0x4069, "You don't have enough money.\x01I can't sell it to you.\x01Chomp chomp...\x02")
-        update_message_by_id(messages, 0x406C, "We hope you like it!\x01Chomp chomp chomp.\x02")
+        if langdef == 0:
+            if t == 0:
+                text1 = "\x1AChomp chomp chomp...\x01We have... \x05\x41a mysterious item\x05\x40! \x01Do you want it...huh? Huh?\x04\x05\x41\x0860 Rupees\x05\x40 and it's yours!\x01Keyahahah!\x01\x1B\x05\x42Yes\x01No\x05\x40\x02"
+                text2 = "You don't have enough money.\x01I can't sell it to you.\x01Chomp chomp...\x02"
+                text3 = "We hope you like it!\x01Chomp chomp chomp.\x02"
+            elif t == 1:
+                text1 = getLang(world, "text", 0x405E)
+                text2 = getLang(world, "text", 0x4069)
+                text3 = getLang(world, "text", 0x406C)
+            update_message_by_id(messages, 0x405E, text1)
+            update_message_by_id(messages, 0x4069, text2)
+            update_message_by_id(messages, 0x406C, text3)
+        elif langdef == 1:
+            if t == 0:
+                text1 = "ポリ…ポリ…ポリ…&<#\x01アイテム#\x00…　あるよ…&どうだい？^<#\x01<６０ルピー#\x00なら　いいぜ！　ケケ！&:2#\x02かう&やめとく#\x00>"
+                text2 = "<お金がないなら　売れねぇな。>&ポリ…ポリ…"
+                text3 = "<まいどあり！>&ポリ…ポリ…ポリ…"
+            elif t == 1:
+                text1 = getLang(world, "text", 0x405E)
+                text2 = getLang(world, "text", 0x4069)
+                text3 = getLang(world, "text", 0x406C)
+            update_message_jp(messages_jp, 0x405E, text1, align = "left")
+            update_message_jp(messages_jp, 0x4069, text2, align = "center")
+            update_message_jp(messages_jp, 0x406C, text3, align = "center")
         # Change first magic bean to cost 60 (is used as the price for the one time item when beans are shuffled)
         rom.write_byte(0xE209FD, 0x3C)
-
+    elif not world.settings.shuffle_beans:
+        if t == 0:
+            pass
+        elif t == 1:
+            text1 = getLang(world, "text", 0x905E)
+            text2 = getLang(world, "text", 0x9069)
+            text3 = getLang(world, "text", 0x906C)
+            if langdef == 0:
+                update_message_by_id(messages, 0x405E, text1)
+                update_message_by_id(messages, 0x4069, text2)
+                update_message_by_id(messages, 0x406C, text3)
+            elif langdef == 1:
+                update_message_jp(messages_jp, 0x405E, text1, align = "left")
+                update_message_jp(messages_jp, 0x4069, text2, align = "center")
+                update_message_jp(messages_jp, 0x406C, text3, align = "center")
     if world.settings.shuffle_medigoron_carpet_salesman:
         rom.write_byte(rom.sym('SHUFFLE_CARPET_SALESMAN'), 0x01)
-        # Update carpet salesman messages to better fit the fact that he sells a randomized item
-        update_message_by_id(messages, 0x6077, "\x06\x41Well Come!\x04I am selling stuff, strange and \x01rare, from all over the world to \x01everybody.\x01Today's special is...\x04A mysterious item! \x01Intriguing! \x01I won't tell you what it is until \x01I see the money....\x04How about \x05\x41200 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
-        update_message_by_id(messages, 0x6078, "Thank you very much!\x04The mark that will lead you to\x01the Spirit Temple is the \x05\x41flag on\x01the left \x05\x40outside the shop.\x01Be seeing you!\x02")
-
         rom.write_byte(rom.sym('SHUFFLE_MEDIGORON'), 0x01)
+        # Update carpet salesman messages to better fit the fact that he sells a randomized item
         # Update medigoron messages to better fit the fact that he sells a randomized item
-        update_message_by_id(messages, 0x304C, "I have something cool right here.\x01How about it...\x07\x30\x4F\x02")
-        update_message_by_id(messages, 0x304D, "How do you like it?\x02")
-        update_message_by_id(messages, 0x304F, "How about buying this cool item for \x01200 Rupees?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
-
+        if langdef == 0:
+            if t == 0:
+                text1 = "\x06\x41Well Come!\x04I am selling stuff, strange and \x01rare, from all over the world to \x01everybody.\x01Today's special is...\x04A mysterious item! \x01Intriguing! \x01I won't tell you what it is until \x01I see the money....\x04How about \x05\x41200 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02"
+                text2 = "Thank you very much!\x04The mark that will lead you to\x01the Spirit Temple is the \x05\x41flag on\x01the left \x05\x40outside the shop.\x01Be seeing you!\x02"
+                text3 = "I have something cool right here.\x01How about it...\x07\x30\x4F\x02"
+                text4 = "How do you like it?\x02"
+                text5 = "How about buying this cool item for \x01200 Rupees?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02"
+            elif t == 1:
+                text1 = getLang(world, "text", 0x6077)
+                text2 = getLang(world, "text", 0x6078)
+                text3 = getLang(world, "text", 0x304C)
+                text4 = getLang(world, "text", 0x304D)
+                text5 = getLang(world, "text", 0x304F)
+            update_message_by_id(messages, 0x6077, text1)
+            update_message_by_id(messages, 0x6078, text2)
+            update_message_by_id(messages, 0x304C, text3)
+            update_message_by_id(messages, 0x304D, text4)
+            update_message_by_id(messages, 0x304F, text5)
+        elif langdef == 1:
+            if t == 0: 
+                text1 = "<+T\x1Bイ～ラッシャ～イ！！^<今回ノ　商品ハ…&オ金モラウマデ　ヒミツデ～ス！^<#\x01２００るぴぃ#\x00デ～ス。　買ウ？&:2#\x02かう&やめとく#\x00>"
+                text2 = "<マイドアリ～！！&気ガ変ワッタラ　マタ　来テネ～。"
+                text3 = "<スッゴイもの　もってるゴロ。&ためしに…}\x30\x4F"
+                text4 = "<どう…ゴロ？"
+                text5 = "<２００ルピーで、買う？&:2#\x02かう&やめとく#\x00>"
+            elif t == 1:
+                text1 = getLang(world, "text", 0x6077)
+                text2 = getLang(world, "text", 0x6078)
+                text3 = getLang(world, "text", 0x304C)
+                text4 = getLang(world, "text", 0x304D)
+                text5 = getLang(world, "text", 0x304F)
+            update_message_jp(messages_jp, 0x6077, text1, align = "left")
+            update_message_jp(messages_jp, 0x6078, text2, align = "center")
+            update_message_jp(messages_jp, 0x304C, text3, align = "center")
+            update_message_jp(messages_jp, 0x304D, text4, align = "center")
+            update_message_jp(messages_jp, 0x304F, text5, align = "left")
+    elif not world.settings.shuffle_medigoron_carpet_salesman:
+        if t == 0:
+            pass
+        elif t == 1:
+            text1 = getLang(world, "text", 0x9077)
+            text2 = getLang(world, "text", 0x9078)
+            text3 = getLang(world, "text", 0x904C)
+            text4 = getLang(world, "text", 0x904D)
+            text5 = getLang(world, "text", 0x904F)
+            if langdef == 0:
+                update_message_by_id(messages, 0x6077, text1)
+                update_message_by_id(messages, 0x6078, text2)
+                update_message_by_id(messages, 0x304C, text3)
+                update_message_by_id(messages, 0x304D, text4)
+                update_message_by_id(messages, 0x304F, text5)
+            elif langdef == 1:
+                update_message_jp(messages_jp, 0x6077, text1, align = "left")
+                update_message_jp(messages_jp, 0x6078, text2, align = "center")
+                update_message_jp(messages_jp, 0x304C, text3, align = "center")
+                update_message_jp(messages_jp, 0x304D, text4, align = "center")
+                update_message_jp(messages_jp, 0x304F, text5, align = "left")
     if world.settings.shuffle_smallkeys == 'remove' or world.settings.shuffle_bosskeys == 'remove' or world.settings.shuffle_ganon_bosskey == 'remove':
         locked_doors = get_locked_doors(rom, world)
         for _,[door_byte, door_bits] in locked_doors.items():
@@ -1783,7 +2102,10 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
                 rom.write_int16(chest_address_2 + 6, 0x0172)  # Z pos
 
     # give dungeon items the correct messages
-    add_item_messages(messages, shop_items, world)
+    if langdef == 0:
+        add_item_messages(messages, shop_items, world)
+    elif langdef == 1:
+        add_item_messages(messages_jp, shop_items, world)
     if world.settings.enhance_map_compass:
         reward_list = {'Kokiri Emerald':   "\x05\x42Kokiri Emerald\x05\x40",
                        'Goron Ruby':       "\x05\x41Goron Ruby\x05\x40",
@@ -1806,37 +2128,113 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
                         'Bottom of the Well': ("the \x05\x45Bottom of the Well", None, 0xa2, 0xa5),
                         'Shadow Temple':      ("the \x05\x45Shadow Temple", 'Bongo Bongo', 0x7f, 0xa3),
         }
+        reward_list_jp =  {'Kokiri Emerald':   "##\x02コキリのヒスイ##\x00",
+                           'Goron Ruby':       "##\x01ゴロンのルビー##\x00",
+                           'Zora Sapphire':    "##\x03ゾーラのサファイア##\x00",
+                           'Forest Medallion': "##\x02森のメダル##\x00",
+                           'Fire Medallion':   "##\x01炎のメダル##\x00",
+                           'Water Medallion':  "##\x03水のメダル##\x00",
+                           'Spirit Medallion': "##\x06魂のメダル##\x00",
+                           'Shadow Medallion': "##\x05闇のメダル##\x00",
+                           'Light Medallion':  "##\x04光のメダル##\x00"
+        }
+        dungeon_list_jp =  {'Deku Tree':          ("##\x02デクの樹##\x00", 'Queen Gohma', 0x62, 0x88),
+                            'Dodongos Cavern':    ("##\x01ドドンゴ##\x00", 'King Dodongo', 0x63, 0x89),
+                            'Jabu Jabus Belly':   ("##\x03ジャブジャブ##\x00", 'Barinade', 0x64, 0x8a),
+                            'Forest Temple':      ("##\x02森の神殿##\x00", 'Phantom Ganon', 0x65, 0x8b),
+                            'Fire Temple':        ("##\x01炎の神殿##\x00", 'Volvagia', 0x7c, 0x8c),
+                            'Water Temple':       ("##\x03水の神殿##\x00", 'Morpha', 0x7d, 0x8e),
+                            'Spirit Temple':      ("##\x06魂の神殿##\x00", 'Twinrova', 0x7e, 0x8f),
+                            'Ice Cavern':         ("##\x04氷の洞窟##\x00", None, 0x87, 0x92),
+                            'Bottom of the Well': ("##\x05井戸の下##\x00", None, 0xa2, 0xa5),
+                            'Shadow Temple':      ("##\x05闇の神殿##\x00", 'Bongo Bongo', 0x7f, 0xa3),
+        }
         for dungeon in world.dungeon_mq:
             if dungeon in ['Gerudo Training Ground', 'Ganons Castle']:
                 pass
             elif dungeon in ['Bottom of the Well', 'Ice Cavern']:
                 dungeon_name, boss_name, compass_id, map_id = dungeon_list[dungeon]
+                dungeon_name_jp, boss_name_jp, compass_id_jp, map_id_jp = dungeon_list_jp[dungeon]
+                if t == 1:
+                    rewardX = getLang(world, "reward list")
+                    dungeonX = getLang(world, "dungeon")
+                    dungeon_name_X = getLang(world, "dungeon", dungeon)
                 if world.settings.world_count > 1:
                     map_message = "\x13\x76\x08\x05\x42\x0F\x05\x40 found the \x05\x41Dungeon Map\x05\x40\x01for %s\x05\x40!\x09" % (dungeon_name)
+                    map_message_jp = "~~\x76<<%sの##\x01地図##\x00を入手！" % dungeon_name_jp
+                    if t == 1:
+                        map_message_X = getLang(world, "special", "Dugeon map text M") % dungeon_name_X
                 else:
                     map_message = "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for %s\x05\x40!\x01It\'s %s!\x09" % (dungeon_name, "masterful" if world.dungeon_mq[dungeon] else "ordinary")
+                    map_message_jp = "~~\x76<<%sの##\x01地図##\x00を入手！&&%s向きに巻かれている！" % (dungeon_name_jp, "##\x01裏##\x00" if world.dungeon_mq[dungeon] else "##\x01表##\x00")
+                    if t == 1:
+                        map_message_X = getLang(world, "special", "Dugeon map text S") % (dungeon_name_X, getLang(world, "special", "Masterful") if world.dungeon_mq[dungeon] else getLang(world, "special", "Ordinal"))
 
                 if world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12:
-                    update_message_by_id(messages, map_id, map_message)
+                    if t == 0:
+                        update_message_by_id(messages, map_id, map_message)
+                        update_message_jp(messages_jp, map_id_jp, map_message_jp, mode = 2, align = "left")
+                    elif t == 1:
+                        if langdef == 0:
+                            update_message_by_id(messages, map_id, map_message_X)
+                        elif langdef == 1:
+                            update_message_jp(messages_jp, map_id_jp, map_message_X, mode = 2, align = "left")
             else:
                 dungeon_name, boss_name, compass_id, map_id = dungeon_list[dungeon]
+                dungeon_name_jp, boss_name_jp, compass_id_jp, map_id_jp = dungeon_list_jp[dungeon]
                 dungeon_reward = reward_list[world.get_location(boss_name).item.name]
+                dungeon_reward_jp = reward_list_jp[world.get_location(boss_name_jp).item.name]
+                if t == 1:
+                    rewardX = getLang(world, "reward list")
+                    dungeonX = getLang(world, "dungeon")
+                    dungeon_name_X = getLang(world, "dungeon", dungeon)
                 if world.settings.world_count > 1:
                     compass_message = "\x13\x75\x08\x05\x42\x0F\x05\x40 found the \x05\x41Compass\x05\x40\x01for %s\x05\x40!\x09" % (dungeon_name)
+                    compass_message_jp = "~~\x75<<%sの##\x01コンパス##\x00を入手！" % (dungeon_name_jp)
+                    if t == 1:
+                        compass_message_X = getLang(world, "special", "Compass text M") % dungeon_name_X
                 else:
                     compass_message = "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for %s\x05\x40!\x01It holds the %s!\x09" % (dungeon_name, dungeon_reward)
-                update_message_by_id(messages, compass_id, compass_message)
+                    compass_message_jp = "~~\x75<<%sの##\x01コンパス##\x00を入手！&&%sがあるようだ！" % (dungeon_name_jp, dungeon_reward_jp)
+                    if t == 1:
+                        dungeon_reward_X = rewardX[world.get_location(boss_name).item.name]
+                        compass_message_X = getLang(world, "special", "Compass text S") % (dungeon_name_X, dungeon_reward_X)
+                if t == 0:
+                    update_message_by_id(messages, compass_id, compass_message)
+                    update_message_jp(messages_jp, compass_id_jp, compass_message_jp, mode = 2, align = "left")
+                elif t == 1:
+                    if langdef == 0:
+                        update_message_by_id(messages, compass_id, compass_message_X)
+                    elif langdef == 1:
+                        update_message_jp(messages_jp, compass_id_jp, compass_message_X, mode = 2, align = "left")
                 if world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12:
                     if world.settings.world_count > 1:
                         map_message = "\x13\x76\x08\x05\x42\x0F\x05\x40 found the \x05\x41Dungeon Map\x05\x40\x01for %s\x05\x40!\x09" % (dungeon_name)
+                        map_message_jp = "~~\x76<<%sの##\x01地図##\x00を入手！" % (dungeon_name_jp)
+                        if t == 1:
+                            map_message_X = getLang(world, "special", "Dugeon map text M") % dungeon_name_X
                     else:
                         map_message = "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for %s\x05\x40!\x01It\'s %s!\x09" % (dungeon_name, "masterful" if world.dungeon_mq[dungeon] else "ordinary")
-                    update_message_by_id(messages, map_id, map_message)
+                        map_message_jp = "~~\x76<<%sの##\x01地図##\x00を入手！&&%s向きに巻かれている！" % (dungeon_name_jp, "##\x01裏##\x00" if world.dungeon_mq[dungeon] else "##\x01表##\x00")
+                        if t == 1:
+                            map_message_X = getLang(world, "special", "Dugeon map text S") % (dungeon_name_X, getLang(world, "special", "Masterful") if world.dungeon_mq[dungeon] else getLang(world, "special", "Ordinal"))
+                    if t == 0:
+                        update_message_by_id(messages, map_id, map_message)
+                        update_message_jp(messages_jp, map_id_jp, map_message_jp, mode = 2, align = "left")
+                    elif t == 1:
+                        if langdef == 0:
+                            update_message_by_id(messages, map_id, map_message_X)
+                        elif langdef == 1:
+                            update_message_jp(messages_jp, map_id_jp, map_message_X, mode = 2, align = "left")
 
     # Set hints on the altar inside ToT
     rom.write_int16(0xE2ADB2, 0x707A)
     rom.write_int16(0xE2ADB6, 0x7057)
-    buildAltarHints(world, messages, include_rewards=world.settings.misc_hints and not world.settings.enhance_map_compass, include_wincons=world.settings.misc_hints)
+    if langdef == 0:
+        buildAltarHints(world, messages, include_rewards=world.settings.misc_hints and not world.settings.enhance_map_compass, include_wincons=world.settings.misc_hints)
+    elif langdef == 1:
+        buildAltarHints(world, messages_jp, include_rewards=world.settings.misc_hints and not world.settings.enhance_map_compass, include_wincons=world.settings.misc_hints)
+
 
     # Set Dungeon Reward actors in Jabu Jabu to be accurate
     jabu_actor_type = world.get_location('Barinade').item.special['actor_type']
@@ -1863,10 +2261,20 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     # Add 3rd Wallet Upgrade
     rom.write_int16(0xB6D57E, 0x0003)
     rom.write_int16(0xB6EC52, 999)
-    tycoon_message = "\x08\x13\x57You got a \x05\x43Tycoon's Wallet\x05\x40!\x01Now you can hold\x01up to \x05\x46999\x05\x40 \x05\x46Rupees\x05\x40."
-    if world.settings.world_count > 1:
-       tycoon_message = make_player_message(tycoon_message)
-    update_message_by_id(messages, 0x00F8, tycoon_message, 0x23)
+    if langdef == 0:
+        if t == 0:
+            tycoon_message = "\x08\x13\x57You got a \x05\x43Tycoon's Wallet\x05\x40!\x01Now you can hold\x01up to \x05\x46999\x05\x40 \x05\x46Rupees\x05\x40."
+            if world.settings.world_count > 1:
+               tycoon_message = make_player_message(tycoon_message)
+        elif t == 1:
+            tycoon_message = getLang(world, "text", 0x00F8)
+        update_message_by_id(messages, 0x00F8, tycoon_message, 0x23)
+    elif langdef == 1:
+        if t == 0:
+            tycoon_message = "<<~~\x57##\x03大金持ちのサイフ##\x00を入手！&&##\x06９９９ルピー##\x00まで　持てるゾ！"
+        elif t == 1:
+            tycoon_message = getLang(world, "text", 0x00F8)
+        update_message_jp(messages_jp, 0x00F8, tycoon_message, 0x23, 2, align = "left")
 
     write_shop_items(rom, shop_item_file.start + 0x1DEC, shop_items)
 
@@ -1875,15 +2283,99 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     # text shuffle
     if world.settings.text_shuffle == 'except_hints':
         permutation = shuffle_messages(messages, except_hints=True)
+        if world.settings.warp_songs:
+            update_warp_song_text(messages_jp, world)
+        elif not world.settings.warp_songs:
+            if t == 0:
+                pass
+            elif t == 1:
+                text1 = getLang(world, "text", 0x088D)
+                text2 = getLang(world, "text", 0x088E)
+                text3 = getLang(world, "text", 0x088F)
+                text4 = getLang(world, "text", 0x0890)
+                text5 = getLang(world, "text", 0x0891)
+                text6 = getLang(world, "text", 0x0892)
+                if langdef == 1:
+                    update_message_jp(message_jp, 0x088D, text1, 0x00, align = "left")
+                    update_message_jp(message_jp, 0x088E, text2, 0x00, align = "left")
+                    update_message_jp(message_jp, 0x088F, text3, 0x00, align = "left")
+                    update_message_jp(message_jp, 0x0890, text4, 0x00, align = "left")
+                    update_message_jp(message_jp, 0x0891, text5, 0x00, align = "left")
+                    update_message_jp(message_jp, 0x0892, text6, 0x00, align = "left")
+        reproduce_messages_jp(messages_jp)
+        shuffled = shuffle_messages_jp(messages_jp, except_hints=True)
+        if langdef == 1:
+            write_messages(rom, shuffle = True, shuffle_group = shuffled, mode = langdef)
     elif world.settings.text_shuffle == 'complete':
         permutation = shuffle_messages(messages, except_hints=False)
-
+        if world.settings.warp_songs:
+            update_warp_song_text(messages_jp, world)
+        elif not world.settings.warp_songs:
+            if t == 0:
+                pass
+            elif t == 1:
+                text1 = getLang(world, "text", 0x088D)
+                text2 = getLang(world, "text", 0x088E)
+                text3 = getLang(world, "text", 0x088F)
+                text4 = getLang(world, "text", 0x0890)
+                text5 = getLang(world, "text", 0x0891)
+                text6 = getLang(world, "text", 0x0892)
+                if langdef == 1:
+                    update_message_jp(message_jp, 0x088D, text1, 0x00, align = "left")
+                    update_message_jp(message_jp, 0x088E, text2, 0x00, align = "left")
+                    update_message_jp(message_jp, 0x088F, text3, 0x00, align = "left")
+                    update_message_jp(message_jp, 0x0890, text4, 0x00, align = "left")
+                    update_message_jp(message_jp, 0x0891, text5, 0x00, align = "left")
+                    update_message_jp(message_jp, 0x0892, text6, 0x00, align = "left")
+        reproduce_messages_jp(messages_jp)
+        shuffled = shuffle_messages_jp(messages_jp, except_hints=False)
+        if langdef == 1:
+            write_messages(rom, shuffle = True, shuffle_group = shuffled, mode = langdef)
+    elif world.settings.text_shuffle == 'none':
+        if world.settings.warp_songs:
+            update_warp_song_text(messages_jp, world)
+        elif not world.settings.warp_songs:
+            if t == 0:
+                pass
+            elif t == 1:
+                text1 = getLang(world, "text", 0x088D)
+                text2 = getLang(world, "text", 0x088E)
+                text3 = getLang(world, "text", 0x088F)
+                text4 = getLang(world, "text", 0x0890)
+                text5 = getLang(world, "text", 0x0891)
+                text6 = getLang(world, "text", 0x0892)
+                if langdef == 1:
+                    update_message_jp(message_jp, 0x088D, text1, 0x00, align = "left")
+                    update_message_jp(message_jp, 0x088E, text2, 0x00, align = "left")
+                    update_message_jp(message_jp, 0x088F, text3, 0x00, align = "left")
+                    update_message_jp(message_jp, 0x0890, text4, 0x00, align = "left")
+                    update_message_jp(message_jp, 0x0891, text5, 0x00, align = "left")
+                    update_message_jp(message_jp, 0x0892, text6, 0x00, align = "left")
+        reproduce_messages_jp(messages_jp)
+        if langdef == 1:
+            write_messages(rom, shuffle = False, mode = langdef)
+        
     # If Warp Song ER is on, update text boxes
-    if world.settings.warp_songs:
-        update_warp_song_text(messages, world)
-
-    repack_messages(rom, messages, permutation)
-
+    if langdef == 0:
+        if world.settings.warp_songs:
+            update_warp_song_text(messages, world)
+        elif not world.settings.warp_songs:
+            if t == 0:
+                pass
+            elif t == 1:
+                text1 = getLang(world, "text", 0x088D)
+                text2 = getLang(world, "text", 0x088E)
+                text3 = getLang(world, "text", 0x088F)
+                text4 = getLang(world, "text", 0x0890)
+                text5 = getLang(world, "text", 0x0891)
+                text6 = getLang(world, "text", 0x0892)
+                update_message_by_id(message, 0x088D, text1, 0x00)
+                update_message_by_id(message, 0x088E, text2, 0x00)
+                update_message_by_id(message, 0x088F, text3, 0x00)
+                update_message_by_id(message, 0x0890, text4, 0x00)
+                update_message_by_id(message, 0x0891, text5, 0x00)
+                update_message_by_id(message, 0x0892, text6, 0x00)
+        repack_messages(rom, messages, permutation)
     # output a text dump, for testing...
     #with open('keysanity_' + str(world.settings.seed) + '_dump.txt', 'w', encoding='utf-16') as f:
     #     messages = read_messages(rom)
@@ -2226,12 +2718,153 @@ def create_fake_name(name):
             return create_fake_name(name)
     return new_name
 
+def create_fake_name_jp(name, redo=0):
+    fake_words_1 = [
+        ["ア", "マ"],
+        ["ウ", "ワ", "ヴ"],
+        ["カ", "ガ"],
+        ["キ", "ギ"],
+        ["ク", "グ"],
+        ["ケ", "ゲ"],
+        ["コ", "ゴ"],
+        ["サ", "ザ"],
+        ["シ", "ツ", "ジ", "ヅ"],
+        ["ス", "ヌ", "ズ"],
+        ["セ", "ゼ"],
+        ["ソ", "ゾ"],
+        ["タ", "ダ"],
+        ["チ", "ヂ"],
+        ["テ", "デ"],
+        ["ト", "ド"],
+        ["ハ", "バ", "パ"],
+        ["ヒ", "ビ", "ピ"],
+        ["フ", "ブ", "プ"],
+        ["ヘ", "ベ", "ペ"],
+        ["ホ", "ボ", "ポ"],
+        ["ヤ", "ャ"],
+        ["ユ", "ュ"],
+        ["ヨ", "ョ"],
+        ["ロ", "口"],
+        ["い", "り"],
+        ["か", "が"],
+        ["き", "ぎ"],
+        ["く", "ぐ"],
+        ["け", "げ"],
+        ["こ", "ご"],
+        ["さ", "ざ"],
+        ["し", "じ"],
+        ["す", "ず"],
+        ["せ", "ぜ"],
+        ["そ", "ぞ"],
+        ["た", "だ"],
+        ["ち", "ぢ"],
+        ["つ", "づ"],
+        ["て", "で"],
+        ["と", "ど"],
+        ["ぬ", "め"],
+        ["は", "ば", "ぱ"],
+        ["ひ", "び", "ぴ"],
+        ["ふ", "ぶ", "ぷ"],
+        ["へ", "べ", "ぺ"],
+        ["ほ", "ぼ", "ぽ"],
+        ["や", "ゃ"],
+        ["ゆ", "ゅ"],
+        ["よ", "ょ"],
+        ["る", "ろ"],
+        ["わ", "れ", "ね"],
+    ]
+    fake_words_2 = {
+        "体":    "休",
+        "力":    "カ",
+        "本":    "木",
+        "巨":    "臣",
+        "矢":    "失",
+        "太":    "大",
+        "牛":    "午",
+        "議":    "儀",
+        "刀":    "カ",
+        "目":    "日",
+        "薬":    "楽",
+        "輪":    "輸",
+        "復":    "複",
+        "回":    "同",
+        "地":    "池",
+        "人":    "入",
+        "炎":    "災",
+        "券":    "劵",
+        "青":    "靑",
+        "時":    "待",
+        "嵐":    "颪",
+        "魂":    "塊",
+        "闇":    "間",
+        "光":    "元",
+        "法":    "怯",
+        "実":    "害",
+        "種":    "鐘",
+        "棒":    "捧",
+        "ー":    "一",
+        "剣":    "剱",
+    }
+    ignore_words = ["０", "１", "２", "３", "５", "（", "）", "９"]
+    n = 0
+    z = 0
+    for a, b in fake_words_2.items():
+        if a in name:
+            n += name.count(a)
+            name = name.replace(a, b)
+    c = 0
+    for g in ignore_words:
+        if g in name:
+            c += name.count(g)
+    list_name = list(name)
+    index = len(name) - c         
+    while n <= index / 5:
+        try:
+            k = random.randrange(index)
+        except ValueError:
+            return name
+        if z + 1 == k or z - 1 == k:
+            pass
+        else: 
+            for a in fake_words_1:
+                if list_name[k] in a:
+                    r = random.choice(a)
+                    if list_name[k] == r:
+                        break
+                    elif list_name[k] != r:
+                        list_name[k] = r
+                        n += 1
+                        break
+            else:
+                n += 1
+            z = k
+    new_name = ''.join(list_name)
+    if new_name == name:
+        if redo != 3:
+            o = redo + 1
+            return create_fake_name_jp(new_name, redo=o)
+        elif redo == 3:
+            return new_name
+    elif new_name != name:
+        return new_name
 
-def place_shop_items(rom, world, shop_items, messages, locations, init_shop_id=False):
+def place_shop_items(rom, world, shop_items, messages, messages_jp, locations, init_shop_id=False):
+    lang = world.settings.language_selection
+    t = 0
+    if lang == "extra":
+        lang = getLang(world, "return", "region")
+        t = 1
+        hintX = getLang(world, "hint")
+        text1 = getLang(world, "special", "Dugeon item M")
+        text2 = getLang(world, "special", "Dugeon item S")
+        text3 = getLang(world, "special", "Shop item M")
+        text4 = getLang(world, "special", "Shop item S")
+        text5 = getLang(world, "special", "Purchase")
     if init_shop_id:
         place_shop_items.shop_id = 0x32
 
     shop_objs = { 0x0148 } # "Sold Out" object
+    p_id = ""
     for location in locations:
         if location.item.type == 'Shop':
             shop_objs.add(location.item.special['object'])
@@ -2270,32 +2903,159 @@ def place_shop_items(rom, world, shop_items, messages, locations, init_shop_id=F
 
             shuffle_messages.shop_item_messages.extend(
                 [shop_item.description_message, shop_item.purchase_message])
+            
+            p_id = str(format(location.item.world.id + 1,"02")).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
 
             if item_display.dungeonitem:
+                dungeon_item_name = item_display.name
                 split_item_name = item_display.name.split('(')
                 split_item_name[1] = '(' + split_item_name[1]
 
+                
+                iname = None
+                if t == 0:
+                    for name, (textOptionsen, clearTexten, textOptions, clearText, type) in HT.items():
+                        if (name == dungeon_item_name) is True:
+                            iname = clearText
+                            break
+                        if (clearTexten == dungeon_item_name) is True:
+                            iname = clearText
+                            break    
+                    if iname is None:
+                        raise(TypeError("d%s" % dungeon_item_name))
+                elif t == 1:
+                    for name, (textOptions, clearText) in hintX.items():
+                        if (name == dungeon_item_name) is True:
+                            iname = clearText
+                            break
+                    if iname is None:
+                        if lang == "english":
+                            iname = dungeon_item_name
+                        elif lang == "japanese":
+                            for name, (textOptionsen, clearTexten, textOptions, clearText, type) in HT.items():
+                                if (name == dungeon_item_name) is True:
+                                    iname = clearText
+                                    break
+                                if (clearTexten == dungeon_item_name) is True:
+                                    iname = clearText
+                                    break    
+                            if iname is None:
+                                raise(TypeError("d%s" % dungeon_item_name))
                 if location.item.name == 'Ice Trap':
-                    split_item_name[0] = create_fake_name(split_item_name[0])
-
+                    if t == 0:
+                        split_item_name[0] = create_fake_name(split_item_name[0])
+                        iname = create_fake_name_jp(iname)
+                    elif t == 1:
+                        if lang == "english":
+                            iname = create_fake_name(iname)
+                        elif lang == "japanese":
+                            iname = create_fake_name_jp(iname)
+                    
                 if world.settings.world_count > 1:
+                    price = str(location.price)
+                    p = str(location.item.world.id + 1)
+                    price_jp = str(location.price).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
                     description_text = '\x08\x05\x41%s  %d Rupees\x01%s\x01\x05\x42Player %d\x05\x40\x01Special deal! ONE LEFT!\x09\x0A\x02' % (split_item_name[0], location.price, split_item_name[1], location.item.world.id + 1)
+                    description_text_jp = '<#\x01%s　%sルピー#\x00&Ｐ%s　一点もの！>*O' % (iname, price_jp, p_id)
+                    if t == 1:
+                        if lang == "english":
+                            description_text = text1 % (iname, price, p)
+                        elif lang == "japanese":
+                            description_text_jp = text1 % (iname, price_jp, p_id)
                 else:
+                    price = str(location.price)
                     description_text = '\x08\x05\x41%s  %d Rupees\x01%s\x01\x05\x40Special deal! ONE LEFT!\x01Get it while it lasts!\x09\x0A\x02' % (split_item_name[0], location.price, split_item_name[1])
+                    price_jp = str(location.price).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
+                    description_text_jp = '<#\x01%s　%sルピー#\x00&一点もの！>*O' % (iname, price_jp)
+                    if t == 1:
+                        if lang == "english":
+                            description_text = text2 % (iname, price)
+                        elif lang == "japanese":
+                            description_text_jp = text2 % (iname, price_jp)
                 purchase_text = '\x08%s  %d Rupees\x09\x01%s\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02' % (split_item_name[0], location.price, split_item_name[1])
+                purchase_text_jp = '<%s　%sルピー&:2#\x02かう&やめとく#\x00>' % (iname, price_jp)
+                if t == 1:
+                    price = str(location.price)
+                    if lang == "english":
+                        purchase_text = text5 % (iname, price)
+                    elif lang == "japanese":
+                        purchase_text_jp = text5 % (iname, price_jp)
             else:
-                shop_item_name = getSimpleHintNoPrefix(item_display)
-                if location.item.name == 'Ice Trap':
-                    shop_item_name = create_fake_name(shop_item_name)
+                shop_item_name = getSimpleHintNoPrefix(world, item_display)
+                shop_item_name_jp = item_display.name
 
+                iname = None
+                if t == 0:
+                    for name, (textOptionsen, clearTexten, textOptions, clearText, type) in HT.items():
+                        if (name == shop_item_name_jp) is True:
+                            iname = clearText
+                            break
+                        if (clearTexten == shop_item_name_jp) is True:
+                            iname = clearText
+                            break
+                    if iname is None:
+                        raise(TypeError("i%s" % shop_item_name_jp))
+                elif t == 1:
+                    for name, (textOptions, clearText) in hintX.items():
+                        if (name == shop_item_name_jp) is True:
+                            iname = clearText
+                            break
+                    if iname is None:
+                        if lang == "english":
+                            iname = shop_item_name
+                        elif lang == "japanese":
+                            for name, (textOptionsen, clearTexten, textOptions, clearText, type) in HT.items():
+                                if (name == shop_item_name_jp) is True:
+                                    iname = clearText
+                                    break
+                                if (clearTexten == shop_item_name_jp) is True:
+                                    iname = clearText
+                                    break    
+                            if iname is None:
+                                raise(TypeError("i%s" % shop_item_name_jp))
+                if location.item.name == 'Ice Trap':
+                    if t == 0:
+                        shop_item_name = create_fake_name(shop_item_name)
+                        iname = create_fake_name_jp(iname)
+                    elif t == 1:
+                        if lang == "english":
+                            iname = create_fake_name(iname)
+                        elif lang == "japanese":
+                            iname = create_fake_name_jp(iname)
                 if world.settings.world_count > 1:
+                    p = str(location.item.world.id + 1)
+                    price = str(location.price)
                     description_text = '\x08\x05\x41%s  %d Rupees\x01\x05\x42Player %d\x05\x40\x01Special deal! ONE LEFT!\x09\x0A\x02' % (shop_item_name, location.price, location.item.world.id + 1)
+                    price_jp = str(location.price).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
+                    description_text_jp = '<#\x01%s　%sルピー#\x00&Ｐ%s　一点もの！>*O' % (iname, price_jp, p_id) 
+                    if t == 1:
+                        if lang == "english":
+                            description_text = text3 % (iname, price, p)
+                        elif lang == "japanese":
+                            description_text_jp = text3 % (iname, price_jp, p_id)
                 else:
+                    price = str(location.price)
                     description_text = '\x08\x05\x41%s  %d Rupees\x01\x05\x40Special deal! ONE LEFT!\x01Get it while it lasts!\x09\x0A\x02' % (shop_item_name, location.price)
+                    price_jp = str(location.price).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
+                    description_text_jp = '<#\x01%s　%sルピー#\x00&一点もの！>*O' % (iname, price_jp)
+                    if t == 1:
+                        if lang == "english":
+                            description_text = text4 % (iname, price)
+                        elif lang == "japanese":
+                            description_text_jp = text4 % (iname, price_jp)
                 purchase_text = '\x08%s  %d Rupees\x09\x01\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02' % (shop_item_name, location.price)
+                purchase_text_jp = '<%s　%sルピー&:2#\x02かう&やめとく#\x00>' % (iname, price_jp)
+                if t == 1:
+                    price = str(location.price)
+                    if lang == "english":
+                        purchase_text = text5 % (iname, price)
+                    elif lang == "japanese":
+                        purchase_text_jp = text5 % (iname, price_jp)
 
             update_message_by_id(messages, shop_item.description_message, description_text, 0x03)
             update_message_by_id(messages, shop_item.purchase_message, purchase_text, 0x03)
+            update_message_jp(messages_jp, shop_item.description_message, description_text_jp, 0x03, align = "left")
+            update_message_jp(messages_jp, shop_item.purchase_message, purchase_text_jp, 0x03, align = "left")
 
             place_shop_items.shop_id += 1
 

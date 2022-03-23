@@ -1827,6 +1827,16 @@ setting_infos = [
             "web:hide_when_disabled" : True,
         }),
     Setting_Info('output_dir',        str, "Output Directory", "Directoryinput", False, {}),
+    Setting_Info('lang_path',          str, "Extra Language Directory", "Directoryinput", False, {},
+        gui_params = {
+            "file_types": [
+                {
+                  "name": "All Files",
+                  "extensions": [ "*" ]
+                }
+            ],
+            "hide_when_disabled" : True,
+        }),
     Setting_Info('output_file',       str, None, None, False, {}),
     Setting_Info('seed',              str, None, None, False, {}),
     Setting_Info('patch_file',        str, "Patch File", "Fileinput", False, {},
@@ -1936,6 +1946,25 @@ setting_infos = [
                  ''',
         default        = True,
         disabled_default = False,
+    ),
+    Combobox(
+        name           = 'language_selection',
+        gui_text       = 'Language Option',
+        gui_tooltip    = '''\
+                         Enabling this will change the language of the rom.
+                         Warning: Cannot use the PAL rom.
+                         ''',
+        shared         = True,
+        default        = 'english',
+        choices        = {
+            'english':   'English',
+            'japanese': 'Japanese',
+            'extra': 'Extra',
+        },
+        disable        = {
+            'english'  : {'settings' : ['lang_path']},
+            'japanese' : {'settings' : ['lang_path']}
+        },
     ),
     Setting_Info(
         name           = 'output_types',

@@ -56,7 +56,7 @@ def default_output_path(path):
 
 def read_json(file_path):
     json_string = ""
-    with io.open(file_path, 'r') as file:
+    with io.open(file_path, 'r', encoding = "utf-8") as file:
         for line in file.readlines():
             json_string += line.split('#')[0].replace('\n', ' ')
     json_string = re.sub(' +', ' ', json_string)

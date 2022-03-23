@@ -1,9 +1,11 @@
 class Dungeon(object):
 
-    def __init__(self, world, name, hint, font_color, boss_key=None, small_keys=None, dungeon_items=None):
+    def __init__(self, world, name, name_JP, hint, hint_JP, font_color, boss_key=None, small_keys=None, dungeon_items=None):
         self.world = world
         self.name = name
+        self.name_JP = name_JP
         self.hint = hint
+        self.hint_JP = hint_JP
         self.font_color = font_color
         self.regions = []
         self.boss_key = boss_key if boss_key is not None else []
@@ -21,7 +23,7 @@ class Dungeon(object):
         new_small_keys = [item.copy(new_world) for item in self.small_keys]
         new_dungeon_items = [item.copy(new_world) for item in self.dungeon_items]
 
-        new_dungeon = Dungeon(new_world, self.name, self.hint, self.font_color, new_boss_key, new_small_keys, new_dungeon_items)
+        new_dungeon = Dungeon(new_world, self.name, self.name_JP, self.hint, self.hint_JP, self.font_color, new_boss_key, new_small_keys, new_dungeon_items)
 
         return new_dungeon
 

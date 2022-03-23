@@ -13,6 +13,7 @@
           "settings": [
             "rom",
             "output_dir",
+			"lang_path",
             "enable_distribution_file",
             "enable_cosmetic_file",
             "distribution_file",
@@ -20,6 +21,7 @@
             "count",
             "create_spoiler",
             "create_cosmetics_log",
+		      	"language_selection",
             "output_types",
             "create_patch_file",
             "create_compressed_rom",

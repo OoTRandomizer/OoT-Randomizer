@@ -20,6 +20,144 @@ CONTROL_CHARS = {
 }
 TEXT_END = '\x02'
 
+character_table_jp = {
+    'a':  6, # LINE_WIDTH /  35
+    'b':  6, # LINE_WIDTH /  35
+    'c':  6, # LINE_WIDTH /  35
+    'd':  6, # LINE_WIDTH /  35
+    'e':  6, # LINE_WIDTH /  35
+    'f':  9, # LINE_WIDTH /  52
+    'g':  6, # LINE_WIDTH /  35
+    'h':  6, # LINE_WIDTH /  35
+    'i':  12, # LINE_WIDTH /  70
+    'j':  9, # LINE_WIDTH /  52
+    'k':  6, # LINE_WIDTH /  35
+    'l':  12, # LINE_WIDTH /  70
+    'm':  0, # LINE_WIDTH /  22
+    'n':  6, # LINE_WIDTH /  35
+    'o':  6, # LINE_WIDTH /  35
+    'p':  6, # LINE_WIDTH /  35
+    'q':  6, # LINE_WIDTH /  35
+    'r':  8, # LINE_WIDTH /  42
+    's':  6, # LINE_WIDTH /  35
+    't':  8, # LINE_WIDTH /  42
+    'u':  6, # LINE_WIDTH /  35
+    'v':  6, # LINE_WIDTH /  35
+    'w':  0, # LINE_WIDTH /  22
+    'x':  6, # LINE_WIDTH /  35
+    'y':  6, # LINE_WIDTH /  35
+    'z':  6, # LINE_WIDTH /  35
+    'A':  0, # LINE_WIDTH /  22
+    'B':  6, # LINE_WIDTH /  35
+    'C':  2, # LINE_WIDTH /  25
+    'D':  2, # LINE_WIDTH /  25
+    'E':  6, # LINE_WIDTH /  35
+    'F':  6, # LINE_WIDTH /  35
+    'G':  0, # LINE_WIDTH /  22
+    'H':  4, # LINE_WIDTH /  30
+    'I':  12, # LINE_WIDTH /  70
+    'J':  6, # LINE_WIDTH /  35
+    'K':  4, # LINE_WIDTH /  30
+    'L':  6, # LINE_WIDTH /  35
+    'M':  0, # LINE_WIDTH /  22
+    'N':  2, # LINE_WIDTH /  25
+    'O':  0, # LINE_WIDTH /  22
+    'P':  6, # LINE_WIDTH /  35
+    'Q':  0, # LINE_WIDTH /  22
+    'R':  4, # LINE_WIDTH /  30
+    'S':  4, # LINE_WIDTH /  30
+    'T':  6, # LINE_WIDTH /  35
+    'U':  4, # LINE_WIDTH /  30
+    'V':  2, # LINE_WIDTH /  25
+    'W': -4, # LINE_WIDTH /  18
+    'X':  2, # LINE_WIDTH /  25
+    'Y':  4, # LINE_WIDTH /  30
+    'Z':  4, # LINE_WIDTH /  30
+    ' ':  6, # LINE_WIDTH /  35
+    '1':  12, # LINE_WIDTH /  70
+    '2':  6, # LINE_WIDTH /  35
+    '3':  6, # LINE_WIDTH /  35
+    '4':  4, # LINE_WIDTH /  30
+    '5':  6, # LINE_WIDTH /  35
+    '6':  6, # LINE_WIDTH /  35
+    '7':  6, # LINE_WIDTH /  35
+    '8':  6, # LINE_WIDTH /  35
+    '9':  6, # LINE_WIDTH /  35
+    '0':  4, # LINE_WIDTH /  30
+    '!':  6, # LINE_WIDTH /  35
+    '?':  2, # LINE_WIDTH /  25
+    '\'': 14, # LINE_WIDTH / 104
+    '"':  10, # LINE_WIDTH /  52
+    '.':  12, # LINE_WIDTH /  70
+    ',':  12, # LINE_WIDTH /  70
+    '/':  6, # LINE_WIDTH /  35
+    '-':  10, # LINE_WIDTH /  52
+    '_':  6, # LINE_WIDTH /  35
+    '(':  8, # LINE_WIDTH /  42
+    ')':  8, # LINE_WIDTH /  42
+    '$':  6  # LINE_WIDTH /  35
+}
+
+CONTROL_PARSE_JP = {
+    'LINE_BREAK':   ['&', 0],
+    'BOX_BREAK':    ['^', 0],
+    'COLOR':        ['#', -1],
+    'ENDMARK':      ['|', 0],
+    'ICON':         ['~', -1],
+    'INSTANTSTART': ['<', 0],
+    'INSTANTEND':   ['>', 0],
+    'SOUND':        ['$', -2],
+    'DELAY_BOX':    ['[', -1],
+    'PREVENT':      [']', 0],
+    'EVENT':        ['{', 0],
+    'PRINT_T':      ['@T', 6],
+    'THREE_C':      [':3', 0],
+    'TWO_C':        [':2', 0],
+    'GO_MESSAGE':   ['}', -2],
+    'FADE_OUT':     ['*F', -1],
+    'NAME':         ['@N', 8],
+    'PRINT_M':      ['@M', 6],
+    'PRINT_R':      ['@R', 6],
+    'PRINT_G':      ['@G', 3],
+    'PRINT_P':      ['@P', 5],
+    'PRINT_H':      ['@H', 4],
+    'PRINT_L':      ['@L', 3],
+    'SETBACK':      ['@B', -3],
+    'SETSPEED':     ['+S', -1],
+    'SHIFT_TEXT':   ['+T', -1],
+    'OCARINA':      [':O', 0],
+    'KEEP_OPEN':    ['*O', 0],
+}
+CONTROL_PARSE_JP_1 = {
+    'LINE_BREAK':   ['&&', 0],
+    'BOX_BREAK':    ['^^', 0],
+    'COLOR':        ['##', -1],
+    'ENDMARK':      ['||', 0],
+    'ICON':         ['~~', -1],
+    'INSTANTSTART': ['<<', 0],
+    'INSTANTEND':   ['>>', 0],
+    'SOUND':        ['$$', -2],
+    'DELAY_BOX':    ['[[', -1],
+    'PREVENT':      [']]', 0],
+    'EVENT':        ['{', 0],
+    'PRINT_T':      ['@T', 6],
+    'THREE_C':      [':3', 0],
+    'TWO_C':        [':2', 0],
+    'GO_MESSAGE':   ['}}', -2],
+    'FADE_OUT':     ['*F', -1],
+    'NAME':         ['@N', 8],
+    'PRINT_M':      ['@M', 6],
+    'PRINT_R':      ['@R', 6],
+    'PRINT_G':      ['@G', 3],
+    'PRINT_P':      ['@P', 5],
+    'PRINT_H':      ['@H', 4],
+    'PRINT_L':      ['@L', 3],
+    'SETBACK':      ['@B', -3],
+    'SETSPEED':     ['+S', -1],
+    'SHIFT_TEXT':   ['+T', -1],
+    'OCARINA':      [':O', 0],
+    'KEEP_OPEN':    ['*O', 0],
+}
 
 def line_wrap(text, strip_existing_lines=False, strip_existing_boxes=False, replace_control_chars=True):
     # Replace stand-in characters with their actual control code.
@@ -137,6 +275,645 @@ def line_wrap(text, strip_existing_lines=False, strip_existing_boxes=False, repl
     # This is a hideous level of list comprehension. Sorry.
     return '\x04'.join(['\x01'.join([' '.join([''.join([code.get_string() for code in word]) for word in line]) for line in box]) for box in processed_boxes])
 
+def halflen(text, mode=0):
+    t = 0
+    if mode == 0:
+        for char in CONTROL_PARSE_JP.values():
+            text = text.replace(char[0],"")
+    elif mode == 1:
+        for char in CONTROL_PARSE_JP_1.values():
+            text = text.replace(char[0],"")
+    for char in character_table_jp:
+        num = character_table_jp[char]
+        charf = str(char[0]).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
+        if char[0] in text:
+            t += text.count(char[0]) * num
+        elif charf in text:
+            t += text.count(charf) * num
+    return t
+    
+def charlen(text, leng=0, mode=0):
+    i = 0
+    n = 1
+    e = ""
+    a = 0
+    q = 0
+    get = 0
+    if mode == 0:
+        if leng <= 0:
+            for char in CONTROL_PARSE_JP.values():
+                if char[0] in text:
+                    i += text.count(char[0]) * char[1]
+                    text = text.replace(char[0],"")
+            i += len(text)
+        elif leng > 0:
+            if leng >= charlen(text):
+                i = len(text)
+            elif leng < charlen(text):
+                while n <= len(text):
+                    get = charlen(text[:n])
+                    if get < leng:
+                        pass
+                    elif get == leng:
+                        e = text[:n + 1]
+                        if charlen(e) <= get:
+                            pass
+                        elif get < charlen(e):
+                            for char in CONTROL_PARSE_JP.values():
+                                if e.endswith(char[0]):
+                                    i = n-1
+                                    q = 1
+                                    break
+                            if q != 0:
+                                break
+                            elif q == 0:
+                                i = n
+                                break
+                    elif get > leng:
+                        for char in CONTROL_PARSE_JP.values():
+                            if text[:n].endswith(char[0]):
+                                a = len(char[0])
+                                i = n - a
+                                break
+                        if charlen(text[:n-a]) > leng:
+                            raise(TypeError("%s" % text))
+                        else:
+                            break
+                    n += 1
+    elif mode == 1:
+        if leng <= 0:
+            for char in CONTROL_PARSE_JP_1.values():
+                if char[0] in text:
+                    i += text.count(char[0]) * char[1]
+                    text = text.replace(char[0],"")
+            i += len(text)
+        elif leng > 0:
+            if leng >= charlen(text):
+                i = len(text)
+            elif leng < charlen(text):
+                while n <= len(text):
+                    get = charlen(text[:n])
+                    if get < leng:
+                        pass
+                    elif get == leng:
+                        e = text[:n + 1]
+                        if charlen(e) <= get:
+                            pass
+                        elif get < charlen(e):
+                            for char in CONTROL_PARSE_JP_1.values():
+                                if e.endswith(char[0]):
+                                    i = n-1
+                                    q = 1
+                                    break
+                            if q != 0:
+                                break
+                            elif q == 0:
+                                i = n
+                                break
+                    elif get > leng:
+                        for char in CONTROL_PARSE_JP_1.values():
+                            if text[:n].endswith(char[0]):
+                                a = len(char[0])
+                                i = n - a
+                                break
+                        if charlen(text[:n-a]) > leng:
+                            raise(TypeError("%s" % text))
+                        else:
+                            break
+                    n += 1
+    return i
+    
+def linewrapJP(text, mode=0, align="left"):
+    LINE = 15
+    instant = 0
+    alone = align
+    if not isinstance(text, str):
+        text = str(text).translate(str.maketrans({chr(0x0021 + i): chr(0xFF01 + i) for i in range(94)}))
+    if "~" in text:
+        LINE = 12
+        if align == "center":
+            alone = "left"
+    if text.startswith("<<"):
+        text = text.replace("<<","<",1)
+    if text.startswith("<"):
+        instant = 1
+        text = text.replace("<","",1)
+    i = 1
+    n = 1
+    p = 0
+    k = 0
+    j = 0
+    w = 0
+    tex = {}
+    box = {}
+    shift = ""
+    if mode == 0:
+        splitbox = text.split("^")
+        while n <= text.count("^") + 1:
+            if (":2" or ":3" or ":O") in splitbox[n-1]:
+                splitbox[n-1] = splitbox[n-1]
+            elif "&" in splitbox[n-1] and (":2" or ":3" or ":O" )not in splitbox[n-1]:
+                splitline = splitbox[n-1].split("&")
+                while i <= splitbox[n-1].count("&") + 1:
+                    if charlen(splitline[i-1])-2 <= LINE:
+                        if i % 3 == 0:
+                            if "~" not in text:
+                                if alone == "left":
+                                    if "+T" in splitline[i-1]:
+                                        splitline[i-1] = splitline[i-1][3:] + "^<"
+                                    elif "+T" not in splitline[i-1]:
+                                        splitline[i-1] = splitline[i-1] + "^<"
+                                elif alone == "center":
+                                    w = format((LINE - charlen(splitline[i-1]))*8 + int(halflen(splitline[i-1]) / 2),"02x")
+                                    if w != "00" and not "-" in w:
+                                        shift = r"+T\x{}".format(w)
+                                    elif w == "00" or "-" in w:
+                                        shift = ""
+                                    if "+T" in splitline[i-1]:
+                                        splitline[i-1] = shift + splitline[i-1][3:] + "^<"
+                                    elif "+T" not in splitline[i-1]:
+                                        splitline[i-1] = shift + splitline[i-1] + "^<"
+                                elif alone == "right":
+                                    w = format((LINE - charlen(splitline[i-1]))*16 + halflen(splitline[i-1]),"02x")
+                                    if w != "00" and not "-" in w:
+                                        shift = r"+T\x{}".format(w)
+                                    elif w == "00" or "-" in w:
+                                        shift = ""
+                                    if "+T" in splitline[i-1]:
+                                        splitline[i-1] = shift + splitline[i-1][3:] + "^<"
+                                    elif "+T" not in splitline[i-1]:
+                                        splitline[i-1] = shift + splitline[i-1] + "^<"
+                            elif "~" in text:
+                                splitline[i-1] = splitline[i-1] + "^<"
+                        elif i % 3 != 0:
+                            if "~" not in text:
+                                if alone == "left":
+                                    if "+T" in splitline[i-1]:
+                                        splitline[i-1] = splitline[i-1][3:] + "&"
+                                    elif "+T" not in splitline[i-1]:
+                                        splitline[i-1] = splitline[i-1] + "&"
+                                elif alone == "center":
+                                    w = format((LINE - charlen(splitline[i-1]))*8 + int(halflen(splitline[i-1]) / 2),"02x")
+                                    if w != "00" and not "-" in w:
+                                        shift = r"+T\x{}".format(w)
+                                    elif w == "00" or "-" in w:
+                                        shift = ""
+                                    if "+T" in splitline[i-1]:
+                                        splitline[i-1] = shift + splitline[i-1][3:] + "&"
+                                    elif "+T" not in splitline[i-1]:
+                                        splitline[i-1] = shift + splitline[i-1] + "&"
+                                elif alone == "right":
+                                    w = format((LINE - charlen(splitline[i-1]))*16 + halflen(splitline[i-1]),"02x")
+                                    if w != "00" and not "-" in w:
+                                        shift = r"+T\x{}".format(w)
+                                    elif w == "00" or "-" in w:
+                                        shift = ""
+                                    if "+T" in splitline[i-1]:
+                                        splitline[i-1] = shift + splitline[i-1][3:] + "&"
+                                    elif "+T" not in splitline[i-1]:
+                                        splitline[i-1] = shift + splitline[i-1] + "&"
+                            elif "~" in text:
+                                splitline[i-1] = splitline[i-1] + "&"
+                    elif charlen(splitline[i-1])-2 > LINE:
+                        k = 0
+                        j = charlen(splitline[i-1],LINE)
+                        p = 0
+                        while LINE * (p - 1) <= charlen(splitline[i-1]):
+                            if (i + p) % 3 == 0:
+                                if "~" not in text:
+                                    if alone == "left":
+                                        if "+T" in splitline[i-1][k:j]:
+                                            tex[p] = splitline[i-1][k+3:j] + "^<"
+                                        elif "+T" not in splitline[i-1][k:j]:
+                                            tex[p] = splitline[i-1][k:j] + "^<"
+                                    elif alone == "center":
+                                        w = format((LINE - charlen(splitline[i-1][k:j]))*8 + int(halflen(splitline[i-1][k:j]) / 2),"02x")
+                                        if w != "00" and not "-" in w:
+                                            shift = r"+T\x{}".format(w)
+                                        elif w == "00" or "-" in w:
+                                            shift = ""
+                                        if "+T" in splitline[i-1][k:j]:
+                                            tex[p] = shift + splitline[i-1][k+3:j] + "^<"
+                                        elif "+T" not in splitline[i-1][k:j]:
+                                            tex[p] = shift + splitline[i-1][k:j] + "^<"
+                                    elif alone == "right":
+                                        w = format((LINE - charlen(splitline[i-1][k:j]))*16 + halflen(splitline[i-1][k:j]),"02x")
+                                        if w != "00" and not "-" in w:
+                                            shift = r"+T\x{}".format(w)
+                                        elif w == "00" or "-" in w:
+                                            shift = ""
+                                        if "+T" in splitline[i-1][k:j]:
+                                            tex[p] = shift + splitline[i-1][k+3:j] + "^<"
+                                        elif "+T" not in splitline[i-1][k:j]:
+                                            tex[p] = shift + splitline[i-1][k:j] + "^<"
+                                elif "~" in text:
+                                    tex[p] = splitline[i-1][k:j] + "^<"
+                            elif (i + p) % 3 != 0:
+                                if "~" not in text:
+                                    if alone == "left":
+                                        if "+T" in splitline[i-1][k:j]:
+                                            tex[p] = splitline[i-1][k+3:j] + "&"
+                                        elif "+T" not in splitline[i-1][k:j]:
+                                            tex[p] = splitline[i-1][k:j] + "&"
+                                    elif alone == "center":
+                                        w = format((LINE - charlen(splitline[i-1][k:j]))*8 + int(halflen(splitline[i-1][k:j]) / 2),"02x")
+                                        if w != "00" and not "-" in w:
+                                            shift = r"+T\x{}".format(w)
+                                        elif w == "00" or "-" in w:
+                                            shift = ""
+                                        if "+T" in splitline[i-1][k:j]:
+                                            tex[p] = shift + splitline[i-1][k+3:j] + "&"
+                                        elif "+T" not in splitline[i-1][k:j]:
+                                            tex[p] = shift + splitline[i-1][k:j] + "&"
+                                    elif alone == "right":
+                                        w = format((LINE - charlen(splitline[i-1][k:j]))*16 + halflen(splitline[i-1][k:j]),"02x")
+                                        if w != "00" and not "-" in w:
+                                            shift = r"+T\x{}".format(w)
+                                        elif w == "00" or "-" in w:
+                                            shift = ""
+                                        if "+T" in splitline[i-1][k:j]:
+                                            tex[p] = shift + splitline[i-1][k+3:j] + "&"
+                                        elif "+T" not in splitline[i-1][k:j]:
+                                            tex[p] = shift + splitline[i-1][k:j] + "&"
+                                elif "~" in text:
+                                    tex[p] = splitline[i-1][k:j] + "&"
+                            k = j
+                            j += charlen(splitline[i-1][k:],LINE)
+                            p += 1
+                        splitline[i-1] = "".join(tex.values())
+                    i += 1
+                splitbox[n-1] = "".join(splitline)
+            elif "&" not in splitbox[n-1] and (":2" or ":3" or ":O" )not in splitbox[n-1]:
+                if charlen(splitbox[n-1])-2 <= LINE:
+                    if "~" not in text:
+                        if alone == "left":
+                            if "T+" in splitbox[n-1]:
+                                splitbox[n-1] = splitbox[n-1][3:] + "^<"
+                            elif "T+" not in splitbox[n-1]:
+                                splitbox[n-1] = splitbox[n-1] + "^<"
+                        elif alone == "center":
+                            w = format((LINE - charlen(splitbox[n-1]))*8 + int(halflen(splitbox[n-1][k:j]) / 2),"02x")
+                            if w != "00" and not "-" in w:
+                                shift = r"+T\x{}".format(w)
+                            elif w == "00" or "-" in w:
+                                shift = ""
+                            if "T+" in splitbox[n-1]:
+                                splitbox[n-1] = shift + splitbox[n-1][3:] + "^<"
+                            elif "T+" not in splitbox[n-1]:
+                                splitbox[n-1] = shift + splitbox[n-1] + "^<"
+                        elif alone == "right":
+                            w = format((LINE - charlen(splitbox[n-1]))*16 + halflen(splitbox[n-1][k:j]),"02x")
+                            if w != "00" and not "-" in w:
+                                shift = r"+T\x{}".format(w)
+                            elif w == "00" or "-" in w:
+                                shift = ""
+                            if "T+" in splitbox[n-1]:
+                                splitbox[n-1] = shift + splitbox[n-1][3:] + "^<"
+                            elif "T+" not in splitbox[n-1]:
+                                splitbox[n-1] = shift + splitbox[n-1] + "^<"
+                    elif "~" in text:
+                        splitbox[n-1] = splitbox[n-1] + "^<"
+                elif charlen(splitbox[n-1])-2 > LINE:
+                    j = charlen(splitbox[n-1],LINE)
+                    p = 0
+                    k = 0
+                    while LINE * (p - 1) <= charlen(splitbox[n-1]):
+                        if (n + p) % 3 == 0:
+                            if "~" not in text:
+                                if alone == "left":
+                                    if "T+" in splitbox[n-1][k:j]:
+                                        box[p] = splitbox[n-1][k+3:j] + "^<"
+                                    elif "T+" not in splitbox[n-1][k:j]:
+                                        box[p] = splitbox[n-1][k:j] + "^<"
+                                elif alone == "center":
+                                    w = format((LINE - charlen(splitbox[n-1][k:j]))*8 + int(halflen(splitbox[n-1][k:j]) / 2),"02x")
+                                    if w != "00" and not "-" in w:
+                                        shift = r"+T\x{}".format(w)
+                                    elif w == "00" or "-" in w:
+                                        shift = ""
+                                    if "+T" in splitbox[n-1][k:j]:
+                                        box[p] = shift + splitbox[n-1][k+3:j] + "^<"
+                                    elif "+T" not in splitbox[n-1][k:j]:
+                                        box[p] = shift + splitbox[n-1][k:j] + "^<"
+                                elif alone == "right":
+                                    w = format((LINE - charlen(splitbox[n-1][k:j]))*16 + halflen(splitbox[n-1][k:j]),"02x")
+                                    if w != "00" and not "-" in w:
+                                        shift = r"+T\x{}".format(w)
+                                    elif w == "00" or "-" in w:
+                                        shift = ""
+                                    if "+T" in splitbox[n-1][k:j]:
+                                        box[p] = shift + splitbox[n-1][k+3:j] + "^<"
+                                    elif "+T" not in splitbox[n-1][k:j]:
+                                        box[p] = shift + splitbox[n-1][k:j] + "^<"
+                            elif "~" in text:
+                                box[p] = splitbox[n-1][k:j] + "^<"
+                        elif (n + p) % 3 != 0:
+                            if "~" not in text:
+                                if alone == "left":
+                                    if "T+" in splitbox[n-1][k:j]:
+                                        box[p] = splitbox[n-1][k+3:j] + "&"
+                                    elif "T+" not in splitbox[n-1][k:j]:
+                                        box[p] = splitbox[n-1][k:j] + "&"
+                                elif alone == "center":
+                                    w = format((LINE - charlen(splitbox[n-1][k:j]))*8 + int(halflen(splitbox[n-1][k:j]) / 2),"02x")
+                                    if w != "00" and not "-" in w:
+                                        shift = r"+T\x{}".format(w)
+                                    elif w == "00" or "-" in w:
+                                        shift = ""
+                                    if "+T" in splitbox[n-1][k:j]:
+                                        box[p] = shift + splitbox[n-1][k+3:j] + "&"
+                                    elif "+T" not in splitbox[n-1][k:j]:
+                                        box[p] = shift + splitbox[n-1][k:j] + "&"
+                                elif alone == "right":
+                                    w = format((LINE - charlen(splitbox[n-1][k:j])) * 16 + halflen(splitbox[n-1][k:j]),"02x")
+                                    if w != "00" and not "-" in w:
+                                        shift = r"+T\x{}".format(w)
+                                    elif w == "00" or "-" in w:
+                                        shift = ""
+                                    if "+T" in splitbox[n-1][k:j]:
+                                        box[p] = shift + splitbox[n-1][k+3:j] + "&"
+                                    elif "+T" not in splitbox[n-1][k:j]:
+                                        box[p] = shift + splitbox[n-1][k:j] + "&"
+                            elif "~" in text:
+                                box[p] = splitbox[n-1][k:j] + "&"
+                        k = j
+                        j += charlen(splitbox[n-1][k:], LINE)
+                        p += 1
+                    splitbox[n-1] = "".join(box.values())
+                    if splitbox[n-1].endswith("&"):
+                        splitbox[n-1] = splitbox[n-1][:-1] + "^<"
+            n += 1
+        text = "".join(splitbox)
+        text = text.replace("<<","<")
+        text = text.replace("^^","^")
+        if text.endswith("&"):
+            text = text[:-1]
+        elif text.endswith("^<"):
+            text = text[:-2]
+        text = text.replace("^<^<","^<")
+        text = text.replace("^<&","^<")
+        text = text.replace("&^<","^<")
+        text = text.replace("&&","&")
+        if text.endswith("&"):
+            text = text[:-1]
+        elif text.endswith("^<"):
+            text = text[:-2]
+        if instant == 1:
+            text = "<" + text
+    elif mode == 1:
+        splitbox = text.split("^^")
+        while n <= text.count("^^") + 1:
+            if (":2" or ":3" or ":O") in splitbox[n-1]:
+                splitbox[n-1] = splitbox[n-1]
+            elif "&&" in splitbox[n-1] and (":2" or ":3" or ":O") not in splitbox[n-1]:
+                splitline = splitbox[n-1].split("&&")
+                while i <= splitbox[n-1].count("&&") + 1:
+                    print(splitline[i-1])
+                    if charlen(splitline[i-1],mode = 1)-2 <= LINE:
+                        if i % 3 == 0:
+                            if "~" not in text:
+                                if alone == "left":
+                                    if "+T" in splitline[i-1]:
+                                        splitline[i-1] = splitline[i-1][3:] + "^^<<"
+                                    elif "+T" not in splitline[i-1]:
+                                        splitline[i-1] = splitline[i-1] + "^^<<"
+                                elif alone == "center":
+                                    w = format((LINE - charlen(splitline[i-1],mode = 1))*8 + int(halflen(splitline[i-1],1) / 2),"02x")
+                                    if w != "00" and not "-" in w:
+                                        shift = r"+T\x{}".format(w)
+                                    elif w == "00" or "-" in w:
+                                        shift = ""
+                                    if "+T" in splitline[i-1]:
+                                        splitline[i-1] = shift + splitline[i-1][3:] + "^^<<"
+                                    elif "+T" not in splitline[i-1]:
+                                        splitline[i-1] = shift + splitline[i-1] + "^^<<"
+                                elif alone == "right":
+                                    w = format((LINE - charlen(splitline[i-1],mode = 1))*16 + halflen(splitline[i-1],1),"02x")
+                                    if w != "00" and not "-" in w:
+                                        shift = r"+T\x{}".format(w)
+                                    elif w == "00" or "-" in w:
+                                        shift = ""
+                                    if "+T" in splitline[i-1]:
+                                        splitline[i-1] = shift + splitline[i-1][3:] + "^^<<"
+                                    elif "+T" not in splitline[i-1]:
+                                        splitline[i-1] = shift + splitline[i-1] + "^^<<"
+                            elif "~" in text:
+                                splitline[i-1] = splitline[i-1] + "^^<<"
+                        elif i % 3 != 0:
+                            if "~" not in text:
+                                if alone == "left":
+                                    if "+T" in splitline[i-1]:
+                                        splitline[i-1] = splitline[i-1][3:] + "&&"
+                                    elif "+T" not in splitline[i-1]:
+                                        splitline[i-1] = splitline[i-1] + "&&"
+                                elif alone == "center":
+                                    w = format((LINE - charlen(splitline[i-1],mode = 1))*8 + int(halflen(splitline[i-1],1) / 2),"02x")
+                                    if w != "00" and not "-" in w:
+                                        shift = r"+T\x{}".format(w)
+                                    elif w == "00" or "-" in w:
+                                        shift = ""
+                                    if "+T" in splitline[i-1]:
+                                        splitline[i-1] = shift + splitline[i-1][3:] + "&&"
+                                    elif "+T" not in splitline[i-1]:
+                                        splitline[i-1] = shift + splitline[i-1] + "&&"
+                                elif alone == "right":
+                                    w = format((LINE - charlen(splitline[i-1],mode = 1))*16 + halflen(splitline[i-1],1),"02x")
+                                    if w != "00" and not "-" in w:
+                                        shift = r"+T\x{}".format(w)
+                                    elif w == "00" or "-" in w:
+                                        shift = ""
+                                    if "+T" in splitline[i-1]:
+                                        splitline[i-1] = shift + splitline[i-1][3:] + "&&"
+                                    elif "+T" not in splitline[i-1]:
+                                        splitline[i-1] = shift + splitline[i-1] + "&&"
+                            elif "~" in text:
+                                splitline[i-1] = splitline[i-1] + "&&"
+                    elif charlen(splitline[i-1],mode = 1)-2 > LINE:
+                        j = charlen(splitline[i-1],LINE,mode = 1)
+                        p = 0
+                        while LINE * (p - 1) <= charlen(splitline[i-1],mode = 1):
+                            if (i + p) % 3 == 0:
+                                if "~" not in text:
+                                    if alone == "left":
+                                        if "+T" in splitline[i-1][k:j]:
+                                            tex[p] = splitline[i-1][k+3:j] + "^^<<"
+                                        elif "+T" not in splitline[i-1][k:j]:
+                                            tex[p] = splitline[i-1][k:j] + "^^<<"
+                                    elif alone == "center":
+                                        w = format((LINE - charlen(splitline[i-1][k:j],mode = 1))*8 + int(halflen(splitline[i-1][k:j],1) / 2),"02x")
+                                        if w != "00" and not "-" in w:
+                                            shift = r"+T\x{}".format(w)
+                                        elif w == "00" or "-" in w:
+                                            shift = ""
+                                        if "+T" in splitline[i-1][k:j]:
+                                            tex[p] = shift + splitline[i-1][k+3:j] + "^^<<"
+                                        elif "+T" not in splitline[i-1][k:j]:
+                                            tex[p] = shift + splitline[i-1][k:j] + "^^<<"
+                                    elif alone == "right":
+                                        w = format((LINE - charlen(splitline[i-1][k:j],mode = 1))*16 + halflen(splitline[i-1][k:j],1),"02x")
+                                        if w != "00" and not "-" in w:
+                                            shift = r"+T\x{}".format(w)
+                                        elif w == "00" or "-" in w:
+                                            shift = ""
+                                        if "+T" in splitline[i-1][k:j]:
+                                            tex[p] = shift + splitline[i-1][k+3:j] + "^^<<"
+                                        elif "+T" not in splitline[i-1][k:j]:
+                                            tex[p] = shift + splitline[i-1][k:j] + "^^<<"
+                                elif "~" in text:
+                                    tex[p] = splitline[i-1][k:j] + "^^<<"
+                            elif (i + p) % 3 != 0:
+                                if "~" not in text:
+                                    if alone == "left":
+                                        if "+T" in splitline[i-1][k:j]:
+                                            tex[p] = splitline[i-1][k+3:j] + "&&"
+                                        elif "+T" not in splitline[i-1][k:j]:
+                                            tex[p] = splitline[i-1][k:j] + "&&"
+                                    elif alone == "center":
+                                        w = format((LINE - charlen(splitline[i-1][k:j],mode = 1))*8 + int(halflen(splitline[i-1][k:j],1) / 2),"02x")
+                                        if w != "00" and not "-" in w:
+                                            shift = r"+T\x{}".format(w)
+                                        elif w == "00" or "-" in w:
+                                            shift = ""
+                                        if "+T" in splitline[i-1][k:j]:
+                                            tex[p] = shift + splitline[i-1][k+3:j] + "&&"
+                                        elif "+T" not in splitline[i-1][k:j]:
+                                            tex[p] = shift + splitline[i-1][k:j] + "&&"
+                                    elif alone == "right":
+                                        w = format((LINE - charlen(splitline[i-1][k:j],mode = 1))*16 + halflen(splitline[i-1][k:j],1),"02x")
+                                        if w != "00" and not "-" in w:
+                                            shift = r"+T\x{}".format(w)
+                                        elif w == "00" or "-" in w:
+                                            shift = ""
+                                        if "+T" in splitline[i-1][k:j]:
+                                            tex[p] = shift + splitline[i-1][k+3:j] + "&&"
+                                        elif "+T" not in splitline[i-1][k:j]:
+                                            tex[p] = shift + splitline[i-1][k:j] + "&&"
+                                elif "~" in text:
+                                    tex[p] = splitline[i-1][k:j] + "&&"
+                            k = j
+                            j += charlen(splitline[i-1][k:],LINE,mode = 1)
+                            p += 1
+                        splitline[i-1] = "".join(tex.values())
+                    i += 1
+                splitbox[n-1] = "".join(splitline)
+            elif "&&" not in splitbox[n-1] and (":2" or ":3" or ":O") not in splitbox[n-1]:
+                if charlen(splitbox[n-1],mode = 1)-2 <= LINE:
+                    if "~" not in text:
+                        if alone == "left":
+                            if "T+" in splitbox[n-1]:
+                                splitbox[n-1] = splitbox[n-1][3:] + "^^<<"
+                            elif "T+" not in splitbox[n-1]:
+                                splitbox[n-1] = splitbox[n-1] + "^^<<"
+                        elif alone == "center":
+                            w = format((LINE - charlen(splitbox[n-1],mode = 1))*8 + int(halflen(splitbox[n-1],1) / 2),"02x")
+                            if w != "00" and not "-" in w:
+                                shift = r"+T\x{}".format(w)
+                            elif w == "00" or "-" in w:
+                                shift = ""
+                            if "T+" in splitbox[n-1]:
+                                splitbox[n-1] = shift + splitbox[n-1][3:] + "^^<<"
+                            elif "T+" not in splitbox[n-1]:
+                                splitbox[n-1] = shift + splitbox[n-1] + "^^<<"
+                        elif alone == "right":
+                            w = format((LINE - charlen(splitbox[n-1],mode = 1))*16 + halflen(splitbox[n-1],1),"02x")
+                            if w != "00" and not "-" in w:
+                                shift = r"+T\x{}".format(w)
+                            elif w == "00" or "-" in w:
+                                shift = ""
+                            if "T+" in splitbox[n-1]:
+                                splitbox[n-1] = shift + splitbox[n-1][3:] + "^^<<"
+                            elif "T+" not in splitbox[n-1]:
+                                splitbox[n-1] = shift + splitbox[n-1] + "^^<<"
+                    elif "~" in text:
+                        splitbox[n-1] = splitbox[n-1] + "^^<<"
+                elif charlen(splitbox[n-1],mode = 1)-2 > LINE:
+                    j = charlen(splitbox[n-1],LINE,mode = 1)
+                    p = 0
+                    k = 0
+                    while LINE * (p - 1) <= charlen(splitbox[n-1],mode = 1):
+                        if (n + p) % 3 == 0:
+                            if "~" not in text:
+                                if alone == "left":
+                                    if "T+" in splitbox[n-1][k:j]:
+                                        box[p] = splitbox[n-1][k+3:j] + "^^<<"
+                                    elif "T+" not in splitbox[n-1][k:j]:
+                                        box[p] = splitbox[n-1][k:j] + "^^<<"
+                                elif alone == "center":
+                                    w = format((LINE - charlen(splitbox[n-1][k:j],mode = 1))*8 + int(halflen(splitbox[n-1][k:j],1) / 2),"02x")
+                                    if w != "00" and not "-" in w:
+                                        shift = r"+T\x{}".format(w)
+                                    elif w == "00" or "-" in w:
+                                        shift = ""
+                                    if "+T" in splitbox[n-1][k:j]:
+                                        box[p] = shift + splitbox[n-1][k+3:j] + "^^<<"
+                                    elif "+T" not in splitbox[n-1][k:j]:
+                                        box[p] = shift + splitbox[n-1][k:j] + "^^<<"
+                                elif alone == "right":
+                                    w = format((LINE - charlen(splitbox[n-1][k:j],mode = 1))*16 + halflen(splitbox[n-1][k:j],1),"02x")
+                                    if w != "00" and not "-" in w:
+                                        shift = r"+T\x{}".format(w)
+                                    elif w == "00" or "-" in w:
+                                        shift = ""
+                                    if "+T" in splitbox[n-1][k:j]:
+                                        box[p] = shift + splitbox[n-1][k+3:j] + "^^<<"
+                                    elif "+T" not in splitbox[n-1][k:j]:
+                                        box[p] = shift + splitbox[n-1][k:j] + "^^<<"
+                            elif "~" in text:
+                                box[p] = splitbox[n-1][k:j] + "^^<<"
+                        elif (n + p) % 3 != 0:
+                            if "~" not in text:
+                                if alone == "left":
+                                    if "T+" in splitbox[n-1][k:j]:
+                                        box[p] = splitbox[n-1][k+3:j] + "&&"
+                                    elif "T+" not in splitbox[n-1][k:j]:
+                                        box[p] = splitbox[n-1][k:j] + "&&"
+                                elif alone == "center":
+                                    w = format((LINE - charlen(splitbox[n-1][k:j],mode = 1))*8 + int(halflen(splitbox[n-1][k:j],1) / 2),"02x")
+                                    if w != "00" and not "-" in w:
+                                        shift = r"+T\x{}".format(w)
+                                    elif w == "00" or "-" in w:
+                                        shift = ""
+                                    if "+T" in splitbox[n-1][k:j]:
+                                        box[p] = shift + splitbox[n-1][k+3:j] + "&&"
+                                    elif "+T" not in splitbox[n-1][k:j]:
+                                        box[p] = shift + splitbox[n-1][k:j] + "&&"
+                                elif alone == "right":
+                                    w = format((LINE - charlen(splitbox[n-1][k:j],mode = 1))*16 + halflen(splitbox[n-1][k:j],1),"02x")
+                                    if w != "00" and not "-" in w:
+                                        shift = r"+T\x{}".format(w)
+                                    elif w == "00" or "-" in w:
+                                        shift = ""
+                                    if "+T" in splitbox[n-1][k:j]:
+                                        box[p] = shift + splitbox[n-1][k+3:j] + "&&"
+                                    elif "+T" not in splitbox[n-1][k:j]:
+                                        box[p] = shift + splitbox[n-1][k:j] + "&&"
+                            elif "~" in text:
+                                box[p] = splitbox[n-1][k:j] + "&&"
+                        k = j
+                        j += charlen(splitbox[n-1][k:], LINE,mode = 1)
+                        p += 1
+                    splitbox[n-1] = "".join(box.values())
+                    if splitbox[n-1].endswith("&&"):
+                        splitbox[n-1] = splitbox[n-1][:-2] + "^^<<"
+            n += 1
+        text = "".join(splitbox)
+        text = text.replace("<<<","<")
+        text = text.replace("^^^","^")
+        if text.endswith("&&"):
+            text = text[:-2]
+        elif text.endswith("^^<<"):
+            text = text[:-4]
+        text = text.replace("^^,<^^<<","^^<<")
+        text = text.replace("^^<<&&","^^<<")
+        text = text.replace("&&^^<<","^^<<")
+        text = text.replace("&&&","&")
+        if text.endswith("&&"):
+            text = text[:-2]
+        elif text.endswith("^^<<"):
+            text = text[:-4]
+        if instant == 1:
+            text = "<<" + text
+    return text
 
 def calculate_width(words):
     words_width = 0

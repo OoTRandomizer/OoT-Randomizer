@@ -1,7 +1,9 @@
 [
     {
         "region_name": "Root",
+		"name_jp": "手元",
         "hint": "Link's Pocket",
+		"hint_jp": "手持ち",
         "locations": {
             "Links Pocket": "True",
             "Gift from Sages": "can_receive_ganon_bosskey"
@@ -13,6 +15,7 @@
     },
     {
         "region_name": "Root Exits",
+		"name_jp": "スポーン",
         "exits": {
             "Child Spawn": "is_child",
             "Adult Spawn": "is_adult",
@@ -26,57 +29,67 @@
     },
     {
         "region_name": "Child Spawn",
+		"name_jp": "子供　スポーン",
         "exits": {
             "KF Links House": "True"
         }
     },
     {
         "region_name": "Adult Spawn",
+		"name_jp": "大人　スポーン",
         "exits": {
             "Temple of Time": "True"
         }
     },
     {
         "region_name": "Prelude of Light Warp",
+		"name_jp": "プレリュード着",
         "exits": {
             "Temple of Time": "True"
         }
     },
     {
         "region_name": "Minuet of Forest Warp",
+		"name_jp": "メヌエット着",
         "exits": {
             "Sacred Forest Meadow": "True"
         }
     },
     {
         "region_name": "Bolero of Fire Warp",
+		"name_jp": "ボレロ着",
         "exits": {
             "DMC Central Local": "True"
         }
     },
     {
         "region_name": "Serenade of Water Warp",
+		"name_jp": "セレナーデ着",
         "exits": {
             "Lake Hylia": "True"
         }
     },
     {
         "region_name": "Nocturne of Shadow Warp",
+		"name_jp": "ノクターン着",
         "exits": {
             "Graveyard Warp Pad Region": "True"
         }
     },
     {
         "region_name": "Requiem of Spirit Warp",
+		"name_jp": "レクイエム着",
         "exits": {
             "Desert Colossus": "True"
         }
     },
     {
         "region_name": "Kokiri Forest",
+		"name_jp": "コキリの森",
         "font_color": "Green",
         "scene": "Kokiri Forest",
         "hint": "Kokiri Forest",
+		"hint_jp": "コキリの森",
         "events": {
             "Showed Mido Sword & Shield": "is_child and Kokiri_Sword and Buy_Deku_Shield"
         },
@@ -109,9 +122,11 @@
     },
     {
         "region_name": "KF Outside Deku Tree",
+		"name_jp": "コキリ　デクの樹の外",
         "font_color": "Green",
         "scene": "Kokiri Forest",
         "hint": "Kokiri Forest",
+		"hint_jp": "コキリの森",
         "events": {
             "Showed Mido Sword & Shield": "is_child and Kokiri_Sword and Buy_Deku_Shield"
         },
@@ -134,6 +149,7 @@
     },
     {
         "region_name": "KF Links House",
+		    "name_jp": "コ森　自宅",
         "scene": "KF Links House",
         "locations": {
             "KF Links House Cow": "is_adult and can_play(Eponas_Song) and 'Links Cow'"
@@ -144,6 +160,7 @@
     },
     {
         "region_name": "KF Midos House",
+		    "name_jp": "コ森　ミド",
         "scene": "KF Midos House",
         "locations": {
             "KF Midos Top Left Chest": "True",
@@ -157,6 +174,7 @@
     },
     {
         "region_name": "KF Sarias House",
+		    "name_jp": "コ森　サリア",
         "scene": "KF Sarias House",
         "exits": {
             "Kokiri Forest": "True"
@@ -164,6 +182,7 @@
     },
     {
         "region_name": "KF House of Twins",
+		    "name_jp": "コ森　双子",
         "scene": "KF House of Twins",
         "exits": {
             "Kokiri Forest": "True"
@@ -171,6 +190,7 @@
     },
     {
         "region_name": "KF Know It All House",
+		    "name_jp": "コ森　物知り",
         "scene": "KF Know it All House",
         "exits": {
             "Kokiri Forest": "True"
@@ -178,6 +198,7 @@
     },
     {
         "region_name": "KF Kokiri Shop",
+		    "name_jp": "コ森　店",
         "scene": "KF Kokiri Shop",
         "locations": {
             "KF Shop Item 1": "True",
@@ -195,18 +216,22 @@
     },
     {
         "region_name": "LW Forest Exit",
+		"name_jp": "迷森　出口",
         "font_color": "Green",
         "scene": "Lost Woods",
         "hint": "the Lost Woods",
+		"hint_jp": "迷いの森",
         "exits": {
             "Kokiri Forest": "True"
         }
     },
     {
         "region_name": "Lost Woods",
+		"name_jp": "迷いの森",
         "font_color": "Green",
         "scene": "Lost Woods",
         "hint": "the Lost Woods",
+		"hint_jp": "迷いの森",
         "events": {
             "Odd Mushroom Access": "is_adult and ('Cojiro Access' or Cojiro)",
             "Poachers Saw Access": "is_adult and 'Odd Potion Access'"
@@ -236,9 +261,11 @@
     },
     {
         "region_name": "LW Beyond Mido",
+		"name_jp": "迷森　ミドの先",
         "font_color": "Green",
         "scene": "Lost Woods",
         "hint": "the Lost Woods",
+		"hint_jp": "迷いの森",
         "locations": {
             "LW Deku Scrub Near Deku Theater Right": "is_child and can_stun_deku",
             "LW Deku Scrub Near Deku Theater Left": "is_child and can_stun_deku",
@@ -262,18 +289,22 @@
     },
     {
         "region_name": "Lost Woods Mushroom Timeout",
+		"name_jp": "迷森　キノコ",
         "font_color": "Green",
         "scene": "Lost Woods",
         "hint": "the Lost Woods",
+		"hint_jp": "迷いの森",
         "exits": {
             "Lost Woods": "True"
         }
     },
     {
         "region_name": "SFM Entryway",
+		"name_jp": "聖森　入口",
         "font_color": "Green",
         "scene": "Sacred Forest Meadow",
         "hint": "the Sacred Forest Meadow",
+		"hint_jp": "森の聖域",
         "exits": {
             "LW Beyond Mido": "True",
             "Sacred Forest Meadow": "
@@ -284,9 +315,11 @@
     },
     {
         "region_name": "Sacred Forest Meadow",
+		"name_jp": "森の聖域",
         "font_color": "Green",
         "scene": "Sacred Forest Meadow",
         "hint": "the Sacred Forest Meadow",
+		"hint_jp": "森の聖域",
         "locations": {
             "Song from Saria": "is_child and Zeldas_Letter",
             "Sheik in Forest": "is_adult",
@@ -305,9 +338,11 @@
     },
     {
         "region_name": "SFM Forest Temple Entrance Ledge",
+		"name_jp": "聖森　神殿入口",
         "font_color": "Green",
         "scene": "Sacred Forest Meadow",
         "hint": "the Sacred Forest Meadow",
+		"hint_jp": "森の聖域",
         "exits": {
             "Sacred Forest Meadow": "True",
             "Forest Temple Lobby": "True"
@@ -315,9 +350,11 @@
     },
     {
         "region_name": "LW Bridge From Forest",
+		"name_jp": "迷森　森橋",
         "font_color": "Green",
         "scene": "Lost Woods",
         "hint": "the Lost Woods",
+		"hint_jp": "迷いの森",
         "locations": {
             "LW Gift from Saria": "True"
         },
@@ -327,9 +364,11 @@
     },
     {
         "region_name": "LW Bridge",
+		"name_jp": "迷森　橋",
         "font_color": "Green",
         "scene": "Lost Woods",
         "hint": "the Lost Woods",
+		"hint_jp": "迷いの森",
         "exits": {
             "Kokiri Forest": "True",
             "Hyrule Field": "True",
@@ -338,9 +377,11 @@
     },
     {
         "region_name": "Hyrule Field",
+		"name_jp": "ハイラル平原",
         "font_color": "Light Blue",
         "scene": "Hyrule Field",
         "hint": "Hyrule Field",
+		"hint_jp": "ハイラル平原",
         "time_passes": true,
         "locations": {
             "HF Ocarina of Time Item": "is_child and has_all_stones",
@@ -368,9 +409,11 @@
     },
     {
         "region_name": "Lake Hylia",
+		"name_jp": "ハイリア湖畔",
         "font_color": "Blue",
         "scene": "Lake Hylia",
         "hint": "Lake Hylia",
+		"hint_jp": "ハイリア湖畔",
         "time_passes": true,
         "events": {
             "Bonooru": "is_child and Ocarina"
@@ -414,9 +457,11 @@
     },
     {
         "region_name": "LH Fishing Island",
+		"name_jp": "湖畔　釣り堀前",
         "font_color": "Blue",
         "scene": "Lake Hylia",
         "hint": "Lake Hylia",
+		"hint_jp": "ハイリア湖畔",
         "exits": {
             "Lake Hylia": "True",
             "LH Fishing Hole": "True"
@@ -424,14 +469,17 @@
     },
     {
         "region_name": "LH Owl Flight",
+		"name_jp": "湖畔　フクロウ",
         "scene": "Lake Hylia",
         "hint": "Lake Hylia",
+		"hint_jp": "ハイリア湖畔",
         "exits": {
             "Hyrule Field": "True"
         }
     },
     {
         "region_name": "LH Lab",
+		    "name_jp": "湖畔　研究所",
         "scene": "LH Lab",
         "events": {
             "Eyedrops Access": "
@@ -450,6 +498,7 @@
     },
     {
         "region_name": "LH Fishing Hole",
+		    "name_jp": "湖畔　釣り堀",
         "scene": "LH Fishing Hole",
         "locations": {
             "LH Child Fishing": "is_child",
@@ -461,9 +510,11 @@
     },
     {
         "region_name": "Gerudo Valley",
+		"name_jp": "ゲルドの谷",
         "font_color": "Yellow",
         "scene": "Gerudo Valley",
         "hint": "Gerudo Valley",
+		"hint_jp": "ゲルドの谷",
         "time_passes": true,
         "locations": {
             "GV GS Small Bridge": "can_use(Boomerang) and at_night",
@@ -481,9 +532,11 @@
     },
     {
         "region_name": "GV Upper Stream",
+		"name_jp": "ゲ谷　滝上",
         "font_color": "Yellow",
         "scene": "Gerudo Valley",
         "hint": "Gerudo Valley",
+		"hint_jp": "ゲルドの谷",
         "time_passes": true,
         "locations": {
             "GV Waterfall Freestanding PoH": "True",
@@ -499,9 +552,11 @@
     },
     {
         "region_name": "GV Lower Stream",
+		"name_jp": "ゲ谷　滝下",
         "font_color": "Yellow",
         "scene": "Gerudo Valley",
         "hint": "Gerudo Valley",
+		"hint_jp": "ゲルドの谷",
         "time_passes": true,
         "exits": {
             "Lake Hylia": "True"
@@ -509,9 +564,11 @@
     },
     {
         "region_name": "GV Grotto Ledge",
+		"name_jp": "ゲ谷　穴口",
         "font_color": "Yellow",
         "scene": "Gerudo Valley",
         "hint": "Gerudo Valley",
+		"hint_jp": "ゲルドの谷",
         "time_passes": true,
         "exits": {
             "GV Lower Stream": "True",
@@ -521,9 +578,11 @@
     },
     {
         "region_name": "GV Crate Ledge",
+		"name_jp": "ゲ谷　洞穴",
         "font_color": "Yellow",
         "scene": "Gerudo Valley",
         "hint": "Gerudo Valley",
+		"hint_jp": "ゲルドの谷",
         "time_passes": true,
         "locations": {
             "GV Crate Freestanding PoH": "True"
@@ -534,9 +593,11 @@
     },
     {
         "region_name": "GV Fortress Side",
+		"name_jp": "ゲ谷　砦側",
         "font_color": "Yellow",
         "scene": "Gerudo Valley",
         "hint": "Gerudo Valley",
+		"hint_jp": "ゲルドの谷",
         "time_passes": true,
         "events": {
             "Broken Sword Access": "is_adult and ('Poachers Saw Access' or Poachers_Saw)"
@@ -560,6 +621,7 @@
     },
     {
         "region_name": "GV Carpenter Tent",
+		    "name_jp": "ゲ谷　テント",
         "scene": "GV Carpenter Tent",
         "exits": {
             "GV Fortress Side": "True"
@@ -567,9 +629,11 @@
     },
     {
         "region_name": "Gerudo Fortress",
+		"name_jp": "ゲルドの砦",
         "font_color": "Yellow",
         "scene": "Gerudo Fortress",
         "hint": "Gerudo's Fortress",
+		"hint_jp": "ゲルドの砦",
         "events": {
             "Carpenter Rescue": "can_finish_GerudoFortress",
             "GF Gate Open": "is_adult and Gerudo_Membership_Card"
@@ -605,9 +669,11 @@
     },
     {
         "region_name": "GF Outside Gate",
+		"name_jp": "ゲ砦　門外",
         "font_color": "Yellow",
         "scene": "Gerudo Fortress",
         "hint": "Gerudo's Fortress",
+		"hint_jp": "ゲルドの砦",
         "exits": {
             "Gerudo Fortress": "is_adult or (shuffle_overworld_entrances and 'GF Gate Open')",
             "Wasteland Near Fortress": "True"
@@ -615,9 +681,11 @@
     },
     {
         "region_name": "Wasteland Near Fortress",
+		"name_jp": "幻砂　砦側",
         "font_color": "Yellow",
         "scene": "Haunted Wasteland",
         "hint": "the Haunted Wasteland",
+		"hint_jp": "幻影の砂漠",
         "exits": {
             "GF Outside Gate": "True",
             "Haunted Wasteland": "
@@ -626,9 +694,11 @@
     },
     {
         "region_name": "Haunted Wasteland",
+		"name_jp": "幻影の砂漠",
         "font_color": "Yellow",
         "scene": "Haunted Wasteland",
         "hint": "the Haunted Wasteland",
+		"hint_jp": "幻影の砂漠",
         "locations": {
             "Wasteland Chest": "has_fire_source",
             "Wasteland Bombchu Salesman": "
@@ -646,9 +716,11 @@
     },
     {
         "region_name": "Wasteland Near Colossus",
+		"name_jp": "幻砂　神殿側",
         "font_color": "Yellow",
         "scene": "Haunted Wasteland",
         "hint": "the Haunted Wasteland",
+		"hint_jp": "幻影の砂漠",
         "exits": {
             "Desert Colossus": "True",
             "Haunted Wasteland": "logic_reverse_wasteland"
@@ -656,9 +728,11 @@
     },
     {
         "region_name": "Desert Colossus",
+		"name_jp": "巨大邪神像",
         "font_color": "Yellow",
         "scene": "Desert Colossus",
         "hint": "the Desert Colossus",
+		"hint_jp": "巨大邪神像",
         "time_passes": true,
         "locations": {
             "Colossus Freestanding PoH": "is_adult and here(can_plant_bean)",
@@ -682,9 +756,11 @@
     },
     {
         "region_name": "Desert Colossus From Spirit Lobby",
+		"name_jp": "巨像　神殿出口",
         "font_color": "Yellow",
         "scene": "Desert Colossus",
         "hint": "the Desert Colossus",
+		"hint_jp": "巨大邪神像",
         "locations": {
             "Sheik at Colossus": "True"
         },
@@ -694,6 +770,7 @@
     },
     {
         "region_name": "Colossus Great Fairy Fountain",
+		    "name_jp": "巨像　泉",
         "scene": "Colossus Great Fairy Fountain",
         "locations": {
             "Colossus Great Fairy Reward": "can_play(Zeldas_Lullaby)"
@@ -704,6 +781,7 @@
     },
     {
         "region_name": "Market Entrance",
+		    "name_jp": "城下町入口",
         "scene": "Market Entrance",
         "hint": "the Market",
         "exits": {
@@ -714,9 +792,11 @@
     },
     {
         "region_name": "Market",
+		"name_jp": "城下町",
         "font_color": "Light Blue",
         "scene": "Market",
         "hint": "the Market",
+		"hint_jp": "城下町",
         "exits": {
             "Market Entrance": "True",
             "ToT Entrance": "True",
@@ -732,9 +812,11 @@
     },
     {
         "region_name": "Market Back Alley",
+		"name_jp": "城町　裏路地",
         "font_color": "Light Blue",
         "scene": "Market",
         "hint": "the Market",
+		"hint_jp": "城下町",
         "exits": {
             "Market": "True",
             "Market Bombchu Shop": "at_night",
@@ -744,8 +826,10 @@
     },
     {
         "region_name": "ToT Entrance",
+		    "name_jp": "時の神殿　入口",
         "scene": "ToT Entrance",
         "hint": "the Market",
+		"hint_jp": "城下町",
         "locations": {
             "ToT Gossip Stone (Left)": "True",
             "ToT Gossip Stone (Left-Center)": "True",
@@ -760,9 +844,11 @@
     },
     {
         "region_name": "Temple of Time",
+		"name_jp": "時の神殿",
         "font_color": "Light Blue",
         "scene": "Temple of Time",
         "hint": "the Temple of Time",
+		"hint_jp": "時の神殿",
         "locations": {
             "ToT Light Arrows Cutscene": "is_adult and can_trigger_lacs"
         },
@@ -773,9 +859,11 @@
     },
     {
         "region_name": "Beyond Door of Time",
+		"name_jp": "時門の先",
         "font_color": "Light Blue",
         "scene": "Temple of Time",
         "hint": "the Temple of Time",
+		"hint_jp": "時の神殿",
         "locations": {
             "Master Sword Pedestal": "True",
             "Sheik at Temple": "Forest_Medallion and is_adult"
@@ -786,6 +874,7 @@
     },
     {
         "region_name": "Castle Grounds",
+		    "name_jp": "城",
         "font_color": "Light Blue",
         "scene": "Castle Grounds",
         "hint": "the Castle Grounds",
@@ -797,9 +886,11 @@
     },
     {
         "region_name": "Hyrule Castle Grounds",
+		    "name_jp": "ハイラル城",
         "font_color": "Light Blue",
         "scene": "Castle Grounds",
         "hint": "Hyrule Castle",
+		    "hint_jp": "ハイラル城",
         "time_passes": true,
         "locations": {
             "HC Malon Egg": "True",
@@ -819,9 +910,11 @@
     },
     {
         "region_name": "HC Garden",
+		    "name_jp": "ハ城　庭",
         "font_color": "Light Blue",
         "scene": "Castle Grounds",
         "hint": "Hyrule Castle",
+		"hint_jp": "ハイラル城",
         "exits": {
             "HC Garden Locations": "True",
             "Hyrule Castle Grounds": "True"
@@ -830,9 +923,11 @@
     {
         # Directly reachable from Root in "Free Zelda"
         "region_name": "HC Garden Locations",
+		    "name_jp": "ハ城　庭園",
         "font_color": "Light Blue",
         "scene": "Castle Grounds",
         "hint": "Hyrule Castle",
+		"hint_jp": "ハイラル城",
         "locations": {
             "HC Zeldas Letter": "True",
             "Song from Impa": "True"
@@ -840,6 +935,7 @@
     },
     {
         "region_name": "HC Great Fairy Fountain",
+		    "name_jp": "ハ城　泉",
         "scene": "HC Great Fairy Fountain",
         "locations": {
             "HC Great Fairy Reward": "can_play(Zeldas_Lullaby)"
@@ -850,9 +946,11 @@
     },
     {
         "region_name": "Ganons Castle Grounds",
+		    "name_jp": "ガノン城",
         "font_color": "Light Blue",
         "scene": "Castle Grounds",
         "hint": "outside Ganon's Castle",
+		"hint_jp": "ガノン城外",
         "locations": {
             "OGC GS": "True"
         },
@@ -864,6 +962,7 @@
     },
     {
         "region_name": "OGC Great Fairy Fountain",
+		    "name_jp": "ガ城外　泉",
         "scene": "OGC Great Fairy Fountain",
         "locations": {
             "OGC Great Fairy Reward": "can_play(Zeldas_Lullaby)"
@@ -874,6 +973,7 @@
     },
     {
         "region_name": "Market Guard House",
+		    "name_jp": "城町　兵士",
         "scene": "Market Guard House",
         "events": {
             "Sell Big Poe": "is_adult and Bottle_with_Big_Poe"
@@ -890,6 +990,7 @@
     },
     {
         "region_name": "Market Bazaar",
+		    "name_jp": "城町　バザー",
         "scene": "Market Bazaar",
         "locations": {
             "Market Bazaar Item 1": "True",
@@ -907,6 +1008,7 @@
     },
     {
         "region_name": "Market Mask Shop",
+		    "name_jp": "城町　お面屋",
         "scene": "Market Mask Shop",
         "events": {
             "Skull Mask": "Zeldas_Letter and (complete_mask_quest or at('Kakariko Village', is_child))",
@@ -922,6 +1024,7 @@
     },
     {
         "region_name": "Market Shooting Gallery",
+		    "name_jp": "城町　射的屋",
         "scene": "Market Shooting Gallery",
         "locations": {
             "Market Shooting Gallery Reward": "is_child"
@@ -932,6 +1035,7 @@
     },
     {
         "region_name": "Market Bombchu Bowling",
+		    "name_jp": "城町　ボーリング",
         "scene": "Market Bombchu Bowling",
         "locations": {
             "Market Bombchu Bowling First Prize": "found_bombchus",
@@ -944,6 +1048,7 @@
     },
     {
         "region_name": "Market Potion Shop",
+		    "name_jp": "城町　薬屋",
         "scene": "Market Potion Shop",
         "locations": {
             "Market Potion Shop Item 1": "True",
@@ -961,6 +1066,7 @@
     },
     {
         "region_name": "Market Treasure Chest Game",
+		    "name_jp": "城町　クジ屋",
         "scene": "Market Treasure Chest Game",
         "locations": {
             "Market Treasure Chest Game Reward": "can_use(Lens_of_Truth)"
@@ -971,6 +1077,7 @@
     },
     {
         "region_name": "Market Bombchu Shop",
+		    "name_jp": "城町　ボムチュウ屋",
         "scene": "Market Bombchu Shop",
         "locations": {
             "Market Bombchu Shop Item 1": "True",
@@ -988,6 +1095,7 @@
     },
     {
         "region_name": "Market Dog Lady House",
+		    "name_jp": "城町　犬好きの家",
         "scene": "Market Dog Lady House",
         "locations": {
             "Market Lost Dog": "is_child and at_night"
@@ -998,6 +1106,7 @@
     },
     {
         "region_name": "Market Man in Green House",
+		    "name_jp": "城町　緑の民家",
         "scene": "Market Man in Green House",
         "exits": {
             "Market Back Alley": "True"
@@ -1005,9 +1114,11 @@
     },
     {
         "region_name": "Kakariko Village",
+		"name_jp": "カカリコ村",
         "font_color": "Pink",
         "scene": "Kakariko Village",
         "hint": "Kakariko Village",
+		"hint_jp": "カカリコ村",
         "events": {
             "Cojiro Access": "is_adult and 'Wake Up Adult Talon'",
             "Kakariko Village Gate Open": "is_child and (Zeldas_Letter or open_kakariko == 'open')"
@@ -1055,9 +1166,11 @@
     },
     {
         "region_name": "Kak Impas Ledge",
+		"name_jp": "カ村　インパ端",
         "font_color": "Pink",
         "scene": "Kakariko Village",
         "hint": "Kakariko Village",
+		"hint_jp": "カカリコ村",
         "exits": {
             "Kak Impas House Back": "True",
             "Kakariko Village": "True"
@@ -1065,9 +1178,11 @@
     },
     {
         "region_name": "Kak Impas Rooftop",
+		"name_jp": "カ村　インパ屋根",
         "font_color": "Pink",
         "scene": "Kakariko Village",
         "hint": "Kakariko Village",
+		"hint_jp": "カカリコ村",
         "locations": {
             "Kak GS Above Impas House": "is_adult and at_night"
         },
@@ -1078,9 +1193,11 @@
     },
     {
         "region_name": "Kak Odd Medicine Rooftop",
+		"name_jp": "カ村　謎薬屋",
         "font_color": "Pink",
         "scene": "Kakariko Village",
         "hint": "Kakariko Village",
+		"hint_jp": "カカリコ村",
         "locations": {
             "Kak Man on Roof": "True"
         },
@@ -1091,9 +1208,11 @@
     },
     {
         "region_name": "Kak Backyard",
+		"name_jp": "カ村　裏路地",
         "font_color": "Pink",
         "scene": "Kakariko Village",
         "hint": "Kakariko Village",
+		"hint_jp": "カカリコ村",
         "exits": {
             "Kakariko Village": "True",
             "Kak Open Grotto": "True",
@@ -1103,6 +1222,7 @@
     },
     {
         "region_name": "Kak Carpenter Boss House",
+		    "name_jp": "カ村　大工の家",
         "scene": "Kak Carpenter Boss House",
         "events": {
             "Wake Up Adult Talon": "is_adult and (Pocket_Egg or Pocket_Cucco)"
@@ -1113,6 +1233,7 @@
     },
     {
         "region_name": "Kak House of Skulltula",
+		    "name_jp": "カ村　スタルハウス",
         "scene": "Kak House of Skulltula",
         "locations": {
             "Kak 10 Gold Skulltula Reward": "(Gold_Skulltula_Token, 10)",
@@ -1127,6 +1248,7 @@
     },
     {
         "region_name": "Kak Impas House",
+		    "name_jp": "カ村　インパ家",
         "scene": "Kak Impas House",
         "exits": {
             "Kakariko Village": "True",
@@ -1135,6 +1257,7 @@
     },
     {
         "region_name": "Kak Impas House Back",
+		    "name_jp": "カ村　インパ裏",
         "scene": "Kak Impas House",
         "locations": {
             "Kak Impas House Freestanding PoH": "True"
@@ -1146,6 +1269,7 @@
     },
     {
         "region_name": "Kak Impas House Near Cow",
+		    "name_jp": "カ村　インパ牛",
         "scene": "Kak Impas House",
         "locations": {
             "Kak Impas House Cow": "can_play(Eponas_Song)"
@@ -1153,6 +1277,7 @@
     },
     {
         "region_name": "Kak Windmill",
+		    "name_jp": "カ村　風車",
         "scene": "Windmill and Dampes Grave",
         "events": {
             "Drain Well": "is_child and can_play(Song_of_Storms)"
@@ -1169,6 +1294,7 @@
     },
     {
         "region_name": "Kak Bazaar",
+		    "name_jp": "カ村　バザー",
         "scene": "Kak Bazaar",
         "locations": {
             "Kak Bazaar Item 1": "True",
@@ -1186,6 +1312,7 @@
     },
     {
         "region_name": "Kak Shooting Gallery",
+		    "name_jp": "カ村　射的屋",
         "scene": "Kak Shooting Gallery",
         "locations": {
             "Kak Shooting Gallery Reward": "is_adult and Bow"
@@ -1196,6 +1323,7 @@
     },
     {
         "region_name": "Kak Potion Shop Front",
+		    "name_jp": "カ村　薬屋",
         "scene": "Kak Potion Shop",
         "locations": {
             "Kak Potion Shop Item 1": "is_adult",
@@ -1214,6 +1342,7 @@
     },
     {
         "region_name": "Kak Potion Shop Back",
+		    "name_jp": "カ村　薬屋裏",
         "scene": "Kak Potion Shop",
         "exits": {
             "Kak Backyard": "is_adult",
@@ -1222,6 +1351,7 @@
     },
     {
         "region_name": "Kak Odd Medicine Building",
+		    "name_jp": "カ村　怪しい薬屋",
         "scene": "Kak Odd Medicine Building",
         "events": {
             "Odd Potion Access": "
@@ -1234,9 +1364,11 @@
     },
     {
         "region_name": "Graveyard",
+		"name_jp": "墓地",
         "font_color": "Pink",
         "scene": "Graveyard",
         "hint": "the Graveyard",
+		"hint_jp": "墓地",
         "locations": {
             "Graveyard Freestanding PoH": "
                 (is_adult and (here(can_plant_bean) or can_use(Longshot))) or
@@ -1259,6 +1391,7 @@
     },
     {
         "region_name": "Graveyard Shield Grave",
+		    "name_jp": "墓地　盾",
         "scene": "Graveyard Shield Grave",
         "locations": {
             "Graveyard Shield Grave Chest": "True",
@@ -1270,6 +1403,7 @@
     },
     {
         "region_name": "Graveyard Heart Piece Grave",
+		    "name_jp": "墓地　ハート",
         "scene": "Graveyard Heart Piece Grave",
         "locations": {
             "Graveyard Heart Piece Grave Chest": "can_play(Suns_Song)"
@@ -1280,6 +1414,7 @@
     },
     {
         "region_name": "Graveyard Royal Familys Tomb",
+		    "name_jp": "墓地　王家",
         "scene": "Graveyard Royal Familys Tomb",
         "locations": {
             "Graveyard Royal Familys Tomb Chest": "has_fire_source",
@@ -1294,6 +1429,7 @@
     },
     {
         "region_name": "Graveyard Dampes Grave",
+		    "name_jp": "墓地　ダンペイ墓",
         "scene": "Windmill and Dampes Grave",
         "events": {
             "Dampes Windmill Access": "is_adult and can_play(Song_of_Time)"
@@ -1310,6 +1446,7 @@
     },
     {
         "region_name": "Graveyard Dampes House",
+		    "name_jp": "墓地　ダンペイ",
         "scene": "Graveyard Dampes House",
         "exits": {
             "Graveyard": "True"
@@ -1317,9 +1454,11 @@
     },
     {
         "region_name": "Graveyard Warp Pad Region",
+		"name_jp": "墓地　ワープ着",
         "font_color": "Pink",
         "scene": "Graveyard",
         "hint": "the Graveyard",
+		"hint_jp": "墓地",
         "locations": {
             "Graveyard Gossip Stone": "True",
             "Gossip Stone Fairy": "can_summon_gossip_fairy_without_suns and has_bottle"
@@ -1333,9 +1472,11 @@
     },
     {
         "region_name": "Kak Behind Gate",
+		"name_jp": "カ村　門裏",
         "font_color": "Pink",
         "scene": "Kakariko Village",
         "hint": "Kakariko Village",
+		"hint_jp": "カカリコ村",
         "exits": {
             "Kakariko Village": "
                 is_adult or logic_visible_collisions or 'Kakariko Village Gate Open' or open_kakariko == 'open'",
@@ -1344,9 +1485,11 @@
     },
     {
         "region_name": "Death Mountain",
+		"name_jp": "デスマウンテン",
         "font_color": "Red",
         "scene": "Death Mountain",
         "hint": "Death Mountain Trail",
+		"hint_jp": "登山道",
         "time_passes": true,
         "locations": {
             "DMT Chest": "
@@ -1384,9 +1527,11 @@
     },
     {
         "region_name": "Death Mountain Summit",
+		"name_jp": "デ山　頂上",
         "font_color": "Red",
         "scene": "Death Mountain",
         "hint": "Death Mountain Trail",
+		"hint_jp": "登山道",
         "time_passes": true,
         "events": {
             "Prescription Access": "is_adult and ('Broken Sword Access' or Broken_Sword)"
@@ -1413,6 +1558,7 @@
     },
     {
         "region_name": "DMT Owl Flight",
+		"name_jp": "登道　フクロウ",
         "scene": "Death Mountain",
         "exits": {
             "Kak Impas Rooftop": "True"
@@ -1420,9 +1566,11 @@
     },
     {
         "region_name": "Goron City",
+		"name_jp": "ゴロンシティ",
         "font_color": "Red",
         "scene": "Goron City",
         "hint": "Goron City",
+		"hint_jp": "ゴロンシティ",
         "events": {
             "Goron City Child Fire": "is_child and can_use(Dins_Fire)",
             "GC Woods Warp Open": "
@@ -1485,9 +1633,11 @@
     },
     {
         "region_name": "GC Woods Warp",
+		"name_jp": "ゴシ　森側",
         "font_color": "Red",
         "scene": "Goron City",
         "hint": "Goron City",
+		"hint_jp": "ゴロンシティ",
         "events": {
             "GC Woods Warp Open": "can_blast_or_smash or can_use(Dins_Fire)"
         },
@@ -1498,9 +1648,11 @@
     },
     {
         "region_name": "GC Darunias Chamber",
+		"name_jp": "ゴシ　ダルニア",
         "font_color": "Red",
         "scene": "Goron City",
         "hint": "Goron City",
+		"hint_jp": "ゴロンシティ",
         "events": {
             "Goron City Child Fire": "can_use(Sticks)"
         },
@@ -1514,9 +1666,11 @@
     },
     {
         "region_name": "GC Grotto Platform",
+		"name_jp": "ゴシ　穴",
         "font_color": "Red",
         "scene": "Goron City",
         "hint": "Goron City",
+		"hint_jp": "ゴロンシティ",
         "exits": {
             "GC Grotto": "True",
             "Goron City": "
@@ -1527,6 +1681,7 @@
     },
     {
         "region_name": "GC Shop",
+		    "name_jp": "ゴシ　店",
         "scene": "GC Shop",
         "locations": {
             "GC Shop Item 1": "True",
@@ -1544,9 +1699,11 @@
     },
     {
         "region_name": "DMC Upper Nearby",
+		"name_jp": "火口　近上",
         "font_color": "Red",
         "scene": "Death Mountain Crater",
         "hint": "Death Mountain Crater",
+		"hint_jp": "火口",
         "exits": {
             "DMC Upper Local": "can_use(Goron_Tunic)",
             "Death Mountain Summit": "True",
@@ -1555,9 +1712,11 @@
     },
     {
         "region_name": "DMC Upper Local",
+		"name_jp": "火口　遠上",
         "font_color": "Red",
         "scene": "Death Mountain Crater",
         "hint": "Death Mountain Crater",
+		"hint_jp": "火口",
         "locations": {
             "DMC Wall Freestanding PoH": "True",
             "DMC GS Crate": "is_child and can_child_attack",
@@ -1576,9 +1735,11 @@
     },
     {
         "region_name": "DMC Ladder Area Nearby",
+		"name_jp": "火口　梯子",
         "font_color": "Red",
         "scene": "Death Mountain Crater",
         "hint": "Death Mountain Crater",
+		"hint_jp": "火口",
         "locations": {
             "DMC Deku Scrub": "is_child and can_stun_deku"
         },
@@ -1591,9 +1752,11 @@
     },
     {
         "region_name": "DMC Lower Nearby",
+		"name_jp": "火口　近下",
         "font_color": "Red",
         "scene": "Death Mountain Crater",
         "hint": "Death Mountain Crater",
+		"hint_jp": "火口",
         "exits": {
             "DMC Lower Local": "can_use(Goron_Tunic)",
             "GC Darunias Chamber": "True",
@@ -1603,9 +1766,11 @@
     },
     {
         "region_name": "DMC Lower Local",
+		"name_jp": "火口　遠下",
         "font_color": "Red",
         "scene": "Death Mountain Crater",
         "hint": "Death Mountain Crater",
+		"hint_jp": "火口",
         "exits": {
             "DMC Lower Nearby": "True",
             "DMC Ladder Area Nearby": "True",
@@ -1617,9 +1782,11 @@
     },
     {
         "region_name": "DMC Central Nearby",
+		"name_jp": "火口　中上",
         "font_color": "Red",
         "scene": "Death Mountain Crater",
         "hint": "Death Mountain Crater",
+		"hint_jp": "火口",
         "locations": {
             "DMC Volcano Freestanding PoH": "
                 is_adult and
@@ -1633,9 +1800,11 @@
     },
     {
         "region_name": "DMC Central Local",
+		"name_jp": "火口　中下",
         "font_color": "Red",
         "scene": "Death Mountain Crater",
         "hint": "Death Mountain Crater",
+		"hint_jp": "火口",
         "locations": {
             "DMC GS Bean Patch": "can_plant_bugs and can_child_attack",
             "Bean Plant Fairy": "can_plant_bean and can_play(Song_of_Storms) and has_bottle"
@@ -1653,9 +1822,11 @@
     },
     {
         "region_name": "DMC Fire Temple Entrance",
+		"name_jp": "火口　神殿入口",
         "font_color": "Red",
         "scene": "Death Mountain Crater",
         "hint": "Death Mountain Crater",
+		"hint_jp": "火口",
         "exits": {
             "Fire Temple Lower": "True",
             "DMC Central Nearby": "can_use(Goron_Tunic)"
@@ -1663,6 +1834,7 @@
     },
     {
         "region_name": "DMC Great Fairy Fountain",
+		    "name_jp": "火口　泉",
         "scene": "DMC Great Fairy Fountain",
         "locations": {
             "DMC Great Fairy Reward": "can_play(Zeldas_Lullaby)"
@@ -1673,6 +1845,7 @@
     },
     {
         "region_name": "DMT Great Fairy Fountain",
+		    "name_jp": "登道　泉",
         "scene": "DMT Great Fairy Fountain",
         "locations": {
             "DMT Great Fairy Reward": "can_play(Zeldas_Lullaby)"
@@ -1683,9 +1856,11 @@
     },
     {
         "region_name": "ZR Front",
+		"name_jp": "ゾ川　前",
         "font_color": "Blue",
         "scene": "Zora River",
         "hint": "Zora's River",
+		"hint_jp": "ゾーラ川",
         "time_passes": true,
         "locations": {
             "ZR GS Tree": "is_child and can_child_attack"
@@ -1697,9 +1872,11 @@
     },
     {
         "region_name": "Zora River",
+		"name_jp": "ゾーラ川",
         "font_color": "Blue",
         "scene": "Zora River",
         "hint": "Zora's River",
+		"hint_jp": "ゾーラ川",
         "time_passes": true,
         "locations": {
             "ZR Magic Bean Salesman": "is_child",
@@ -1738,9 +1915,11 @@
     },
     {
         "region_name": "ZR Behind Waterfall",
+		"name_jp": "ゾ川　滝裏",
         "font_color": "Blue",
         "scene": "Zora River",
         "hint": "Zora's River",
+		"hint_jp": "ゾーラ川",
         "exits": {
             "Zora River": "True",
             "Zoras Domain": "True"
@@ -1748,18 +1927,22 @@
     },
     {
         "region_name": "ZR Top of Waterfall",
+		"name_jp": "ゾ川　滝上",
         "font_color": "Blue",
         "scene": "Zora River",
         "hint": "Zora's River",
+		"hint_jp": "ゾーラ川",
         "exits": {
             "Zora River": "True"
         }
     },
     {
         "region_name": "Zoras Domain",
+		"name_jp": "ゾーラの里",
         "font_color": "Blue",
         "scene": "Zoras Domain",
         "hint": "Zora's Domain",
+		"hint_jp": "ゾーラの里",
         "events": {
             "King Zora Thawed": "is_adult and Blue_Fire",
             "Eyeball Frog Access": "
@@ -1794,9 +1977,11 @@
     },
     {
         "region_name": "ZD Behind King Zora",
+		"name_jp": "ゾ里　王裏",
         "font_color": "Blue",
         "scene": "Zoras Domain",
         "hint": "Zora's Domain",
+		"hint_jp": "ゾーラの里",
         "exits": {
             "Zoras Domain": "
                 Deliver_Letter or zora_fountain == 'open' or
@@ -1806,18 +1991,22 @@
     },
     {
         "region_name": "ZD Eyeball Frog Timeout",
+		"name_jp": "ゾ里　カエル",
         "font_color": "Blue",
         "scene": "Zoras Domain",
         "hint": "Zora's Domain",
+		"hint_jp": "ゾーラの里",
         "exits": {
             "Zoras Domain": "True"
         }
     },
     {
         "region_name": "Zoras Fountain",
+		"name_jp": "ゾーラの泉",
         "font_color": "Blue",
         "scene": "Zoras Fountain",
         "hint": "Zora's Fountain",
+		"hint_jp": "ゾーラの泉", 
         "locations": {
             "ZF Iceberg Freestanding PoH": "is_adult",
             "ZF Bottom Freestanding PoH": "
@@ -1841,9 +2030,11 @@
     },
     {
         "region_name": "ZF Ice Ledge",
+		"name_jp": "ゾ泉　氷",
         "font_color": "Blue",
         "scene": "Zoras Fountain",
         "hint": "Zora's Fountain",
+		"hint_jp": "ゾーラの泉",
         "exits": {
             "Zoras Fountain": "True",
             "Ice Cavern Beginning": "True"
@@ -1851,6 +2042,7 @@
     },
     {
         "region_name": "ZD Shop",
+		    "name_jp": "ゾ里　店",
         "scene": "ZD Shop",
         "locations": {
             "ZD Shop Item 1": "True",
@@ -1868,6 +2060,7 @@
     },
     {
         "region_name": "ZF Great Fairy Fountain",
+		    "name_jp": "ゾ泉　泉",
         "scene": "ZF Great Fairy Fountain",
         "locations": {
             "ZF Great Fairy Reward": "can_play(Zeldas_Lullaby)"
@@ -1878,9 +2071,11 @@
     },
     {
         "region_name": "Lon Lon Ranch",
+		"name_jp": "ロンロン牧場",
         "font_color": "Light Blue",
         "scene": "Lon Lon Ranch",
         "hint": "Lon Lon Ranch",
+		"hint_jp": "ロンロン牧場",
         "events": {
             "Epona": "can_play(Eponas_Song) and is_adult and at_day",
             "Links Cow": "can_play(Eponas_Song) and is_adult and at_day"
@@ -1902,6 +2097,7 @@
     },
     {
         "region_name": "LLR Talons House",
+		    "name_jp": "牧場　タロン",
         "scene": "LLR Talons House",
         "locations": {
             "LLR Talons Chickens": "is_child and at_day and Zeldas_Letter"
@@ -1912,6 +2108,7 @@
     },
     {
         "region_name": "LLR Stables",
+		    "name_jp": "牧場　馬小屋",
         "scene": "LLR Stables",
         "locations": {
             "LLR Stables Left Cow": "can_play(Eponas_Song)",
@@ -1923,6 +2120,7 @@
     },
     {
         "region_name": "LLR Tower",
+		    "name_jp": "牧場　塔",
         "scene": "LLR Tower",
         "locations": {
             "LLR Freestanding PoH": "is_child",
@@ -1935,6 +2133,7 @@
     },
     {
         "region_name": "Ganons Castle Tower",
+		    "name_jp": "ガノン城塔",
         "dungeon": "Ganons Castle",
         "locations": {
             "Ganons Tower Boss Key Chest": "True",
@@ -1944,6 +2143,7 @@
     },
     {
         "region_name": "GF Storms Grotto",
+		    "name_jp": "ゲ砦　嵐穴",
         "scene": "GF Storms Grotto",
         "locations": {
             "Free Fairies": "has_bottle"
@@ -1954,6 +2154,7 @@
     },
     {
         "region_name": "ZD Storms Grotto",
+		    "name_jp": "ゾ里　嵐穴",
         "scene": "ZD Storms Grotto",
         "locations": {
             "Free Fairies": "has_bottle"
@@ -1964,6 +2165,7 @@
     },
     {
         "region_name": "KF Storms Grotto",
+		    "name_jp": "コ森　嵐穴",
         "scene": "KF Storms Grotto",
         "locations": {
             "KF Storms Grotto Chest": "True",
@@ -1979,6 +2181,7 @@
     },
     {
         "region_name": "LW Near Shortcuts Grotto",
+		    "name_jp": "迷森　近道穴",
         "scene": "LW Near Shortcuts Grotto",
         "locations": {
             "LW Near Shortcuts Grotto Chest": "True",
@@ -1994,6 +2197,7 @@
     },
     {
         "region_name": "Deku Theater",
+		    "name_jp": "お面品評会",
         "scene": "Deku Theater",
         "locations": {
             "Deku Theater Skull Mask": "is_child and 'Skull Mask'",
@@ -2005,6 +2209,7 @@
     },
     {
         "region_name": "LW Scrubs Grotto",
+		    "name_jp": "迷森　アキンド穴",
         "scene": "LW Scrubs Grotto",
         "locations": {
             "LW Deku Scrub Grotto Rear": "can_stun_deku",
@@ -2016,6 +2221,7 @@
     },
     {
         "region_name": "SFM Fairy Grotto",
+		    "name_jp": "聖森　泉",
         "scene": "SFM Fairy Grotto",
         "locations": {
             "Free Fairies": "has_bottle"
@@ -2026,6 +2232,7 @@
     },
     {
         "region_name": "SFM Storms Grotto",
+		    "name_jp": "聖森　嵐穴",
         "scene": "SFM Storms Grotto",
         "locations": {
             "SFM Deku Scrub Grotto Rear": "can_stun_deku",
@@ -2037,6 +2244,7 @@
     },
     {
         "region_name": "SFM Wolfos Grotto",
+		    "name_jp": "聖森　狼穴",
         "scene": "SFM Wolfos Grotto",
         "locations": {
             "SFM Wolfos Grotto Chest": "
@@ -2049,6 +2257,7 @@
     },
     {
         "region_name": "LLR Grotto",
+		    "name_jp": "牧場　穴",
         "scene": "LLR Grotto",
         "locations": {
             "LLR Deku Scrub Grotto Left": "can_stun_deku",
@@ -2061,6 +2270,7 @@
     },
     {
         "region_name": "HF Southeast Grotto",
+		    "name_jp": "平原　南穴",
         "scene": "HF Southeast Grotto",
         "locations": {
             "HF Southeast Grotto Chest": "True",
@@ -2076,6 +2286,7 @@
     },
     {
         "region_name": "HF Open Grotto",
+		    "name_jp": "平原　穴",
         "scene": "HF Open Grotto",
         "locations": {
             "HF Open Grotto Chest": "True",
@@ -2091,6 +2302,7 @@
     },
     {
         "region_name": "HF Inside Fence Grotto",
+		    "name_jp": "平原　柵穴",
         "scene": "HF Inside Fence Grotto",
         "locations": {
             "HF Deku Scrub Grotto": "can_stun_deku"
@@ -2101,6 +2313,7 @@
     },
     {
         "region_name": "HF Cow Grotto",
+		    "name_jp": "平原　牛穴",
         "scene": "HF Cow Grotto",
         "locations": {
             "HF GS Cow Grotto": "
@@ -2117,6 +2330,7 @@
     },
     {
         "region_name": "HF Near Market Grotto",
+		    "name_jp": "平原　町穴",
         "scene": "HF Near Market Grotto",
         "locations": {
             "HF Near Market Grotto Chest": "True",
@@ -2132,6 +2346,7 @@
     },
     {
         "region_name": "HF Fairy Grotto",
+		    "name_jp": "平原　泉",
         "scene": "HF Fairy Grotto",
         "locations": {
             "Free Fairies": "has_bottle"
@@ -2142,6 +2357,7 @@
     },
     {
         "region_name": "HF Near Kak Grotto",
+		    "name_jp": "平原　村穴",
         "scene": "HF Near Kak Grotto",
         "locations": {
             "HF GS Near Kak Grotto": "can_use(Boomerang) or can_use(Hookshot)"
@@ -2152,6 +2368,7 @@
     },
     {
         "region_name": "HF Tektite Grotto",
+		    "name_jp": "平原　テクタイト穴",
         "scene": "HF Tektite Grotto",
         "locations": {
             "HF Tektite Grotto Freestanding PoH": "
@@ -2163,6 +2380,7 @@
     },
     {
         "region_name": "HC Storms Grotto",
+		    "name_jp": "ハ城　嵐穴",
         "scene": "HC Storms Grotto",
         "locations": {
             "HC GS Storms Grotto": "
@@ -2179,6 +2397,7 @@
     },
     {
         "region_name": "Kak Redead Grotto",
+		    "name_jp": "カ村　リーデッド穴",
         "scene": "Kak Redead Grotto",
         "locations": {
             "Kak Redead Grotto Chest": "
@@ -2191,6 +2410,7 @@
     },
     {
         "region_name": "Kak Open Grotto",
+		    "name_jp": "カ村　穴",
         "scene": "Kak Open Grotto",
         "locations": {
             "Kak Open Grotto Chest": "True",
@@ -2206,6 +2426,7 @@
     },
     {
         "region_name": "DMT Cow Grotto",
+		    "name_jp": "登道　牛穴",
         "scene": "DMT Cow Grotto",
         "locations": {
             "DMT Cow Grotto Cow": "can_play(Eponas_Song)"
@@ -2216,6 +2437,7 @@
     },
     {
         "region_name": "DMT Storms Grotto",
+		    "name_jp": "登道　嵐穴",
         "scene": "DMT Storms Grotto",
         "locations": {
             "DMT Storms Grotto Chest": "True",
@@ -2231,6 +2453,7 @@
     },
     {
         "region_name": "GC Grotto",
+		    "name_jp": "ゴシ　穴",
         "scene": "GC Grotto",
         "locations": {
             "GC Deku Scrub Grotto Left": "can_stun_deku",
@@ -2243,6 +2466,7 @@
     },
     {
         "region_name": "DMC Upper Grotto",
+		    "name_jp": "火口　上穴",
         "scene": "DMC Upper Grotto",
         "locations": {
             "DMC Upper Grotto Chest": "True",
@@ -2258,6 +2482,7 @@
     },
     {
         "region_name": "DMC Hammer Grotto",
+		    "name_jp": "火口　ハンマー穴",
         "scene": "DMC Hammer Grotto",
         "locations": {
             "DMC Deku Scrub Grotto Left": "can_stun_deku",
@@ -2270,6 +2495,7 @@
     },
     {
         "region_name": "ZR Open Grotto",
+		    "name_jp": "ゾ川　穴",
         "scene": "ZR Open Grotto",
         "locations": {
             "ZR Open Grotto Chest": "True",
@@ -2285,6 +2511,7 @@
     },
     {
         "region_name": "ZR Fairy Grotto",
+		    "name_jp": "ゾ川　泉",
         "scene": "ZR Fairy Grotto",
         "locations": {
             "Free Fairies": "has_bottle"
@@ -2295,6 +2522,7 @@
     },
     {
         "region_name": "ZR Storms Grotto",
+		    "name_jp": "ゾ川　嵐穴",
         "scene": "ZR Storms Grotto",
         "locations": {
             "ZR Deku Scrub Grotto Rear": "can_stun_deku",
@@ -2306,6 +2534,7 @@
     },
     {
         "region_name": "LH Grotto",
+		    "name_jp": "湖畔　穴",
         "scene": "LH Grotto",
         "locations": {
             "LH Deku Scrub Grotto Left": "can_stun_deku",
@@ -2318,6 +2547,7 @@
     },
     {
         "region_name": "Colossus Grotto",
+		    "name_jp": "巨像　穴",
         "scene": "Colossus Grotto",
         "locations": {
             "Colossus Deku Scrub Grotto Rear": "can_stun_deku",
@@ -2329,6 +2559,7 @@
     },
     {
         "region_name": "GV Octorok Grotto",
+		    "name_jp": "ゲ谷　タコ穴",
         "scene": "GV Octorok Grotto",
         "exits": {
             "GV Grotto Ledge": "True"
@@ -2336,6 +2567,7 @@
     },
     {
         "region_name": "GV Storms Grotto",
+		    "name_jp": "ゲ谷　嵐穴",
         "scene": "GV Storms Grotto",
         "locations": {
             "GV Deku Scrub Grotto Rear": "can_stun_deku",
