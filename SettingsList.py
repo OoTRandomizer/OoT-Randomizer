@@ -928,7 +928,7 @@ logic_tricks = {
         'tags'    : ("Shadow Temple",),
         'tooltip' : '''\
 	            Bongo Bongo can technically be defeated without first freezing
-		    him with the Ice Arrows, but it's basically impossible.
+                    him with the Ice Arrows, but it's basically impossible.
                     '''},
     'Shadow Temple Bongo Bongo with Nothing': {
         'name'    : 'logic_shadow_bongo',
@@ -937,7 +937,7 @@ logic_tricks = {
                     If Shadow Temple dungeon shortcuts are enabled, 
                     Bongo Bongo can be fought without projectiles
                     using precise sword slashes. This trick supersedes
-		    "Shadow Temple Bongo Bongo without Ice Arrows".
+                    "Shadow Temple Bongo Bongo without Ice Arrows".
                     '''},
     'Stop Link the Goron with Din\'s Fire': {
         'name'    : 'logic_link_goron_dins',
