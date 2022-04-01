@@ -179,9 +179,11 @@
         "dungeon": "Shadow Temple",
         "locations": {
             "Shadow Temple Bongo Bongo Heart": "
-                Boss_Key_Shadow_Temple and (logic_shadow_bongo or Bow or Hookshot)",
+                Boss_Key_Shadow_Temple and
+                (logic_shadow_bongo or (can_use(Ice_Arrows) or (logic_shadow_bongo_ice and (Bow or Hookshot))))",
             "Bongo Bongo": "
-                Boss_Key_Shadow_Temple and (logic_shadow_bongo or Bow or Hookshot)",
+                Boss_Key_Shadow_Temple and
+                (logic_shadow_bongo or (can_use(Ice_Arrows) or (logic_shadow_bongo_ice and (Bow or Hookshot))))",
             "Shadow Temple MQ GS Near Boss": "has_projectile(adult) or can_use(Dins_Fire)"
         }
     }
