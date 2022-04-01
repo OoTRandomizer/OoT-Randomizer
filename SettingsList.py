@@ -923,13 +923,21 @@ logic_tricks = {
                     needing a Bow.
                     Applies in both vanilla and MQ Shadow.
                     '''},
+    'Shadow Temple Bongo Bongo without Ice Arrows': {
+        'name'    : 'logic_shadow_bongo_ice',
+        'tags'    : ("Shadow Temple",),
+        'tooltip' : '''\
+	            Bongo Bongo can technically be defeated without first freezing
+		    him with the Ice Arrows, but it's basically impossible.
+                    '''},
     'Shadow Temple Bongo Bongo with Nothing': {
         'name'    : 'logic_shadow_bongo',
         'tags'    : ("Shadow Temple",),
         'tooltip' : '''\
                     If Shadow Temple dungeon shortcuts are enabled, 
                     Bongo Bongo can be fought without projectiles
-                    using precise sword slashes.
+                    using precise sword slashes. This trick supersedes
+		    "Shadow Temple Bongo Bongo without Ice Arrows".
                     '''},
     'Stop Link the Goron with Din\'s Fire': {
         'name'    : 'logic_link_goron_dins',
