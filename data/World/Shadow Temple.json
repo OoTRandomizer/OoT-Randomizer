@@ -132,8 +132,10 @@
         "region_name": "Shadow Temple Boss Room",
         "dungeon": "Shadow Temple",
         "locations": {
-            "Shadow Temple Bongo Bongo Heart": "logic_shadow_bongo or Bow or Hookshot",
-            "Bongo Bongo": "logic_shadow_bongo or Bow or Hookshot"
+            "Shadow Temple Bongo Bongo Heart": "
+                logic_shadow_bongo or (can_use(Ice_Arrows) or (logic_shadow_bongo_ice and (Bow or Hookshot)))",
+            "Bongo Bongo": "
+                logic_shadow_bongo or (can_use(Ice_Arrows) or (logic_shadow_bongo_ice and (Bow or Hookshot)))"
         }
     }
 ]
