@@ -1025,7 +1025,6 @@ class World(object):
         # these are items that can never be required but are still considered major items
         exclude_item_list = [
             'Double Defense',
-            'Ice Arrows',
         ]
         if (self.settings.damage_multiplier != 'ohko' and self.settings.damage_multiplier != 'quadruple' and 
             self.settings.shuffle_scrubs == 'off' and not self.settings.shuffle_grotto_entrances):
