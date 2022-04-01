@@ -927,7 +927,7 @@ logic_tricks = {
         'name'    : 'logic_shadow_bongo_ice',
         'tags'    : ("Shadow Temple",),
         'tooltip' : '''\
-	            Bongo Bongo can technically be defeated without first freezing
+                    Bongo Bongo can technically be defeated without first freezing
                     him with the Ice Arrows, but it's basically impossible.
                     '''},
     'Shadow Temple Bongo Bongo with Nothing': {
