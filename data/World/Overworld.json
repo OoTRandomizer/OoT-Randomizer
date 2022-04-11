@@ -1711,7 +1711,7 @@
                 can_play(Song_of_Time) and can_play(Song_of_Storms)",
             "ZR Frogs in the Rain": "is_child and can_play(Song_of_Storms)",
             "ZR Near Open Grotto Freestanding PoH": "
-                is_child or can_use(Hover_Boots) or (is_adult and logic_zora_river_lower)",
+                is_child or (is_adult and (plant_beans or Hover_Boots or logic_zora_river_lower))",
             "ZR Near Domain Freestanding PoH": "
                 is_child or can_use(Hover_Boots) or (is_adult and logic_zora_river_upper)",
             "ZR GS Ladder": "is_child and at_night and can_child_attack",
