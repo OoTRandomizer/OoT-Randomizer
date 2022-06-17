@@ -8,7 +8,7 @@
     "remove_items": [],
     "dungeons_woth_limit": 40,
     "dungeons_barren_limit": 40,
-    "named_items_required":  true,
+    "named_items_required": false,
     "vague_named_items": false,
     "use_default_goals": true,
     "distribution": {
