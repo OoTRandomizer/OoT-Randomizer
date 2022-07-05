@@ -128,14 +128,10 @@ class State(object):
 
 
     # Used for fall damage and other situations where damage is unavoidable
-    def can_live_dmg(self, hearts):
-        mult = self.world.settings.damage_multiplier
-        if hearts*4 >= 3:
-            return mult != 'ohko' and mult != 'quadruple'
-        elif hearts*4 < 3:
-            return mult != 'ohko'
-        else:
-            return True
+    def can_live_dmg(self, damage):
+        damage = damage * self.world.damage
+        health = self.world.settings.starting_hearts
+        return self.world.settings.damage_multiplier != 'ohko' and (damage < health or (damage / 2 < health and self.has('Double Defense')))
 
 
     # Use the guarantee_hint rule defined in json.

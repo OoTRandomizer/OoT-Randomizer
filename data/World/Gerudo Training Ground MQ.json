@@ -35,7 +35,7 @@
         "locations": {
             "Gerudo Training Ground MQ Underwater Silver Rupee Chest": "
                 has_fire_source and can_use(Iron_Boots) and
-                (logic_fewer_tunic_requirements or can_use(Zora_Tunic)) and can_take_damage"
+                (logic_fewer_tunic_requirements or can_use(Zora_Tunic)) and (can_live_with_nayrus(0.5) or Fairy)"
         }
     },
     {

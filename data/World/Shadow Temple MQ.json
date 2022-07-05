@@ -59,7 +59,7 @@
                 (not shadow_temple_shortcuts or (Small_Key_Shadow_Temple, 6) or
                     ((logic_lens_shadow_mq_platform or can_use(Lens_of_Truth)) and Hover_Boots)) and
                 (can_play(Song_of_Time) or
-                    (logic_shadow_mq_invisible_blades and damage_multiplier != 'ohko')) and
+                    (logic_shadow_mq_invisible_blades and can_live_dmg(0.5))) and
                 (logic_lens_shadow_mq_invisible_blades or can_use(Lens_of_Truth) or
                     can_use(Nayrus_Love))",
             "Shadow Temple Lower Huge Pit": "has_fire_source or logic_shadow_mq_huge_pit"

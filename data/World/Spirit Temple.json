@@ -92,11 +92,11 @@
             "Spirit Temple GS Sun on Floor Room": "
                 (is_child and has_projectile(child) and
                     (Small_Key_Spirit_Temple, 5)) or
-                (is_adult and (has_projectile(adult) or can_take_damage) and
+                (is_adult and (has_projectile(adult) or can_live_with_nayrus(0.5) or Fairy) and
                     ((Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
                     ((Small_Key_Spirit_Temple, 2) and bombchus_in_logic and not entrance_shuffle))) or
                 has_projectile(both) or can_use(Dins_Fire) or
-                (can_take_damage and (Sticks or Kokiri_Sword or has_projectile(child)))"
+                ((can_live_with_nayrus(0.5) or Fairy) and (Sticks or Kokiri_Sword or has_projectile(child)))"
         },
         "exits": {
             "Spirit Temple Central Chamber": "has_explosives",

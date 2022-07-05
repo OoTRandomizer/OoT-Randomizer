@@ -4507,6 +4507,10 @@ setting_infos = [
         gui_tooltip    = '''\
             Changes the amount of damage taken.
 
+            'Quadruple': Under this setting,
+            Double Defense can possibly be
+            required for certain maneuvers.
+
             'OHKO': Link dies in one hit.
         ''',
         shared         = True,

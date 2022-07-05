@@ -550,7 +550,7 @@
             "Gerudo Fortress": "True",
             "GV Upper Stream": "True",
             "GV Crate Ledge": "
-                logic_valley_crate_hovers and can_use(Hover_Boots) and can_take_damage",
+                logic_valley_crate_hovers and can_use(Hover_Boots) and (can_live_with_nayrus(0.5) or Fairy)",
             "Gerudo Valley": "
                 is_child or can_ride_epona or can_use(Longshot) or
                 gerudo_fortress == 'open' or 'Carpenter Rescue'",
@@ -1356,7 +1356,7 @@
                 can_blast_or_smash or 
                 (logic_dmt_bombable and is_child and Progressive_Strength_Upgrade)",
             "DMT Freestanding PoH": "
-                can_take_damage or can_use(Hover_Boots) or
+                can_live_with_nayrus(0.5) or Fairy or can_use(Hover_Boots) or
                 (is_adult and here(can_plant_bean and (plant_beans or has_explosives or Progressive_Strength_Upgrade)))",
             "DMT GS Bean Patch": "
                 can_plant_bugs and can_child_attack and
@@ -1479,12 +1479,20 @@
             "GC Grotto Platform": "
                 is_adult and 
                 ((can_play(Song_of_Time) and 
-                        ((damage_multiplier != 'ohko' and damage_multiplier != 'quadruple') or 
-                            can_use(Goron_Tunic) or can_use(Longshot) or can_use(Nayrus_Love))) or 
+                        # 0.75 damage for the lava, but the grotto can be shuffled to dampe's grave
+                        # So without hearts this can lead to another damage check and the highest is 1 damage
+                        # If logic supported multiple bottles, this could use 2 bottles plus Fairy/Red/Blue/Milk to heal
+                        (can_live_with_nayrus(1.75) or (can_live_dmg(0.75) and not no_collectible_hearts) or
+                            # Fairy can be used here if it's the unshuffled grotto because a bottle isn't needed there
+                            (not shuffle_grotto_entrances and Fairy and (can_live_dmg(0.25)
+                            # Logic doesn't count more than one bottle but it would take 4 on OHKO
+                            )) or can_use(Goron_Tunic) or can_use(Longshot))) or 
                     (can_use(Hookshot) and
-                        ((damage_multiplier != 'ohko' and can_use(Goron_Tunic)) or
+                    # Fairies don't seem to work here while using the Hookshot
+                        ((can_live_dmg(0.25) and can_use(Goron_Tunic)) or
                             can_use(Nayrus_Love) or
-                            (damage_multiplier != 'ohko' and damage_multiplier != 'quadruple' and logic_goron_grotto))))"
+                            # The timing is difficult
+                            (can_live_dmg(1) and logic_goron_grotto))))"
         }
     },
     {
@@ -1524,8 +1532,8 @@
         "exits": {
             "GC Grotto": "True",
             "Goron City": "
-                (damage_multiplier != 'ohko' and (damage_multiplier != 'quadruple' or can_use(Goron_Tunic))) or
-                can_use(Nayrus_Love) or (can_play(Song_of_Time) and can_use(Longshot))"
+                can_live_with_nayrus(0.75) or (can_live_dmg(0.25) and can_use(Goron_Tunic)) or
+                (can_play(Song_of_Time) and (can_use(Longshot)))"
         }
     },
     {
@@ -1574,8 +1582,7 @@
             "DMC Ladder Area Nearby": "True",
             "DMC Central Nearby": "
                 can_use(Goron_Tunic) and can_use(Longshot) and 
-                ((damage_multiplier != 'ohko' and damage_multiplier != 'quadruple') or 
-                    (Fairy and not entrance_shuffle) or can_use(Nayrus_Love))"
+                (can_live_with_nayrus(1) or (Fairy and not entrance_shuffle))"
         }
     },
     {

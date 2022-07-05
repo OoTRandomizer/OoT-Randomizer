@@ -30,7 +30,7 @@ never_prefix = ['Bombs', 'Arrows', 'Rupee', 'Deku Seeds', 'Map', 'Compass']
 never_suffix = ['Capacity']
 never = {
     'Bunny Hood', 'Recovery Heart', 'Milk', 'Ice Arrows', 'Ice Trap',
-    'Double Defense', 'Biggoron Sword', 'Giants Knife',
+    'Biggoron Sword', 'Giants Knife',
 } | {name for name, item in ItemInfo.items.items() if item.priority
      or any(map(name.startswith, never_prefix)) or any(map(name.endswith, never_suffix))}
 

@@ -8,7 +8,7 @@
                 ((Hover_Boots or (logic_fire_mq_near_boss and Bow)) and has_fire_source) or 
                 (Progressive_Hookshot and (can_use(Fire_Arrows) or 
                     (can_use(Dins_Fire) and 
-                    ((damage_multiplier != 'ohko' and damage_multiplier != 'quadruple') or can_use(Goron_Tunic) or 
+                    (can_live_dmg(0.75) or can_use(Goron_Tunic) or
                         Bow or (Progressive_Hookshot, 2)))))"
         },
         "exits": {

@@ -48,8 +48,8 @@
             "Spirit Temple Child Climb East Chest": "at('Spirit Temple Central Chamber', True)
                 or is_child or has_projectile(adult)",
             "Spirit Temple GS Sun on Floor Room": "can_use(Boomerang) or can_use(Hookshot) or
-                (can_child_damage and (can_live_dmg(0.5) or Fairy or can_use(Nayrus_Love))) or 
-                (is_adult and (can_live_dmg(0.5) or Fairy or can_use(Nayrus_Love)))"
+                (can_child_damage and (can_live_with_nayrus(0.5) or Fairy)) or 
+                (is_adult and (can_live_with_nayrus(0.5) or Fairy))"
         },
         "exits": {
             "Spirit Temple Central Chamber": "has_explosives"

@@ -51,10 +51,10 @@
             # Other exits are not affected by one bonk ko
             "Dodongos Cavern Lower Right Side": "
                 here((can_use(Sticks) or can_use(Dins_Fire)) and
-                    Progressive_Strength_Upgrade and can_take_damage)",
+                    Progressive_Strength_Upgrade and (can_live_with_nayrus(0.5) or Fairy))",
             "Dodongos Cavern Bomb Bag Area": "
                 (at('Dodongos Cavern Bomb Bag Area', is_adult) and has_explosives) or
-                (logic_dc_mq_child_bombs and (Kokiri_Sword or Sticks) and can_take_damage)",
+                (logic_dc_mq_child_bombs and (Kokiri_Sword or Sticks) and (can_live_with_nayrus(0.5) or Fairy))",
             "Dodongos Cavern Before Boss": "
                 has_explosives or
                 (Progressive_Strength_Upgrade and

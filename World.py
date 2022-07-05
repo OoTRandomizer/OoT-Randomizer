@@ -109,6 +109,14 @@ class World(object):
             'Ganons Castle': False
         }
 
+        self.damage = 1
+        if settings.damage_multiplier == 'half':
+            self.damage = 0.5
+        elif settings.damage_multiplier == 'double':
+            self.damage = 2
+        elif settings.damage_multiplier == 'quadruple':
+            self.damage = 4
+
         if resolveRandomizedSettings:
             self.resolve_random_settings()
 
@@ -279,6 +287,7 @@ class World(object):
         new_world = World(self.id, self.settings, False)
         new_world.skipped_trials = copy.copy(self.skipped_trials)
         new_world.dungeon_mq = copy.copy(self.dungeon_mq)
+        new_world.damage = self.damage
         new_world.shop_prices = copy.copy(self.shop_prices)
         new_world.triforce_goal = self.triforce_goal
         new_world.triforce_count = self.triforce_count
@@ -1098,9 +1107,11 @@ class World(object):
 
         # these are items that can never be required but are still considered major items
         exclude_item_list = [
-            'Double Defense',
             'Ice Arrows',
         ]
+        if self.settings.damage_multiplier != 'quadruple' or self.settings.starting_hearts > 4:
+            # Double Defense may be required to reduce forced damage (which can be as high as 1 heart)
+            exclude_item_list.append('Double Defense')
         if (self.settings.damage_multiplier != 'ohko' and self.settings.damage_multiplier != 'quadruple' and
             self.settings.shuffle_scrubs == 'off' and not self.settings.shuffle_grotto_entrances):
             # nayru's love may be required to prevent forced damage

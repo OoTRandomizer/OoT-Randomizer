@@ -21,15 +21,15 @@
         "dungeon": "Gerudo Training Ground",
         "locations": {
             "Gerudo Training Ground Hidden Ceiling Chest": "(Small_Key_Gerudo_Training_Ground, 3)
-                or (can_use(Hookshot) and can_mega) or (is_child and has_explosives and (can_live_dmg(0.5) or can_use(Nayrus_Love)))",
+                or (can_use(Hookshot) and can_mega) or (is_child and has_explosives and can_live_with_nayrus(0.5))",
             "Gerudo Training Ground Maze Path First Chest": "(Small_Key_Gerudo_Training_Ground, 4)
-                or (can_use(Hookshot) and can_mega) or (is_child and has_explosives and (can_live_dmg(1.0) or can_use(Nayrus_Love)))",
+                or (can_use(Hookshot) and can_mega) or (is_child and has_explosives and can_live_with_nayrus(1.0))",
             "Gerudo Training Ground Maze Path Second Chest": "(Small_Key_Gerudo_Training_Ground, 6)
-                or (can_use(Hookshot) and can_mega) or (is_child and has_explosives and (can_live_dmg(1.0) or can_use(Nayrus_Love)))",
+                or (can_use(Hookshot) and can_mega) or (is_child and has_explosives and can_live_with_nayrus(1.0))",
             "Gerudo Training Ground Maze Path Third Chest": "(Small_Key_Gerudo_Training_Ground, 7)
-                or (can_use(Hookshot) and can_mega) or (is_child and has_explosives and (can_live_dmg(0.5) or can_use(Nayrus_Love)))",
+                or (can_use(Hookshot) and can_mega) or (is_child and has_explosives and can_live_with_nayrus(0.5))",
             "Gerudo Training Ground Maze Path Final Chest": "(Small_Key_Gerudo_Training_Ground, 9)
-                or (can_use(Hookshot) and can_mega) or (is_child and has_explosives and (can_live_dmg(0.5) or can_use(Nayrus_Love)))"
+                or (can_use(Hookshot) and can_mega) or (is_child and has_explosives and can_live_with_nayrus(0.5))"
         },
         "exits": {
             "Gerudo Training Ground Central Maze Right": "(Small_Key_Gerudo_Training_Ground, 9)
@@ -66,8 +66,8 @@
         "dungeon": "Gerudo Training Ground",
         "locations": {
             "Gerudo Training Ground Hammer Room Clear Chest": "True",
-            "Gerudo Training Ground Hammer Room Switch Chest": "can_use(Megaton_Hammer) or 
-                can_live_dmg(0.5) or can_use(Nayrus_Love)"
+            "Gerudo Training Ground Hammer Room Switch Chest": "
+                can_use(Megaton_Hammer) or can_live_with_nayrus(0.5)"
         },
         "exits": {
             "Gerudo Training Ground Eye Statue Lower": "can_use(Bow)",
