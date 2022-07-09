@@ -4348,7 +4348,8 @@ class SettingInfos:
     climb_anywhere = Checkbutton(
         gui_text       = 'Climb Anywhere',
         gui_tooltip    = '''\
-            Make all surfaces climbable and hookshot-able.
+            Make all vertical surfaces climbable and
+            most surfaces hookshot-able.
         ''',
         shared         = True,
         default        = False,
