@@ -208,6 +208,20 @@ logic_tricks = {
                     from below, by shooting it through the vines,
                     bypassing the need to lower the staircase.
                     '''},
+    'Gerudo\'s Fortress Ledge Jump': {
+        'name'    : 'logic_gf_jump',
+        'tags'    : ("Gerudo's Fortress",),
+        'tooltip' : '''\
+                    From the southern roof with the guard, a jump
+                    can reach the second floor of the fortress.
+                    '''},
+    'Gerudo\'s Fortress Roof Ledge Jump': {
+        'name'    : 'logic_gf_jump_roof',
+        'tags'    : ("Gerudo's Fortress",),
+        'tooltip' : '''\
+                    Adult can use an autojump to climb onto the roof
+                    without going through the upper "Kitchen".
+                    '''},
     'Thieves\' Hideout "Kitchen" with No Additional Items': {
         'name'    : 'logic_gerudo_kitchen',
         'tags'    : ("Thieves' Hideout", "Gerudo's Fortress",),
@@ -2181,8 +2195,8 @@ setting_infos = [
         disable        = {
             True : {
                 'sections' : ['open_section', 'shuffle_section', 'shuffle_dungeon_section'],
-                'settings': ['starting_age', 'shuffle_interior_entrances', 'shuffle_grotto_entrances', 'shuffle_dungeon_entrances',
-                             'shuffle_bosses', 'shuffle_overworld_entrances', 'owl_drops', 'warp_songs', 'spawn_positions',
+                'settings': ['starting_age', 'shuffle_interior_entrances', 'shuffle_hideout_entrances', 'shuffle_grotto_entrances',
+                             'shuffle_dungeon_entrances', 'shuffle_bosses', 'shuffle_overworld_entrances', 'owl_drops', 'warp_songs', 'spawn_positions',
                              'triforce_hunt', 'triforce_count_per_world', 'triforce_goal_per_world', 'bombchus_in_logic', 'one_item_per_dungeon'],
             }
         },
@@ -2547,9 +2561,9 @@ setting_infos = [
         ''',
         disable        = {
             'glitchless': {'settings' : ['tricks_list_msg']},
-            'glitched'  : {'settings' : ['allowed_tricks', 'shuffle_interior_entrances', 'shuffle_grotto_entrances',
-                                         'shuffle_dungeon_entrances', 'shuffle_overworld_entrances', 'owl_drops',
-                                         'warp_songs', 'spawn_positions', 'mq_dungeons_mode', 'mq_dungeons_specific',
+            'glitched'  : {'settings' : ['allowed_tricks', 'shuffle_interior_entrances', 'shuffle_hideout_entrances',
+                                         'shuffle_grotto_entrances', 'shuffle_dungeon_entrances', 'shuffle_overworld_entrances',
+                                         'owl_drops', 'warp_songs', 'spawn_positions', 'mq_dungeons_mode', 'mq_dungeons_specific',
                                          'mq_dungeons_count', 'shuffle_bosses', 'dungeon_shortcuts', 'deadly_bonks']},
             'none'      : {'settings' : ['allowed_tricks', 'logic_no_night_tokens_without_suns_song', 'reachable_locations']},
         },
@@ -3151,6 +3165,9 @@ setting_infos = [
             and items never revert, even when dying or loading a save.
         ''',
         shared         = True,
+        disable        = {
+            'off' : {'settings' : ['shuffle_hideout_entrances']}
+        },
         gui_params     = {
             'randomize_key': 'randomize_settings',
             'distribution':  [
@@ -3158,6 +3175,25 @@ setting_infos = [
                 ('simple', 1),
                 ('all', 1),
             ],
+        },
+    ),
+    Checkbutton(
+        name           = 'shuffle_hideout_entrances',
+        gui_text       = 'Shuffle Thieves\' Hideout Entrances',
+        gui_tooltip    = '''\
+            Shuffle the pool of entrances to Thieves' Hideout
+            into the pool of interior entrances.
+            
+            Note that savewarping in any room of Thieves' Hideout
+            always takes you to the first room (with a cell and 1 torch).
+            
+            There is an extra heart piece on the balcony above the jail in
+            Gerudo's Fortress if accessed as child. This is not shuffled.
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(

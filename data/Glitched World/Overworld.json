@@ -325,18 +325,27 @@
                 Gerudo_Membership_Card and can_ride_epona and Bow and is_adult",
             "GF HBA 1500 Points": "
                 Gerudo_Membership_Card and can_ride_epona and Bow and is_adult",
-            "Hideout Jail Guard (1 Torch)": "is_adult or (is_child and can_child_damage)",
-            "Hideout Jail Guard (2 Torches)": "is_adult or (is_child and can_child_damage)",
-            "Hideout Jail Guard (3 Torches)": "is_adult or (is_child and can_child_damage)",
-            "Hideout Jail Guard (4 Torches)": "is_adult or (is_child and can_child_damage)",
-            "Hideout Gerudo Membership Card": "can_finish_GerudoFortress",
             "GF GS Archery Range": "can_use(Hookshot) and at_night",
             "GF GS Top Floor": "at_night and is_adult"
         },
         "exits": {
             "Haunted Wasteland": "is_child or 'GF Gate Open' or
                 ((Progressive_Hookshot and (Hover_Boots or can_mega)) or (can_isg and Bombs) )",
+            "Thieves Hideout": "True",
             "Gerudo Training Ground Lobby": "True"
+        }
+    },
+    {
+        "region_name": "Thieves Hideout",
+        "hint": "THIEVES_HIDEOUT",
+        "locations": {
+            "Hideout Jail Guard (1 Torch)": "is_adult or (is_child and can_child_damage)",
+            "Hideout Jail Guard (2 Torches)": "is_adult or (is_child and can_child_damage)",
+            "Hideout Jail Guard (3 Torches)": "is_adult or (is_child and can_child_damage)",
+            "Hideout Jail Guard (4 Torches)": "is_adult or (is_child and can_child_damage)",
+            "Hideout Gerudo Membership Card": "(gerudo_fortress == 'normal' and (Small_Key_Thieves_Hideout, 4) and is_adult)
+                or (gerudo_fortress == 'fast' and Small_Key_Thieves_Hideout)
+                or (gerudo_fortress != 'normal' and gerudo_fortress != 'fast')"
         }
     },
     {

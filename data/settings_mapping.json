@@ -187,6 +187,7 @@
             "mq_dungeons_specific",
             "mq_dungeons_count",
             "shuffle_interior_entrances",
+            "shuffle_hideout_entrances",
             "shuffle_grotto_entrances",
             "shuffle_dungeon_entrances",
             "shuffle_bosses",

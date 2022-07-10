@@ -461,7 +461,8 @@
             "GV Grotto Ledge": "True",
             "GV Fortress Side": "
                 is_adult and 
-                (can_ride_epona or can_use(Longshot) or gerudo_fortress == 'open' or 'Carpenter Rescue')"
+                (can_ride_epona or can_use(Longshot) or
+                gerudo_fortress == 'open' or can_finish_GerudoFortress)"
         }
     },
     {
@@ -533,7 +534,7 @@
                 logic_valley_crate_hovers and can_use(Hover_Boots) and can_take_damage",
             "Gerudo Valley": "
                 is_child or can_ride_epona or can_use(Longshot) or
-                gerudo_fortress == 'open' or 'Carpenter Rescue'",
+                gerudo_fortress == 'open' or can_finish_GerudoFortress",
             "GV Carpenter Tent": "is_adult", # Invisible as child so not in logic
             "GV Storms Grotto": "is_adult and can_open_storm_grotto" # Not there as child
         }
@@ -550,24 +551,13 @@
         "scene": "Gerudo Fortress",
         "hint": "GERUDO_FORTRESS",
         "events": {
-            "Carpenter Rescue": "can_finish_GerudoFortress",
             "GF Gate Open": "is_adult and Gerudo_Membership_Card"
         },
         "locations": {
-            "GF Chest": "
-                can_use(Hover_Boots) or can_use(Scarecrow) or can_use(Longshot)",
             "GF HBA 1000 Points": "
                 Gerudo_Membership_Card and can_ride_epona and Bow and at_day",
             "GF HBA 1500 Points": "
                 Gerudo_Membership_Card and can_ride_epona and Bow and at_day",
-            "Hideout Jail Guard (1 Torch)": "is_adult or Kokiri_Sword",
-            "Hideout Jail Guard (2 Torches)": "is_adult or Kokiri_Sword",
-            "Hideout Jail Guard (3 Torches)": "
-                (is_adult or Kokiri_Sword) and 
-                (Gerudo_Membership_Card or can_use(Bow) or can_use(Hookshot)
-                    or can_use(Hover_Boots) or logic_gerudo_kitchen)",
-            "Hideout Jail Guard (4 Torches)": "is_adult or Kokiri_Sword",
-            "Hideout Gerudo Membership Card": "can_finish_GerudoFortress",
             "GF GS Archery Range": "
                 can_use(Hookshot) and Gerudo_Membership_Card and at_night",
             "GF GS Top Floor": "
@@ -577,9 +567,122 @@
         },
         "exits": {
             "GV Fortress Side": "True",
+            "Thieves Hideout Jail (1 Torch)": "True",
+            "Thieves Hideout Jail (3 Torches)": "True",
+            "Thieves Hideout Kitchen Hallway": "True",
+            "Thieves Hideout Jail (2 Torches)": "True",
+            "GF Entrances Behind Crates": "True",
+            "Gerudo Fortress 2nd Floor": "can_use(Longshot) or can_use(Hover_Boots) or logic_gf_jump",
+            "Gerudo Fortress Jail": "can_use(Longshot)",
             "GF Outside Gate": "'GF Gate Open'",
             "Gerudo Training Ground Lobby": "Gerudo_Membership_Card and is_adult",
             "GF Storms Grotto": "is_adult and can_open_storm_grotto" # Not there as child
+        }
+    },
+    {
+        "region_name": "GF Entrances Behind Crates",
+        "scene": "Gerudo Fortress",
+        "hint": "GERUDO_FORTRESS",
+        "exits": {
+            "Gerudo Fortress": "True",
+            "Thieves Hideout Jail (1 Torch)": "True",
+            "Thieves Hideout Kitchen Hallway": "True"
+        }
+    },
+    {
+        "region_name": "Gerudo Fortress Jail",
+        "scene": "Gerudo Fortress",
+        "hint": "GERUDO_FORTRESS",
+        "exits": {
+            "Gerudo Fortress": "can_use(Hookshot)",
+            "GF Hall to Balcony Entrance": "can_use(Hookshot)"
+        }
+    },
+    {
+        "region_name": "Gerudo Fortress Balcony",
+        "scene": "Gerudo Fortress",
+        "hint": "GERUDO_FORTRESS",
+        "locations": {
+            #"GF Glitch Freestanding PoH": "is_child"
+        },
+        "exits": {
+            "Gerudo Fortress": "True",
+            "Gerudo Fortress Jail": "True",
+            "TH Hall to Balcony Upper": "True",
+            "GF Hall to Balcony Entrance": "True"
+        }
+    },
+    {
+        "region_name": "GF Hall to Balcony Entrance",
+        "scene": "Gerudo Fortress",
+        "hint": "GERUDO_FORTRESS",
+        "exits": {
+            "Gerudo Fortress": "True",
+            "TH Hall to Balcony Lower": "True"
+        }
+    },
+    {
+        "region_name": "Gerudo Fortress 2nd Floor",
+        "scene": "Gerudo Fortress",
+        "hint": "GERUDO_FORTRESS",
+        "exits": {
+            "Thieves Hideout Jail (3 Torches)": "True",
+            "Thieves Hideout Jail (2 Torches)": "True",
+            "Thieves Hideout Kitchen Front": "True",
+            "GF Entrances Behind Crates": "True",
+            "Gerudo Fortress": "True",
+            "GF Kitchen Roof Access": "logic_gf_jump_roof and is_adult",
+            "GF High Jail Entrance": "
+                logic_gf_jump_roof and
+                (can_use(Hover_Boots) or can_use(Scarecrow) or can_use(Longshot))",
+            "GF Roof Chest": "
+                logic_gf_jump_roof and
+                (can_use(Hover_Boots) or can_use(Scarecrow) or can_use(Longshot))",
+            "GF Roof Gold Skulltula": "logic_gf_jump_roof and is_adult and at_night"
+        }
+    },
+    {
+        "region_name": "GF High Jail Entrance",
+        "scene": "Gerudo Fortress",
+        "hint": "GERUDO_FORTRESS",
+        "exits": {
+            "Thieves Hideout Jail (4 Torches)": "True",
+            "Gerudo Fortress": "True",
+            "Gerudo Fortress 2nd Floor": "True",
+            "GF Roof Gold Skulltula": "can_use(Longshot) and at_night"
+        }
+    },
+    {
+        "region_name": "GF Kitchen Roof Access",
+        "scene": "Gerudo Fortress",
+        "hint": "GERUDO_FORTRESS",
+        "exits": {
+            "Thieves Hideout Kitchen Rear": "True",
+            "GF Hall to Balcony Entrance": "can_use(Hover_Boots)",
+            "GF High Jail Entrance": "True",
+            "Gerudo Fortress 2nd Floor": "True",
+            "Gerudo Fortress Jail": "can_use(Longshot) and can_use(Hover_Boots)",
+            "GF Hall to Balcony Entrance": "
+                can_use(Hover_Boots) or can_use(Scarecrow) or can_use(Longshot)",
+            "GF Roof Chest": "
+                can_use(Hover_Boots) or can_use(Scarecrow) or can_use(Longshot)",
+            "GF Roof Gold Skulltula": "is_adult and at_night"
+        }
+    },
+    {
+        "region_name": "GF Roof Chest",
+        "scene": "Gerudo Fortress",
+        "hint": "GERUDO_FORTRESS",
+        "locations": {
+            "GF Chest": "True"
+        }
+    },
+    {
+        "region_name": "GF Roof Gold Skulltula",
+        "scene": "Gerudo Fortress",
+        "hint": "GERUDO_FORTRESS",
+        "locations": {
+            "GF GS Top Floor": "True"
         }
     },
     {
@@ -589,6 +692,164 @@
         "exits": {
             "Gerudo Fortress": "is_adult or (shuffle_overworld_entrances and 'GF Gate Open')",
             "Wasteland Near Fortress": "True"
+        }
+    },
+    {
+        "region_name": "Thieves Hideout Gerudo Warrior",
+        "scene": "Thieves Hideout",
+        "hint": "THIEVES_HIDEOUT",
+        "locations": {
+            "Hideout Gerudo Membership Card": "True"
+        }
+    },
+    {
+        "region_name": "Thieves Hideout Jail (1 Torch)",
+        "scene": "Thieves Hideout",
+        "hint": "THIEVES_HIDEOUT",
+        "events": {
+            "Hideout Gerudo 1": "is_adult or Kokiri_Sword",
+            "Hideout Carpenter 1": "
+                'Hideout Gerudo 1' and
+                ((gerudo_fortress == 'normal' and (Small_Key_Thieves_Hideout, 4))
+                    or (gerudo_fortress == 'fast' and Small_Key_Thieves_Hideout))"
+        },
+        "locations": {
+            "Hideout Jail Guard (1 Torch)": "'Hideout Gerudo 1'"
+        },
+        "exits": {
+            "Gerudo Fortress": "True",
+            "GF Entrances Behind Crates": "True",
+            "Thieves Hideout Gerudo Warrior": "
+                (gerudo_fortress == 'normal' and 
+                'Hideout Carpenter 1' and 'Hideout Carpenter 2'
+                and 'Hideout Carpenter 3' and 'Hideout Carpenter 4')
+                    or (gerudo_fortress == 'fast' and 'Hideout Carpenter 1')"
+        }
+    },
+    {
+        "region_name": "Thieves Hideout Jail (2 Torches)",
+        "scene": "Thieves Hideout", #"room": 05,
+        "hint": "THIEVES_HIDEOUT",
+        "events": {
+            "Hideout Gerudo 2": "is_adult or Kokiri_Sword",
+            "Hideout Carpenter 2": "
+                'Hideout Gerudo 2' and
+                (gerudo_fortress == 'normal' and (Small_Key_Thieves_Hideout, 4))"
+        },
+        "locations": {
+            "Hideout Jail Guard (2 Torches)": "'Hideout Gerudo 2'"
+        },
+        "exits": {
+            "Thieves Hideout Jail (1 Torch)": "True", #Savewarp
+            "Gerudo Fortress": "True",
+            "Gerudo Fortress 2nd Floor": "True",
+            "Thieves Hideout Gerudo Warrior": "
+                gerudo_fortress == 'normal' and
+                'Hideout Carpenter 1' and 'Hideout Carpenter 2' and
+                'Hideout Carpenter 3' and 'Hideout Carpenter 4'"
+        }
+    },
+    {
+        "region_name": "Thieves Hideout Jail (3 Torches)",
+        "scene": "Thieves Hideout", #"room": 04,
+        "hint": "THIEVES_HIDEOUT",
+        "events": {
+            "Hideout Gerudo 3": "is_adult or Kokiri_Sword",
+            "Hideout Carpenter 3": "
+                'Hideout Gerudo 3' and
+                (gerudo_fortress == 'normal' and (Small_Key_Thieves_Hideout, 4))"
+        },
+        "locations": {
+            "Hideout Jail Guard (3 Torches)": "'Hideout Gerudo 3'"
+        },
+        "exits": {
+            "Thieves Hideout Jail (1 Torch)": "True", #Savewarp
+            "Gerudo Fortress": "True",
+            "Gerudo Fortress 2nd Floor": "True",
+            "Thieves Hideout Gerudo Warrior": "
+                gerudo_fortress == 'normal' and
+                'Hideout Carpenter 1' and 'Hideout Carpenter 2' and
+                'Hideout Carpenter 3' and 'Hideout Carpenter 4'"
+        }
+    },
+    {
+        "region_name": "Thieves Hideout Jail (4 Torches)",
+        "scene": "Thieves Hideout",
+        "hint": "THIEVES_HIDEOUT",
+        "events": {
+            "Hideout Gerudo 4": "is_adult or Kokiri_Sword",
+            "Hideout Carpenter 4": "
+                'Hideout Gerudo 4' and
+                (gerudo_fortress == 'normal' and (Small_Key_Thieves_Hideout, 4))"
+        },
+        "locations": {
+            "Hideout Jail Guard (4 Torches)": "'Hideout Gerudo 4'"
+        },
+        "exits": {
+            "Thieves Hideout Jail (1 Torch)": "True", #Savewarp
+            "GF High Jail Entrance": "True",
+            "Thieves Hideout Gerudo Warrior": "
+                gerudo_fortress == 'normal' and
+                'Hideout Carpenter 1' and 'Hideout Carpenter 2' and
+                'Hideout Carpenter 3' and 'Hideout Carpenter 4'"
+        }
+    },
+    {
+        "region_name": "Thieves Hideout Kitchen Hallway",
+        "scene": "Thieves Hideout",
+        "hint": "THIEVES_HIDEOUT",
+        "exits": {
+            "Thieves Hideout Jail (1 Torch)": "True", #Savewarp
+            "GF Entrances Behind Crates": "True",
+            "Gerudo Fortress": "True",
+            "Thieves Hideout Kitchen Front": "Gerudo_Membership_Card or can_use(Bow) or logic_gerudo_kitchen",
+            "Thieves Hideout Kitchen Rear": "Gerudo_Membership_Card or can_use(Bow) or logic_gerudo_kitchen"
+        }
+    },
+    {
+        "region_name": "Thieves Hideout Kitchen Front",
+        "scene": "Thieves Hideout",
+        "hint": "THIEVES_HIDEOUT",
+        "exits": {
+            "Thieves Hideout Jail (1 Torch)": "True", #Savewarp
+            "Gerudo Fortress 2nd Floor": "True",
+            "Thieves Hideout Kitchen Rear": "
+                can_use(Hookshot) or can_use(Hover_Boots) or
+                Gerudo_Membership_Card or can_use(Bow) or logic_gerudo_kitchen",
+            "Thieves Hideout Kitchen Hallway": "Gerudo_Membership_Card or can_use(Bow) or logic_gerudo_kitchen"
+        }
+    },
+    {
+        "region_name": "Thieves Hideout Kitchen Rear",
+        "scene": "Thieves Hideout",
+        "hint": "THIEVES_HIDEOUT",
+        "exits": {
+            "Thieves Hideout Jail (1 Torch)": "True", #Savewarp
+            "GF Kitchen Roof Access": "True",
+            "Thieves Hideout Kitchen Front": "
+                can_use(Hookshot) or can_use(Hover_Boots) or
+                Gerudo_Membership_Card or can_use(Bow) or logic_gerudo_kitchen",
+            "Thieves Hideout Kitchen Hallway": "Gerudo_Membership_Card or can_use(Bow) or logic_gerudo_kitchen"
+        }
+    },
+    {
+        "region_name": "TH Hall to Balcony Lower",
+        "scene": "Thieves Hideout",
+        "hint": "THIEVES_HIDEOUT",
+        "exits": {
+            "Thieves Hideout Jail (1 Torch)": "True", #Savewarp
+            "GF Hall to Balcony Entrance": "True",
+            "TH Hall to Balcony Upper": "can_use(Hookshot)"
+        }
+    },
+    {
+        "region_name": "TH Hall to Balcony Upper",
+        "scene": "Thieves Hideout",
+        "hint": "THIEVES_HIDEOUT",
+        "exits": {
+            "Thieves Hideout Jail (1 Torch)": "True", #Savewarp
+            "TH Hall to Balcony Lower": "can_use(Hookshot)",
+            "Gerudo Fortress Balcony": "True"
         }
     },
     {

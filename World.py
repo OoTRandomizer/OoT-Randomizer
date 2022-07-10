@@ -64,7 +64,7 @@ class World(object):
         if (
             settings.open_forest == 'closed'
             and (
-                self.shuffle_special_interior_entrances or settings.shuffle_overworld_entrances
+                self.shuffle_special_interior_entrances or settings.shuffle_hideout_entrances or settings.shuffle_overworld_entrances
                 or settings.warp_songs or settings.spawn_positions or (settings.shuffle_bosses != 'off')
             )
         ):
