@@ -1318,7 +1318,7 @@ logic_tricks = {
                     It is possible to reach the Goron City Grotto by
                     quickly using the Hookshot while in the midst of
                     taking damage from the lava floor. This trick will
-                    not be expected on OHKO or quadruple damage.
+                    not be expected on OHKO damage.
                     '''},
     'Deku Tree Basement without Slingshot': {
         'name'    : 'logic_deku_b1_skip',
@@ -4507,7 +4507,7 @@ setting_infos = [
         gui_tooltip    = '''\
             Changes the amount of damage taken.
 
-            'Quadruple': Under this setting,
+            With Double or Quadruple damage,
             Double Defense can possibly be
             required for certain maneuvers.
 

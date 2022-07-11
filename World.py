@@ -1109,8 +1109,8 @@ class World(object):
         exclude_item_list = [
             'Ice Arrows',
         ]
-        if self.settings.damage_multiplier != 'quadruple' or self.settings.starting_hearts > 4:
-            # Double Defense may be required to reduce forced damage (which can be as high as 1 heart)
+        if self.settings.damage_multiplier != ('double' or 'quadruple') or self.settings.starting_hearts > 4:
+            # Double Defense may be required to reduce forced damage
             exclude_item_list.append('Double Defense')
         if (self.settings.damage_multiplier != 'ohko' and self.settings.damage_multiplier != 'quadruple' and
             self.settings.shuffle_scrubs == 'off' and not self.settings.shuffle_grotto_entrances):

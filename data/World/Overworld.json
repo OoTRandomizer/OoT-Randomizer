@@ -1477,22 +1477,46 @@
                 (is_adult and 'Stop GC Rolling Goron as Adult') or
                 (is_child and can_play(Zeldas_Lullaby))",
             "GC Grotto Platform": "
+                # You may be logically required to enter grotto with less than 3 hearts
+                # Not if entrances are mixed/decoupled, but otherwise it can go to dampe's grave
+                # This is problematic in hero mode or if windmill doesn't connect to default kakariko
+                # Without healing, you have 6 seconds fewer to carry a fairy through timers (only heat matters)
+                # So you need to still have at least 3 hearts after going through the lava
+                # And it could lead to another damage check, so you need more health to survive that
                 is_adult and 
                 ((can_play(Song_of_Time) and 
-                        # 0.75 damage for the lava, but the grotto can be shuffled to dampe's grave
-                        # So without hearts this can lead to another damage check and the highest is 1 damage
-                        # If logic supported multiple bottles, this could use 2 bottles plus Fairy/Red/Blue/Milk to heal
-                        (can_live_with_nayrus(1.75) or (can_live_dmg(0.75) and not no_collectible_hearts) or
+                        (can_use(Nayrus_Love) or can_use(Goron_Tunic) or can_use(Longshot) or
+                        # The lava does 0.75 damage so if you still have 3 hearts you can survive most damage checks
+                        # But if that is half your health you need more to survive the one check in Fire MQ
+                        # DMC drop doesn't matter here, if you have tunic/longshot for that, you avoid damage here
+                        (damage_multiplier != 'ohko' and (starting_hearts >= 7 or (starting_hearts == 6 and
+                            (not (world.dungeon_mq['Fire Temple'] and logic_fewer_tunic_requirements) or can_use(Bow) or
+                            # Fairy pot within Fire MQ can provide healing    
+                                (Small_Key_Fire_Temple, 5))) or
+                            (starting_hearts >= 5 and (damage_multiplier != 'quadruple' or Double_Defense)) or
+                            (starting_hearts >= 4 and damage_multiplier != 'quadruple' and
+                                (damage_multiplier != 'double' or Double_Defense))) or
+                        (can_live_dmg(0.75) and not (shuffle_special_interior_entrances or no_collectible_hearts)) or
                             # Fairy can be used here if it's the unshuffled grotto because a bottle isn't needed there
                             (not shuffle_grotto_entrances and Fairy and (can_live_dmg(0.25)
                             # Logic doesn't count more than one bottle but it would take 4 on OHKO
-                            )) or can_use(Goron_Tunic) or can_use(Longshot))) or 
-                    (can_use(Hookshot) and
-                    # Fairies don't seem to work here while using the Hookshot
-                        ((can_live_dmg(0.25) and can_use(Goron_Tunic)) or
-                            can_use(Nayrus_Love) or
-                            # The timing is difficult
-                            (can_live_dmg(1) and logic_goron_grotto))))"
+                    ))))) or (can_use(Hookshot) and
+                        (can_use(Nayrus_Love) or
+                        # Fairies don't seem to work here while using the Hookshot
+                            (can_use(Goron_Tunic) and
+                                # Fire MQ damage check doesn't factor in here because tunic
+                                # So this is 0.25 lava damage + 1.0 DMC drop + 0.5 location damage
+                                (can_live_dmg(1.75) or (can_live_dmg(0.25) and
+                                    not (shuffle_special_interior_entrances or no_collectible_hearts)))) or 
+                            # The timing is difficult, DMC drop doesn't factor in here because it requires Goron Tunic
+                            (logic_goron_grotto and damage_multiplier != 'ohko' and
+                                ((starting_hearts >= 8 or (starting_hearts == 7 and (not (world.dungeon_mq['Fire Temple'] and
+                                    logic_fewer_tunic_requirements) or can_use(Bow) or
+                                    (Small_Key_Fire_Temple, 5))) or
+                                (starting_hearts == 5 and (damage_multiplier != 'quadruple' or Double_Defense)) or
+                                (starting_hearts == 4 and damage_multiplier != 'quadruple' and
+                                    (damage_multiplier != 'double' or Double_Defense))) or
+                                (can_live_dmg(1) and not (shuffle_special_interior_entrances or no_collectible_hearts)))))))"
         }
     },
     {
@@ -1532,8 +1556,27 @@
         "exits": {
             "GC Grotto": "True",
             "Goron City": "
-                can_live_with_nayrus(0.75) or (can_live_dmg(0.25) and can_use(Goron_Tunic)) or
-                (can_play(Song_of_Time) and (can_use(Longshot)))"
+                can_use(Nayrus_Love) or (can_play(Song_of_Time) and can_use(Longshot)) or
+                    ((can_live_dmg(0.25) and (can_use(Goron_Tunic) or can_live_dmg(0.75))) and
+                        # Heal with hearts in Kakariko
+                        ((not (shuffle_overworld_entrances or no_collectible_hearts)) or
+                        # Heal with Gossip Stone in Goron City
+                        ((can_summon_gossip_fairy_without_suns or can_play(Song_of_Storms)) and
+                            (can_blast_or_smash or Progressive_Strength_Upgrade)))) or
+                    (can_use(Goron_Tunic) and can_live_dmg(1.75)) or
+                    (damage_multiplier != 'ohko' and
+                        (is_child and (starting_hearts >= 6 or
+                            (starting_hearts >= 5 and (damage_multiplier != 'quadruple' or Double_Defense)) or
+                            (starting_hearts >= 4 and damage_multiplier != 'quadruple' and 
+                                (damage_multiplier != 'double' or Double_Defense)))) or
+                        (is_adult and (starting_hearts >= 11 or (starting_hearts == 10 and
+                            (not (world.dungeon_mq['Fire Temple'] and logic_fewer_tunic_requirements) or can_use(Bow) or
+                            # Fairy pot within Fire MQ can provide healing    
+                                (Small_Key_Fire_Temple, 5))) or
+                            (starting_hearts >= 7 and (damage_multiplier != 'quadruple' or Double_Defense)) or
+                            (starting_hearts >= 5 and damage_multiplier != 'quadruple' and 
+                                (damage_multiplier != 'double' or Double_Defense)) or
+                            (starting_hearts == 4 and Double_Defense))))"
         }
     },
     {
@@ -1582,7 +1625,11 @@
             "DMC Ladder Area Nearby": "True",
             "DMC Central Nearby": "
                 can_use(Goron_Tunic) and can_use(Longshot) and 
-                (can_live_with_nayrus(1) or (Fairy and not entrance_shuffle))"
+                ((can_live_with_nayrus(1.75) or
+                # Song of Time allows freely crossing lava in Goron City
+                (can_play(Song_of_Time) and can_live_dmg(1.5)
+                # and not (shuffle_grotto_entrances or mix/decouple)
+                )) or (Fairy and not entrance_shuffle))"
         }
     },
     {

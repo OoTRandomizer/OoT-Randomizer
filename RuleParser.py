@@ -264,7 +264,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
         self.generic_visit(node)
         # if all the children are literals now, we can evaluate
         if isliteral(node.operand):
-            res = eval(compile(ast.Expression(node), '<string>', 'eval'))
+            res = eval(compile(ast.fix_missing_locations(ast.Expression(node)), '<string>', 'eval'))
             return ast.parse('%r' % res, mode='eval').body
         return node
 
