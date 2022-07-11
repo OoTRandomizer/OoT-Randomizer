@@ -1109,7 +1109,7 @@ class World(object):
         exclude_item_list = [
             'Ice Arrows',
         ]
-        if self.settings.damage_multiplier != ('double' or 'quadruple') or self.settings.starting_hearts > 4:
+        if self.settings.damage_multiplier not in ('double', 'quadruple') or self.settings.starting_hearts > 4:
             # Double Defense may be required to reduce forced damage
             exclude_item_list.append('Double Defense')
         if (self.settings.damage_multiplier != 'ohko' and self.settings.damage_multiplier != 'quadruple' and
