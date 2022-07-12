@@ -19,6 +19,7 @@ uint16_t ocarina_upgrade(z64_file_t *save, uint16_t item_id);
 uint16_t arrows_to_rupee(z64_file_t *save, uint16_t item_id);
 uint16_t bombs_to_rupee(z64_file_t *save, uint16_t item_id);
 uint16_t seeds_to_rupee(z64_file_t *save, uint16_t item_id);
+uint16_t magic_jar_to_rupee(z64_file_t *save, uint16_t item_id);
 uint16_t letter_to_bottle(z64_file_t *save, uint16_t item_id);
 uint16_t health_upgrade_cap(z64_file_t *save, uint16_t item_id);
 

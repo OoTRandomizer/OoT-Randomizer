@@ -368,7 +368,8 @@
             "deadly_bonks",
             "no_collectible_hearts",
             "starting_tod",
-            "blue_fire_arrows"
+            "blue_fire_arrows",
+            "fix_broken_drops"
           ]
         },
         {

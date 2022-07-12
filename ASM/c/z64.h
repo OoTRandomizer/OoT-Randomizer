@@ -261,6 +261,8 @@ typedef enum
   Z64_ITEM_COMPASS,
   Z64_ITEM_DUNGEON_MAP,
   Z64_ITEM_SMALL_KEY,
+  Z64_ITEM_MAGIC_SMALL,
+  Z64_ITEM_MAGIC_LARGE,
 } z64_item_t;
 
 typedef enum
@@ -1268,6 +1270,22 @@ typedef struct
                                               /* 0x01B0 */
 } z64_trail_t;
 
+struct EnItem00;
+
+typedef void(*EnItem00ActionFunc)(struct EnItem00*, z64_game_t*);
+
+typedef struct EnItem00 {
+	z64_actor_t actor;
+	EnItem00ActionFunc actionFunc;
+	uint16_t collectibleFlag;
+	uint16_t getItemId;
+	uint16_t unk_154;
+	uint16_t unk_156;
+	uint16_t unk_158;
+	uint16_t timeToLive; //0x15A
+	float scale;
+} EnItem00;
+
 /* dram addresses */
 #define z64_osSendMesg_addr                     0x80001E20
 #define z64_osRecvMesg_addr                     0x80002030
@@ -1320,6 +1338,7 @@ typedef struct
 #define z64_LinkDamage_addr                     0x8038E6A8
 #define z64_ObjectSpawn_addr                    0x800812F0
 #define z64_ObjectIndex_addr                    0x80081628
+#define z64_ActorSetLinkIncomingItemId_addr     0x80022CF4
 
 /* rom addresses */
 #define z64_icon_item_static_vaddr              0x007BD000
@@ -1371,8 +1390,11 @@ typedef void(*z64_LinkDamage_proc)        (z64_game_t *ctxt, z64_link_t *link,
 typedef void(*z64_LinkInvincibility_proc) (z64_link_t *link, uint8_t frames);
 typedef float *(*z64_GetMatrixStackTop_proc)();
 
-typedef int32_t(*z64_ObjectSpawn_proc)    (z64_obj_ctxt_t* object_ctx, int16_t object_id);
-typedef int32_t(*z64_ObjectIndex_proc)    (z64_obj_ctxt_t* object_ctx, int16_t object_id);
+typedef int32_t(*z64_ObjectSpawn_proc)    (z64_obj_ctxt_t *object_ctx, int16_t object_id);
+typedef int32_t(*z64_ObjectIndex_proc)    (z64_obj_ctxt_t *object_ctx, int16_t object_id);
+
+typedef int32_t(*z64_ActorSetLinkIncomingItemId_proc) (z64_actor_t *actor, z64_game_t *game,
+                                                       int32_t get_item_id, float xz_range, float y_range);
 
 /* data */
 #define z64_file_mq             (*(OSMesgQueue*)      z64_file_mq_addr)
@@ -1431,5 +1453,7 @@ typedef int32_t(*z64_ObjectIndex_proc)    (z64_obj_ctxt_t* object_ctx, int16_t o
 
 #define z64_ObjectSpawn         ((z64_ObjectSpawn_proc)z64_ObjectSpawn_addr)
 #define z64_ObjectIndex         ((z64_ObjectIndex_proc)z64_ObjectIndex_addr)
+
+#define z64_ActorSetLinkIncomingItemId ((z64_ActorSetLinkIncomingItemId_proc)z64_ActorSetLinkIncomingItemId_addr)
 
 #endif

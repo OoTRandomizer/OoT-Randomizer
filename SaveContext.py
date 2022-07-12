@@ -262,6 +262,12 @@ class SaveContext():
         self.addresses['quest']['heart_pieces'].value = int((health % 1) * 4) * 0x10
 
 
+    def give_magic_jar(self):
+        # Magic jar reverts to blue rupee if magic_acquired is false, otherwise does nothing
+        if not self.addresses['magic_acquired'].get_value() and self.addresses['rupees'].get_value() < 5:
+            self.addresses['rupees'].value = 5
+
+
     def give_item(self, world, item, count=1):
         if item.endswith(')'):
             item_base, implicit_count = item[:-1].split(' (', 1)
@@ -277,6 +283,8 @@ class SaveContext():
             self.give_health(count)
         elif item == "Bombchu Item":
             self.give_bombchu_item(world)
+        elif item == "Large Magic Jar":
+            self.give_magic_jar()
         elif item == IGNORE_LOCATION:
             pass # used to disable some skipped and inaccessible locations
         elif item in SaveContext.save_writes_table:

@@ -86,7 +86,8 @@
     "ice_trap_appearance": "junk_only",
     "junk_ice_traps": "normal",
     "logic_earliest_adult_trade": "prescription",
-    "logic_latest_adult_trade": "claim_check"
+    "logic_latest_adult_trade": "claim_check",
+    "fix_broken_drops": false
   },
   "S5 Tournament": {
     "show_seed_info":                          true,

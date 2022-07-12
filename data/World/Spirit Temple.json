@@ -17,6 +17,11 @@
                 (Boomerang or Slingshot or (has_bombchus and logic_spirit_child_bombchu)) and
                 (Sticks or has_explosives or
                     ((Nuts or Boomerang) and (Kokiri_Sword or Slingshot)))",
+            "Deku Shield Pot": "
+                fix_broken_drops and
+                (Boomerang or Slingshot or (has_bombchus and logic_spirit_child_bombchu)) and
+                (Sticks or has_explosives or
+                    ((Nuts or Boomerang) and (Kokiri_Sword or Slingshot)))",
             "Spirit Temple Child Early Torches Chest": "
                 (Boomerang or Slingshot or (has_bombchus and logic_spirit_child_bombchu)) and
                 (Sticks or has_explosives or

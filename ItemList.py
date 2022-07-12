@@ -79,6 +79,7 @@ item_table = {
     'Bombchus (20)':                                   ('Item',     True,  0x6B, None),
     'Rupee (Treasure Chest Game)':                     ('Item',     None,  0x72, None),
     'Piece of Heart (Treasure Chest Game)':            ('Item',     True,  0x76, {'alias': ('Piece of Heart', 1), 'progressive': float('Inf')}),
+    'Large Magic Jar':                                 ('Item',     None,  0x44, {'junk': 1}),
     'Ice Trap':                                        ('Item',     None,  0x7C, {'junk': 0}),
     'Progressive Hookshot':                            ('Item',     True,  0x80, {'progressive': 2}),
     'Progressive Strength Upgrade':                    ('Item',     True,  0x81, {'progressive': 3}),
@@ -173,6 +174,7 @@ item_table = {
     'Bugs':                             ('Drop',     True,  None, None),
     'Big Poe':                          ('Drop',     True,  None, None),
     'Bombchu Drop':                     ('Drop',     True,  None, None),
+    'Deku Shield Drop':                 ('Drop',     True,  None, None),
 
     # Consumable refills defined mostly to placate 'starting with' options
     'Arrows':                           ('Refill',   None,  None, None),
