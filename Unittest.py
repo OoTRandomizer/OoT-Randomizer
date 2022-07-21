@@ -393,6 +393,19 @@ class TestPlandomizer(unittest.TestCase):
         self.assertEqual(get_actual_pool(spoiler)['Small Key (Thieves Hideout)'], 5)
         self.assertNotIn('Small Key Ring (Thieves Hideout)', spoiler['locations'].values())
 
+    def test_fix_broken_drops(self):
+        # Setting off
+        distribution_file, spoiler = generate_with_plandomizer("plando-fix-broken-drops-off")
+        self.assertIn('Deku Shield Pot', spoiler['locations'].values())
+
+        # No deku shield available, fail to generate
+        distribution_file, spoiler = generate_with_plandomizer("plando-fix-broken-drops-bad")
+        self.assertEqual(spoiler, None)
+
+        # Deku shield available only via spirit shield pot
+        distribution_file, spoiler = generate_with_plandomizer("plando-fix-broken-drops-good")
+        self.assertIn('Deku Shield Pot', spoiler[':woth_locations'].values())
+
 class TestHints(unittest.TestCase):
     def test_skip_zelda(self):
         # Song from Impa would be WotH, but instead of relying on random chance to get HC WotH,
