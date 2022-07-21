@@ -1,7 +1,6 @@
-import logging
 import random
 from collections import OrderedDict
-from decimal import Decimal, ROUND_HALF_UP
+from decimal import Decimal, ROUND_UP
 
 from Item import ItemFactory, ItemInfo
 from Utils import random_choices
@@ -36,7 +35,108 @@ plentiful_items = ([
     ['Heart Container'] * 8
 )
 
+# Ludicrous replaces all health upgrades with heart containers
+# as done in plentiful. The item list is used separately to
+# dynamically replace all junk with even levels of each item.
+ludicrous_health = ['Heart Container'] * 8
+
+# List of items that can be multiplied in ludicrous mode.
+# Used to filter the pre-plando pool for candidates instead
+# of appending directly, making this list settings-independent.
+# Excludes Gold Skulltula Tokens, Triforce Pieces, and health
+# upgrades as they are directly tied to win conditions and
+# already have a large count relative to available locations
+# in the game.
+#
+# Base items will always be candidates to replace junk items,
+# even if the player starts with all "normal" copies of an item.
+ludicrous_items_base = [
+    'Light Arrows',
+    'Megaton Hammer',
+    'Progressive Hookshot',
+    'Progressive Strength Upgrade',
+    'Dins Fire',
+    'Hover Boots',
+    'Mirror Shield',
+    'Boomerang',
+    'Iron Boots',
+    'Fire Arrows',
+    'Progressive Scale',
+    'Progressive Wallet',
+    'Magic Meter',
+    'Bow',
+    'Slingshot',
+    'Bomb Bag',
+    'Bombchus',
+    'Lens of Truth',
+    'Goron Tunic',
+    'Zora Tunic',
+    'Biggoron Sword',
+    'Double Defense',
+    'Farores Wind',
+    'Nayrus Love',
+    'Stone of Agony',
+    'Ice Arrows',
+    'Deku Stick Capacity',
+    'Deku Nut Capacity'
+]
+
+ludicrous_items_extended = [
+    'Zeldas Lullaby',
+    'Eponas Song',
+    'Suns Song',
+    'Sarias Song',
+    'Song of Time',
+    'Song of Storms',
+    'Minuet of Forest',
+    'Prelude of Light',
+    'Bolero of Fire',
+    'Serenade of Water',
+    'Nocturne of Shadow',
+    'Requiem of Spirit',
+    'Ocarina',
+    'Kokiri Sword',
+    'Boss Key (Ganons Castle)',
+    'Boss Key (Forest Temple)',
+    'Boss Key (Fire Temple)',
+    'Boss Key (Water Temple)',
+    'Boss Key (Shadow Temple)',
+    'Boss Key (Spirit Temple)',
+    'Gerudo Membership Card',
+    'Small Key (Thieves Hideout)',
+    'Small Key (Shadow Temple)',
+    'Small Key (Ganons Castle)',
+    'Small Key (Forest Temple)',
+    'Small Key (Spirit Temple)',
+    'Small Key (Fire Temple)',
+    'Small Key (Water Temple)',
+    'Small Key (Bottom of the Well)',
+    'Small Key (Gerudo Training Ground)',
+    'Small Key Ring (Thieves Hideout)',
+    'Small Key Ring (Shadow Temple)',
+    'Small Key Ring (Ganons Castle)',
+    'Small Key Ring (Forest Temple)',
+    'Small Key Ring (Spirit Temple)',
+    'Small Key Ring (Fire Temple)',
+    'Small Key Ring (Water Temple)',
+    'Small Key Ring (Bottom of the Well)',
+    'Small Key Ring (Gerudo Training Ground)',
+    'Magic Bean Pack'
+]
+
+ludicrous_exclusions = [
+    'Triforce Piece',
+    'Gold Skulltula Token',
+    'Rutos Letter',
+    'Heart Container',
+    'Piece of Heart',
+    'Piece of Heart (Treasure Chest Game)'
+]
+
 item_difficulty_max = {
+    'ludicrous': {
+        'Piece of Heart': 3,
+    },
     'plentiful': {
         'Piece of Heart': 3,
     },
@@ -127,6 +227,14 @@ song_list = [item.name for item in sorted([i for n, i in ItemInfo.items.items() 
 junk_pool_base = [(item, weight) for (item, weight) in sorted(ItemInfo.junk.items()) if weight > 0]
 remove_junk_items = [item for (item, weight) in sorted(ItemInfo.junk.items()) if weight >= 0]
 
+remove_junk_ludicrous_items = [
+    'Ice Arrows',
+    'Deku Nut Capacity',
+    'Deku Stick Capacity',
+    'Double Defense',
+    'Biggoron Sword'
+]
+
 # a useless placeholder item placed at some skipped and inaccessible locations
 # (e.g. HC Malon Egg with Skip Child Zelda, or the carpenters with Open Gerudo Fortress)
 IGNORE_LOCATION = 'Recovery Heart'
@@ -191,11 +299,11 @@ def get_junk_item(count=1, pool=None, plando_pool=None):
     return return_pool
 
 
-def replace_max_item(items, item, max):
+def replace_max_item(items, item, max_count):
     count = 0
     for i,val in enumerate(items):
         if val == item:
-            if count >= max:
+            if count >= max_count:
                 items[i] = get_junk_item()[0]
             count += 1
 
@@ -272,6 +380,9 @@ def get_pool_core(world):
             pending_junk_pool.append('Boss Key (Ganons Castle)')
         if world.settings.shuffle_song_items == 'any':
             pending_junk_pool.extend(song_list)
+
+    if world.settings.item_pool_value == 'ludicrous':
+        pending_junk_pool.extend(ludicrous_health)
 
     if world.settings.triforce_hunt:
         pending_junk_pool.extend(['Triforce Piece'] * world.settings.triforce_count_per_world)
@@ -450,6 +561,9 @@ def get_pool_core(world):
             placed_items[location.name] = item
     # End of Locations loop.
 
+    # add unrestricted dungeon items to main item pool
+    pool.extend([item.name for item in world.get_unrestricted_dungeon_items()])
+
     if world.settings.shopsanity != 'off':
         pool.extend(min_shop_items)
         for item in min_shop_items:
@@ -541,6 +655,55 @@ def get_pool_core(world):
             junk_candidates.remove(junk_item)
             pool.remove(junk_item)
             pool.append(pending_item)
+
+    if world.settings.item_pool_value == 'ludicrous':
+        # Replace all junk items with major items
+        # Overrides plando'd junk items
+        # Songs are in the unrestricted pool even if their fill is restricted. Filter from candidates
+        duplicate_candidates = [item for item in ludicrous_items_extended if item in pool and (ItemInfo.items[item].type != 'Song' or world.settings.shuffle_song_items == 'any')]
+        duplicate_candidates.extend(ludicrous_items_base)
+        junk_items = [
+            item for item in pool
+            if item not in duplicate_candidates
+            and ItemInfo.items[item].type != 'Shop'
+            and ItemInfo.items[item].type != 'Song'
+            and not ItemInfo.items[item].trade
+            and item not in normal_bottles
+            and item not in ludicrous_exclusions
+        ]
+        max_extra_copies = int(Decimal(len(junk_items) / len(duplicate_candidates)).to_integral_value(rounding=ROUND_UP))
+        duplicate_items = [item for item in duplicate_candidates for _ in range(max_extra_copies)]
+        pool = [item if item not in junk_items else duplicate_items.pop(0) for item in pool]
+        # Handle bottles separately since only 4 can be obtained
+        pool_bottles = 0
+        pool_letters = 0
+        for item in pool:
+            if item == 'Rutos Letter':
+                pool.remove(item)
+                pool_bottles += 1
+                pool_letters += 1
+            if item in normal_bottles:
+                pool.remove(item)
+                pool_bottles += 1
+        letter_adds = 0
+        # No Rutos Letters in the pool could be due to open fountain or starting with one
+        if pool_letters > 0:
+            # Enforce max 2 Rutos Letters to balance out regular bottle availability
+            letter_adds = min(2, max_extra_copies)
+            for _ in range(letter_adds):
+                pool.append('Rutos Letter')
+        # Dynamically add bottles back to pool, accounting for starting items
+        for _ in range(pool_bottles - letter_adds):
+            bottle = random.choice(normal_bottles)
+            pool.append(bottle)
+        # Disabled locations use the #Junk group for fill.
+        # Update pattern matcher since all normal junk is removed.
+        item_groups['Junk'] = remove_junk_ludicrous_items
+        world.distribution.distribution.search_groups['Junk'] = remove_junk_ludicrous_items
+    else:
+        # Fix for unit tests reusing globals after ludicrous pool mutates them
+        item_groups['Junk'] = remove_junk_items
+        world.distribution.distribution.search_groups['Junk'] = remove_junk_items
 
     world.distribution.collect_starters(world.state)
 

@@ -2,7 +2,6 @@ import argparse
 import hashlib
 import json
 import logging
-import math
 import os
 import re
 import string
@@ -13,6 +12,7 @@ from version import __version__
 from Utils import random_choices, local_path, data_path
 from SettingsList import setting_infos, get_setting_info, validate_settings
 from Plandomizer import Distribution
+import StartingItems
 
 class ArgumentDefaultsHelpFormatter(argparse.RawTextHelpFormatter):
 
@@ -81,9 +81,19 @@ class Settings:
         for setting in filter(lambda s: s.shared and s.bitwidth > 0, setting_infos):
             value = self.__dict__[setting.name]
             i_bits = []
+            if setting.name in ('starting_equipment', 'starting_items', 'starting_songs'):
+                items = {'starting_equipment': StartingItems.equipment, 'starting_items': StartingItems.inventory, 'starting_songs': StartingItems.songs}[setting.name]
+                value = []
+                for entry in items.values():
+                    if entry.itemname in self.starting_items:
+                        count = self.starting_items[entry.itemname]
+                        if not isinstance(count, int):
+                            count = count.count
+                        if count > entry.i:
+                            value.append(entry.settingname)
             if setting.type == bool:
                 i_bits = [ 1 if value else 0 ]
-            if setting.type == str:
+            elif setting.type == str:
                 try:
                     index = setting.choice_list.index(value)
                 except ValueError:
@@ -91,7 +101,7 @@ class Settings:
                 # https://stackoverflow.com/questions/10321978/integer-to-bitfield-as-a-list
                 i_bits = [1 if digit=='1' else 0 for digit in bin(index)[2:]]
                 i_bits.reverse()
-            if setting.type == int:
+            elif setting.type == int:
                 value = int(value)
                 value = value - (setting.gui_params.get('min', 0))
                 value = int(value / (setting.gui_params.get('step', 1)))
@@ -99,7 +109,7 @@ class Settings:
                 # https://stackoverflow.com/questions/10321978/integer-to-bitfield-as-a-list
                 i_bits = [1 if digit=='1' else 0 for digit in bin(value)[2:]]
                 i_bits.reverse()
-            if setting.type == list:
+            elif setting.type == list:
                 if len(value) > len(setting.choice_list) / 2:
                     value = [item for item in setting.choice_list if item not in value]
                     terminal = [1] * setting.bitwidth
@@ -107,7 +117,7 @@ class Settings:
                     terminal = [0] * setting.bitwidth
 
                 item_indexes = []
-                for item in value:                       
+                for item in value:
                     try:
                         item_indexes.append(setting.choice_list.index(item))
                     except ValueError:
@@ -119,6 +129,8 @@ class Settings:
                     item_bits += [0] * ( setting.bitwidth - len(item_bits) )
                     i_bits.extend(item_bits)
                 i_bits.extend(terminal)
+            else:
+                raise TypeError(f'Cannot encode type {setting.type} into settings string')
 
             # pad it
             i_bits += [0] * ( setting.bitwidth - len(i_bits) )
@@ -135,18 +147,18 @@ class Settings:
             value = None
             if setting.type == bool:
                 value = True if cur_bits[0] == 1 else False
-            if setting.type == str:
+            elif setting.type == str:
                 index = 0
                 for b in range(setting.bitwidth):
                     index |= cur_bits[b] << b
                 value = setting.choice_list[index]
-            if setting.type == int:
+            elif setting.type == int:
                 value = 0
                 for b in range(setting.bitwidth):
                     value |= cur_bits[b] << b
                 value = value * setting.gui_params.get('step', 1)
                 value = value + setting.gui_params.get('min', 0)
-            if setting.type == list:
+            elif setting.type == list:
                 value = []
                 max_index = (1 << setting.bitwidth) - 1
                 while True:
@@ -163,9 +175,12 @@ class Settings:
                     value.append(setting.choice_list[index-1])
                     cur_bits = bits[:setting.bitwidth]
                     bits = bits[setting.bitwidth:]
+            else:
+                raise TypeError(f'Cannot decode type {setting.type} from settings string')
 
             self.__dict__[setting.name] = value
 
+        self.distribution.reset() # convert starting_items
         self.settings_string = self.get_settings_string()
         self.numeric_seed = self.get_numeric_seed()
 
@@ -323,13 +338,23 @@ class Settings:
 
 
     def to_json(self):
-        return {setting.name: self.__dict__[setting.name] for setting in setting_infos
-                if setting.shared and (setting.name not in self._disabled or
+        return {
+            setting.name: (
+                {name: (
+                    {name: record.to_json() for name, record in record.items()} if isinstance(record, dict) else record.to_json()
+                ) for name, record in self.__dict__[setting.name].items()}
+                if setting.name == 'starting_items' else
+                self.__dict__[setting.name]
+            )
+            for setting in setting_infos
+            if setting.shared and (
+                setting.name not in self._disabled or
                 # We want to still include settings disabled by randomized settings options if they're specified in distribution
-                ('_settings' in self.distribution.src_dict and setting.name in self.distribution.src_dict['_settings'].keys()))
-                # Don't want to include list starting equipment and songs, these are consolidated into starting_items
-                and not (setting.name == "starting_equipment" or setting.name == "starting_songs")}
-
+                ('_settings' in self.distribution.src_dict and setting.name in self.distribution.src_dict['_settings'].keys())
+            )
+            # Don't want to include list starting equipment and songs, these are consolidated into starting_items
+            and not (setting.name == "starting_equipment" or setting.name == "starting_songs")
+        }
 
     def to_json_cosmetics(self):
         return {setting.name: self.__dict__[setting.name] for setting in setting_infos if setting.cosmetic}

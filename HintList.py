@@ -38,9 +38,11 @@ class Hint(object):
                 self.text = text[choice]
 
 class Multi(object):
+    name = ""
     locations = []
 
-    def __init__(self, locations):
+    def __init__(self, name, locations):
+        self.name = name
         self.locations = locations
 
 def getHint(name, clearer_hint=False):
@@ -54,7 +56,7 @@ def getHint(name, clearer_hint=False):
 
 def getMulti(name):
     locations = multiTable[name]
-    return Multi(locations)
+    return Multi(name, locations)
 
 def getHintGroup(group, world):
     ret = []
@@ -68,9 +70,12 @@ def getHintGroup(group, world):
         if group == 'dual_always' and hint.name in conditional_dual_always and conditional_dual_always[hint.name](world):
             hint.type = 'dual_always'
 
+        if group == 'entrance_always' and hint.name in conditional_entrance_always and conditional_entrance_always[hint.name](world):
+            hint.type = 'entrance_always'
+
         conditional_keep = True
         type_append = False
-        if group in ['overworld', 'dungeon', 'sometimes', 'dual'] and hint.name in conditional_sometimes.keys():
+        if group in ['overworld', 'dungeon', 'sometimes', 'dual', 'entrance'] and hint.name in conditional_sometimes.keys():
             conditional_keep = conditional_sometimes[hint.name](world)
 
         # Hint inclusion override from distribution
@@ -117,17 +122,49 @@ def getRequiredHints(world):
             ret.append(hint)
     return ret
 
+# Get the multi hints containing the list of locations for a possible hint upgrade.
+def getUpgradeHintList(world, locations):
+    ret = []
+    for name in multiTable:
+        if name not in hintExclusions(world):
+            hint = getHint(name, world.settings.clearer_hints)
+            multi = getMulti(name)
+
+            if len(locations) < len(multi.locations) and all(location in multi.locations for location in locations) and (hint.name not in conditional_sometimes.keys() or conditional_sometimes[hint.name](world)):
+                accepted_type = False
+
+                for hint_type in hint.type:
+                    type_override = False
+                    if hint_type in world.hint_type_overrides:
+                        if name in world.hint_type_overrides[hint_type]:
+                            type_override = True
+                    if hint_type in world.item_hint_type_overrides:
+                        for locationName in multi.locations:
+                            if locationName not in hintExclusions(world):
+                                location = world.get_location(locationName)
+                                if location.item.name in world.item_hint_type_overrides[hint_type]:
+                                    type_override = True
+
+                    if world.hint_dist_user['upgrade_hints'] == 'limited':
+                        if world.hint_dist_user['distribution'][hint_type]['copies'] > 0:
+                            accepted_type = True
+                    if not type_override:
+                        accepted_type = True
+
+                if accepted_type:
+                    ret.append(hint)
+    return ret
 
 # Helpers for conditional always hints
 def stones_required_by_settings(world):
     stones = 0
-    if world.settings.bridge == 'stones':
+    if world.settings.bridge == 'stones' and not world.shuffle_special_dungeon_entrances:
         stones = max(stones, world.settings.bridge_stones)
     if world.settings.shuffle_ganon_bosskey == 'on_lacs' and world.settings.lacs_condition == 'stones':
         stones = max(stones, world.settings.lacs_stones)
     if world.settings.shuffle_ganon_bosskey == 'stones':
         stones = max(stones, world.settings.ganon_bosskey_stones)
-    if world.settings.bridge == 'dungeons':
+    if world.settings.bridge == 'dungeons' and not world.shuffle_special_dungeon_entrances:
         stones = max(stones, world.settings.bridge_rewards - 6)
     if world.settings.shuffle_ganon_bosskey == 'on_lacs' and world.settings.lacs_condition == 'dungeons':
         stones = max(stones, world.settings.lacs_rewards - 6)
@@ -139,13 +176,13 @@ def stones_required_by_settings(world):
 
 def medallions_required_by_settings(world):
     medallions = 0
-    if world.settings.bridge == 'medallions':
+    if world.settings.bridge == 'medallions' and not world.shuffle_special_dungeon_entrances:
         medallions = max(medallions, world.settings.bridge_medallions)
     if world.settings.shuffle_ganon_bosskey == 'on_lacs' and world.settings.lacs_condition == 'medallions':
         medallions = max(medallions, world.settings.lacs_medallions)
     if world.settings.shuffle_ganon_bosskey == 'medallions':
         medallions = max(medallions, world.settings.ganon_bosskey_medallions)
-    if world.settings.bridge == 'dungeons':
+    if world.settings.bridge == 'dungeons' and not world.shuffle_special_dungeon_entrances:
         medallions = max(medallions, max(world.settings.bridge_rewards - 3, 0))
     if world.settings.shuffle_ganon_bosskey == 'on_lacs' and world.settings.lacs_condition == 'dungeons':
         medallions = max(medallions, max(world.settings.lacs_rewards - 3, 0))
@@ -157,7 +194,7 @@ def medallions_required_by_settings(world):
 
 def tokens_required_by_settings(world):
     tokens = 0
-    if world.settings.bridge == 'tokens':
+    if world.settings.bridge == 'tokens' and not world.shuffle_special_dungeon_entrances:
         tokens = max(tokens, world.settings.bridge_tokens)
     if world.settings.shuffle_ganon_bosskey == 'on_lacs' and world.settings.lacs_condition == 'tokens':
         tokens = max(tokens, world.settings.lacs_tokens)
@@ -180,6 +217,16 @@ conditional_always = {
     'Kak 50 Gold Skulltula Reward': lambda world: tokens_required_by_settings(world) < 50,
 }
 
+# Entrance hints required under certain settings
+conditional_entrance_always = {
+    'Ganons Castle Grounds -> Ganons Castle Lobby': lambda world: (world.settings.bridge != 'open'
+        and (world.settings.bridge != 'stones' or world.settings.bridge_stones > 1)
+        and (world.settings.bridge != 'medallions' or world.settings.bridge_medallions > 1)
+        and (world.settings.bridge != 'dungeons' or world.settings.bridge_rewards > 2)
+        and (world.settings.bridge != 'tokens' or world.settings.bridge_tokens > 20)
+        and (world.settings.bridge != 'hearts' or world.settings.bridge_hearts > world.settings.starting_hearts + 1)),
+}
+
 # Dual hints required under certain settings
 conditional_dual_always = {
     'HF Ocarina of Time Retrieval': lambda world: stones_required_by_settings(world) < 2,
@@ -187,7 +234,7 @@ conditional_dual_always = {
     'ZR Frogs Rewards':             lambda world: not world.settings.shuffle_frog_song_rupees,
 }
 
-# Some sometimes and dual hints should only be enabled under certain settings
+# Some sometimes, dual, and entrance hints should only be enabled under certain settings
 conditional_sometimes = {
     # Conditionnal sometimes hints
     'HC Great Fairy Reward':                    lambda world: world.settings.shuffle_interior_entrances == 'off',
@@ -202,6 +249,12 @@ conditional_sometimes = {
     'Spirit Temple Child Lower':                lambda world: world.settings.tokensanity not in ['dungeon', 'all'],
     'Spirit Temple Adult Lower':                lambda world: world.settings.tokensanity not in ['dungeon', 'all'],
     'Shadow Temple Invisible Blades Chests':    lambda world: world.settings.tokensanity not in ['dungeon', 'all'],
+
+    # Conditional entrance hints
+    'Ganons Castle Grounds -> Ganons Castle Lobby': lambda world: (world.settings.bridge != 'open'
+        and (world.settings.bridge != 'dungeons' or world.settings.bridge_rewards > 1)
+        and (world.settings.bridge != 'tokens' or world.settings.bridge_tokens > 10)
+        and (world.settings.bridge != 'hearts' or world.settings.bridge_hearts > world.settings.starting_hearts)),
 }
 
 # Table of hints, format is (name, hint text, clear hint text, type of hint) there are special characters that are read for certain in game commands:
@@ -471,7 +524,7 @@ hintTable = {
     'HF Ocarina of Time Retrieval':                                ("during her escape, #Princess Zelda# entrusted you with both...^", None, 'dual'),
     'HF Valley Grotto':                                            ("in a grotto full of #spider webs# a cow and a spider hold respectively...^", None, 'dual'),
     'Market Bombchu Bowling Rewards':                              ("at the #Bombchu Bowling Alley#, the first and second prizes are...^", None, 'dual'),
-    'ZR Frogs Rewards':                                            ("the #Frogs of Zora River#, for giving them rain and a great performance, will reward you with...", None, 'dual'),
+    'ZR Frogs Rewards':                                            ("the #Frogs of Zora River#, for giving them rain and a great performance, will reward you with...^", None, 'dual'),
     'LH Lake Lab Pool':                                            ("inside a #lakeside lab# a person and a spider hold respectively...^", None, 'dual'),
     'LH Adult Bean Destination Checks':                            ("#riding the bean platform# of the lake to the lab's roof and the fishing hole leads to...^", None, 'dual'),
     'GV Pieces of Heart Ledges':                                   ("within the #valley#, the crate and waterfall conceal respectively...^", None, 'dual'),
@@ -1221,6 +1274,8 @@ hintTable = {
     'Zoras Fountain -> Jabu Jabus Belly Beginning':             ("inside #Jabu Jabu#, one can find", None, 'entrance'),
     'Kakariko Village -> Bottom of the Well':                   ("a #village well# leads to", None, 'entrance'),
 
+    'Ganons Castle Grounds -> Ganons Castle Lobby':             ("the #rainbow bridge# leads to", None, 'entrance'),
+
     'KF Links House':                                           ("Link's House", None, 'region'),
     'Temple of Time':                                           ("the #Temple of Time#", None, 'region'),
     'KF Midos House':                                           ("Mido's house", None, 'region'),
@@ -1569,7 +1624,6 @@ hintTable = {
     'Adult Altar Text End':                                     ("Together with the Hero of Time,&the awakened ones will bind the&evil and return the light of peace&to the world...", None, 'altar'),
 
     'Validation Line':                                          ("Hmph... Since you made it this far,&I'll let you know what glorious&prize of Ganon's you likely&missed out on in my tower.^Behold...^", None, 'validation line'),
-    'Light Arrow Location':                                     ("Ha ha ha... You'll never beat me by&reflecting my lightning bolts&and unleashing the arrows from&", None, 'Light Arrow Location'),
     '2001':                                                     ("Oh! It's @.&I was expecting someone called&Sheik. Do you know what&happened to them?", None, 'ganonLine'),
     '2002':                                                     ("I knew I shouldn't have put the key&on the other side of my door.", None, 'ganonLine'),
     '2003':                                                     ("Looks like it's time for a&round of tennis.", None, 'ganonLine'),
@@ -1618,7 +1672,6 @@ multiTable = {
     'Spirit Temple MQ Child Top':                               ['Spirit Temple MQ Sun Block Room Chest', 'Spirit Temple MQ GS Sun Block Room'],
     'Spirit Temple MQ Symphony Room':                           ['Spirit Temple MQ Symphony Room Chest', 'Spirit Temple MQ GS Symphony Room'],
     'Spirit Temple MQ Throne Room GS':                          ['Spirit Temple MQ GS Nine Thrones Room West', 'Spirit Temple MQ GS Nine Thrones Room North'],
-    'Shadow Temple Upper Checks':                               ['Shadow Temple Map Chest', 'Shadow Temple Hover Boots Chest'],
     'Shadow Temple Invisible Blades Chests':                    ['Shadow Temple Invisible Blades Visible Chest', 'Shadow Temple Invisible Blades Invisible Chest'],
     'Shadow Temple Single Pot Room':                            ['Shadow Temple Freestanding Key', 'Shadow Temple GS Single Giant Pot'],
     'Shadow Temple Spike Walls Room':                           ['Shadow Temple Spike Walls Left Chest', 'Shadow Temple Boss Key Chest'],
@@ -1632,6 +1685,31 @@ multiTable = {
     'Ice Cavern Final Room':                                    ['Ice Cavern Iron Boots Chest', 'Sheik in Ice Cavern'],
     'Ice Cavern MQ Final Room':                                 ['Ice Cavern MQ Iron Boots Chest', 'Sheik in Ice Cavern'],
     'Ganons Castle Spirit Trial Chests':                        ['Ganons Castle Spirit Trial Crystal Switch Chest', 'Ganons Castle Spirit Trial Invisible Chest'],
+}
+
+misc_item_hint_table = {
+    'dampe_diary': {
+        'id': 0x5003,
+        'hint_location': 'Dampe Diary Hint',
+        'default_item': 'Progressive Hookshot',
+        'default_item_text': "Whoever reads this, please enter {area}. I will let you have my stretching, shrinking keepsake.^I'm waiting for you.&--Dampé",
+        'custom_item_text': "Whoever reads this, please enter {area}. I will let you have {item}.^I'm waiting for you.&--Dampé",
+        'default_item_fallback': "Whoever reads this, I'm sorry, but I seem to have #misplaced# my stretching, shrinking keepsake.&--Dampé",
+        'custom_item_fallback': "Whoever reads this, I'm sorry, but I seem to have #misplaced# {item}.&--Dampé",
+        'replace': {
+            "enter #your pocket#. I will let you have": "check #your pocket#. You will find",
+        },
+    },
+    'ganondorf': {
+        'id': 0x70CC,
+        'hint_location': 'Ganondorf Hint',
+        'default_item': 'Light Arrows',
+        'default_item_text': "Ha ha ha... You'll never beat me by reflecting my lightning bolts and unleashing the arrows from {area}!",
+        'custom_item_text': "Ha ha ha... You'll never find {item} from {area}!",
+        'replace': {
+            "from #Ganon's Castle#": "from #my castle#",
+        },
+    },
 }
 
 # Separate table for goal names to avoid duplicates in the hint table.

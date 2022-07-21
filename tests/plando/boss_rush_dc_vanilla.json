@@ -1,7 +1,7 @@
 {
   "settings":                  {
   "spawn_positions":                         true,
-  "shuffle_dungeon_entrances":               true,
+  "shuffle_dungeon_entrances":               "simple",
   "open_forest":                             "open",
   "mq_dungeons_mode":                        "vanilla",
   "dungeon_shortcuts_choice":                "choice",

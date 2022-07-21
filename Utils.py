@@ -54,7 +54,7 @@ def default_output_path(path):
     return path
 
 
-def read_json(file_path):
+def read_logic_file(file_path):
     json_string = ""
     with io.open(file_path, 'r') as file:
         for line in file.readlines():

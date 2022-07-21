@@ -748,7 +748,10 @@
         }
     },
     {
-        "region_name": "Graveyard Dampes House"
+        "region_name": "Graveyard Dampes House",
+        "locations": {
+            "Dampe Diary Hint": "is_adult"
+        }
     },
     {
         "region_name": "Graveyard Warp Pad Region",

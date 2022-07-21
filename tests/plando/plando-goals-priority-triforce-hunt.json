@@ -47,7 +47,7 @@
     "shuffle_medigoron_carpet_salesman":       false,
     "shuffle_interior_entrances":              "off",
     "shuffle_grotto_entrances":                false,
-    "shuffle_dungeon_entrances":               false,
+    "shuffle_dungeon_entrances":               "off",
     "shuffle_overworld_entrances":             false,
     "owl_drops":                               false,
     "warp_songs":                              false,

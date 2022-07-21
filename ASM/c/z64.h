@@ -1108,23 +1108,25 @@ typedef struct
   int8_t           room_index;             /* 0x11CBC */
   char             unk_16_[0x000B];        /* 0x11CBD */
   void            *room_ptr;               /* 0x11CC8 */
-  char             unk_17_[0x0118];        /* 0x11CCC */
+  char             unk_17_[0x00D4];        /* 0x11CCC */
+  float            mf_11DA0[4][4];         /* 0x11DA0 */
+  char             unk_18_[0x0004];        /* 0x11DE0 */
   uint32_t         gameplay_frames;        /* 0x11DE4 */
   uint8_t          link_age;               /* 0x11DE8 */
-  char             unk_18_;                /* 0x11DE9 */
+  char             unk_19_;                /* 0x11DE9 */
   uint8_t          spawn_index;            /* 0x11DEA */
   uint8_t          n_map_actors;           /* 0x11DEB */
   uint8_t          n_rooms;                /* 0x11DEC */
-  char             unk_19_[0x000B];        /* 0x11DED */
+  char             unk_20_[0x000B];        /* 0x11DED */
   void            *map_actor_list;         /* 0x11DF8 */
-  char             unk_20_[0x0008];        /* 0x11DFC */
+  char             unk_21_[0x0008];        /* 0x11DFC */
   void            *scene_exit_list;        /* 0x11E04 */
-  char             unk_21_[0x000C];        /* 0x11E08 */
+  char             unk_22_[0x000C];        /* 0x11E08 */
   uint8_t          skybox_type;            /* 0x11E14 */
   int8_t           scene_load_flag;        /* 0x11E15 */
-  char             unk_22_[0x0004];        /* 0x11E16 */
+  char             unk_23_[0x0004];        /* 0x11E16 */
   int16_t          entrance_index;         /* 0x11E1A */
-  char             unk_23_[0x0042];        /* 0x11E1C */
+  char             unk_24_[0x0042];        /* 0x11E1C */
   uint8_t          fadeout_transition;     /* 0x11E5E */
                                            /* 0x11E5F */
 } z64_game_t;

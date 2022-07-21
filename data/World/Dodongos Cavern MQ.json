@@ -33,7 +33,9 @@
         "dungeon": "Dodongos Cavern",
         "locations": {
             "Dodongos Cavern MQ GS Song of Time Block Room": "
-                can_play(Song_of_Time) and (can_child_attack or is_adult)"
+                can_play(Song_of_Time) and (can_child_attack or is_adult)",
+            "Deku Baba Sticks": "is_adult or Kokiri_Sword or can_use(Boomerang)",
+            "Dodongos Cavern MQ Deku Scrub Staircase": "can_stun_deku"
         },
         "exits": {
             # Two routes available to get to upper level checks:
@@ -46,39 +48,44 @@
             # are accessible as explosives can break crates. If hammer was used, the
             # staircase can't be lowered, but the boulders can be broken. The boulders
             # are permanent even though the staircase is not, so child gets access once
-            # adult opens the way.
-            "Dodongos Cavern Upper Level": "here(can_bonk_crate and (is_adult or can_child_attack or Nuts))",
-            # Other exits are not affected by one bonk ko
+            # adult opens the way. Dins Fire can be used as either age to blow up the
+            # boulders with the bomb flower behind them.
+            "Dodongos Cavern Upper Level": "
+                here(can_bonk_crate and (is_adult or can_child_attack or Nuts)) or can_use(Dins_Fire)",
+            # Lower Right Side can be opened using the bomb flower at the top of the
+            # elevator if explosives/hammer are not available to break the wall normally.
+            # Din's Fire allows getting to the flower through the boulders, while the
+            # stick route goes through the staircase room to get to the other side of
+            # the boulders.
             "Dodongos Cavern Lower Right Side": "
-                here((can_use(Sticks) or can_use(Dins_Fire)) and
+                here(((can_use(Sticks) and can_bonk_crate) or can_use(Dins_Fire)) and
                     Progressive_Strength_Upgrade and can_take_damage)",
             "Dodongos Cavern Bomb Bag Area": "
                 (at('Dodongos Cavern Bomb Bag Area', is_adult) and has_explosives) or
                 (logic_dc_mq_child_bombs and (Kokiri_Sword or Sticks) and can_take_damage)",
+            # Opening the dino mouth without explosives requires access to the bomb
+            # flower behind the boulder near the top of the elevator. Din's Fire and hammer
+            # break through the boulders, while the other items go through the staircase
+            # room and either the upper Lizalfos fight or adult alternatives to skip the fight.
             "Dodongos Cavern Before Boss": "
                 has_explosives or
                 (Progressive_Strength_Upgrade and
                     here((logic_dc_mq_eyes_adult and is_adult) or (logic_dc_mq_eyes_child and is_child)) and
-                    here(can_use(Sticks) or can_use(Dins_Fire) or
-                        (is_adult and (logic_dc_jump or Megaton_Hammer or Hover_Boots or Hookshot))))"
+                    here((can_use(Sticks) and can_bonk_crate) or can_use(Dins_Fire) or
+                        (is_adult and (Megaton_Hammer or (can_bonk_crate and (logic_dc_jump or Hover_Boots or Hookshot))))))"
         }
     },
     {
         "region_name": "Dodongos Cavern Upper Level",
         "dungeon": "Dodongos Cavern",
         "locations": {
-            "Deku Baba Sticks": "is_adult or Kokiri_Sword or can_use(Boomerang)",
-            "Dodongos Cavern MQ Compass Chest": "is_adult or can_child_attack or Nuts",
+            "Dodongos Cavern MQ Compass Chest": "True",
             "Dodongos Cavern MQ Larvae Room Chest": "can_use(Sticks) or has_fire_source",
             "Dodongos Cavern MQ Torch Puzzle Room Chest": "
                 can_blast_or_smash or can_use(Sticks) or can_use(Dins_Fire) or
                 (is_adult and (logic_dc_jump or Hover_Boots or Progressive_Hookshot))",
             "Dodongos Cavern MQ GS Larvae Room": "can_use(Sticks) or has_fire_source",
-            "Dodongos Cavern MQ GS Lizalfos Room": "can_blast_or_smash",
-            "Dodongos Cavern MQ Deku Scrub Staircase": "can_stun_deku"
-        },
-        "exits": {
-            "Dodongos Cavern Elevator": "True"
+            "Dodongos Cavern MQ GS Lizalfos Room": "can_blast_or_smash"
         }
     },
     {

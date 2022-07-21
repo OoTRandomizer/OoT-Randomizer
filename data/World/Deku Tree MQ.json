@@ -7,7 +7,9 @@
             "Deku Tree MQ Slingshot Chest": "is_adult or can_child_attack",
             "Deku Tree MQ Slingshot Room Back Chest": "has_fire_source_with_torch or can_use(Bow)",
             "Deku Tree MQ Basement Chest": "has_fire_source_with_torch or can_use(Bow)",
-            "Deku Tree MQ GS Lobby": "is_adult or can_child_attack",
+            "Deku Tree MQ GS Lobby": "
+                is_adult or (Sticks or Kokiri_Sword or has_explosives or can_use(Dins_Fire) or
+                ((Slingshot or Boomerang) and can_bonk_crate))",
             "Deku Baba Sticks": "is_adult or Kokiri_Sword or Boomerang",
             "Deku Baba Nuts": "
                 is_adult or Slingshot or Sticks or 

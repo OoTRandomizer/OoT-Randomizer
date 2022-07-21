@@ -1,7 +1,6 @@
-import collections
 import logging
+from ItemPool import song_list
 from Location import DisableType
-from SaveContext import SaveContext
 from Search import Search
 from State import State
 
@@ -19,8 +18,8 @@ def set_rules(world):
         if world.settings.shuffle_song_items == 'song':
             if location.type == 'Song':
                 # allow junk items, but songs must still have matching world
-                add_item_rule(location, lambda location, item: 
-                    ((location.world.distribution.song_as_items or world.settings.starting_songs)
+                add_item_rule(location, lambda location, item:
+                    ((location.world.distribution.song_as_items or any(name in song_list and record.count for name, record in world.settings.starting_items.items()))
                         and item.type != 'Song')
                     or (item.type == 'Song' and item.world.id == location.world.id))
             else:

@@ -70,8 +70,7 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
         itempool.extend(songitempool)
         songitempool = []
 
-    # add unrestricted dungeon items to main item pool
-    itempool.extend([item for world in worlds for item in world.get_unrestricted_dungeon_items()])
+    # Unrestricted dungeon items are already in main item pool
     dungeon_items = [item for world in worlds for item in world.get_restricted_dungeon_items()]
 
     random.shuffle(itempool) # randomize item placement order. this ordering can greatly affect the location accessibility bias

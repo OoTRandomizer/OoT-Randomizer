@@ -11,7 +11,7 @@ from Rom import Rom
 from Spoiler import Spoiler
 from LocationList import business_scrubs
 from Hints import writeGossipStoneHints, buildAltarHints, \
-        buildGanonText, getSimpleHintNoPrefix
+        buildGanonText, buildMiscItemHints, getSimpleHintNoPrefix
 from Utils import data_path
 from Messages import read_messages, update_message_by_id, read_shop_items, update_warp_song_text, \
         write_shop_items, remove_unused_messages, make_player_message, \
@@ -21,7 +21,7 @@ from OcarinaSongs import replace_songs
 from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
 from SaveContext import SaveContext, Scenes, FlagType
 from version import __version__
-import StartingItems
+from ItemPool import song_list
 
 
 def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
@@ -54,7 +54,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     # Load Triforce model into a file
     triforce_obj_file = File({ 'Name': 'object_gi_triforce' })
     triforce_obj_file.copy(rom)
-    with open(data_path('triforce.bin'), 'rb') as stream:
+    with open(data_path('Triforce.zobj'), 'rb') as stream:
         obj_data = stream.read()
         rom.write_bytes(triforce_obj_file.start, obj_data)
         triforce_obj_file.end = triforce_obj_file.start + len(obj_data)
@@ -78,6 +78,17 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     update_dmadata(rom, dd_obj_file)
     # Add it to the extended object table
     add_to_extended_object_table(rom, 0x194, dd_obj_file)
+
+    # Load Key Ring model into a file
+    keyring_obj_file = File({ 'Name': 'object_gi_keyring' })
+    keyring_obj_file.copy(rom)
+    with open(data_path('KeyRing.zobj'), 'rb') as stream:
+        obj_data = stream.read()
+        rom.write_bytes(keyring_obj_file.start, obj_data)
+        keyring_obj_file.end = keyring_obj_file.start + len(obj_data)
+    update_dmadata(rom, keyring_obj_file)
+    # Add it to the extended object table
+    add_to_extended_object_table(rom, 0x195, keyring_obj_file)
 
     # Apply chest texture diffs to vanilla wooden chest texture for Chest Texture Matches Content setting
     # new texture, vanilla texture, num bytes
@@ -103,6 +114,9 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     # Create an option so that recovery hearts no longer drop by changing the code which checks Link's health when an item is spawned.
     if world.settings.no_collectible_hearts:
         rom.write_byte(0xA895B7, 0x2E)
+    # Remove color commands inside certain object display lists
+    rom.write_int32s(0x1455818, [0x00000000, 0x00000000, 0x00000000, 0x00000000]) # Small Key
+    rom.write_int32s(0x14B9F20, [0x00000000, 0x00000000, 0x00000000, 0x00000000]) # Boss Key
 
     # Force language to be English in the event a Japanese rom was submitted
     rom.write_byte(0x3E, 0x45)
@@ -244,7 +258,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     # songs as items flag
     songs_as_items = world.settings.shuffle_song_items != 'song' or \
                      world.distribution.song_as_items or \
-                     world.settings.starting_songs
+                     any(name in song_list and record.count for name, record in world.settings.starting_items.items())
 
     if songs_as_items:
         rom.write_byte(rom.sym('SONGS_AS_ITEMS'), 1)
@@ -993,7 +1007,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         rom.write_int16(0xACAA2E, 0x0138) # 1st Impa escort
         rom.write_int16(0xD12D6E, 0x0138) # 2nd+ Impa escort
 
-    if world.settings.shuffle_dungeon_entrances:
+    if world.shuffle_dungeon_entrances:
         rom.write_byte(rom.sym('DUNGEONS_SHUFFLED'), 1)
 
         # Connect lake hylia fill exit to revisit exit
@@ -1016,7 +1030,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         rom.write_byte(0x021862E3, 0xC2)
 
     if (
-            world.settings.shuffle_overworld_entrances or world.settings.shuffle_dungeon_entrances
+            world.settings.shuffle_overworld_entrances or world.shuffle_dungeon_entrances
             or (world.settings.shuffle_bosses != 'off')
     ):
         # Remove deku sprout and drop player at SFM after forest completion
@@ -1585,6 +1599,9 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     if 'ganondorf' in world.settings.misc_hints:
         buildGanonText(world, messages)
 
+    # build misc. item hints
+    buildMiscItemHints(world, messages)
+
     # Write item overrides
     override_table = get_override_table(world)
     rom.write_bytes(rom.sym('cfg_item_overrides'), get_override_table_bytes(override_table))
@@ -1617,8 +1634,18 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     if world.settings.damage_multiplier == 'ohko':
         rom.write_byte(rom.sym('CFG_DAMAGE_MULTIPLYER'), 3)
 
-    if world.settings.deadly_bonks:
+    if world.settings.deadly_bonks != 'none':
         rom.write_int32(rom.sym('CFG_DEADLY_BONKS'), 1)
+        if world.settings.deadly_bonks == 'half':
+            rom.write_int16(rom.sym('CFG_BONK_DAMAGE'), 0x0004)
+        if world.settings.deadly_bonks == 'normal':
+            rom.write_int16(rom.sym('CFG_BONK_DAMAGE'), 0x0008)
+        if world.settings.deadly_bonks == 'double':
+            rom.write_int16(rom.sym('CFG_BONK_DAMAGE'), 0x0010)
+        if world.settings.deadly_bonks == 'quadruple':
+            rom.write_int16(rom.sym('CFG_BONK_DAMAGE'), 0x0020)
+        if world.settings.deadly_bonks == 'ohko':
+            rom.write_int16(rom.sym('CFG_BONK_DAMAGE'), 0xFFFE)
 
     # Patch songs and boss rewards
     for location in world.get_filled_locations():

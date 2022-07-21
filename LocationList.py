@@ -888,6 +888,7 @@ location_table = OrderedDict([
     ("DMT Storms Grotto Gossip Stone",                               ("HintStone",    None,  None, None,                        None,                                    None)),
     ("DMC Upper Grotto Gossip Stone",                                ("HintStone",    None,  None, None,                        None,                                    None)),
 
+    ("Dampe Diary Hint",                                             ("Hint",         None,  None, None,                        None,                                    None)),
     ("Ganondorf Hint",                                               ("Hint",         None,  None, None,                        None,                                    None)),
 ])
 

@@ -30,7 +30,7 @@
 "shuffle_cows": false,
 "shuffle_interior_entrances": "all",
 "shuffle_grotto_entrances": true,
-"shuffle_dungeon_entrances": true,
+"shuffle_dungeon_entrances": "simple",
 "shuffle_overworld_entrances": true,
 "owl_drops": true,
 "warp_songs": true,

@@ -27,11 +27,6 @@ common-key.bin
 .*.sw*
 *.wad
 
-data/Models/Adult/*.zobj
-data/Models/Adult/Pieces
-data/Models/Child/*.zobj
-data/Models/Child/Pieces
-
 tests/Output
 !tests/*.sav
 !tests/plando/*.json

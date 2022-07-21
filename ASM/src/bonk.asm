@@ -1,5 +1,8 @@
 CFG_DEADLY_BONKS:
     .word 0x00000000
+CFG_BONK_DAMAGE:
+    .halfword 0x0000
+.align 8
 
 
 BONK_LAST_FRAME:
@@ -88,11 +91,29 @@ APPLY_BONK_DAMAGE:
     lh      t3, 0x13C8(t8)   ; Nayru's Love Timer, range 0 - 1200
     bnez    t3, @@return_bonk
     nop
+    lh      t3, CFG_BONK_DAMAGE
+    bltz    t3, @@bonks_kill
+    lh      t4, 0x30(t8)     ; Player Health
+    lbu     t7, 0x3D(t8)     ; check if player has double defense
+    beq     t7, zero, @@normal_defense
+    nop
+    sra     t3, t3, 1        ; halve damage from bonk
+    sll     t3, t3, 0x10
+    sra     t3, t3, 0x10
+    
+@@normal_defense:
+    sub     t4, t4, t3
+    sh      t4, 0x30(t8)
+    b       @@return_bonk
+    nop
+
+@@bonks_kill:
     sh      $zero, 0x30(t8)  ; Player Health
 
 @@return_bonk:
     jr      ra
     nop
+
 
 KING_DODONGO_BONKS:
     ; displaced code

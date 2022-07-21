@@ -200,7 +200,7 @@ void draw_dungeon_info(z64_disp_buf_t *db) {
                 if (current_keys < 0) current_keys = 0;
                 if (current_keys > 9) current_keys = 9;
 
-                int8_t total_keys = z64_file.scene_flags[d->index].unk_00_;
+                int8_t total_keys = z64_file.scene_flags[d->index].unk_00_ >> 0x10;
                 if (total_keys < 0) total_keys = 0;
                 if (total_keys > 9) total_keys = 9;
 

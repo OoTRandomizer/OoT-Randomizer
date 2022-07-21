@@ -1,6 +1,6 @@
 {
   "settings":                  {
     "shuffle_bosses":                          "limited",
-    "shuffle_dungeon_entrances":               true
+    "shuffle_dungeon_entrances":               "simple"
   }
 }

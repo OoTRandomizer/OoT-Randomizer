@@ -6,12 +6,13 @@
             "Fire Temple MQ Map Room Side Chest": "
                 is_adult or Kokiri_Sword or Sticks or Slingshot or Bombs or can_use(Dins_Fire)",
             "Fire Temple MQ Near Boss Chest": "
-                (logic_fewer_tunic_requirements or can_use(Goron_Tunic)) and
-                (((can_use(Hover_Boots) or (logic_fire_mq_near_boss and can_use(Bow))) and has_fire_source) or 
-                    (can_use(Hookshot) and (can_use(Fire_Arrows) or
-                        (can_use(Dins_Fire) and 
-                            ((damage_multiplier != 'ohko' and damage_multiplier != 'quadruple') or
-                                can_use(Goron_Tunic) or can_use(Bow) or can_use(Longshot))))))"
+                is_adult and (logic_fewer_tunic_requirements or can_use(Goron_Tunic)) and
+                ((logic_fire_mq_near_boss and has_fire_source and can_use(Bow)) or
+                    ((can_use(Hover_Boots) or can_use(Hookshot)) and
+                        ((can_use(Fire_Arrows) and can_bonk_heated_crate) or
+                            (can_use(Dins_Fire) and
+                                ((damage_multiplier != 'ohko' and damage_multiplier != 'quadruple') or
+                                can_use(Goron_Tunic) or can_use(Hover_Boots) or can_use(Bow) or can_use(Longshot))))))"
         },
         "exits": {
             "DMC Fire Temple Entrance": "True",

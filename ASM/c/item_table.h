@@ -19,7 +19,7 @@ typedef struct {
     uint16_t    text_id;
 
     uint16_t    object_id;
-    int8_t      graphic_id;
+    uint8_t     graphic_id;
     uint8_t     chest_type;
 
     upgrade_fn  upgrade;

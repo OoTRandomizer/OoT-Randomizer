@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from Hints import HintDistFiles
 from SettingsList import setting_infos, setting_map, get_setting_info, get_settings_from_section, get_settings_from_tab
-from Utils import data_path, read_json
+from Utils import data_path
 import sys
 import json
 import copy
@@ -254,7 +254,8 @@ def CreateJSON(path, web_version=False):
             settingOutputJson['cosmeticsArray'].append(tabJsonArr)
     
     for d in HintDistFiles():
-        dist = read_json(d)
+        with open(d, 'r') as dist_file:
+            dist = json.load(dist_file)
         if ('distribution' in dist and
            'goal' in dist['distribution'] and
            (dist['distribution']['goal']['fixed'] != 0 or

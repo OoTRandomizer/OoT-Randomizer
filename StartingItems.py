@@ -1,25 +1,21 @@
 from collections import namedtuple
 from itertools import chain
-import math
 
-    
-_Entry = namedtuple("_Entry", ['settingname', 'itemname', 'available', 'guitext', 'special', 'ammo'])
+
+_Entry = namedtuple("_Entry", ['settingname', 'itemname', 'available', 'guitext', 'special', 'ammo', 'i'])
 def _entry(settingname, itemname=None, available=1, guitext=None, special=False, ammo=None):
     if itemname is None:
         itemname = settingname.capitalize()
     if guitext is None:
         guitext = itemname
-    if available == 1:
-        return [(settingname, _Entry(settingname, itemname, available, guitext, special, ammo))]
-    else:
-        result = []
-        for i in range(available):
-            if i == 0:
-                name = settingname
-            else:
-                name = "{}{}".format(settingname, i+1)
-            result.append((name, _Entry(name, itemname, available, guitext, special, ammo)))
-        return result
+    result = []
+    for i in range(available):
+        if i == 0:
+            name = settingname
+        else:
+            name = "{}{}".format(settingname, i+1)
+        result.append((name, _Entry(name, itemname, available, guitext, special, ammo, i)))
+    return result
 
 # Ammo items must be declared in ItemList.py.
 inventory = dict(chain(

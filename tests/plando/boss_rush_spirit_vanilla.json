@@ -1,7 +1,7 @@
 {
   "settings":                  {
   "spawn_positions":                         true,
-  "shuffle_dungeon_entrances":               true,
+  "shuffle_dungeon_entrances":               "simple",
   "open_forest":                             "open",
   "dungeon_shortcuts_choice":                "choice",
   "dungeon_shortcuts":                       ["spirit_temple"],

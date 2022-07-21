@@ -55,7 +55,7 @@ The randomizer will ensure a glitchless path through the seed will exist, but th
 Glitchless can still mean that clever or unintuitive strategies may be required involving the use of things like Hover Boots, the Hookshot, or other items that may not have been as important in the original game.
 
 Each major dungeon will earn you a random Spiritual Stone or Medallion once completed.
-The particular dungeons where these can be found, as well as other relevant dungeon information can be viewed in the pause menu by holding the "A" button on the C-Item Menu.
+The particular dungeons where these can be found, as well as other relevant dungeon information can be viewed in the pause menu by holding the D-Pad buttons on the C-Item Menu.
 Note, however, that the unlock conditions for dungeon information are settings-dependent.
 
 As a service to the player in this very long game, many cutscenes have been greatly shortened or removed, and text is as often as possible either omitted or sped up. It is likely that someone somewhere will miss the owl's interjections; to that person, I'm sorry I guess?
@@ -110,7 +110,7 @@ do that.
   * `Chest Size Matches Content` has been replaced with `Chest Appearance Matches Content`. Unique textures are applied to chests containing major items, small keys, boss keys, skulltula tokens, and remaining items. An additional option also changes chest sizes like the previous setting.
   * New cosmetic setting `Disable Battle Music` turns off the battle music from being near enemies, allowing the background music to continue uninterrupted.
   * New setting `Plant Magic Beans` automatically plants all the Magic Beans from the start.
-  * New setting `Key Rings` which can be enabled per-dungeon to replace all of its individual Small Keys into a singular Small Key Ring containing all the small keys for that dungeon.
+  * New setting `Key Rings` which can be enabled per-dungeon to replace all of its individual Small Keys into a singular Small Key Ring containing all the small keys for that dungeon. Key Rings also have their own model.
   * Setting `Randomize Ocarina Song Notes` can now be set to either "row" of songs individually, i.e. "Frog Songs" or "Warp Songs", in additional to the "Off" and "All Songs" options.
   * MQ Dungeon settings have been replaced with `MQ Dungeons Mode` which allows finer selection of which dungeons are MQ, or how many are at random.
   * New setting `Shuffle Boss Entrances` allows boss rooms to be shuffled between dungeons. This is only available in glitchless logic.
@@ -121,10 +121,13 @@ do that.
   * New setting `Easier Fire Arrow Entry` allows you to set the amount of torches that must be lit to open Shadow Temple.
   * The pause screen info menu has been split into 3 menus, which show icons on the D-Pad indicating which direction leads to which menu. In addition, the menu now tracks the total keys you've found for a dungeon, not just how many you have remaining.
   * New setting `Invisible Chests` makes all chests in the game invisible.
-  * New setting `One Bonk KO` will instantly kill Link when he hits his head while rolling.
-  * New hint type `Dual Hint` which allows multiple locations to be hinted in the same hint.
+  * New setting `Bonks Do Damage` will deal damage to Link when bonking, including `One Bonk KO` which will instantly kill him from bonking.
+  * New hint type `Dual Hint` which allows multiple locations to be hinted in the same hint. Hint distros can also use new option `upgrade_hints` to upgrade some hints to Dual Hints.
   * New `Chaos` hint distribution which gives all hint types equal likelihood.
   * New setting `Blue Fire Arrows` gives Ice Arrows the power to melt red ice and mud walls to give them more utility.
+  * New Misc. Hint `Dampé's Diary` which reveals the location of a hookshot.
+  * New item pool setting `Ludicrous` makes it so every check will be a major item.
+  * `Shuffle Dungeon Entrances` has new setting `Dungeons and Ganon` which puts Ganon's Castle into the pool of dungeons which can be shuffled. 
 
 * **Gameplay**
   * Shortened the animation for equipping magic arrows.
@@ -183,6 +186,8 @@ do that.
 * You can now receive starting ice traps, either from Impa's item with Skip Child Zelda or with plando.
 * Plandomizer will now display an error and inform the user if they have specified conflicting settings within the plando.
 * Common ER error messages are now more helpful to solving the issue.
+* Corrected some goal hint colors.
+* Triforce Piece model has been updated so that it is shinier and centered.
 
 ### 6.2
 

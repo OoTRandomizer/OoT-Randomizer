@@ -8,13 +8,13 @@ import json
 from enum import Enum
 import itertools
 
-from HintList import getHint, getMulti, getHintGroup, hintExclusions
+from HintList import getHint, getMulti, getHintGroup, getUpgradeHintList, hintExclusions, misc_item_hint_table
 from Item import MakeEventItem
 from Messages import COLOR_MAP, update_message_by_id
 from Region import Region
 from Search import Search
 from TextBox import line_wrap
-from Utils import random_choices, data_path, read_json
+from Utils import random_choices, data_path
 
 
 bingoBottlesForHints = (
@@ -401,20 +401,23 @@ class HintArea(Enum):
             text = getHint(self.dungeon_name, clearer_hints).text
         else:
             text = str(self)
-        if '#' not in text:
-            text = f'#{text}#'
-        if world is not None:
+        prefix, suffix = text.replace('#', '').split(' ', 1)
+        if world is None:
+            if prefix == "Link's":
+                text = f"@'s {suffix}"
+        else:
             replace_prefixes = ('a', 'an', 'the')
             move_prefixes = ('outside', 'inside')
-            prefix, suffix = text.split(' ', 1)
             if prefix in replace_prefixes:
-                text = f"#world {world}'s {suffix.replace('#', '')}#"
+                text = f"world {world}'s {suffix}"
             elif prefix in move_prefixes:
-                text = f"#{prefix} world {world}'s {suffix.replace('#', '')}#"
+                text = f"{prefix} world {world}'s {suffix}"
             elif prefix == "Link's":
-                text = f"#player {world}'s {suffix.replace('#', '')}#"
+                text = f"player {world}'s {suffix}"
             else:
-                text = f"#world {world}'s {text.replace('#', '')}#"
+                text = f"world {world}'s {text}"
+        if '#' not in text:
+            text = f'#{text}#'
         if preposition and self.preposition(clearer_hints) is not None:
             text = f'{self.preposition(clearer_hints)} {text}'
         return text
@@ -465,8 +468,14 @@ def get_goal_category(spoiler, world, goal_categories):
             # Build lists for weighted choice
             if category.weight > 0:
                 zero_weights = False
-            cat_sizes.append(category.weight)
-            cat_names.append(category.name)
+            # If one hint per goal is on, only add a category for random selection if:
+            #   1. Unhinted goals exist in the category, or
+            #   2. All goals in all categories have been hinted at least once
+            if (not world.one_hint_per_goal or
+               len([goal for goal in category.goals if goal.weight > 0]) > 0 or
+               len([goal for cat in world.goal_categories.values() for goal in cat.goals if goal.weight == 0]) == len([goal for cat in world.goal_categories.values() for goal in cat.goals])):
+                cat_sizes.append(category.weight)
+                cat_names.append(category.name)
             # Depends on category order to choose next in the priority list
             # Each category is guaranteed a hint first round, then weighted based on goal count
             if not goal_category and category.name not in world.hinted_categories:
@@ -812,6 +821,25 @@ def get_specific_hint(spoiler, world, checked, type):
         return None
 
     hint = random.choice(hintGroup)
+
+    if world.hint_dist_user['upgrade_hints'] in ['on', 'limited']:
+        upgrade_list = getUpgradeHintList(world, [hint.name])
+        upgrade_list = list(filter(lambda upgrade: is_not_checked([world.get_location(location) for location in getMulti(upgrade.name).locations], checked), upgrade_list))
+
+        if upgrade_list is not None:
+            multi = None
+
+            for upgrade in upgrade_list:
+                upgrade_multi = getMulti(upgrade.name)
+
+                if not multi or len(multi.locations) < len(upgrade_multi.locations):
+                    hint = upgrade
+                    multi = getMulti(hint.name)
+
+            if multi:
+                return get_specific_multi_hint(spoiler, world, checked, hint)
+
+
     location = world.get_location(hint.name)
     checked.add(location.name)
 
@@ -841,7 +869,7 @@ def get_overworld_hint(spoiler, world, checked):
 def get_dungeon_hint(spoiler, world, checked):
     return get_specific_hint(spoiler, world, checked, 'dungeon')
 
-def get_multi_hint(spoiler, world, checked, type):
+def get_random_multi_hint(spoiler, world, checked, type):
     hint_group = getHintGroup(type, world)
     multi_hints = list(filter(lambda hint: is_not_checked([world.get_location(location) for location in getMulti(hint.name).locations], checked), hint_group))
 
@@ -849,6 +877,24 @@ def get_multi_hint(spoiler, world, checked, type):
         return None
 
     hint = random.choice(multi_hints)
+
+    if world.hint_dist_user['upgrade_hints'] in ['on', 'limited']:
+        multi = getMulti(hint.name)
+
+        upgrade_list = getUpgradeHintList(world, multi.locations)
+        upgrade_list = list(filter(lambda upgrade: is_not_checked([world.get_location(location) for location in getMulti(upgrade.name).locations], checked), upgrade_list))
+
+        if upgrade_list:
+            for upgrade in upgrade_list:
+                upgrade_multi = getMulti(upgrade.name)
+
+                if len(multi.locations) < len(upgrade_multi.locations):
+                    hint = upgrade
+                    multi = getMulti(hint.name)
+
+    return get_specific_multi_hint(spoiler, world, checked, hint)
+
+def get_specific_multi_hint(spoiler, world, checked, hint):
     multi = getMulti(hint.name)
     locations = [world.get_location(location) for location in multi.locations]
 
@@ -877,7 +923,7 @@ def get_multi_hint(spoiler, world, checked, type):
     return (GossipText(gossip_string % tuple(text_segments), colors, [location.name for location in locations], [item.name for item in items]), locations)
 
 def get_dual_hint(spoiler, world, checked):
-    return get_multi_hint(spoiler, world, checked, 'dual')
+    return get_random_multi_hint(spoiler, world, checked, 'dual')
 
 def get_entrance_hint(spoiler, world, checked):
     if not world.entrance_shuffle:
@@ -928,9 +974,10 @@ def get_junk_hint(spoiler, world, checked):
 
 
 hint_func = {
-    'trial':        lambda spoiler, world, checked: None,
-    'always':       lambda spoiler, world, checked: None,
-    'dual_always':  lambda spoiler, world, checked: None,
+    'trial':            lambda spoiler, world, checked: None,
+    'always':           lambda spoiler, world, checked: None,
+    'dual_always':      lambda spoiler, world, checked: None,
+    'entrance_always':  lambda spoiler, world, checked: None,
     'woth':             get_woth_hint,
     'goal':             get_goal_hint,
     'barren':           get_barren_hint,
@@ -950,6 +997,7 @@ hint_dist_keys = {
     'trial',
     'always',
     'dual_always',
+    'entrance_always',
     'woth',
     'goal',
     'barren',
@@ -978,13 +1026,15 @@ def buildBingoHintList(boardURL):
     except (URLError, HTTPError) as e:
         logger = logging.getLogger('')
         logger.info(f"Could not retrieve board info. Using default bingo hints instead: {e}")
-        genericBingo = read_json(data_path('Bingo/generic_bingo_hints.json'))
+        with open(data_path('Bingo/generic_bingo_hints.json'), 'r') as bingoFile:
+            genericBingo = json.load(bingoFile)
         return genericBingo['settings']['item_hints']
 
     # Goal list returned from Bingosync is a sequential list of all of the goals on the bingo board, starting at top-left and moving to the right.
     # Each goal is a dictionary with attributes for name, slot, and colours. The only one we use is the name
     goalList = [goal['name'] for goal in json.loads(goalList)]
-    goalHintRequirements = read_json(data_path('Bingo/bingo_goals.json'))
+    with open(data_path('Bingo/bingo_goals.json'), 'r') as bingoFile:
+        goalHintRequirements = json.load(bingoFile)
 
     hintsToAdd = {}
     for goal in goalList:
@@ -1020,16 +1070,14 @@ def alwaysNamedItem(world, locations):
 
 def buildGossipHints(spoiler, worlds):
     checkedLocations = dict()
-    # Add Light Arrow locations to "checked" locations if Ganondorf is reachable without it.
+    # Add misc. item hint locations to "checked" locations if the respective hint is reachable without the hinted item.
     for world in worlds:
-        location = world.light_arrow_location
-        if location is None:
-            continue
-        if 'ganondorf' in world.settings.misc_hints and can_reach_hint(worlds, world.get_location("Ganondorf Hint"), location):
-            light_arrow_world = location.world
-            if light_arrow_world.id not in checkedLocations:
-                checkedLocations[light_arrow_world.id] = set()
-            checkedLocations[light_arrow_world.id].add(location.name)
+        for hint_type, location in world.misc_hint_item_locations.items():
+            if hint_type in world.settings.misc_hints and can_reach_hint(worlds, world.get_location(misc_item_hint_table[hint_type]['hint_location']), location):
+                item_world = location.world
+                if item_world.id not in checkedLocations:
+                    checkedLocations[item_world.id] = set()
+                checkedLocations[item_world.id].add(location.name)
 
     # Build all the hints.
     for world in worlds:
@@ -1095,7 +1143,8 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
     # Create list of items for which we want hints. If Bingosync URL is supplied, include items specific to that bingo.
     # If not (or if the URL is invalid), use generic bingo hints
     if world.settings.hint_dist == "bingo":
-        bingoDefaults = read_json(data_path('Bingo/generic_bingo_hints.json'))
+        with open(data_path('Bingo/generic_bingo_hints.json'), 'r') as bingoFile:
+            bingoDefaults = json.load(bingoFile)
         if world.bingosync_url is not None and world.bingosync_url.startswith("https://bingosync.com/"): # Verify that user actually entered a bingosync URL
             logger = logging.getLogger('')
             logger.info("Got Bingosync URL. Building board-specific goals.")
@@ -1108,7 +1157,7 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
 
         if world.settings.shopsanity != "off" and "Progressive Wallet" not in world.item_hints:
             world.item_hints.append("Progressive Wallet")
-                
+
 
     #Removes items from item_hints list if they are included in starting gear.
     #This method ensures that the right number of copies are removed, e.g.
@@ -1128,7 +1177,7 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
             world.hint_dist_user['distribution']['always']['copies'] = 1
             world.hint_dist_user['distribution']['trial']['copies'] = 1
 
-            
+
     # Load hint distro from distribution file or pre-defined settings
     #
     # 'fixed' key is used to mimic the tournament distribution, creating a list of fixed hint types to fill
@@ -1205,6 +1254,28 @@ def buildWorldGossipHints(spoiler, world, checkedLocations=None):
             item_text = getHint(getItemGenericName(location.item), world.settings.clearer_hints).text
             add_hint(spoiler, world, stoneGroups, GossipText('%s #%s#.' % (location_text, item_text), ['Green', 'Red'], [location.name], [location.item.name]), hint_dist['always'][1], [location], force_reachable=True)
             logging.getLogger('').debug('Placed always hint for %s.', location.name)
+
+    # Add required entrance hints, only if hint copies > 0
+    if world.entrance_shuffle and 'entrance_always' in hint_dist and hint_dist['entrance_always'][1] > 0:
+        alwaysEntrances = getHintGroup('entrance_always', world)
+        for entrance_hint in alwaysEntrances:
+            entrance = world.get_entrance(entrance_hint.name)
+            connected_region = entrance.connected_region
+            if entrance.shuffled and (connected_region.dungeon or any(hint.name == connected_region.name for hint in getHintGroup('region', world))):
+                checkedAlwaysLocations.add(entrance.name)
+
+                entrance_text = entrance_hint.text
+                if '#' not in entrance_text:
+                    entrance_text = '#%s#' % entrance_text
+
+                if connected_region.dungeon:
+                    region_text = getHint(connected_region.dungeon.name, world.settings.clearer_hints).text
+                else:
+                    region_text = getHint(connected_region.name, world.settings.clearer_hints).text
+                if '#' not in region_text:
+                    region_text = '#%s#' % region_text
+
+                add_hint(spoiler, world, stoneGroups, GossipText('%s %s.' % (entrance_text, region_text), ['Light Blue', 'Green']), hint_dist['entrance_always'][1], None, force_reachable=True)
 
     # Add trial hints, only if hint copies > 0
     if hint_dist['trial'][1] > 0:
@@ -1447,28 +1518,38 @@ def buildGanonText(world, messages):
     text = get_raw_text(ganonLines.pop().text)
     update_message_by_id(messages, 0x70CB, text)
 
-    # light arrow hint or validation chest item
-    if 'Light Arrows' in world.distribution.effective_starting_items and world.distribution.effective_starting_items['Light Arrows'].count > 0:
-        text = getHint('Light Arrow Location', world.settings.clearer_hints).text
-        text += "#your pocket#"
-    elif world.light_arrow_location:
-        text = getHint('Light Arrow Location', world.settings.clearer_hints).text
-        location = world.light_arrow_location
-        if world.id != location.world.id:
-            text += HintArea.at(location).text(world.settings.clearer_hints, world=location.world.id + 1)
-        else:
-            text += HintArea.at(location).text(world.settings.clearer_hints).replace('Ganon\'s Castle', 'my castle')
-        text += '!'
-        text = str(GossipText(text, ['Green'], prefix=''))
-    else:
-        text = get_raw_text(getHint('Validation Line', world.settings.clearer_hints).text)
-        for location in world.get_filled_locations():
-            if location.name == 'Ganons Tower Boss Key Chest':
-                text += get_raw_text(getHint(getItemGenericName(location.item), world.settings.clearer_hints).text)
-                break
-        text += '!'
 
-    update_message_by_id(messages, 0x70CC, text)
+def buildMiscItemHints(world, messages):
+    for hint_type, data in misc_item_hint_table.items():
+        if hint_type in world.settings.misc_hints:
+            item = world.misc_hint_items[hint_type]
+            if item in world.distribution.effective_starting_items and world.distribution.effective_starting_items[item].count > 0:
+                if item == data['default_item']:
+                    text = data['default_item_text'].format(area='#your pocket#')
+                else:
+                    text = data['custom_item_text'].format(area='#your pocket#', item=item)
+            elif hint_type in world.misc_hint_item_locations:
+                location = world.misc_hint_item_locations[hint_type]
+                area = HintArea.at(location).text(world.settings.clearer_hints, world=None if location.world.id == world.id else location.world.id + 1)
+                if item == data['default_item']:
+                    text = data['default_item_text'].format(area=area)
+                else:
+                    text = data['custom_item_text'].format(area=area, item=getHint(getItemGenericName(location.item), world.settings.clearer_hints).text)
+            elif 'fallback' in data:
+                if item == data['default_item']:
+                    text = data['default_item_fallback']
+                else:
+                    text = data['custom_item_fallback'].format(item=item)
+            else:
+                text = getHint('Validation Line', world.settings.clearer_hints).text
+                for location in world.get_filled_locations():
+                    if location.name == 'Ganons Tower Boss Key Chest':
+                        text += f"#{getHint(getItemGenericName(location.item), world.settings.clearer_hints).text}#"
+                        break
+            for find, replace in data.get('replace', {}).items():
+                text = text.replace(find, replace)
+
+            update_message_by_id(messages, data['id'], str(GossipText(text, ['Green'], prefix='')))
 
 
 def get_raw_text(string):
@@ -1497,7 +1578,8 @@ def HintDistFiles():
 def HintDistList():
     dists = {}
     for d in HintDistFiles():
-        dist = read_json(d)
+        with open(d, 'r') as dist_file:
+            dist = json.load(dist_file)
         dist_name = dist['name']
         gui_name = dist['gui_name']
         dists.update({ dist_name: gui_name })
@@ -1513,7 +1595,8 @@ def HintDistTips():
             tips = tips + "\n"
         else:
             first_dist = False
-        dist = read_json(d)
+        with open(d, 'r') as dist_file:
+            dist = json.load(dist_file)
         gui_name = dist['gui_name']
         desc = dist['description']
         i = 0

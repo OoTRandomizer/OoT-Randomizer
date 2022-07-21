@@ -61,9 +61,10 @@
             or (for_age == adult and (Bow or Hookshot))
             or (for_age == both and (Slingshot or Boomerang) and (Bow or Hookshot))
             or (for_age == either and (Slingshot or Boomerang or Bow or Hookshot))",
-    "can_bonk_tree": "deadly_bonks == False or Fairy or can_use(Nayrus_Love)",
-    "can_bonk_crate": "deadly_bonks == False or Fairy or can_use(Nayrus_Love) or can_blast_or_smash",
-    "can_bonk_underwater_crate": "deadly_bonks == False or Fairy or can_use(Nayrus_Love)",
+    "can_bonk_tree": "deadly_bonks != 'ohko' or Fairy or can_use(Nayrus_Love)",
+    "can_bonk_crate": "deadly_bonks != 'ohko' or Fairy or can_use(Nayrus_Love) or can_blast_or_smash",
+    "can_bonk_underwater_crate": "deadly_bonks != 'ohko' or Fairy or can_use(Nayrus_Love)",
+    "can_bonk_heated_crate": "(deadly_bonks != 'ohko' or (Fairy and (can_use(Goron_Tunic) or damage_multiplier != 'ohko')) or can_use(Nayrus_Love) or can_blast_or_smash)",
 
     # can_use and helpers
     # The parser reduces this to smallest form based on item category.

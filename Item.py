@@ -30,6 +30,7 @@ class ItemInfo(object):
         self.stone = self.special.get('stone', False)
         self.alias = self.special.get('alias', None)
         self.junk = self.special.get('junk', None)
+        self.trade = self.special.get('trade', False)
 
 
 for item_name in item_table:

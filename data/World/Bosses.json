@@ -45,11 +45,11 @@
             "Dodongos Cavern King Dodongo Heart": "
                 ((can_use(Megaton_Hammer) and logic_dc_hammer_floor) or
                     has_explosives or king_dodongo_shortcuts) and
-                (Bombs or Progressive_Strength_Upgrade) and can_jumpslash",
+                (((Bombs or Progressive_Strength_Upgrade) and can_jumpslash) or deadly_bonks)",
             "King Dodongo": "
                 ((can_use(Megaton_Hammer) and logic_dc_hammer_floor) or
                     has_explosives or king_dodongo_shortcuts) and
-                (Bombs or Progressive_Strength_Upgrade) and can_jumpslash",
+                (((Bombs or Progressive_Strength_Upgrade) and can_jumpslash) or deadly_bonks)",
             "Fairy Pot": "has_bottle"
         },
         "exits": {
@@ -188,8 +188,8 @@
         "region_name": "Ganons Castle Tower",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Tower Boss Key Chest": "True",
-            "Ganondorf Hint": "Boss_Key_Ganons_Castle",
+            "Ganons Tower Boss Key Chest": "is_adult or Kokiri_Sword",
+            "Ganondorf Hint": "(is_adult or Kokiri_Sword) and Boss_Key_Ganons_Castle",
             "Ganon": "Boss_Key_Ganons_Castle and can_use(Light_Arrows)"
         }
     }

@@ -2,6 +2,7 @@
 
 #include "get_items.h"
 #include "item_table.h"
+#include "item_draw_table.h"
 #include "util.h"
 #include "z64.h"
 
@@ -11,7 +12,7 @@
 
 typedef struct {
     uint16_t object_id;
-    int8_t graphic_id;
+    uint8_t graphic_id;
 } model_t;
 
 typedef struct {
@@ -29,7 +30,7 @@ void load_object_file(uint32_t object_id, uint8_t *buf) {
         entry = &(z64_object_table[object_id]);
     } else {
         z64_object_table_t *extended_table = (z64_object_table_t *) (&EXTENDED_OBJECT_TABLE);
-        entry = extended_table + (object_id - num_vanilla_objects) * sizeof(z64_object_table) / 8;
+        entry = &extended_table[object_id - num_vanilla_objects - 1];
     }
     uint32_t vrom_start = entry->vrom_start;
     uint32_t size = entry->vrom_end - vrom_start;
@@ -74,20 +75,18 @@ void scale_top_matrix(float scale_factor) {
 }
 
 typedef void (*pre_draw_fn)(z64_actor_t *actor, z64_game_t *game, uint32_t unknown);
-typedef void (*gi_draw_fn)(z64_game_t *game, uint32_t graphic_id_minus_1);
 typedef void (*actor_draw_fn)(z64_actor_t *actor, z64_game_t *game);
 #define pre_draw_1 ((pre_draw_fn)0x80022438)
 #define pre_draw_2 ((pre_draw_fn)0x80022554)
-#define base_draw_gi_model ((gi_draw_fn)0x800570C0)
 #define base_collectable_draw ((actor_draw_fn)0x80013268)
 
-void draw_model_low_level(int8_t graphic_id_minus_1, z64_actor_t *actor, z64_game_t *game) {
+void draw_model_low_level(uint8_t graphic_id_minus_1, z64_actor_t *actor, z64_game_t *game) {
     pre_draw_1(actor, game, 0);
     pre_draw_2(actor, game, 0);
     base_draw_gi_model(game, graphic_id_minus_1);
 }
 
-float scale_factor(int8_t graphic_id, z64_actor_t *actor, float base_scale) {
+float scale_factor(uint8_t graphic_id, z64_actor_t *actor, float base_scale) {
     if (graphic_id == 0x63) {
         // Draw skull tokens at their vanilla size
         return base_scale * 0.5;

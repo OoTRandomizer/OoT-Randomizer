@@ -428,7 +428,9 @@
             "LH Lab Dive": "
                 (Progressive_Scale, 2) or
                 (logic_lab_diving and Iron_Boots and can_use(Hookshot))",
-            "LH GS Lab Crate": "Iron_Boots and can_use(Hookshot) and can_bonk_underwater_crate"
+            "LH GS Lab Crate": "
+                Iron_Boots and can_use(Hookshot) and
+                ((not deadly_bonks) or Fairy or (can_use(Nayrus_Love) and shuffle_interior_entrances == 'off'))"
         },
         "exits": {
             "Lake Hylia": "True"
@@ -813,6 +815,16 @@
         },
         "exits": {
             "Castle Grounds": "True"
+        }
+    },
+    {
+        "region_name": "Castle Grounds From Ganons Castle",
+        "scene": "Castle Grounds",
+        "hint": "OUTSIDE_GANONS_CASTLE",
+        "exits": {
+            # the rainbow bridge cutscene trigger doesn't extend to the castle entrance
+            "Ganons Castle Grounds": "is_adult and bridge == 'open'"
+            # no exit back into the castle because the entrance places Link in midair if the bridge isn't spawned
         }
     },
     {
@@ -1270,6 +1282,9 @@
     {
         "region_name": "Graveyard Dampes House",
         "scene": "Graveyard Dampes House",
+        "locations": {
+            "Dampe Diary Hint": "is_adult"
+        },
         "exits": {
             "Graveyard": "True"
         }
@@ -1510,8 +1525,14 @@
         "hint": "DEATH_MOUNTAIN_CRATER",
         "locations": {
             "DMC Wall Freestanding PoH": "True",
-            # can_bonk_tree used here to exclude hammer usage
-            "DMC GS Crate": "is_child and can_child_attack and can_bonk_tree",
+            # OHKO and BONKO interact poorly with the heat timer.
+            # After being revived by a fairy after bonking the crate,
+            # lingering flames will kill the player in OHKO unless they
+            # immediately move to put them out. To prevent this unintended
+            # inconvenience from being required, fairies are not in logic
+            # for this crate with both OHKO and BONKO.
+            "DMC GS Crate": "
+                is_child and can_child_attack and can_bonk_heated_crate",
             "DMC Gossip Stone": "has_explosives",
             "Gossip Stone Fairy": "
                 has_explosives and can_summon_gossip_fairy_without_suns and has_bottle"

@@ -132,8 +132,7 @@
         "locations": {
             "Shadow Temple MQ After Wind Enemy Chest": "True",
             "Shadow Temple MQ After Wind Hidden Chest": "has_explosives",
-            "Shadow Temple MQ GS After Wind": "
-                has_explosives or logic_shadow_mq_after_wind_gs",
+            "Shadow Temple MQ GS After Wind": "True",
             "Nut Pot": "True"
         },
         "exits": {

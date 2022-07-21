@@ -8,7 +8,7 @@ from Item import ItemInfo, MakeEventItem
 from Location import Location
 from Region import TimeOfDay
 from State import State
-from Utils import data_path, read_json
+from Utils import data_path, read_logic_file
 
 
 escaped_items = {}
@@ -32,7 +32,7 @@ rule_aliases = {}
 nonaliases = set()
 
 def load_aliases():
-    j = read_json(data_path('LogicHelpers.json'))
+    j = read_logic_file(data_path('LogicHelpers.json'))
     for s, repl in j.items():
         if '(' in s:
             rule, args = s[:-1].split('(', 1)
