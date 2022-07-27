@@ -4246,7 +4246,7 @@ setting_infos = [
             smaller version of the fancy chest.
         ''',
         disable    = {
-            'off' : {'settings' : ['bombchus_gilded_chest_appearance'] }
+            'off' : {'settings' : ['bombchus_major_item_appearance'] }
         },
         shared         = True,
     ),
@@ -4261,13 +4261,11 @@ setting_infos = [
         shared         = True,
     ),
     Checkbutton(
-        name           = 'bombchus_gilded_chest_appearance',
-        gui_text       = 'Bombchus in Gilded Chests',
+        name           = 'bombchus_major_item_appearance',
+        gui_text       = 'Bombchus Appear as Major Items',
         gui_tooltip    = '''\
                          If enabled, bombchus will appear inside 
-                         Gilded chests instead of Wooden chests.
-
-                         Requires "Texture" to be enabled for the
+                         major item chests using the textures determined by the
                          "Chest Appearance Matches Contents" setting.
                          ''',
         gui_params={
