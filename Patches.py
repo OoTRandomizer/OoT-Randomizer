@@ -1899,7 +1899,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     SILVER_CHEST = 13
     SKULL_CHEST_SMALL = 14
     SKULL_CHEST_BIG =  15
-    if world.settings.bombchus_in_logic or world.settings.bombchus_gilded_chest_appearance:
+    if world.settings.bombchus_in_logic or world.settings.bombchus_major_item_appearance:
         bombchu_ids = [0x6A, 0x03, 0x6B]
         for i in bombchu_ids:
             item = read_rom_item(rom, i)
