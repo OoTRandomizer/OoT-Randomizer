@@ -2,10 +2,10 @@
   "settings": {
     "fix_broken_drops": true,
     "open_door_of_time": false,
-    "shuffle_dungeon_entrances": true,
-    "shuffle_interior_entrances": "simple",
     "shuffle_song_items": "any",
-    "starting_age": "child"
+    "starting_age": "child",
+    "starting_items": ["bombs", "ocarina", "slingshot"],
+    "starting_songs": ["requiem"]
   },
   "locations": {
     "Deku Tree Slingshot Chest": "Song of Time",
@@ -14,16 +14,8 @@
     "Ganons Castle Light Trial Third Left Chest": "Deku Shield",
     "Ganons Castle Light Trial First Right Chest": "Deku Shield",
     "Ganons Castle Light Trial Second Right Chest": "Deku Shield",
-    "Ganons Castle Light Trial Third Right Chest": "Deku Shield"
-  },
-  "entrances": {
-    "Ganons Castle Grounds -> OGC Great Fairy Fountain": {
-      "region": "KF Kokiri Shop",
-      "from": "Kokiri Forest"
-    },
-    "KF Outside Deku Tree -> Deku Tree Lobby": {
-      "region": "Spirit Temple Lobby",
-      "from": "Desert Colossus"
-    }
+    "Ganons Castle Light Trial Third Right Chest": "Deku Shield",
+    "Dodongos Cavern Deku Scrub Lobby": "Buy Deku Stick (1)",
+    "KF Shop Item 1": "Buy Deku Stick (1)"
   }
 }

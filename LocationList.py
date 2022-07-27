@@ -842,6 +842,7 @@ location_table = OrderedDict([
     ("Bean Plant Fairy",                                             ("Drop",         None,  None, None,                        'Fairy',                                 None)),
     ("Fairy Pond",                                                   ("Drop",         None,  None, None,                        'Fairy',                                 None)),
     ("Big Poe Kill",                                                 ("Drop",         None,  None, None,                        'Big Poe',                               None)),
+    ("Deku Shield Pot",                                              ("Drop",         None,  None, None,                        'Deku Shield Drop',                      None)),
 
     ## Hints
     # These are not actual locations, but are filler spots used for hint reachability.

@@ -86,7 +86,7 @@ def load_spoiler(json_file):
         return json.load(f)
 
 
-def generate_with_plandomizer(filename, live_copy=False):
+def generate_with_plandomizer(filename, live_copy=False, max_attempts=10):
     distribution_file = load_spoiler(os.path.join(test_dir, 'plando', filename + '.json'))
     try:
         settings = load_settings(distribution_file['settings'], seed='TESTTESTTEST', filename=filename)
@@ -103,7 +103,7 @@ def generate_with_plandomizer(filename, live_copy=False):
             'output_file': os.path.join(test_dir, 'Output', filename),
             'seed': 'TESTTESTTEST'
         })
-    spoiler = main(settings)
+    spoiler = main(settings, max_attempts=max_attempts)
     if not live_copy:
         spoiler = load_spoiler('%s_Spoiler.json' % settings.output_file)
     return distribution_file, spoiler
@@ -445,11 +445,10 @@ class TestPlandomizer(unittest.TestCase):
     def test_fix_broken_drops(self):
         # Setting off
         distribution_file, spoiler = generate_with_plandomizer("plando-fix-broken-drops-off")
-        self.assertIn('Deku Shield Pot', spoiler['locations'].values())
+        self.assertNotIn('Deku Shield Pot', spoiler['locations'].values())
 
         # No deku shield available, fail to generate
-        distribution_file, spoiler = generate_with_plandomizer("plando-fix-broken-drops-bad")
-        self.assertEqual(spoiler, None)
+        self.assertRaises(RuntimeError, lambda : generate_with_plandomizer("plando-fix-broken-drops-bad", max_attempts=1))
 
         # Deku shield available only via spirit shield pot
         distribution_file, spoiler = generate_with_plandomizer("plando-fix-broken-drops-good")
