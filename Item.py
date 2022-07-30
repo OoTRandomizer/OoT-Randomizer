@@ -138,6 +138,9 @@ class Item(object):
         if self.type in ('Drop', 'Event', 'Shop', 'DungeonReward') or not self.advancement:
             return False
 
+        if self.name.startswith('Bombchus') and self.world.settings.bombchus_major_item_appearance and self.world.settings.one_item_per_dungeon:
+            return True
+
         if self.name.startswith('Bombchus') and not self.world.settings.bombchus_in_logic:
             return False
 
