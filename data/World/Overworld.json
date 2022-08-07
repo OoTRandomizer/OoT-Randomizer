@@ -1087,11 +1087,11 @@
         "region_name": "Kak House of Skulltula",
         "scene": "Kak House of Skulltula",
         "locations": {
-            "Kak 10 Gold Skulltula Reward": "(Gold_Skulltula_Token, 10)",
-            "Kak 20 Gold Skulltula Reward": "(Gold_Skulltula_Token, 20)",
-            "Kak 30 Gold Skulltula Reward": "(Gold_Skulltula_Token, 30)",
-            "Kak 40 Gold Skulltula Reward": "(Gold_Skulltula_Token, 40)",
-            "Kak 50 Gold Skulltula Reward": "(Gold_Skulltula_Token, 50)"
+            "Kak 10 Gold Skulltula Reward": "(Golden_Skull_Token, 10)",
+            "Kak 20 Gold Skulltula Reward": "(Golden_Skull_Token, 20)",
+            "Kak 30 Gold Skulltula Reward": "(Golden_Skull_Token, 30)",
+            "Kak 40 Gold Skulltula Reward": "(Golden_Skull_Token, 40)",
+            "Kak 50 Gold Skulltula Reward": "(Golden_Skull_Token, 50)"
         },
         "exits": {
             "Kakariko Village": "True"

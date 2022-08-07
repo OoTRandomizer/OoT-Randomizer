@@ -330,7 +330,7 @@ class WorldDistribution(object):
                             self.distribution.settings.lacs_condition == 'tokens') or
                             self.distribution.settings.shuffle_ganon_bosskey == 'tokens' or self.distribution.settings.bridge == 'tokens')
                     if self.distribution.settings.tokensanity == 'all' and major_tokens:
-                        self.major_group.append('Gold Skulltula Token')
+                        self.major_group.append('Golden Skull Token')
                     major_hearts = ((self.distribution.settings.shuffle_ganon_bosskey == 'on_lacs' and
                             self.distribution.settings.lacs_condition == 'hearts') or
                             self.distribution.settings.shuffle_ganon_bosskey == 'hearts' or self.distribution.settings.bridge == 'hearts')
@@ -1281,7 +1281,7 @@ class Distribution(object):
                         # Add Token/Triforce Piece/heart reachability data
                         if goal.items[0]['name'] == 'Triforce Piece':
                             goal_text +=  ' (' + str(goal.items[0]['quantity']) + '/' + str(world.triforce_count) + ' reachable)'
-                        if goal.items[0]['name'] == 'Gold Skulltula Token':
+                        if goal.items[0]['name'] == 'Golden Skull Token':
                             goal_text +=  ' (' + str(goal.items[0]['quantity']) + '/100 reachable)'
                         if goal.items[0]['name'] == 'Piece of Heart':
                             goal_text +=  ' (' + str(goal.items[0]['quantity']) + '/68 reachable)' #TODO adjust total based on starting_hearts?

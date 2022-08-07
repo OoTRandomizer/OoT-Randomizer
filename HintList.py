@@ -434,7 +434,7 @@ hintTable = {
     'Deku Nuts (5)':                                            (["some nuts", "some flashbangs", "some scrub spit"], "Deku Nuts (5 pieces)", 'item'),
     'Deku Nuts (10)':                                           (["lots-o-nuts", "plenty of flashbangs", "plenty of scrub spit"], "Deku Nuts (10 pieces)", 'item'),
     'Deku Seeds (30)':                                          (["catapult ammo", "lots-o-seeds"], "Deku Seeds (30 pieces)", 'item'),
-    'Gold Skulltula Token':                                     (["proof of destruction", "an arachnid chip", "spider remains", "one percent of a curse"], "a Gold Skulltula Token", 'item'),
+    'Golden Skull Token':                                       (["proof of destruction", "an arachnid chip", "spider remains", "one percent of a curse"], "a Golden Skull Token", 'item'),
 
     'ZR Frogs Ocarina Game':                                       (["an #amphibian feast# yields", "the #croaking choir's magnum opus# awards", "the #froggy finale# yields"], "the final reward from the #Frogs of Zora's River# is", 'always'),
     'KF Links House Cow':                                          ("the #bovine bounty of a horseback hustle# gifts", "#Malon's obstacle course# leads to", 'always'),
@@ -1596,7 +1596,7 @@ hintTable = {
     'bridge_stones':                                            ("Spiritual Stones", None, 'bridge'),
     'bridge_medallions':                                        ("Medallions", None, 'bridge'),
     'bridge_dungeons':                                          ("Spiritual Stones and Medallions", None, 'bridge'),
-    'bridge_tokens':                                            ("Gold Skulltula Tokens", None, 'bridge'),
+    'bridge_tokens':                                            ("Golden Skull Tokens", None, 'bridge'),
     'bridge_hearts':                                            ("hearts", None, 'bridge'),
 
     'ganonBK_dungeon':                                          ("hidden somewhere #inside its castle#", None, 'ganonBossKey'),
@@ -1608,14 +1608,14 @@ hintTable = {
     'ganonBK_medallions':                                       ("Medallions", None, 'ganonBossKey'),
     'ganonBK_stones':                                           ("Spiritual Stones", None, 'ganonBossKey'),
     'ganonBK_dungeons':                                         ("Spiritual Stones and Medallions", None, 'ganonBossKey'),
-    'ganonBK_tokens':                                           ("Gold Skulltula Tokens", None, 'ganonBossKey'),
+    'ganonBK_tokens':                                           ("Golden Skull Tokens", None, 'ganonBossKey'),
     'ganonBK_hearts':                                           ("hearts", None, 'ganonBossKey'),
 
     'lacs_vanilla':                                             ("the #Shadow and Spirit Medallions#", None, 'lacs'),
     'lacs_medallions':                                          ("Medallions", None, 'lacs'),
     'lacs_stones':                                              ("Spiritual Stones", None, 'lacs'),
     'lacs_dungeons':                                            ("Spiritual Stones and Medallions", None, 'lacs'),
-    'lacs_tokens':                                              ("Gold Skulltula Tokens", None, 'lacs'),
+    'lacs_tokens':                                              ("Golden Skull Tokens", None, 'lacs'),
     'lacs_hearts':                                              ("hearts", None, 'lacs'),
 
     'Spiritual Stone Text Start':                               ("3 Spiritual Stones found in Hyrule...", None, 'altar'),

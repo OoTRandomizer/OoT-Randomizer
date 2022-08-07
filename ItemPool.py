@@ -43,7 +43,7 @@ ludicrous_health = ['Heart Container'] * 8
 # List of items that can be multiplied in ludicrous mode.
 # Used to filter the pre-plando pool for candidates instead
 # of appending directly, making this list settings-independent.
-# Excludes Gold Skulltula Tokens, Triforce Pieces, and health
+# Excludes Golden Skull Tokens, Triforce Pieces, and health
 # upgrades as they are directly tied to win conditions and
 # already have a large count relative to available locations
 # in the game.
@@ -126,7 +126,7 @@ ludicrous_items_extended = [
 
 ludicrous_exclusions = [
     'Triforce Piece',
-    'Gold Skulltula Token',
+    'Golden Skull Token',
     'Rutos Letter',
     'Heart Container',
     'Piece of Heart',
@@ -330,11 +330,11 @@ def generate_itempool(world):
     world.distribution.set_complete_itempool(world.itempool)
 
     # make sure that there are enough gold skulltulas for bridge/ganon boss key/lacs
-    world.available_tokens = placed_items_count.get("Gold Skulltula Token", 0) \
-                           + pool.count("Gold Skulltula Token") \
-                           + world.distribution.get_starting_item("Gold Skulltula Token")
-    if world.max_progressions["Gold Skulltula Token"] > world.available_tokens:
-        raise ValueError(f"Not enough available Gold Skulltula Tokens to meet requirements. Available: {world.available_tokens}, Required: {world.max_progressions['Gold Skulltula Token']}.")
+    world.available_tokens = placed_items_count.get("Golden Skull Token", 0) \
+                           + pool.count("Golden Skull Token") \
+                           + world.distribution.get_starting_item("Golden Skull Token")
+    if world.max_progressions["Golden Skull Token"] > world.available_tokens:
+        raise ValueError(f"Not enough available Golden Skull Tokens to meet requirements. Available: {world.available_tokens}, Required: {world.max_progressions['Golden Skull Token']}.")
 
 def get_pool_core(world):
     pool = []
@@ -401,8 +401,8 @@ def get_pool_core(world):
                 or location.type == 'Drop'):
             shuffle_item = False
 
-        # Gold Skulltula Tokens
-        elif location.vanilla_item == 'Gold Skulltula Token':
+        # Golden Skull Tokens
+        elif location.vanilla_item == 'Golden Skull Token':
             shuffle_item = (world.settings.tokensanity == 'all'
                             or (world.settings.tokensanity == 'dungeons' and location.dungeon)
                             or (world.settings.tokensanity == 'overworld' and not location.dungeon))

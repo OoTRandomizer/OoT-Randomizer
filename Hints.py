@@ -27,7 +27,7 @@ defaultHintDists = [
     'balanced.json', 'bingo.json', 'chaos.json', 'ddr.json', 'scrubs.json', 'strong.json', 'tournament.json', 'useless.json', 'very_strong.json', 'very_strong_magic.json', 'weekly.json'
 ]
 
-unHintableWothItems = ['Triforce Piece', 'Gold Skulltula Token']
+unHintableWothItems = ['Triforce Piece', 'Golden Skull Token']
 
 class RegionRestriction(Enum):
     NONE = 0,

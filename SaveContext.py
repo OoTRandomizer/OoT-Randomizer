@@ -1006,7 +1006,7 @@ class SaveContext():
         "Progressive Strength Upgrade" : {'upgrades.strength_upgrade' : None},
         "Progressive Scale"            : {'upgrades.diving_upgrade'   : None},
         "Progressive Wallet"           : {'upgrades.wallet'           : None},
-        "Gold Skulltula Token" : {
+        "Golden Skull Token" : {
             'quest.gold_skulltula'  : True,
             'gs_tokens'             : None,
         },

@@ -797,7 +797,7 @@ logic_tricks = {
                     With precise Hover Boots movement it is possible
                     to reach the boss key chest's region without
                     needing the Longshot. It is not necessary to take
-                    damage from the spikes. The Gold Skulltula Token
+                    damage from the spikes. The Golden Skull Token
                     in the following room can also be obtained with
                     just the Hover Boots.
                     '''},
@@ -1107,7 +1107,7 @@ logic_tricks = {
                     distance, even the Hookshot can reach the switch. This trick is
                     only relevant if "Shuffle Boss Entrances" is enabled.
 
-                    MQ Jabu: A Gold Skulltula Token can be collected with the
+                    MQ Jabu: A Golden Skull Token can be collected with the
                     Hookshot or Longshot using the same methods as hitting the switch
                     in vanilla. This trick is usually only relevant if Jabu dungeon
                     shortcuts are enabled.
@@ -2164,7 +2164,7 @@ setting_infos = [
                          - Logic Rules
                          - (Random) Number of MQ Dungeons
                          - Pre-completed dungeons
-                         - Rainbow Bridge/Ganon Boss Key Requirements: Gold Skulltula Tokens
+                         - Rainbow Bridge/Ganon Boss Key Requirements: Golden Skull Tokens
                          - Variable numbers of Spiritual Stones, Medallions, or Dungeons
                          for Rainbow Bridge and Ganon's Boss Key
                          (you will always be required to obtain all the relevant rewards)
@@ -2335,7 +2335,7 @@ setting_infos = [
             'stones':	  'Spiritual Stones',
             'medallions': 'Medallions',
             'dungeons':   'Dungeons',
-            'tokens':     'Gold Skulltula Tokens',
+            'tokens':     'Golden Skull Tokens',
             'hearts':     'Hearts',
             'random':     'Random'
         },
@@ -2345,9 +2345,9 @@ setting_infos = [
             'Spiritual Stones': A configurable amount of Spiritual Stones.
             'Medallions': A configurable amount of Medallions.
             'Dungeons': A configurable amount of Dungeon Rewards.
-            'Gold Skulltula Tokens': A configurable amount of Gold Skulltula Tokens.
+            'Golden Skull Tokens': A configurable amount of Golden Skull Tokens.
             'Hearts': A configurable amount of hearts.
-            'Random': A random Rainbow Bridge requirement excluding Gold Skulltula Tokens.
+            'Random': A random Rainbow Bridge requirement excluding Golden Skull Tokens.
         ''',
         shared         = True,
         disable        = {
@@ -2427,7 +2427,7 @@ setting_infos = [
         min            = 1,
         max            = 999,
         gui_tooltip    = '''\
-            Select the amount of Gold Skulltula Tokens required to spawn the rainbow bridge.
+            Select the amount of Golden Skull Tokens required to spawn the rainbow bridge.
         ''',
         shared         = True,
         disabled_default = 0,
@@ -2565,7 +2565,7 @@ setting_infos = [
             'All Goals': The randomizer will guarantee that every goal item is obtainable, not just the amount required
             to beat the game, but otherwise behaves like 'Required Only'.
             Goal items are the items required for the rainbow bridge and/or Ganon's Boss Key, so for example if the bridge is
-            set to 1 Medallion and Ganon's Boss Key to 1 Gold Skulltula Token, all 6 Medallions and all 100 Tokens will
+            set to 1 Medallion and Ganon's Boss Key to 1 Golden Skull Token, all 6 Medallions and all 100 Tokens will
             be obtainable. In Triforce Hunt, this will instead guarantee that all Triforce Pieces can be obtained.
 
             'Required Only': Only items and locations required to beat the game will be guaranteed reachable.
@@ -3716,7 +3716,7 @@ setting_infos = [
             when reaching the target number of Dungeon Rewards.
             
             'Tokens': Ganon's Castle Boss Key will be awarded
-            when reaching the target number of Gold Skulltula Tokens.
+            when reaching the target number of Golden Skull Tokens.
 
             'Hearts': Ganon's Castle Boss Key will be awarded
             when reaching the target number of hearts.
@@ -3794,12 +3794,12 @@ setting_infos = [
     ),
     Scale(
         name           = 'ganon_bosskey_tokens',
-        gui_text       = "Gold Skulltula Tokens Required for Ganon's BK",
+        gui_text       = "Golden Skull Tokens Required for Ganon's BK",
         default        = 100,
         min            = 1,
         max            = 999,
         gui_tooltip    = '''\
-            Select the amount of Gold Skulltula Tokens
+            Select the amount of Golden Skull Tokens
             required to receive Ganon's Castle Boss Key.
         ''',
         shared         = True,
@@ -3846,7 +3846,7 @@ setting_infos = [
             'Stones': A configurable amount of Spiritual Stones.
             'Medallions': A configurable amount of Medallions.
             'Dungeons': A configurable amount of Dungeon Rewards.
-            'Tokens': A configurable amount of Gold Skulltula Tokens.
+            'Tokens': A configurable amount of Golden Skull Tokens.
             'Hearts': A configurable amount of hearts.
         ''',
         shared         = True,
@@ -3921,12 +3921,12 @@ setting_infos = [
     ),
     Scale(
         name           = 'lacs_tokens',
-        gui_text       = "Gold Skulltula Tokens Required for LACS",
+        gui_text       = "Golden Skull Tokens Required for LACS",
         default        = 100,
         min            = 1,
         max            = 999,
         gui_tooltip    = '''\
-            Select the amount of Gold Skulltula Tokens
+            Select the amount of Golden Skull Tokens
             required to trigger the Light Arrow Cutscene.
         ''',
         shared         = True,

@@ -161,7 +161,7 @@ do that.
 * Fix a crash when certain settings related to Light Arrow hints are combined.
 * Many minor logic bugs have been corrected.
 * Fix a softlock when plandoing starting with less than 10 beans.
-* Fix plando negative locations (ex. "!Gold Skulltula Token") choosing Buy items for non-Buy locations.
+* Fix plando negative locations (ex. "!Golden Skull Token") choosing Buy items for non-Buy locations.
 
 #### Other changes
 * Added an auto-tracker context area to memory, so auto-trackers can find certain symbols much easier.
@@ -171,7 +171,7 @@ do that.
 * Plandomizer
   * You can now specify an arbitrary 4-character hexadecimal text ID as a "Gossip Stone" to overwrite text in the game.
   * Adjusted how `starting_items` works in order to remove some redundancy, where it is now placed within the settings dictionary.. Spoiler output now includes a section `:skipped_locations` instead which is not used by Plandomizer.
-  * Gold Skulltula Token requirements can be increased above 100 (the pool must also have at least that many).
+  * Golden Skull Token requirements can be increased above 100 (the pool must also have at least that many).
 * Triforce Hunt changes
   * The number of Triforce pieces available per world, which was previously tied to the item pool setting, is now a separate setting.
 * Replaced old output option `compress_rom` with four separate options for outputting a patch file, compressed ROM, uncompressed ROM, and a WAD file.
@@ -212,7 +212,7 @@ do that.
   * New setting `Reachable Locations` replaces `All Locations Reachable` and adds a new option "All Goals" which ensures that all goal items for Ganon's Boss Key and the Rainbow Bridge are reachable, regardless of how many are required by the setting.
     * For example, if the Rainbow Bridge requires 4 medallions, all 6 medallions will be guaranteed reachable.
   * New setting `LACS Condition` to select what goal items are required for the Light Arrows Cutscene, separate from whether Ganon's Boss Key is placed there. (Additional settings are added to control how many.)
-  * `Ganon's Boss Key` now allows you to set it to the Light Arrow Cutscene (and use `LACS Condition` to set its objective) or for it to be directly awarded when meeting a configurable target number of Spiritual Stones, Medallions, Dungeons completed, or Gold Skulltula Tokens. (Additional settings are added to control how many.)
+  * `Ganon's Boss Key` now allows you to set it to the Light Arrow Cutscene (and use `LACS Condition` to set its objective) or for it to be directly awarded when meeting a configurable target number of Spiritual Stones, Medallions, Dungeons completed, or Golden Skull Tokens. (Additional settings are added to control how many.)
   * New `Rainbow Bridge` option `Random` that will choose one of the other options at random (besides Skulltula Tokens), and require the maximum of that goal (if applicable).
 
 * **Hints**
@@ -359,7 +359,7 @@ do that.
   * Gerudo Fortress Small Keys are configured in a separate setting.
 * New options for `Rainbow Bridge` and `Ganon's Boss Key on Light Arrows Cut Scene`.
   * Sliders allow customizing the exact number of stones/medallions/dungeons/tokens required.
-  * Ganon's BK on LACS can now be set to require Gold Skulltula Tokens.
+  * Ganon's BK on LACS can now be set to require Golden Skull Tokens.
   * `Randomize Main Rules` won't randomize slider values.
   * Conditional-always hints check for whether 2 or more dungeon rewards are required, as a backstop.
 
@@ -824,7 +824,7 @@ do that.
   * Pulling out ocarina near a spot where Pierre can spawn will do so.
 * Rainbow Bridge changes
   * Spiritual Stones added as bridge requirement
-  * 100 Gold Skulltula tokens added as bridge requirement
+  * 100 Golden Skull Tokens added as bridge requirement
 * Any location can now be excluded from being required.
 * Various advanced tricks has been split into individual tricks to be selected.
 * Choose sound effects ocarina uses when played
