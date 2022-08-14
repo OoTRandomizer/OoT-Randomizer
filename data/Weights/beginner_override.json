@@ -1,0 +1,80 @@
+{
+    "name":                  "beginner_override",
+    "gui_name":              "Beginner",
+    "description":           "Recommended for new players",
+    "options": {
+        "bridge_tokens_max": 50,
+        "ganon_bosskey_tokens_max": 50,
+        "extra_conditionals": {
+            "restrict_one_entrance_randomizer": [true]
+        }
+    },
+    "weights": {
+        "trials_random": {
+            "false": 1
+        },
+        "trials": {
+            "0": 1,
+            "1": 1
+        },
+        "shuffle_overworld_entrances": {
+            "false": 1
+        },
+        "mq_dungeons_mode": {
+            "vanilla": 1
+        },
+        "shuffle_song_items": {
+            "song": 6,
+            "any": 4
+        },
+        "shuffle_scrubs": {
+            "off": 10,
+            "low": 5
+        },
+        "no_escape_sequence": {
+            "true": 1
+        },
+        "no_epona_race": {
+            "true": 1
+        },
+        "big_poe_count_random": {
+            "false": 1
+        },
+        "big_poe_count": {
+            "1": 1,
+            "2": 1,
+            "3": 1,
+            "4": 1
+        },
+        "hints": {
+            "always": 1
+        },
+        "hint_dist": {
+            "balanced": 1,
+            "scrubs": 1,
+            "strong": 1,
+            "very_strong": 1
+        },
+        "text_shuffle": {
+            "none": 1
+        },
+        "damage_multiplier": {
+            "half": 3,
+            "normal": 13,
+            "double": 4
+        },
+        "item_pool_value": {
+            "plentiful": 3,
+            "balanced": 12,
+            "scarce": 5
+        },
+        "junk_ice_traps": {
+            "off": 12,
+            "normal": 6,
+            "on": 3
+        },
+        "logic_earliest_adult_trade": {
+            "poachers_saw": 1
+        }
+    }
+}

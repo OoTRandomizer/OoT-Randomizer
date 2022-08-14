@@ -15,6 +15,8 @@ from SettingsList import setting_infos, get_setting_info, validate_settings
 from Plandomizer import Distribution
 import StartingItems
 
+from RandomSettings import generate_plando
+
 LEGACY_STARTING_ITEM_SETTINGS = {'starting_equipment': StartingItems.equipment, 'starting_items': StartingItems.inventory, 'starting_songs': StartingItems.songs}
 
 class ArgumentDefaultsHelpFormatter(argparse.RawTextHelpFormatter):
@@ -215,6 +217,9 @@ class Settings:
         self.numeric_seed = self.get_numeric_seed()
 
     def load_distribution(self):
+        if self.enable_random_settings:
+            self.distribution = Distribution(self, generate_plando(self.random_settings_weights))
+            self.enable_distribution_file = True
         if self.enable_distribution_file:
             if self.distribution_file:
                 try:

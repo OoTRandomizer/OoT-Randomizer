@@ -11,6 +11,7 @@ from Colors import get_tunic_color_options, get_navi_color_options, get_sword_tr
     get_magic_color_options, get_heart_color_options, get_shield_frame_color_options, get_a_button_color_options,\
     get_b_button_color_options, get_c_button_color_options, get_start_button_color_options
 from Hints import HintDistList, HintDistTips, gossipLocations
+from RandomSettingsList import WeightList, WeightTips
 from Item import ItemInfo
 from Location import LocationIterator
 from LocationList import location_table
@@ -1830,6 +1831,7 @@ setting_infos = [
         default        = False,
         disable        = {
             False  : {'settings' : ['distribution_file']},
+            True  : {'settings' : ['enable_random_settings', 'random_settings_weights']},
         },
         shared         = False,
     ),
@@ -1882,6 +1884,31 @@ setting_infos = [
             ],
             "hide_when_disabled" : True,
         }),
+    Checkbutton(
+        name           = 'enable_random_settings',
+        gui_text       = 'Enable Random Settings',
+        gui_tooltip    = '''\
+            Random Settings is a mode with some settings are chosen by weights.
+        ''',
+        default        = False,
+        disable        = {
+            False : {'settings' : ['random_settings_weights']},
+            True : {'settings' : ['enable_distribution_file', 'distribution_file']},
+        },
+        shared         = False,
+    ),
+    Combobox(
+        name           = 'random_settings_weights',
+        gui_text       = 'Random Settings Weights',
+        default        = 'rsl_season5',
+        choices        = WeightList(),
+        gui_tooltip    = WeightTips(),
+        shared         = True,
+        disable        = {},
+        gui_params = {
+            "hide_when_disabled" : True,
+        }
+    ),
     Setting_Info('checked_version',   str, None, None, False, {}),
     Setting_Info('rom',               str, "Base ROM", "Fileinput", False, {},
         gui_params = {

@@ -37,6 +37,8 @@ from LocationList import set_drop_location_names
 from Goals import update_goal_items, maybe_set_misc_item_hints, replace_goal_names
 from version import __version__
 
+from JSONDump import dump_obj
+
 
 class dummy_window():
     def __init__(self):
@@ -440,6 +442,16 @@ def patch_and_output(settings, window, spoiler, rom):
             logger.info("Copied distribution file to: %s" % filename)
         except:
             logger.info('Distribution file copy failed.')
+    
+    if settings.enable_random_settings:
+        window.update_status('Copying Random Settings File')
+        try:
+            filename = os.path.join(output_dir, '%s_RandomSettings.json' % output_filename_base)
+            with open(filename, 'w') as f:
+                f.write(dump_obj(settings.distribution.settings.to_json()))
+            logger.info("Copied random settings file to: %s" % filename)
+        except Exception as e:
+            logger.info('Random settings file copy failed.')
 
     window.update_progress(100)
     if cosmetics_log and cosmetics_log.errors:
