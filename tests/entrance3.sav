@@ -5,7 +5,6 @@
 "create_wad_file": false,
 "create_uncompressed_rom": false,
 "seed": "ENTRANCES",
-"randomize_settings": false,
 "open_forest": "open",
 "open_door_of_time": false,
 "zora_fountain": "closed",

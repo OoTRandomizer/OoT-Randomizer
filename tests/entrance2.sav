@@ -7,7 +7,6 @@
 "create_uncompressed_rom": false,
 "enable_distribution_file": true,
 "distribution_file": "tests/cfairy.dist",
-"randomize_settings": false,
 "open_forest": "open",
 "open_door_of_time": false,
 "zora_fountain": "closed",

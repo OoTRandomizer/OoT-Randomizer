@@ -8,7 +8,6 @@
 "create_compressed_rom": false,
 "create_wad_file": false,
 "create_uncompressed_rom": false,
-"randomize_settings": false,
 "open_forest": "open",
 "open_kakariko": "open",
 "open_door_of_time": true,
