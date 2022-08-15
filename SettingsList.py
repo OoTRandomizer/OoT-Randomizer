@@ -2182,32 +2182,6 @@ setting_infos = [
             "hide_when_disabled" : True,
         }
     ),
-    Checkbutton(
-        name           = 'randomize_settings',
-        gui_text       = 'Randomize Main Rule Settings',
-        gui_tooltip    = '''\
-                         Randomizes all settings on the 'Main Rules' tab, except:
-
-                         - Logic Rules
-                         - (Random) Number of MQ Dungeons
-                         - Pre-completed dungeons
-                         - Rainbow Bridge/Ganon Boss Key Requirements: Gold Skulltula Tokens
-                         - Variable numbers of Spiritual Stones, Medallions, or Dungeons
-                         for Rainbow Bridge and Ganon's Boss Key
-                         (you will always be required to obtain all the relevant rewards)
-                         - Scrub Shuffle will either be "Off" or "On (Affordable)"
-                         ''',
-        default        = False,
-        disable        = {
-            True : {
-                'sections' : ['open_section', 'shuffle_section', 'shuffle_dungeon_section'],
-                'settings': ['starting_age', 'shuffle_interior_entrances', 'shuffle_grotto_entrances', 'shuffle_dungeon_entrances',
-                             'shuffle_bosses', 'shuffle_overworld_entrances', 'owl_drops', 'warp_songs', 'spawn_positions',
-                             'triforce_hunt', 'triforce_count_per_world', 'triforce_goal_per_world', 'bombchus_in_logic', 'one_item_per_dungeon'],
-            }
-        },
-        shared         = True,
-    ),
     Combobox(
         name           = 'open_forest',
         gui_text       = 'Forest',
@@ -2244,7 +2218,6 @@ setting_infos = [
             'closed' : {'settings' : ['starting_age']}
         },
         gui_params     = {
-            'randomize_key': 'randomize_settings',
             'distribution': [
                 ('open', 1),
                 ('closed_deku', 1),
@@ -2280,7 +2253,6 @@ setting_infos = [
         ''',
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
@@ -2294,7 +2266,6 @@ setting_infos = [
         ''',
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
@@ -2321,7 +2292,6 @@ setting_infos = [
         ''',
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
@@ -2349,7 +2319,6 @@ setting_infos = [
             'open' : {'settings' : ['shuffle_hideoutkeys']}
         },
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
@@ -2385,7 +2354,6 @@ setting_infos = [
             '!hearts':     {'settings': ['bridge_hearts']},
         },
         gui_params     = {
-            'randomize_key': 'randomize_settings',
             'distribution':  [
                 ('open',       1),
                 ('vanilla',    1),
@@ -2407,7 +2375,6 @@ setting_infos = [
         shared         = True,
         disabled_default = 0,
         gui_params     = {
-            "randomize_key": "randomize_settings",
             "hide_when_disabled": True,
             'distribution': [(6, 1)],
         },
@@ -2424,7 +2391,6 @@ setting_infos = [
         shared         = True,
         disabled_default = 0,
         gui_params     = {
-            "randomize_key": "randomize_settings",
             "hide_when_disabled": True,
             'distribution': [(3, 1)],
         },
@@ -2442,7 +2408,6 @@ setting_infos = [
         shared         = True,
         disabled_default = 0,
         gui_params     = {
-            "randomize_key": "randomize_settings",
             "hide_when_disabled": True,
             'distribution': [(9, 1)],
         },
@@ -2491,7 +2456,6 @@ setting_infos = [
         ''',
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
         disable        = {
             True  : {'settings' : ['shuffle_ganon_bosskey', 'ganon_bosskey_stones', 'ganon_bosskey_medallions', 'ganon_bosskey_rewards', 'ganon_bosskey_tokens', 'ganon_bosskey_hearts']},
@@ -2623,7 +2587,6 @@ setting_infos = [
         default        = False,
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
@@ -2666,7 +2629,6 @@ setting_infos = [
         ''',
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
@@ -2680,7 +2642,6 @@ setting_infos = [
             True : {'settings' : ['trials']}
         },
         gui_params     = {
-            'randomize_key': 'randomize_settings',
             'distribution':  [
                 (True, 1),
             ]
@@ -3004,7 +2965,6 @@ setting_infos = [
         default        = True,
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
@@ -3020,7 +2980,6 @@ setting_infos = [
         default        = False,
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
@@ -3040,7 +2999,6 @@ setting_infos = [
         },
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
@@ -3054,7 +3012,6 @@ setting_infos = [
         ''',
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
@@ -3089,7 +3046,6 @@ setting_infos = [
             'Anywhere': Songs can appear in any location.
         ''',
         gui_params     = {
-            'randomize_key': 'randomize_settings',
             'distribution':  [
                 ('song', 2),
                 ('dungeon', 1),
@@ -3109,7 +3065,6 @@ setting_infos = [
         default        = False,
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
@@ -3123,7 +3078,6 @@ setting_infos = [
         default        = False,
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
@@ -3138,7 +3092,6 @@ setting_infos = [
         default        = False,
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
@@ -3153,7 +3106,6 @@ setting_infos = [
         default        = False,
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
@@ -3179,7 +3131,6 @@ setting_infos = [
         ''',
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
             'distribution':  [
                 ('off', 2),
                 ('simple', 1),
@@ -3197,7 +3148,6 @@ setting_infos = [
         default        = False,
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
@@ -3223,7 +3173,6 @@ setting_infos = [
         ''',
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
             'distribution': [
                 ('off', 2),
                 ('simple', 1),
@@ -3251,7 +3200,6 @@ setting_infos = [
         },
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
@@ -3273,7 +3221,6 @@ setting_infos = [
         default        = False,
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
@@ -3287,7 +3234,6 @@ setting_infos = [
         default        = False,
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
@@ -3299,7 +3245,6 @@ setting_infos = [
         default        = False,
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Checkbutton(
@@ -3315,7 +3260,6 @@ setting_infos = [
         default        = False,
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
@@ -3347,7 +3291,6 @@ setting_infos = [
         ''',
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
             'distribution':  [
                 ('off', 1),
                 ('low', 1),
@@ -3397,7 +3340,6 @@ setting_infos = [
         ''',
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
             'distribution':  [
                 ('off',    6),
                 ('0',      1),
@@ -3474,7 +3416,6 @@ setting_infos = [
         ''',
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
@@ -3520,7 +3461,6 @@ setting_infos = [
         ''',
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
@@ -3572,7 +3512,6 @@ setting_infos = [
         },
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
@@ -3602,7 +3541,6 @@ setting_infos = [
         ''',
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
@@ -3689,7 +3627,6 @@ setting_infos = [
         ''',
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
@@ -3757,7 +3694,6 @@ setting_infos = [
             '!hearts':  {'settings': ['ganon_bosskey_hearts']},
         },
         gui_params     = {
-            'randomize_key': 'randomize_settings',
             'distribution': [
                 ('remove',          4),
                 ('dungeon',         2),
@@ -3779,7 +3715,6 @@ setting_infos = [
         shared         = True,
         disabled_default = 0,
         gui_params     = {
-            "randomize_key": "randomize_settings",
             "hide_when_disabled": True,
             'distribution': [(6, 1)],
         },
@@ -3796,7 +3731,6 @@ setting_infos = [
         shared         = True,
         disabled_default = 0,
         gui_params     = {
-            "randomize_key": "randomize_settings",
             "hide_when_disabled": True,
             'distribution': [(3, 1)],
         },
@@ -3814,7 +3748,6 @@ setting_infos = [
         shared         = True,
         disabled_default = 0,
         gui_params     = {
-            "randomize_key": "randomize_settings",
             "hide_when_disabled": True,
             'distribution': [(9, 1)],
         },
@@ -4001,7 +3934,6 @@ setting_infos = [
         default        = False,
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
         },
     ),
     Combobox(
@@ -4710,7 +4642,6 @@ setting_infos = [
         ''',
         shared         = True,
         gui_params     = {
-            'randomize_key': 'randomize_settings',
             'distribution': [
                 ('random', 1),
             ],

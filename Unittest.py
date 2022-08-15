@@ -750,7 +750,6 @@ class TestValidSpoilers(unittest.TestCase):
     def test_fuzzer(self):
         random.seed()
         fuzz_settings = [Settings({
-            'randomize_settings': True,
             'create_patch_file': False,
             'create_compressed_rom': False,
             'create_wad_file': False,
@@ -758,7 +757,7 @@ class TestValidSpoilers(unittest.TestCase):
             'create_spoiler': True,
             'output_file': os.path.join(output_dir, 'fuzz-%d' % i),
         }) for i in range(10)]
-        out_keys = ['randomize_settings', 'create_patch_file', 'create_compressed_rom', 'create_wad_file',
+        out_keys = ['create_patch_file', 'create_compressed_rom', 'create_wad_file',
                     'create_uncompressed_rom', 'patch_without_output', 'create_spoiler', 'output_file', 'seed']
         for settings in fuzz_settings:
             output_file = '%s_Spoiler.json' % settings.output_file

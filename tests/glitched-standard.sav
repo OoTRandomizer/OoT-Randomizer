@@ -2,7 +2,6 @@
     "seed": "TESTTESTTEST",
     "create_spoiler": true,
     "world_count": 1,
-    "randomize_settings": false,
     "logic_rules": "glitched",
     "open_forest": "open",
     "open_door_of_time": true,

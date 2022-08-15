@@ -15,10 +15,8 @@
             "output_dir",
             "enable_distribution_file",
             "enable_cosmetic_file",
-            "enable_random_settings",
             "distribution_file",
             "cosmetic_file",
-            "random_settings_weights",
             "count",
             "create_spoiler",
             "create_cosmetics_log",
@@ -151,10 +149,11 @@
           "name": "main_section",
           "text": "",
           "col_span": 4,
-          "row_span": [2,2,2],
+          "row_span": [3,3,3],
           "settings": [
-            "randomize_settings",
-            "logic_rules"
+            "logic_rules",
+            "enable_random_settings",
+            "random_settings_weights"
           ]
         },
         {

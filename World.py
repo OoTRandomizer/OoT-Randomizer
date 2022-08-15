@@ -370,30 +370,6 @@ class World(object):
         dist_keys = []
         if '_settings' in self.distribution.distribution.src_dict:
             dist_keys = self.distribution.distribution.src_dict['_settings'].keys()
-        if self.settings.randomize_settings:
-            setting_info = get_setting_info('randomize_settings')
-            self.randomized_list.extend(setting_info.disable[True]['settings'])
-            for section in setting_info.disable[True]['sections']:
-                self.randomized_list.extend(get_settings_from_section(section))
-                # Remove settings specified in the distribution
-                self.randomized_list = [x for x in self.randomized_list if x not in dist_keys]
-            for setting in list(self.randomized_list):
-                if (setting == 'bridge_medallions' and self.settings.bridge != 'medallions') \
-                        or (setting == 'bridge_stones' and self.settings.bridge != 'stones') \
-                        or (setting == 'bridge_rewards' and self.settings.bridge != 'dungeons') \
-                        or (setting == 'bridge_tokens' and self.settings.bridge != 'tokens') \
-                        or (setting == 'bridge_hearts' and self.settings.bridge != 'hearts') \
-                        or (setting == 'lacs_medallions' and self.settings.lacs_condition != 'medallions') \
-                        or (setting == 'lacs_stones' and self.settings.lacs_condition != 'stones') \
-                        or (setting == 'lacs_rewards' and self.settings.lacs_condition != 'dungeons') \
-                        or (setting == 'lacs_tokens' and self.settings.lacs_condition != 'tokens') \
-                        or (setting == 'lacs_hearts' and self.settings.lacs_condition != 'hearts') \
-                        or (setting == 'ganon_bosskey_medallions' and self.settings.shuffle_ganon_bosskey != 'medallions') \
-                        or (setting == 'ganon_bosskey_stones' and self.settings.shuffle_ganon_bosskey != 'stones') \
-                        or (setting == 'ganon_bosskey_rewards' and self.settings.shuffle_ganon_bosskey != 'dungeons') \
-                        or (setting == 'ganon_bosskey_tokens' and self.settings.shuffle_ganon_bosskey != 'tokens') \
-                        or (setting == 'ganon_bosskey_hearts' and self.settings.shuffle_ganon_bosskey != 'hearts'):
-                    self.randomized_list.remove(setting)
         if self.settings.big_poe_count_random and 'big_poe_count' not in dist_keys:
             self.settings.big_poe_count = random.randint(1, 10)
             self.randomized_list.append('big_poe_count')

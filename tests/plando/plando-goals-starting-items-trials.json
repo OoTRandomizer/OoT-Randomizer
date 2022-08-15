@@ -3,7 +3,6 @@
   "settings":                  {
     "world_count":                             1,
     "create_spoiler":                          true,
-    "randomize_settings":                      false,
     "open_forest":                             "closed_deku",
     "open_kakariko":                           "open",
     "open_door_of_time":                       true,
