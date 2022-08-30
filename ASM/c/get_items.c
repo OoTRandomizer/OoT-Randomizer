@@ -290,6 +290,13 @@ void try_pending_item() {
 
 void handle_pending_items() {
     push_coop_item();
+
+    override_t override = pending_item_queue[0];
+    if (override.key.all != 0) {
+        z64_game.common.input[0].raw.pad.s = 0;
+        z64_game.common.input[0].pad_pressed.s = 0;
+    }
+
     if (link_is_ready()) {
         pop_ice_trap();
         // don't apply ice traps while playing the treasure chest game, since that would allow cheesing it
