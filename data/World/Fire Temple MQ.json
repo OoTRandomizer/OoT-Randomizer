@@ -91,8 +91,8 @@
         "dungeon": "Fire Temple",
         "locations": {},
         "exits": {
-            "Fire Temple Elevator Hearts" 
-                "(can_use(Farores_Wind) and logic_fire_hearts_fw) or 
+            "Fire Temple Elevator Hearts": "
+                (can_use(Farores_Wind) and logic_fire_hearts_fw) or 
                 (Goron_Tunic)",
             "Fire Temple Lower Lizalfos Maze": "
                 ((can_use(Farores_Wind) and Hookshot and 
