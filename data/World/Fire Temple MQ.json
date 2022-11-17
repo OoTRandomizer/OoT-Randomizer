@@ -93,7 +93,7 @@
         "exits": {
             "Fire Temple Elevator Hearts": "
                 (can_use(Farores_Wind) and logic_fire_hearts_fw) or 
-                (Goron_Tunic)",
+                (can_use(Goron_Tunic))",
             "Fire Temple Lower Lizalfos Maze": "
                 ((can_use(Farores_Wind) and Hookshot and 
                 logic_fire_elevator_fw) or Goron_Tunic) and 
