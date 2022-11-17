@@ -1016,14 +1016,15 @@ logic_tricks = {
                     '''},
     'Fire Temple Elevator Room Freestanding Hearts with Farore\'s Wind': {
         'name'    : 'logic_fire_hearts_fw',
-        'tags'    : ("Fire Temple", "MQ",),
+        'tags'    : ("Fire Temple", "MQ", "Entrance", "Freestandings",),
         'tooltip' : '''\
                     If you set Farore's Wind in the elevator room, 
                     you can warp from the entrance room to start the
                     timer in the elevator room. This allows you to have
                     enough time to collect the freestanding hearts
                     without the goron tunic. This is even possible as
-                    child and also in MQ.
+                    child and also in MQ. This trick requires Fewer Tunic 
+		    Requirements to be in logic.
                     '''},
     'Fire Temple Elevator Room with Farore\'s Wind and Hookshot': {
         'name'    : 'logic_fire_elevator_fw',
@@ -1033,7 +1034,8 @@ logic_tricks = {
                     you can warp from the entrance room to start the
                     timer in the elevator room. This allows you to have
                     enough time to get past the room with just the Hook-
-                    shot and no goron tunic.
+                    shot and no goron tunic. This trick requires Fewer Tunic 
+		    Requirements to be in logic.
                     '''},
     'Fire Temple MQ Chest Near Boss without Breaking Crate': {
         'name'    : 'logic_fire_mq_near_boss',
