@@ -75,9 +75,9 @@
         "region_name": "Fire Temple Elevator Hearts",
         "dungeon": "Fire Temple",
         "locations": {
-            "Fire Temple Elevator Room Recovery Heart 1": "true",
-            "Fire Temple Elevator Room Recovery Heart 2": "true",
-            "Fire Temple Elevator Room Recovery Heart 3": "true"
+            "Fire Temple Elevator Room Recovery Heart 1": "True",
+            "Fire Temple Elevator Room Recovery Heart 2": "True",
+            "Fire Temple Elevator Room Recovery Heart 3": "True"
         },
         "exits": {
             "Fire Temple Elevator Room": "true"
