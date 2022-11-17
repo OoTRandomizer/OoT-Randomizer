@@ -273,7 +273,9 @@ class Search(object):
                 if world_filter is not None and state.world.id != world_filter:
                     continue
                 valid_goals[category_name]['stateReverse'][state.world.id] = []
-                world_category = state.world.goal_categories[category_name]
+                world_category = state.world.goal_categories.get(category_name, None)
+                if world_category is None:
+                    continue
                 for goal in world_category.goals:
                     if goal.name not in valid_goals[category_name]:
                         valid_goals[category_name][goal.name] = []

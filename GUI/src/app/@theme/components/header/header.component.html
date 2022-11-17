@@ -7,7 +7,7 @@
     </div>
   </div>
 </div>
-<div class="controls">
+<div [style]="platform === 'darwin' ? 'margin-left: 60px;' :''" class="controls">
     <img id="dark-switch" class="controlIcon" [src]="themeSwitcher.isDarkThemeActive ? 'assets/img/sun.svg' : 'assets/img/moon.svg'" (click)="switchTheme()">
     <img id="min" class="controlIcon" [ngClass]="{hidden: platform === 'darwin'}" style="width: 22px; height: 22px; -webkit-app-region: no-drag" src="assets/img/min.png" (click)="minimize()">
     <img id="max" class="controlIcon" [ngClass]="{hidden: platform === 'darwin'}" style="width: 22px; height: 22px; -webkit-app-region: no-drag" [src]="isMaximized ? 'assets/img/max.png' : 'assets/img/notMax.png'" (click)="maximize()">

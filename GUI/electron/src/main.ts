@@ -1,18 +1,19 @@
-import { app, BrowserWindow, shell, session, ipcMain, globalShortcut, Menu, MenuItem } from "electron";
+import { app, shell, session, ipcMain, BrowserWindow, globalShortcut, Menu, MenuItem } from "electron";
 import * as os from "os";
 import * as fs from "fs";
 import * as path from "path";
 import * as url from "url";
-
 import * as windowStateKeeper from "electron-window-state";
-import * as commander from 'commander';
+import * as remoteMain from '@electron/remote/main'
+
+remoteMain.initialize();
 
 var win: BrowserWindow;
 var isRelease: boolean = false;
 
 function createApp() {
 
-  //Fix up empty node command line in bundled mode (crashes commander otherwise)
+  //Fix up empty node command line in bundled mode
   if (app.isPackaged) {
     process.argv[0] = 'main.js';
     process.argv.unshift('node');
@@ -24,13 +25,21 @@ function createApp() {
   }
 
   //Parse command line
-  commander
-    .option('p, python <path>', 'Path to your python executable')
-    .option('r, release', 'Runs electron in release mode')
-    .parse(process.argv);
+  let programOpts: any = {};
 
-  global["commandLineArgs"] = commander;
-  isRelease = commander.release || app.isPackaged;
+  for (let i = 0; i < process.argv.length; i++) {
+    let arg = process.argv[i];
+
+    if (arg === "r" || arg === "release") { //Runs electron in release mode
+      programOpts["release"] = true;
+    }
+    else if ((arg === "p" || arg === "python") && i < (process.argv.length - 1)) { //Path to the python executable
+      programOpts["python"] = process.argv[++i];
+    }
+  }
+
+  global["commandLineArgs"] = programOpts;
+  isRelease = programOpts.release || app.isPackaged;
 
   //Load the previous window state with fallback to defaults
   let mainWindowState = windowStateKeeper({
@@ -39,7 +48,26 @@ function createApp() {
   });
 
   //Browser Window common options
-  let browserOptions = { icon: path.join(__dirname, '../src/assets/icon/png/64x64.png'), title: 'OoT Randomizer GUI', opacity: 1.00, backgroundColor: '#000000', minWidth: 880, minHeight: 680, width: mainWindowState.width, height: mainWindowState.height, x: mainWindowState.x, y: mainWindowState.y, show: false, webPreferences: { nodeIntegration: false, contextIsolation: true, webviewTag: false, preload: path.join(__dirname, 'preload.js') } };
+  let browserOptions = { 
+    icon: path.join(__dirname, '../src/assets/icon/png/64x64.png'), 
+    title: 'OoT Randomizer GUI', 
+    opacity: 1.00, 
+    backgroundColor: '#000000', 
+    minWidth: 880, 
+    minHeight: 680, 
+    width: mainWindowState.width, 
+    height: mainWindowState.height, 
+    x: mainWindowState.x, y: 
+    mainWindowState.y, 
+    show: false, 
+    webPreferences: { 
+      sandbox: false, 
+      nodeIntegration: false, 
+      contextIsolation: true, 
+      webviewTag: false, 
+      preload: path.join(__dirname, 'preload.js') 
+    } 
+  };
 
   //Override menu (only need dev tools shortcut)
   let appMenu = new Menu();
@@ -137,6 +165,10 @@ app.on("activate", () => {
   if (win === null) {
     createApp();
   }
+});
+
+app.on('browser-window-created', (_, window) => {
+  remoteMain.enable(window.webContents)
 });
 
 app.on("window-all-closed", () => {

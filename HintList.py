@@ -239,10 +239,6 @@ conditional_sometimes = {
     # Conditional sometimes hints
     'HC Great Fairy Reward':                    lambda world: world.settings.shuffle_interior_entrances == 'off',
     'OGC Great Fairy Reward':                   lambda world: world.settings.shuffle_interior_entrances == 'off',
-    'Kak 20 Gold Skulltula Reward':             lambda world: '20_skulltulas' not in world.settings.misc_hints,
-    'Kak 30 Gold Skulltula Reward':             lambda world: '30_skulltulas' not in world.settings.misc_hints,
-    'Kak 40 Gold Skulltula Reward':             lambda world: '40_skulltulas' not in world.settings.misc_hints,
-    'Kak 50 Gold Skulltula Reward':             lambda world: '50_skulltulas' not in world.settings.misc_hints,
     'ZR Frogs in the Rain':                     lambda world: not world.settings.shuffle_frog_song_rupees,
 
     # Conditional dual hints

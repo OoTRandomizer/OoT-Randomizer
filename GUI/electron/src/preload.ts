@@ -1,21 +1,22 @@
 import * as electron from 'electron';
+import * as remote from '@electron/remote';
 import * as os from "os";
 import * as fs from 'fs';
 import * as path from 'path';
 
 import * as post from 'post-robot';
 
-const generator = electron.remote.require(path.join(__dirname, '../src/modules/generator.js'));
-const commander = electron.remote.getGlobal("commandLineArgs");
+const generator = remote.require(path.join(__dirname, '../src/modules/generator.js'));
+const commander = remote.getGlobal("commandLineArgs");
 
-var testMode = commander.release || electron.remote.app.isPackaged ? false : true;
+var testMode = commander.release || remote.app.isPackaged ? false : true;
 console.log("Test Mode:", testMode);
 
 var platform = os.platform();
 console.log("Platform:", platform);
 
 var pythonPath = commander.python ? '"' + commander.python + '"' : platform == "win32" ? "py" : "python3";
-var pythonSourcePath = path.normalize(electron.remote.app.isPackaged ? electron.remote.app.getAppPath() + "/python/" : electron.remote.app.getAppPath() + "/../");
+var pythonSourcePath = path.normalize(remote.app.isPackaged ? remote.app.getAppPath() + "/python/" : remote.app.getAppPath() + "/../");
 var pythonGeneratorPath = pythonSourcePath + "OoTRandomizer.py";
 
 console.log("Python Executable Path:", pythonPath);
@@ -27,23 +28,23 @@ electron.webFrame.executeJavaScript('window.apiTestMode = ' + testMode + ';');
 electron.webFrame.executeJavaScript('window.apiPlatform = "' + platform + '";');
 
 //ELECTRON EVENTS
-electron.remote.getCurrentWindow().on('maximize', () => {
+remote.getCurrentWindow().on('maximize', () => {
   post.send(window, 'window-maximized', true);
 });
-electron.remote.getCurrentWindow().on('enter-full-screen', () => { //macOS exclusive
+remote.getCurrentWindow().on('enter-full-screen', () => { //macOS exclusive
   post.send(window, 'window-maximized', true);
 });
-electron.remote.getCurrentWindow().on('enter-html-full-screen', () => {
+remote.getCurrentWindow().on('enter-html-full-screen', () => {
   post.send(window, 'window-maximized', true);
 });
 
-electron.remote.getCurrentWindow().on('unmaximize', () => {
+remote.getCurrentWindow().on('unmaximize', () => {
   post.send(window, 'window-maximized', false);
 });
-electron.remote.getCurrentWindow().on('leave-full-screen', () => {
+remote.getCurrentWindow().on('leave-full-screen', () => {
   post.send(window, 'window-maximized', false);
 });
-electron.remote.getCurrentWindow().on('leave-html-full-screen', () => {
+remote.getCurrentWindow().on('leave-html-full-screen', () => {
   post.send(window, 'window-maximized', false);
 });
 
@@ -67,7 +68,7 @@ function displayPythonErrorAndExit(notPython3: boolean = false) {
     else
       alert("Please ensure you have Python 3.6 or higher installed before running the GUI. You can specify the path to python using the 'python <path>' command line switch!");
 
-    electron.remote.app.quit();
+    remote.app.quit();
   }, 500);
 }
 
@@ -133,7 +134,7 @@ post.on('copyToClipboard', function (event) {
   if (!data || typeof (data) != "object" || Object.keys(data).length != 1 || !data["content"] || typeof (data["content"]) != "string" || data["content"].length < 1)
     return false;
 
-  electron.remote.clipboard.writeText(data.content);
+  remote.clipboard.writeText(data.content);
 
   return true;
 });
@@ -145,12 +146,12 @@ post.on('browseForFile', function (event) {
   if (!data || typeof (data) != "object" || Object.keys(data).length != 1 || !data["fileTypes"] || typeof (data["fileTypes"]) != "object")
     return false;
 
-  return electron.remote.dialog.showOpenDialogSync({ filters: data.fileTypes, properties: ["openFile", "treatPackageAsDirectory"]});
+  return remote.dialog.showOpenDialogSync({ filters: data.fileTypes, properties: ["openFile", "treatPackageAsDirectory"]});
 });
 
 
 post.on('browseForDirectory', function (event) {
-  return electron.remote.dialog.showOpenDialogSync({ properties: ["openDirectory", "createDirectory", "treatPackageAsDirectory"] });
+  return remote.dialog.showOpenDialogSync({ properties: ["openDirectory", "createDirectory", "treatPackageAsDirectory"] });
 });
 
 post.on('createAndOpenPath', function (event) {
@@ -167,21 +168,27 @@ post.on('createAndOpenPath', function (event) {
   }
 
   if (fs.existsSync(data)) {
-    return electron.remote.shell.openItem(data);
+    remote.shell.openPath(data);
+    return true;
   }
   else {
     fs.mkdirSync(data);
-    return electron.remote.shell.openItem(data);
+
+    remote.shell.openPath(data).then(res => {
+      post.send(window, 'createAndOpenPathResult', res);
+    });
+
+    return false;
   }
 });
 
 post.on('window-minimize', function (event) {
-  electron.remote.getCurrentWindow().minimize();
+  remote.getCurrentWindow().minimize();
 });
 
 post.on('window-maximize', function (event) {
 
-  let currentWindow = electron.remote.getCurrentWindow();
+  let currentWindow = remote.getCurrentWindow();
 
   if (currentWindow.isMaximized()) {
     currentWindow.unmaximize();
@@ -192,17 +199,17 @@ post.on('window-maximize', function (event) {
 });
 
 post.on('window-is-maximized', function (event) {
-  return electron.remote.getCurrentWindow().isMaximized();
+  return remote.getCurrentWindow().isMaximized();
 });
 
 post.on('window-close', function (event) {
 
   //Only close the window on macOS, on every other OS exit immediately
   if (os.platform() == "darwin") {
-    electron.remote.getCurrentWindow().close();
+    remote.getCurrentWindow().close();
   }
   else {
-    electron.remote.app.quit();
+    remote.app.quit();
   }
 });
 
@@ -340,7 +347,7 @@ if (fs.existsSync(pythonGeneratorPath)) {
 }
 else {
   alert("The GUI is not placed in the correct location...");
-  electron.remote.app.quit();
+  remote.app.quit();
 }
 
 //Test if python executable exists and can be called

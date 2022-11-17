@@ -1136,6 +1136,13 @@ def buildGossipHints(spoiler, worlds):
                 if item_world.id not in checkedLocations:
                     checkedLocations[item_world.id] = set()
                 checkedLocations[item_world.id].add(location.name)
+        for hint_type in world.misc_hint_location_items.keys():
+            location = world.get_location(misc_location_hint_table[hint_type]['item_location'])
+            if hint_type in world.settings.misc_hints and can_reach_hint(worlds, world.get_location(misc_location_hint_table[hint_type]['hint_location']), location):
+                item_world = location.world
+                if item_world.id not in checkedLocations:
+                    checkedLocations[item_world.id] = set()
+                checkedLocations[item_world.id].add(location.name)
 
     # Build all the hints.
     for world in worlds:
@@ -1620,13 +1627,12 @@ def buildMiscItemHints(world, messages):
 
 def buildMiscLocationHints(world, messages):
     for hint_type, data in misc_location_hint_table.items():
+        text = data['location_fallback']
         if hint_type in world.settings.misc_hints:
             location = world.misc_hint_locations[hint_type]
             if hint_type in world.misc_hint_location_items:
                 item = world.misc_hint_location_items[hint_type]
                 text = data['location_text'].format(item=getHint(getItemGenericName(item), world.settings.clearer_hints).text)
-        else:
-            text = data['location_fallback']
 
         update_message_by_id(messages, data['id'], str(GossipText(text, ['Green'], prefix='')), 0x23)
 

@@ -196,19 +196,8 @@ item00_init_hook:
     jr      ra
     sh      T9, 0x001c(S0)   ; replaced code
 
-get_override_drop_id_hook:
-    addiu   sp, sp, -0x10
-    sw      ra, 0x00(sp)
-    or      a1, r0, a2 ; pass params which should be in a2 right now.
-    jal     get_override_drop_id
-    nop
-    lw      ra, 0x00(sp)
-    jr      ra
-    addiu   sp, sp, 0x10
-
-; hooks Item_DropCollectible to store additional flag data in the variable passed to the EnItem00 spawn.
-; 0x4000 gets set to indicate that its being dropped, which we use to index a second table that we called the dropped_collectible table
-; 0x00C0 bits get set to extend the flag
+; hooks Item_DropCollectible to store flag data in the variables passed to the EnItem00 spawn.
+; Put the flag data into the y rotation paramter of the EnItem00 because its unused.
 drop_collectible_hook:
     li      t0, drop_collectible_override_flag	
     lh      t1, 0x00(t0) ; get the current override flag

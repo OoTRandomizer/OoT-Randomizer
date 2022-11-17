@@ -119,7 +119,10 @@ class GoalCategory(object):
         # be called once for all world states for each category type.
 
         for index, state in enumerate(starting_search.state_list):
-            for goal in state.world.goal_categories[self.name].goals:
+            world_category = state.world.goal_categories.get(self.name, None)
+            if world_category is None:
+                continue
+            for goal in world_category.goals:
                 if goal.items:
                     if all(map(full_search.state_list[index].has_item_goal, goal.items)):
                         for i in goal.items:

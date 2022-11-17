@@ -1,7 +1,7 @@
 {
   "name": "ootr-electron-gui",
   "description": "GUI for Ocarina of Time Randomizer",
-  "version": "6.2.228",
+  "version": "6.9.3",
   "homepage": "https://www.ootrandomizer.com",
   "author": "ZeldaSpeedRuns <zsrstaff@gmail.com>",
   "main": "electron/dist/main.js",
@@ -22,7 +22,7 @@
   "build": {
     "appId": "com.ootrandomizer.electrongui",
     "productName": "Ocarina of Time Randomizer",
-    "copyright": "Copyright © 2020 ${author}",
+    "copyright": "Copyright © 2022 ${author}",
     "asar": false,
     "directories": {
       "output": "installer"
@@ -85,7 +85,7 @@
     "node": ">=12.20.2 <=19"
   },
   "dependencies": {
-    "commander": "2.20.0",
+    "@electron/remote": "^2.0.8",
     "electron-window-state": "5.0.3",
     "post-robot": "https://github.com/dragonbane0/post-robot/tarball/dad59c1c0f6266d0dd4bd35e0fb7137d45c6c773",
     "tree-kill": "1.2.1",
@@ -118,15 +118,15 @@
     "@nebular/theme": "9.1.0-rc.6",
     "@types/jasmine": "3.6.0",
     "@types/jasminewd2": "2.0.6",
-    "@types/node": "12.11.1",
+    "@types/node": "^16.18.2",
     "@typescript-eslint/eslint-plugin": "5.27.1",
     "@typescript-eslint/parser": "5.27.1",
-    "angular-dual-listbox": "4.7.0",
+    "angular-dual-listbox": "6.0.0",
     "angular-file": "3.6.0",
     "browserslist": "4.21.4",
     "core-js": "3.25.1",
     "crc": "3.8.0",
-    "electron": "7.3.3",
+    "electron": "^21.2.3",
     "eslint": "8.22.0",
     "eva-icons": "1.1.3",
     "hammerjs": "2.0.8",

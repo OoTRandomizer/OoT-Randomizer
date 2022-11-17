@@ -160,6 +160,7 @@ issue. You should always Hard Reset to avoid this issue entirely.
   * Several vanilla warp destination messages have been updated to keep consistency with our custom warp destination messages.
   * Removed the cutscenes when throwing a bomb at and blowing up the boulder in front of Dodongo's Cavern.
   * Certain switches in MQ dungeons have been moved down 1 unit so they are less difficult for Link to walk onto.
+  * The "Truth Spinner" puzzle in the Shadow Temple's solution is now seeded per seed, so that the correct skull will be consistent across players racing the same seed.
 
 
 #### Bug fixes
@@ -199,6 +200,12 @@ issue. You should always Hard Reset to avoid this issue entirely.
   * You can now specify an arbitrary 4-character hexadecimal text ID as a "Gossip Stone" to overwrite text in the game.
   * Adjusted how `starting_items` works in order to remove some redundancy, where it is now placed within the settings dictionary.. Spoiler output now includes a section `:skipped_locations` instead which is not used by Plandomizer.
   * Gold Skulltula Token requirements can be increased above 100 (the pool must also have at least that many).
+  * Plandomizer will now display an error and inform the user if they have specified conflicting settings within the plando.
+  * New plando item groups available: `#Map`, `#Compass`, `#BossKey`, and `#SmallKey` for placing a random one of these dungeon items in a specific location.
+  * Cosmetics plando has added three new groups which songs can be placed in `bgm_groups`:
+    * `favorites`: Songs placed in this group will be given priority when placing songs.
+    * `exclude`: Songs placed in this group will be ignored when placing songs.
+    * `groups`: In here you can place a dictionary where the key is a custom group name and the value is a list of sequences, and use `#GroupName` similar to item groups in normal plando to place any song from that group in that location.
 * Triforce Hunt changes
   * The number of Triforce pieces available per world, which was previously tied to the item pool setting, is now a separate setting.
 * Replaced old output option `compress_rom` with four separate options for outputting a patch file, compressed ROM, uncompressed ROM, and a WAD file.
@@ -213,12 +220,11 @@ issue. You should always Hard Reset to avoid this issue entirely.
 * Hinted item and location for a Gossip Stone hint are now included in the spoiler log.
 * One-way entrances are now restricted to one per hint area rather than one per scene.
 * You can now receive starting ice traps, either from Impa's item with Skip Child Zelda or with plando.
-* Plandomizer will now display an error and inform the user if they have specified conflicting settings within the plando.
 * Common ER error messages are now more helpful to solving the issue.
 * Corrected some goal hint colors.
 * Triforce Piece model has been updated so that it is shinier and centered.
 * Goal hints are now selected based on their category rather than their parent goal.
-* New plando item groups available: `#Map`, `#Compass`, `#BossKey`, and `#SmallKey` for placing a random one of these dungeon items in a specific location.
+* Settings and tricks in the spoiler log have been re-ordered to more closely follow the order in the GUI and use more logical groupings, respectively.
 
 ### 6.2
 

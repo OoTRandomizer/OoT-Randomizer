@@ -43,8 +43,7 @@ def patch_music(rom, settings, log, symbols):
     # patch music
     if settings.background_music != 'normal' or settings.fanfares != 'normal' or log.src_dict.get('bgm', {}):
         music.restore_music(rom)
-        log.bgm, errors = music.randomize_music(rom, settings, log.src_dict.get('bgm', {}))
-        log.errors.extend(errors)
+        music.randomize_music(rom, settings, log)
     else:
         music.restore_music(rom)
     # Remove battle music
@@ -1010,6 +1009,7 @@ class CosmeticsLog(object):
         self.misc_colors = {}
         self.sfx = {}
         self.bgm = {}
+        self.bgm_groups = {}
 
         self.src_dict = {}
         self.errors = []
@@ -1035,6 +1035,12 @@ class CosmeticsLog(object):
             else:
                 logging.getLogger('').warning("Cosmetic Plandomizer enabled, but no file provided.")
                 self.settings.enable_cosmetic_file = False
+
+        self.bgm_groups['favorites'] = CollapseList(self.src_dict.get('bgm_groups', {}).get('favorites', []).copy())
+        self.bgm_groups['exclude'] = CollapseList(self.src_dict.get('bgm_groups', {}).get('exclude', []).copy())
+        self.bgm_groups['groups'] = AlignedDict(self.src_dict.get('bgm_groups', {}).get('groups', {}).copy(), 1)
+        for key, value in self.bgm_groups['groups'].items():
+            self.bgm_groups['groups'][key] = CollapseList(value.copy())
 
         if self.src_dict.get('settings', {}):
             valid_settings = []
@@ -1062,11 +1068,12 @@ class CosmeticsLog(object):
             'ui_colors': self.ui_colors,
             'misc_colors': self.misc_colors,
             'sfx': self.sfx,
+            'bgm_groups': self.bgm_groups,
             'bgm': self.bgm,
         }
 
         if (not self.settings.enable_cosmetic_file):
-            del self_dict[':enable_cosmetic_file'] # Done this way for ordering purposes.
+            del self_dict[':enable_cosmetic_file']  # Done this way for ordering purposes.
         if (not self.errors):
             del self_dict[':errors']
 

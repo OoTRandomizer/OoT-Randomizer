@@ -7,7 +7,6 @@ const spawn = require('child_process').spawn;
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 
 //Dynamic modules are loaded later
-var commander = null;
 var ping = null;
 var crc32 = null;
 
@@ -347,7 +346,6 @@ async function main(commandLine) {
         "./node_modules/.bin",
         "./node_modules/@angular",
         "./node_modules/electron",
-        "./node_modules/commander",
         "./node_modules/tcp-ping",
         "./node_modules/crc"]
         .some(module => !fs.existsSync(module))) {
@@ -355,28 +353,39 @@ async function main(commandLine) {
     }
 
     //Load dynamic modules
-    commander = require('commander');
     ping = require('tcp-ping');
     crc32 = require('crc').crc32;
 
     //Parse command line
-    commander
-        .option('p, python <path>', 'Path to your python executable')
-        .option('r, release', 'Runs electron in release mode')
-        .option('w, web', 'Runs the GUI in your browser')
-        .option('f, force', 'Force an environment check and Angular/Electron re-compile')
-        .parse(commandLine);
+    let programOpts = {};
 
-    if (commander["python"] && typeof (commander["python"]) == "string" && commander["python"].trim().length > 0)
-        pythonPath = commander["python"];
+    for (let i = 0; i < commandLine.length; i++) {
+        let arg = commandLine[i];
 
-    if (commander["release"])
+        if ((arg === "p" || arg === "python") && i < (commandLine.length - 1)) { //Path to the python executable
+            programOpts["python"] = commandLine[++i];
+        }
+        else if (arg === "r" || arg === "release") { //Runs electron in release mode
+            programOpts["release"] = true;
+        }
+        else if (arg === "w" || arg === "web") { //Runs the GUI in the browser
+            programOpts["web"] = true;
+        }
+        else if (arg === "f" || arg === "force") { //Force an environment check and Angular/Electron re-compile
+            programOpts["force"] = true;
+        }
+    }
+
+    if (programOpts["python"] && typeof (programOpts["python"]) == "string" && programOpts["python"].trim().length > 0)
+        pythonPath = programOpts["python"];
+
+    if (programOpts["release"])
         releaseMode = true;
     else
-        if (commander["web"])
+        if (programOpts["web"])
             webMode = true;
 
-    if (commander["force"])
+    if (programOpts["force"])
         forceRecompile = true;
 
     console.log("Mode: " + (releaseMode ? "Release" : webMode ? "Web" : "Dev"));

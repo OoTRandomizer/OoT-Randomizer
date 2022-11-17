@@ -588,7 +588,7 @@ bool Item00_KillActorIfFlagIsSet(z64_actor_t *actor) {
 // Override the drop ID (what item to spawn) in the call to Item_DropCollectible/Item_DropCollectible2.
 // Drops all overridden items as green rupees for consistency (so they don't float like hearts do).
 // The rest of the code is just the rewrite of the vanilla code for converting drops based on age/health.
-int16_t get_override_drop_id(int16_t dropId, uint16_t params) {
+int16_t get_override_drop_id(int16_t dropId) {
     // make our a dummy enitem00 with enough info to get the override
     EnItem00 dummy;
     dummy.actor.actor_id = 0x15;
