@@ -196,7 +196,7 @@
         },
         "exits": {
             "Fire Temple Narrow Path Room": "True",
-            "Fire Temple Flame Maze": "(can_use(Bow) and can_use(Hookshot) and can_use(Goron_Tunic)) or can_use(Fire_Arrows)"
+            "Fire Temple Flame Maze": "((can_use(Bow) and can_use(Hookshot) and can_use(Goron_Tunic))) or can_use(Fire_Arrows)"
         }
     },
     {
