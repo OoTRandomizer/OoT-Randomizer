@@ -83,11 +83,25 @@
 
         },
         "exits": {
-            "Fire Temple Elevator Room": "Goron_Tunic and (Small_Key_Fire_Temple, 2)"
+            "Fire Temple Elevator Room": "(Small_Key_Fire_Temple, 2)"
         }
     },
     {
         "region_name": "Fire Temple Elevator Room",
+        "dungeon": "Fire Temple",
+        "locations": {},
+        "exits": {
+            "Fire Temple Elevator Hearts" 
+                "(can_use(Farores_Wind) and logic_fire_hearts_fw) or 
+                (Goron_Tunic)",
+            "Fire Temple Lower Lizalfos Maze": "
+                ((can_use(Farores_Wind) and Hookshot and 
+                logic_fire_elevator_fw) or Goron_Tunic) and 
+                has_fire_source or (logic_fire_mq_climb and Hover_Boots)"
+        }
+    },
+    {
+        "region_name": "Fire Temple Elevator Hearts",
         "dungeon": "Fire Temple",
         "locations": {
             "Fire Temple MQ Elevator Room Recovery Heart 1": "True",
@@ -95,7 +109,7 @@
             "Fire Temple MQ Elevator Room Recovery Heart 3": "True"
         },
         "exits": {
-            "Fire Temple Lower Lizalfos Maze": "has_fire_source or (logic_fire_mq_climb and Hover_Boots)"
+            "Fire Temple Elevator Room": "True"
         }
     },
     {
@@ -182,7 +196,7 @@
         },
         "exits": {
             "Fire Temple Narrow Path Room": "True",
-            "Fire Temple Flame Maze": "(can_use(Bow) and can_use(Hookshot)) or can_use(Fire_Arrows)"
+            "Fire Temple Flame Maze": "(can_use(Bow) and can_use(Hookshot) and can_use(Goron_Tunic)) or can_use(Fire_Arrows)"
         }
     },
     {
