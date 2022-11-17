@@ -50,22 +50,37 @@
         },
         "exits": {
             "Fire Temple Elevator Room": "
-                (logic_fewer_tunic_requirements or Goron_Tunic) and (Small_Key_Fire_Temple, 3)"
+                (Small_Key_Fire_Temple, 3)"
         }
     },
     {
         "region_name": "Fire Temple Elevator Room",
         "dungeon": "Fire Temple",
-        "locations": {
-            "Fire Temple Elevator Room Recovery Heart 1": "True",
-            "Fire Temple Elevator Room Recovery Heart 2": "True",
-            "Fire Temple Elevator Room Recovery Heart 3": "True"
-        },
+        "locations": {},
         "exits": {
+            "Fire Temple Elevator Hearts": "
+                (can_use(Farores_Wind) and logic_fire_hearts_fw) or 
+                (can_use(Goron_Tunic))"
             "Fire Temple Boulder Maze Lower": "
+                is_adult and
                 (Small_Key_Fire_Temple, 4) and
                 (Progressive_Strength_Upgrade or logic_fire_strength) and
-                (has_explosives or Bow or Hookshot)"
+                (has_explosives or Bow or Hookshot) and
+                ((can_use(Farores_Wind) and Hookshot and 
+                logic_fire_elevator_fw) or
+                Goron_Tunic)"
+        }
+    },
+    {
+        "region_name": "Fire Temple Elevator Hearts",
+        "dungeon": "Fire Temple",
+        "locations": {
+            "Fire Temple Elevator Room Recovery Heart 1": "true",
+            "Fire Temple Elevator Room Recovery Heart 2": "true",
+            "Fire Temple Elevator Room Recovery Heart 3": "true"
+        },
+        "exits": {
+            "Fire Temple Elevator Room": "true"
         }
     },
     {
