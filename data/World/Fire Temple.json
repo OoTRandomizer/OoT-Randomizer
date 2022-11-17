@@ -50,7 +50,7 @@
         },
         "exits": {
             "Fire Temple Elevator Room": "
-                is_adult and Goron_Tunic and (Small_Key_Fire_Temple, 3)"
+                (logic_fewer_tunic_requirements or Goron_Tunic) and (Small_Key_Fire_Temple, 3)"
         }
     },
     {
