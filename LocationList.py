@@ -495,7 +495,7 @@ location_table = OrderedDict([
     ("GC Upper Staircase Pot 1",                                     ("Pot",          0x62,  [(3,0,43),(3,2,10)],None,              'Rupees (5)',                            ("Goron City", "Pot"))),
     ("GC Upper Staircase Pot 2",                                     ("Pot",          0x62,  [(3,0,44),(3,2,11)],None,              'Rupee (1)',                             ("Goron City", "Pot"))),
     ("GC Upper Staircase Pot 3",                                     ("Pot",          0x62,  [(3,0,45),(3,2,12)],None,              'Rupees (5)',                            ("Goron City", "Pot"))),
-    ("GC Boulder Maze Crate",                                        ("Crate",        0x62,  (0,0,50), None,                        'Rupee (1)',                             ("Goron City", "Crate"))),
+    ("GC Boulder Maze Crate",                                        ("Crate",        0x62,  [(0,0,50),(0,2,47)], None,             'Rupee (1)',                             ("Goron City", "Crate"))),
     # Goron City Beehives
     ("GC Grotto Beehive",                                            ("Beehive",      0x3E,  (12,0,0x44 + (0x1B * 2)), None,        'Rupees (20)',                           ("Goron City", "Grottos", "Beehive"))),
 

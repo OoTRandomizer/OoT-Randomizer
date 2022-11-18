@@ -240,7 +240,9 @@ async function setupNodeEnvironment(freshSetup = false) {
 
     environmentChecked = true;
 
-    let npmInstallCommand = freshSetup ? "npm ci --verbose" : "npm install --verbose --no-save";
+    let npmInstallCommand = freshSetup ? "npm ci --verbose --only=prod" : "npm install --verbose --no-save --only=prod";
+
+    console.log("\nInstalling npm dependencies via:", npmInstallCommand, '\n')
 
     await spawnChildSubProcess(npmInstallCommand, null, true, true, "inherit")
         .catch(err => { throw Error("Environment setup failed", err); });
@@ -254,7 +256,7 @@ async function setupWebTestNodeEnvironment() {
 
     await waitFor(1000);
 
-    await spawnChildSubProcess("npm install --verbose", null, true, true, "inherit", "webTest").catch(err => { throw Error("Web test environment setup failed"); });
+    await spawnChildSubProcess("npm install --verbose --only=prod", null, true, true, "inherit", "webTest").catch(err => { throw Error("Web test environment setup failed"); });
 
     console.log("Web test environment setup completed");
 }

@@ -226,10 +226,11 @@ def prepare_rom(spoiler, world, rom, settings, rng_state=None, restore=True):
         rom.restore()
     patch_rom(spoiler, world, rom)
     cosmetics_log = patch_cosmetics(settings, rom)
-    if settings.model_adult != "Default" or len(settings.model_adult_filepicker) > 0:
-        patch_model_adult(rom, settings, cosmetics_log)
-    if settings.model_child != "Default" or len(settings.model_child_filepicker) > 0:
-        patch_model_child(rom, settings, cosmetics_log)
+    if not settings.generating_patch_file:
+        if settings.model_adult != "Default" or len(settings.model_adult_filepicker) > 0:
+            patch_model_adult(rom, settings, cosmetics_log)
+        if settings.model_child != "Default" or len(settings.model_child_filepicker) > 0:
+            patch_model_child(rom, settings, cosmetics_log)
     rom.update_header()
     return cosmetics_log
 
@@ -345,7 +346,7 @@ def patch_and_output(settings, window, spoiler, rom):
                 log_and_update_window(window, 'Patching ROM')
                 player_filename_suffix = ""
 
-            settings.disable_custom_music = settings.create_patch_file
+            settings.generating_patch_file = settings.create_patch_file
             patch_cosmetics_log = prepare_rom(spoiler, world, rom, settings, rng_state, restore_rom)
             restore_rom = True
             window.update_progress(65 + 20*(world.id + 1)/settings.world_count)
@@ -376,7 +377,7 @@ def patch_and_output(settings, window, spoiler, rom):
             uncompressed_path = os.path.join(output_dir, uncompressed_filename)
             log_and_update_window(window, f"Saving Uncompressed ROM: {uncompressed_filename}")
             if separate_cosmetics:
-                settings.disable_custom_music = False
+                settings.generating_patch_file = False
                 cosmetics_log = prepare_rom(spoiler, world, rom, settings, rng_state, restore_rom)
             else:
                 cosmetics_log = patch_cosmetics_log

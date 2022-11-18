@@ -543,6 +543,7 @@
     width: calc(50% - 20px) !important;
     left: calc(50% - 20px + 25px) !important;
     bottom: 13px;
+    padding: 0.75rem 1.5rem !important;
     margin-right: 6px !important;
 
     @media (max-width: 680px) {
@@ -563,10 +564,6 @@
     }
 
     .footerGenerateButtonNormalSmall {
-      bottom: 5px;
-    }
-
-    .footerGenerateButtonRaceSmall {
       bottom: 5px;
     }
   }
