@@ -367,13 +367,29 @@ SRAM_SLOTS:
     j       Sram_CopySave
     nop
 
-; Hack to EnItem00_Init
-; replaces
-;   ANDI    t9, v0, 0x00FF
-;   SH      T9, 0x001c(S0)
-.orga 0xA87AF0 ; In memory 0x80011B90
-    jal     item00_init_hook
-    nop
+; Increase the size of EnItem00 instances to store the override
+.orga 0xB5D6BE ; Address in ROM of the enitem00 init params
+    .halfword 0x01AC
+
+; Increase the size of pot instances to store chest type 
+.orga 0xDE8A5E ; Address in ROM of the ObjTsubo init params
+    .halfword 0x01A0 ; New data starts at 0x0190
+
+; Increase the size of flying pot instances to store chest type
+.orga 0xDFB03A ; Address in ROM of the En_Tubo_Trap Init params
+    .halfword 0x01AC ; New data starts at 0x019C
+
+; Increase the size of crate instances to store chest type
+.orga 0xEC856E ; Address in ROM of Obj_Kibako2 Init params
+    .halfword 0x01B8 ; New data starts at 0x01A8
+
+; Increase the size of small crate instances to store chest type
+.orga 0xDE7B0E ; Address in ROM of Obj_Kibako Init params
+    .halfword 0x019C ; New data starts at 0x018C
+
+; Increase the size of beehive instances to store chest type
+.orga 0xEC783E ; Address in ROM of Obj_Comb Init params
+    .halfword 0x01B4 ; New data starts at 0x01A4
 
 ; Hack EnItem00_Init when it checks the scene flags to prevent killing the actor if its being overridden.
 ; replaces
@@ -414,14 +430,6 @@ SRAM_SLOTS:
     j get_override_drop_id
     nop
 
-; Hack Item_DropCollectible to set the y rotation to the drop_collectible_override_flag
-; replaces
-;   sw      r0, 0x0020(sp)
-;   sw      r0, 0x001C(sp)
-.orga 0xA89718; in memory 0x800137B8
-    jal     drop_collectible_hook
-    sw      r0, 0x0020(sp)
-
 ; Hack Item_DropCollectible when room index of the spawned actor gets set to -1.
 ; replaces
 ;   addiu   t7, r0, 0x00DC
@@ -446,22 +454,21 @@ SRAM_SLOTS:
     nop
     nop
 
-; Hack Item_DropCollectible2 to set the y rotation to the drop_collectible_override_flag
+; Hack Item_DropCollectible call to Actor_Spawn to set override
 ; replaces
-;   sw      r0, 0x0020(sp)
-;   sw      r0, 0x001C(sp)
-.orga 0xA89940; in memory 0x800139E0
-    jal     drop_collectible2_hook
-    sw      r0, 0x0020(sp)
+;   jal     0x80025110
+.orga 0xA8972C; in memory 0x800137B8
+    jal     Item_DropCollectible_Actor_Spawn_Override
 
-; Hack ObjTsubo_SpawnCollectible (Pot) to store the collectible override flag from the z rotation
-; Replaces
-; lw        a0, 0x001c(sp)
-; sra       t6, v1, 9
-; andi      t7,t6, 0x003F
-.orga 0xDE7C8C
-    nop
-    jal     obj_tsubo_spawn_hook
+; Hack Item_DropCollectible2 call to Actor_Spawn to set override
+; replaces
+;   jal     0x80025110
+.orga 0xA89958; in memory 0x800139E0
+    jal     Item_DropCollectible_Actor_Spawn_Override
+
+; Hack ObjTsubo_SpawnCollectible (Pot) to call our overridden spawn function
+.orga 0xDE7C60
+    j		ObjTsubo_SpawnCollectible_Hack
     nop
 
 ; Hack ObjKibako2_SpawnCollectible (Large crates) to call our overridden spawn function

@@ -190,21 +190,6 @@ get_item_hook:
     jr      ra
     addiu   sp, sp, 0x20
 
-; Set actors dropFlag to indicate that it was dropped from something.
-item00_init_hook:
-    andi    T9, V0, 0x00FF   ; replaced code
-    jr      ra
-    sh      T9, 0x001c(S0)   ; replaced code
-
-; hooks Item_DropCollectible to store flag data in the variables passed to the EnItem00 spawn.
-; Put the flag data into the y rotation paramter of the EnItem00 because its unused.
-drop_collectible_hook:
-    li      t0, drop_collectible_override_flag	
-    lh      t1, 0x00(t0) ; get the current override flag
-    sh      r0, 0x00(t0) ; clear the override_flag
-    jr      ra
-    sw      t1, 0x1C(sp) ; put the flag in the y rotation parameter which is at 0x1C(sp)
-
 ; Hook Item_DropCollectible to not set the room to -1 if we are going to be overriding the collectible.
 ; This will cause overridden collectibles to despawn when switching rooms. 
 drop_collectible_room_hook:

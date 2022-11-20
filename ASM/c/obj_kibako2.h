@@ -11,9 +11,12 @@ typedef void (*ObjKibako2ActionFunc)(struct ObjKibako2 *, z64_game_t *);
 
 typedef struct ObjKibako2 {
     /* 0x0000 */ DynaPolyActor dyna;
-    /* 0x0164 */ uint8_t collider[0x4c];
-    /* 0x01B0 */ void *actionFunc;
-    /* 0x01B4 */ int16_t collectibleFlag;
+    /* 0x0154 */ uint8_t collider[0x4C];
+    /* 0x01A0 */ void *actionFunc;
+    /* 0x01A4 */ int16_t collectibleFlag;
+    /* 0x01A8 */ uint8_t chest_type;
 } ObjKibako2; // size = 0x01B8
+
+override_t get_crate_override(z64_actor_t *actor, z64_game_t *game);
 
 #endif

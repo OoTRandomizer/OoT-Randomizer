@@ -614,7 +614,7 @@ logic_tricks = {
 
     # Dungeons
 
-        'Deku Tree Basement Vines GS with Jump Slash': {
+    'Deku Tree Basement Vines GS with Jump Slash': {
         'name'    : 'logic_deku_basement_gs',
         'tags'    : ("Deku Tree", "Skulltulas",),
         'tooltip' : '''\
@@ -4693,7 +4693,7 @@ setting_infos = [
     Combobox(
         name           = 'correct_potcrate_appearances',
         gui_text       = 'Pot & Crate Appearance Matches Contents',
-        default        = 'off',
+        default        = 'textures_unchecked',
         choices        = {
             'off':                'Off',
             'textures_content':   'Texture (Match Content)',

@@ -1,6 +1,6 @@
 #include "objects.h"
-
 #include "z64.h"
+#include "get_items.h"
 
 extern uint8_t FIX_BROKEN_DROPS;
 

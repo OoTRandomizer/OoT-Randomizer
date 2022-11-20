@@ -1330,22 +1330,6 @@ typedef struct
                                               /* 0x01B0 */
 } z64_trail_t;
 
-struct EnItem00;
-
-typedef void(*EnItem00ActionFunc)(struct EnItem00 *, z64_game_t *);
-
-typedef struct EnItem00 {
-  z64_actor_t actor;
-  EnItem00ActionFunc actionFunc;
-  uint16_t collectibleFlag;
-  uint16_t getItemId;
-  uint16_t unk_154;
-  uint16_t unk_156;
-  uint16_t unk_158;
-  int16_t timeToLive; //0x15A
-  float scale;
-} EnItem00;
-
 typedef enum {
     /* 0x00 */ ITEM00_RUPEE_GREEN,
     /* 0x01 */ ITEM00_RUPEE_BLUE,
@@ -1687,7 +1671,6 @@ typedef struct EnGSwitch
 #define z64_ctxt_game_size                      0x00012518
 
 /* function prototypes */
-typedef void(*z64_EnItem00ActionFunc)(struct EnItem00 *, z64_game_t *);
 typedef void(*z64_ActorKillFunc)(z64_actor_t *);
 typedef uint8_t(*z64_Message_GetStateFunc)(uint8_t *);
 typedef void(*z64_Flags_SetCollectibleFunc)(z64_game_t *game, uint32_t flag);
@@ -1697,7 +1680,7 @@ typedef void(*z64_Audio_PlayFanFareFunc)(uint16_t);
 typedef void (*z64_DrawActors_proc)       (z64_game_t *game, void *actor_ctxt);
 typedef void (*z64_DeleteActor_proc)      (z64_game_t *game, void *actor_ctxt,
                                            z64_actor_t *actor);
-typedef void (*z64_SpawnActor_proc)       (void *actor_ctxt, z64_game_t *game,
+typedef z64_actor_t* (*z64_SpawnActor_proc)       (void *actor_ctxt, z64_game_t *game,
                                            int actor_id, float x, float y,
                                            float z, uint16_t rx, uint16_t ry,
                                            uint16_t rz, uint16_t variable);
@@ -1724,7 +1707,6 @@ typedef float *(*z64_GetMatrixStackTop_proc)();
 typedef void (*SsSram_ReadWrite_proc)(uint32_t addr, void *dramAddr, size_t size, uint32_t direction);
 typedef void *(*z64_memcopy_proc)(void *dest, void *src, uint32_t size);
 typedef void (*z64_bzero_proc)(void *__s, uint32_t __n);
-typedef EnItem00 *(*z64_Item_DropCollectible_proc)(z64_game_t *globalCtx, z64_xyzf_t *spawnPos, int16_t params);
 typedef void (*z64_Gfx_DrawDListOpa_proc)(z64_game_t *game, z64_gfx_t *dlist);
 typedef float (*z64_Math_SinS_proc)(int16_t angle);
 

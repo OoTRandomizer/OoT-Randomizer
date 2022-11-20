@@ -929,6 +929,7 @@ export class GUIGlobal implements OnDestroy {
 
       //Not mapped settings need to be deleted manually
       delete settingsFile["settings_string"];
+      delete settingsFile["theme"]
 
       //Delete all shared = false keys from map since they aren't included in the seed
       this.deleteSettingsFromMapWithCondition(settingsFile, "shared", false);
