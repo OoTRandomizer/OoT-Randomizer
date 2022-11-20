@@ -1026,7 +1026,9 @@
             "logic_lens_shadow_platform",
             "logic_lens_bongo",
             "logic_lens_spirit_mq",
-            "logic_lens_spirit"
+            "logic_lens_spirit",
+            "logic_fire_hearts_fw",
+            "logic_fire_elevator_fw"
         ],
         "starting_equipment": [],
         "starting_items": [],
