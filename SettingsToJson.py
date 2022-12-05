@@ -9,7 +9,7 @@ import copy
 
 tab_keys     = ['text', 'app_type', 'footer']
 section_keys = ['text', 'app_type', 'is_colors', 'is_sfx', 'col_span', 'row_span', 'subheader']
-setting_keys = ['hide_when_disabled', 'min', 'max', 'size', 'max_length', 'file_types', 'no_line_break', 'function', 'option_remove']
+setting_keys = ['hide_when_disabled', 'min', 'max', 'size', 'max_length', 'file_types', 'no_line_break', 'function', 'option_remove', 'dynamic']
 types_with_options = ['Checkbutton', 'Radiobutton', 'Combobox', 'SearchBox', 'MultipleSelect']
 
 
@@ -270,9 +270,23 @@ def CreateJSON(path, web_version=False):
     with open(path, 'w') as f:
         json.dump(settingOutputJson, f)
 
- 
+
+def GetSettingOptions(setting_key, web_version):
+    setting = GetSettingJson(setting_key, web_version)
+
+    print(json.dumps(setting))
+
+
 def settingToJsonMain():
-    web_version = '--web' in sys.argv
+    args = sys.argv[1:]
+    web_version = '--web' in args
+
+    if '--setting' in args:
+        arg_index = args.index('--setting') + 1
+        if len(args) < arg_index:
+            raise Exception("Usage: SettingsToJson.py --setting <setting_key>")
+        return GetSettingOptions(args[arg_index], web_version)
+
     CreateJSON(data_path('generated/settings_list.json'), web_version)
 
 

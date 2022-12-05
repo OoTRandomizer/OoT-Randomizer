@@ -4743,6 +4743,9 @@ setting_infos = [
         default        = 'balanced',
         choices        = HintDistList(),
         gui_tooltip    = HintDistTips(),
+        gui_params     = {
+            "dynamic": True,
+        },
         shared         = True,
         disable        = {
             '!bingo' : {'settings' : ['bingosync_url']},
@@ -5161,6 +5164,7 @@ setting_infos = [
         default        = 'Default',
         gui_params     = {
             "hide_when_disabled": True,
+            "dynamic": True,
         }
     ),
     Setting_Info('model_adult_filepicker', str, "Adult Link Model", "Fileinput", False, {},
@@ -5197,6 +5201,7 @@ setting_infos = [
         default        = 'Default',
         gui_params     = {
             "hide_when_disabled": True,
+            "dynamic": True,
         }
     ),
     Setting_Info('model_child_filepicker', str, "Child Link Model", "Fileinput", False, {},
@@ -6100,6 +6105,7 @@ setting_infos = [
         ''',
         gui_params     = {
             "hide_when_disabled": True,
+            "dynamic": True,
         }
     ),
     Combobox(
@@ -6114,6 +6120,7 @@ setting_infos = [
         ''',
         gui_params     = {
             "hide_when_disabled": True,
+            "dynamic": True,
         }
     ),
     Setting_Info(
