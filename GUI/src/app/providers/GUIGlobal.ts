@@ -538,20 +538,22 @@ export class GUIGlobal implements OnDestroy {
             if (!dynamicSetting)
               continue;
 
+            let parsedSetting = JSON.parse(dynamicSetting);
+
             let isCosmetic = (tab.name in guiSettings.cosmeticsObj);
                     
-            guiSettings.settingsObj[tab.name].sections[section.name].settings[setting.name] = dynamicSetting;
-            guiSettings.settingsArray[tabIndex].sections[sectionIndex].settings[settingIndex] = dynamicSetting;
+            guiSettings.settingsObj[tab.name].sections[section.name].settings[setting.name] = parsedSetting;
+            guiSettings.settingsArray[tabIndex].sections[sectionIndex].settings[settingIndex] = parsedSetting;
 
             if (isCosmetic) {
-              guiSettings.cosmeticsObj[tab.name].sections[section.name].settings[setting.name] = dynamicSetting;
+              guiSettings.cosmeticsObj[tab.name].sections[section.name].settings[setting.name] = parsedSetting;
 
               let cosmeticTabIndex = guiSettings.cosmeticsArray.findIndex(elem => elem.name == tab.name);
 
               if (cosmeticTabIndex != -1) {
 
                 //Note: This follows the assumption that sections and settings are structured identically between settings and cosmetics arrays.
-                guiSettings.cosmeticsArray[cosmeticTabIndex].sections[sectionIndex].settings[settingIndex] = dynamicSetting;
+                guiSettings.cosmeticsArray[cosmeticTabIndex].sections[sectionIndex].settings[settingIndex] = parsedSetting;
               }
             }  
           }
