@@ -535,6 +535,9 @@ export class GUIGlobal implements OnDestroy {
           if (setting.dynamic) {
             let dynamicSetting = await this.updateDynamicSetting(setting.name)
 
+            if (!dynamicSetting)
+              continue;
+
             let isCosmetic = (tab.name in guiSettings.cosmeticsObj);
                     
             guiSettings.settingsObj[tab.name].sections[section.name].settings[setting.name] = dynamicSetting;
