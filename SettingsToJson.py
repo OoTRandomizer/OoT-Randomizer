@@ -271,7 +271,7 @@ def CreateJSON(path, web_version=False):
         json.dump(settingOutputJson, f)
 
 
-def GetSettingOptions(setting_key, web_version):
+def GetSettingDetails(setting_key, web_version):
     setting = GetSettingJson(setting_key, web_version)
 
     print(json.dumps(setting))
@@ -285,7 +285,7 @@ def settingToJsonMain():
         arg_index = args.index('--setting') + 1
         if len(args) < arg_index:
             raise Exception("Usage: SettingsToJson.py --setting <setting_key>")
-        return GetSettingOptions(args[arg_index], web_version)
+        return GetSettingDetails(args[arg_index], web_version)
 
     CreateJSON(data_path('generated/settings_list.json'), web_version)
 
