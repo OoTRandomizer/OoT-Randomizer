@@ -347,6 +347,49 @@ function parseSettings(pythonPath, randoPath) {
   });
 }
 
+function getUpdatedDynamicSetting(pythonPath, scriptPath, settingName) {
+  return new Promise(function (resolve, reject) {
+
+    let output = "";
+    let error = false;
+
+    let args = ['--setting', settingName];
+
+    //console.log("Get dynamic setting now with spawn!");
+
+    let settingsToJSONPY = spawn(pythonPath + ' ' + '"' + scriptPath + '"', args, { shell: true }).on('error', err => {
+      console.error("[getUpdatedDynamicSetting] Error spawning process:", err);
+      reject(err);
+    });
+
+    settingsToJSONPY.stdout.on('data', data => {
+      output = output + data.toString();
+      error = false;
+    });
+    settingsToJSONPY.stderr.on('data', data => {
+      output = output + data.toString();
+      error = true;
+    });
+
+    promiseFromChildProcess(settingsToJSONPY).then(function () {
+
+      //console.log("Get dynamic setting DONE!");
+
+      if (error) {
+        console.error('[getUpdatedDynamicSetting] settingsToJSONPY error: ' + output);
+        reject(output);
+      }
+      else {
+        resolve(output.replace(/\r?\n|\r/g, "\r\n"));
+      }
+
+    }).catch(err => {
+      console.error('[getUpdatedDynamicSetting] settingsToJSONPY promise rejected: ' + err);
+      reject(err);
+    });
+  });
+}
+
 module.exports = new EventEmitter();
 
 module.exports.getSettings = getSettings;
@@ -354,3 +397,4 @@ module.exports.parseSettings = parseSettings;
 module.exports.romBuilding = romBuilding;
 module.exports.cancelRomBuilding = cancelRomBuilding;
 module.exports.testPythonPath = testPythonPath;
+module.exports.getUpdatedDynamicSetting = getUpdatedDynamicSetting;

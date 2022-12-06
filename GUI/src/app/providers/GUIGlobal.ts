@@ -416,8 +416,7 @@ export class GUIGlobal implements OnDestroy {
     this.createWebEvents();
   }
 
-  parseGeneratorGUISettings(guiSettings, userSettings) {
-
+  async parseGeneratorGUISettings(guiSettings, userSettings) {
     const isRGBHex = /[0-9A-Fa-f]{6}/;
 
     //Intialize settings maps
@@ -472,7 +471,7 @@ export class GUIGlobal implements OnDestroy {
 
           continue;
         }
-        section.settings.forEach(setting => {
+        section.settings.forEach(async setting => {
 
           this.generator_settingsVisibilityMap[setting.name] = true;
 
@@ -529,10 +528,19 @@ export class GUIGlobal implements OnDestroy {
               this.generator_customColorMap[setting.name] = "";
             }
           }
+          
+          //Handle dynamic settings. The availale options (and sometimes the tooltip) are determined at runtime
+          if (setting.dynamic) {
+              //console.log("getting dynamic options for " + setting.name);
+              let dynamicSetting = await this.updateDynamicSetting(setting.name)
+              //console.log(JSON.parse(dynamicSetting).text);
+          }
         });
       }
     }
 
+    console.log("finalizing settings");
+    
     //Add GUI only options
     this.generator_settingsMap["settings_string"] = userSettings && "settings_string" in userSettings ? userSettings["settings_string"] : "";
     this.generator_settingsMap["theme"] = userSettings && "theme" in userSettings ? userSettings["theme"] : "";
@@ -551,6 +559,43 @@ export class GUIGlobal implements OnDestroy {
     this.setGlobalVar('generatorGoalDistros', guiSettings.distroArray);
 
     this.generator_presets = guiSettings.presets;
+  }
+
+   updateDynamicSetting(settingName: string) {
+    if (this.getGlobalVar('electronAvailable')) {
+     
+      return new Promise<any>(function (resolve, reject) {
+
+          post.send(window, 'updateDynamicSetting', settingName).then(event => {
+            var listenerSuccess = post.once('updateDynamicSettingSuccess', function (event) {
+  
+              listenerError.cancel();
+  
+              let data = event.data;
+              resolve(data);
+            });
+  
+            var listenerError = post.once('updateDynamicSettingError', function (event) {
+  
+              listenerSuccess.cancel();
+  
+              let data = event.data;
+  
+              console.error("[updateDynamicSetting] Python Error:", data);
+              reject(data);
+            });
+  
+          }).catch(err => {
+            console.error("[updateDynamicSettingy] Post-Robot Error:", err);
+            reject(err);
+          });   
+      })
+    }
+     /*
+    else {
+      //TODO: Should dynamic settings ever be needed on web, add APi call or browser lookups here.
+    }
+    */
   }
 
   async versionCheck() { //Electron only

@@ -18,6 +18,7 @@ console.log("Platform:", platform);
 var pythonPath = commander.python ? '"' + commander.python + '"' : platform == "win32" ? "py" : "python3";
 var pythonSourcePath = path.normalize(remote.app.isPackaged ? remote.app.getAppPath() + "/python/" : remote.app.getAppPath() + "/../");
 var pythonGeneratorPath = pythonSourcePath + "OoTRandomizer.py";
+var pythonSettingsToJsonPath = pythonSourcePath + "SettingsToJson.py";
 
 console.log("Python Executable Path:", pythonPath);
 console.log("Python Source Path:", pythonGeneratorPath);
@@ -251,6 +252,23 @@ post.on('convertSettingsToString', function (event) {
 
   return true;
 });
+
+post.on('updateDynamicSetting', function (event) {
+  let data = event.data;
+
+  if (!data || typeof (data) != "string" || data.length < 1)
+    return false;
+
+  //console.log("get settings from string", data);
+
+  generator.getUpdatedDynamicSetting(pythonPath, pythonSettingsToJsonPath, data).then(res => {
+    //console.log('[Preload] Success');
+      post.send(window, 'updateDynamicSettingSuccess', res);
+      
+  }).catch((err) => {
+      post.send(window, 'updateDynamicSettingError', err);
+  })
+})
 
 post.on('convertStringToSettings', function (event) {
 
