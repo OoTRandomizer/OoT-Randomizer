@@ -272,9 +272,11 @@ def CreateJSON(path, web_version=False):
 
 
 def GetSettingDetails(setting_key, web_version):
-    setting = GetSettingJson(setting_key, web_version)
+    settingJsonObj = GetSettingJson(setting_key, web_version, as_array=False)
+    settingJsonArr = GetSettingJson(setting_key, web_version, as_array=True)
 
-    print(json.dumps(setting))
+    settingOutput = { "object": settingJsonObj, "array": settingJsonArr }
+    print(json.dumps(settingOutput))
 
 
 def settingToJsonMain():
