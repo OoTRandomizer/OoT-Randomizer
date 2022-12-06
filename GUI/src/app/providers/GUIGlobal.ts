@@ -332,7 +332,7 @@ export class GUIGlobal implements OnDestroy {
       if (userSettings)
         userSettings = JSON.parse(userSettings);
 
-      this.parseGeneratorGUISettings(res, userSettings);
+      await this.parseGeneratorGUISettings(res, userSettings);
 
     } catch (err) {
       console.error(err);
@@ -401,7 +401,7 @@ export class GUIGlobal implements OnDestroy {
       }
     }
 
-    this.parseGeneratorGUISettings(res, userSettings);
+    await this.parseGeneratorGUISettings(res, userSettings);
 
     //Check for cached files and then create web events after
     if ((<any>window).emscriptenFoundCachedROMFile)
@@ -471,7 +471,9 @@ export class GUIGlobal implements OnDestroy {
 
           continue;
         }
-        section.settings.forEach(async setting => {
+        for (let settingIndex = 0; settingIndex < section.settings.length; settingIndex++) {
+
+          let setting = section.settings[settingIndex];
 
           this.generator_settingsVisibilityMap[setting.name] = true;
 
@@ -531,15 +533,30 @@ export class GUIGlobal implements OnDestroy {
           
           //Handle dynamic settings. The availale options (and sometimes the tooltip) are determined at runtime
           if (setting.dynamic) {
-              //console.log("getting dynamic options for " + setting.name);
-              let dynamicSetting = await this.updateDynamicSetting(setting.name)
-              //console.log(JSON.parse(dynamicSetting).text);
+            let dynamicSetting = await this.updateDynamicSetting(setting.name)
+
+            let isCosmetic = (tab.name in guiSettings.cosmeticsObj);
+                    
+            guiSettings.settingsObj[tab.name].sections[section.name].settings[setting.name] = dynamicSetting;
+            guiSettings.settingsArray[tabIndex].sections[sectionIndex].settings[settingIndex] = dynamicSetting;
+
+            if (isCosmetic) {
+              guiSettings.cosmeticsObj[tab.name].sections[section.name].settings[setting.name] = dynamicSetting;
+
+              let cosmeticTabIndex = guiSettings.cosmeticsArray.findIndex(elem => elem.name == tab.name);
+
+              if (cosmeticTabIndex != -1) {
+
+                //Note: This follows the assumption that sections and settings are structured identically between settings and cosmetics arrays.
+                guiSettings.cosmeticsArray[cosmeticTabIndex].sections[sectionIndex].settings[settingIndex] = dynamicSetting;
+              }
+            }  
           }
-        });
+        };
       }
     }
 
-    console.log("finalizing settings");
+    //console.log("finalizing settings");
     
     //Add GUI only options
     this.generator_settingsMap["settings_string"] = userSettings && "settings_string" in userSettings ? userSettings["settings_string"] : "";
@@ -561,7 +578,7 @@ export class GUIGlobal implements OnDestroy {
     this.generator_presets = guiSettings.presets;
   }
 
-   updateDynamicSetting(settingName: string) {
+  updateDynamicSetting(settingName: string) {
     if (this.getGlobalVar('electronAvailable')) {
      
       return new Promise<any>(function (resolve, reject) {
