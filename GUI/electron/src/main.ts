@@ -239,7 +239,7 @@ function manageCSP() {
     callback({
       responseHeaders: {
         ...details.responseHeaders,
-        'Content-Security-Policy': ['default-src \'self\' *.gstatic.com; img-src \'self\' data: *; style-src \'self\' \'unsafe-inline\' *.googleapis.com; script-src \'self\' \'unsafe-eval\' \'unsafe-inline\' *.googleapis.com; connect-src \'self\' *.githubusercontent.com ws: localhost:4200*']
+        'Content-Security-Policy': ['default-src \'self\' https://*.gstatic.com/; img-src \'self\' data: *; style-src \'self\' \'unsafe-inline\' https://*.googleapis.com/; script-src \'self\' \'unsafe-eval\' \'unsafe-inline\' https://*.googleapis.com/; connect-src \'self\' https://*.githubusercontent.com/ ws: localhost:4200*']
       }
     })
   });
