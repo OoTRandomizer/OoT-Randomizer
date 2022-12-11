@@ -346,6 +346,7 @@
             "minor_items_as_major_chest",
             "invisible_chests",
             "correct_potcrate_appearances",
+            "incorrect_chest_appearances",
             "clearer_hints",
             "hints",
             "hint_dist",

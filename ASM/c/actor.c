@@ -1,4 +1,5 @@
 #include "z64.h"
+#include "chests.h"
 #include "pots.h"
 #include "item_table.h"
 #include "get_items.h"
@@ -125,6 +126,9 @@ void Actor_StoreChestType(z64_actor_t* actor, z64_game_t* game) {
                 row = get_item_row(override.value.base.item_id);
             }
             *pChestType = row->chest_type;
+            if (INCORRECT_CHEST_APPEARANCES) {
+                *pChestType = wrong_chest_type(*pChestType, override.key, actor->actor_id);
+            }
         }
         else
         {

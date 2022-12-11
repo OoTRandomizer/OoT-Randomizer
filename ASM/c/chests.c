@@ -1,4 +1,8 @@
 #include "chests.h"
+#include "dungeon_info.h"
+#include "item_effects.h"
+#include "item_table.h"
+#include "rng.h"
 #include "n64.h"
 #include "gfx.h"
 #include "sys_matrix.h"
@@ -19,8 +23,127 @@ uint32_t CHEST_TEXTURE_MATCH_CONTENTS = 0;
 uint32_t CHEST_SIZE_MATCH_CONTENTS = 0;
 uint32_t CHEST_SIZE_TEXTURE = 0;
 
+extern uint8_t CFG_GLITCHLESS_LOGIC;
+
 extern Mtx_t* write_matrix_stack_top(z64_gfx_t* gfx);
 asm(".equ write_matrix_stack_top, 0x800AB900");
+
+#define NUM_CHEST_TYPES 8
+ChestType CHEST_TYPES[NUM_CHEST_TYPES] = {
+    BROWN_CHEST,
+    GILDED_CHEST,
+    SILVER_CHEST,
+    GOLD_CHEST,
+    SKULL_CHEST_SMALL,
+    SKULL_CHEST_BIG,
+    HEART_CHEST_SMALL,
+    HEART_CHEST_BIG,
+};
+
+void disallow_chest_type(bool *allowed_types, ChestType type_to_disallow) {
+    switch (type_to_disallow) {
+        case BROWN_CHEST: allowed_types[0] = false; break;
+        case GILDED_CHEST: allowed_types[1] = false; break;
+        case SILVER_CHEST: allowed_types[2] = false; break;
+        case GOLD_CHEST: allowed_types[3] = false; break;
+        case SKULL_CHEST_SMALL: allowed_types[4] = false; break;
+        case SKULL_CHEST_BIG: allowed_types[5] = false; break;
+        case HEART_CHEST_SMALL: allowed_types[6] = false; break;
+        case HEART_CHEST_BIG: allowed_types[7] = false; break;
+    }
+}
+
+uint8_t wrong_chest_type(uint8_t chest_type, override_key_t override_key, int16_t actor_id) {
+    // Physically adjacent chests tend to have numerically adjacent override keys, which tend to yield identical random numbers. Byteswap the override key to get more variety based on the lower bits.
+    uint32_t byteswapped_override_key = ((override_key.all >> 24) & 0xff) | ((override_key.all >> 8) & 0xff00) | ((override_key.all << 8) & 0xff0000) | ((override_key.all << 24) & 0xff000000);
+    Seeded_Rand_Seed(RANDOMIZER_RNG_SEED ^ byteswapped_override_key);
+    if (actor_id == 0x19E) { // beehive
+        return chest_type == BROWN_CHEST ? GILDED_CHEST : BROWN_CHEST;
+    }
+    bool allowed_types[NUM_CHEST_TYPES] = {
+        true, // BROWN_CHEST
+        true, // GILDED_CHEST
+        true, // SILVER_CHEST
+        true, // GOLD_CHEST
+        // Get the skull and heart chest textures from the item table to make sure they have the correct sizes for the randomizer settings.
+        get_item_row(0x005B)->chest_type == SKULL_CHEST_SMALL,
+        get_item_row(0x005B)->chest_type == SKULL_CHEST_BIG,
+        get_item_row(0x003D)->chest_type == HEART_CHEST_SMALL,
+        get_item_row(0x003D)->chest_type == HEART_CHEST_BIG,
+    };
+    if (CHEST_SIZE_MATCH_CONTENTS && override_key.type == OVR_CHEST) {
+        // classic CSMC, treat skull/heart chests as brown or gilded depending on wincons
+        disallow_chest_type(allowed_types, SKULL_CHEST_SMALL);
+        disallow_chest_type(allowed_types, SKULL_CHEST_BIG);
+        disallow_chest_type(allowed_types, HEART_CHEST_SMALL);
+        disallow_chest_type(allowed_types, HEART_CHEST_BIG);
+        switch (chest_type) {
+            case BROWN_CHEST:
+            case SKULL_CHEST_SMALL:
+            case HEART_CHEST_SMALL:
+                chest_type = BROWN_CHEST;
+                break;
+            case GILDED_CHEST:
+            case SKULL_CHEST_BIG:
+            case HEART_CHEST_BIG:
+                chest_type = GILDED_CHEST;
+                break;
+            case SILVER_CHEST:
+                chest_type = SILVER_CHEST;
+                break;
+            case GOLD_CHEST:
+                chest_type = GOLD_CHEST;
+                break;
+        }
+    }
+    bool restricted = override_key.type == OVR_CHEST && (CHEST_SIZE_MATCH_CONTENTS || CHEST_SIZE_TEXTURE) && (
+        override_key.scene == 0x0D && override_key.flag == 0x11 && !CFG_DUNGEON_IS_MQ[CASTLE_ID] // Ganons Castle Light Trial Lullaby Chest
+        || override_key.scene == 0x06 && override_key.flag == 0x04 && !CFG_DUNGEON_IS_MQ[SPIRIT_ID] // Spirit Temple Compass Chest
+        || override_key.scene == 0x5C && override_key.flag == 0x0B && !CFG_GLITCHLESS_LOGIC // Spirit Temple Silver Gauntlets Chest
+    );
+    if (restricted) {
+        // chest size must change
+        switch (chest_type) {
+            case BROWN_CHEST:
+            case SILVER_CHEST:
+            case SKULL_CHEST_SMALL:
+            case HEART_CHEST_SMALL:
+                disallow_chest_type(allowed_types, BROWN_CHEST);
+                disallow_chest_type(allowed_types, SILVER_CHEST);
+                disallow_chest_type(allowed_types, SKULL_CHEST_SMALL);
+                disallow_chest_type(allowed_types, HEART_CHEST_SMALL);
+                break;
+            case GILDED_CHEST:
+            case GOLD_CHEST:
+            case SKULL_CHEST_BIG:
+            case HEART_CHEST_BIG:
+                disallow_chest_type(allowed_types, GILDED_CHEST);
+                disallow_chest_type(allowed_types, GOLD_CHEST);
+                disallow_chest_type(allowed_types, SKULL_CHEST_BIG);
+                disallow_chest_type(allowed_types, HEART_CHEST_BIG);
+                break;
+        }
+    }
+    // must not be the same as the original type
+    disallow_chest_type(allowed_types, chest_type);
+    // Pick a random chest type that's not the same as the original.
+    int num_allowed_chest_types = 0;
+    for (int i = 0; i < NUM_CHEST_TYPES; i++) {
+        if (allowed_types[i]) {
+            num_allowed_chest_types++;
+        }
+    }
+    int random_index = Seeded_Rand_ZeroOne() * num_allowed_chest_types;
+    for (int i = 0; i < NUM_CHEST_TYPES; i++) {
+        if (allowed_types[i]) {
+            if (i == random_index) {
+                return CHEST_TYPES[i];
+            }
+        } else {
+            random_index++;
+        }
+    }
+}
 
 void get_chest_override(z64_actor_t *actor) {
     Chest *chest = (Chest *)actor;
@@ -37,8 +160,12 @@ void get_chest_override(z64_actor_t *actor) {
             if (item_row == NULL) {
                 item_row = get_item_row(override.value.base.item_id);
             }
+            uint8_t chest_type = item_row->chest_type;
+            if (INCORRECT_CHEST_APPEARANCES) {
+                chest_type = wrong_chest_type(chest_type, override.key, actor->actor_id);
+            }
             if (CHEST_SIZE_MATCH_CONTENTS || CHEST_SIZE_TEXTURE) {
-                if (item_row->chest_type == BROWN_CHEST || item_row->chest_type == SILVER_CHEST || item_row->chest_type == SKULL_CHEST_SMALL || item_row->chest_type == HEART_CHEST_SMALL) {
+                if (chest_type == BROWN_CHEST || chest_type == SILVER_CHEST || chest_type == SKULL_CHEST_SMALL || chest_type == HEART_CHEST_SMALL) {
                     // Small chest
                     size = SMALL_CHEST;
                 }
@@ -48,7 +175,7 @@ void get_chest_override(z64_actor_t *actor) {
                 }
             }
 
-            color = item_row->chest_type;
+            color = chest_type;
         }
     }
 
