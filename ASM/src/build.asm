@@ -27,6 +27,7 @@
 .include "malon.asm"
 .include "mido.asm"
 .include "weather.asm"
+.include "item_restriction_flags.asm"
 
 ;==================================================================================================
 ; New code region
