@@ -248,11 +248,6 @@ item_row_t item_table[] = {
 
 };
 
-void test_text_id(item_row_t* item_row)
-{
-    item_row->text_id = 0x004C;
-}
-
 item_row_t *get_item_row(uint16_t item_id) {
     if (item_id >= array_size(item_table)) {
         return NULL;
@@ -275,11 +270,12 @@ uint16_t resolve_upgrades(uint16_t item_id) {
     }
 }
 
-void resolve_text_id(item_row_t* item_row) {
+uint16_t resolve_text_id(item_row_t* item_row) {
     if(item_row->alt_text_func != NULL)
     {
-        item_row->alt_text_func(item_row);
+        return item_row->alt_text_func(item_row);
     }
+    return item_row->text_id;
 }
 
 void call_effect_function(item_row_t *item_row) {
