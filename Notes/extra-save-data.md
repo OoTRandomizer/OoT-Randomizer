@@ -79,7 +79,7 @@ With `shuffle_cows`, the flags representing which cows have been talked to are s
 * LLR Stables Right Cow: scene 0x36, bit 0200_0000
 * LLR Stables Left Cow: scene 0x36, bit 0100_0000
 * Kak Impas House Cow: scene 0x37, bit 0100_0000
-* HF Cow Grotto Cow: scene 0x37, bit 0200_0000
+* HF Cow Grotto Cow: scene 0x3e, bit 0200_0000
 * DMT Cow Grotto Cow: scene 0x3e, bit 0100_0000
 * LLR Tower Left Cow: scene 0x4c, bit 0200_0000
 * LLR Tower Right Cow: scene 0x4c, bit 0100_0000
