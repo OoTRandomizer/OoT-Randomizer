@@ -4306,23 +4306,23 @@ setting_infos = [
         min            = 0,
         max            = 100,
         gui_tooltip    = '''\
-            Multiplies the number of GS Tokens 
-            neededin logic to place an item on a 
-            GS reward. Rounds down to 
+            Multiplies the number of GS Tokens
+            neededin logic to place an item on a
+            GS reward. Rounds down to
             nearest Token.
 
-            0: No additional GS 
+            0: No additional GS
             Tokens are needed for the game
             to put an item on a GS Token Reward.
 
-            50: 50% more GS Tokens need to be 
-            in logic. (Ex: there needs to 
-            be 15 Skulls in logic to put 
+            50: 50% more GS Tokens need to be
+            in logic. (Ex: there needs to
+            be 15 Skulls in logic to put
             an item on 10 skulls)
 
-            100: 100% more GS Tokens need to 
-            be in logic. (Ex: All Skulls must 
-            be in logic to placean item 
+            100: 100% more GS Tokens need to
+            be in logic. (Ex: All Skulls must
+            be in logic to placean item
             on 50 Skulls)
         ''',
         shared         = True,
