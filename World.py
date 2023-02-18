@@ -540,19 +540,19 @@ class World(object):
             if region['region_name'] == "Kak House of Skulltula":
                 if self.settings.increase_logical_skulls == "scale":
                     region['locations'] = {
-                        "Kak 10 Gold Skulltula Reward": "(Gold_Skulltula_Token, " + str(int(10 * (1 + self.settings.logical_skulls_scalled/100))) + ")",
-                        "Kak 20 Gold Skulltula Reward": "(Gold_Skulltula_Token, " + str(int(20 * (1 + self.settings.logical_skulls_scalled/100))) + ")",
-                        "Kak 30 Gold Skulltula Reward": "(Gold_Skulltula_Token, " + str(int(30 * (1 + self.settings.logical_skulls_scalled/100))) + ")",
-                        "Kak 40 Gold Skulltula Reward": "(Gold_Skulltula_Token, " + str(int(40 * (1 + self.settings.logical_skulls_scalled/100))) + ")",
-                        "Kak 50 Gold Skulltula Reward": "(Gold_Skulltula_Token, " + str(int(50 * (1 + self.settings.logical_skulls_scalled/100))) + ")"
+                        "Kak 10 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % int(10 * (1 + self.settings.logical_skulls_scalled/100)),
+                        "Kak 20 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % int(20 * (1 + self.settings.logical_skulls_scalled/100)),
+                        "Kak 30 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % int(30 * (1 + self.settings.logical_skulls_scalled/100)),
+                        "Kak 40 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % int(40 * (1 + self.settings.logical_skulls_scalled/100)),
+                        "Kak 50 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % int(50 * (1 + self.settings.logical_skulls_scalled/100))
                     }
                 elif self.settings.increase_logical_skulls == "buffer":
                     region['locations'] = {
-                        "Kak 10 Gold Skulltula Reward": "(Gold_Skulltula_Token, " + str(10 + self.settings.logical_skulls_buffered) + ")",
-                        "Kak 20 Gold Skulltula Reward": "(Gold_Skulltula_Token, " + str(20 + self.settings.logical_skulls_buffered) + ")",
-                        "Kak 30 Gold Skulltula Reward": "(Gold_Skulltula_Token, " + str(30 + self.settings.logical_skulls_buffered) + ")",
-                        "Kak 40 Gold Skulltula Reward": "(Gold_Skulltula_Token, " + str(40 + self.settings.logical_skulls_buffered) + ")",
-                        "Kak 50 Gold Skulltula Reward": "(Gold_Skulltula_Token, " + str(50 + self.settings.logical_skulls_buffered) + ")"
+                        "Kak 10 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % (10 + self.settings.logical_skulls_buffered),
+                        "Kak 20 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % (20 + self.settings.logical_skulls_buffered),
+                        "Kak 30 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % (30 + self.settings.logical_skulls_buffered),
+                        "Kak 40 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % (40 + self.settings.logical_skulls_buffered),
+                        "Kak 50 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % (50 + self.settings.logical_skulls_buffered)
                     }
 
             new_region = Region(region['region_name'])
