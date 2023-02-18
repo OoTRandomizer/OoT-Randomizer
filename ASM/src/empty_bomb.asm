@@ -1,6 +1,6 @@
 ;At the end of the bombs explosion it sets a bunch of variables if Link is still holding the bomb instance.
 ;This hooks into that check and sets three additional variables to prevent empty bomb
-;This is NOT the same fix that was made in version 1.1 of the game. 
+;This is NOT the same fix that was made in version 1.1 of the game.
 ;Doing it this way prevents the Bomb OI glitch that the OoT devs added in 1.1 and onwards.
 
 empty_bomb:

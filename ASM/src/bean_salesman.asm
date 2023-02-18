@@ -5,7 +5,7 @@ SHUFFLE_BEANS:
 ; Override the initial salesman bean count check if the salesman is randomized
 ; t1 = bean count value to use
 bean_initial_check:
-    addu    v0, v0, t7          ; v0 = save context    
+    addu    v0, v0, t7          ; v0 = save context
     lb      t1, SHUFFLE_BEANS
     beqz    t1, @@return
     lb      v0, -0x59A4(v0)     ; if the salesman isn't randomized, use the current bean count in save context (default code)

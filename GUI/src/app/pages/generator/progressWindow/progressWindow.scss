@@ -1,28 +1,32 @@
-/deep/ {
-  .progress-window {
-    margin-left: auto;
-    margin-right: auto;
-    width: 90%;
+@import '../../../../app/@theme/styles/themes';
 
-    .headerButton {
-      float: right;
-      margin-top: -10px;
-      margin-right: -10px;
-    }
-
-    .footerButtonWrapper {
-      margin-top: 18px;
-      text-align: center;
-    }
-
-    button + button {
-      margin-left: 1rem;
-    }
-  }
-
-  @media (min-width: 40rem) {
+@include nb-install-component() {
+  ::ng-deep {
     .progress-window {
-      width: 38rem;
+      margin-left: auto;
+      margin-right: auto;
+      width: 90%;
+
+      .headerButton {
+        float: right;
+        margin-top: -10px;
+        margin-right: -10px;
+      }
+
+      .footerButtonWrapper {
+        margin-top: 18px;
+        text-align: center;
+      }
+
+      button + button {
+        margin-left: 1rem;
+      }
+    }
+
+    @media (min-width: 40rem) {
+      .progress-window {
+        width: 38rem;
+      }
     }
   }
 }

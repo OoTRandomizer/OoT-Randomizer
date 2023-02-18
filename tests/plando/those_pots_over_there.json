@@ -1,0 +1,15 @@
+{
+  "settings": {
+      "create_spoiler": true,
+      "create_patch_file": false,
+      "create_compressed_rom": false,
+      "create_wad_file": false,
+      "create_uncompressed_rom": false,
+      "hints": "none",
+      "shuffle_pots" : "all",
+      "trials": 0
+  },
+  "locations": {
+      "Ganons Tower Pot 1": "Light Arrows"
+  }
+}

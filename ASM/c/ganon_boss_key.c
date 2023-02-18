@@ -43,6 +43,10 @@ void give_ganon_boss_key() {
                 if (z64_file.gs_tokens >= GANON_BOSS_KEY_CONDITION_COUNT)
                     give_boss_key = true;
                 break;
+            case 5: // Hearts
+                if (z64_file.energy_capacity >= GANON_BOSS_KEY_CONDITION_COUNT)
+                    give_boss_key = true;
+                break;
         }
 
         if (give_boss_key) {

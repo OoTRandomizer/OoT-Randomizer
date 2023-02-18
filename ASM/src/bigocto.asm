@@ -19,7 +19,7 @@ drop_ruto:
     bne     t2, t3, @@return ;return if ruto isnt the held actor
     li      t4, 0xFFFFF7FF   ;held actor state flag bitmask
     lw      t5, 0x066C(t0)   ;state flags 1
-    and     t5, t4, t5       
+    and     t5, t4, t5
     sw      t5, 0x066C(t0)   ;unset held actor state flag
     sw      r0, 0x039C(t0)   ;null held actor
     sw      r0, 0x011C(t0)   ;null link attachedB
@@ -54,7 +54,7 @@ check_kill_demoeffect:
     andi    t1, t1, 0x0040   ;big octo visited bit
     beqz    t1, @@return     ;return if flag is not set
     nop
-    jal     0x80020EB4       ;Actor_Kill 
+    jal     0x80020EB4       ;Actor_Kill
     nop
 @@return:
     lw      t2, 0x20(sp)

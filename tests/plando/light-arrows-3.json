@@ -1,13 +1,17 @@
 {
-"settings": {
-    "create_spoiler": false,
-    "compress_rom": "Temp",
-    "hints": "none"
-},
-"item_pool": {
-    "Light Arrows": 3
-},
-"locations": {
-    "Ganons Tower Boss Key Chest": "Light Arrows"
-}
+  "settings": {
+      "create_spoiler": false,
+      "patch_without_output": true,
+      "create_patch_file": false,
+      "create_compressed_rom": false,
+      "create_wad_file": false,
+      "create_uncompressed_rom": false,
+      "hints": "none"
+  },
+  "item_pool": {
+      "Light Arrows": 3
+  },
+  "locations": {
+      "Ganons Tower Boss Key Chest": "Light Arrows"
+  }
 }

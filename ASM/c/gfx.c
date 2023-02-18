@@ -57,12 +57,12 @@ sprite_t font_sprite = {
 sprite_t dpad_sprite = {
     NULL, 32, 32, 1,
     G_IM_FMT_IA, G_IM_SIZ_16b, 2
-};  
+};
 
 sprite_t triforce_sprite = {
     NULL, 16, 16, 16,
     G_IM_FMT_IA, G_IM_SIZ_8b, 1
-};  
+};
 
 sprite_t song_note_sprite = {
     NULL, 16, 24, 1,
@@ -140,7 +140,7 @@ void gfx_init() {
         NULL, z64_icon_item_static_vaddr, z64_icon_item_static_vsize
     };
     file_init(&icon_item_static);
-    
+
     file_t parameter_static = {
         NULL, z64_parameter_static_vaddr, z64_parameter_static_vsize
     };

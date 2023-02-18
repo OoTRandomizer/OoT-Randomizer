@@ -1,6 +1,6 @@
 import { Component, Input, ChangeDetectorRef } from '@angular/core';
 import { NbDialogRef, NbDialogService } from '@nebular/theme';
-import { ErrorDetailsWindow } from '../errorDetailsWindow/errorDetailsWindow.component';
+import { ErrorDetailsWindowComponent } from '../errorDetailsWindow/errorDetailsWindow.component';
 
 @Component({
   template: `
@@ -13,20 +13,20 @@ import { ErrorDetailsWindow } from '../errorDetailsWindow/errorDetailsWindow.com
         {{ progressMessage }}
         <p></p>
         {{ currentGenerationIndex }} / {{ totalGenerationCount }}:
-        <nb-progress-bar [value]="progressPercentageCurrent" [status]="progressStatus == 0 ? 'primary': progressStatus == 1 ? 'success' : 'danger'" [displayValue]="true"></nb-progress-bar>
+        <nb-progress-bar [value]="progressPercentageCurrent" [status]="progressStatus === 0 ? 'primary': progressStatus === 1 ? 'success' : 'danger'" [displayValue]="true"></nb-progress-bar>
         <p></p>
         Total:
-        <nb-progress-bar [value]="progressPercentageTotal" [status]="progressStatus == 0 ? 'info': progressStatus == 1 ? 'success' : 'danger'" [displayValue]="true"></nb-progress-bar>
-        <div *ngIf="progressPercentageTotal == 100" class="footerButtonWrapper">
-          <button nbButton [disabled]="cancellationInProgress" size="small" status="primary" (click)="cancelGeneration()">OK</button>
-          <button *ngIf="progressErrorDetails.length > 0" nbButton [disabled]="cancellationInProgress" size="small" status="danger" (click)="showErrorDetails()">Details</button>
+        <nb-progress-bar [value]="progressPercentageTotal" [status]="progressStatus === 0 ? 'info': progressStatus === 1 ? 'success' : 'danger'" [displayValue]="true"></nb-progress-bar>
+        <div *ngIf="progressPercentageTotal === 100" class="footerButtonWrapper">
+          <button nbButton [disabled]="cancellationInProgress" size="small" status="basic" (click)="cancelGeneration()">OK</button>
+          <button *ngIf="progressErrorDetails.length > 0" nbButton [disabled]="cancellationInProgress" status="danger" size="small" (click)="showErrorDetails()">Details</button>
         </div>
       </nb-card-body>
     </nb-card>
   `,
   styleUrls: ['./progressWindow.scss'],
 })
-export class ProgressWindow {
+export class ProgressWindowComponent {
 
   @Input() dashboardRef: any;
   @Input() totalGenerationCount: number;
@@ -43,7 +43,7 @@ export class ProgressWindow {
   cancellationInProgress: boolean = false;
   closed: boolean = false;
 
-  constructor(protected ref: NbDialogRef<ProgressWindow>, private cd: ChangeDetectorRef, private dialogService: NbDialogService) {
+  constructor(protected ref: NbDialogRef<ProgressWindowComponent>, private cd: ChangeDetectorRef, private dialogService: NbDialogService) {
   }
 
   refreshLayout() {
@@ -77,7 +77,7 @@ export class ProgressWindow {
 
   showErrorDetails() {
     this.cancelGeneration();
-    this.dialogService.open(ErrorDetailsWindow, {
+    this.dialogService.open(ErrorDetailsWindowComponent, {
       autoFocus: true, closeOnBackdropClick: true, closeOnEsc: true, hasBackdrop: true, hasScroll: false, context: { errorMessage: this.progressErrorDetails }
     });
   }

@@ -1,7 +1,6 @@
-import collections
 import logging
+from ItemPool import song_list
 from Location import DisableType
-from SaveContext import SaveContext
 from Search import Search
 from State import State
 
@@ -19,8 +18,8 @@ def set_rules(world):
         if world.settings.shuffle_song_items == 'song':
             if location.type == 'Song':
                 # allow junk items, but songs must still have matching world
-                add_item_rule(location, lambda location, item: 
-                    ((location.world.distribution.song_as_items or world.settings.starting_songs)
+                add_item_rule(location, lambda location, item:
+                    ((location.world.distribution.song_as_items or any(name in song_list and record.count for name, record in world.settings.starting_items.items()))
                         and item.type != 'Song')
                     or (item.type == 'Song' and item.world.id == location.world.id))
             else:
@@ -44,13 +43,12 @@ def set_rules(world):
                 location.add_rule(create_shop_rule(location))
             else:
                 add_item_rule(location, lambda location, item: item.type == 'Shop' and item.world.id == location.world.id)
-        elif 'Deku Scrub' in location.name:
+        elif location.type in ['Scrub', 'GrottoScrub']:
             location.add_rule(create_shop_rule(location))
         else:
             add_item_rule(location, lambda location, item: item.type != 'Shop')
 
-        if world.settings.skip_child_zelda and location.name == 'Song from Impa':
-            limit_to_itemset(location, SaveContext.giveable_items)
+        if world.skip_child_zelda and location.name == 'Song from Impa':
             if world.settings.triforce_hunt and world.total_starting_triforce_count >= world.triforce_goal - world.settings.world_count:
                 # We have enough starting Triforce pieces that putting a piece on every world's Song from Impa would hit the goal count
                 # and render the game unbeatable, so for simplicity's sake we forbid putting pieces on any world's Song from Impa.
@@ -141,9 +139,9 @@ def set_shop_rules(world):
                                       'Buy Fish',
                                       'Buy Green Potion',
                                       'Buy Poe',
-                                      'Buy Red Potion [30]',
-                                      'Buy Red Potion [40]',
-                                      'Buy Red Potion [50]',
+                                      'Buy Red Potion for 30 Rupees',
+                                      'Buy Red Potion for 40 Rupees',
+                                      'Buy Red Potion for 50 Rupees',
                                       'Buy Fairy\'s Spirit']:
                 location.add_rule(State.has_bottle)
             if location.item.name in ['Buy Bombchu (10)', 'Buy Bombchu (20)', 'Buy Bombchu (5)']:

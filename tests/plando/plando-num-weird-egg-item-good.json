@@ -1,6 +1,6 @@
 {
   "settings": {
-    "shuffle_weird_egg": true
+    "shuffle_child_trade": ["Weird Egg"]
   },
   "locations": {
     "KF Midos Top Left Chest":                                   "Weird Egg"

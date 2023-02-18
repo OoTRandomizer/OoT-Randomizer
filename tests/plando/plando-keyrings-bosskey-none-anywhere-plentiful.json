@@ -1,0 +1,12 @@
+{
+  "settings":                  {
+    "item_pool_value":                         "plentiful",
+    "gerudo_fortress":                         "normal",
+    "shuffle_smallkeys":                       "keysanity",
+    "shuffle_hideoutkeys":                     "keysanity",
+    "key_rings":                               [
+    ],
+    "keyring_give_bk":                         true,
+    "mq_dungeons_mode":                        "vanilla"
+  }
+}

@@ -25,7 +25,16 @@
 # value or not.
 
 from enum import Enum
-from collections import namedtuple
+import os
+import sys
+from Utils import data_path
+
+# Python 3.6 support. We can drop the conditional usage of namedtuple if we decide to no longer support Python 3.6.
+dataclass_supported = sys.version_info[0] >= 3 and sys.version_info[1] >= 7
+if dataclass_supported:
+    from dataclasses import dataclass
+else:
+    from collections import namedtuple
 
 
 class Tags(Enum):
@@ -45,8 +54,20 @@ class Tags(Enum):
     INC_NE     = 20     # Incompatible with NAVI_ENEMY? (Verify)
                         # I'm now thinking it has to do with a limit of concurrent sounds)
 
-Sound = namedtuple('Sound',   'id      keyword                  label                        tags')
+
+if dataclass_supported:
+    @dataclass(frozen=True)
+    class Sound:
+        id: int
+        keyword: str
+        label: str
+        tags: list
+else:
+    Sound = namedtuple('Sound', 'id    keyword                  label                        tags')
+
+
 class Sounds(Enum):
+    #                          id      keyword                  label                        tags
     NONE               = Sound(0x0000, 'none',                  'None',                      [Tags.NAVI, Tags.HPLOW])
     ARMOS_GROAN        = Sound(0x3848, 'armos',                 'Armos',                     [Tags.HORSE, Tags.PAINFUL])
     BARK               = Sound(0x28D8, 'bark',                  'Bark',                      [Tags.BRIEF, Tags.NAVI, Tags.HPLOW, Tags.HOVERBOOT])
@@ -99,9 +120,9 @@ class Sounds(Enum):
     INGO_WOOAH         = Sound(0x6854, 'ingo-wooah',            'Ingo "Wooah!"',             [Tags.PAINFUL])
     IRON_BOOTS         = Sound(0x080D, 'iron-boots',            'Iron Boots',                [Tags.BRIEF, Tags.HPLOW, Tags.QUIET])
     IRON_KNUCKLE       = Sound(0x3929, 'iron-knuckle',          'Iron Knuckle',              [])
-    INGO_KAAH          = Sound(0x6855, 'kaah',                  'Kaah!',                     [Tags.PAINFUL]) 
-    MOBLIN_CLUB_GROUND = Sound(0x38E1, 'moblin-club-ground',    'Moblin Club Ground',        [Tags.PAINFUL]) 
-    MOBLIN_CLUB_SWING  = Sound(0x39EF, 'moblin-club-swing',     'Moblin Club Swing',         [Tags.PAINFUL]) 
+    INGO_KAAH          = Sound(0x6855, 'kaah',                  'Kaah!',                     [Tags.PAINFUL])
+    MOBLIN_CLUB_GROUND = Sound(0x38E1, 'moblin-club-ground',    'Moblin Club Ground',        [Tags.PAINFUL])
+    MOBLIN_CLUB_SWING  = Sound(0x39EF, 'moblin-club-swing',     'Moblin Club Swing',         [Tags.PAINFUL])
     MOO                = Sound(0x28DF, 'moo',                   'Moo',                       [Tags.NAVI, Tags.NIGHTFALL, Tags.HORSE, Tags.HPLOW])
     MWEEP              = Sound(0x687A, 'mweep',                 'Mweep!',                    [Tags.BRIEF, Tags.NAVI, Tags.MENUMOVE, Tags.MENUSELECT, Tags.NIGHTFALL, Tags.HPLOW, Tags.HORSE, Tags.HOVERBOOT])
     NAVI_HELLO         = Sound(0x6844, 'navi-hello',            'Navi "Hello!"',             [Tags.PAINFUL, Tags.NAVI])
@@ -149,6 +170,16 @@ class Sounds(Enum):
     ZELDA_ADULT_GASP   = Sound(0x6879, 'adult-zelda-gasp',      'Zelda Gasp (Adult)',        [Tags.NAVI, Tags.HPLOW])
 
 
+if dataclass_supported:
+    @dataclass(frozen=True)
+    class SoundHook:
+        name: str
+        pool: list
+        locations: list
+else:
+    SoundHook = namedtuple('SoundHook', 'name pool locations')
+
+
 # Sound pools
 standard    = [s for s in Sounds if Tags.LOOPED not in s.value.tags]
 looping     = [s for s in Sounds if Tags.LOOPED in s.value.tags]
@@ -162,8 +193,8 @@ menu_cursor = [s for s in Sounds if Tags.MENUMOVE in s.value.tags]
 horse_neigh = [s for s in Sounds if Tags.HORSE in s.value.tags]
 
 
-SoundHook = namedtuple('SoundHook', 'name pool locations')
 class SoundHooks(Enum):
+    #                           name                pool         locations
     NAVI_OVERWORLD  = SoundHook('Navi - Overworld', navi,        [0xAE7EF2, 0xC26C7E])
     NAVI_ENEMY      = SoundHook('Navi - Enemy',     navi,        [0xAE7EC6])
     HP_LOW          = SoundHook('Low Health',       hp_low,      [0xADBA1A])
@@ -210,3 +241,17 @@ def get_setting_choices(sound_hook):
         **choices,
         }
     return result
+
+
+def get_voice_sfx_choices(age, include_random=True):
+    # Dynamically populate the SettingsList entry for the voice effects
+    # Voice packs should be a folder of .bin files in the Voices/{age} directory
+    names = ['Default', 'Silent']
+    voices_path = os.path.join(data_path('Voices'), ('Child' if age == 0 else 'Adult'))
+    if os.path.isdir(voices_path):
+        names += [f for f in os.listdir(voices_path) if os.path.isdir(os.path.join(voices_path, f))]
+
+    # Add a random if multiple options are available
+    if len(names) > 2 and include_random:
+        names.append('Random')
+    return names

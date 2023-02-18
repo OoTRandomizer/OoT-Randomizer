@@ -1,22 +1,24 @@
-import { Component, ChangeDetectorRef, OnInit } from '@angular/core';
-import { GUIGlobal } from '../../../providers/GUIGlobal';
+import {ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {GUIGlobal} from '../../../providers/GUIGlobal';
+import {ThemeSwitcher} from '../../../providers/theme-switcher.service';
 
 @Component({
-  selector: 'ngx-header',
+  selector: 'ootr-header',
   styleUrls: ['./header.component.scss'],
   templateUrl: './header.component.html',
 })
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
 
   isMaximized: boolean = false;
   platform: string = (<any>window).apiPlatform;
 
-  constructor(private cd: ChangeDetectorRef, public global: GUIGlobal) { }
+  constructor(private cd: ChangeDetectorRef,
+              public global: GUIGlobal,
+              public themeSwitcher: ThemeSwitcher,
+  ) { }
 
   ngOnInit() {
-
     if (this.global.getGlobalVar('electronAvailable')) {
-
       this.global.isWindowMaximized().then(res => {
         this.isMaximized = res;
 
@@ -56,5 +58,9 @@ export class HeaderComponent {
 
   close() {
     this.global.closeWindow();
+  }
+
+  switchTheme() {
+    this.themeSwitcher.switchTheme();
   }
 }

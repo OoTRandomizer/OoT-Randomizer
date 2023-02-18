@@ -271,11 +271,11 @@ PLAYED_WARP_SONG:
 ;PLAYED_WARP_SONG is set so that the white fade in can be used on the other side of the warp
 warp_speedup:
 
-    la     t2, 0x800FE49C ;pointer to links overlay in RAM 
+    la     t2, 0x800FE49C ;pointer to links overlay in RAM
     lw     t2, 0(t2)
     beqz   t2, @@return
     nop
-    la     t0, GLOBAL_CONTEXT 
+    la     t0, GLOBAL_CONTEXT
     lui    t3, 0x0001
     ori    t3, t3, 0x04C4 ;offset of warp song played
     add    t0, t0, t3
@@ -284,9 +284,9 @@ warp_speedup:
     ori    t3, t3, 0x26CC
     add    t2, t2, t3     ;entrance Table of Warp songs
     sll    t1, t1, 1
-    addu   t2, t1, t2 
-    lh     t1, 0x0(t2) 
-    sh     t1, 0x1956(t0) ;next entrance 
+    addu   t2, t1, t2
+    lh     t1, 0x0(t2)
+    sh     t1, 0x1956(t0) ;next entrance
     la     t4, 0x801D84A0 ;globalctx+10000
     li     t1, 0x03
     sb     t1, 0x1E5E(t4) ;transition fade type
@@ -301,8 +301,8 @@ warp_speedup:
 
     li     t1, 0x01
     sh     t1, 0x13D4(t0) ; Timer 2 value
-    
-@@return: 
+
+@@return:
     jr     ra
     nop
 
@@ -331,7 +331,7 @@ guard_catch:
     la      v0, GLOBAL_CONTEXT
     lui     at, 0x0001
     add     v0, v0, at
-    li	    at, 0x047e
+    li      at, 0x047e
     sh      at, 0x1E1A(v0) ;entrance index = caught by guard
     li      at, 0x14
     jr      ra
@@ -367,7 +367,7 @@ burning_kak:
     b       @@return
     sw      t9, 0x0000(s0)
 
-@@default:  
+@@default:
     li      at, 0x01E1
 
 @@return:
@@ -463,14 +463,14 @@ fountain_set_posrot:
     beqz    t3, @@skip     ;dont set flag if get item is 0
     lb      t6, 0x0(t1)
     li      t4, 0x7E       ;GI_MAX
-    beq     t3, t4, @@skip ;skip for catchable items  
-    nop 
+    beq     t3, t4, @@skip ;skip for catchable items
+    nop
     bnez    t6, @@skip     ;skip setting flag if its already set
     li      t4, 0x1
     sb      t4, 0x0(t1)    ;set flag
     li      t5, 0xC1A00000
     sw      t5, 0x24(t2)   ;set x
-    li      t5, 0x41200000 
+    li      t5, 0x41200000
     sw      t5, 0x28(t2)   ;set y
     li      t5, 0xC4458000
     sw      t5, 0x2C(t2)   ;set z
@@ -602,9 +602,10 @@ sos_talk_prevention:
     lh      t7, 0xB6(s0)   ;displaced
     lhu     t9, 0xB4AE(t9) ;displaced
     la      t1, PLAYER_ACTOR
-    lb      t2, 0x424(t1)  ;get item id
+    lw      t2, 0x428(t1)  ;interactRangeActor
     beqz    t2, @@no_item
     nop
+    lb      t2, 0x424(t1)  ;get item id
     li      t1, 0x7E
     bne     t2, t1, @@item
     nop
@@ -663,14 +664,14 @@ heavy_block_set_link_action:
 @@return:
     jr      ra
 lwc1    f6, 0x0C(s0)   ;displaced
-    
+
 heavy_block_shorten_anim:
     la      t0, PLAYER_ACTOR
     lw      t1, 0x01AC(t0)   ;current animation
     li      t2, 0x04002F98   ;heavy block lift animation
     bne     t1, t2, @@return ;return if not heavy block lift
-    lw      t3, 0x1BC(t0)    ;current animation frame 
-    li      t4, 0x42CF0000   
+    lw      t3, 0x1BC(t0)    ;current animation frame
+    li      t4, 0x42CF0000
     bne     t3, t4, @@check_end
     li      t5, 0x43640000   ;228.0f
     b       @@return
@@ -683,8 +684,8 @@ heavy_block_shorten_anim:
 @@return:
     jr      ra
     addiu   a1, s0, 0x01A4   ;displaced
-    
-;==================================================================================================    
+
+;==================================================================================================
 ; Override Demo_Effect init data for medallions
 demo_effect_medal_init:
     sh      t8, 0x17C(a0)      ; displaced code

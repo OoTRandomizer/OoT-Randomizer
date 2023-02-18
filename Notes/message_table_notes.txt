@@ -1,0 +1,16 @@
+Message_FindMessage (debug) -> func_800D6A90 (1.0 EN) / func_800D69EC (1.0 JP)
+save context + 0x2200 = play->msgCtx.font
+line 12279 in data.s in disassembly
+80112E34 = pointer to JP table (8010A94C) line 10152
+80112E38 = pointer to EN table (8010EA8C) line 11196
+credit table? 80112CAC line 12254
+findmessage called near lbl_800DCB60 (JP) / lbl_800DCC04 (EN)
+
+text ID FFFC hard-coded offsets for JP file in func_8005BD78 / Font_LoadOrderedFont in kanfont.s / z_kanfont.c
+DMA request needs to be modified to point to EN file if FFFC relocated there
+a3 = 0803A150 change to actual FFFC offset, modify segment to 07 if in EN file
+t6 = 08000000 change to 07000000 if FFFC in EN file
+t7 = 0803A340 change to actual FFFD offset, modify segment to 07 if in EN file (used for FFFC length)
+t8 = 008EB000 change to 0092D000 for start of file pointer
+
+

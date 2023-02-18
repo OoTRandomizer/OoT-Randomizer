@@ -29,23 +29,23 @@ before_time_travel:
     lhu     t1, 0x9C (a1)
     sh      t1, 0x0A (t0)
 
-	li		t0, 0x7E4 ; Offset to secondary save (First unused byte in scene 40 [xD4 + x40 * x1C + x10]
-	addu	t0, t0, a1 ; t0 is start of secondary FW
-	li		t1, 0xE64 ; Offset to main FW data
-	addu	t1, t1, a1 ; t1 is start of main FW data
-	li		t2, 0x8  ; Amount of words to store
-	
+    li      t0, 0x7AC   ; Offset to secondary save (First unused byte in scene 0x3E [0xD4 + 0x3E * 0x1C + 0x10]
+    addu    t0, t0, a1  ; t0 is start of secondary FW
+    li      t1, 0xE64   ; Offset to main FW data
+    addu    t1, t1, a1  ; t1 is start of main FW data
+    li      t2, 0x0A    ; Amount of words to store
+
 @@swap:
-	lw		t3, 0x00 (t0)  ; t3 is value in secondary FW
-	lw		t4, 0x00 (t1)  ; t4 is value in main FW
-	sw		t3, 0x00 (t1)  ; Store secondary FW to main FW
-	sw		t4, 0x00 (t0)  ; Store main FW to secondary FW
-	addiu	t0, 0x1C	; Increment secondary FW pointer by 1 scene length
-	addiu   t1, 0x04	; Increment main FW pointer by one word
-	addiu	t2, -0x01	; Decrement counter
-	bgtz	t2, @@swap
-	nop
-	
+    lw      t3, 0x00 (t0)   ; t3 is value in secondary FW
+    lw      t4, 0x00 (t1)   ; t4 is value in main FW
+    sw      t3, 0x00 (t1)   ; Store secondary FW to main FW
+    sw      t4, 0x00 (t0)   ; Store main FW to secondary FW
+    addiu   t0, 0x1C        ; Increment secondary FW pointer by 1 scene length
+    addiu   t1, 0x04        ; Increment main FW pointer by one word
+    addiu   t2, -0x01       ; Decrement counter
+    bgtz    t2, @@swap
+    nop
+
     j       0x06F80C ; Swap Link Ages
     nop
 

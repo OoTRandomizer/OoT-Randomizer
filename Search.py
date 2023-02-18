@@ -2,6 +2,7 @@ import copy
 from collections import defaultdict
 import itertools
 
+from LocationList import location_groups
 from Region import TimeOfDay
 from State import State
 
@@ -92,8 +93,8 @@ class Search(object):
         raise Exception('Unimplemented for Search. Perhaps you want RewindableSearch.')
 
 
-    # Internal to the iteration. Modifies the exit_queue, regions. 
-    # Returns a queue of the exits whose access rule failed, 
+    # Internal to the iteration. Modifies the exit_queue, regions.
+    # Returns a queue of the exits whose access rule failed,
     # as a cache for the exits to try on the next iteration.
     def _expand_regions(self, exit_queue, regions, age):
         failed = []
@@ -107,8 +108,8 @@ class Search(object):
                     if exit.connected_region.provides_time and not regions[exit.world.get_region('Root')] & exit.connected_region.provides_time:
                         exit_queue.extend(failed)
                         failed = []
+                        regions[exit.world.get_region('Root')] |= exit.connected_region.provides_time
                     regions[exit.connected_region] = exit.connected_region.provides_time
-                    regions[exit.world.get_region('Root')] |= exit.connected_region.provides_time
                     exit_queue.extend(exit.connected_region.exits)
                 else:
                     failed.append(exit)
@@ -214,7 +215,7 @@ class Search(object):
     # state to determine beatability; otherwise, only checks that the search
     # has already acquired all the Triforces.
     #
-    # The above comment was specifically for collecting the triforce. Other win 
+    # The above comment was specifically for collecting the triforce. Other win
     # conditions are possible, such as in Triforce Hunt, where only the total
     # amount of an item across all worlds matter, not specifcally who has it
     #
@@ -272,7 +273,9 @@ class Search(object):
                 if world_filter is not None and state.world.id != world_filter:
                     continue
                 valid_goals[category_name]['stateReverse'][state.world.id] = []
-                world_category = state.world.goal_categories[category_name]
+                world_category = state.world.goal_categories.get(category_name, None)
+                if world_category is None:
+                    continue
                 for goal in world_category.goals:
                     if goal.name not in valid_goals[category_name]:
                         valid_goals[category_name][goal.name] = []
@@ -285,13 +288,18 @@ class Search(object):
         return valid_goals
 
 
-    def collect_pseudo_starting_items(self):
+    def iter_pseudo_starting_locations(self):
         for state in self.state_list:
-            # Skip Child Zelda and Link's Pocket are not technically starting items, so collect them now
-            if state.world.settings.skip_child_zelda:
-                self.collect(state.world.get_location('Song from Impa').item)
-            self.collect(state.world.get_location('Links Pocket').item)
+            for location in state.world.distribution.skipped_locations:
+                # We need to use the locations in the current world
+                location = state.world.get_location(location.name)
+                self._cache['visited_locations'].add(location)
+                yield location
 
+
+    def collect_pseudo_starting_items(self):
+        for location in self.iter_pseudo_starting_locations():
+            self.collect(location.item)
 
     # Use the cache in the search to determine region reachability.
     # Implicitly requires is_starting_age or Time_Travel.

@@ -1,0 +1,331 @@
+en_ko fado actor
+vram start: 80AD1C20
+vrom start: E51A60
+hook at   : 80AD3A88, offset 1E68
+            E538C8
+80AD43DC
+
+80AD37A4, E535E4 for text fix
+
+801EBE50
+
+addiu   $at, $zero, 0x0031         # $at = 00000031
+or      v1, $zero, $zero           # v1 = 00000000
+
+en_ko fado actor 0x0163 var 0xff0c
+xyz -947 20 57 (FC4D, 0014, 0039)
+pwr 0 21855 0 (0000, 555F, 0000)
+
+-1113 0 -94
+0 9636 0
+FBA6 0 FFA1
+0 25A4 0
+
+TODO
+- Stop Cojiro cry in LW if turned in (blocked, no disassembly)
+
+en_hs grog actor
+vram start: 80AA0C70
+vrom start: E20AC0
+hook at   : 80AA0D78, offset 108
+            E20BC8
+
+en_skj skull kid actor
+vram start: 80A6CA90
+vrom start: DEF3E0
+hook at   : 80A6CDEC, DEF73C, 35C
+
+en_heishi2 guard actor
+vram start: 8097D000
+vrom start: D1A690
+
+en_cs graveyard kid
+vram start: 80AE1640
+vrom start: E60920
+
+en_mm running man
+vram start: 80AD0600
+vrom start: E50440
+ram start: 801EA580, hook at 
+
+en_go2 biggoron actor
+vram start: 80B56910
+vrom start: ED2040
+hook at   : 
+ram       : 801E9560
+
+bgs flag 1: 80B57B68, ED3298, 1258
+bgs flag 2: 80B57C4C, ED337C, 133C
+bgs flag 3: 80B58CB4, ED43E4, 23A4
+func_80B58C8C
+bgs flag 4: 80B5AE44, ED6574, 4534
+
+tears init: 80B5A4D4, ED5C04, 3BC4
+anim func:  80B59130, ED4860, 2820
+sfx hook:   80B5A054, ED5784, 3744
+
+
+en_ds granny actor
+vram start: 80AAB9C0
+vrom start: E2B810
+hook at   : 80AAC1EC, E2C03C, 82C
+
+blue potion get_item text 0x0045
+buy description text      0x00B5
+new buy item text         0x00BE
+
+-----------------------------------------------
+courtyard guards never block
+-----------------------------------------------
+en_heishi1
+vram start: 80938580
+vrom start: CD5CA0
+
+-----------------------------------------------
+malon spawn fix
+-----------------------------------------------
+en_ma1
+vram start: 809F0A20
+vrom start: D7E110
+ram start : 801F3980 (castle grounds)
+
+spawn function func_809F0C54
+overwritten at vrom D7E398 / vram 809F0CA8 / offset 288 / ram 801F3C08
+
+-----------------------------------------------
+child zelda cutscene
+-----------------------------------------------
+
+z_sram.c
+vram start: 8008FFC0
+vrom start: B05F20
+hook at   : 800904C4 / vrom B06424 / offset 504
+prevent Zelda's Letter reverting to Chicken on save
+
+scene 74, room 0, indoors/nakaniwa
+child zelda actors
+en_zl1
+vram start: 808AD2F0
+vrom start: C4ABB0 to C4E9B0
+en_zl4
+vram start: 80B80CF0
+vrom start: EFC410 to F00E40
+ram start: 801F0170
+hook ram: 801F2714
+give letter location 1: line 2683  vram 80B832A0 vrom EFE9C0 offset 25B0
+give letter location 2: line 2723  vram 80B8333C vrom EFEA5C offset 264C
+
+typedef enum {
+    /* 0 */ ZL4_CS_WAIT,
+    /* 1 */ ZL4_CS_START,
+    /* 2 */ ZL4_CS_MEET,
+    /* 3 */ ZL4_CS_STONE,
+    /* 4 */ ZL4_CS_NAMES,
+    /* 5 */ ZL4_CS_LEGEND,
+    /* 6 */ ZL4_CS_WINDOW,
+    /* 7 */ ZL4_CS_GANON,
+    /* 8 */ ZL4_CS_PLAN
+} EnZl4CutsceneState;
+
+event_flag 801C894C s16
+msg_state_1 801D887C u8
+msg_state_2 801D895C u8
+msg_state_3 801D895F u8
+
+
+0xEFCBA7 0x08
+vram 80B81487 offset 797
+addiu   t8, $zero, 0x0005
+changes 0x0005 to 0x0008
+saves to 0x01F9, csState
+skips to ZL4_CS_PLAN
+
+0xEFE7C7 0x05
+vram 80B830A7 offset 23B7
+addiu   t9, t8, 0x0001
+changes 0x0001 to 0x0005
+
+0xEFE938 nop
+vram 80B83218 offset 2528
+bne     v0, $at, lbl_80B83230
+
+0xEFE948 nop
+vram 80B83228 offset 2538
+bnel    v0, $zero, lbl_80B8323C
+
+0xEFE950 nop
+vram 80B83230 offset 2540
+b       lbl_80B83348
+
+-----------------------------------------------
+mask shop
+-----------------------------------------------
+
+en_ossan shop actor
+vram start: 808CED80
+vrom start: C6C5E0 to C72BC0
+ram: 801E2210
+overlay table: 800E8CD0
+
+StartConversation: 801E3548
+TryPaybackMask: 8040F4FC
+
+en_girla shop item actors
+vram start: 80862C00
+vrom start: C004E0 to C02E00
+
+trade shuffle shop changes
+
+EnGirlA_TrySetMaskItemDescription -> controls item visibility
+  func_808643AC
+  if (INV_CONTENT(ITEM_TRADE_CHILD) == sMaskShopItems[params]) {
+  change to check if the item is shuffled, and if not if the item is owned
+  vanilla behavior is child trade quest shuffle off
+  hook at vram 808643F8 / vrom C01CD8 / offset 17F8
+EnGirlA_SetItemDescription -> text ID if shop slot/mask is borrowable
+EnGirlA_InitializeItemAction -> borrow vs shop text for items
+EnOssan_State_SelectMaskItem -> Set get mask flags
+EnOssan_State_ItemPurchased -> Set MoT get flag
+  func_808D1D08
+  before finishing item = this->shelfSlots[this->cursorIndex];
+  hook to set shop sold out flag if selected mask slot is shuffled
+  hook at vram 808D1D7C / vrom C6F5DC / offset 2FFC / ram 801E520C
+EnOssan_State_LendMaskOfTruth -> Give MoT on bunny turn-in
+EnOssan_SpawnItemsOnShelves -> whether or not to show items based on quest progress, see ShopItemDisp functions above it
+EnOssan_UpdateShopOfferings -> called after LendMaskOfTruth to add goron/zora/gerudo masks to inventory
+EnOssan_SetupHelloDialog -> set payback state and block access if keaton not sold yet
+  func_808D2E8C
+  override right after `if (this->actor.params == OSSAN_TYPE_MASK) {`
+  vram 808D2EA0 / vrom C70700 / offset 4120
+EnOssan_TryPaybackMask -> Prices
+  func_808CFF7C
+  vram 808CFF8C / vrom C6D7EC / offset 120C
+
+z_parameter.c
+vram start 8006D8E0
+vrom start AE3840
+Item_Give func_8006FDCC
+Trade quest items including SOLD OUT block starting at lbl_80071344
+hook at lbl_80071370 / vrom AE72D0 / offset 3A90
+
+Mask Shop slot order
+    { { SI_GERUDO_MASK, 50, 52, -20 },
+      { SI_ZORA_MASK, 50, 76, -20 },
+      { SI_MASK_OF_TRUTH, 80, 52, -3 },
+      { SI_GORON_MASK, 80, 76, -3 },
+      { SI_SKULL_MASK, -50, 52, -20 },
+      { SI_KEATON_MASK, -50, 76, -20 },
+      { SI_BUNNY_HOOD, -80, 52, -3 },
+      { SI_SPOOKY_MASK, -80, 76, -3 } },
+
+rando shop changes
+
+0xC004EC (Shop_Check_Sold_Out)
+vram 80862C0C
+func_80862C0C / EnGirlA_TryChangeShopItem
+start of function before switch statement
+overrides entire function to set Sold Out only on non-shop items
+-- called by En_GirlA init function
+-- also called after mask purchase by EnOssan_State_ItemPurchased, similar to regular shop items in EnOssan_State_ContinueShoppingPrompt
+-- no change
+
+0xC0067C (shop item IDs greater than 50/0x32)
+vram 80862D9C
+func_80862D84 / EnGirlA_InitItem
+change SI_MAX check from 0x32 to 0x64
+-- 10 traditional shops w/ max 4 non-shop items plus 8 mask shop items gives 48 max new shop IDs, still fits
+-- no change
+
+0xC018A0 (Shop_Set_Sold_Out)
+vram 80863FC0
+func_80863FB4 / EnGirlA_BuyEvent_ShieldDiscount
+start of function before if statement, sets Sold Out after item get but before rupee charge
+-- NOT called by mask shop even though it's the eventBuyFunc for masks, special handling
+   in EnOssan_State_ItemPurchased
+-- Need to add hook after EnOssan_ResetItemPosition(this) but before item->updateStockedItemFunc
+
+0xC6C7A8 (Shop_Keeper_Init_ID)
+vram 808CEF48
+func_808CEEDC / EnOssan_SpawnItemsOnShelves
+itemParams = sShopItemReplaceFunc[shopItems->shopItemIndex](shopItems->shopItemIndex);
+skips ShopItemDisp variants. For regular shop items, will always display, so skipping the check for non-shop items outside mask shop is fine
+-- mask-shop-specific ShopItemDisp functions need to be called regardless of item in that slot
+-- this hides items according to quest progression
+
+0xC6C920 (Shop_Keeper_Init_ID)
+vram 808CF0C0
+func_808CF030 / EnOssan_UpdateShopOfferings
+s16 params = sShopItemReplaceFunc[shopItem->shopItemIndex](shopItem->shopItemIndex);
+same as EnOssan_SpawnItemsOnShelves
+
+
+-----------------------------------------------
+new flag system
+-----------------------------------------------
+
+lbl_808394AC
+
+0xCF == text id for useless cutscene item
+0xcf branch lbl_80839430
+in func_8083B040
+
+Owned flags 8011A5D0 + D4 + 60 * 1C + 0x10 uint32 8011B134
+Traded flags 8011A5D0 + D4 + 61 * 1C + 0x10 uint32 8011B150
+
+hook at 80403F4C, lbl_80839320
+
+player jal at 80391CC0
+
+c func at 8040E824
+
+
+-----------------------------------------------
+partial trade shuffle
+-----------------------------------------------
+spoiling items in z_sram.c and z_parameter.c
+timer set where??
+dynamic disable_trade_timers in timers.asm
+
+
+-----------------------------------------------
+ Flags
+-----------------------------------------------
+
+--------------------
+ Anju (get Pocket Egg)
+--------------------
+item_get_inf[0x2c]
+
+--------------------
+ Talon (Wake)
+--------------------
+event_chk_inf[0x6a]
+
+--------------------
+ Anju (give Pocket Cucco)
+--------------------
+item_get_inf[0x2e]
+
+--------------------
+ Sad Dude (give Cojiro)
+--------------------
+no flag set, only timer
+
+--------------------
+ Granny (give Odd Mushroom)
+--------------------
+item_get_inf[0x30]
+
+--------------------
+ Fado (give Odd Potion)
+--------------------
+inf_table[0x0b6]
+item_get_inf[0x31]
+item_get_inf[0x1f]
+
+--------------------
+ Boss (give Poachers Saw)
+--------------------
+no flag set
+
+

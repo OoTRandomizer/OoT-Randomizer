@@ -1,0 +1,16 @@
+{
+    "settings": {
+        "bridge":                                  "medallions",
+        "bridge_medallions":                       5,
+        "shuffle_ganon_bosskey":                   "medallions",
+        "ganon_bosskey_medallions":                6,
+        "item_pool_value":                         "minimal",
+        "shuffle_child_trade":                     [],
+        "shuffle_song_items":                      "song",
+        "empty_dungeons_mode":                     "count",
+        "empty_dungeons_count":                    4,
+        "shuffle_mapcompass":                      "any_dungeon",
+        "shuffle_smallkeys":                       "any_dungeon",
+        "shuffle_bosskeys":                        "any_dungeon"
+    }
+}

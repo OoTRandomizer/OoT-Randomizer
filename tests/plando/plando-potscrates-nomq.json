@@ -1,0 +1,7 @@
+{
+  "settings": {
+    "shuffle_pots":                            "all",
+    "shuffle_crates":                          "all",
+    "mq_dungeons_mode":                        "vanilla"
+  }
+}

@@ -1,4 +1,6 @@
 #include "item_effects.h"
+#include "dungeon_info.h"
+#include "trade_quests.h"
 
 #define rupee_cap ((uint16_t*)0x800F8CEC)
 volatile uint8_t MAX_RUPEES = 0;
@@ -20,7 +22,7 @@ void give_triforce_piece(z64_file_t *save, int16_t arg1, int16_t arg2) {
     set_triforce_render();
 
     // Trigger win when the target is hit
-    if (save->scene_flags[0x48].unk_00_ == triforce_pieces_requied) {
+    if (save->scene_flags[0x48].unk_00_ == TRIFORCE_PIECES_REQUIRED) {
         // Give GC boss key to allow beating the game again afterwards
         give_dungeon_item(save, 0x01, 10);
 
@@ -61,12 +63,44 @@ void give_dungeon_item(z64_file_t *save, int16_t mask, int16_t dungeon_id) {
     save->dungeon_items[dungeon_id].items |= mask;
 }
 
+char key_counts[14][2] = {
+    {0, 0}, // Deku Tree
+    {0, 0}, // Dodongo's Cavern
+    {0, 0}, // Inside Jabu Jabu's Belly
+    {5, 6}, // Forest Temple
+    {8, 5}, // Fire Temple
+    {6, 2}, // Water Temple
+    {5, 7}, // Spirit Temple
+    {5, 6}, // Shadow Temple
+    {3, 2}, // Bottom of the Well
+    {0, 0}, // Ice Cavern
+    {0, 0}, // Ganon's Tower
+    {9, 3}, // Gerudo Training Ground
+    {4, 4}, // Thieves' Hideout
+    {2, 3}, // Ganon's Castle
+};
+
 void give_small_key(z64_file_t *save, int16_t dungeon_id, int16_t arg2) {
-    int8_t keys = save->dungeon_keys[dungeon_id];
-    if (keys < 0) {
-        keys = 0;
+    int8_t current_keys = save->dungeon_keys[dungeon_id] > 0 ? save->dungeon_keys[dungeon_id] : 0;
+    save->dungeon_keys[dungeon_id] = current_keys + 1;
+    uint32_t flag = save->scene_flags[dungeon_id].unk_00_;
+    int8_t total_keys = flag >> 0x10;
+    int8_t max_keys = key_counts[dungeon_id][CFG_DUNGEON_IS_MQ[dungeon_id]];
+    if (total_keys < max_keys) {
+        save->scene_flags[dungeon_id].unk_00_ = (flag & 0x0000ffff) | ((total_keys + 1) << 0x10);
     }
-    save->dungeon_keys[dungeon_id] = keys + 1;
+}
+
+uint8_t KEYRING_BOSSKEY_CONDITION = 0;
+void give_small_key_ring(z64_file_t *save, int16_t dungeon_id, int16_t arg2) {
+    int8_t current_keys = save->dungeon_keys[dungeon_id] > 0 ? save->dungeon_keys[dungeon_id] : 0;
+    save->dungeon_keys[dungeon_id] = current_keys + key_counts[dungeon_id][CFG_DUNGEON_IS_MQ[dungeon_id]];
+    if (KEYRING_BOSSKEY_CONDITION && dungeon_id > 2 && dungeon_id < 8) {
+        save->dungeon_items[dungeon_id].boss_key = 1;
+    }
+    uint32_t flag = save->scene_flags[dungeon_id].unk_00_;
+    int8_t max_keys = key_counts[dungeon_id][CFG_DUNGEON_IS_MQ[dungeon_id]];
+    save->scene_flags[dungeon_id].unk_00_ = (flag & 0x0000ffff) | (max_keys << 0x10);
 }
 
 void give_defense(z64_file_t *save, int16_t arg1, int16_t arg2) {
@@ -112,6 +146,12 @@ void fill_wallet_upgrade(z64_file_t *save, int16_t arg1, int16_t arg2) {
         save->rupees = rupee_cap[arg1];
 }
 
+void clear_excess_hearts(z64_file_t *save, int16_t arg1, int16_t arg2) {
+    if (save->energy_capacity >= 19 * 0x10)  // Giving a Heart Container at 19 hearts.
+        save->heart_pieces = 0;
+    save->refill_hearts = 20 * 0x10;
+}
+
 uint8_t OPEN_KAKARIKO = 0;
 uint8_t COMPLETE_MASK_QUEST = 0;
 void open_mask_shop(z64_file_t *save, int16_t arg1, int16_t arg2) {
@@ -126,4 +166,15 @@ void open_mask_shop(z64_file_t *save, int16_t arg1, int16_t arg2) {
         save->item_get_inf[3] = save->item_get_inf[3] | 0x8F00; // "Sold Masks & Unlocked Masks" / "Obtained Mask of Truth"
         save->event_chk_inf[8] = save->event_chk_inf[8] | 0xF000; // "Paid Back Mask Fees"
     }
+    // Set Zelda's Letter as collected in trade quest flags
+    trade_quest_upgrade(save, arg1, arg2);
+}
+
+void give_bombchus(z64_file_t *save, int16_t arg1, int16_t arg2) {
+    save->items[Z64_SLOT_BOMBCHU] = Z64_ITEM_BOMBCHU;
+    save->ammo[8] += arg1;
+}
+
+void trade_quest_upgrade(z64_file_t *save, int16_t item_id, int16_t arg2) {
+    SaveFile_SetTradeItemAsOwned((uint8_t)item_id);
 }

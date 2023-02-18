@@ -1,14 +1,15 @@
 <div class="header-container"
-     [class.left]="platform != 'darwin'"
-     [class.right]="platform == 'darwin'">
-  <div class="logo-containter">
-    <div class="logo" [class.left]="platform != 'darwin'" [class.right]="platform == 'darwin'">
+     [class.left]="platform !== 'darwin'"
+     [class.right]="platform === 'darwin'">
+  <div class="logo-container">
+    <div class="logo" [class.left]="platform !== 'darwin'" [class.right]="platform === 'darwin'">
       <img style="width: 75px; height: 27px" src="assets/img/headerIcon.png">
     </div>
   </div>
 </div>
-<div class="controls">
-    <img id="min" class="controlIcon" [ngClass]="{hidden: platform == 'darwin'}" style="width: 22px; height: 22px; -webkit-app-region: no-drag" src="assets/img/min.png" (click)="minimize()">
-    <img id="max" class="controlIcon" [ngClass]="{hidden: platform == 'darwin'}" style="width: 22px; height: 22px; -webkit-app-region: no-drag" [src]="isMaximized ? 'assets/img/max.png' : 'assets/img/notMax.png'" (click)="maximize()">
-    <img id="close" class="controlIcon" [ngClass]="{hidden: platform == 'darwin'}" style="width: 22px; height: 22px; -webkit-app-region: no-drag" src="assets/img/X.png" (click)="close()">
+<div [style]="platform === 'darwin' ? 'margin-left: 60px;' :''" class="controls">
+    <img id="dark-switch" class="controlIcon" [src]="themeSwitcher.isDarkThemeActive ? 'assets/img/sun.svg' : 'assets/img/moon.svg'" (click)="switchTheme()">
+    <img id="min" class="controlIcon" [ngClass]="{hidden: platform === 'darwin'}" style="width: 22px; height: 22px; -webkit-app-region: no-drag" src="assets/img/min.png" (click)="minimize()">
+    <img id="max" class="controlIcon" [ngClass]="{hidden: platform === 'darwin'}" style="width: 22px; height: 22px; -webkit-app-region: no-drag" [src]="isMaximized ? 'assets/img/max.png' : 'assets/img/notMax.png'" (click)="maximize()">
+    <img id="close" class="controlIcon" [ngClass]="{hidden: platform === 'darwin'}" style="width: 22px; height: 22px; -webkit-app-region: no-drag" src="assets/img/X.png" (click)="close()">
 </div>

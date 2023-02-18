@@ -2,16 +2,20 @@
 
 *.txt  text
 *.json text
-*.c    text
-*.h    text
-*.py   text
+*.c    text eol=lf
+*.h    text eol=lf
+*.py   text eol=lf
 *.md   text
 *.html text
-*.asm  text
+*.asm  text eol=lf
 
 *.bin  binary
 *.o    binary
 
+/ASM/build/*.txt  text -diff linguist-generated=true
 /data/generated/* text -diff linguist-generated=true
-/Decompress/* binary
-/Compress/*   binary
+
+/bin/Compress/Compress*     binary
+/bin/Decompress/Decompress* binary
+/bin/gzinject/gzinject*     binary
+/bin/minibsdiff/minibsdiff* binary

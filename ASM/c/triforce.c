@@ -5,11 +5,8 @@ static uint32_t render_triforce_flag = 0;
 #define FRAMES_PER_CYCLE 2
 #define TRIFORCE_SPRITE_FRAMES 16
 #define TRIFORCE_FRAMES_VISIBLE 100 // 20 Frames seems to be about 1 second
-#define TRIFORCE_FRAMES_FADE_AWAY 80 
-#define TRIFORCE_FRAMES_FADE_INTO 5 
-
-uint16_t triforce_hunt_enabled = 0;
-uint16_t triforce_pieces_requied = 0xFFFF;
+#define TRIFORCE_FRAMES_FADE_AWAY 80
+#define TRIFORCE_FRAMES_FADE_INTO 5
 
 void set_triforce_render() {
     render_triforce_flag = 1;
@@ -19,10 +16,10 @@ void set_triforce_render() {
 void draw_triforce_count(z64_disp_buf_t *db) {
 
     // Must be triforce hunt and triforce should be drawable, and we should either be on the pause screen or the render triforce flag should be set
-    if (!(triforce_hunt_enabled && CAN_DRAW_TRIFORCE && (render_triforce_flag == 1 || z64_game.pause_ctxt.state == 6))) {
+    if (!(TRIFORCE_HUNT_ENABLED && CAN_DRAW_TRIFORCE && (render_triforce_flag == 1 || z64_game.pause_ctxt.state == 6))) {
         return;
     }
-    
+
     uint8_t alpha;
     // In the pause screen always draw
     if (z64_game.pause_ctxt.state == 6) {
@@ -46,7 +43,7 @@ void draw_triforce_count(z64_disp_buf_t *db) {
 
     frames++;
 
-    int pieces = z64_file.scene_flags[0x48].unk_00_; //Unused word in scene x48. 
+    int pieces = z64_file.scene_flags[0x48].unk_00_; //Unused word in scene x48.
 
     // Get length of string to draw
     // Theres probably a better way to do this, log 10 wasnt working though
@@ -58,7 +55,7 @@ void draw_triforce_count(z64_disp_buf_t *db) {
     }
     pieces_digits = pieces_digits == 0 ? 1 : pieces_digits;
     int required_digits = 0;
-    int required_copy = triforce_pieces_requied;
+    int required_copy = TRIFORCE_PIECES_REQUIRED;
     while(required_copy >= 1) {
         required_digits++;
         required_copy /= 10;
@@ -81,7 +78,7 @@ void draw_triforce_count(z64_disp_buf_t *db) {
         pieces_copy /= 10;
     }
     text[pieces_digits] = 0x2F; // writes a slash (/)
-    required_copy = triforce_pieces_requied;
+    required_copy = TRIFORCE_PIECES_REQUIRED;
     for(int i = str_len - 1; i > pieces_digits; i--) {
         text[i] = (required_copy % 10) + '0';
         required_copy /= 10;
@@ -102,7 +99,10 @@ void draw_triforce_count(z64_disp_buf_t *db) {
     sprite_load(db, &triforce_sprite, sprite, 1);
     sprite_draw(db, &triforce_sprite, 0, draw_x, draw_y_triforce, triforce_sprite.tile_w, triforce_sprite.tile_h);
 
+    // If model text needs to be drawn as well, don't end DL yet
     text_flush(db);
-    gDPFullSync(db->p++);
-    gSPEndDisplayList(db->p++);
+    if (!illegal_model) {
+        gDPFullSync(db->p++);
+        gSPEndDisplayList(db->p++);
+    }
 }

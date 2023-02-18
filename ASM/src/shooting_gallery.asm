@@ -1,8 +1,8 @@
 shooting_gallery_init:
     li      t0, SAVE_CONTEXT
     lw      t2, 0x04(t0)       ; Link's age
-    
-	beq	    t2, r0, @@adult
+
+    beq     t2, r0, @@adult
     lw      t1, 0x00(t0)       ; Entrance Idx
 
 @@child:

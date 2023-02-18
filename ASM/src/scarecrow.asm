@@ -37,15 +37,15 @@ save_scarecrow_song:
     addiu   a1, a1, 8
     jal     0x57030             ; shift scarecrow song over by 1 note
     addiu   a2, a2, -8
-    
+
 @@copy_song:
     jal     store_scarecrow_fix
     nop
     lw      ra, 0x10(sp)
-	lw      a3, 0x8(sp)
-	lw      a2, 0x4(sp)
-	lw      a1, 0x0(sp)
+    lw      a3, 0x8(sp)
+    lw      a2, 0x4(sp)
+    lw      a1, 0x0(sp)
     j       0x57030
     addiu   sp,sp,0x18
 
-	
+

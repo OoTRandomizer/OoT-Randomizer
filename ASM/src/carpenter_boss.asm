@@ -14,7 +14,7 @@ prevent_carpenter_boss_softlock:
     bne     t6, t4, @@return ;if msgCtx+0xE3E7‬ is 0xFF, set it to 0x02
     li      t5, 0x02
     sb      t5, 0x63E7(t0)   ;msgCtx+0xE3E7
-    
+
     @@return:
     jr      ra
     addiu   a2, r0, 0x22     ;displaced

@@ -1,17 +1,18 @@
+#include <stdbool.h>
 #include "models.h"
-
 #include "get_items.h"
 #include "item_table.h"
+#include "item_draw_table.h"
 #include "util.h"
 #include "z64.h"
 
-#define slot_count 8
+#define slot_count 24
 #define object_size 0x1E70
 #define num_vanilla_objects 0x192
 
 typedef struct {
     uint16_t object_id;
-    int8_t graphic_id;
+    uint8_t graphic_id;
 } model_t;
 
 typedef struct {
@@ -20,6 +21,7 @@ typedef struct {
 } loaded_object_t;
 
 extern uint32_t EXTENDED_OBJECT_TABLE;
+extern EnItem00 *collectible_mutex;
 
 loaded_object_t object_slots[slot_count] = { 0 };
 
@@ -29,7 +31,7 @@ void load_object_file(uint32_t object_id, uint8_t *buf) {
         entry = &(z64_object_table[object_id]);
     } else {
         z64_object_table_t *extended_table = (z64_object_table_t *) (&EXTENDED_OBJECT_TABLE);
-        entry = extended_table + (object_id - num_vanilla_objects) * sizeof(z64_object_table) / 8;
+        entry = &extended_table[object_id - num_vanilla_objects - 1];
     }
     uint32_t vrom_start = entry->vrom_start;
     uint32_t size = entry->vrom_end - vrom_start;
@@ -74,20 +76,18 @@ void scale_top_matrix(float scale_factor) {
 }
 
 typedef void (*pre_draw_fn)(z64_actor_t *actor, z64_game_t *game, uint32_t unknown);
-typedef void (*gi_draw_fn)(z64_game_t *game, uint32_t graphic_id_minus_1);
 typedef void (*actor_draw_fn)(z64_actor_t *actor, z64_game_t *game);
 #define pre_draw_1 ((pre_draw_fn)0x80022438)
 #define pre_draw_2 ((pre_draw_fn)0x80022554)
-#define base_draw_gi_model ((gi_draw_fn)0x800570C0)
 #define base_collectable_draw ((actor_draw_fn)0x80013268)
 
-void draw_model_low_level(int8_t graphic_id_minus_1, z64_actor_t *actor, z64_game_t *game) {
+void draw_model_low_level(uint8_t graphic_id_minus_1, z64_actor_t *actor, z64_game_t *game) {
     pre_draw_1(actor, game, 0);
     pre_draw_2(actor, game, 0);
     base_draw_gi_model(game, graphic_id_minus_1);
 }
 
-float scale_factor(int8_t graphic_id, z64_actor_t *actor, float base_scale) {
+float scale_factor(uint8_t graphic_id, z64_actor_t *actor, float base_scale) {
     if (graphic_id == 0x63) {
         // Draw skull tokens at their vanilla size
         return base_scale * 0.5;
@@ -96,18 +96,16 @@ float scale_factor(int8_t graphic_id, z64_actor_t *actor, float base_scale) {
         // Draw ocarinas in the moat at vanilla size
         return 1.0;
     }
-    if (actor->actor_id == 0x15 && (actor->variable & 0xFF) == 0x11) {
-        // Draw small key actors smaller, so they don't stick out of places
-        return base_scale * 0.5;
-    }
     return base_scale;
 }
 
 void draw_model(model_t model, z64_actor_t *actor, z64_game_t *game, float base_scale) {
     loaded_object_t *object = get_object(model.object_id);
-    set_object_segment(object);
-    scale_top_matrix(scale_factor(model.graphic_id, actor, base_scale));
-    draw_model_low_level(model.graphic_id - 1, actor, game);
+    if (object != NULL) {
+        set_object_segment(object);
+        scale_top_matrix(scale_factor(model.graphic_id, actor, base_scale));
+        draw_model_low_level(model.graphic_id - 1, actor, game);
+    }
 }
 
 void models_init() {
@@ -140,6 +138,28 @@ void lookup_model(model_t *model, z64_actor_t *actor, z64_game_t *game, uint16_t
     lookup_model_by_override(model, override);
 }
 
+// Collectible draw function for rupees/recovery hearts
+bool collectible_draw(z64_actor_t *actor, z64_game_t *game) {
+    EnItem00 *this = (EnItem00 *)actor;
+    model_t model = {
+        .object_id = 0x0000,
+        .graphic_id = 0x00,
+    };
+
+    if(this->override.key.all)
+    {
+        lookup_model_by_override(&model, this->override);
+        if(model.object_id != 0x0000 && (this->actor.dropFlag==1 || !Get_CollectibleOverrideFlag(this) || (collectible_mutex == this))) {
+            if (collectible_mutex != this) {
+                draw_model(model, actor, game, 25.0);
+            }
+            return true;
+        }
+    }
+    return false;
+}
+
+
 void heart_piece_draw(z64_actor_t *actor, z64_game_t *game) {
     model_t model = {
         .object_id = 0x00BD,
@@ -149,18 +169,39 @@ void heart_piece_draw(z64_actor_t *actor, z64_game_t *game) {
     draw_model(model, actor, game, 25.0);
 }
 
-void small_key_draw(z64_actor_t *actor, z64_game_t *game) {
-    if ((actor->variable & 0xFF) != 0x11) {
-        base_collectable_draw(actor, game);
+// collectible draw function for common items (sticks, nuts, arrows/seeds/etc. and keys)
+void collectible_draw_other(z64_actor_t *actor, z64_game_t *game) {
+    EnItem00 *this = (EnItem00 *)actor;
+
+    model_t model = {
+        .object_id = 0x0000,
+        .graphic_id = 0x00,
+    };
+
+    // Handle keys separately for now.
+    int collectible_type = actor->variable & 0xFF;
+    if(collectible_type == 0x11)
+    {
+        lookup_model(&model, actor, game,0);
+        draw_model(model, actor, game, 10.0);
         return;
     }
 
-    model_t model = {
-        .object_id = 0x00AA,
-        .graphic_id = 0x02,
-     };
-    lookup_model(&model, actor, game, 0);
-    draw_model(model, actor, game, 25.0);
+    // Probably don't need this check. We convert all dropped overridden collectibles to rupees.
+    // Pretty sure there are no freestanding collectibles of these types. But let's just do it anyway
+    if(this->override.key.all)
+    {
+        lookup_model_by_override(&model, this->override);
+        if(model.object_id != 0x0000 && (this->actor.dropFlag==1 || !Get_CollectibleOverrideFlag(this) || (collectible_mutex == this))) {
+            if (collectible_mutex != this) {
+                draw_model(model, actor, game, 25.0);
+            }
+        }
+    }
+    else
+    {
+        base_collectable_draw(actor, game);
+    }
 }
 
 void heart_container_draw(z64_actor_t *actor, z64_game_t *game) {
@@ -220,8 +261,27 @@ void item_etcetera_draw(z64_actor_t *actor, z64_game_t *game) {
 
 void bowling_bomb_bag_draw(z64_actor_t *actor, z64_game_t *game) {
     override_t override = { 0 };
-    if (actor->variable == 0x00 || actor->variable == 0x05) {
-        override = lookup_override(actor, game->scene_index, 0x34);
+    switch (actor->variable) {
+        case 0x00:
+        case 0x05: // bomb bag
+            override = lookup_override(actor, game->scene_index, 0x34);
+            break;
+        case 0x01:
+        case 0x06: // heart piece
+            override = lookup_override(actor, game->scene_index, 0x3E);
+            break;
+        case 0x02:
+        case 0x07: // bombchus
+            override = lookup_override(actor, game->scene_index, 0x03);
+            break;
+        case 0x03:
+        case 0x08: // bombs
+            override = lookup_override(actor, game->scene_index, 0x65);
+            break;
+        case 0x04:
+        case 0x09: // purple rupee
+            override = lookup_override(actor, game->scene_index, 0x55);
+            break;
     }
 
     model_t model = { 0 };

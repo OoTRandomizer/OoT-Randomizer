@@ -9,11 +9,11 @@ import { NbDialogRef } from '@nebular/theme';
       <button nbButton class="headerButton" size="xsmall" status="danger" (click)="closeDialogNo()">X</button>
       </nb-card-header>
       <nb-card-body>
-        {{ dialogMessage }} 
+        {{ dialogMessage }}
       </nb-card-body>
       <nb-card-footer>
         <div class="footerButtonWrapper">
-          <button nbButton size="small" status="success" (click)="closeDialogYes()">Yes</button>
+          <button nbButton size="small" status="primary" (click)="closeDialogYes()">Yes</button>
           <button nbButton size="small" status="danger" (click)="closeDialogNo()">No</button>
         </div>
       </nb-card-footer>
@@ -21,19 +21,19 @@ import { NbDialogRef } from '@nebular/theme';
   `,
   styleUrls: ['./confirmationWindow.scss'],
 })
-export class ConfirmationWindow {
+export class ConfirmationWindowComponent {
 
   @Input() dialogHeader: string = "Confirmation";
   @Input() dialogMessage: string = "";
 
-  constructor(protected ref: NbDialogRef<ConfirmationWindow>) {
+  constructor(protected ref: NbDialogRef<ConfirmationWindowComponent>) {
   }
 
   closeDialogYes() {
     this.ref.close(true);
   }
 
-  closeDialogNo() { 
+  closeDialogNo() {
     this.ref.close(false);
   }
 }

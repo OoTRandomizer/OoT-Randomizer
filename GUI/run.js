@@ -7,7 +7,6 @@ const spawn = require('child_process').spawn;
 const waitFor = (ms) => new Promise(r => setTimeout(r, ms));
 
 //Dynamic modules are loaded later
-var commander = null;
 var ping = null;
 var crc32 = null;
 
@@ -176,7 +175,7 @@ async function pingServiceUntilLive(host, port) {
         running = await pingService(host, port).catch(err => { throw Error("Can't connect to local network: " + err); });
 
         if (!running)
-            await waitFor(500);     
+            await waitFor(500);
     }
 }
 
@@ -228,22 +227,25 @@ async function spawnChildSubProcess(path, args, shell, verbose, stderrSetting = 
         if (lastMessage && lastMessage.length > 0)
             console.error("Last message:", lastMessage);
 
-        throw Error("process_error");  
-    } 
+        throw Error("process_error");
+    }
 }
 
 async function setupNodeEnvironment(freshSetup = false) {
-
-    if (freshSetup)
-        console.log("Creating environment. Please be patient, this can take 5-10 minutes depending on your internet connection and HDD speed...");
-    else
-        console.log("Updating environment. Please wait...");
+    console.log(freshSetup
+        ? "Creating environment. Please be patient, this can take 5-10 minutes depending on your internet connection and HDD speed..."
+        : "Updating environment. Please wait...");
 
     await waitFor(1000);
 
     environmentChecked = true;
 
-    await spawnChildSubProcess("npm install --verbose", null, true, true, "inherit").catch(err => { throw Error("Environment setup failed"); });
+    let npmInstallCommand = freshSetup ? "npm ci --verbose --only=prod" : "npm install --verbose --no-save --only=prod";
+
+    console.log("\nInstalling npm dependencies via:", npmInstallCommand, '\n')
+
+    await spawnChildSubProcess(npmInstallCommand, null, true, true, "inherit")
+        .catch(err => { throw Error("Environment setup failed", err); });
 
     console.log("Environment setup completed");
 }
@@ -254,7 +256,7 @@ async function setupWebTestNodeEnvironment() {
 
     await waitFor(1000);
 
-    await spawnChildSubProcess("npm install --verbose", null, true, true, "inherit", "webTest").catch(err => { throw Error("Web test environment setup failed"); });
+    await spawnChildSubProcess("npm install --verbose --only=prod", null, true, true, "inherit", "webTest").catch(err => { throw Error("Web test environment setup failed"); });
 
     console.log("Web test environment setup completed");
 }
@@ -291,7 +293,7 @@ async function compileAngular() {
     console.log("Compiling Angular. This can take a minute...");
 
     await spawnChildSubProcess("npm run ng-release", null, true, false).catch(err => { throw Error("Angular compile failed"); });
- 
+
     console.log("Angular compile completed");
 }
 
@@ -316,7 +318,7 @@ async function runAngularDevServer() {
 
         console.log("Angular dev server is running");
         devServerStarted = true;
-    }   
+    }
 }
 
 async function generateWebTestSettingsMap() {
@@ -329,7 +331,7 @@ async function generateWebTestSettingsMap() {
 }
 
 async function runWebTestServer() {
- 
+
     console.log("Running Web Server...");
 
     await spawnDetachedSubProcess("node", ["server.js"], true, false, "webTest").catch(err => { throw Error("Failed to launch Web Server"); });
@@ -341,46 +343,51 @@ async function main(commandLine) {
 
     console.log("OoT Randomizer GUI is booting up");
 
-    //Verify basic environment
-    if (!fs.existsSync("./node_modules"))
-        await setupNodeEnvironment(true);
-
-    //Verify binary folder exists
-    if (!fs.existsSync("./node_modules/.bin")) {
-        //throw Error("GUI/node_modules/.bin folder is missing. Please delete the entire GUI/node_modules folder and try again!");
+    //Verify node_modules
+    if (["./node_modules",
+        "./node_modules/.bin",
+        "./node_modules/@angular",
+        "./node_modules/electron",
+        "./node_modules/tcp-ping",
+        "./node_modules/crc"]
+        .some(module => !fs.existsSync(module))) {
+        await setupNodeEnvironment(true); // fresh npm ci run when node_modules are sus
     }
 
-    //Verify core modules
-    if (!fs.existsSync("./node_modules/@angular") || !fs.existsSync("./node_modules/electron"))
-        await setupNodeEnvironment();
-
-    //Verify dynamic modules needed by run.js
-    if (!fs.existsSync("./node_modules/commander") || !fs.existsSync("./node_modules/tcp-ping") || !fs.existsSync("./node_modules/crc"))
-        await setupNodeEnvironment();
-
     //Load dynamic modules
-    commander = require('commander');
     ping = require('tcp-ping');
     crc32 = require('crc').crc32;
 
     //Parse command line
-    commander
-        .option('p, python <path>', 'Path to your python executable')
-        .option('r, release', 'Runs electron in release mode')
-        .option('w, web', 'Runs the GUI in your browser')
-        .option('f, force', 'Force an environment check and Angular/Electron re-compile')
-        .parse(commandLine);
+    let programOpts = {};
 
-    if (commander["python"] && typeof (commander["python"]) == "string" && commander["python"].trim().length > 0)
-        pythonPath = commander["python"];
+    for (let i = 0; i < commandLine.length; i++) {
+        let arg = commandLine[i];
 
-    if (commander["release"])
+        if ((arg === "p" || arg === "python") && i < (commandLine.length - 1)) { //Path to the python executable
+            programOpts["python"] = commandLine[++i];
+        }
+        else if (arg === "r" || arg === "release") { //Runs electron in release mode
+            programOpts["release"] = true;
+        }
+        else if (arg === "w" || arg === "web") { //Runs the GUI in the browser
+            programOpts["web"] = true;
+        }
+        else if (arg === "f" || arg === "force") { //Force an environment check and Angular/Electron re-compile
+            programOpts["force"] = true;
+        }
+    }
+
+    if (programOpts["python"] && typeof (programOpts["python"]) == "string" && programOpts["python"].trim().length > 0)
+        pythonPath = programOpts["python"];
+
+    if (programOpts["release"])
         releaseMode = true;
     else
-        if (commander["web"])
+        if (programOpts["web"])
             webMode = true;
 
-    if (commander["force"])
+    if (programOpts["force"])
         forceRecompile = true;
 
     console.log("Mode: " + (releaseMode ? "Release" : webMode ? "Web" : "Dev"));
@@ -434,7 +441,7 @@ async function main(commandLine) {
 
             //package.json got changed, update environment
             if (!environmentChecked)
-                await setupNodeEnvironment();
+                await setupNodeEnvironment(true); // fresh setup to reduce peer conflicts with outdated node_modules
 
             electronIndex["package.json"] = packageJsonChanged;
             electronIndexUpdated = true;

@@ -6,10 +6,10 @@ from collections import OrderedDict
 from Search import Search
 from Region import TimeOfDay
 from Rules import set_entrances_based_rules
-from Entrance import Entrance
 from State import State
 from Item import ItemFactory
-from Hints import get_hint_area, HintAreaNotFound
+from Hints import HintArea, HintAreaNotFound
+from HintList import misc_item_hint_table
 
 
 def set_all_entrances_data(world):
@@ -99,6 +99,8 @@ entrance_shuffle_table = [
                         ('Ice Cavern Beginning -> ZF Ice Ledge',                            { 'index': 0x03D4 })),
     ('Dungeon',         ('Gerudo Fortress -> Gerudo Training Ground Lobby',                 { 'index': 0x0008 }),
                         ('Gerudo Training Ground Lobby -> Gerudo Fortress',                 { 'index': 0x03A8 })),
+    ('DungeonSpecial',  ('Ganons Castle Grounds -> Ganons Castle Lobby',                    { 'index': 0x0467 }),
+                        ('Ganons Castle Lobby -> Castle Grounds From Ganons Castle',        { 'index': 0x023D })),
 
     ('Interior',        ('Kokiri Forest -> KF Midos House',                                 { 'index': 0x0433 }),
                         ('KF Midos House -> Kokiri Forest',                                 { 'index': 0x0443 })),
@@ -242,8 +244,8 @@ entrance_shuffle_table = [
                         ('KF Storms Grotto -> Kokiri Forest',                               { 'grotto_id': 0x1B })),
     ('Grotto',          ('Zoras Domain -> ZD Storms Grotto',                                { 'grotto_id': 0x1C, 'entrance': 0x036D, 'content': 0xFF, 'scene': 0x58 }),
                         ('ZD Storms Grotto -> Zoras Domain',                                { 'grotto_id': 0x1C })),
-    ('Grotto',          ('Gerudo Fortress -> GF Storms Grotto',                             { 'grotto_id': 0x1D, 'entrance': 0x036D, 'content': 0xFF, 'scene': 0x5D }),
-                        ('GF Storms Grotto -> Gerudo Fortress',                             { 'grotto_id': 0x1D })),
+    ('Grotto',          ('GF Entrances Behind Crates -> GF Storms Grotto',                  { 'grotto_id': 0x1D, 'entrance': 0x036D, 'content': 0xFF, 'scene': 0x5D }),
+                        ('GF Storms Grotto -> GF Entrances Behind Crates',                  { 'grotto_id': 0x1D })),
     ('Grotto',          ('GV Fortress Side -> GV Storms Grotto',                            { 'grotto_id': 0x1E, 'entrance': 0x05BC, 'content': 0xF0, 'scene': 0x5A }),
                         ('GV Storms Grotto -> GV Fortress Side',                            { 'grotto_id': 0x1E })),
     ('Grotto',          ('GV Grotto Ledge -> GV Octorok Grotto',                            { 'grotto_id': 0x1F, 'entrance': 0x05AC, 'content': 0xF2, 'scene': 0x5A }),
@@ -267,7 +269,7 @@ entrance_shuffle_table = [
     ('Overworld',       ('Lost Woods -> GC Woods Warp',                                     { 'index': 0x04E2 }),
                         ('GC Woods Warp -> Lost Woods',                                     { 'index': 0x04D6 })),
     ('Overworld',       ('Lost Woods -> Zora River',                                        { 'index': 0x01DD }),
-                        ('Zora River -> Lost Woods',                                        { 'index': 0x04DA })),
+                        ('Zora River -> LW Underwater Entrance',                            { 'index': 0x04DA })),
     ('Overworld',       ('LW Beyond Mido -> SFM Entryway',                                  { 'index': 0x00FC }),
                         ('SFM Entryway -> LW Beyond Mido',                                  { 'index': 0x01A9 })),
     ('Overworld',       ('LW Bridge -> Hyrule Field',                                       { 'index': 0x0185 }),
@@ -313,6 +315,8 @@ entrance_shuffle_table = [
     ('Overworld',       ('ZD Behind King Zora -> Zoras Fountain',                           { 'index': 0x0225 }),
                         ('Zoras Fountain -> ZD Behind King Zora',                           { 'index': 0x01A1 })),
 
+    ('OverworldOneWay', ('GV Lower Stream -> Lake Hylia',                                   { 'index': 0x0219 })),
+
     ('OwlDrop',         ('LH Owl Flight -> Hyrule Field',                                   { 'index': 0x027E, 'addresses': [0xAC9F26] })),
     ('OwlDrop',         ('DMT Owl Flight -> Kak Impas Rooftop',                             { 'index': 0x0554, 'addresses': [0xAC9EF2] })),
 
@@ -330,6 +334,72 @@ entrance_shuffle_table = [
     ('Extra',           ('ZR Top of Waterfall -> Zora River',                               { 'index': 0x0199 })),
 ]
 
+def _add_boss_entrances():
+    # Compute this at load time to save a lot of duplication
+    dungeon_data = {}
+    for type, forward, *reverse in entrance_shuffle_table:
+        if type != 'Dungeon':
+            continue
+        if not reverse:
+            continue
+        name, forward = forward
+        reverse = reverse[0][1]
+        if 'blue_warp' not in reverse:
+            continue
+        dungeon_data[name] = {
+            'dungeon_index': forward['index'],
+            'exit_index': reverse['index'],
+            'exit_blue_warp': reverse['blue_warp']
+        }
+
+    for type, source, target, dungeon, index, rindex, addresses in [
+        (
+            'ChildBoss', 'Deku Tree Boss Door', 'Queen Gohma Boss Room',
+            'KF Outside Deku Tree -> Deku Tree Lobby',
+            0x040f, 0x0252, [ 0xB06292, 0xBC6162, 0xBC60AE ]
+        ),
+        (
+            'ChildBoss', 'Dodongos Cavern Boss Door', 'King Dodongo Boss Room',
+            'Death Mountain -> Dodongos Cavern Beginning',
+            0x040b, 0x00c5, [ 0xB062B6, 0xBC616E ]
+        ),
+        (
+            'ChildBoss', 'Jabu Jabus Belly Boss Door', 'Barinade Boss Room',
+            'Zoras Fountain -> Jabu Jabus Belly Beginning',
+            0x0301, 0x0407, [ 0xB062C2, 0xBC60C2 ]
+        ),
+        (
+            'AdultBoss', 'Forest Temple Boss Door', 'Phantom Ganon Boss Room',
+            'SFM Forest Temple Entrance Ledge -> Forest Temple Lobby',
+            0x000c, 0x024E, [ 0xB062CE, 0xBC6182 ]
+        ),
+        (
+            'AdultBoss', 'Fire Temple Boss Door', 'Volvagia Boss Room',
+            'DMC Fire Temple Entrance -> Fire Temple Lower',
+            0x0305, 0x0175, [ 0xB062DA, 0xBC60CE ]
+        ),
+        (
+            'AdultBoss', 'Water Temple Boss Door', 'Morpha Boss Room',
+            'Lake Hylia -> Water Temple Lobby',
+            0x0417, 0x0423, [ 0xB062E6, 0xBC6196 ]
+        ),
+        (
+            'AdultBoss', 'Spirit Temple Boss Door', 'Twinrova Boss Room',
+            'Desert Colossus -> Spirit Temple Lobby',
+            0x008D, 0x02F5, [ 0xB062F2, 0xBC6122 ]
+        ),
+        (
+            'AdultBoss', 'Shadow Temple Boss Door', 'Bongo Bongo Boss Room',
+            'Graveyard Warp Pad Region -> Shadow Temple Entryway',
+            0x0413, 0x02B2, [ 0xB062FE, 0xBC61AA ]
+        )
+    ]:
+        d = {'index': index, 'patch_addresses': addresses}
+        d.update(dungeon_data[dungeon])
+        entrance_shuffle_table.append(
+            (type, (f"{source} -> {target}", d), (f"{target} -> {source}", {'index': rindex}))
+        )
+_add_boss_entrances()
 
 # Basically, the entrances in the list above that go to:
 # - DMC Central Local (child access for the bean and skull)
@@ -339,9 +409,9 @@ entrance_shuffle_table = [
 # if shuffling warp songs (depending on other settings).
 # Table maps: short key -> ([target regions], [allowed types])
 priority_entrance_table = {
-    'Bolero': (['DMC Central Local'], ['OwlDrop', 'WarpSong']),
-    'Nocturne': (['Graveyard Warp Pad Region'], ['OwlDrop', 'Spawn', 'WarpSong']),
-    'Requiem': (['Desert Colossus', 'Desert Colossus From Spirit Lobby'], ['OwlDrop', 'Spawn', 'WarpSong']),
+    'Bolero': (['DMC Central Local'], ['OwlDrop', 'WarpSong', 'OverworldOneWay']),
+    'Nocturne': (['Graveyard Warp Pad Region'], ['OwlDrop', 'Spawn', 'WarpSong', 'OverworldOneWay']),
+    'Requiem': (['Desert Colossus', 'Desert Colossus From Spirit Lobby'], ['OwlDrop', 'Spawn', 'WarpSong', 'OverworldOneWay']),
 }
 
 
@@ -381,28 +451,75 @@ def shuffle_random_entrances(worlds):
         entrance_pools = OrderedDict()
         one_way_priorities = {}
 
+        if worlds[0].settings.shuffle_gerudo_valley_river_exit:
+            one_way_entrance_pools['OverworldOneWay'] = world.get_shufflable_entrances(type='OverworldOneWay')
+
         if worlds[0].settings.owl_drops:
             one_way_entrance_pools['OwlDrop'] = world.get_shufflable_entrances(type='OwlDrop')
 
         if worlds[0].settings.spawn_positions:
             one_way_entrance_pools['Spawn'] = world.get_shufflable_entrances(type='Spawn')
+            if 'child' not in worlds[0].settings.spawn_positions:
+                one_way_entrance_pools['Spawn'].remove(world.get_entrance('Child Spawn -> KF Links House'))
+            elif 'adult' not in worlds[0].settings.spawn_positions:
+                one_way_entrance_pools['Spawn'].remove(world.get_entrance('Adult Spawn -> Temple of Time'))
 
         if worlds[0].settings.warp_songs:
             one_way_entrance_pools['WarpSong'] = world.get_shufflable_entrances(type='WarpSong')
             if worlds[0].settings.reachable_locations != 'beatable' and worlds[0].settings.logic_rules == 'glitchless':
                 # In glitchless, there aren't any other ways to access these areas
-                one_way_priorities['Bolero'] = priority_entrance_table['Bolero']
-                one_way_priorities['Nocturne'] = priority_entrance_table['Nocturne']
-                if not worlds[0].settings.shuffle_dungeon_entrances and not worlds[0].settings.shuffle_overworld_entrances:
+                wincons = [worlds[0].settings.bridge, worlds[0].settings.shuffle_ganon_bosskey]
+                if worlds[0].settings.shuffle_ganon_bosskey == 'on_lacs':
+                    wincons.append(worlds[0].settings.lacs_condition)
+                if (
+                    worlds[0].settings.reachable_locations == 'all'
+                    or ('tokens' in wincons and worlds[0].settings.tokensanity in ('off', 'dungeons'))
+                ):
+                    one_way_priorities['Bolero'] = priority_entrance_table['Bolero']
+                if (
+                    worlds[0].settings.reachable_locations == 'all'
+                    or 'dungeons' in wincons
+                    or ('stones' in wincons and 'medallions' in wincons)
+                    or ('tokens' in wincons and worlds[0].settings.tokensanity in ('off', 'overworld'))
+                ):
+                    one_way_priorities['Nocturne'] = priority_entrance_table['Nocturne']
+                if (
+                    not worlds[0].shuffle_dungeon_entrances
+                    and not worlds[0].settings.shuffle_overworld_entrances
+                    and not worlds[0].shuffle_special_interior_entrances
+                    and (
+                        worlds[0].settings.reachable_locations == 'all'
+                        or 'dungeons' in wincons
+                        or ('stones' in wincons and 'medallions' in wincons)
+                        or ('tokens' in wincons and worlds[0].settings.tokensanity != 'all')
+                    )
+                ):
                     one_way_priorities['Requiem'] = priority_entrance_table['Requiem']
 
-        if worlds[0].settings.shuffle_dungeon_entrances:
+        if worlds[0].settings.shuffle_bosses == 'full':
+            entrance_pools['Boss'] = world.get_shufflable_entrances(type='ChildBoss', only_primary=True)
+            entrance_pools['Boss'] += world.get_shufflable_entrances(type='AdultBoss', only_primary=True)
+            if worlds[0].settings.open_forest == 'closed':
+                # Deku is forced vanilla below, so Queen Gohma must be vanilla to ensure she is reachable.
+                # This is already enforced by the fill algorithm in most cases, but this covers the odd settings combination where it isn't.
+                entrance_pools['Boss'].remove(world.get_entrance('Deku Tree Boss Door -> Queen Gohma Boss Room'))
+        elif worlds[0].settings.shuffle_bosses == 'limited':
+            entrance_pools['ChildBoss'] = world.get_shufflable_entrances(type='ChildBoss', only_primary=True)
+            entrance_pools['AdultBoss'] = world.get_shufflable_entrances(type='AdultBoss', only_primary=True)
+            if worlds[0].settings.open_forest == 'closed':
+                # Deku is forced vanilla below, so Queen Gohma must be vanilla to ensure she is reachable.
+                # This is already enforced by the fill algorithm in most cases, but this covers the odd settings combination where it isn't.
+                entrance_pools['ChildBoss'].remove(world.get_entrance('Deku Tree Boss Door -> Queen Gohma Boss Room'))
+
+        if worlds[0].shuffle_dungeon_entrances:
             entrance_pools['Dungeon'] = world.get_shufflable_entrances(type='Dungeon', only_primary=True)
             # The fill algorithm will already make sure gohma is reachable, however it can end up putting
             # a forest escape via the hands of spirit on Deku leading to Deku on spirit in logic. This is
             # not really a closed forest anymore, so specifically remove Deku Tree from closed forest.
             if worlds[0].settings.open_forest == 'closed':
                 entrance_pools['Dungeon'].remove(world.get_entrance('KF Outside Deku Tree -> Deku Tree Lobby'))
+            if worlds[0].shuffle_special_dungeon_entrances:
+                entrance_pools['Dungeon'] += world.get_shufflable_entrances(type='DungeonSpecial', only_primary=True)
 
         if worlds[0].shuffle_interior_entrances:
             entrance_pools['Interior'] = world.get_shufflable_entrances(type='Interior', only_primary=True)
@@ -426,16 +543,19 @@ def shuffle_random_entrances(worlds):
         one_way_target_entrance_pools = {}
         for pool_type, entrance_pool in one_way_entrance_pools.items():
             # One way entrances are extra entrances that will be connected to entrance positions from a selection of entrance pools
-            if pool_type == 'OwlDrop':
-                valid_target_types = ('WarpSong', 'OwlDrop', 'Overworld', 'Extra')
+            if pool_type == 'OverworldOneWay':
+                valid_target_types = ('Spawn', 'WarpSong', 'OwlDrop', 'OverworldOneWay', 'Overworld', 'Interior', 'SpecialInterior', 'Extra')
+                one_way_target_entrance_pools[pool_type] = build_one_way_targets(world, valid_target_types)
+            elif pool_type == 'OwlDrop':
+                valid_target_types = ('WarpSong', 'OwlDrop', 'OverworldOneWay', 'Overworld', 'Extra')
                 one_way_target_entrance_pools[pool_type] = build_one_way_targets(world, valid_target_types, exclude=['Prelude of Light Warp -> Temple of Time'])
                 for target in one_way_target_entrance_pools[pool_type]:
                     target.set_rule(lambda state, age=None, **kwargs: age == 'child')
             elif pool_type == 'Spawn':
-                valid_target_types = ('Spawn', 'WarpSong', 'OwlDrop', 'Overworld', 'Interior', 'SpecialInterior', 'Extra')
+                valid_target_types = ('Spawn', 'WarpSong', 'OwlDrop', 'OverworldOneWay', 'Overworld', 'Interior', 'SpecialInterior', 'Extra')
                 one_way_target_entrance_pools[pool_type] = build_one_way_targets(world, valid_target_types)
             elif pool_type == 'WarpSong':
-                valid_target_types = ('Spawn', 'WarpSong', 'OwlDrop', 'Overworld', 'Interior', 'SpecialInterior', 'Extra')
+                valid_target_types = ('Spawn', 'WarpSong', 'OwlDrop', 'OverworldOneWay', 'Overworld', 'Interior', 'SpecialInterior', 'Extra')
                 one_way_target_entrance_pools[pool_type] = build_one_way_targets(world, valid_target_types)
             # Ensure that when trying to place the last entrance of a one way pool, we don't assume the rest of the targets are reachable
             for target in one_way_target_entrance_pools[pool_type]:
@@ -469,7 +589,7 @@ def shuffle_random_entrances(worlds):
                         break
 
         # Place priority entrances
-        shuffle_one_way_priority_entrances(worlds, world, one_way_priorities, one_way_entrance_pools, one_way_target_entrance_pools, locations_to_ensure_reachable, complete_itempool, retry_count=2)
+        placed_one_way_entrances = shuffle_one_way_priority_entrances(worlds, world, one_way_priorities, one_way_entrance_pools, one_way_target_entrance_pools, locations_to_ensure_reachable, complete_itempool, retry_count=2)
 
         # Delete all targets that we just placed from one way target pools so multiple one way entrances don't use the same target
         replaced_entrances = [entrance.replaces for entrance in chain.from_iterable(one_way_entrance_pools.values())]
@@ -480,7 +600,7 @@ def shuffle_random_entrances(worlds):
 
         # Shuffle all entrances among the pools to shuffle
         for pool_type, entrance_pool in one_way_entrance_pools.items():
-            shuffle_entrance_pool(world, worlds, entrance_pool, one_way_target_entrance_pools[pool_type], locations_to_ensure_reachable, check_all=True, retry_count=5)
+            placed_one_way_entrances += shuffle_entrance_pool(world, worlds, entrance_pool, one_way_target_entrance_pools[pool_type], locations_to_ensure_reachable, check_all=True, placed_one_way_entrances=placed_one_way_entrances)
             # Delete all targets that we just placed from other one way target pools so multiple one way entrances don't use the same target
             replaced_entrances = [entrance.replaces for entrance in entrance_pool]
             for remaining_target in chain.from_iterable(one_way_target_entrance_pools.values()):
@@ -491,7 +611,8 @@ def shuffle_random_entrances(worlds):
                 delete_target_entrance(unused_target)
 
         for pool_type, entrance_pool in entrance_pools.items():
-            shuffle_entrance_pool(world, worlds, entrance_pool, target_entrance_pools[pool_type], locations_to_ensure_reachable)
+            shuffle_entrance_pool(world, worlds, entrance_pool, target_entrance_pools[pool_type], locations_to_ensure_reachable, placed_one_way_entrances=placed_one_way_entrances)
+
 
     # Multiple checks after shuffling entrances to make sure everything went fine
     max_search = Search.max_explore([world.state for world in worlds], complete_itempool)
@@ -515,7 +636,7 @@ def shuffle_random_entrances(worlds):
     # Validate the worlds one last time to ensure all special conditions are still valid
     for world in worlds:
         try:
-            validate_world(world, worlds, None, locations_to_ensure_reachable, complete_itempool)
+            validate_world(world, worlds, None, locations_to_ensure_reachable, complete_itempool, placed_one_way_entrances=placed_one_way_entrances)
         except EntranceShuffleError as error:
             raise EntranceShuffleError('Worlds are not valid after shuffling entrances, Reason: %s' % error)
 
@@ -532,7 +653,7 @@ def shuffle_one_way_priority_entrances(worlds, world, one_way_priorities, one_wa
             # If all entrances could be connected without issues, log connections and continue
             for entrance, target in rollbacks:
                 confirm_replacement(entrance, target)
-            return
+            return rollbacks
 
         except EntranceShuffleError as error:
             for entrance, target in rollbacks:
@@ -540,11 +661,14 @@ def shuffle_one_way_priority_entrances(worlds, world, one_way_priorities, one_wa
             logging.getLogger('').info('Failed to place all priority one-way entrances for world %d. Will retry %d more times', world.id, retry_count)
             logging.getLogger('').info('\t%s' % error)
 
-    raise EntranceShuffleError('Priority one-way entrance placement attempt count exceeded for world %d' % world.id)
-
+    if world.settings.custom_seed:
+        raise EntranceShuffleError('Entrance placement attempt count exceeded for world %d. Ensure the \"Seed\" field is empty and retry a few times.' % world.id)
+    if world.settings.distribution_file:
+        raise EntranceShuffleError('Entrance placement attempt count exceeded for world %d. Some entrances in the Plandomizer File may have to be changed to create a valid seed. Reach out to Support on Discord for help.' % world.id)
+    raise EntranceShuffleError('Entrance placement attempt count exceeded for world %d. Retry a few times or reach out to Support on Discord for help.' % world.id)
 
 # Shuffle all entrances within a provided pool
-def shuffle_entrance_pool(world, worlds, entrance_pool, target_entrances, locations_to_ensure_reachable, check_all=False, retry_count=20):
+def shuffle_entrance_pool(world, worlds, entrance_pool, target_entrances, locations_to_ensure_reachable, check_all=False, retry_count=20, placed_one_way_entrances=()):
 
     # Split entrances between those that have requirements (restrictive) and those that do not (soft). These are primarily age or time of day requirements.
     restrictive_entrances, soft_entrances = split_entrances_by_requirements(worlds, entrance_pool, target_entrances)
@@ -555,22 +679,22 @@ def shuffle_entrance_pool(world, worlds, entrance_pool, target_entrances, locati
 
         try:
             # Shuffle restrictive entrances first while more regions are available in order to heavily reduce the chances of the placement failing.
-            shuffle_entrances(worlds, restrictive_entrances, target_entrances, rollbacks, locations_to_ensure_reachable)
+            shuffle_entrances(worlds, restrictive_entrances, target_entrances, rollbacks, locations_to_ensure_reachable, placed_one_way_entrances=placed_one_way_entrances)
 
             # Shuffle the rest of the entrances, we don't have to check for beatability/reachability of locations when placing those, unless specified otherwise
             if check_all:
-                shuffle_entrances(worlds, soft_entrances, target_entrances, rollbacks, locations_to_ensure_reachable)
+                shuffle_entrances(worlds, soft_entrances, target_entrances, rollbacks, locations_to_ensure_reachable, placed_one_way_entrances=placed_one_way_entrances)
             else:
-                shuffle_entrances(worlds, soft_entrances, target_entrances, rollbacks)
+                shuffle_entrances(worlds, soft_entrances, target_entrances, rollbacks, placed_one_way_entrances=placed_one_way_entrances)
 
             # Fully validate the resulting world to ensure everything is still fine after shuffling this pool
             complete_itempool = [item for world in worlds for item in world.get_itempool_with_dungeon_items()]
-            validate_world(world, worlds, None, locations_to_ensure_reachable, complete_itempool)
+            validate_world(world, worlds, None, locations_to_ensure_reachable, complete_itempool, placed_one_way_entrances=placed_one_way_entrances)
 
             # If all entrances could be connected without issues, log connections and continue
             for entrance, target in rollbacks:
                 confirm_replacement(entrance, target)
-            return
+            return rollbacks
 
         except EntranceShuffleError as error:
             for entrance, target in rollbacks:
@@ -578,7 +702,11 @@ def shuffle_entrance_pool(world, worlds, entrance_pool, target_entrances, locati
             logging.getLogger('').info('Failed to place all entrances in a pool for world %d. Will retry %d more times', entrance_pool[0].world.id, retry_count)
             logging.getLogger('').info('\t%s' % error)
 
-    raise EntranceShuffleError('Entrance placement attempt count exceeded for world %d' % entrance_pool[0].world.id)
+    if world.settings.custom_seed:
+        raise EntranceShuffleError('Entrance placement attempt count exceeded for world %d. Ensure the \"Seed\" field is empty and retry a few times.' % world.id)
+    if world.settings.distribution_file:
+        raise EntranceShuffleError('Entrance placement attempt count exceeded for world %d. Some entrances in the Plandomizer File may have to be changed to create a valid seed. Reach out to Support on Discord for help.' % world.id)
+    raise EntranceShuffleError('Entrance placement attempt count exceeded for world %d. Retry a few times or reach out to Support on Discord for help.' % world.id)
 
 
 # Split entrances based on their requirements to figure out how each entrance should be handled when shuffling them
@@ -617,11 +745,11 @@ def split_entrances_by_requirements(worlds, entrances_to_split, assumed_entrance
     return restrictive_entrances, soft_entrances
 
 
-def replace_entrance(worlds, entrance, target, rollbacks, locations_to_ensure_reachable, itempool):
+def replace_entrance(worlds, entrance, target, rollbacks, locations_to_ensure_reachable, itempool, placed_one_way_entrances=()):
     try:
-        check_entrances_compatibility(entrance, target, rollbacks)
+        check_entrances_compatibility(entrance, target, rollbacks, placed_one_way_entrances)
         change_connections(entrance, target)
-        validate_world(entrance.world, worlds, entrance, locations_to_ensure_reachable, itempool)
+        validate_world(entrance.world, worlds, entrance, locations_to_ensure_reachable, itempool, placed_one_way_entrances=placed_one_way_entrances)
         rollbacks.append((entrance, target))
         return True
     except EntranceShuffleError as error:
@@ -652,8 +780,8 @@ def place_one_way_priority_entrance(worlds, world, priority_name, allowed_region
             if priority_name != 'Nocturne' or entrance.world.settings.hints == "mask":
                 continue
         # If not shuffling dungeons, Nocturne requires adult access.
-        if not entrance.world.settings.shuffle_dungeon_entrances and priority_name == 'Nocturne':
-            if entrance.type != 'WarpSong' and entrance.parent_region.name != 'Adult Spawn':
+        if not entrance.world.shuffle_dungeon_entrances and priority_name == 'Nocturne':
+            if entrance.type not in ('OverworldOneWay', 'WarpSong') and entrance.parent_region.name != 'Adult Spawn':
                 continue
         for target in one_way_target_entrance_pools[entrance.type]:
             if target.connected_region and target.connected_region.name in allowed_regions:
@@ -665,7 +793,7 @@ def place_one_way_priority_entrance(worlds, world, priority_name, allowed_region
 
 # Shuffle entrances by placing them instead of entrances in the provided target entrances list
 # While shuffling entrances, the algorithm will ensure worlds are still valid based on multiple criterias
-def shuffle_entrances(worlds, entrances, target_entrances, rollbacks, locations_to_ensure_reachable=()):
+def shuffle_entrances(worlds, entrances, target_entrances, rollbacks, locations_to_ensure_reachable=(), placed_one_way_entrances=()):
 
     # Retrieve all items in the itempool, all worlds included
     complete_itempool = [item for world in worlds for item in world.get_itempool_with_dungeon_items()]
@@ -682,7 +810,7 @@ def shuffle_entrances(worlds, entrances, target_entrances, rollbacks, locations_
             if target.connected_region == None:
                 continue
 
-            if replace_entrance(worlds, entrance, target, rollbacks, locations_to_ensure_reachable, complete_itempool):
+            if replace_entrance(worlds, entrance, target, rollbacks, locations_to_ensure_reachable, complete_itempool, placed_one_way_entrances=placed_one_way_entrances):
                 break
 
         if entrance.connected_region == None:
@@ -690,25 +818,36 @@ def shuffle_entrances(worlds, entrances, target_entrances, rollbacks, locations_
 
 
 # Check and validate that an entrance is compatible to replace a specific target
-def check_entrances_compatibility(entrance, target, rollbacks=()):
+def check_entrances_compatibility(entrance, target, rollbacks=(), placed_one_way_entrances=()):
     # An entrance shouldn't be connected to its own scene, so we fail in that situation
     if entrance.parent_region.get_scene() and entrance.parent_region.get_scene() == target.connected_region.get_scene():
         raise EntranceShuffleError('Self scene connections are forbidden')
 
-    # One way entrances shouldn't lead to the same scene as other already chosen one way entrances
-    if entrance.type in ['OwlDrop', 'Spawn', 'WarpSong'] and \
-       any([rollback[0].connected_region.get_scene() == target.connected_region.get_scene() for rollback in rollbacks]):
-        raise EntranceShuffleError('Another %s already leads to %s' % (entrance.type, target.connected_region.get_scene()))
+    # One way entrances shouldn't lead to the same hint area as other already chosen one way entrances
+    if entrance.type in ('OverworldOneWay', 'OwlDrop', 'Spawn', 'WarpSong'):
+        try:
+            hint_area = HintArea.at(target.connected_region)
+        except HintAreaNotFound:
+            pass # not connected to a hint area yet, will be checked when shuffling two-way entrances
+        else:
+            # Check all already placed entrances of the same type (including priority entrances placed separately)
+            for rollback in (*rollbacks, *placed_one_way_entrances):
+                try:
+                    placed_entrance = rollback[0]
+                    if entrance.type == placed_entrance.type and HintArea.at(placed_entrance.connected_region) == hint_area:
+                        raise EntranceShuffleError(f'Another {entrance.type} entrance already leads to {hint_area}')
+                except HintAreaNotFound:
+                    pass
 
 
 # Validate the provided worlds' structures, raising an error if it's not valid based on our criterias
-def validate_world(world, worlds, entrance_placed, locations_to_ensure_reachable, itempool):
+def validate_world(world, worlds, entrance_placed, locations_to_ensure_reachable, itempool, placed_one_way_entrances=()):
 
     # For various reasons, we don't want the player to end up through certain entrances as the wrong age
     # This means we need to hard check that none of the relevant entrances are ever reachable as that age
     # This is mostly relevant when shuffling special interiors (such as windmill or kak potion shop)
     # Warp Songs and Overworld Spawns can also end up inside certain indoors so those need to be handled as well
-    CHILD_FORBIDDEN = ['OGC Great Fairy Fountain -> Castle Grounds', 'GV Carpenter Tent -> GV Fortress Side']
+    CHILD_FORBIDDEN = ['OGC Great Fairy Fountain -> Castle Grounds', 'GV Carpenter Tent -> GV Fortress Side', 'Ganons Castle Lobby -> Castle Grounds']
     ADULT_FORBIDDEN = ['HC Great Fairy Fountain -> Castle Grounds', 'HC Storms Grotto -> Castle Grounds']
 
     for entrance in world.get_shufflable_entrances():
@@ -726,16 +865,30 @@ def validate_world(world, worlds, entrance_placed, locations_to_ensure_reachable
 
     if locations_to_ensure_reachable:
         max_search = Search.max_explore([w.state for w in worlds], itempool)
-        # If ALR is enabled, ensure all locations we want to keep reachable are indeed still reachable
-        # Otherwise, just continue if the game is still beatable
-        if not (world.check_beatable_only and max_search.can_beat_game(False)):
+        if world.check_beatable_only:
+            if worlds[0].settings.reachable_locations == 'goals':
+                # If this entrance is required for a goal, it must be placed somewhere reachable.
+                # We also need to check to make sure the game is beatable, since custom goals might not imply that.
+                predicate = lambda state: state.won() and state.has_all_item_goals()
+            else:
+                # If the game is not beatable without this entrance, it must be placed somewhere reachable.
+                predicate = State.won
+            perform_access_check = not max_search.can_beat_game(scan_for_items=False, predicate=predicate)
+        else:
+            # All entrances must be placed somewhere reachable.
+            perform_access_check = True
+        if perform_access_check:
             max_search.visit_locations(locations_to_ensure_reachable)
             for location in locations_to_ensure_reachable:
                 if not max_search.visited(location):
                     raise EntranceShuffleError('%s is unreachable' % location.name)
 
-    if world.shuffle_interior_entrances and (world.settings.misc_hints or world.settings.hints != 'none') and \
-       (entrance_placed == None or entrance_placed.type in ['Interior', 'SpecialInterior']):
+    if (
+        world.shuffle_interior_entrances and (
+            (world.dungeon_rewards_hinted and False) or #TODO enable if boss reward shuffle and/or mixed pools bosses are on
+            any(hint_type in world.settings.misc_hints for hint_type in misc_item_hint_table) or world.settings.hints != 'none'
+        ) and (entrance_placed == None or entrance_placed.type in ['Interior', 'SpecialInterior'])
+    ):
         # Ensure Kak Potion Shop entrances are in the same hint area so there is no ambiguity as to which entrance is used for hints
         potion_front_entrance = get_entrance_replacing(world.get_region('Kak Potion Shop Front'), 'Kakariko Village -> Kak Potion Shop Front')
         potion_back_entrance = get_entrance_replacing(world.get_region('Kak Potion Shop Back'), 'Kak Backyard -> Kak Potion Shop Back')
@@ -750,7 +903,7 @@ def validate_world(world, worlds, entrance_placed, locations_to_ensure_reachable
                 raise EntranceShuffleError('Kak Impas House entrances are not in the same hint area')
 
     if (world.shuffle_special_interior_entrances or world.settings.shuffle_overworld_entrances or world.settings.spawn_positions) and \
-       (entrance_placed == None or entrance_placed.type in ['SpecialInterior', 'Overworld', 'Spawn', 'WarpSong', 'OwlDrop']):
+       (entrance_placed == None or entrance_placed.type in ('SpecialInterior', 'Overworld', 'OverworldOneWay', 'Spawn', 'WarpSong', 'OwlDrop')):
         # At least one valid starting region with all basic refills should be reachable without using any items at the beginning of the seed
         # Note this creates new empty states rather than reuse the worlds' states (which already have starting items)
         no_items_search = Search([State(w) for w in worlds])
@@ -774,7 +927,7 @@ def validate_world(world, worlds, entrance_placed, locations_to_ensure_reachable
             raise EntranceShuffleError('Path to Temple of Time as child is not guaranteed')
 
     if (world.shuffle_interior_entrances or world.settings.shuffle_overworld_entrances) and \
-       (entrance_placed == None or entrance_placed.type in ['Interior', 'SpecialInterior', 'Overworld', 'Spawn', 'WarpSong', 'OwlDrop']):
+       (entrance_placed == None or entrance_placed.type in ('Interior', 'SpecialInterior', 'Overworld', 'OverworldOneWay', 'Spawn', 'WarpSong', 'OwlDrop')):
         # The Big Poe Shop should always be accessible as adult without the need to use any bottles
         # This is important to ensure that players can never lock their only bottles by filling them with Big Poes they can't sell
         # We can use starting items in this check as long as there are no exits requiring the use of a bottle without refills
@@ -782,6 +935,23 @@ def validate_world(world, worlds, entrance_placed, locations_to_ensure_reachable
 
         if not time_travel_search.can_reach(world.get_region('Market Guard House'), age='adult'):
             raise EntranceShuffleError('Big Poe Shop access is not guaranteed as adult')
+
+    # placing a two-way entrance can connect a one-way entrance to a hint area,
+    # so the restriction also needs to be checked here
+    for idx1 in range(len(placed_one_way_entrances)):
+        try:
+            entrance1 = placed_one_way_entrances[idx1][0]
+            hint_area1 = HintArea.at(entrance1.connected_region)
+        except HintAreaNotFound:
+            pass
+        else:
+            for idx2 in range(idx1):
+                try:
+                    entrance2 = placed_one_way_entrances[idx2][0]
+                    if entrance1.type == entrance2.type and hint_area1 == HintArea.at(entrance2.connected_region):
+                        raise EntranceShuffleError(f'Multiple {entrance1.type} entrances lead to {hint_area1}')
+                except HintAreaNotFound:
+                    pass
 
 
 # Returns whether or not we can affirm the entrance can never be accessed as the given age
@@ -792,7 +962,7 @@ def entrance_unreachable_as(entrance, age, already_checked=None):
     already_checked.append(entrance)
 
     # The following cases determine when we say an entrance is not safe to affirm unreachable as the given age
-    if entrance.type in ('WarpSong', 'Overworld'):
+    if entrance.type in ('WarpSong', 'OverworldOneWay', 'Overworld'):
         # Note that we consider all overworld entrances as potentially accessible as both ages, to be completely safe
         return False
     elif entrance.type == 'OwlDrop':
@@ -816,7 +986,7 @@ def entrance_unreachable_as(entrance, age, already_checked=None):
 # Returns whether two entrances are in the same hint area
 def same_hint_area(first, second):
     try:
-        return get_hint_area(first) == get_hint_area(second)
+        return HintArea.at(first) == HintArea.at(second)
     except HintAreaNotFound:
         return False
 
@@ -831,7 +1001,7 @@ def get_entrance_replacing(region, entrance_name):
     try:
         return next(filter(lambda entrance: entrance.replaces and entrance.replaces.name == entrance_name and \
                                             entrance.parent_region and entrance.parent_region.name != 'Root Exits' and \
-                                            entrance.type not in ('OwlDrop', 'Spawn', 'WarpSong'), region.entrances))
+                                            entrance.type not in ('OverworldOneWay', 'OwlDrop', 'Spawn', 'WarpSong'), region.entrances))
     except StopIteration:
         return None
 

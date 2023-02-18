@@ -502,7 +502,7 @@ static void draw_digits(z64_disp_buf_t* db, const uint8_t* digits, const counter
 // Draw counter tiles
 static void draw_counts(z64_disp_buf_t* db, const counter_tile_info_t* info, uint8_t alpha) {
     const counter_tile_data_t* const data = counter_positions;
-    
+
     uint8_t bright_alpha = color_product(WHITE.a, alpha);
 
     // Rupee
@@ -589,7 +589,7 @@ void draw_file_icons(z64_disp_buf_t* db, const z64_menudata_t* menu_data) {
         if ((menu_data->menu_transition == 0x00 && menu_data->menu_depth == 0x02)
                 || menu_data->alt_transition == 0x05
                 || menu_data->alt_transition == 0x16) {
-            read_file_data(&menu_data->sram_buffer->primary_saves[menu_data->selected_file]);
+            read_file_data(&menu_data->sram_buffer->primary_saves[menu_data->selected_file].original_save);
             return;
         }
     }
@@ -676,7 +676,12 @@ static void populate_child_trade(const z64_file_t* file, variable_tile_t* tile) 
         tile->enabled = 1;
     }
     else if (Z64_ITEM_WEIRD_EGG <= item_child && item_child <= Z64_ITEM_ZELDAS_LETTER) {
-        tile->tile_index = item_child;
+        if (item_child == Z64_ITEM_ZELDAS_LETTER && (file->event_chk_inf[0x05] & 0x0200) == 0) {
+            // haven't learned Song from Impa, letter will revert on load
+            tile->tile_index = Z64_ITEM_CHICKEN;
+        } else {
+            tile->tile_index = item_child;
+        }
         tile->enabled = 1;
     }
     else {
@@ -686,8 +691,20 @@ static void populate_child_trade(const z64_file_t* file, variable_tile_t* tile) 
 }
 
 
+extern uint8_t DISABLE_TIMERS;
 static void populate_adult_trade(const z64_file_t* file, variable_tile_t* tile) {
     uint8_t item_adult = file->items[Z64_SLOT_ADULT_TRADE];
+    if (!DISABLE_TIMERS) {
+        switch (item_adult) {
+            case Z64_ITEM_ODD_MUSHROOM:
+                item_adult = Z64_ITEM_COJIRO;
+                break;
+            case Z64_ITEM_EYEBALL_FROG:
+            case Z64_ITEM_EYE_DROPS:
+                item_adult = Z64_ITEM_PRESCRIPTION;
+                break;
+        }
+    }
     if (Z64_ITEM_POCKET_EGG <= item_adult && item_adult <= Z64_ITEM_CLAIM_CHECK) {
         tile->tile_index = item_adult;
         tile->enabled = 1;

@@ -13,7 +13,7 @@ rova_check_pos:
     la      t1, START_TWINROVA_FIGHT
     lb      t2, 0x00(t1)
     bnez    t2, @@return
-    nop     
+    nop
     lw      t3, 0x28(s2)   ;links height
     li      t4, 0x43700000 ;240.0f
     blt     t3, t4, @@return

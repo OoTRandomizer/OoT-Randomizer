@@ -1,40 +1,48 @@
-/deep/ {
-  .error-window {
-    margin-left: auto;
-    margin-right: auto;
-    width: 90%;
+@import '../../../../app/@theme/styles/themes';
 
-    .errorHeader {
-      padding-bottom: 4px;
-    }
-
-    .errorBody {
-      padding-top: 4px;
-    }
-
-    .headerButton {
-      float: right;
-      margin-top: -30px;
-      margin-right: -10px;
-    }
-
-    .textAreaError {
-      height: 200px;
-      max-height: 200px;
-    }
-
-    .footerButtonWrapper {
-      text-align: center;
-    }
-
-    button + button {
-      margin-left: 1rem;
-    }
-  }
-
-  @media (min-width: 40rem) {
+@include nb-install-component() {
+  ::ng-deep {
     .error-window {
-      width: 38rem;
+      margin-left: auto;
+      margin-right: auto;
+      width: 90%;
+
+      .errorHeader {
+        padding-bottom: 4px;
+      }
+
+      .errorBody {
+        padding-top: 4px;
+      }
+
+      .headerButton {
+        float: right;
+        margin-top: -30px;
+        margin-right: -10px;
+      }
+
+      .textAreaError {
+        height: 200px;
+        max-height: 200px;
+        font-family: "Courier New", sans-serif;
+        font-weight: 500;
+        font-size: 0.9rem;
+        line-height: 1rem;
+      }
+
+      .footerButtonWrapper {
+        text-align: center;
+      }
+
+      button + button {
+        margin-left: 1rem;
+      }
+    }
+
+    @media (min-width: 40rem) {
+      .error-window {
+        width: 38rem;
+      }
     }
   }
 }

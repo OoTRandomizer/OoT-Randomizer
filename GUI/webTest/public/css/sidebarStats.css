@@ -1,0 +1,94 @@
+/* Left sidebar handling */
+.sidebar {
+    display: initial;
+    width: 300px; /* Set the width of the sidebar */
+    height: 1050px;
+    z-index: 1; /* Stay on top */
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* Disable horizontal scroll */
+}
+@media (max-width: 1250px) { /* 1550 */
+    .sidebar {
+        display: none;
+    }
+}
+.sbL {
+    left: 0;
+    margin-top: 140px;
+}
+
+.sbL p {
+    padding-top: unset;
+    padding-bottom: unset;
+    line-height: 1.42857143;
+}
+
+/* Right sidebar
+.sbL {
+right: 0;
+margin-top: 140px;
+}
+*/
+
+/* Enable sidebar on basecontainer */
+@media (min-width: 1251px) { /* Remove for old sidebar appearance on only big screens */
+    .basecontainer {
+        position: absolute;
+        width: 76.7% !important;
+        left: 23.3% !important; /* set to 0% for right sidebar */
+    }
+}
+
+@media (min-width: 1351px) { /* Remove for old sidebar appearance on only big screens */
+    .basecontainer {
+        width: 79% !important;
+        left: 21% !important; /* set to 0% for right sidebar */
+    }
+}
+
+/* Normal sidebar appearance */
+@media (min-width: 1551px) {
+    .basecontainer {
+        position: absolute;
+        width: 81% !important;
+        left: 19% !important; /* set to 0% for right sidebar */
+    }
+}
+
+/* Nicer scaling with bigger sizes */
+@media (min-width: 1651px) {
+    .basecontainer {
+        width: 82% !important;
+        left: 18% !important; /* set to 0% for right sidebar */
+    }
+}
+
+@media (min-width: 1751px) {
+    .basecontainer {
+        width: 83% !important;
+        left: 17% !important; /* set to 0% for right sidebar */
+    }
+}
+
+@media (min-width: 1851px) {
+    .basecontainer {
+        width: 84% !important;
+        left: 16% !important; /* set to 0% for right sidebar */
+    }
+}
+
+@media (min-width: 1951px) {
+    .basecontainer {
+        width: 85% !important;
+        left: 15% !important; /* set to 0% for right sidebar */
+    }
+}
+
+@media (min-width: 2051px) {
+    .basecontainer {
+        width: 86% !important;
+        left: 14% !important; /* set to 0% for right sidebar */
+    }
+}

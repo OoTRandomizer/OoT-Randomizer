@@ -1,22 +1,21 @@
 import ast
 from collections import defaultdict
-from inspect import signature, _ParameterKind
 import logging
 import re
 
-from Item import MakeEventItem
-from ItemList import item_table
+from Item import ItemInfo, Item, MakeEventItem
 from Location import Location
 from Region import TimeOfDay
+from RulesCommon import allowed_globals, escape_name
 from State import State
-from Utils import data_path, read_json
+from Utils import data_path, read_logic_file
 
 
 escaped_items = {}
-for item in item_table:
-    escaped_items[re.sub(r'[\'()[\]]', '', item.replace(' ', '_'))] = item
+for item in ItemInfo.items:
+    escaped_items[escape_name(item)] = item
 
-event_name = re.compile(r'\w+')
+event_name = re.compile(r'[A-Z]\w+')
 # All generated lambdas must accept these keyword args!
 # For evaluation at a certain age (required as all rules are evaluated at a specific age)
 # or at a certain spot (can be omitted in many cases)
@@ -27,13 +26,14 @@ kwarg_defaults = {
     'tod': TimeOfDay.NONE,
 }
 
-allowed_globals = {'TimeOfDay': TimeOfDay}
+special_globals = {'TimeOfDay': TimeOfDay}
+allowed_globals.update(special_globals)
 
 rule_aliases = {}
 nonaliases = set()
 
 def load_aliases():
-    j = read_json(data_path('LogicHelpers.json'))
+    j = read_logic_file(data_path('LogicHelpers.json'))
     for s, repl in j.items():
         if '(' in s:
             rule, args = s[:-1].split('(', 1)
@@ -80,7 +80,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
                     value=ast.Name(id='state', ctx=ast.Load()),
                     attr='has',
                     ctx=ast.Load()),
-                args=[ast.Str(escaped_items[node.id])],
+                args=[node],
                 keywords=[])
         elif node.id in self.world.__dict__:
             return ast.parse('%r' % self.world.__dict__[node.id], mode='eval').body
@@ -89,27 +89,33 @@ class Rule_AST_Transformer(ast.NodeTransformer):
             return ast.parse('%r' % self.world.settings.__dict__[node.id], mode='eval').body
         elif node.id in State.__dict__:
             return self.make_call(node, node.id, [], [])
-        elif node.id in kwarg_defaults or node.id in allowed_globals:
+        elif node.id in kwarg_defaults or node.id in special_globals:
             return node
         elif event_name.match(node.id):
             self.events.add(node.id.replace('_', ' '))
+            # Ensure the item info is updated properly
+            Item(node.id, event=True)
             return ast.Call(
                 func=ast.Attribute(
                     value=ast.Name(id='state', ctx=ast.Load()),
                     attr='has',
                     ctx=ast.Load()),
-                args=[ast.Str(node.id.replace('_', ' '))],
+                args=[node],
                 keywords=[])
         else:
             raise Exception('Parse Error: invalid node name %s' % node.id, self.current_spot.name, ast.dump(node, False))
 
     def visit_Str(self, node):
+        esc = escape_name(node.s)
+        if esc not in ItemInfo.solver_ids:
+            self.events.add(esc.replace('_', ' '))
+            Item(esc, event=True)
         return ast.Call(
             func=ast.Attribute(
                 value=ast.Name(id='state', ctx=ast.Load()),
                 attr='has',
                 ctx=ast.Load()),
-            args=[ast.Str(node.s)],
+            args=[ast.Name(id=escape_name(node.s), ctx=ast.Load())],
             keywords=[])
 
     # python 3.8 compatibility: ast walking now uses visit_Constant for Constant subclasses
@@ -128,7 +134,8 @@ class Rule_AST_Transformer(ast.NodeTransformer):
 
         if not isinstance(item, (ast.Name, ast.Str)):
             raise Exception('Parse Error: first value must be an item. Got %s' % item.__class__.__name__, self.current_spot.name, ast.dump(node, False))
-        iname = item.id if isinstance(item, ast.Name) else item.s
+        if isinstance(item, ast.Str):
+            item = ast.Name(id=escape_name(item.s), ctx=ast.Load())
 
         if not (isinstance(count, ast.Name) or isinstance(count, ast.Num)):
             raise Exception('Parse Error: second value must be a number. Got %s' % item.__class__.__name__, self.current_spot.name, ast.dump(node, False))
@@ -137,18 +144,15 @@ class Rule_AST_Transformer(ast.NodeTransformer):
             # Must be a settings constant
             count = ast.parse('%r' % self.world.settings.__dict__[count.id], mode='eval').body
 
-        if iname in escaped_items:
-            iname = escaped_items[iname]
-
-        if iname not in item_table:
-            self.events.add(iname)
+        if item.id not in ItemInfo.solver_ids:
+            self.events.add(item.id.replace('_', ' '))
 
         return ast.Call(
             func=ast.Attribute(
                 value=ast.Name(id='state', ctx=ast.Load()),
                 attr='has',
                 ctx=ast.Load()),
-            args=[ast.Str(iname), count],
+            args=[item, count],
             keywords=[])
 
 
@@ -202,8 +206,10 @@ class Rule_AST_Transformer(ast.NodeTransformer):
                 elif child.id in rule_aliases:
                     child = self.visit(child)
                 elif child.id in escaped_items:
+                    logging.getLogger('').debug(f'Call? {node.func.id} with {child.id}')
                     child = ast.Str(escaped_items[child.id])
                 else:
+                    logging.getLogger('').debug(f'Call? {node.func.id} with {child.id}')
                     child = ast.Str(child.id.replace('_', ' '))
             elif not isinstance(child, ast.Str):
                 child = self.visit(child)
@@ -290,9 +296,13 @@ class Rule_AST_Transformer(ast.NodeTransformer):
         # if any is False(And)/True(Or), the whole node can be replaced with it
         for elt in list(node.values):
             if isinstance(elt, ast.Str):
-                items.add(elt.s)
-            elif isinstance(elt, ast.Name) and elt.id in nonaliases:
-                items.add(escaped_items[elt.id])
+                items.add(escape_name(elt.s))
+            elif (isinstance(elt, ast.Name) and elt.id not in rule_aliases
+                    and elt.id not in self.world.__dict__
+                    and elt.id not in self.world.settings.__dict__
+                    and elt.id not in dir(self)
+                    and elt.id not in State.__dict__):
+                items.add(elt.id)
             else:
                 # It's possible this returns a single item check,
                 # but it's already wrapped in a Call.
@@ -305,9 +315,11 @@ class Rule_AST_Transformer(ast.NodeTransformer):
                         and elt.func.attr in ('has', groupable) and len(elt.args) == 1):
                     args = elt.args[0]
                     if isinstance(args, ast.Str):
-                        items.add(args.s)
+                        items.add(escape_name(args.s))
+                    elif isinstance(args, ast.Name):
+                        items.add(args.id)
                     else:
-                        items.update(it.s for it in args.elts)
+                        items.update(it.id for it in args.elts)
                 elif isinstance(elt, ast.BoolOp) and node.op.__class__ == elt.op.__class__:
                     new_values.extend(elt.values)
                 else:
@@ -324,7 +336,8 @@ class Rule_AST_Transformer(ast.NodeTransformer):
                     value=ast.Name(id='state', ctx=ast.Load()),
                     attr='has_any_of' if early_return else 'has_all_of',
                     ctx=ast.Load()),
-                args=[ast.Tuple(elts=[ast.Str(i) for i in items], ctx=ast.Load())],
+                args=[ast.Tuple(elts=[ast.Name(id=i, ctx=ast.Load()) for i in items],
+                                ctx=ast.Load())],
                 keywords=[])] + new_values
         else:
             node.values = new_values
@@ -355,6 +368,8 @@ class Rule_AST_Transformer(ast.NodeTransformer):
             return self.replaced_rules[target][rule]
 
         subrule_name = target + ' Subrule %d' % (1 + len(self.replaced_rules[target]))
+        # Ensure the item info is created
+        Item(subrule_name, event=True)
         # Save the info to be made into a rule later
         self.delayed_rules.append((target, node, subrule_name))
         # Replace the call with a reference to that item
@@ -363,7 +378,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
                 value=ast.Name(id='state', ctx=ast.Load()),
                 attr='has',
                 ctx=ast.Load()),
-            args=[ast.Str(subrule_name)],
+            args=[ast.Name(id=escape_name(subrule_name), ctx=ast.Load())],
             keywords=[])
         # Cache the subrule for any others in this region
         # (and reserve the item name in the process)
@@ -402,6 +417,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
             # requires consistent iteration on dicts
             kwargs = [ast.arg(arg=k) for k in kwarg_defaults.keys()]
             kwd = list(map(ast.Constant, kwarg_defaults.values()))
+            name = f'<{self.current_spot and self.current_spot.name}: {rule_str}>'
             try:
                 self.rule_cache[rule_str] = eval(compile(
                     ast.fix_missing_locations(
@@ -413,8 +429,9 @@ class Rule_AST_Transformer(ast.NodeTransformer):
                                 kwonlyargs=kwargs,
                                 kw_defaults=kwd),
                             body=body))),
-                    '<string>', 'eval'),
+                    name, 'eval'),
                     # globals/locals. if undefined, everything in the namespace *now* would be allowed
+                    # Intentionally modifiable so we can add the ItemInfo solver ids as we go
                     allowed_globals)
             except TypeError as e:
                 raise Exception('Parse Error: %s' % e, self.current_spot.name, ast.dump(body, False))
@@ -447,7 +464,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
         if self.world.ensure_tod_access:
             # tod has DAY or (tod == NONE and (ss or find a path from a provider))
             # parsing is better than constructing this expression by hand
-            return ast.parse("(tod & TimeOfDay.DAY) if tod else (state.has_all_of(('Ocarina', 'Suns Song')) or state.search.can_reach(spot.parent_region, age=age, tod=TimeOfDay.DAY))", mode='eval').body
+            return ast.parse("(tod & TimeOfDay.DAY) if tod else (state.has_all_of((Ocarina, Suns_Song)) or state.search.can_reach(spot.parent_region, age=age, tod=TimeOfDay.DAY))", mode='eval').body
         return ast.NameConstant(True)
 
     def at_dampe_time(self, node):
@@ -464,7 +481,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
         if self.world.ensure_tod_access:
             # tod has DAMPE or (tod == NONE and (ss or find a path from a provider))
             # parsing is better than constructing this expression by hand
-            return ast.parse("(tod & TimeOfDay.DAMPE) if tod else (state.has_all_of(('Ocarina', 'Suns Song')) or state.search.can_reach(spot.parent_region, age=age, tod=TimeOfDay.DAMPE))", mode='eval').body
+            return ast.parse("(tod & TimeOfDay.DAMPE) if tod else (state.has_all_of((Ocarina, Suns_Song)) or state.search.can_reach(spot.parent_region, age=age, tod=TimeOfDay.DAMPE))", mode='eval').body
         return ast.NameConstant(True)
 
 

@@ -1,0 +1,11 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Randomizer setup help
+    url: https://discord.gg/BGRrKKn
+    about: "Get help with generating seeds in #setup-support on our Discord server."
+  - name: Game progression help
+    url: https://discord.gg/6Nypg4U73C
+    about: "If you get stuck, please ask for help in #gameplay-and-tricks on our Discord server before reporting a bug."
+  - name: Feature suggestions
+    url: https://discord.gg/DjEm3s7XQY
+    about: "You can open an issue to suggest a new feature, but if you prefer, you can also post to #dev-suggestions on our Discord server."

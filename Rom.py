@@ -11,7 +11,8 @@ import copy
 from Utils import is_bundled, subprocess_args, local_path, data_path, default_output_path, get_version_bytes
 from ntype import BigStream, uint32
 from crc import calculate_crc
-from version import __version__
+from Models import restrictiveBytes
+from version import base_version, branch_identifier, supplementary_version
 
 DMADATA_START = 0x7430
 
@@ -55,8 +56,7 @@ class Rom(BigStream):
         self.original = self.copy()
 
         # Add version number to header.
-        self.write_bytes(0x35, get_version_bytes(__version__))
-        self.force_patch.extend([0x35, 0x36, 0x37])
+        self.write_version_bytes()
 
 
     def copy(self):
@@ -68,7 +68,7 @@ class Rom(BigStream):
         return new_rom
 
 
-    def decompress_rom_file(self, file, decomp_file):
+    def decompress_rom_file(self, file, decomp_file, verify_crc=True):
         validCRC = [
             [0xEC, 0x70, 0x11, 0xB7, 0x76, 0x16, 0xD7, 0x2B], # Compressed
             [0x70, 0xEC, 0xB7, 0x11, 0x16, 0x76, 0x2B, 0xD7], # Byteswap compressed
@@ -78,7 +78,7 @@ class Rom(BigStream):
         # Validate ROM file
         file_name = os.path.splitext(file)
         romCRC = list(self.buffer[0x10:0x18])
-        if romCRC not in validCRC:
+        if verify_crc and romCRC not in validCRC:
             # Bad CRC validation
             raise RuntimeError('ROM file %s is not a valid OoT 1.0 US ROM.' % file)
         elif len(self.buffer) < 0x2000000 or len(self.buffer) > (0x4000000) or file_name[1].lower() not in ['.z64', '.n64']:
@@ -88,23 +88,27 @@ class Rom(BigStream):
             # If Input ROM is compressed, then Decompress it
             subcall = []
 
-            if is_bundled():
-                sub_dir = "."
-            else:
-                sub_dir = "Decompress"
+            sub_dir = "./" if is_bundled() else "bin/Decompress/"
 
             if platform.system() == 'Windows':
-                if 8 * struct.calcsize("P") == 64:
-                    subcall = [sub_dir + "\\Decompress.exe", file, decomp_file]
+                if platform.machine() == 'AMD64':
+                    subcall = [sub_dir + "Decompress.exe", file, decomp_file]
+                elif platform.machine() == 'ARM64':
+                    subcall = [sub_dir + "Decompress_ARM64.exe", file, decomp_file]
                 else:
-                    subcall = [sub_dir + "\\Decompress32.exe", file, decomp_file]
+                    subcall = [sub_dir + "Decompress32.exe", file, decomp_file]
             elif platform.system() == 'Linux':
-                if platform.uname()[4] == 'aarch64' or platform.uname()[4] == 'arm64':
-                    subcall = [sub_dir + "/Decompress_ARM64", file, decomp_file]
+                if platform.machine() in ['arm64', 'aarch64', 'aarch64_be', 'armv8b', 'armv8l']:
+                    subcall = [sub_dir + "Decompress_ARM64", file, decomp_file]
+                elif platform.machine() in ['arm', 'armv7l', 'armhf']:
+                    subcall = [sub_dir + "Decompress_ARM32", file, decomp_file]
                 else:
-                    subcall = [sub_dir + "/Decompress", file, decomp_file]
+                    subcall = [sub_dir + "Decompress", file, decomp_file]
             elif platform.system() == 'Darwin':
-                subcall = [sub_dir + "/Decompress.out", file, decomp_file]
+                if platform.machine() == 'arm64':
+                    subcall = [sub_dir + "Decompress_ARM64.out", file, decomp_file]
+                else:
+                    subcall = [sub_dir + "Decompress.out", file, decomp_file]
             else:
                 raise RuntimeError('Unsupported operating system for decompression. Please supply an already decompressed ROM.')
 
@@ -119,6 +123,17 @@ class Rom(BigStream):
         super().write_byte(address, value)
         self.changed_address[self.last_address-1] = value
 
+    def write_bytes_restrictive(self, start, size, values):
+        for i in range(size):
+            address = start + i
+            should_write = True
+            for restrictiveBlock in restrictiveBytes:
+                # If i is between the start of restrictive zone [0] and start + size [1]
+                if restrictiveBlock[0] <= address and address < restrictiveBlock[0] + restrictiveBlock[1]:
+                    should_write = False
+                    break
+            if should_write:
+                self.write_byte(address, values[i])
 
     def write_bytes(self, address, values):
         super().write_bytes(address, values)
@@ -131,8 +146,7 @@ class Rom(BigStream):
         self.changed_dma = {}
         self.force_patch = []
         self.last_address = None
-        self.write_bytes(0x35, get_version_bytes(__version__))
-        self.force_patch.extend([0x35, 0x36, 0x37])
+        self.write_version_bytes()
 
 
     def sym(self, symbol_name):
@@ -149,6 +163,22 @@ class Rom(BigStream):
     def update_header(self):
         crc = calculate_crc(self)
         self.write_bytes(0x10, crc)
+
+
+    def write_version_bytes(self):
+        version_bytes = get_version_bytes(base_version, branch_identifier, supplementary_version)
+        self.write_bytes(0x19, version_bytes)
+        self.write_bytes(0x35, version_bytes[:3])
+        self.force_patch.extend([0x19, 0x1A, 0x1B, 0x1C, 0x1D, 0x35, 0x36, 0x37])
+
+
+    def read_version_bytes(self):
+        version_bytes = self.read_bytes(0x19, 5)
+        secondary_version_bytes = self.read_bytes(0x35, 3)
+        for i in range(3):
+            if secondary_version_bytes[i] != version_bytes[i]:
+                return secondary_version_bytes
+        return version_bytes
 
 
     def read_rom(self, file):
@@ -253,9 +283,9 @@ class Rom(BigStream):
 
 
     # This will scan for any changes that have been made to the DMA table
-    # This assumes any changes here are new files, so this should only be called
+    # By default, this assumes any changes here are new files, so this should only be called
     # after patching in the new files, but before vanilla files are repointed
-    def scan_dmadata_update(self):
+    def scan_dmadata_update(self, preserve_from_file=False, assume_move=False):
         cur = DMADATA_START
         dma_data_end = None
         dma_index = 0
@@ -269,12 +299,33 @@ class Rom(BigStream):
 
             # If the entries do not match, the flag the changed entry
             if not (dma_start == old_dma_start and dma_end == old_dma_end):
-                self.changed_dma[dma_index] = (-1, dma_start, dma_end - dma_start)
+                from_file = -1
+                if preserve_from_file and dma_index in self.changed_dma:
+                    from_file = self.changed_dma[dma_index][0]
+                elif assume_move and dma_index < 1496:
+                    from_file = old_dma_start
+                self.changed_dma[dma_index] = (from_file, dma_start, dma_end - dma_start)
 
             cur += 0x10
             dma_index += 1
             dma_start, dma_end, dma_size = self._get_dmadata_record(cur)
             old_dma_start, old_dma_end, old_dma_size = self.original._get_dmadata_record(cur)
+
+
+    # This will rescan the entire ROM, compare to original ROM, and repopulate changed_address.
+    def rescan_changed_bytes(self):
+        self.changed_address = {}
+        size = len(self.buffer)
+        original_size = len(self.original.buffer)
+        for i, byte in enumerate(self.buffer):
+            if i >= original_size:
+                self.changed_address[i] = byte
+                continue
+            orig_byte = self.original.read_byte(i)
+            if byte != orig_byte:
+                self.changed_address[i] = byte
+        if size < original_size:
+            self.changed_address.update(zip(range(size, original_size-1), [0]*(original_size-size)))
 
 
     # gets the last used byte of rom defined in the DMA table

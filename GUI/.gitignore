@@ -40,6 +40,7 @@ speed-measure-plugin.json
 *.njsproj
 
 # misc
+/.angular/cache
 /.sass-cache
 /connect.lock
 /coverage
@@ -54,5 +55,5 @@ testem.log
 .DS_Store
 Thumbs.db
 
-# package-lock.json
-package-lock.json
+# Angular
+.angular

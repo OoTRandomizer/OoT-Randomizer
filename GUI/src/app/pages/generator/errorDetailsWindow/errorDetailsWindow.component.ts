@@ -10,23 +10,23 @@ import { GUIGlobal } from '../../../providers/GUIGlobal';
         <button nbButton class="headerButton" size="xsmall" status="danger" (click)="closeDialog()">X</button>
       </nb-card-header>
       <nb-card-body class="errorBody">
-        <textarea class="textAreaError" nbInput fullWidth readonly>{{ errorMessage }}</textarea>   
+        <textarea class="textAreaError" nbInput fullWidth readonly>{{ errorMessage }}</textarea>
       </nb-card-body>
       <nb-card-footer>
         <div class="footerButtonWrapper">
-          <button nbButton hero size="small" status="primary" (click)="closeDialog()">OK</button>
-          <button nbButton hero size="small" status="info" (click)="copyErrorMessage()">Copy</button>
+          <button nbButton size="small" status="basic" (click)="closeDialog()">OK</button>
+          <button nbButton size="small" status="info" (click)="copyErrorMessage()">Copy</button>
         </div>
       </nb-card-footer>
     </nb-card>
   `,
   styleUrls: ['./errorDetailsWindow.scss'],
 })
-export class ErrorDetailsWindow {
+export class ErrorDetailsWindowComponent {
 
   @Input() errorMessage: string = "";
 
-  constructor(protected ref: NbDialogRef<ErrorDetailsWindow>, public global: GUIGlobal) {
+  constructor(protected ref: NbDialogRef<ErrorDetailsWindowComponent>, public global: GUIGlobal) {
   }
 
   closeDialog() {

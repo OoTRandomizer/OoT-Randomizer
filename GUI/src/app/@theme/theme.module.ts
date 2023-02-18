@@ -1,7 +1,6 @@
 import { ModuleWithProviders, NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 import {
   NbActionsModule,
@@ -43,7 +42,7 @@ import {
 import {
   GUILayoutComponent
 } from './layouts';
-import { GUI_THEME } from './styles/theme.gui';
+import {ThemeSwitcher} from '../providers/theme-switcher.service';
 
 const BASE_MODULES = [CommonModule, FormsModule, ReactiveFormsModule];
 
@@ -60,7 +59,6 @@ const NB_MODULES = [
   NbCheckboxModule,
   NbPopoverModule,
   NbContextMenuModule,
-  NgbModule,
   NbProgressBarModule,
   NbCalendarModule,
   NbCalendarRangeModule,
@@ -85,31 +83,28 @@ const COMPONENTS = [
   GUILayoutComponent
 ];
 
-const ENTRY_COMPONENTS = [];
-
 const NB_THEME_PROVIDERS = [
   ...NbThemeModule.forRoot(
     {
-      name: 'corporate',
+      name: 'default',
     },
-    [ GUI_THEME ],
   ).providers,
   ...NbSidebarModule.forRoot().providers,
   ...NbMenuModule.forRoot().providers,
   ...NbDialogModule.forRoot().providers,
   ...NbWindowModule.forRoot().providers,
   ...NbToastrModule.forRoot().providers,
+  ThemeSwitcher,
 ];
 
 @NgModule({
-  imports: [...BASE_MODULES, ...NB_MODULES],
-  exports: [...BASE_MODULES, ...NB_MODULES, ...COMPONENTS],
-  declarations: [...COMPONENTS],
-  entryComponents: [...ENTRY_COMPONENTS],
+    imports: [...BASE_MODULES, ...NB_MODULES],
+    exports: [...BASE_MODULES, ...NB_MODULES, ...COMPONENTS],
+    declarations: [...COMPONENTS]
 })
 export class ThemeModule {
-  static forRoot(): ModuleWithProviders {
-    return <ModuleWithProviders>{
+  static forRoot(): ModuleWithProviders<ThemeModule> {
+    return {
       ngModule: ThemeModule,
       providers: [...NB_THEME_PROVIDERS],
     };

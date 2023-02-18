@@ -6,10 +6,12 @@ from itertools import chain
 
 class Location(object):
 
-    def __init__(self, name='', address=None, address2=None, default=None, type='Chest', scene=None, parent=None, filter_tags=None, internal=False):
+    def __init__(self, name='', address=None, address2=None, default=None, type='Chest', scene=None, parent=None,
+                 filter_tags=None, internal=False, vanilla_item=None):
         self.name = name
         self.parent_region = parent
         self.item = None
+        self.vanilla_item = vanilla_item
         self.address = address
         self.address2 = address2
         self.default = default
@@ -29,12 +31,14 @@ class Location(object):
         self.never = False
         if filter_tags is None:
             self.filter_tags = None
+        elif isinstance(filter_tags, str):
+            self.filter_tags = [filter_tags]
         else:
             self.filter_tags = list(filter_tags)
 
 
     def copy(self, new_region):
-        new_location = Location(self.name, self.address, self.address2, self.default, self.type, self.scene, new_region, self.filter_tags)
+        new_location = Location(self.name, self.address, self.address2, self.default, self.type, self.scene, new_region, self.filter_tags, self.vanilla_item)
         new_location.world = new_region.world
         if self.item:
             new_location.item = self.item.copy(new_region.world)
@@ -52,6 +56,11 @@ class Location(object):
         return new_location
 
 
+    @property
+    def dungeon(self):
+        return self.parent_region.dungeon if self.parent_region is not None else None
+
+
     def add_rule(self, lambda_rule):
         if self.always:
             self.set_rule(lambda_rule)
@@ -60,7 +69,14 @@ class Location(object):
         if self.never:
             return
         self.access_rules.append(lambda_rule)
-        self.access_rule = lambda state, **kwargs: all(rule(state, **kwargs) for rule in self.access_rules)
+        self.access_rule = self._run_rules
+
+
+    def _run_rules(self, state, **kwargs):
+        for rule in self.access_rules:
+            if not rule(state, **kwargs):
+                return False
+        return True
 
 
     def set_rule(self, lambda_rule):
@@ -90,7 +106,7 @@ class Location(object):
     # Can the player see what's placed at this location without collecting it?
     # Used to reduce JSON spoiler noise
     def has_preview(self):
-        return location_is_viewable(self.name, self.world.settings.correct_chest_appearances)
+        return location_is_viewable(self.name, self.world.settings.correct_chest_appearances, self.world.settings.fast_chests)
 
 
     def has_item(self):
@@ -127,7 +143,7 @@ def LocationFactory(locations, world=None):
             if addresses is None:
                 addresses = (None, None)
             address, address2 = addresses
-            ret.append(Location(match_location, address, address2, default, type, scene, filter_tags=filter_tags))
+            ret.append(Location(match_location, address, address2, default, type, scene, filter_tags=filter_tags, vanilla_item=vanilla_item))
         else:
             raise KeyError('Unknown Location: %s', location)
 

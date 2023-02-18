@@ -16,7 +16,7 @@ easier_fishing:
     jr      ra
     nop
 
-keep_fishing_rod_equipped: 
+keep_fishing_rod_equipped:
     lbu     t6, 0x13E2(v1)  ; Temp B/Can Use B Action
     lbu     v0, 0x0068(v1)  ; B button
     li      at, 0x59        ; fishing rod C item

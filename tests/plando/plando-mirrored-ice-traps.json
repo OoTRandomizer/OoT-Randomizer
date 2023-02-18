@@ -1,0 +1,37 @@
+{
+    "settings": {
+        "world_count": 4,
+        "ice_trap_appearance": "junk_only",
+        "junk_ice_traps": "onslaught"
+    },
+    "locations": {
+        "World 1": {
+            "KF Midos Top Left Chest": { "item": "Ice Trap", "player": 4, "model": "Rupees (200)"},
+            "KF Midos Top Right Chest": { "item": "Ice Trap", "player": 3, "model": "Rupees (200)"},
+            "KF Midos Bottom Left Chest": { "item": "Rupees (200)", "player": 2},
+            "KF Midos Bottom Right Chest": { "item": "Ice Trap", "player": 3, "model": "Rupees (200)"},
+            "KF Storms Grotto Chest": { "item": "Deku Shield", "player": 1}
+        },
+        "World 3": {
+            "KF Midos Top Left Chest": { "item": "Ice Trap", "player": 2, "model": "Rupees (200)"},
+            "KF Midos Top Right Chest": { "item": "Ice Trap", "player": 1, "model": "Rupees (200)"},
+            "KF Midos Bottom Left Chest": { "item": "Rupees (200)", "player": 4},
+            "KF Midos Bottom Right Chest": { "item": "Ice Trap", "player": 1, "model": "Rupees (200)"},
+            "KF Storms Grotto Chest": { "item": "Deku Shield", "player": 3}
+        },
+        "World 2": {
+            "KF Midos Top Left Chest": { "item": "Piece of Heart", "player": 2},
+            "KF Midos Top Right Chest": { "item": "Ice Trap", "player": 3, "model": "Deku Nuts (10)"},
+            "KF Midos Bottom Left Chest": { "item": "Ice Trap", "player": 3, "model": "Rupees (200)"},
+            "KF Midos Bottom Right Chest": { "item": "Ice Trap", "player": 3, "model": "Rupees (200)"},
+            "KF Storms Grotto Chest": { "item": "Rutos Letter", "player": 1}
+        },
+        "World 4": {
+            "KF Midos Top Left Chest": { "item": "Piece of Heart", "player": 4},
+            "KF Midos Top Right Chest": { "item": "Ice Trap", "player": 1, "model": "Deku Nuts (10)"},
+            "KF Midos Bottom Left Chest": { "item": "Ice Trap", "player": 1, "model": "Rupees (200)"},
+            "KF Midos Bottom Right Chest": { "item": "Ice Trap", "player": 1, "model": "Rupees (200)"},
+            "KF Storms Grotto Chest": { "item": "Rutos Letter", "player": 3}
+        }
+    }
+}

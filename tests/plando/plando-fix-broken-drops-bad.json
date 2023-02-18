@@ -1,0 +1,27 @@
+{
+  "settings": {
+    "fix_broken_drops": true,
+    "open_door_of_time": false,
+    "open_forest": "open",
+    "shuffle_interior_entrances": "simple",
+    "shuffle_scrubs": "low",
+    "shuffle_song_items": "any",
+    "starting_age": "child"
+  },
+  "locations": {
+    "Deku Tree Slingshot Chest": "Song of Time",
+    "Sheik at Colossus": "Requiem of Spirit",
+    "Ganons Castle Light Trial First Left Chest": "Deku Shield",
+    "Ganons Castle Light Trial Second Left Chest": "Deku Shield",
+    "Ganons Castle Light Trial Third Left Chest": "Deku Shield",
+    "Ganons Castle Light Trial First Right Chest": "Deku Shield",
+    "Ganons Castle Light Trial Second Right Chest": "Deku Shield",
+    "Ganons Castle Light Trial Third Right Chest": "Deku Shield"
+  },
+  "entrances": {
+    "Kakariko Village -> Kak Bazaar": {
+      "region": "KF Kokiri Shop",
+      "from": "Kokiri Forest"
+    }
+  }
+}

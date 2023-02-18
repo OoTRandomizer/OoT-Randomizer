@@ -1,22 +1,24 @@
 import * as electron from 'electron';
+import * as remote from '@electron/remote';
 import * as os from "os";
 import * as fs from 'fs';
 import * as path from 'path';
 
 import * as post from 'post-robot';
 
-const generator = electron.remote.require(path.join(__dirname, '../src/modules/generator.js'));
-const commander = electron.remote.getGlobal("commandLineArgs");
+const generator = remote.require(path.join(__dirname, '../src/modules/generator.js'));
+const commander = remote.getGlobal("commandLineArgs");
 
-var testMode = commander.release || electron.remote.app.isPackaged ? false : true;
+var testMode = commander.release || remote.app.isPackaged ? false : true;
 console.log("Test Mode:", testMode);
 
 var platform = os.platform();
 console.log("Platform:", platform);
 
-var pythonPath = commander.python ? commander.python : platform == "win32" ? "py" : "python3";
-var pythonSourcePath = path.normalize(electron.remote.app.isPackaged ? electron.remote.app.getAppPath() + "/python/" : electron.remote.app.getAppPath() + "/../");
+var pythonPath = commander.python ? '"' + commander.python + '"' : platform == "win32" ? "py" : "python3";
+var pythonSourcePath = path.normalize(remote.app.isPackaged ? remote.app.getAppPath() + "/python/" : remote.app.getAppPath() + "/../");
 var pythonGeneratorPath = pythonSourcePath + "OoTRandomizer.py";
+var pythonSettingsToJsonPath = pythonSourcePath + "SettingsToJson.py";
 
 console.log("Python Executable Path:", pythonPath);
 console.log("Python Source Path:", pythonGeneratorPath);
@@ -27,30 +29,30 @@ electron.webFrame.executeJavaScript('window.apiTestMode = ' + testMode + ';');
 electron.webFrame.executeJavaScript('window.apiPlatform = "' + platform + '";');
 
 //ELECTRON EVENTS
-electron.remote.getCurrentWindow().on('maximize', () => {
+remote.getCurrentWindow().on('maximize', () => {
   post.send(window, 'window-maximized', true);
 });
-electron.remote.getCurrentWindow().on('enter-full-screen', () => { //macOS exclusive
+remote.getCurrentWindow().on('enter-full-screen', () => { //macOS exclusive
   post.send(window, 'window-maximized', true);
 });
-electron.remote.getCurrentWindow().on('enter-html-full-screen', () => {
+remote.getCurrentWindow().on('enter-html-full-screen', () => {
   post.send(window, 'window-maximized', true);
 });
 
-electron.remote.getCurrentWindow().on('unmaximize', () => {
+remote.getCurrentWindow().on('unmaximize', () => {
   post.send(window, 'window-maximized', false);
 });
-electron.remote.getCurrentWindow().on('leave-full-screen', () => {
+remote.getCurrentWindow().on('leave-full-screen', () => {
   post.send(window, 'window-maximized', false);
 });
-electron.remote.getCurrentWindow().on('leave-html-full-screen', () => {
+remote.getCurrentWindow().on('leave-html-full-screen', () => {
   post.send(window, 'window-maximized', false);
 });
 
 
 //FUNCTIONS
 function dumpSettingsToFile(settingsObj) {
-  settingsObj["check_version"] = true;    
+  settingsObj["check_version"] = true;
   fs.writeFileSync(pythonSourcePath + "settings.sav", JSON.stringify(settingsObj, null, 4));
 }
 
@@ -67,7 +69,7 @@ function displayPythonErrorAndExit(notPython3: boolean = false) {
     else
       alert("Please ensure you have Python 3.6 or higher installed before running the GUI. You can specify the path to python using the 'python <path>' command line switch!");
 
-    electron.remote.app.quit();
+    remote.app.quit();
   }, 500);
 }
 
@@ -83,17 +85,36 @@ function readSettingsFromFile() {
 
 //POST ROBOT
 post.on('getCurrentSourceVersion', function (event) {
+  type VersionData = {
+    baseVersion: string;
+    supplementaryVersion: number;
+    fullVersion: string;
+    branchUrl: string;
+  };
 
   let versionFilePath = pythonSourcePath + "version.py"; //Read version.py from the python source
+  let data: VersionData = { baseVersion : "", supplementaryVersion : 0, fullVersion : "", branchUrl : "" }
 
   if (fs.existsSync(versionFilePath)) {
-    let versionString = fs.readFileSync(versionFilePath, 'utf8');
-    versionString = versionString.substr(versionString.indexOf("'") + 1);
-   
-    return versionString.substr(0, versionString.indexOf("'"));
+    let versionFile = fs.readFileSync(versionFilePath, 'utf8');
+
+    let baseMatch = versionFile.match(/^[ \t]*__version__ = ['"](.+)['"]/m);
+    let supplementaryMatch = versionFile.match(/^[ \t]*supplementary_version = (\d+)$/m);
+    let fullMatch = versionFile.match(/^[ \t]*__version__ = f['"]*(.+)['"]/m);
+    let urlMatch = versionFile.match(/^[ \t]*branch_url = ['"](.+)['"]/m);
+
+    data.baseVersion = baseMatch != null && baseMatch[1] !== undefined ? baseMatch[1] : "";
+    data.supplementaryVersion = supplementaryMatch != null && supplementaryMatch[1] !== undefined ? parseInt(supplementaryMatch[1]) : 0;
+    data.fullVersion = fullMatch != null && fullMatch[1] !== undefined ? fullMatch[1] : data.baseVersion;
+    data.fullVersion = data.fullVersion
+      .replace('{base_version}', data.baseVersion)
+      .replace('{supplementary_version}', data.supplementaryVersion.toString())
+    data.branchUrl = urlMatch != null && urlMatch[1] !== undefined ? urlMatch[1] : "";
+
+    return data;
   }
   else {
-    return false;
+    return null;
   }
 });
 
@@ -114,7 +135,7 @@ post.on('copyToClipboard', function (event) {
   if (!data || typeof (data) != "object" || Object.keys(data).length != 1 || !data["content"] || typeof (data["content"]) != "string" || data["content"].length < 1)
     return false;
 
-  electron.remote.clipboard.writeText(data.content);
+  remote.clipboard.writeText(data.content);
 
   return true;
 });
@@ -126,12 +147,12 @@ post.on('browseForFile', function (event) {
   if (!data || typeof (data) != "object" || Object.keys(data).length != 1 || !data["fileTypes"] || typeof (data["fileTypes"]) != "object")
     return false;
 
-  return electron.remote.dialog.showOpenDialog({ filters: data.fileTypes, properties: ["openFile", "treatPackageAsDirectory"]});
+  return remote.dialog.showOpenDialogSync({ filters: data.fileTypes, properties: ["openFile", "treatPackageAsDirectory"]});
 });
 
 
 post.on('browseForDirectory', function (event) {
-  return electron.remote.dialog.showOpenDialog({ properties: ["openDirectory", "createDirectory", "treatPackageAsDirectory"] });
+  return remote.dialog.showOpenDialogSync({ properties: ["openDirectory", "createDirectory", "treatPackageAsDirectory"] });
 });
 
 post.on('createAndOpenPath', function (event) {
@@ -148,21 +169,27 @@ post.on('createAndOpenPath', function (event) {
   }
 
   if (fs.existsSync(data)) {
-    return electron.remote.shell.openItem(data);
+    remote.shell.openPath(data);
+    return true;
   }
   else {
     fs.mkdirSync(data);
-    return electron.remote.shell.openItem(data);
+
+    remote.shell.openPath(data).then(res => {
+      post.send(window, 'createAndOpenPathResult', res);
+    });
+
+    return false;
   }
 });
 
 post.on('window-minimize', function (event) {
-  electron.remote.getCurrentWindow().minimize();
+  remote.getCurrentWindow().minimize();
 });
 
 post.on('window-maximize', function (event) {
 
-  let currentWindow = electron.remote.getCurrentWindow();
+  let currentWindow = remote.getCurrentWindow();
 
   if (currentWindow.isMaximized()) {
     currentWindow.unmaximize();
@@ -173,17 +200,17 @@ post.on('window-maximize', function (event) {
 });
 
 post.on('window-is-maximized', function (event) {
-  return electron.remote.getCurrentWindow().isMaximized();
+  return remote.getCurrentWindow().isMaximized();
 });
 
 post.on('window-close', function (event) {
 
   //Only close the window on macOS, on every other OS exit immediately
   if (os.platform() == "darwin") {
-    electron.remote.getCurrentWindow().close();
+    remote.getCurrentWindow().close();
   }
   else {
-    electron.remote.app.quit();
+    remote.app.quit();
   }
 });
 
@@ -225,6 +252,23 @@ post.on('convertSettingsToString', function (event) {
 
   return true;
 });
+
+post.on('updateDynamicSetting', function (event) {
+  let data = event.data;
+
+  if (!data || typeof (data) != "string" || data.length < 1)
+    return false;
+
+  //console.log("get settings from string", data);
+
+  generator.getUpdatedDynamicSetting(pythonPath, pythonSettingsToJsonPath, data).then(res => {
+    //console.log('[Preload] Success');
+      post.send(window, 'updateDynamicSettingSuccess', res);
+      
+  }).catch((err) => {
+      post.send(window, 'updateDynamicSettingError', err);
+  })
+})
 
 post.on('convertStringToSettings', function (event) {
 
@@ -291,7 +335,7 @@ post.on('generateSeed', function (event) {
     }
 
     if (err.short == "user_cancelled")
-      post.send(window, 'generateSeedCancelled'); 
+      post.send(window, 'generateSeedCancelled');
     else
       post.send(window, 'generateSeedError', err);
   });
@@ -321,7 +365,7 @@ if (fs.existsSync(pythonGeneratorPath)) {
 }
 else {
   alert("The GUI is not placed in the correct location...");
-  electron.remote.app.quit();
+  remote.app.quit();
 }
 
 //Test if python executable exists and can be called

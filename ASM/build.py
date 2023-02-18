@@ -32,6 +32,11 @@ run_dir = root_dir
 # Compile code
 
 os.chdir(run_dir)
+
+base_rom_size = os.stat('roms/base.z64').st_size
+if base_rom_size != 0x400_0000:
+    sys.exit(f'build.py: roms/base.z64 should be 0x4000000 bytes (64 MiB), but yours is 0x{base_rom_size:x} bytes ({base_rom_size / (1024 ** 2)} MiB). Make sure you have an uncompressed base ROM (see ../bin/Decompress).')
+
 if compile_c:
     clist = ['make']
     if dump_obj:
@@ -96,11 +101,13 @@ with open('build/asm_symbols.txt', 'r') as f:
 
 os.chdir(run_dir)
 
+PAYLOAD_START = int(symbols['PAYLOAD_START']['address'], 16)
+PAYLOAD_END = int(symbols['PAYLOAD_END']['address'], 16)
 data_symbols = {}
 for (name, sym) in symbols.items():
     if sym['type'] == 'data':
         addr = int(sym['address'], 16)
-        if 0x80400000 <= addr < 0x80420000:
+        if PAYLOAD_START <= addr < PAYLOAD_END:
             addr = addr - 0x80400000 + 0x03480000
         else:
             continue

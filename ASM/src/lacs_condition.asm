@@ -8,6 +8,8 @@ lacs_condition_check:
     beq     t1, t2, @@stones
     li      t2, 4
     beq     t1, t2, @@tokens
+    li      t2, 5
+    beq     t1, t2, @@hearts
     nop
 
 @@vanilla:
@@ -139,6 +141,11 @@ lacs_condition_check:
 
 @@tokens:
     lh      t4, 0xD0(s0) ; Gold Skulltulas
+    b       @@count
+    nop
+
+@@hearts:
+    lh      t4, 0x2E(s0) ; Heart Containers * 0x10
 
 @@count:
     li      at, 0

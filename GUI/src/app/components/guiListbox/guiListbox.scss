@@ -1,98 +1,92 @@
-div.record-picker {
-  overflow-x: hidden;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  position: relative;
-  min-height: calc(100% - 4.9rem);
-  max-height: calc(100% - 4.9rem);
+@import '../../../app/@theme/styles/themes';
 
-  @media (max-width: 960px) and (max-height: 960px) {
-    min-height: calc(100% - 3.5rem);
-    max-height: calc(100% - 3.5rem);
-  }
-}
-
-div.pickerWithTagFilter {
-  overflow-x: hidden;
-  overflow-y: auto;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  position: relative;
-  min-height: calc(100% - 7.2rem);
-  max-height: calc(100% - 7.2rem);
-
-  @media (max-width: 960px) and (max-height: 960px) {
+@include nb-install-component() {
+  div.record-picker {
+    overflow-x: hidden;
+    overflow-y: auto;
+    border: 1px solid nb-theme(color-info-800);
+    border-radius: 8px;
+    position: relative;
     min-height: calc(100% - 4.9rem);
-    max-height: calc(100% - 5.0rem);
-  }
-}
+    max-height: calc(100% - 4.9rem);
+    height: 100%;
 
-//Scrollbar style for record-picker (
-//http://www.ourtuts.com/how-to-customize-browser-scrollbars-using-css3/
-div.record-picker {
-  &::-webkit-scrollbar {
-    width: 6px;
+    @media (max-width: 960px) and (max-height: 960px) {
+      min-height: calc(100% - 3.5rem);
+      max-height: calc(100% - 3.5rem);
+    }
   }
 
-  &::-webkit-scrollbar-track {
-      background: #eee;
-      box-shadow: 0px 0px 3px #dfdfdf inset;
+  div.pickerWithTagFilter {
+    overflow-x: hidden;
+    overflow-y: auto;
+    border: 1px solid nb-theme(color-info-800);
+    border-radius: 8px;
+    position: relative;
+    min-height: calc(100% - 7.2rem);
+    max-height: calc(100% - 7.2rem);
+
+    @media (max-width: 960px) and (max-height: 960px) {
+      min-height: calc(100% - 4.9rem);
+      max-height: calc(100% - 5.0rem);
+    }
   }
 
-  &::-webkit-scrollbar-thumb {
-      background: #337ab7;
-  }
-}
-
-.record-picker ul {
+  .record-picker ul {
     margin: 0;
     padding: 0 0 1px 0;
-}
+    height: 100%;
 
-.record-picker li {
-  border-top: thin solid #ddd;
-  border-bottom: 1px solid #ddd;
-  display: block;
-  padding: 2px 2px 2px 10px;
-  margin-bottom: -1px;
-  font-size: 0.85em;
-  cursor: pointer;
-  white-space: pre-line; //always text wrap to be safe
-  min-height: 16px;
-}
+    &.over {
+      background-color: unset !important;
+    }
+  }
 
-.record-picker li:hover {
-    background-color: #808080;
-}
+  .record-picker li {
+    border-top: thin solid nb-theme(color-info-800);
+    border-bottom: 1px solid nb-theme(color-info-800);
+    display: block;
+    padding: 2px 2px 2px 10px;
+    margin-bottom: -1px;
+    font-size: 0.85em;
+    cursor: pointer;
+    white-space: pre-line; //always text wrap to be safe
+    min-height: 16px;
+  }
 
-.record-picker li.selected {
-    background-color: #FFA07A;
-}
+  .record-picker li:hover {
+    background-color: nb-theme(color-info-900);
+  }
 
-.record-picker li.selected:hover {
-    background-color: #a2231d;
-}
+  .record-picker li.selected {
+    background-color: nb-theme(color-info-700);
+  }
 
-.record-picker li.disabled {
+  .record-picker li.selected:hover {
+    background-color: nb-theme(color-info-600);
+  }
+
+  .record-picker li.disabled {
     opacity: 0.5;
     cursor: default;
     background-color: inherit;
-}
+  }
 
-.record-picker li:first-child {
+  .record-picker li:first-child {
     border-top-left-radius: 8px;
     border-top-right-radius: 8px;
     border-top: none;
-}
+  }
 
-.record-picker li:last-child {
+  .record-picker li:last-child {
     border-bottom-left-radius: 8px;
     border-bottom-right-radius: 8px;
     border-bottom: none;
-}
+  }
 
 .record-picker label {
+  display: inline-block;
+  line-height: 1.25;
   cursor: pointer;
   font-weight: inherit;
   font-size: 14px;
@@ -105,131 +99,132 @@ div.record-picker {
   -ms-user-select: none;
   user-select: none;
 
-  @media (max-width: 1900px) {
-    font-size: 13px;
+    @media (max-width: 1900px) {
+      font-size: 13px;
+    }
+
+    @media (max-width: 1750px) {
+      font-size: 12px;
+    }
+
+    @media (max-width: 1630px) {
+      font-size: 11px;
+    }
+
+    @media (max-width: 500px) {
+      font-size: 10px;
+    }
   }
 
-  @media (max-width: 1750px) {
-    font-size: 12px;
-  }
-
-  @media (max-width: 1630px) {
-    font-size: 11px;
-  }
-
-  @media (max-width: 500px) {
-    font-size: 10px;
-  }
-}
-
-.record-picker ul.over {
+  .record-picker ul.over {
     background-color: lightgray;
-}
+  }
 
-.dual-list {
+  .dual-list {
     display: -webkit-box;
     display: flex;
     flex-direction: row;
     align-content: flex-start;
-}
+  }
 
-.dual-list .listbox {
+  .dual-list .listbox {
     width: 50%;
     margin: 0px;
-}
+  }
 
-.dual-list .button-bar {
+  .dual-list .button-bar {
     margin-top: 8px;
-}
+  }
 
 
-/* &nbsp;&nbsp;&nbsp;&#9654; */
+  /* &nbsp;&nbsp;&nbsp;&#9654; */
 
-.point-right::after {
+  .point-right::after {
     content: "\25B6";
     padding-left: 0;
-}
+  }
 
 
-/* &#9664;&nbsp;&nbsp;&nbsp; */
+  /* &#9664;&nbsp;&nbsp;&nbsp; */
 
-.point-left::before {
+  .point-left::before {
     content: "\25C0";
     padding-right: 0;
-}
+  }
 
-.dual-list .button-bar button {
+  .dual-list .button-bar button {
     width: 47%;
-}
+  }
 
-.buttonBox {
+  .buttonBox {
     width: 100%;
     display: flex;
     flex-direction: row;
-}
+  }
 
-.buttonBox button {
+  .buttonBox button {
     width: 28%;
     margin-right: 3px;
-}
-.buttonBox .switchButton {
-  width: 40%;
-
-  @media (max-width: 420px) {
-    text-overflow: ellipsis;
-    overflow: hidden;
   }
-}
+  .buttonBox .switchButton {
+    width: 40%;
 
-button.btn-block {
+    @media (max-width: 420px) {
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  }
+
+  button.btn-block {
     display: block;
     width: 100%;
     margin-bottom: 8px;
-}
+  }
 
-button.btn {
+  button.btn {
     height: 28px;
     padding: 0;
-}
+  }
 
-button.pull-left {
+  button.pull-left {
     margin-right: 5px;
-}
+  }
 
-.input-md {
+  .input-md {
     height: 28px;
     padding: 0;
-}
+  }
 
-.filter {
-    margin-bottom: -2.2em;
-}
+  .filter {
+    margin-bottom: -27px;
+  }
 
-.filter::after {
+  .filter::after {
     content: "o";
     width: 40px;
     color: transparent;
     font-size: 2em;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M0 64l192 192v192l128-32V256L512 64H0z"/></svg>');
+    background-image: nb-theme(filter-icon);
     background-repeat: no-repeat;
     background-position: center center;
     opacity: .2;
     top: -30px;
     left: calc(100% - 21px);
     position: relative;
-}
-
-.tagFilterSelect {
-  max-width: 100%;
-  width: 100%;
-  padding-bottom: 0.3rem !important;
-
-  /deep/ button {
-    max-width: 100% !important;
-    width: 100% !important;
   }
-}
 
-.tagFilterSelectPadding {
-  height: 31px;
+  .tagFilterSelect {
+    max-width: 100%;
+    width: 100%;
+    padding-bottom: 0.3rem !important;
+
+    ::ng-deep button {
+      max-width: 100% !important;
+      width: 100% !important;
+    }
+  }
+
+  .tagFilterSelectPadding {
+    height: 31px;
+  }
 }

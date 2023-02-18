@@ -17,7 +17,7 @@ bunny_hood :
     lbu     a3, 0x14f(t1)      ; Worn Mask
     bne     t0, a3, @@return
     mtc1    t7, f4             ; Displaced
- 
+
     la      a3, PLAYER_WALK_RUN
     lw      t0, 0x0664(t1)     ; Link State function pointer
     bne     t0, a3, @@return   ; Branch if Link is not walking or running forward

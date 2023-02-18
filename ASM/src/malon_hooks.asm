@@ -51,7 +51,7 @@ malon_check_give_item:
     nop
     jal     override_epona_song ;give item for songs as items
     nop
-    la      t0, 0x801D8966 ;globalCtx->msgCtx.unk_E3EE 
+    la      t0, 0x801D8966 ;globalCtx->msgCtx.unk_E3EE
     li      t1, 0x0004
     sh      t1, 0x00(t0)
     nop
@@ -124,7 +124,7 @@ malon_reload:
     addiu   at, r0, 0x0002
     bne     v0, at, @@return
     nop
-    la      t0, 0x801D8966 ;globalCtx->msgCtx.unk_E3EE 
+    la      t0, 0x801D8966 ;globalCtx->msgCtx.unk_E3EE
     li      t1, 0x0004
     sh      t1, 0x00(t0)
 @@reload:

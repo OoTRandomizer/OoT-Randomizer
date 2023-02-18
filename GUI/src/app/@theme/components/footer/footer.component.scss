@@ -1,6 +1,5 @@
 @import '../../styles/themes';
-@import '~@nebular/theme/styles/global/breakpoints';
-@import '~bootstrap/scss/mixins/breakpoints';
+@import '@nebular/theme/styles/global/breakpoints';
 
 @include nb-install-component() {
   width: 100%;
@@ -13,19 +12,18 @@
 
     a {
       padding: 0.4rem;
-      color: rgb(208, 207, 211);
+      color: nb-theme(color-success-600);
       transition: color ease-out 0.1s;
 
       &:hover {
-        color: #37b364;
+        color: nb-theme(color-basic-1100);
       }
     }
   }
 
-  //Update Button
   span {
-    a {
-      color: white !important;
+    a#updateButton {
+      color: nb-theme(color-warning-600);
     }
   }
 

@@ -1,6 +1,9 @@
 {
   "settings":                  {
-    "spawn_positions":                         true,
+    "spawn_positions":                         [
+      "child",
+      "adult"
+    ],
     "starting_equipment":                      [
       "deku_shield",
       "kokiri_sword",

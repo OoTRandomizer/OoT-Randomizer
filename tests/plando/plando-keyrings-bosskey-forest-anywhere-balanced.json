@@ -1,0 +1,11 @@
+{
+  "settings":                  {
+    "item_pool_value":                         "balanced",
+    "shuffle_smallkeys":                       "keysanity",
+    "key_rings":                               [
+      "Forest Temple"
+    ],
+    "keyring_give_bk":                         true,
+    "mq_dungeons_mode":                        "vanilla"
+  }
+}

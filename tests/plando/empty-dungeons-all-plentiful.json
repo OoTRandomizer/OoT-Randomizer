@@ -1,0 +1,25 @@
+{
+    "settings": {
+        "bridge":                                  "medallions",
+        "bridge_medallions":                       5,
+        "shuffle_ganon_bosskey":                   "medallions",
+        "ganon_bosskey_medallions":                6,
+        "item_pool_value":                         "plentiful",
+        "shuffle_child_trade":                     [],
+        "shuffle_song_items":                      "song",
+        "empty_dungeons_mode":                     "specific",
+        "empty_dungeons_specific":                 [
+          "Deku Tree",
+          "Dodongos Cavern",
+          "Jabu Jabus Belly",
+          "Forest Temple",
+          "Fire Temple",
+          "Water Temple",
+          "Shadow Temple",
+          "Spirit Temple"
+        ],
+        "starting_items": [
+          "zeldas_letter"
+        ]
+    }
+}

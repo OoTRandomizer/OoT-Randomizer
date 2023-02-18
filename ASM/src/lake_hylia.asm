@@ -21,7 +21,7 @@ Hit_Gossip_Stone:
     nop
 
     ; Only Adult has control
-    lw      t6, 0x0004(v1)     
+    lw      t6, 0x0004(v1)
     bnez    t6, @@return
     nop
 
@@ -142,7 +142,7 @@ Fill_Lake:
     add.s  f8, f0, f6
     c.lt.s f8, f4
     nop
-    b      @@check_fill_max      
+    b      @@check_fill_max
     nop
 
 @@draining:
@@ -164,7 +164,7 @@ Fill_Lake:
     ; update the fill level with the new value
     mov.s   f4, f8
     ; Play sound
-    jal     0x80023108 
+    jal     0x80023108
     li      a1, 0x205E
     or      a0, s0, zero
 
@@ -180,7 +180,7 @@ Fill_Lake:
     lw      v0, 0x002C(sp)     ;v0 = global_context
     lw      t8, 0x07C0(v0)     ;t8 = col_hdr
     lw      t9, 0x0028(t8)     ;t9 = col_hdr.water
-    
+
     addiu   t7, zero, 0xFB57   ;t7 = FFFFFB57 (-0x04A9)
     sh      t7, 0x0012(t9)     ;col_hdr.water[1].pos.y = -0x04A9
     sh      t1, 0x0022(t9)     ;col_hdr.water[2].pos.y = actor y-pos
@@ -189,6 +189,6 @@ Fill_Lake:
 @@return:
     lw      ra, 0x0024(sp)
     lw      s0, 0x0020(sp)
-    addiu   sp, sp, 0x0028    
+    addiu   sp, sp, 0x0028
     jr      ra
     nop

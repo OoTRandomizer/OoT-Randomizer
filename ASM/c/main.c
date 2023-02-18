@@ -1,4 +1,5 @@
 #include "triforce.h"
+#include "model_text.h"
 #include "dungeon_info.h"
 #include "file_select.h"
 #include "get_items.h"
@@ -16,6 +17,8 @@
 #include "ganon_boss_key.h"
 #include "extern_ctxt.h"
 #include "weather.h"
+#include "textures.h"
+#include "scene.h"
 
 void Gameplay_InitSkybox(z64_game_t* globalCtx, int16_t skyboxId);
 
@@ -24,7 +27,9 @@ void c_init() {
     gfx_init();
     text_init();
     item_overrides_init();
+    override_flags_init();
     models_init();
+    init_textures();
 }
 
 void before_game_state_update() {
@@ -38,6 +43,7 @@ void before_game_state_update() {
 void after_game_state_update() {
     draw_dungeon_info(&(z64_ctxt.gfx->overlay));
     draw_triforce_count(&(z64_ctxt.gfx->overlay));
+    draw_illegal_model_text(&(z64_ctxt.gfx->overlay));
     give_ganon_boss_key();
 }
 
@@ -51,4 +57,7 @@ void after_scene_init() {
     clear_twinrova_vars();
     models_reset();
     extern_scene_init();
+    check_model_skeletons();
+    reset_collectible_mutex();
+    get_current_scene_setup_number();
 }

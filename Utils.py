@@ -6,7 +6,7 @@ import sys
 import urllib.request
 from urllib.error import URLError, HTTPError
 import re
-from version import __version__
+from version import __version__, base_version, supplementary_version, branch_url
 import random
 import itertools
 import bisect
@@ -54,7 +54,7 @@ def default_output_path(path):
     return path
 
 
-def read_json(file_path):
+def read_logic_file(file_path):
     json_string = ""
     with io.open(file_path, 'r') as file:
         for line in file.readlines():
@@ -84,10 +84,12 @@ def close_console():
         except Exception:
             pass
 
-def get_version_bytes(a):
-    version_bytes = [0x00, 0x00, 0x00]
+def get_version_bytes(a, b=0x00, c=0x00):
+    version_bytes = [0x00, 0x00, 0x00, b, c]
+
     if not a:
-        return version_bytes;
+        return version_bytes
+
     sa = a.replace('v', '').replace(' ', '.').split('.')
 
     for i in range(0,3):
@@ -124,12 +126,30 @@ class VersionError(Exception):
 def check_version(checked_version):
     if compare_version(checked_version, __version__) < 0:
         try:
-            with urllib.request.urlopen('https://raw.githubusercontent.com/TestRunnerSRL/OoT-Randomizer/Dev/version.py') as versionurl:
-                version = versionurl.read()
-                version = re.search(".__version__ = '(.+)'", str(version)).group(1)
+            with urllib.request.urlopen(f'{branch_url.replace("https://github.com", "https://raw.githubusercontent.com").replace("tree/", "")}/version.py') as versionurl:
+                version_file = versionurl.read().decode("utf-8")
 
-                if compare_version(version, __version__) > 0:
-                    raise VersionError("You are on version " + __version__ + ", and the latest is version " + version + ".")
+                base_match = re.search("""^[ \t]*__version__ = ['"](.+)['"]""", version_file, re.MULTILINE)
+                supplementary_match = re.search(r"^[ \t]*supplementary_version = (\d+)$", version_file, re.MULTILINE)
+                full_match = re.search("""^[ \t]*__version__ = f['"]*(.+)['"]""", version_file, re.MULTILINE)
+                url_match = re.search("""^[ \t]*branch_url = ['"](.+)['"]""", version_file, re.MULTILINE)
+
+                remote_base_version = base_match.group(1) if base_match else ""
+                remote_supplementary_version = int(supplementary_match.group(1)) if supplementary_match else 0
+                remote_full_version = full_match.group(1) if full_match else remote_base_version
+                remote_full_version = remote_full_version \
+                    .replace('{base_version}', remote_base_version) \
+                    .replace('{supplementary_version}', str(remote_supplementary_version))
+                remote_branch_url = url_match.group(1) if url_match else ""
+
+                upgrade_available = False
+                if compare_version(remote_base_version, base_version) > 0:
+                    upgrade_available = True
+                elif compare_version(remote_base_version, base_version) == 0 and remote_supplementary_version > supplementary_version:
+                    upgrade_available = True
+
+                if upgrade_available:
+                    raise VersionError("You are on version " + __version__ + ", and the latest is version " + remote_full_version + ".")
         except (URLError, HTTPError) as e:
             logger = logging.getLogger('')
             logger.warning("Could not fetch latest version: " + str(e))
@@ -194,3 +214,30 @@ def check_python_version():
     python_version = '.'.join([str(num) for num in sys.version_info[0:3]])
     if compare_version(python_version, '3.6.0') < 0:
         raise VersionError('Randomizer requires at least version 3.6 and you are using %s' % python_version, "https://www.python.org/downloads/")
+
+
+def run_process(window, logger, args, stdin=None):
+    process = subprocess.Popen(args, bufsize=1, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+    filecount = None
+    if stdin is not None:
+        process.communicate(input=stdin)
+    else:
+        while True:
+            line = process.stdout.readline()
+            if line != b'':
+                find_index = line.find(b'files remaining')
+                if find_index > -1:
+                    files = int(line[:find_index].strip())
+                    if filecount == None:
+                        filecount = files
+                    window.update_progress(65 + 30*(1 - files/filecount))
+                logger.info(line.decode('utf-8').strip('\n'))
+            else:
+                break
+
+
+# https://stackoverflow.com/a/23146126
+def find_last(source_list, sought_element):
+    for reverse_index, element in enumerate(reversed(source_list)):
+        if element == sought_element:
+            return len(source_list) - 1 - reverse_index

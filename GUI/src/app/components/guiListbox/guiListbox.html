@@ -20,7 +20,7 @@
         <div class="record-picker" [ngClass]="{pickerWithTagFilter:tagFilter}">
             <ul [ngClass]="{over:available.dragOver}" (drop)="drop($event, confirmed)" (dragover)="allowDrop($event, available)" (dragleave)="dragLeave()">
                 <li *ngFor="let item of available.sift; let idx=index;" (click)="disabled ? null : selectItem(available.pick, item); shiftClick($event, idx, available, item)" [ngClass]="{selected: isItemSelected(available.pick, item), disabled: disabled}" [draggable]="!disabled && format.draggable"
-                    (dragstart)="drag($event, item, available)" (dragend)="dragEnd(available)" [nbPopover]="item._tooltip ? tooltipComponent : null" [nbPopoverContext]="item._tooltip ? {tooltip: item._tooltip} : null" [nbPopoverTrigger]="item._tooltip ? 'hint' : 'noop'" [nbPopoverPlacement]="item._tooltip ? 'top' : null" [nbPopoverAdjustment]="item._tooltip ? 'counterclockwise' : null"><label>{{item._name}}</label></li>
+                    (dragstart)="drag($event, item, available)" (dragend)="dragEnd(available)" [nbPopover]="item._tooltip ? tooltipComponent : null" [nbPopoverContext]="item._tooltip ? {tooltip: item._tooltip} : null" [nbPopoverTrigger]="item._tooltip ? 'hint' : 'noop'" [nbPopoverPlacement]="item._tooltip ? 'top' : null"><label>{{item._name}}</label></li>
             </ul>
         </div>
     </div>
@@ -45,7 +45,7 @@
         <div class="record-picker" [ngClass]="{pickerWithTagFilter:tagFilter}">
             <ul [ngClass]="{over:confirmed.dragOver}" (drop)="drop($event, available)" (dragover)="allowDrop($event, confirmed)" (dragleave)="dragLeave()">
                 <li #itmConf *ngFor="let item of confirmed.sift; let idx=index;" (click)="disabled ? null : selectItem(confirmed.pick, item); shiftClick($event, idx, confirmed, item)" [ngClass]="{selected: isItemSelected(confirmed.pick, item), disabled: disabled}" [draggable]="!disabled && format.draggable"
-                    (dragstart)="drag($event, item, confirmed)" (dragend)="dragEnd(confirmed)" [nbPopover]="item._tooltip ? tooltipComponent : null" [nbPopoverContext]="item._tooltip ? {tooltip: item._tooltip} : null" [nbPopoverTrigger]="item._tooltip ? 'hint' : 'noop'" [nbPopoverPlacement]="item._tooltip ? 'top' : null" [nbPopoverAdjustment]="item._tooltip ? 'counterclockwise' : null"><label>{{item._name}}</label></li>
+                    (dragstart)="drag($event, item, confirmed)" (dragend)="dragEnd(confirmed)" [nbPopover]="item._tooltip ? tooltipComponent : null" [nbPopoverContext]="item._tooltip ? {tooltip: item._tooltip} : null" [nbPopoverTrigger]="item._tooltip ? 'hint' : 'noop'" [nbPopoverPlacement]="item._tooltip ? 'top' : null"><label>{{item._name}}</label></li>
             </ul>
         </div>
     </div>

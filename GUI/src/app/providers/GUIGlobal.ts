@@ -1,12 +1,14 @@
-import { Injectable, HostBinding, EventEmitter, Output } from '@angular/core';
+import { Injectable, HostBinding, EventEmitter, Output, Directive, OnDestroy } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-import { ProgressWindow } from '../pages/generator/progressWindow/progressWindow.component';
+import { ProgressWindowComponent } from '../pages/generator/progressWindow/progressWindow.component';
 
 import * as post from 'post-robot';
+import {GuiEvent} from './GuiEvent';
 
+@Directive()
 @Injectable()
-export class GUIGlobal {
+export class GUIGlobal implements OnDestroy {
 
   //Globals for GUI HTML
   public generator_tabsVisibilityMap: Object = {};
@@ -22,8 +24,8 @@ export class GUIGlobal {
 
   @HostBinding('class.indigo-pink') materialStyleIndigo: boolean = true;
 
-  @Output() globalEmitter: EventEmitter<object> = new EventEmitter();
-  
+  @Output() globalEmitter: EventEmitter<GuiEvent> = new EventEmitter();
+
   constructor(private http: HttpClient) {
     this.globalVars = new Map<string, any>([
       ["appReady", false],
@@ -223,10 +225,35 @@ export class GUIGlobal {
     if (!this.getGlobalVar('electronAvailable'))
       throw Error("electron_not_available");
 
-    let event = await post.send(window, 'createAndOpenPath', path);
-    let res = event.data;
+    let event = null;
 
-    if (res == true)
+    try {
+      event = await post.send(window, 'createAndOpenPath', path);
+    } catch (ex) {
+      console.error(ex);
+    }
+
+    if (event == null)
+      throw Error("The specified output directory does not exist!");
+
+    //If folder already existed, we get a quick sync exit, otherwise wait for async callback that the folder was created and opened
+    let status = event.data;
+
+    if (status)
+      return true;
+
+    let response = await new Promise(function (resolve, reject) {
+
+      var listenerResult = post.once('createAndOpenPathResult', function (res) {
+
+        listenerResult.cancel();
+
+        let data = res.data;
+        resolve(data);
+      });
+    });
+
+    if (response === "")
       return true;
     else
       throw Error("path_not_opened");
@@ -305,7 +332,7 @@ export class GUIGlobal {
       if (userSettings)
         userSettings = JSON.parse(userSettings);
 
-      this.parseGeneratorGUISettings(res, userSettings);
+      await this.parseGeneratorGUISettings(res, userSettings);
 
     } catch (err) {
       console.error(err);
@@ -370,11 +397,11 @@ export class GUIGlobal {
             adjustedUserPresets[presetName] = { settings: userPresets[presetName] };
         });
 
-        Object.assign(res.presets, adjustedUserPresets);       
+        Object.assign(res.presets, adjustedUserPresets);
       }
     }
 
-    this.parseGeneratorGUISettings(res, userSettings);
+    await this.parseGeneratorGUISettings(res, userSettings);
 
     //Check for cached files and then create web events after
     if ((<any>window).emscriptenFoundCachedROMFile)
@@ -389,8 +416,7 @@ export class GUIGlobal {
     this.createWebEvents();
   }
 
-  parseGeneratorGUISettings(guiSettings, userSettings) {
-
+  async parseGeneratorGUISettings(guiSettings, userSettings) {
     const isRGBHex = /[0-9A-Fa-f]{6}/;
 
     //Intialize settings maps
@@ -415,8 +441,39 @@ export class GUIGlobal {
 
       this.generator_tabsVisibilityMap[tab.name] = true;
 
-      tab.sections.forEach(section => {
-        section.settings.forEach(setting => {
+      for (let sectionIndex = 0; sectionIndex < tab.sections.length; sectionIndex++) {
+
+        let section = tab.sections[sectionIndex];
+
+        //Skip sections that don't belong to this app and delete them from the guiSettings
+        if ("app_type" in section && section.app_type && section.app_type.indexOf(this.getGlobalVar("appType")) == -1) {
+
+          tab.sections.splice(sectionIndex, 1);
+          sectionIndex--;
+
+          let foundInCosmeticsTab = guiSettings.cosmeticsArray.find(entryTab => {
+
+            let index = entryTab.sections.findIndex(entry => entry.name == section.name);
+
+            if (index != -1) {
+              entryTab.sections.splice(index, 1);
+              return true;
+            }
+
+            return false;
+          });
+
+          delete guiSettings.settingsObj[tab.name].sections[section.name];
+
+          if (foundInCosmeticsTab) {
+            delete guiSettings.cosmeticsObj[foundInCosmeticsTab.name].sections[section.name];
+          }
+
+          continue;
+        }
+        for (let settingIndex = 0; settingIndex < section.settings.length; settingIndex++) {
+
+          let setting = section.settings[settingIndex];
 
           this.generator_settingsVisibilityMap[setting.name] = true;
 
@@ -473,12 +530,41 @@ export class GUIGlobal {
               this.generator_customColorMap[setting.name] = "";
             }
           }
-        });
-      });
+          
+          //Handle dynamic settings. The available options (and sometimes the tooltip) are determined at runtime
+          if (setting.dynamic) {
+            let dynamicSetting = await this.updateDynamicSetting(setting.name)
+
+            if (dynamicSetting) {
+
+              let parsedSetting = JSON.parse(dynamicSetting);
+
+              let isCosmetic = (tab.name in guiSettings.cosmeticsObj);
+                     
+              guiSettings.settingsObj[tab.name].sections[section.name].settings[setting.name] = parsedSetting.object;
+              
+              guiSettings.settingsArray[tabIndex].sections[sectionIndex].settings[settingIndex] = parsedSetting.array;
+  
+              if (isCosmetic) {
+                guiSettings.cosmeticsObj[tab.name].sections[section.name].settings[setting.name] = parsedSetting.object;
+  
+                let cosmeticTabIndex = guiSettings.cosmeticsArray.findIndex(elem => elem.name == tab.name);
+  
+                if (cosmeticTabIndex != -1) {
+  
+                  //Note: This follows the assumption that sections and settings are structured identically between settings and cosmetics arrays.
+                  guiSettings.cosmeticsArray[cosmeticTabIndex].sections[sectionIndex].settings[settingIndex] = parsedSetting.array;
+                }
+              }  
+            }
+          }
+        };
+      }
     }
 
     //Add GUI only options
     this.generator_settingsMap["settings_string"] = userSettings && "settings_string" in userSettings ? userSettings["settings_string"] : "";
+    this.generator_settingsMap["theme"] = userSettings && "theme" in userSettings ? userSettings["theme"] : "";
     this.generator_settingsVisibilityMap["settings_string"] = true;
 
     console.log("JSON Settings Data:", guiSettings);
@@ -496,6 +582,46 @@ export class GUIGlobal {
     this.generator_presets = guiSettings.presets;
   }
 
+  /**
+   * Queries SettingsToJson.py to return a JSON object with the dynamically generated setting definition in object & array format
+   * resolves with { object: settingInObjectFormat , array: settingInArrayFormat } (or null in web mode)
+   * rejects with null
+   * POTENTIAL TODO: add api calls or browser lookups for web if needed in the future
+  */
+  updateDynamicSetting(settingName: string) {
+    let self = this;
+
+    return new Promise<any>(function (resolve, reject) {
+      if (self.getGlobalVar('electronAvailable')) { //app mode
+        post.send(window, 'updateDynamicSetting', settingName).then(event => {
+          var listenerSuccess = post.once('updateDynamicSettingSuccess', function (event) {
+
+            listenerError.cancel();
+
+            let data = event.data;
+            resolve(data);
+          });
+
+          var listenerError = post.once('updateDynamicSettingError', function (event) {
+
+            listenerSuccess.cancel();
+
+            console.error("[updateDynamicSetting] Python Error:", event.data);
+            reject(null);
+          });
+
+        }).catch(err => {
+          console.error("[updateDynamicSettingy] Post-Robot Error:", err);
+          reject(null);
+        });   
+      } else { //web mode
+          //TODO: Should dynamic settings ever be needed on web, add API call or browser lookups here.
+          //for now, resolving with null is fine.
+          resolve(null);
+      }   
+    })
+  }
+
   async versionCheck() { //Electron only
 
     if (!this.getGlobalVar('electronAvailable'))
@@ -505,29 +631,48 @@ export class GUIGlobal {
 
       var event = await post.send(window, 'getCurrentSourceVersion');
 
-      var res: string = event.data;
+      type VersionData = {
+        baseVersion: string;
+        supplementaryVersion: number;
+        fullVersion: string;
+        branchUrl: string;
+      };
+
+      var local: VersionData = event.data;
       var result = { hasUpdate: false, currentVersion: "", latestVersion: "" };
 
-      if (res && res.length > 0) {
+      if (local !== null) {
 
-        console.log("Local:", res);
-        result.currentVersion = res;
+        console.log("Local:", local);
+        result.currentVersion = local.fullVersion;
 
-        this.globalEmitter.emit({ name: "local_version_checked", version: res });
+        this.globalEmitter.emit({ name: "local_version_checked", version: local.fullVersion, branchUrl: local.branchUrl });
 
-        let branch = res.includes("Release") ? "release" : "Dev";
-        var remoteFile = await this.http.get("https://raw.githubusercontent.com/TestRunnerSRL/OoT-Randomizer/" + branch + "/version.py", { responseType: "text" }).toPromise();
+        let remote: VersionData = { baseVersion : "", supplementaryVersion : 0, fullVersion : "", branchUrl : "" }
+        let url = local.branchUrl.replace("https://github.com", "https://raw.githubusercontent.com").replace("tree/", "") + "/version.py";
+        console.log("URL: ", url)
+        var remoteFile = await this.http.get(url, { responseType: "text" }).toPromise();
 
-        let remoteVersion = remoteFile.substr(remoteFile.indexOf("'") + 1);
-        remoteVersion = remoteVersion.substr(0, remoteVersion.indexOf("'"));
+        let baseMatch = remoteFile.match(/^[ \t]*__version__ = ['"](.+)['"]/m);
+        let supplementaryMatch = remoteFile.match(/^[ \t]*supplementary_version = (\d+)$/m);
+        let fullMatch = remoteFile.match(/^[ \t]*__version__ = f['"]*(.+)['"]/m);
+        let urlMatch = remoteFile.match(/^[ \t]*branch_url = ['"](.+)['"]/m);
 
-        console.log("Remote:", remoteVersion);
-        result.latestVersion = remoteVersion;
+        remote.baseVersion = baseMatch != null && baseMatch[1] !== undefined ? baseMatch[1] : "";
+        remote.supplementaryVersion = supplementaryMatch != null && supplementaryMatch[1] !== undefined ? parseInt(supplementaryMatch[1]) : 0;
+        remote.fullVersion = fullMatch != null && fullMatch[1] !== undefined ? fullMatch[1] : remote.baseVersion;
+        remote.fullVersion = remote.fullVersion
+          .replace('{base_version}', remote.baseVersion)
+          .replace('{supplementary_version}', remote.supplementaryVersion.toString())
+        remote.branchUrl = urlMatch != null && urlMatch[1] !== undefined ? urlMatch[1] : "";
+
+        console.log("Remote:", remote);
+        result.latestVersion = remote.fullVersion;
 
         //Compare versions
-        result.hasUpdate = this.isVersionNewer(remoteVersion, res);
+        result.hasUpdate = this.isVersionNewer(remote.baseVersion, local.baseVersion, remote.supplementaryVersion, local.supplementaryVersion);
 
-        return result;  
+        return result;
       }
       else {
         return result;
@@ -539,7 +684,7 @@ export class GUIGlobal {
     }
   }
 
-  isVersionNewer(newVersion: string, oldVersion: string) {
+  isVersionNewer(newVersion: string, oldVersion: string, newSubVersion: number = 0, oldSubVersion: number = 0) {
 
     //Strip away dev strings
     if (oldVersion.startsWith("dev") && oldVersion.includes("_"))
@@ -554,10 +699,14 @@ export class GUIGlobal {
     //Version is not newer if the new version doesn't satisfy the format
     if (newSplit.length < 3)
       return false;
+    else if (newSplit.length == 4)
+      newSubVersion = newSubVersion == 0 ? Number(newSplit[3]) : 0;
 
     //Version is newer if the old version doesn't satisfy the format
     if (oldSplit.length < 3)
       return true;
+    else if (oldSplit.length == 4)
+      oldSubVersion = oldSubVersion == 0 ? Number(oldSplit[3]) : 0;
 
     //Compare major.minor.revision
     if (Number(newSplit[0]) > Number(oldSplit[0])) {
@@ -570,6 +719,11 @@ export class GUIGlobal {
       else if (Number(newSplit[1]) == Number(oldSplit[1])) {
         if (Number(newSplit[2]) > Number(oldSplit[2])) {
           return true;
+        }
+        else if (Number(newSplit[2]) == Number(oldSplit[2])) {
+          if (newSubVersion > oldSubVersion) {
+            return true;
+          }
         }
       }
     }
@@ -608,7 +762,7 @@ export class GUIGlobal {
     }
     else if (typeof (settingValue) == "string") { //Try to cast it
 
-      if (Number(parseInt(settingValue)) != Number(settingValue)) { //Cast failed, not numeric    
+      if (Number(parseInt(settingValue)) != Number(settingValue)) { //Cast failed, not numeric
         error = true;
       }
       else {
@@ -715,6 +869,10 @@ export class GUIGlobal {
               this.verifyNumericSetting(settingsObj, setting, false);
               this.generator_settingsMap[setting.name] = settingsObj[setting.name];
             }
+            else if (setting.type == "MultipleSelect") { //Validate list types before applying them
+              if (Array.isArray(settingsObj[setting.name]))
+                this.generator_settingsMap[setting.name] = settingsObj[setting.name];
+            }
             else { //Everything else
               this.generator_settingsMap[setting.name] = settingsObj[setting.name];
             }
@@ -745,7 +903,7 @@ export class GUIGlobal {
         section.settings.forEach(setting => {
 
           if (setting.name in cleanSettings) {
-            this.generator_settingsMap[setting.name] = setting.default; 
+            this.generator_settingsMap[setting.name] = setting.default;
           }
         });
       });
@@ -804,8 +962,8 @@ export class GUIGlobal {
 
             if (error) { //Input could not be recovered, abort
               invalidSettingsList.push(setting.text);
-            }       
-          }     
+            }
+          }
         });
       });
     });
@@ -840,6 +998,7 @@ export class GUIGlobal {
 
       //Not mapped settings need to be deleted manually
       delete settingsFile["settings_string"];
+      delete settingsFile["theme"]
 
       //Delete all shared = false keys from map since they aren't included in the seed
       this.deleteSettingsFromMapWithCondition(settingsFile, "shared", false);
@@ -999,10 +1158,10 @@ export class GUIGlobal {
     }
   }
 
-  generateSeedElectron(progressWindowRef: ProgressWindow, fromPatchFile: boolean = false, useStaticSeed: string = "") { //Electron only
+  generateSeedElectron(progressWindowRef: ProgressWindowComponent, fromPatchFile: boolean = false, useStaticSeed: string = "") { //Electron only
     var self = this;
 
-    return new Promise(function (resolve, reject) {
+    return new Promise<void>(function (resolve, reject) {
 
       let settingsMap = self.createSettingsFileObject(fromPatchFile, false, false, true);
 
@@ -1115,7 +1274,7 @@ export class GUIGlobal {
       fileReader.onload = function (event) {
 
         console.log("Read in file successfully");
-        resolve(event.target["result"]); 
+        resolve(event.target["result"]);
       };
 
       if (useArrayBuffer)
@@ -1179,7 +1338,7 @@ export class GUIGlobal {
       return plandoFileText;
     }
     catch (ex) {
-      switch (ex.error) {       
+      switch (ex.error) {
         case "file_read_error": {
           throw { error: `An error occurred during the loading of the ${settingText}! Please try to enter it again.` };
         }

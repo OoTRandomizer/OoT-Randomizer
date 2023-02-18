@@ -1,0 +1,11 @@
+{
+  "settings":                  {
+    "item_pool_value":                         "plentiful",
+    "shuffle_smallkeys":                       "vanilla",
+    "key_rings":                               [
+      "Forest Temple"
+    ],
+    "keyring_give_bk":                         true,
+    "mq_dungeons_mode":                        "vanilla"
+  }
+}

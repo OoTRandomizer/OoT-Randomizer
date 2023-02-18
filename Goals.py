@@ -1,7 +1,8 @@
 from collections import OrderedDict, defaultdict
 import logging
 
-from HintList import goalTable, getHintGroup, hintExclusions
+from HintList import goalTable, getHintGroup, hintExclusions, misc_item_hint_table, misc_location_hint_table
+from ItemList import item_table
 from Search import Search
 
 
@@ -38,7 +39,7 @@ class Goal(object):
         self.weight = 0
         self.category = None
         self._item_cache = {}
-    
+
     def copy(self):
         new_goal = Goal(self.world, self.name, self.hint_text, self.color, self.items, self.locations, self.lock_locations, self.lock_entrances, self.required_locations, True)
         return new_goal
@@ -55,7 +56,10 @@ class Goal(object):
 
     def requires(self, item):
         # Prevent direct hints for certain items that can have many duplicates, such as tokens and Triforce Pieces
-        return any(i['name'] == item and not i['hintable'] for i in self.items)
+        names = [item]
+        if item_table[item][3] is not None and 'alias' in item_table[item][3]:
+            names.append(item_table[item][3]['alias'][0])
+        return any(i['name'] in names and not i['hintable'] for i in self.items)
 
 
 class GoalCategory(object):
@@ -103,7 +107,7 @@ class GoalCategory(object):
 
 
     def update_reachable_goals(self, starting_search, full_search):
-        # Only reduce goal item quantity if minimum goal requirements are reachable, 
+        # Only reduce goal item quantity if minimum goal requirements are reachable,
         # but not the full goal quantity. Primary use is to identify reachable
         # skull tokens, triforce pieces, and plentiful item duplicates with
         # All Locations Reachable off. Beatable check is required to prevent
@@ -115,11 +119,14 @@ class GoalCategory(object):
         # be called once for all world states for each category type.
 
         for index, state in enumerate(starting_search.state_list):
-            for goal in state.world.goal_categories[self.name].goals:
+            world_category = state.world.goal_categories.get(self.name, None)
+            if world_category is None:
+                continue
+            for goal in world_category.goals:
                 if goal.items:
                     if all(map(full_search.state_list[index].has_item_goal, goal.items)):
                         for i in goal.items:
-                            i['quantity'] = min(full_search.state_list[index].item_count(i['name']), i['quantity'])
+                            i['quantity'] = min(full_search.state_list[index].item_name_count(i['name']), i['quantity'])
 
 
 def replace_goal_names(worlds):
@@ -147,23 +154,18 @@ def update_goal_items(spoiler):
     # item_locations: only the ones that should appear as "required"/WotH
     all_locations = [location for world in worlds for location in world.get_filled_locations()]
     # Set to test inclusion against
-    item_locations = {location for location in all_locations if location.item.majoritem and not location.locked and location.item.name != 'Triforce Piece'}
+    item_locations = {location for location in all_locations if location.item.majoritem and not location.locked}
 
     # required_locations[category.name][goal.name][world_id] = [...]
     required_locations = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     priority_locations = {(world.id): {} for world in worlds}
-    
+
     # rebuild hint exclusion list
     for world in worlds:
         hintExclusions(world, clear_cache=True)
 
     # getHintGroup relies on hint exclusion list
     always_locations = [location.name for world in worlds for location in getHintGroup('always', world)]
-    if spoiler.playthrough:
-        # Skip even the checks
-        _maybe_set_light_arrows = lambda _: None
-    else:
-        _maybe_set_light_arrows = maybe_set_light_arrows
 
     if worlds[0].enable_goal_hints:
         # References first world for goal categories only
@@ -185,7 +187,7 @@ def update_goal_items(spoiler):
                 # Goals are changed for beatable-only accessibility per-world
                 category.update_reachable_goals(search, full_search)
                 reachable_goals = full_search.beatable_goals_fast({ cat_name: category }, cat_world.id)
-                identified_locations = search_goals({ cat_name: category }, reachable_goals, search, priority_locations, all_locations, item_locations, always_locations, _maybe_set_light_arrows)
+                identified_locations = search_goals({ cat_name: category }, reachable_goals, search, priority_locations, all_locations, item_locations, always_locations)
                 # Multiworld can have all goals for one player's bridge entirely
                 # locked by another player's bridge. Therefore, we can't assume
                 # accurate required location lists by locking every world's
@@ -209,11 +211,11 @@ def update_goal_items(spoiler):
         for cat_name, category in worlds[0].unlocked_goal_categories.items():
             category.update_reachable_goals(search, full_search)
         reachable_goals = full_search.beatable_goals_fast(worlds[0].unlocked_goal_categories)
-    identified_locations = search_goals(worlds[0].unlocked_goal_categories, reachable_goals, search, priority_locations, all_locations, item_locations, always_locations, _maybe_set_light_arrows, search_woth=True)
+    identified_locations = search_goals(worlds[0].unlocked_goal_categories, reachable_goals, search, priority_locations, all_locations, item_locations, always_locations, search_woth=True)
     required_locations.update(identified_locations)
     woth_locations = list(required_locations['way of the hero'])
     del required_locations['way of the hero']
-    
+
     # Update WOTH items
     woth_locations_dict = {}
     for world in worlds:
@@ -260,7 +262,7 @@ def update_goal_items(spoiler):
                             goal_locations[location[0]].append(goal_world)
                     goal.required_locations = [(location, 1, 1, world_ids) for location, world_ids in goal_locations.items()]
         # Copy of goal categories for the spoiler log to reference
-        # since the hint algorithm mutates the world copy 
+        # since the hint algorithm mutates the world copy
         for world in worlds:
             spoiler.goal_categories[world.id] = {cat_name: category.copy() for cat_name, category in world.goal_categories.items()}
     spoiler.goal_locations = required_locations_dict
@@ -287,12 +289,13 @@ def unlock_category_entrances(category_locks, state_list):
             exit.access_rule = access_rule
 
 
-def search_goals(categories, reachable_goals, search, priority_locations, all_locations, item_locations, always_locations, _maybe_set_light_arrows, search_woth=False):
+def search_goals(categories, reachable_goals, search, priority_locations, all_locations, item_locations, always_locations, search_woth=False):
     # required_locations[category.name][goal.name][world_id] = [...]
     required_locations = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
     world_ids = [state.world.id for state in search.state_list]
     if search_woth:
         required_locations['way of the hero'] = []
+    remaining_locations = all_locations[:]
     for location in search.iter_reachable_locations(all_locations):
         # Try to remove items one at a time and see if the goal is still reachable
         if location in item_locations:
@@ -317,7 +320,7 @@ def search_goals(categories, reachable_goals, search, priority_locations, all_lo
                                 for world_id in hintable_states:
                                     # Placeholder weights to be set for future bottleneck targeting.
                                     # 0 weights for always-hinted locations isn't relevant currently
-                                    # but is intended to screen out contributions to the overall 
+                                    # but is intended to screen out contributions to the overall
                                     # goal/category weights
                                     if location.name in always_locations or location.name in location.world.hint_exclusions:
                                         location_weights = (location, 0, 0)
@@ -333,12 +336,29 @@ def search_goals(categories, reachable_goals, search, priority_locations, all_lo
             if search_woth and not valid_goals['way of the hero']:
                 required_locations['way of the hero'].append(location)
             location.item = old_item
-            _maybe_set_light_arrows(location)
+        maybe_set_misc_item_hints(location)
+        remaining_locations.remove(location)
         search.state_list[location.item.world.id].collect(location.item)
+    for location in remaining_locations:
+        # finally, collect unreachable locations for misc. item hints
+        maybe_set_misc_item_hints(location)
     return required_locations
 
 
-def maybe_set_light_arrows(location):
-    if not location.item.world.light_arrow_location and location.item and location.item.name == 'Light Arrows':
-        location.item.world.light_arrow_location = location
-        logging.getLogger('').debug(f'Light Arrows [{location.item.world.id}] set to [{location.name}]')
+def maybe_set_misc_item_hints(location):
+    if not location.item:
+        return
+    if location.item.world.dungeon_rewards_hinted and location.item.name in location.item.world.rewardlist:
+        if location.item.name not in location.item.world.hinted_dungeon_reward_locations:
+            location.item.world.hinted_dungeon_reward_locations[location.item.name] = location
+            logging.getLogger('').debug(f'{location.item.name} [{location.item.world.id}] set to [{location.name}]')
+    for hint_type in misc_item_hint_table:
+        item = location.item.world.misc_hint_items[hint_type]
+        if hint_type not in location.item.world.misc_hint_item_locations and location.item.name == item:
+            location.item.world.misc_hint_item_locations[hint_type] = location
+            logging.getLogger('').debug(f'{item} [{location.item.world.id}] set to [{location.name}]')
+    for hint_type in misc_location_hint_table:
+        the_location = location.world.misc_hint_locations[hint_type]
+        if hint_type not in location.world.misc_hint_location_items and location.name == the_location:
+            location.world.misc_hint_location_items[hint_type] = location.item
+            logging.getLogger('').debug(f'{the_location} [{location.world.id}] set to [{location.item.name}]')

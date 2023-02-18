@@ -21,6 +21,6 @@ init:
 Static_ctxt_Init:
     li      t0, RANDO_CONTEXT
     sw      t0, 0x15D4(v0)
-    jr      ra    
+    jr      ra
     ; Displaced code
     li      v0, 0x15C0

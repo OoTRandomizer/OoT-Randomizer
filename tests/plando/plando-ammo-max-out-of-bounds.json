@@ -1,5 +1,7 @@
 {
-  "starting_items": {
-    "Progressive Wallet": 100
-  }
+  "settings": {
+		"starting_items": {
+			"Progressive Wallet": 100
+		}
+	}
 }

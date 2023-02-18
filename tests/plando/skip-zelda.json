@@ -1,12 +1,15 @@
 {
 "settings": {
-    "skip_child_zelda": true,
+    "shuffle_child_trade": [],
     "tokensanity": "overworld",
     "hint_dist": "tournament",
     "disabled_locations": [
         "HC Great Fairy Reward",
         "HC GS Storms Grotto",
         "HC GS Tree"
+    ],
+    "starting_items": [
+      "zeldas_letter"
     ]
 },
 "locations": {

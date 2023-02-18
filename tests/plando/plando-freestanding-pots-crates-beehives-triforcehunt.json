@@ -1,0 +1,11 @@
+{
+  "settings": {
+    "shuffle_pots":                            "all",
+    "shuffle_crates":                          "all",
+    "shuffle_freestanding_items":              "all",
+    "shuffle_beehives":                        true,
+    "triforce_hunt":                           true,
+    "triforce_count_per_world":                200,
+    "triforce_goal_per_world":                 200
+  }
+}

@@ -22,7 +22,7 @@ extended_object_lookup_load:
     LA      T9, EXTENDED_OBJECT_TABLE
     JR      RA
     ADDIU   A2, A2, -0x193
-    
+
 
 extended_object_lookup_shop:
     LH      T9, 0x00(S0) ; displaced

@@ -43,7 +43,7 @@ gossip_hints:
     b       @@return
     nop
 
-@@default: 
+@@default:
     ; Show message only if worn mask is the mask of truth
     jal     0x79B44
     nop

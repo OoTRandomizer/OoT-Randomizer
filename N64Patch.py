@@ -156,7 +156,7 @@ def create_patch_file(rom, file, xor_range=(0x00B8AD30, 0x00F029A0)):
         # start a new block
         if not block_start:
             block_start = address
-            block_end = address - 1             
+            block_end = address - 1
 
         # save the new data
         data += rom.buffer[block_end+1:address+1]
@@ -175,7 +175,9 @@ def create_patch_file(rom, file, xor_range=(0x00B8AD30, 0x00F029A0)):
 
 
 # This will apply a patch file to a source rom to generate a patched rom.
-def apply_patch_file(rom, file, sub_file=None):
+def apply_patch_file(rom, settings, sub_file=None):
+    file = settings.patch_file
+
     # load the patch file and decompress
     if sub_file:
         with zipfile.ZipFile(file, 'r') as patch_archive:
@@ -266,6 +268,9 @@ def apply_patch_file(rom, file, sub_file=None):
                 data += [b ^ key]
 
         # Save the new data to rom
-        rom.write_bytes(block_start, data)
+        if settings.repatch_cosmetics:
+            rom.write_bytes_restrictive(block_start, block_size, data)
+        else:
+            rom.write_bytes(block_start, data)
         block_start = block_start+block_size
 

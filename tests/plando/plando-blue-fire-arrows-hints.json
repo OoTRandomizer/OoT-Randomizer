@@ -1,0 +1,16 @@
+{
+    "settings": {
+        "shuffle_mapcompass": "startwith",
+        "blue_fire_arrows":   true,
+        "zora_fountain":      "open",
+        "hint_dist":          "tournament"
+    },
+    "locations": {
+        "Ice Cavern Map Chest":        "#Bottle",
+        "Ice Cavern Compass Chest":    "#Bottle",
+        "Ice Cavern Iron Boots Chest": "#Bottle",
+        "Ice Cavern Freestanding PoH": "#Bottle",
+        "Sheik in Ice Cavern":         "Song of Storms",
+        "Bottom of the Well Front Left Fake Wall Chest": "Light Arrows"
+    }
+}    

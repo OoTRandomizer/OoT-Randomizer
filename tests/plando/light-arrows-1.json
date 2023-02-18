@@ -1,8 +1,8 @@
 {
-"item_pool": {
-    "Light Arrows": 3
-},
-"locations": {
-    "Ganons Tower Boss Key Chest": "Light Arrows"
-}
+  "item_pool": {
+      "Light Arrows": 3
+  },
+  "locations": {
+      "Ganons Tower Boss Key Chest": "Light Arrows"
+  }
 }

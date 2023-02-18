@@ -10,5 +10,5 @@ disable_trade_timers:
     j       0x80073930 ; skip storing new timer state
     nop
 @@return:
-    j       0x80073914 ; back to the normal code. 
+    j       0x80073914 ; back to the normal code.
     nop

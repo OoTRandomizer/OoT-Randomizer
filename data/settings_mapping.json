@@ -1,15 +1,16 @@
 {
   "Tabs": [
     {
-      "name": "general_tab_electron",
+      "name": "general_tab",
       "text": "ROM Options",
-      "exclude_from_web": true,
+      "app_type": ["generator"],
       "sections": [
         {
-          "name": "general_section",
+          "name": "general_section_electron",
           "text": "",
+          "exclude_from_web": true,
           "col_span": 4,
-          "row_span": [2,2,2],
+          "row_span": [2,2,3],
           "settings": [
             "rom",
             "output_dir",
@@ -20,41 +21,24 @@
             "count",
             "create_spoiler",
             "create_cosmetics_log",
-            "compress_rom",
+            "output_types",
+            "create_patch_file",
+            "create_compressed_rom",
+            "create_wad_file",
+            "create_uncompressed_rom",
+            "wad_file",
+            "wad_channel_id",
+            "wad_channel_title",
+            "show_seed_info",
+            "user_message",
             "open_output_dir",
             "open_python_dir"
           ]
         },
         {
-          "name": "multiworld_section",
-          "text": "Multi-World Generation",
-          "subheader": "This is used for co-op generations. Increasing Player Count will drastically increase the generation time.<br>For more information, see:<br><a href='https://github.com/TestRunnerSRL/bizhawk-co-op' target='_blank'>https://github.com/TestRunnerSRL/bizhawk-co-op</a>",
-          "row_span": [1,1,1],
-          "settings": [
-            "world_count",
-            "player_num"
-          ]
-        },
-        {
-          "name": "preset_section",
-          "text": "Settings Presets",
-          "subheader": "Presets are settings that can be saved and loaded from.<br>Loading a preset will overwrite all settings that affect the seed.",
-          "row_span": [1,1,1],
-          "settings": [
-            "presets"
-          ]
-        }
-      ]
-    },
-    {
-      "name": "general_tab_web_generator",
-      "text": "ROM Options",
-      "app_type": ["generator"],
-      "exclude_from_electron": true,
-      "sections": [
-        {
-          "name": "general_section",
+          "name": "general_section_web_generator",
           "text": "",
+          "exclude_from_electron": true,
           "col_span": 4,
           "row_span": [1,1,1],
           "settings": [
@@ -69,7 +53,10 @@
             "web_common_key_file",
             "web_common_key_string",
             "web_wad_channel_id",
-            "web_wad_channel_title"
+            "web_wad_channel_title",
+            "web_wad_legacy_mode",
+            "show_seed_info",
+            "user_message"
           ]
         },
         {
@@ -113,7 +100,8 @@
             "web_common_key_file",
             "web_common_key_string",
             "web_wad_channel_id",
-            "web_wad_channel_title"
+            "web_wad_channel_title",
+            "web_wad_legacy_mode"
           ]
         },
         {
@@ -152,12 +140,14 @@
             "open_door_of_time",
             "zora_fountain",
             "gerudo_fortress",
+            "dungeon_shortcuts_choice",
             "dungeon_shortcuts",
             "bridge",
             "bridge_medallions",
             "bridge_stones",
             "bridge_rewards",
             "bridge_tokens",
+            "bridge_hearts",
             "trials_random",
             "trials"
           ]
@@ -168,19 +158,30 @@
           "row_span": [6,6,9],
           "settings": [
             "starting_age",
+            "mq_dungeons_mode",
+            "mq_dungeons_specific",
+            "mq_dungeons_count",
+            "empty_dungeons_mode",
+            "empty_dungeons_specific",
+            "empty_dungeons_count",
             "shuffle_interior_entrances",
             "shuffle_grotto_entrances",
             "shuffle_dungeon_entrances",
+            "shuffle_bosses",
             "shuffle_overworld_entrances",
+            "shuffle_gerudo_valley_river_exit",
             "owl_drops",
             "warp_songs",
             "spawn_positions",
             "triforce_hunt",
+            "triforce_count_per_world",
             "triforce_goal_per_world",
             "bombchus_in_logic",
             "one_item_per_dungeon",
             "mq_dungeons_random",
             "mq_dungeons",
+            "free_bombchu_drops",
+            "one_item_per_dungeon",
             "increase_logical_skulls",
             "logical_skulls_scalled",
             "logical_skulls_buffered"
@@ -196,13 +197,20 @@
             "shopsanity_prices",
             "tokensanity",
             "shuffle_scrubs",
+            "shuffle_child_trade",
+            "adult_trade_shuffle",
+            "adult_trade_start",
+            "shuffle_freestanding_items",
+            "shuffle_pots",
+            "shuffle_crates",
             "shuffle_cows",
+            "shuffle_beehives",
             "shuffle_kokiri_sword",
             "shuffle_ocarinas",
-            "shuffle_weird_egg",
             "shuffle_gerudo_card",
             "shuffle_beans",
-            "shuffle_medigoron_carpet_salesman"
+            "shuffle_expensive_merchants",
+            "shuffle_frog_song_rupees"
           ]
         },
         {
@@ -213,12 +221,16 @@
             "shuffle_mapcompass",
             "shuffle_smallkeys",
             "shuffle_hideoutkeys",
+            "key_rings_choice",
+            "key_rings",
+            "keyring_give_bk",
             "shuffle_bosskeys",
             "shuffle_ganon_bosskey",
             "ganon_bosskey_medallions",
             "ganon_bosskey_stones",
             "ganon_bosskey_rewards",
             "ganon_bosskey_tokens",
+            "ganon_bosskey_hearts",
             "enhance_map_compass"
           ]
         }
@@ -313,7 +325,6 @@
           "text": "Timesavers",
           "row_span": [1,1,1],
           "settings": [
-            "skip_child_zelda",
             "no_escape_sequence",
             "no_guard_stealth",
             "no_epona_race",
@@ -323,10 +334,13 @@
             "fast_chests",
             "free_scarecrow",
             "fast_bunny_hood",
+            "plant_beans",
             "chicken_count_random",
             "chicken_count",
             "big_poe_count_random",
-            "big_poe_count"
+            "big_poe_count",
+            "easier_fire_arrow_entry",
+            "fae_torch_count"
           ]
         },
         {
@@ -336,6 +350,9 @@
           "settings": [
             "ocarina_songs",
             "correct_chest_appearances",
+            "minor_items_as_major_chest",
+            "invisible_chests",
+            "correct_potcrate_appearances",
             "clearer_hints",
             "hints",
             "hint_dist",
@@ -343,8 +360,11 @@
             "misc_hints",
             "text_shuffle",
             "damage_multiplier",
-			"no_collectible_hearts",
-            "starting_tod"
+            "deadly_bonks",
+            "no_collectible_hearts",
+            "starting_tod",
+            "blue_fire_arrows",
+            "fix_broken_drops"
           ]
         },
         {
@@ -354,9 +374,7 @@
           "settings": [
             "item_pool_value",
             "junk_ice_traps",
-            "ice_trap_appearance",
-            "logic_earliest_adult_trade",
-            "logic_latest_adult_trade"
+            "ice_trap_appearance"
           ]
         }
       ]
@@ -369,13 +387,41 @@
       "sections": [
         {
           "name": "generalcosmetics_section",
-          "col_span": 4,
+          "text": "General Cosmetics",
+          "col_span": 2,
           "row_span": [2,2,2],
           "settings": [
             "default_targeting",
             "display_dpad",
+            "dpad_dungeon_menu",
             "correct_model_colors",
             "randomize_all_cosmetics"
+          ]
+        },
+        {
+          "name": "playermodels_section_generator",
+          "text": "Player Models",
+          "app_type": ["generator"],
+          "col_span": 2,
+          "row_span": [2,2,2],
+          "settings": [
+            "model_adult",
+            "model_adult_filepicker",
+            "model_child",
+            "model_child_filepicker",
+            "model_unavailable_msg"
+          ]
+        },
+        {
+          "name": "playermodels_section_patcher",
+          "text": "Player Models",
+          "exclude_from_electron": true,
+          "app_type": ["patcher"],
+          "col_span": 2,
+          "row_span": [2,2,2],
+          "settings": [
+            "model_adult_filepicker",
+            "model_child_filepicker"
           ]
         },
         {
@@ -444,19 +490,20 @@
           "name": "sfx_main_section",
           "is_sfx": true,
           "col_span": 4,
-          "row_span": [1,1,1],
+          "row_span": [2,1,2],
           "settings": [
-            "randomize_all_sfx"
+            "randomize_all_sfx",
+            "disable_battle_music"
           ]
         },
         {
           "name": "generalsfx_section",
           "text": "General",
           "is_sfx": true,
-          "row_span": [6,6,13],
+          "col_span": 1,
+          "row_span": [6,6,11],
           "settings": [
             "background_music",
-            "disable_battle_music",
             "fanfares",
             "ocarina_fanfares",
             "sfx_low_hp",
@@ -470,7 +517,8 @@
           "name": "menusfx_section",
           "text": "Menu",
           "is_sfx": true,
-          "row_span": [6,6,13],
+          "col_span": 1,
+          "row_span": [6,6,11],
           "settings": [
             "sfx_menu_cursor",
             "sfx_menu_select"
@@ -480,10 +528,37 @@
           "name": "npcsfx_section",
           "text": "NPC",
           "is_sfx": true,
-          "row_span": [6,6,13],
+          "col_span": 1,
+          "row_span": [6,6,11],
           "settings": [
             "sfx_navi_overworld",
             "sfx_navi_enemy"
+          ]
+        },
+        {
+          "name": "linksfx_section_generator",
+          "text": "Link",
+          "app_type": ["generator"],
+          "is_sfx": true,
+          "col_span": 1,
+          "row_span": [6,6,11],
+          "settings": [
+            "sfx_link_adult",
+            "sfx_link_child",
+            "sfx_link_unavailable_msg"
+          ]
+        },
+        {
+          "name": "linksfx_section_patcher",
+          "text": "Link",
+          "exclude_from_electron": true,
+          "app_type": ["patcher"],
+          "is_sfx": true,
+          "col_span": 1,
+          "row_span": [6,6,11],
+          "settings": [
+            "sfx_link_adult",
+            "sfx_link_child"
           ]
         }
       ]

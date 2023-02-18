@@ -1,5 +1,6 @@
 <!doctype html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -8,9 +9,11 @@
     <link href="https://fonts.googleapis.com/css?family=Exo&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <title>Ocarina of Time Randomizer</title>
-    <link rel="stylesheet" href="/css/generator5Page.css">
+    <link rel="stylesheet" href="/css/webtest.css">
     <link rel="stylesheet" href="/css/mediaCSS5.css">
+    <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="/css/bootstrap-theme.min.css">
+    <link rel="stylesheet" href="/css/sidebarStats.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/v4-shims.css">
 </head>
@@ -20,6 +23,7 @@
     window.jQuery || document.write('<script src="/js/vendor/jquery-1.11.2.min.js"><\\\/script>')
 </script>
 <script src="/js/vendor/bootstrap.min.js"></script>
+
 <body>
     <custom-style>
         <style include="lumo-color lumo-typography"></style>
@@ -33,82 +37,212 @@
     </div>
     <div class="navbar navbar-default">
         <div class="container-fluid">
-            <!-- Brand and toggle get grouped for better mobile display-->
-            <div class="navbar-header"></div><button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button>
-            <!-- Collect the nav links, forms, and other content for toggling-->
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1"></div>
-            <ul class="nav navbar-nav"></ul>
-        </div>
-    </div>
-<div class="basecontainer webframe">
-    <div class="sidebar sbL"></div>
-    <div class="sidebar sbR"></div>
-    <h1 class="center" style="margin-bottom: 10px;"><strong>Ocarina of Time Item Randomizer</strong></h1>
-    <div class="panel panel-default">
-        <div class="panel-heading"><button class="spoilerBtn btn-instructions spoiler-trigger center" type="button" data-toggle="collapse">Instructions / Help</button></div>
-        <div class="panel-collapse collapse out">
-            <div class="panel-body">
+            <div class="navbar-header"></div><button class="navbar-toggle collapsed" type="button"
+                data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false"><span
+                    class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span
+                    class="icon-bar"></span><span class="icon-bar"></span></button>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li class="nav-item"><a href="#">Home</a></li>
+                    <li class="nav-dropdown"><a class="dropdown-toggle" data-toggle="dropdown" role="button"
+                            aria-haspopup="true" aria-expanded="false" style="cursor: pointer;">Generator <span
+                                class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li class="nav-item"><a href="#">Stable<small
+                                        style="position: relative; left: 2px; top: -5px; font-size: .7em;">vX.x</small></a>
+                            </li>
+                            <li class="nav-item"><a href="#">Dev<small
+                                        style="position: relative; left: 2px; top: -5px; font-size: .7em;">vX.x.x</small></a>
+                            </li>
+                            <li class="nav-item"><a href="#">Dev (Roman971 Branch)<small
+                                        style="position: relative; left: 2px; top: -5px; font-size: .7em;">vX.x.x</small></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a href="#">Challenge Seed</a></li>
+                    <li class="nav-dropdown"><a class="dropdown-toggle" data-toggle="dropdown" role="button"
+                            aria-haspopup="true" aria-expanded="false" style="cursor: pointer;">Plandomizer <span
+                                class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li class="nav-item"><a href="#">Stable<small
+                                        style="position: relative; left: 2px; top: -5px; font-size: .7em;">vX.x</small></a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a href="#">Downloads</a></li>
+                    <li class="nav-dropdown"><a class="dropdown-toggle" data-toggle="dropdown" role="button"
+                            aria-haspopup="true" aria-expanded="false" style="cursor: pointer;">Community <span
+                                class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li class="nav-item"><a href="#">About OoTR</a></li>
+                            <li class="nav-item"><a href="#">Gossip Stone Podcast</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-dropdown"><a class="dropdown-toggle" data-toggle="dropdown" role="button"
+                            aria-haspopup="true" aria-expanded="false" style="cursor: pointer;">Resources <span
+                                class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li class="nav-item"><a href="https://wiki.ootrandomizer.com">Wiki</a></li>
+                            <li class="nav-item"><a href="https://github.com/TestRunnerSRL/OoT-Randomizer/tree/Dev">Dev
+                                    Github</a></li>
+                            <li class="nav-item"><a href="https://discord.gg/ootrandomizer">Discord</a></li>
+                            <li class="nav-item"><a href="https://www.zeldaspeedruns.com">ZeldaSpeedRuns</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item"><a href="#">Legal</a></li>
+                    <li class="nav-dropdown"><a class="dropdown-toggle" id="navBarVersionSelector"
+                            data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"
+                            style="cursor: pointer;">Version <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li class="nav-item"><a href="#">vX.x.xxy</a></li>
+                            <li class="nav-item"><a href="x">vX.x.xxz</a></li>
+                        </ul>
+                    </li>
+                    <li class=".nav-item"><a href="x">Recent Seed</a></li>
+                </ul>
             </div>
         </div>
     </div>
-    <div id="appArea">
-        <div id="loadingAnimation">
-            <div class="fairy">
-                <div class="wings"></div>
-                <div class="glow">
-                    <div class="sparkle"></div>
-                    <div class="sparkle"></div>
-                    <div class="sparkle"></div>
-                    <div class="sparkle"></div>
-                    <div class="sparkle"></div>
+    <div class="sidebar sbL">
+        <div class="ad-sidebar-top-padding"></div>
+        <h3 class="center" style="margin-bottom: 10px; margin-top: 5px">Your most recent seed:</h3><span class="center">
+            <p style="margin-bottom: 3px"><strong>ID: </strong><a id="statsSeedID"
+                    href="#" target="_blank">999999</a></p>
+            <p style="margin-bottom: 3px"><strong>Seed: </strong><span id="statsSeedText">#DevRocks</span></p>
+            <p style="margin-bottom: 20px"><strong>Date: </strong><span id="statsSeedTS">Sat, 05 Nov 1955 01:16:00
+                    PST</span></p>
+        </span>
+        <h3 class="center" style="margin-bottom: 10px">Statistics:</h3><span class="center">
+            <p style="margin-bottom: 3px"><strong>Generated seeds: </strong>999999</p>
+            <p style="margin-bottom: 5px"><strong>Last seed generation: </strong>1 second ago</p>
+        </span>
+        <div class="ad-sidebar-bottom">
+        </div>
+    </div>
+    <div class="basecontainer webframe">
+        <div class="sidebar sbL"></div>
+        <div class="sidebar sbR"></div>
+        <h1 class="center" style="padding-bottom: 10px"><strong>Ocarina of Time Item Randomizer vX.x.xxx (Dev)</strong></h1>
+        <h5 class="center" style="padding-bottom: 10px"><strong> Warning: Dev versions are less tested than <a href="/generator">stable</a> releases and can contain bugs and other issues!</strong></h5>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <button class="spoilerBtn btn-instructions spoiler-trigger center" type="button"
+                    data-toggle="collapse">Instructions / Help</button>
+            </div>
+            <div class="panel-collapse collapse out">
+                <div class="panel-body">
+                    <h4>How to:</h4>
+                    <ul>
+                        <li>Use the Seed Generator below to create an OoT Randomizer Seed with your preferred settings,
+                            logic options and cosmetic touches. <strong>An Ocarina of Time 1.0 NTSC-U / NTSC-J rom is
+                                needed.</strong><br /><em> <small>OoTRandomizer.com and ZeldaSpeedRuns.com do not
+                                    distribute any copyrighted material.</small></em></li>
+                        <li>Hit the <strong>Generate Seed </strong>button to start the generation process.</li>
+                        <li>The <strong>Generate Race Seed </strong>button will disable the spoiler log, enable rom
+                            encryption, and set a random seed.</li>
+                        <li>You will be added to the queue. The bot will only handle a few generation requests at a
+                            time, so bear in mind that the generation might take a minute (or more for Multiworld)</li>
+                        <li>The cosmetic settings selected on generation can be overruled on the seed page itself, but
+                            will get set as default for this seed. Your own cosmetic choices are saved for next time.
+                        </li>
+                        <li>After the seed is generated, you will be forwarded to the seed page where you can check the
+                            generated settings, the spoiler log (given you didn't generate a race seed), and also adjust
+                            the cosmetic and targeting settings.</li>
+                        <li>Afterwards, enter the required file information and select your generation mode.</li>
+                        <li>Then hit <strong>Patch Rom </strong>to generate your randomized OoT rom.</li>
+                        <li>
+                            Note that for the different options to play OoTR on, you will have to configure your
+                            platform correctly. Refer to <a style="text-decoration: underline"
+                                href="https://wiki.ootrandomizer.com/index.php?title=Setup#Emulators">our wiki</a> for
+                            more information.</li>
+                    </ul>
+                    <h4>Please note that rom compression is a rather resource heavy process. To be able to run the OoT
+                        Web Randomizer smoothly, we recommend</h4>
+                    <ul>
+                        <li>A multi core CPU (at least 2 cores)</li>
+                        <li>At least 1.5 GB of RAM (possibly more)</li>
+                        <li>An updated Browser (Chrome v69+, Firefox v63+, Edge (Chromium branch only), Opera v56+,
+                            Safari 10+)</li>
+                        <li>A 64 Bit system is preferred, 32 Bit support cannot be guaranteed</li>
+                        <li>Mobile Devices are supported, but will slow down the patching process (Android phones with
+                            2GB+ RAM, iPhone 5 or newer (iOS 10) supported)</li>
+                    </ul>
+                    <h5>Note: If your device barely fulfills the requirements, the patching process can take up to 90
+                        seconds.</h5>
                 </div>
             </div>
-            <div class="center" id="loadText">LOADING...</div>
         </div>
-        <div id="genApp">
-            <ngx-app></ngx-app>
+        <div id="appArea">
+            <div id="loadingAnimation">
+                <div class="fairy">
+                    <div class="wings"></div>
+                    <div class="glow">
+                        <div class="sparkle"></div>
+                        <div class="sparkle"></div>
+                        <div class="sparkle"></div>
+                        <div class="sparkle"></div>
+                        <div class="sparkle"></div>
+                    </div>
+                </div>
+                <div class="center" id="loadText">LOADING...</div>
+            </div>
+            <div id="genApp">
+                <ngx-app></ngx-app>
+            </div>
+        </div>
+        <hr>
+        <div id="linkBox" style="display: flex; flex-direction: column;"></div>
+        <div class="panel-collapse collapse out" id="console">
+            <div class="panel-body"><textarea class="emscripten" id="output" readonly="" rows="8"
+                    style="margin-bottom: 10px;"></textarea></div>
         </div>
     </div>
-    <hr>
-    <div id="linkBox" style="display: flex; flex-direction: column;"></div>
-    <div class="panel-collapse collapse out" id="console">
-        <div class="panel-body"><textarea class="emscripten" id="output" readonly="" rows="8" style="margin-bottom: 10px;"></textarea></div>
+    <div class="webFooter" id="footer">
+        <div id="ootr" style="text-align: center; margin-top: 0px;">
+            <h2 class="footertitle">Ocarina of Time Randomizer Web Generator</h2>
+            <div id="social" style="display: flex; justify-content: center; margin: 0 auto; margin-bottom: 0px;"></div>
+            <a class="fa fa-twitter" style="font-size:30px; margin-right: 10px; color:white;" target="_blank"
+                href="https://twitter.com/zeldaspeedruns/"></a><a class="fa fa-youtube-square"
+                style="font-size:30px; margin-right: 10px; color:white;" target="_blank"
+                href="https://www.youtube.com/channel/UCd3Qyn3yRGaOzEIZojyq2CA"></a><a class="fab fa-discord"
+                style="position: relative; top: 2px; font-size:28px; margin-right: 10px; color:white;" target="_blank"
+                href="https://discord.gg/xcw9kZm"></a><a class="fab fa-patreon"
+                style="position: relative; top: 2px; font-size:28px; color:white;" target="_blank"
+                href="https://www.patreon.com/zeldaspeedruns"></a>
+            <h6 class="creditfooter">by Dragonbane0 &amp; TreZc0_</h6>
+            <div id="disclaimer">1998-2019 -- ZeldaSpeedRuns.com</div>
+        </div>
     </div>
-</div>
-<div class="webFooter" id="footer">
-    <div id="ootr" style="text-align: center; margin-top: 0px;">
-        <h2 class="footertitle">Ocarina of Time Randomizer Web Generator</h2>
-        <div id="social" style="display: flex; justify-content: center; margin: 0 auto; margin-bottom: 0px;"></div><a class="fa fa-twitter" style="font-size:30px; margin-right: 10px; color:white;" target="_blank" href="https://twitter.com/zeldaspeedruns/"></a><a class="fa fa-youtube-square" style="font-size:30px; margin-right: 10px; color:white;" target="_blank"
-            href="https://www.youtube.com/channel/UCd3Qyn3yRGaOzEIZojyq2CA"></a><a class="fab fa-discord" style="position: relative; top: 2px; font-size:28px; margin-right: 10px; color:white;" target="_blank" href="https://discord.gg/xcw9kZm"></a><a class="fab fa-patreon"
-            style="position: relative; top: 2px; font-size:28px; color:white;" target="_blank" href="https://www.patreon.com/zeldaspeedruns"></a>
-        <h6 class="creditfooter">by Dragonbane0 &amp; TreZc0_</h6>
-        <div id="disclaimer">1998-2019 -- ZeldaSpeedRuns.com</div>
-    </div>
-</div>
-<script type="text/javascript">
-    window.pythonSourceVersion = "Test";
-    window.pythonSourceIsMasterVersion = false;
-</script>
-<script type="text/javascript">
-    var w = window.ShadyDOM || {};
-    w.$ = !(!Element.prototype.attachShadow || !Node.prototype.getRootNode);
-    var ka = Object.getOwnPropertyDescriptor(Node.prototype, "firstChild");
-    w.g = !!(ka && ka.configurable && ka.get);
-    w.H = w.force || !w.$;
+    <script type="text/javascript">
+        window.pythonSourceVersion = "Test";
+        window.pythonSourceIsMasterVersion = false;
+    </script>
+    <script type="text/javascript">
+        var w = window.ShadyDOM || {};
+        w.$ = !(!Element.prototype.attachShadow || !Node.prototype.getRootNode);
+        var ka = Object.getOwnPropertyDescriptor(Node.prototype, "firstChild");
+        w.g = !!(ka && ka.configurable && ka.get);
+        w.H = w.force || !w.$;
 
-    if (w.H)
-        alert("Your browser is not compatible with this website. Please use Firefox v63+, Chrome v53+, Opera v40+, Safari v10+ or Edge v76+ (Chromium Branch)!");
-</script>
+        if (w.H)
+            alert("Your browser is not compatible with this website. Please use Firefox v63+, Chrome v53+, Opera v40+, Safari v10+ or Edge v76+ (Chromium Branch)!");
+    </script>
 
-<!--Disable pace after initial page load (to prevent it from ever coming up again in the same session)-->
-<script type="text/javascript">
-    window.paceOptions = {
-      restartOnPushState: false,
-      restartOnRequestAfter: false
-    };
-</script>
+    <!--Disable pace after initial page load (to prevent it from ever coming up again in the same session)-->
+    <script type="text/javascript">
+        window.paceOptions = {
+            restartOnPushState: false,
+            restartOnRequestAfter: false
+        };
+    </script>
 
-<script type="text/javascript" src="runtime.js"></script><script type="text/javascript" src="es2015-polyfills.js" nomodule></script><script type="text/javascript" src="polyfills.js"></script><script type="text/javascript" src="styles.js"></script><script type="text/javascript" src="scripts.js"></script><script type="text/javascript" src="vendor.js"></script><script type="text/javascript" src="main.js"></script>
-<script type="text/javascript" src="/js/settingsGUI.js"></script>
+    <script type="text/javascript" src="runtime.js"></script>
+    <script type="text/javascript" src="es2015-polyfills.js" nomodule></script>
+    <script type="text/javascript" src="polyfills.js"></script>
+    <script type="text/javascript" src="scripts.js"></script>
+    <script type="text/javascript" src="vendor.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+    <script type="text/javascript" src="/js/settingsGUI.js"></script>
 </body>
+
 </html>

@@ -1,15 +1,21 @@
 .sw*
-/.vs
-/.vscode
-/.idea
+.vs
+.vscode
+.idea
 /ASM/build/bin
 /Output
 /build
 /dist
 /Logs
 /testlogs
-/__pycache__
+__pycache__
 ARCHIVE.bin
+
+**/.DS_Store
+
+#Directory generated when we create wad file
+/wadextract
+common-key.bin
 
 *.[nz]64
 *.[nz]64.bak
@@ -19,6 +25,12 @@ ARCHIVE.bin
 *.sav
 *.spec
 .*.sw*
+*.wad
+
+data/Models/Adult/*.zobj
+data/Models/Adult/Pieces
+data/Models/Child/*.zobj
+data/Models/Child/Pieces
 
 tests/Output
 !tests/*.sav
@@ -28,3 +40,5 @@ tests/Output
 # global git configuration.
 /ASM/build/bundle_r.txt
 /ASM/build/bundle_d.txt
+
+**/.DS_Store

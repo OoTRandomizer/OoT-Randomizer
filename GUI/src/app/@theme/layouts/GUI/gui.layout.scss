@@ -1,6 +1,5 @@
 @import '../../styles/themes';
-@import '~bootstrap/scss/mixins/breakpoints';
-@import '~@nebular/theme/styles/global/breakpoints';
+@import '@nebular/theme/styles/global/breakpoints';
 
 @include nb-install-component() {
 
@@ -16,7 +15,7 @@
 
   .main-content {
     min-width: 900px; //min 900x780 space for content, everything else adds scrollbars to the "browser"
-    overflow: scroll;
+    overflow: hidden;
     background: #d0cfd3;
   }
 
@@ -27,7 +26,7 @@
   }
 
   .webLayout {
-    /deep/ .layout {
+    :host ::ng-deep .layout {
       min-height: unset;
     }
   }
@@ -92,7 +91,7 @@
     &.collapsed {
       width: 0;
 
-      /deep/ .main-container {
+      :host ::ng-deep .main-container {
         width: 0;
 
         .scrollable {
@@ -102,9 +101,9 @@
       }
     }
 
-    /deep/ .main-container {
+    :host ::ng-deep .main-container {
       width: $sidebar-width;
-      background: nb-theme(color-bg);
+      background: nb-theme(color-basic-800);
       transition: width 0.3s ease;
       overflow: hidden;
 
@@ -119,24 +118,24 @@
   }
 
   nb-sidebar.menu-sidebar {
-    margin-top: nb-theme(sidebar-header-gap);
+    margin-top: 0;
 
     @include nb-for-theme(corporate) {
       margin-top: 0;
     }
 
-    /deep/ .main-container {
-      height: calc(#{nb-theme(sidebar-height)} - #{nb-theme(header-height)} - #{nb-theme(sidebar-header-gap)}) !important;
-      @include nb-ltr(border-top-right-radius, nb-theme(radius));
-      @include nb-rtl(border-top-left-radius, nb-theme(radius));
+    :host ::ng-deep .main-container {
+      height: calc(#{nb-theme(sidebar-height)} - #{nb-theme(header-height)}) !important;
+      @include nb-ltr(border-top-right-radius, nb-theme(border-radius));
+      @include nb-rtl(border-top-left-radius, nb-theme(border-radius));
 
       @include nb-for-theme(corporate) {
-        border: 1px solid nb-theme(separator);
+        border: 1px solid nb-theme(divider-color);
         height: calc(#{nb-theme(sidebar-height)} - #{nb-theme(header-height)}) !important;
       }
     }
 
-    /deep/ .scrollable {
+    :host ::ng-deep .scrollable {
       @include nb-for-theme(corporate) {
         padding-top: 0;
 
@@ -146,7 +145,7 @@
       }
     }
 
-    /deep/ nb-sidebar-header {
+    :host ::ng-deep nb-sidebar-header {
       padding-bottom: 0.5rem;
       text-align: center;
     }
@@ -160,7 +159,7 @@
       transition: padding 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.48);
 
       @include nb-for-theme(corporate) {
-        border-radius: nb-theme(radius);
+        border-radius: nb-theme(border-radius);
       }
 
       i {
@@ -178,7 +177,7 @@
       }
     }
 
-    /deep/ nb-menu {
+    :host ::ng-deep nb-menu {
       & > .menu-items {
         & > .menu-item:first-child {
           .menu-title {
@@ -189,7 +188,7 @@
               margin-left: 1rem;
               background: nb-theme(color-danger);
               padding: 0 0.5rem;
-              border-radius: nb-theme(radius);
+              border-radius: nb-theme(border-radius);
               font-size: nb-theme(font-size-sm);
             }
               */
@@ -204,7 +203,7 @@
 
     &.compacted {
 
-      /deep/ nb-sidebar-header {
+      :host ::ng-deep nb-sidebar-header {
         padding-left: 0;
         padding-right: 0;
       }
@@ -223,18 +222,12 @@
     }
   }
 
-  @include media-breakpoint-down(xs) {
-    .main-content {
-      padding: 0.75rem !important;
-    }
-  }
-
   @include media-breakpoint-down(sm) {
 
     nb-sidebar.menu-sidebar {
       margin-top: 0;
 
-      /deep/ .main-container {
+      :host ::ng-deep .main-container {
         height: calc(#{nb-theme(sidebar-height)} - #{nb-theme(header-height)}) !important;
         @include nb-ltr(border-top-right-radius, 0);
         @include nb-rtl(border-top-left-radius, 0);

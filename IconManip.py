@@ -10,7 +10,7 @@ def add_hue(image, color, tiff=False):
         try:
             for x in range(3):
                 image[i+x] = int(((image[i+x]/255) * (color[x]/255)) * 255)
-        except: 
+        except:
             pass
     return image
 

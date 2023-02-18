@@ -1,0 +1,12 @@
+{
+  "settings": {
+    "shopsanity": "4"
+  },
+  "locations": {
+    "Kak 10 Gold Skulltula Reward": "!Gold Skulltula Token",
+    "Kak 20 Gold Skulltula Reward": "!Gold Skulltula Token",
+    "Kak 30 Gold Skulltula Reward": "!Gold Skulltula Token",
+    "Kak 40 Gold Skulltula Reward": "!Gold Skulltula Token",
+    "Kak 50 Gold Skulltula Reward": "!Gold Skulltula Token"
+  }
+}

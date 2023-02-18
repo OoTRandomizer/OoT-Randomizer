@@ -63,10 +63,10 @@ function romBuilding(pythonPath, randoPath, settings) {
       let args = ['--seed', seedString];
       //args["checked_version"] = false;
 
-      romBuildingGenerator = spawn('"' + pythonPath + '"' + ' ' + '"' + randoPath + '"', args, { shell: true });
+      romBuildingGenerator = spawn(pythonPath + ' ' + '"' + randoPath + '"', args, { shell: true });
     }
     else { //Random Seed
-      romBuildingGenerator = spawn('"' + pythonPath + '"' + ' ' + '"' + randoPath + '"', { shell: true });
+      romBuildingGenerator = spawn(pythonPath + ' ' + '"' + randoPath + '"', { shell: true });
     }
 
     romBuildingGenerator.on('error', err => {
@@ -232,7 +232,7 @@ function testPythonPath(pythonPath) {
 
     var error = "";
 
-    let pythonExec = spawn('"' + pythonPath + '"', { shell: true }).on('error', err => {
+    let pythonExec = spawn(pythonPath, { shell: true }).on('error', err => {
       reject(err);
     });
 
@@ -270,7 +270,7 @@ function getSettings(pythonPath, randoPath, settingsString) {
 
     //console.log("Get settings now with spawn!");
 
-    let settingsPY = spawn('"' + pythonPath + '"' + ' ' + '"' + randoPath + '"', args, { shell: true }).on('error', err => {
+    let settingsPY = spawn(pythonPath + ' ' + '"' + randoPath + '"', args, { shell: true }).on('error', err => {
       console.error("[getSettings] Error spawning process:", err);
       reject(err);
     });
@@ -314,7 +314,7 @@ function parseSettings(pythonPath, randoPath) {
 
     let args = ['--convert_settings'];
 
-    let settingsPY = spawn('"' + pythonPath + '"' + ' ' + '"' + randoPath + '"', args, { shell: true }).on('error', err => {
+    let settingsPY = spawn(pythonPath + ' ' + '"' + randoPath + '"', args, { shell: true }).on('error', err => {
       console.error("[parseSettings] Error spawning process:", err);
       reject(err);
     });
@@ -347,6 +347,49 @@ function parseSettings(pythonPath, randoPath) {
   });
 }
 
+function getUpdatedDynamicSetting(pythonPath, scriptPath, settingName) {
+  return new Promise(function (resolve, reject) {
+
+    let output = "";
+    let error = false;
+
+    let args = ['--setting', settingName];
+
+    //console.log("Get dynamic setting now with spawn!");
+
+    let settingsToJSONPY = spawn(pythonPath + ' ' + '"' + scriptPath + '"', args, { shell: true }).on('error', err => {
+      console.error("[getUpdatedDynamicSetting] Error spawning process:", err);
+      reject(err);
+    });
+
+    settingsToJSONPY.stdout.on('data', data => {
+      output = output + data.toString();
+      error = false;
+    });
+    settingsToJSONPY.stderr.on('data', data => {
+      output = output + data.toString();
+      error = true;
+    });
+
+    promiseFromChildProcess(settingsToJSONPY).then(function () {
+
+      //console.log("Get dynamic setting DONE!");
+
+      if (error) {
+        console.error('[getUpdatedDynamicSetting] settingsToJSONPY error: ' + output);
+        reject(output);
+      }
+      else {
+        resolve(output.replace(/\r?\n|\r/g, "\r\n"));
+      }
+
+    }).catch(err => {
+      console.error('[getUpdatedDynamicSetting] settingsToJSONPY promise rejected: ' + err);
+      reject(err);
+    });
+  });
+}
+
 module.exports = new EventEmitter();
 
 module.exports.getSettings = getSettings;
@@ -354,3 +397,4 @@ module.exports.parseSettings = parseSettings;
 module.exports.romBuilding = romBuilding;
 module.exports.cancelRomBuilding = cancelRomBuilding;
 module.exports.testPythonPath = testPythonPath;
+module.exports.getUpdatedDynamicSetting = getUpdatedDynamicSetting;

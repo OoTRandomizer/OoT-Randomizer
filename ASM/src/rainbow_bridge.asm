@@ -17,6 +17,9 @@ rainbow_bridge:
     li        at, 5
     beq       t2, at, @@tokens
 
+    li        at, 6
+    beq       t2, at, @@hearts
+
 @@open:
     li        at, 0
     jr        ra
@@ -141,6 +144,11 @@ rainbow_bridge:
 
 @@tokens:
     lh        t7, 0xD0(a3) ; Gold Skulltulas
+    b         @@count
+    nop
+
+@@hearts:
+    lh        t7, 0x2E(a3) ; Heart Containers * 0x10
 
 @@count:
     li        at, 0

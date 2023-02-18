@@ -1,4 +1,4 @@
-dampe_fix: 
+dampe_fix:
     lw      t2, 0x1D44(s1) ; Scene Collection Flags
     andi    t2, t2, 0x0100
     bnez    t2, @@received_hp

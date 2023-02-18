@@ -1,6 +1,5 @@
- 
-import { Directive, Input, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
-import { MatGridList } from '@angular/material';
+import { Directive, Input, OnInit, ChangeDetectorRef } from '@angular/core';
+import { MatGridList } from '@angular/material/grid-list';
 import { MediaObserver, MediaChange } from '@angular/flex-layout';
 
 export interface IResponsiveColumnsMap {
@@ -43,10 +42,10 @@ export class ResponsiveColsDirective implements OnInit {
       this.grid.cols = 2;
 
     cd.markForCheck();
-    cd.detectChanges();
   }
 
   public ngOnInit(): void {
+    this.cd.detectChanges();
     this.initializeColsCount();
 
     //Default
@@ -56,18 +55,16 @@ export class ResponsiveColsDirective implements OnInit {
     this.cd.markForCheck();
     this.cd.detectChanges();
 
-    this.media.media$
-      .subscribe((changes: MediaChange) => {
-        this.grid.cols = this.countBySize[changes.mqAlias];
-
-        if (this.cd) {
-          this.cd.markForCheck();
-        }
-      });
+    this.media.asObservable().subscribe((changes: MediaChange[]) => {
+      if (changes[0]) {
+        this.grid.cols = this.countBySize[changes[0].mqAlias];
+        this.cd?.markForCheck();
+      }
+    });
   }
 
   private initializeColsCount(): void {
-    Object.keys(this.countBySize).some( 
+    Object.keys(this.countBySize).some(
       (mqAlias: string): boolean => {
         const isActive = this.media.isActive(mqAlias);
 

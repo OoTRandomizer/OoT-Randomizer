@@ -3,11 +3,11 @@ import { DualListComponent } from 'angular-dual-listbox';
 import { BasicList } from 'angular-dual-listbox';
 
 @Component({
-  selector: 'gui-listbox',
+  selector: 'ootr-gui-listbox',
   templateUrl: './guiListbox.html',
   styleUrls: ['./guiListbox.scss']
 })
-export class GUIListboxModule extends DualListComponent {
+export class GUIListboxComponent extends DualListComponent {
 
   @Input() tooltip: any = 'tooltip';
   @Input() tooltipComponent: any = null;
@@ -24,7 +24,7 @@ export class GUIListboxModule extends DualListComponent {
   }
 
   onFilter(source: BasicList) {
-  
+
     //Filter by Tag
     if (source.name == "available" && this.selectedTag != "(all)") {
       const filtered = source.list.filter((item: any) => {

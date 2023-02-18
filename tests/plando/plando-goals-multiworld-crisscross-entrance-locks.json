@@ -14,11 +14,11 @@
     "triforce_hunt":                           false,
     "logic_rules":                             "glitchless",
     "reachable_locations":                     "all",
-    "bombchus_in_logic":                       false,
+    "free_bombchu_drops":                       false,
     "one_item_per_dungeon":                    false,
     "trials_random":                           false,
     "trials":                                  0,
-    "skip_child_zelda":                        true,
+    "shuffle_child_trade":                     [],
     "no_escape_sequence":                      true,
     "no_guard_stealth":                        true,
     "no_epona_race":                           true,
@@ -32,6 +32,7 @@
     "start_with_rupees":                       false,
     "start_with_consumables":                  true,
     "starting_hearts":                         3,
+    "plant_beans":                             false,
     "chicken_count_random":                    false,
     "chicken_count":                           7,
     "big_poe_count_random":                    false,
@@ -42,14 +43,17 @@
     "shuffle_song_items":                      "song",
     "shuffle_cows":                            false,
     "shuffle_beans":                           false,
-    "shuffle_medigoron_carpet_salesman":       false,
+    "shuffle_expensive_merchants":       false,
     "shuffle_interior_entrances":              "off",
     "shuffle_grotto_entrances":                false,
-    "shuffle_dungeon_entrances":               false,
+    "shuffle_dungeon_entrances":               "off",
     "shuffle_overworld_entrances":             false,
     "owl_drops":                               false,
     "warp_songs":                              false,
-    "spawn_positions":                         true,
+    "spawn_positions":                         [
+      "child",
+      "adult"
+    ],
     "shuffle_scrubs":                          "off",
     "shopsanity":                              "off",
     "tokensanity":                             "off",
@@ -61,8 +65,7 @@
     "ganon_bosskey_medallions":                6,
     "lacs_condition":                          "vanilla",
     "enhance_map_compass":                     false,
-    "mq_dungeons_random":                      false,
-    "mq_dungeons":                             0,
+    "mq_dungeons_mode":                        "vanilla",
     "disabled_locations":                      [
       "Deku Theater Mask of Truth"
     ],
@@ -81,18 +84,23 @@
       "logic_lens_gtg",
       "logic_lens_shadow",
       "logic_lens_shadow_back",
+      "logic_lens_bongo",
       "logic_lens_spirit"
     ],
-    "logic_earliest_adult_trade":              "prescription",
-    "logic_latest_adult_trade":                "claim_check",
+    "adult_trade_start":                       [
+      "Prescription",
+      "Eyeball Frog",
+      "Eyedrops",
+      "Claim Check"
+    ],
     "starting_equipment":                      [
       "deku_shield"
     ],
     "starting_items":                          [
-      "ocarina"
+      "ocarina",
+      "zeldas_letter"
     ],
     "starting_songs":                          [],
-    "ocarina_songs":                           false,
     "correct_chest_appearances":               "off",
     "clearer_hints":                           true,
     "no_collectible_hearts":                   false,
@@ -298,7 +306,7 @@
       "Graveyard Royal Familys Tomb Chest":                   {"item": "Recovery Heart", "player": 1},
       "Graveyard Freestanding PoH":                           {"item": "Arrows (5)", "player": 2},
       "Graveyard Dampe Gravedigging Tour":                    {"item": "Double Defense", "player": 2},
-      "Graveyard Hookshot Chest":                             {"item": "Piece of Heart", "player": 1},
+      "Graveyard Dampe Race Hookshot Chest":                  {"item": "Piece of Heart", "player": 1},
       "Graveyard Dampe Race Freestanding PoH":                {"item": "Arrows (30)", "player": 2},
       "DMT Freestanding PoH":                                 {"item": "Recovery Heart", "player": 2},
       "DMT Chest":                                            {"item": "Arrows (5)", "player": 1},
@@ -562,7 +570,7 @@
       "Graveyard Royal Familys Tomb Chest":                   {"item": "Progressive Wallet", "player": 2},
       "Graveyard Freestanding PoH":                           {"item": "Piece of Heart", "player": 1},
       "Graveyard Dampe Gravedigging Tour":                    {"item": "Rupees (5)", "player": 1},
-      "Graveyard Hookshot Chest":                             {"item": "Recovery Heart", "player": 2},
+      "Graveyard Dampe Race Hookshot Chest":                  {"item": "Recovery Heart", "player": 2},
       "Graveyard Dampe Race Freestanding PoH":                {"item": "Deku Stick (1)", "player": 2},
       "DMT Freestanding PoH":                                 {"item": "Rupees (20)", "player": 1},
       "DMT Chest":                                            {"item": "Piece of Heart", "player": 2},

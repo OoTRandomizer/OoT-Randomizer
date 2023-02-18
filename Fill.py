@@ -1,14 +1,13 @@
 import random
 import logging
+from Hints import HintArea
 from State import State
 from Rules import set_shop_rules
 from Location import DisableType
 from LocationList import location_groups
-from ItemPool import songlist, get_junk_item, item_groups, remove_junk_items, remove_junk_set
-from ItemList import item_table
-from Item import ItemFactory
+from ItemPool import remove_junk_items
+from Item import ItemFactory, ItemInfo
 from Search import Search
-from functools import reduce
 
 logger = logging.getLogger('')
 
@@ -24,10 +23,7 @@ class FillError(ShuffleError):
 # Places all items into the world
 def distribute_items_restrictive(window, worlds, fill_locations=None):
     if worlds[0].settings.shuffle_song_items == 'song':
-        song_location_names = [
-            'Song from Royal Familys Tomb', 'Song from Impa', 'Song from Malon', 'Song from Saria',
-            'Song from Ocarina of Time', 'Song from Windmill', 'Sheik in Forest', 'Sheik at Temple',
-            'Sheik in Crater', 'Sheik in Ice Cavern', 'Sheik in Kakariko', 'Sheik at Colossus']
+        song_location_names = location_groups['Song']
     elif worlds[0].settings.shuffle_song_items == 'dungeon':
         song_location_names = [
             'Deku Tree Queen Gohma Heart', 'Dodongos Cavern King Dodongo Heart',
@@ -73,8 +69,7 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
         itempool.extend(songitempool)
         songitempool = []
 
-    # add unrestricted dungeon items to main item pool
-    itempool.extend([item for world in worlds for item in world.get_unrestricted_dungeon_items()])
+    # Unrestricted dungeon items are already in main item pool
     dungeon_items = [item for world in worlds for item in world.get_restricted_dungeon_items()]
 
     random.shuffle(itempool) # randomize item placement order. this ordering can greatly affect the location accessibility bias
@@ -98,7 +93,7 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
             and location.item.looks_like_item is None))
     junk_items = remove_junk_items.copy()
     junk_items.remove('Ice Trap')
-    major_items = [item for (item, data) in item_table.items() if data[0] == 'Item' and data[1] and data[2] is not None]
+    major_items = [name for name, item in ItemInfo.items.items() if item.type == 'Item' and item.advancement and item.index is not None]
     fake_items = []
     if worlds[0].settings.ice_trap_appearance == 'major_only':
         model_items = [item for item in itempool if item.majoritem]
@@ -144,6 +139,33 @@ def distribute_items_restrictive(window, worlds, fill_locations=None):
         logger.info('Placing dungeon items.')
         fill_dungeons_restrictive(window, worlds, search, fill_locations, dungeon_items, itempool + songitempool)
         search.collect_locations()
+
+
+    # If some dungeons are supposed to be empty, fill them with useless items.
+    if worlds[0].settings.empty_dungeons_mode != 'none':
+        empty_locations = [location for location in fill_locations \
+            if world.empty_dungeons[HintArea.at(location).dungeon_name].empty]
+        for location in empty_locations:
+            fill_locations.remove(location)
+            location.world.hint_type_overrides['sometimes'].append(location.name)
+            location.world.hint_type_overrides['random'].append(location.name)
+
+        if worlds[0].settings.shuffle_mapcompass in ['any_dungeon', 'overworld', 'keysanity', 'regional']:
+            # Non-empty dungeon items are present in restitempool but yet we
+            # don't want to place them in an empty dungeon
+            restdungeon, restother = [], []
+            for item in restitempool:
+                if item.dungeonitem:
+                    restdungeon.append(item)
+                else:
+                    restother.append(item)
+            fast_fill(window, empty_locations, restother)
+            restitempool = restdungeon + restother
+            random.shuffle(restitempool)
+        else:
+            # We don't have to worry about this if dungeon items stay in their own dungeons
+            fast_fill(window, empty_locations, restitempool)
+
 
     # places the songs into the world
     # Currently places songs only at song locations. if there's an option
@@ -245,7 +267,11 @@ def fill_dungeon_unique_item(window, worlds, search, fill_locations, itempool):
     major_items = [item for item in itempool if item.majoritem]
     minor_items = [item for item in itempool if not item.majoritem]
 
-    dungeons = [dungeon for world in worlds for dungeon in world.dungeons]
+    if worlds[0].settings.empty_dungeons_mode != 'none':
+        dungeons = [dungeon for world in worlds for dungeon in world.dungeons if not world.empty_dungeons[dungeon.name].empty]
+    else:
+        dungeons = [dungeon for world in worlds for dungeon in world.dungeons]
+
     double_dungeons = []
     for dungeon in dungeons:
         # we will count spirit temple twice so that it gets 2 items to match vanilla
@@ -263,7 +289,15 @@ def fill_dungeon_unique_item(window, worlds, search, fill_locations, itempool):
 
     # iterate of all the dungeons in a random order, placing the item there
     for dungeon in dungeons:
-        dungeon_locations = [location for region in dungeon.regions for location in region.locations if location in fill_locations]
+        # Need to re-get dungeon regions to ensure boss rooms are considered
+        regions = []
+        for region in dungeon.world.regions:
+            try:
+                if HintArea.at(region).dungeon_name == dungeon.name:
+                    regions.append(region)
+            except:
+                pass
+        dungeon_locations = [location for region in regions for location in region.locations if location in fill_locations]
 
         # cache this list to flag afterwards
         all_dungeon_locations.extend(dungeon_locations)
@@ -333,6 +367,7 @@ def fill_ownworld_restrictive(window, worlds, search, locations, ownpool, itempo
                 logger.info("Failed to place %s items for world %s. Will retry %s more times.", description, (world.id+1), world_attempts)
                 for location in prize_locs_dict[world.id]:
                     location.item = None
+                    location.price = None
                     if location.disabled == DisableType.DISABLED:
                         location.disabled = DisableType.PENDING
                 logger.info('\t%s' % str(e))
@@ -366,6 +401,7 @@ def fill_restrictive(window, worlds, base_search, locations, itempool, count=-1)
     items_search = base_search.copy()
     items_search.collect_all(itempool)
     logging.getLogger('').debug(f'Placing {len(itempool)} items among {len(locations)} potential locations.')
+    itempool.sort(key=lambda item: not item.priority)
 
     # loop until there are no items or locations
     while itempool and locations:
@@ -375,7 +411,9 @@ def fill_restrictive(window, worlds, base_search, locations, itempool, count=-1)
 
         # get an item and remove it from the itempool
         item_to_place = itempool.pop()
-        if item_to_place.majoritem:
+        if item_to_place.priority:
+            l2cations = [l for l in locations if l.can_fill_fast(item_to_place)]
+        elif item_to_place.majoritem:
             l2cations = [l for l in locations if not l.minor_only]
         else:
             l2cations = locations
@@ -508,10 +546,6 @@ def fast_fill(window, locations, itempool):
     while itempool and locations:
         spot_to_fill = locations.pop()
         item_to_place = itempool.pop()
-        # Impa can't presently hand out refills at the start of the game.
-        # Only replace her item with a rupee if it's junk.
-        if spot_to_fill.world.settings.skip_child_zelda and spot_to_fill.name == 'Song from Impa' and item_to_place.name in remove_junk_set:
-            item_to_place = ItemFactory('Rupee (1)', spot_to_fill.world)
         spot_to_fill.world.push_item(spot_to_fill, item_to_place)
         window.fillcount += 1
         window.update_progress(5 + ((window.fillcount / window.locationcount) * 30))

@@ -1,4 +1,4 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { takeWhile } from 'rxjs/operators';
 import {
   NbThemeService,
@@ -7,13 +7,13 @@ import {
 import { GUIGlobal } from '../../../providers/GUIGlobal';
 
 @Component({
-  selector: 'gui-layout',
+  selector: 'ootr-gui-layout',
   styleUrls: ['./gui.layout.scss'],
   template: `
     <nb-layout [ngClass]="{webLayout: !global.getGlobalVar('electronAvailable'), electronLayout: global.getGlobalVar('electronAvailable')}">
       <nb-layout-header fixed *ngIf="global.getGlobalVar('electronAvailable')">
-        <div *ngIf="platform != 'darwin' || !isMaximized" class="dragRegion"></div>
-        <ngx-header></ngx-header>
+        <div *ngIf="platform !== 'darwin' || !isMaximized" class="dragRegion"></div>
+        <ootr-header></ootr-header>
       </nb-layout-header>
 
       <nb-layout-column class="main-content">
@@ -21,27 +21,19 @@ import { GUIGlobal } from '../../../providers/GUIGlobal';
       </nb-layout-column>
 
       <nb-layout-footer fixed *ngIf="global.getGlobalVar('electronAvailable')">
-        <ngx-footer></ngx-footer>
+        <ootr-footer></ootr-footer>
       </nb-layout-footer>
     </nb-layout>
   `,
 })
-export class GUILayoutComponent implements OnDestroy {
+export class GUILayoutComponent implements OnDestroy, OnInit {
 
   private alive = true;
-  currentTheme: string;
 
   platform: string = (<any>window).apiPlatform;
   isMaximized: boolean = false
 
-  constructor(protected themeService: NbThemeService, public global: GUIGlobal) {
-
-    this.themeService.getJsTheme()
-      .pipe(takeWhile(() => this.alive))
-      .subscribe(theme => {
-        this.currentTheme = theme.name;
-    });
-  }
+  constructor(public global: GUIGlobal) { }
 
   ngOnInit() {
 

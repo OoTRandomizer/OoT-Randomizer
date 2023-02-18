@@ -2,11 +2,11 @@ import { Component } from '@angular/core';
 import { MENU_ITEMS } from './pages-menu';
 
 @Component({
-  selector: 'ngx-pages',
+  selector: 'ootr-ngx-pages',
   template: `
-    <gui-layout>
+    <ootr-gui-layout>
       <router-outlet></router-outlet>
-    </gui-layout>
+    </ootr-gui-layout>
   `,
 })
 export class PagesComponent {
