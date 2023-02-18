@@ -4278,7 +4278,7 @@ setting_infos = [
         },
         shared         = True,
     ),
-        Combobox(
+    Combobox(
         name           = 'increase_logical_skulls',
         gui_text       = 'Increase Logical Skulls',
         default        = 'off',
