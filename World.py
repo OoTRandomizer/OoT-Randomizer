@@ -644,7 +644,7 @@ class World(object):
                         elif self.settings.shopsanity_prices == 'random_giant':
                             self.shop_prices[location.name] = random.randrange(0,501,5)
                         elif self.settings.shopsanity_prices == 'random_tycoon':
-                            self.shop_prices[location.name] = random.randrange(0,1000,5)
+                            self.shop_prices[location.name] = int(random.betavariate(1.5, 2) * 200) * 5
                         elif self.settings.shopsanity_prices == 'affordable':
                             self.shop_prices[location.name] = 10
 

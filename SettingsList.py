@@ -3955,7 +3955,8 @@ setting_infos = [
 
             'X Wallet': Shop prices for shopsanity items will range
             between 0 and the specified wallet's maximum capacity,
-            in multiples of 5.
+            in multiples of 5, except for Tycoon Wallet who will have
+            a bias towards values slightly below the middle of the range.
 
             'Affordable': Shop prices for shopsanity items will be
             fixed to 10 rupees.
