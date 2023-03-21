@@ -253,7 +253,7 @@
         ]
     },
     "Standard Weekly (Latest)": {
-        "create_spoiler": true,
+        "create_spoiler": false,
         "show_seed_info": true,
         "user_message": "Standard Weekly (Latest)",
         "world_count": 1,
