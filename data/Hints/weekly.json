@@ -1,7 +1,7 @@
 {
     "name":                  "weekly",
     "gui_name":              "Weekly",
-    "description":           "Hint Distribution for weekly races. 5 Goal hints, 3 Barren hints, 5 Sometimes hints, 7 Always hints (including 40 and 50 skulls, Skull Mask, Sheik in Kakariko, and DMC Scrub).",
+    "description":           "Hint distribution for weekly races. 5 Goal hints, 3 Barren hints, 5 Sometimes hints, 7 Always hints (including 40 and 50 Skulltula tokens, Skull Mask, Sheik in Kakariko, and Death Mountain Crater Scrub).",
     "add_locations":         [
         { "location": "Deku Theater Skull Mask", "types": ["always"] },
         { "location": "Sheik in Kakariko", "types": ["always"] },
