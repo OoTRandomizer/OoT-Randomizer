@@ -1366,7 +1366,7 @@
         "correct_potcrate_appearances": "textures_content",
         "clearer_hints": true,
         "hints": "always",
-        "hint_dist": "leagueS4",
+        "hint_dist": "league",
         "misc_hints": [
             "altar",
             "ganondorf",
