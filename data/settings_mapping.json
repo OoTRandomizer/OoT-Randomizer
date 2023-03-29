@@ -149,7 +149,8 @@
             "bridge_tokens",
             "bridge_hearts",
             "trials_random",
-            "trials"
+            "trials",
+            "remove_ice_block_in_adult_lake"
           ]
         },
         {

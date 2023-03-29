@@ -193,3 +193,20 @@ Fill_Lake:
     addiu   sp, sp, 0x0028
     jr      ra
     nop
+
+
+Lake_To_Domain:
+    ; Displaced code
+    sw      t3, 0x0154(s0)
+
+    lb      t1, LAKE_ICE_BLOCK
+    beqz    t1, @@return_lake_to_domain
+    nop
+    li      t4, 0x01
+    jr      ra
+    nop
+
+@@return_lake_to_domain:
+    lw      t4, 0x0004(v1)
+    jr      ra
+    nop

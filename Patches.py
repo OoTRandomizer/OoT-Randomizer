@@ -2375,6 +2375,10 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
     # Fix crash when hitting white bubbles enemies with Dins Fire
     rom.write_byte(0xCB4397, 0x00)
 
+    if world.settings.remove_ice_block_in_adult_lake:
+        symbol = rom.sym('LAKE_ICE_BLOCK')
+        rom.write_byte(symbol, 0x01)
+
     # actually write the save table to rom
     world.distribution.give_items(world, save_context)
     if world.settings.starting_age == 'adult':

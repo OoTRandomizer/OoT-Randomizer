@@ -443,7 +443,7 @@
         },
         "exits": {
             "Hyrule Field": "True",
-            "Zoras Domain": "is_child and can_dive",
+            "Zoras Domain": "(is_child and can_dive) or (is_adult and remove_ice_block_in_adult_lake)",
             "LH Owl Flight": "is_child",
             "LH Lab": "True",
             "LH Fishing Island": "

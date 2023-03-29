@@ -2256,7 +2256,7 @@ setting_infos = [
                 'sections': ['shuffle_section'],
                 'settings': [
                     'open_forest', 'open_kakariko', 'open_door_of_time', 'zora_fountain', 'gerudo_fortress', 'dungeon_shortcuts_choice',
-                    'dungeon_shortcuts', 'trials_random', 'trials',
+                    'dungeon_shortcuts', 'trials_random', 'trials', 'remove_ice_block_in_adult_lake',
                     'starting_age', 'shuffle_interior_entrances',
                     'shuffle_grotto_entrances', 'shuffle_dungeon_entrances',
                     'shuffle_bosses', 'shuffle_overworld_entrances', 'shuffle_gerudo_valley_river_exit', 'owl_drops', 'warp_songs', 'spawn_positions',
@@ -2682,6 +2682,16 @@ setting_infos = [
         ''',
         shared         = True,
         disabled_default = 0,
+    ),
+    Checkbutton(
+        name           = 'remove_ice_block_in_adult_lake',
+        gui_text       = 'Remove Ice Block In Adult Lake Hylia',
+        gui_tooltip    = '''\
+            Remove the Ice Block in Lake Hylia when Link is adult,
+            enabling access to Zora's Domain.
+        ''',
+        default        = False,
+        shared         = True,
     ),
     Combobox(
         name           = 'shuffle_ganon_bosskey',
