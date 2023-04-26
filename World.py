@@ -535,8 +535,26 @@ class World(object):
 
     def load_regions_from_json(self, file_path):
         region_json = read_logic_file(file_path)
-
         for region in region_json:
+
+            if region['region_name'] == "Kak House of Skulltula":
+                if self.settings.increase_logical_skulls == "scale":
+                    region['locations'] = {
+                        "Kak 10 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % int(10 * (1 + self.settings.logical_skulls_scalled/100)),
+                        "Kak 20 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % int(20 * (1 + self.settings.logical_skulls_scalled/100)),
+                        "Kak 30 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % int(30 * (1 + self.settings.logical_skulls_scalled/100)),
+                        "Kak 40 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % int(40 * (1 + self.settings.logical_skulls_scalled/100)),
+                        "Kak 50 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % int(50 * (1 + self.settings.logical_skulls_scalled/100))
+                    }
+                elif self.settings.increase_logical_skulls == "buffer":
+                    region['locations'] = {
+                        "Kak 10 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % (10 + self.settings.logical_skulls_buffered),
+                        "Kak 20 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % (20 + self.settings.logical_skulls_buffered),
+                        "Kak 30 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % (30 + self.settings.logical_skulls_buffered),
+                        "Kak 40 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % (40 + self.settings.logical_skulls_buffered),
+                        "Kak 50 Gold Skulltula Reward": "(Gold_Skulltula_Token, %d)" % (50 + self.settings.logical_skulls_buffered)
+                    }
+
             new_region = Region(region['region_name'])
             new_region.world = self
             if 'scene' in region:

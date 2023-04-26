@@ -177,7 +177,10 @@
             "triforce_count_per_world",
             "triforce_goal_per_world",
             "free_bombchu_drops",
-            "one_item_per_dungeon"
+            "one_item_per_dungeon",
+            "increase_logical_skulls",
+            "logical_skulls_scalled",
+            "logical_skulls_buffered"
           ]
         },
         {
