@@ -759,6 +759,7 @@ class World(object):
         gbk = GoalCategory('ganon_bosskey', 20)
         trials = GoalCategory('trials', 30, minimum_goals=1)
         th = GoalCategory('triforce_hunt', 30, goal_count=round(self.settings.triforce_goal_per_world / 10), minimum_goals=1)
+        ganon = GoalCategory('ganon', 40, goal_count=1)
         trial_goal = Goal(self, 'the Tower', 'path to #the Tower#', 'White', items=[], create_empty=True)
 
         if self.settings.triforce_hunt and self.settings.triforce_goal_per_world > 0:
@@ -779,10 +780,9 @@ class World(object):
         # Ganon's Boss Key can be Stones, Medallions, Dungeons, Skulls, LACS or
         # one of the keysanity variants.
         # Trials is one goal that is only on if at least one trial is on in the world.
-        # If there are no win conditions beyond Kill Ganon (open bridge, GBK removed,
-        # no trials), a fallback "path of the hero" clone of WOTH is created. Path
-        # wording is used to distinguish the hint type even though the hintable location
-        # set is identical to WOTH.
+        # If there are no trials, a "path of the hero" clone of WOTH is created, which
+        # is deprioritized compared to other goals. Path wording is used to distinguish
+        # the hint type even though the hintable location set is identical to WOTH.
         if not self.settings.triforce_hunt:
             if self.settings.starting_age == 'child':
                 dot_items = [{'name': 'Temple of Time Access', 'quantity': 1, 'minimum': 1, 'hintable': True}]
@@ -1002,12 +1002,12 @@ class World(object):
                 trials.add_goal(trial_goal)
                 self.goal_categories[trials.name] = trials
 
-            if (self.shuffle_special_dungeon_entrances or self.settings.bridge == 'open') and (self.settings.shuffle_ganon_bosskey == 'remove' or self.settings.shuffle_ganon_bosskey == 'vanilla') and self.settings.trials == 0:
-                g = GoalCategory('ganon', 30, goal_count=1)
-                # Equivalent to WOTH, but added in case WOTH hints are disabled in favor of goal hints
-                g.add_goal(Goal(self, 'the hero', 'path of #the hero#', 'White', items=[{'name': 'Triforce', 'quantity': 1, 'minimum': 1, 'hintable': True}]))
-                g.minimum_goals = 1
-                self.goal_categories[g.name] = g
+            # In glitched logic or if trials are off, it's possible that some items required to beat the game
+            # (such as bow, magic, light arrows, or anything required to reach Ganon's Castle)
+            # don't appear on any other paths, so a goal specifically for beating the game is added.
+            ganon.add_goal(Goal(self, 'the hero', 'path of #the hero#', 'White', items=[{'name': 'Triforce', 'quantity': 1, 'minimum': 1, 'hintable': True}]))
+            ganon.minimum_goals = 1
+            self.goal_categories[ganon.name] = ganon
 
     def get_region(self, regionname):
         if isinstance(regionname, Region):
