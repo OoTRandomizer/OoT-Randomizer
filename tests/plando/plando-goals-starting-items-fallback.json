@@ -42,7 +42,7 @@
     "shuffle_gerudo_card":                     false,
     "shuffle_song_items":                      "song",
     "shuffle_cows":                            false,
-    "shuffle_beans":                           false,
+    "shuffle_beans":                           "off",
     "shuffle_expensive_merchants":       false,
     "shuffle_interior_entrances":              "off",
     "shuffle_grotto_entrances":                false,

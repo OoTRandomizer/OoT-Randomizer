@@ -465,8 +465,11 @@ def get_pool_core(world):
             pending_junk_pool.append('Kokiri Sword')
         if world.settings.shuffle_ocarinas:
             pending_junk_pool.append('Ocarina')
-        if world.settings.shuffle_beans and world.distribution.get_starting_item('Magic Bean') < 10:
-            pending_junk_pool.append('Magic Bean Pack')
+        if world.settings.shuffle_beans != 'off' and world.distribution.get_starting_item('Magic Bean') < 10:
+            if world.settings.shuffle_beans == 'pack':
+                pending_junk_pool.append('Magic Bean Pack')
+            else: # world.settings.shuffle_beans == 'individual'
+                pending_junk_pool.append('Magic Bean')
         if (world.settings.gerudo_fortress != "open"
                 and world.settings.shuffle_hideoutkeys in ['any_dungeon', 'overworld', 'keysanity', 'regional']):
             if 'Thieves Hideout' in world.settings.key_rings and world.settings.gerudo_fortress != "fast":
@@ -614,9 +617,12 @@ def get_pool_core(world):
 
         # Magic Beans
         elif location.vanilla_item == 'Buy Magic Bean':
-            if world.settings.shuffle_beans:
+            if world.settings.shuffle_beans == 'pack':
                 item = 'Magic Bean Pack' if world.distribution.get_starting_item('Magic Bean') < 10 else get_junk_item()[0]
-            shuffle_item = world.settings.shuffle_beans
+            elif world.settings.shuffle_beans == 'individual':
+                item = 'Magic Bean'
+                pending_junk_pool.extend(['Magic Bean'] * 9)
+            shuffle_item = world.settings.shuffle_beans != 'off'
 
         # Frogs Purple Rupees
         elif location.scene == 0x54 and location.vanilla_item == 'Rupees (50)':

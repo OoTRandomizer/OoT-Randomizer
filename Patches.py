@@ -2104,7 +2104,7 @@ def patch_rom(spoiler:Spoiler, world:World, rom:Rom):
         rom.write_bytes(0x2C550AE, [0x00, 0x82]) # LLR Stable right cow
         set_cow_id_data(rom, world)
 
-    if world.settings.shuffle_beans:
+    if world.settings.shuffle_beans != 'off':
         rom.write_byte(rom.sym('SHUFFLE_BEANS'), 0x01)
         # Update bean salesman messages to better fit the fact that he sells a randomized item
         if 'unique_merchants' not in world.settings.misc_hints:

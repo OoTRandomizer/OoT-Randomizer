@@ -17,7 +17,7 @@
     "shuffle_gerudo_card":                     true,
     "shuffle_song_items":                      "any",
     "shuffle_cows":                            true,
-    "shuffle_beans":                           true,
+    "shuffle_beans":                           "individual",
     "shuffle_expensive_merchants":       true,
     "shuffle_frog_song_rupees":                true,
     "shuffle_scrubs":                          "low",

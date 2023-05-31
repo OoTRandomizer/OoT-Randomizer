@@ -23,7 +23,7 @@
     "shuffle_ocarinas": false,
     "shuffle_child_trade": [],
     "shuffle_gerudo_card": false,
-    "shuffle_beans": false,
+    "shuffle_beans": "off",
     "shuffle_mapcompass": "startwith",
     "shuffle_smallkeys": "dungeon",
     "shuffle_bosskeys": "dungeon",
