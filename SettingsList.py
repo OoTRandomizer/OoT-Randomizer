@@ -5223,11 +5223,13 @@ setting_infos = [
             'double':    'Double',
             'quadruple': 'Quadruple',
             'ohko':      'OHKO',
+            'nhko':      'NHKO',
         },
         gui_tooltip    = '''\
             Changes the amount of damage taken.
 
             'OHKO': Link dies in one hit.
+            'NHKO': Link dies.
         ''',
         shared         = True,
     ),
@@ -5311,9 +5313,6 @@ setting_infos = [
         ''',
         shared         = True,
     ),
-
-
-
     Combobox(
         name           = 'item_pool_value',
         gui_text       = 'Item Pool',

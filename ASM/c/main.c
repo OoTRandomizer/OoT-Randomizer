@@ -21,6 +21,8 @@
 #include "scene.h"
 #include "music.h"
 
+extern uint8_t CFG_DAMAGE_MULTIPLYER;
+
 void Gameplay_InitSkybox(z64_game_t* globalCtx, int16_t skyboxId);
 
 void c_init() {
@@ -40,6 +42,9 @@ void before_game_state_update() {
     update_hud_colors();
     process_extern_ctxt();
     manage_music_changes();
+    if (CFG_DAMAGE_MULTIPLYER == 4) {
+        z64_file.energy = 0;
+    }
 }
 
 void after_game_state_update() {
