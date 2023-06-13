@@ -2,24 +2,26 @@
 # With python3.10, you can instead run pytest Unittest.py
 # See `python -m unittest -h` or `pytest -h` for more options.
 
-from collections import Counter, defaultdict
+from __future__ import annotations
 import json
 import logging
 import os
 import random
 import re
 import unittest
+from collections import Counter, defaultdict
+from typing import Literal, Optional, Any, overload
 
 from EntranceShuffle import EntranceShuffleError
 from Fill import ShuffleError
-from Hints import HintArea
-from Hints import HintArea, buildMiscItemHints
+from Hints import HintArea, build_misc_item_hints
 from Item import ItemInfo
 from ItemPool import remove_junk_items, remove_junk_ludicrous_items, ludicrous_items_base, ludicrous_items_extended, trade_items, ludicrous_exclusions
 from LocationList import location_is_viewable
 from Main import main, resolve_settings, build_world_graphs
 from Messages import Message
 from Settings import Settings, get_preset_files
+from Spoiler import Spoiler
 
 test_dir = os.path.join(os.path.dirname(__file__), 'tests')
 output_dir = os.path.join(test_dir, 'Output')
@@ -48,10 +50,10 @@ bottles = {name for name, item in ItemInfo.items.items() if item.special.get('bo
 junk = set(remove_junk_items)
 shop_items = {i for i, nfo in ItemInfo.items.items() if nfo.type == 'Shop'}
 ludicrous_junk = set(remove_junk_ludicrous_items)
-ludicrous_set = set(ludicrous_items_base) | set(ludicrous_items_extended) | ludicrous_junk | set(trade_items) | set(bottles) | set(ludicrous_exclusions) | set(['Bottle with Big Poe']) | shop_items
+ludicrous_set = set(ludicrous_items_base) | set(ludicrous_items_extended) | ludicrous_junk | set(trade_items) | set(bottles) | set(ludicrous_exclusions) | {'Bottle with Big Poe'} | shop_items
 
 
-def make_settings_for_test(settings_dict, seed=None, outfilename=None, strict=True):
+def make_settings_for_test(settings_dict: dict[str, Any], seed: Optional[str] = None, outfilename: str = '', strict: bool = True) -> Settings:
     # Some consistent settings for testability
     settings_dict.update({
         'create_patch_file': False,
@@ -67,16 +69,15 @@ def make_settings_for_test(settings_dict, seed=None, outfilename=None, strict=Tr
     return Settings(settings_dict, strict=strict)
 
 
-def load_settings(settings_file, seed=None, filename=None):
+def load_settings(settings_file: dict[str, Any] | str, seed: Optional[str] = None, filename: Optional[str] = None) -> Settings:
     if isinstance(settings_file, dict):  # Check if settings_file is a distribution file settings dict
-        try:
-            j = settings_file
-            j.update({
-                'enable_distribution_file': True,
-                'distribution_file': os.path.join(test_dir, 'plando', filename + '.json')
-            })
-        except TypeError:
+        if filename is None:
             raise RuntimeError("Running test with in memory file but did not supply a filename for output file.")
+        j = settings_file
+        j.update({
+            'enable_distribution_file': True,
+            'distribution_file': os.path.join(test_dir, 'plando', filename + '.json')
+        })
     else:
         sfile = os.path.join(test_dir, settings_file)
         filename = os.path.splitext(settings_file)[0]
@@ -85,12 +86,22 @@ def load_settings(settings_file, seed=None, filename=None):
     return make_settings_for_test(j, seed=seed, outfilename=filename)
 
 
-def load_spoiler(json_file):
+def load_spoiler(json_file: str) -> Any:
     with open(json_file) as f:
         return json.load(f)
 
 
-def generate_with_plandomizer(filename, live_copy=False, max_attempts=10):
+@overload
+def generate_with_plandomizer(filename: str, live_copy: Literal[False] = False, max_attempts: int = 10) -> tuple[dict[str, Any], dict[str, Any]]:
+    pass
+
+
+@overload
+def generate_with_plandomizer(filename: str, live_copy: Literal[True], max_attempts: int = 10) -> tuple[dict[str, Any], Spoiler]:
+    pass
+
+
+def generate_with_plandomizer(filename: str, live_copy: bool = False, max_attempts: int = 10) -> tuple[dict[str, Any], Spoiler | dict[str, Any]]:
     distribution_file = load_spoiler(os.path.join(test_dir, 'plando', filename + '.json'))
     try:
         settings = load_settings(distribution_file['settings'], seed='TESTTESTTEST', filename=filename)
@@ -109,11 +120,11 @@ def generate_with_plandomizer(filename, live_copy=False, max_attempts=10):
         })
     spoiler = main(settings, max_attempts=max_attempts)
     if not live_copy:
-        spoiler = load_spoiler('%s_Spoiler.json' % settings.output_file)
+        spoiler = load_spoiler(f'{settings.output_file}_Spoiler.json')
     return distribution_file, spoiler
 
 
-def get_actual_pool(spoiler):
+def get_actual_pool(spoiler: dict[str, Any]) -> dict[str, int]:
     """Retrieves the actual item pool based on items placed in the spoiler log.
 
     :param spoiler: Spoiler log output from generator
@@ -192,7 +203,7 @@ class TestPlandomizer(unittest.TestCase):
 
     def test_rom_patching(self):
         # This makes sure there are no crashes while patching.
-        if not os.path.exists('./ZOOTDEC.z64'):
+        if not os.path.isfile('./ZOOTDEC.z64'):
             self.skipTest("Base ROM file not available.")
         filename = "plando-ammo-max-out-of-bounds"
         logic_rules_settings = ['glitchless', 'glitched', 'none']
@@ -363,7 +374,7 @@ class TestPlandomizer(unittest.TestCase):
             distribution_file, spoiler = generate_with_plandomizer(filename)
             pool_set = {i for i, c in spoiler['item_pool'].items()}
             self.assertEqual(
-                set(['Rupees (5)']),
+                {'Rupees (5)'},
                 pool_set - ludicrous_set,
                 'Ludicrous pool missing forced location junk items')
 
@@ -545,7 +556,7 @@ class TestHints(unittest.TestCase):
         self.assertIn('Hyrule Castle', woth)
 
     def test_ganondorf(self):
-        if not os.path.exists('./ZOOTDEC.z64'):
+        if not os.path.isfile('./ZOOTDEC.z64'):
             self.skipTest("Base ROM file not available.")
         filenames = [
             "light-arrows-1",
@@ -613,11 +624,11 @@ class TestHints(unittest.TestCase):
         _, spoiler = generate_with_plandomizer(filename, live_copy=True)
         world = spoiler.worlds[0]
         location = spoiler.worlds[0].misc_hint_item_locations["ganondorf"]
-        area = HintArea.at(location, use_alt_hint=True).text(world.settings.clearer_hints, world=None if location.world.id == world.id else location.world.id + 1)
+        area = HintArea.at(location, use_alt_hint=True).text(world.settings.clearer_hints, world=None if not location.world or location.world.id == world.id else location.world.id + 1)
         self.assertEqual(area, "#Ganondorf's Chamber#")
         # Build a test message with the same ID as the ganondorf hint (0x70CC)
         messages = [Message("Test", 0, 0x70CC, 0,0,0)]
-        buildMiscItemHints(spoiler.worlds[0], messages)
+        build_misc_item_hints(spoiler.worlds[0], messages)
         for message in messages:
             if(message.id == 0x70CC): # Ganondorf hint message
                 self.assertTrue("thosepotsoverthere" in message.text.replace('\n', '').replace(' ', ''))
@@ -625,7 +636,7 @@ class TestHints(unittest.TestCase):
     def test_blue_fire_arrows(self):
         # Blue Fire Arrows should be WotH and in the item pool
         _, spoiler = generate_with_plandomizer("plando-blue-fire-arrows-hints")
-        woth = list(spoiler[':woth_locations'].values())
+        woth = [x['item'] if isinstance(x, dict) else x for x in spoiler[':woth_locations'].values()]
         self.assertIn('Blue Fire Arrows', woth)
 
 
@@ -838,7 +849,7 @@ class TestValidSpoilers(unittest.TestCase):
                 except Exception as e:
                     # output the settings file in case of any failure
                     with open(settings_file, 'w') as f:
-                        d = {k: settings.__dict__[k] for k in out_keys}
+                        d = {k: settings.settings_dict[k] for k in out_keys}
                         json.dump(d, f, indent=0)
                     logging.getLogger('').exception(f'Failed to generate with these settings:\n{settings.get_settings_display()}\n')
                     raise

@@ -9,10 +9,10 @@ on:
 jobs:
   test_minimum_python:
     name: Unit Tests - Python ${{ matrix.python-version }}
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: ["3.6"]
+        python-version: ["3.8"]
 
     steps:
       - uses: actions/checkout@v3

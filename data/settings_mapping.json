@@ -289,7 +289,7 @@
           "col_span": 2,
           "row_span": [3,3,3],
           "settings": [
-            "starting_items"
+            "starting_inventory"
           ]
         },
         {

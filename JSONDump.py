@@ -1,38 +1,47 @@
+from __future__ import annotations
 import json
-
+from collections.abc import Sequence
 from functools import reduce
+from typing import Optional
 
 INDENT = '  '
 
+
 class CollapseList(list):
     pass
+
+
 class CollapseDict(dict):
     pass
+
+
 class AlignedDict(dict):
-    def __init__(self, src_dict, depth):
+    def __init__(self, src_dict: dict, depth: int) -> None:
         self.depth = depth - 1
         super().__init__(src_dict)
+
+
 class SortedDict(dict):
     pass
 
 
-def is_scalar(value):
+def is_scalar(value) -> bool:
     return not is_list(value) and not is_dict(value)
 
 
-def is_list(value):
+def is_list(value) -> bool:
     return isinstance(value, list) or isinstance(value, tuple)
 
 
-def is_dict(value):
+def is_dict(value) -> bool:
     return isinstance(value, dict)
 
 
-def dump_scalar(obj, ensure_ascii=False):
+def dump_scalar(obj, ensure_ascii: bool = False) -> str:
     return json.dumps(obj, ensure_ascii=ensure_ascii)
 
 
-def dump_list(obj, current_indent='', ensure_ascii=False):
+def dump_list(obj: list, current_indent: str = '', ensure_ascii: bool = False) -> str:
     entries = [dump_obj(value, current_indent + INDENT, ensure_ascii=ensure_ascii) for value in obj]
 
     if len(entries) == 0:
@@ -58,7 +67,7 @@ def dump_list(obj, current_indent='', ensure_ascii=False):
     return output
 
 
-def get_keys(obj, depth):
+def get_keys(obj: AlignedDict, depth: int):
     if depth == 0:
         yield from obj.keys()
     else:
@@ -66,7 +75,7 @@ def get_keys(obj, depth):
             yield from get_keys(value, depth - 1)
 
 
-def dump_dict(obj, current_indent='', sub_width=None, ensure_ascii=False):
+def dump_dict(obj: dict, current_indent: str = '', sub_width: Optional[Sequence[int, int]] = None, ensure_ascii: bool = False) -> str:
     entries = []
 
     key_width = None
@@ -113,7 +122,7 @@ def dump_dict(obj, current_indent='', sub_width=None, ensure_ascii=False):
     return output
 
 
-def dump_obj(obj, current_indent='', sub_width=None, ensure_ascii=False):
+def dump_obj(obj, current_indent: str = '', sub_width: Optional[Sequence[int, int]] = None, ensure_ascii: bool = False) -> str:
     if is_list(obj):
         return dump_list(obj, current_indent, ensure_ascii)
     elif is_dict(obj):

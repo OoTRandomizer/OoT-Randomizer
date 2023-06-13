@@ -9,7 +9,7 @@
         "shuffle_song_items":                      "dungeon",
         "empty_dungeons_mode":                     "count",
         "empty_dungeons_count":                    4,
-        "starting_items": [
+        "starting_inventory": [
           "zeldas_letter"
         ]
     }

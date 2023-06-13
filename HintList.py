@@ -1,4 +1,10 @@
+from __future__ import annotations
 import random
+from collections.abc import Callable, Collection
+from typing import TYPE_CHECKING, Optional, Any
+
+if TYPE_CHECKING:
+    from World import World
 
 #   Abbreviations
 #       DMC     Death Mountain Crater
@@ -20,49 +26,48 @@ import random
 #       ZF      Zora's Fountain
 #       ZR      Zora's River
 
-class Hint(object):
-    name = ""
-    text = ""
-    type = []
 
-    def __init__(self, name, text, type, choice=None):
-        self.name = name
-        self.type = [type] if not isinstance(type, list) else type
+class Hint:
+    def __init__(self, name: str, text: str | list[str], hint_type: str | list[str], choice: Optional[int] = None) -> None:
+        self.name: str = name
+        self.type: list[str] = [hint_type] if not isinstance(hint_type, list) else hint_type
 
+        self.text: str
         if isinstance(text, str):
             self.text = text
         else:
-            if choice == None:
+            if choice is None:
                 self.text = random.choice(text)
             else:
                 self.text = text[choice]
 
-class Multi(object):
-    name = ""
-    locations = []
 
-    def __init__(self, name, locations):
-        self.name = name
-        self.locations = locations
+class Multi:
+    def __init__(self, name: str, locations: list[str]) -> None:
+        self.name: str = name
+        self.locations: list[str] = locations
 
-def getHint(name, clearer_hint=False):
-    textOptions, clearText, type = hintTable[name]
+
+def get_hint(name: str, clearer_hint: bool = False) -> Hint:
+    text_options, clear_text, hint_type = hintTable[name]
     if clearer_hint:
-        if clearText == None:
-            return Hint(name, textOptions, type, 0)
-        return Hint(name, clearText, type)
+        if clear_text is None:
+            return Hint(name, text_options, hint_type, 0)
+        return Hint(name, clear_text, hint_type)
     else:
-        return Hint(name, textOptions, type)
+        return Hint(name, text_options, hint_type)
 
-def getMulti(name):
+
+def get_multi(name: str) -> Multi:
     locations = multiTable[name]
     return Multi(name, locations)
 
-def getHintGroup(group, world):
+
+def get_hint_group(group: str, world: World) -> list[Hint]:
     ret = []
     for name in hintTable:
 
-        hint = getHint(name, world.settings.clearer_hints)
+        hint = get_hint(name, world.settings.clearer_hints)
 
         if hint.name in world.always_hints and group == 'always':
             hint.type = 'always'
@@ -83,7 +88,7 @@ def getHintGroup(group, world):
             if hint.name in world.added_hint_types[group]:
                 hint.type = group
                 type_append = True
-            if nameIsLocation(name, hint.type, world):
+            if name_is_location(name, hint.type, world):
                 location = world.get_location(name)
                 for i in world.item_added_hint_types[group]:
                     if i == location.item.name:
@@ -97,38 +102,39 @@ def getHintGroup(group, world):
             if name in world.hint_type_overrides[group]:
                 type_override = True
         if group in world.item_hint_type_overrides:
-            if nameIsLocation(name, hint.type, world):
+            if name_is_location(name, hint.type, world):
                 location = world.get_location(name)
                 if location.item.name in world.item_hint_type_overrides[group]:
                     type_override = True
             elif name in multiTable.keys():
-                multi = getMulti(name)
+                multi = get_multi(name)
                 for locationName in multi.locations:
-                    if locationName not in hintExclusions(world):
+                    if locationName not in hint_exclusions(world):
                         location = world.get_location(locationName)
                         if location.item.name in world.item_hint_type_overrides[group]:
                             type_override = True
 
-        if group in hint.type and (name not in hintExclusions(world)) and not type_override and (conditional_keep or type_append):
+        if group in hint.type and (name not in hint_exclusions(world)) and not type_override and (conditional_keep or type_append):
             ret.append(hint)
     return ret
 
 
-def getRequiredHints(world):
+def get_required_hints(world: World) -> list[Hint]:
     ret = []
     for name in hintTable:
-        hint = getHint(name)
+        hint = get_hint(name)
         if 'always' in hint.type or hint.name in conditional_always and conditional_always[hint.name](world):
             ret.append(hint)
     return ret
 
+
 # Get the multi hints containing the list of locations for a possible hint upgrade.
-def getUpgradeHintList(world, locations):
+def get_upgrade_hint_list(world: World, locations: list[str]) -> list[Hint]:
     ret = []
     for name in multiTable:
-        if name not in hintExclusions(world):
-            hint = getHint(name, world.settings.clearer_hints)
-            multi = getMulti(name)
+        if name not in hint_exclusions(world):
+            hint = get_hint(name, world.settings.clearer_hints)
+            multi = get_multi(name)
 
             if len(locations) < len(multi.locations) and all(location in multi.locations for location in locations) and (hint.name not in conditional_sometimes.keys() or conditional_sometimes[hint.name](world)):
                 accepted_type = False
@@ -140,7 +146,7 @@ def getUpgradeHintList(world, locations):
                             type_override = True
                     if hint_type in world.item_hint_type_overrides:
                         for locationName in multi.locations:
-                            if locationName not in hintExclusions(world):
+                            if locationName not in hint_exclusions(world):
                                 location = world.get_location(locationName)
                                 if location.item.name in world.item_hint_type_overrides[hint_type]:
                                     type_override = True
@@ -155,8 +161,10 @@ def getUpgradeHintList(world, locations):
                     ret.append(hint)
     return ret
 
+
 # Helpers for conditional always hints
-def stones_required_by_settings(world):
+# TODO: Make these properties of World or Settings.
+def stones_required_by_settings(world: World) -> int:
     stones = 0
     if world.settings.bridge == 'stones' and not world.shuffle_special_dungeon_entrances:
         stones = max(stones, world.settings.bridge_stones)
@@ -174,7 +182,7 @@ def stones_required_by_settings(world):
     return stones
 
 
-def medallions_required_by_settings(world):
+def medallions_required_by_settings(world: World) -> int:
     medallions = 0
     if world.settings.bridge == 'medallions' and not world.shuffle_special_dungeon_entrances:
         medallions = max(medallions, world.settings.bridge_medallions)
@@ -192,7 +200,7 @@ def medallions_required_by_settings(world):
     return medallions
 
 
-def tokens_required_by_settings(world):
+def tokens_required_by_settings(world: World) -> int:
     tokens = 0
     if world.settings.bridge == 'tokens' and not world.shuffle_special_dungeon_entrances:
         tokens = max(tokens, world.settings.bridge_tokens)
@@ -205,7 +213,7 @@ def tokens_required_by_settings(world):
 
 
 # Hints required under certain settings
-conditional_always = {
+conditional_always: dict[str, Callable[[World], bool]] = {
     'Market 10 Big Poes':           lambda world: world.settings.big_poe_count > 3,
     'Deku Theater Mask of Truth':   lambda world: not world.settings.complete_mask_quest,
     'Song from Ocarina of Time':    lambda world: stones_required_by_settings(world) < 2,
@@ -220,7 +228,7 @@ conditional_always = {
 }
 
 # Entrance hints required under certain settings
-conditional_entrance_always = {
+conditional_entrance_always: dict[str, Callable[[World], bool]] = {
     'Ganons Castle Grounds -> Ganons Castle Lobby': lambda world: (world.settings.bridge != 'open'
         and (world.settings.bridge != 'stones' or world.settings.bridge_stones > 1)
         and (world.settings.bridge != 'medallions' or world.settings.bridge_medallions > 1)
@@ -230,14 +238,14 @@ conditional_entrance_always = {
 }
 
 # Dual hints required under certain settings
-conditional_dual_always = {
+conditional_dual_always: dict[str, Callable[[World], bool]] = {
     'HF Ocarina of Time Retrieval': lambda world: stones_required_by_settings(world) < 2,
     'Deku Theater Rewards':         lambda world: not world.settings.complete_mask_quest,
     'ZR Frogs Rewards':             lambda world: not world.settings.shuffle_frog_song_rupees and 'frogs2' not in world.settings.misc_hints,
 }
 
 # Some sometimes, dual, and entrance hints should only be enabled under certain settings
-conditional_sometimes = {
+conditional_sometimes: dict[str, Callable[[World], bool]] = {
     # Conditional sometimes hints
     'HC Great Fairy Reward':                    lambda world: world.settings.shuffle_interior_entrances == 'off',
     'OGC Great Fairy Reward':                   lambda world: world.settings.shuffle_interior_entrances == 'off',
@@ -284,7 +292,7 @@ conditional_sometimes = {
 #   \u00A9      Down arrow
 #   \u00AA      Joystick
 
-hintTable = {
+hintTable: dict[str, tuple[list[str] | str, Optional[str], str | list[str]]] = {
     'Kokiri Emerald':                                           (["a tree's farewell", "the Spiritual Stone of the Forest"], "the Kokiri Emerald", 'item'),
     'Goron Ruby':                                               (["the Gorons' hidden treasure", "the Spiritual Stone of Fire"], "the Goron Ruby", 'item'),
     'Zora Sapphire':                                            (["an engagement ring", "the Spiritual Stone of Water"], "the Zora Sapphire", 'item'),
@@ -1429,7 +1437,7 @@ hintTable = {
     'ZD Storms Grotto':                                         ("a small #Fairy Fountain#", None, 'region'),
     'GF Storms Grotto':                                         ("a small #Fairy Fountain#", None, 'region'),
 
-    # Junk hints must satisfy all of the following conditions:
+    # Junk hints must satisfy all the following conditions:
     # - They aren't inappropriate.
     # - They aren't absurdly long copy pastas.
     # - They aren't quotes or references that are simply not funny when out-of-context.
@@ -1717,7 +1725,7 @@ hintTable = {
 
 # Table containing the groups of locations for the multi hints (dual, etc.)
 # The is used in order to add the locations to the checked list
-multiTable = {
+multiTable: dict[str, list[str]] = {
     'Deku Theater Rewards':                                     ['Deku Theater Skull Mask', 'Deku Theater Mask of Truth'],
     'HF Ocarina of Time Retrieval':                             ['HF Ocarina of Time Item', 'Song from Ocarina of Time'],
     'HF Valley Grotto':                                         ['HF Cow Grotto Cow', 'HF GS Cow Grotto'],
@@ -1765,7 +1773,8 @@ multiTable = {
     'Ganons Castle Spirit Trial Chests':                        ['Ganons Castle Spirit Trial Crystal Switch Chest', 'Ganons Castle Spirit Trial Invisible Chest'],
 }
 
-misc_item_hint_table = {
+# TODO: Make these a type of some sort instead of a dict.
+misc_item_hint_table: dict[str, dict[str, Any]] = {
     'dampe_diary': {
         'id': 0x5003,
         'hint_location': 'Dampe Diary Hint',
@@ -1794,7 +1803,7 @@ misc_item_hint_table = {
     },
 }
 
-misc_location_hint_table = {
+misc_location_hint_table: dict[str, dict[str, Any]] = {
     '10_skulltulas': {
         'id': 0x9004,
         'hint_location': '10 Skulltulas Reward Hint',
@@ -1842,7 +1851,7 @@ misc_location_hint_table = {
 # Separate table for goal names to avoid duplicates in the hint table.
 # Link's Pocket will always be an empty goal, but it's included here to
 # prevent key errors during the dungeon reward lookup.
-goalTable = {
+goalTable: dict[str, tuple[str, str, str]] = {
     'Queen Gohma':                                              ("path to the #Spider#", "path to #Queen Gohma#", "Green"),
     'King Dodongo':                                             ("path to the #Dinosaur#", "path to #King Dodongo#", "Red"),
     'Barinade':                                                 ("path to the #Tentacle#", "path to #Barinade#", "Blue"),
@@ -1856,23 +1865,25 @@ goalTable = {
 
 
 # This specifies which hints will never appear due to either having known or known useless contents or due to the locations not existing.
-def hintExclusions(world, clear_cache=False):
-    if not clear_cache and world.id in hintExclusions.exclusions:
-        return hintExclusions.exclusions[world.id]
+def hint_exclusions(world: World, clear_cache: bool = False) -> list[str]:
+    exclusions: dict[int, list[str]] = hint_exclusions.exclusions
 
-    hintExclusions.exclusions[world.id] = []
-    hintExclusions.exclusions[world.id].extend(world.settings.disabled_locations)
+    if not clear_cache and world.id in exclusions:
+        return exclusions[world.id]
+
+    exclusions[world.id] = []
+    exclusions[world.id].extend(world.settings.disabled_locations)
 
     for location in world.get_locations():
         if location.locked:
-            hintExclusions.exclusions[world.id].append(location.name)
+            exclusions[world.id].append(location.name)
 
     world_location_names = [
         location.name for location in world.get_locations()]
 
     location_hints = []
     for name in hintTable:
-        hint = getHint(name, world.settings.clearer_hints)
+        hint = get_hint(name, world.settings.clearer_hints)
         if any(item in hint.type for item in
                 ['always',
                  'dual_always',
@@ -1888,31 +1899,33 @@ def hintExclusions(world, clear_cache=False):
         if any(item in hint.type for item in
                 ['dual',
                  'dual_always']):
-            multi = getMulti(hint.name)
+            multi = get_multi(hint.name)
             exclude_hint = False
             for location in multi.locations:
                 if location not in world_location_names or world.get_location(location).locked:
                     exclude_hint = True
             if exclude_hint:
-                hintExclusions.exclusions[world.id].append(hint.name)
+                exclusions[world.id].append(hint.name)
         else:
-            if hint.name not in world_location_names and hint.name not in hintExclusions.exclusions[world.id]:
-                hintExclusions.exclusions[world.id].append(hint.name)
-    return hintExclusions.exclusions[world.id]
+            if hint.name not in world_location_names and hint.name not in exclusions[world.id]:
+                exclusions[world.id].append(hint.name)
+    return exclusions[world.id]
 
 
-hintExclusions.exclusions = {}
+hint_exclusions.exclusions = {}
 
 
-def nameIsLocation(name, hint_type, world):
+def name_is_location(name: str, hint_type: str | Collection[str], world: World) -> bool:
     if isinstance(hint_type, (list, tuple)):
         for htype in hint_type:
-            if htype in ['sometimes', 'song', 'overworld', 'dungeon', 'always', 'exclude'] and name not in hintExclusions(world):
+            if htype in ['sometimes', 'song', 'overworld', 'dungeon', 'always', 'exclude'] and name not in hint_exclusions(
+                    world):
                 return True
-    elif hint_type in ['sometimes', 'song', 'overworld', 'dungeon', 'always', 'exclude'] and name not in hintExclusions(world):
+    elif hint_type in ['sometimes', 'song', 'overworld', 'dungeon', 'always', 'exclude'] and name not in hint_exclusions(
+            world):
         return True
     return False
 
 
-def clearHintExclusionCache():
-    hintExclusions.exclusions.clear()
+def clear_hint_exclusion_cache() -> None:
+    hint_exclusions.exclusions.clear()

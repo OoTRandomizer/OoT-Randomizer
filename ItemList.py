@@ -1,8 +1,11 @@
+from __future__ import annotations
+from typing import Optional, Any
+
 # Progressive: True  -> Advancement
 #              False -> Priority
 #              None  -> Normal
 #    Item:                                            (type, Progressive, GetItemID, special),
-item_table = {
+item_table: dict[str, tuple[str, Optional[bool], Optional[int], Optional[dict[str, Any]]]] = {
     'Bombs (5)':                                       ('Item',     None,  0x0001, {'junk': 8}),
     'Deku Nuts (5)':                                   ('Item',     None,  0x0002, {'junk': 5}),
     'Bombchus (10)':                                   ('Item',     True,  0x0003, None),

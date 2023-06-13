@@ -1,10 +1,18 @@
+from __future__ import annotations
 import os
 import random
 from enum import IntEnum
+from typing import TYPE_CHECKING
+
 from Utils import data_path
 
+if TYPE_CHECKING:
+    from Cosmetics import CosmeticsLog
+    from Rom import Rom
+    from Settings import Settings
 
-def get_model_choices(age):
+
+def get_model_choices(age: int) -> list[str]:
     names = ["Default"]
     path = data_path("Models/Adult")
     if age == 1:
@@ -29,14 +37,13 @@ class ModelDefinitionError(ModelError):
 
 # Used for writer model pointers to the rom in place of the vanilla pointers
 class ModelPointerWriter:
+    def __init__(self, rom: Rom) -> None:
+        self.rom: Rom = rom
+        self.offset: int = 0
+        self.advance: int = 4
+        self.base: int = CODE_START
 
-    def __init__(self, rom):
-        self.rom = rom
-        self.offset = 0
-        self.advance = 4
-        self.SetBase('Code')
-
-    def SetBase(self, base):
+    def SetBase(self, base: str) -> None:
         if base == 'Code':
             self.base = CODE_START
         elif base == 'Player':
@@ -54,30 +61,30 @@ class ModelPointerWriter:
         elif base == 'RunningMan':
             self.base = RUNNING_MAN_START
 
-    def GoTo(self, dest):
+    def GoTo(self, dest: int) -> None:
         self.offset = dest
 
-    def SetAdvance(self, adv):
+    def SetAdvance(self, adv: int) -> None:
         self.advance = adv
 
-    def GetAddress(self):
+    def GetAddress(self) -> int:
         return self.base + self.offset
 
-    def WriteModelData(self, data):
+    def WriteModelData(self, data: int) -> None:
         self.rom.write_bytes(self.GetAddress(), data.to_bytes(4, 'big'))
         self.offset += self.advance
 
-    def WriteModelData16(self, data):
+    def WriteModelData16(self, data: int) -> None:
         self.rom.write_bytes(self.GetAddress(), data.to_bytes(2, 'big'))
         self.offset += 2
 
-    def WriteModelDataHi(self, data):
+    def WriteModelDataHi(self, data: int) -> None:
         bytes = data.to_bytes(4, 'big')
         for i in range(2):
             self.rom.write_byte(self.GetAddress(), bytes[i])
             self.offset += 1
 
-    def WriteModelDataLo(self, data):
+    def WriteModelDataLo(self, data: int) -> None:
         bytes = data.to_bytes(4, 'big')
         for i in range(2, 4):
             self.rom.write_byte(self.GetAddress(), bytes[i])
@@ -86,7 +93,7 @@ class ModelPointerWriter:
 
 # Either return the starting index of the requested data (when start == 0)
 # or the offset of the element in the footer, if it exists (start > 0)
-def scan(bytes, data, start=0):
+def scan(bytes: bytearray, data: bytearray | str, start: int = 0) -> int:
     databytes = data
     # If a string was passed, encode string as bytes
     if isinstance(data, str):
@@ -174,20 +181,20 @@ def scan(bytes, data, start=0):
 
 
 # Follows pointers from the LUT until finding the actual DList, and returns the offset of the DList
-def unwrap(zobj, address):
+def unwrap(zobj: bytearray, address: int) -> int:
     # An entry in the LUT will look something like 0xDE 01 0000 06014050
     # Only the last 3 bytes should be necessary.
     data = int.from_bytes(zobj[address+5:address+8], 'big')
     # If the data here points to another entry in the LUT, keep searching until
     # an address outside the table is found.
-    while LUT_START <= data and data <= LUT_END:
+    while LUT_START <= data <= LUT_END:
         address = data
         data = int.from_bytes(zobj[address+5:address+8], 'big')
     return address
 
 
 # Used to overwrite pointers in the displaylist with new ones
-def WriteDLPointer(dl, index, data):
+def WriteDLPointer(dl: list[int], index: int, data: int) -> None:
     bytes = data.to_bytes(4, 'big')
     for i in range(4):
         dl[index + i] = bytes[i]
@@ -195,7 +202,8 @@ def WriteDLPointer(dl, index, data):
 
 # An extensive function which loads pieces from the vanilla Link model to add to the user-provided zobj
 # Based on https://github.com/hylian-modding/ML64-Z64Lib/blob/master/cores/Z64Lib/API/zzoptimize.ts function optimize()
-def LoadVanilla(rom, missing, rebase, linkstart, linksize, pieces, skips):
+def LoadVanilla(rom: Rom, missing: list[str], rebase: int, linkstart: int, linksize: int,
+                pieces: dict[str, tuple[Offsets, int]], skips: dict[str, list[tuple[int, int]]]) -> tuple[list[int], dict[str, int]]:
     # Get vanilla "zobj" of Link's model
     vanillaData = []
     for i in range(linksize):
@@ -299,7 +307,7 @@ def LoadVanilla(rom, missing, rebase, linkstart, linksize, pieces, skips):
                         # Branch to another texture
                         if segJ == segment:
                             if vanillaData[j+1] == 0x0:
-                                returnStack.push(j)
+                                returnStack.append(j)
                             j = loJ & 0x00FFFFFF
                     elif opJ == 0xF0:
                         # F0: G_LOADTLUT
@@ -381,19 +389,19 @@ def LoadVanilla(rom, missing, rebase, linkstart, linksize, pieces, skips):
                     dlEntry = oldDL2New[lo & 0x00FFFFFF]
                     WriteDLPointer(dl, i + 4, BASE_OFFSET + dlEntry + rebase)
         vanillaZobj.extend(dl)
-        # Pad to nearest multiple of 16
+        # Pad to the nearest multiple of 16
         while len(vanillaZobj) % 0x10 != 0:
             vanillaZobj.append(0x00)
     # Now find the relation of items to new offsets
     DLOffsets = {}
     for item in missing:
         DLOffsets[item] = oldDL2New[pieces[item][1]]
-    return (vanillaZobj, DLOffsets)
+    return vanillaZobj, DLOffsets
 
 
 # Finds the address of the model's hierarchy so we can write the hierarchy pointer
 # Based on https://github.com/hylian-modding/Z64Online/blob/master/src/Z64Online/common/cosmetics/UniversalAliasTable.ts function findHierarchy()
-def FindHierarchy(zobj, agestr):
+def FindHierarchy(zobj: bytearray, agestr: str) -> int:
     # Scan until we find a segmented pointer which is 0x0C or 0x10 more than
     # the preceeding data and loop until something that's not a segmented pointer is found
     # then return the position of the last segemented pointer.
@@ -416,14 +424,15 @@ def FindHierarchy(zobj, agestr):
     raise ModelDefinitionError("No hierarchy found in " + agestr + " model- Did you check \"Link hierarchy format\" in zzconvert?")
 
 
-TOLERANCE = 0x100
+TOLERANCE: int = 0x100
 
-def CheckDiff(limb, skeleton):
+
+def CheckDiff(limb: int, skeleton: int) -> bool:
     # The normal difference
     normalDiff = abs(limb - skeleton)
     # Underflow/overflow diff
     # For example, if limb is 0xFFFF and skeleton is 0x0001, then they are technically only 2 apart
-    # So subtract 0xFFFF from the absolute value of the difference to get the true differene in this case
+    # So subtract 0xFFFF from the absolute value of the difference to get the true difference in this case
     # Necessary since values are signed, but not represented as signed here
     flowDiff = abs(normalDiff - 0xFFFF)
     # Take the minimum of the two differences
@@ -431,7 +440,8 @@ def CheckDiff(limb, skeleton):
     # Return true if diff is too big
     return diff > TOLERANCE
 
-def CorrectSkeleton(zobj, skeleton, agestr):
+
+def CorrectSkeleton(zobj: bytearray, skeleton: list[list[int]], agestr: str) -> bool:
     # Get the hierarchy pointer
     hierarchy = FindHierarchy(zobj, agestr)
     # Get what the hierarchy pointer points to (pointer to limb 0)
@@ -474,7 +484,7 @@ def CorrectSkeleton(zobj, skeleton, agestr):
 
 
 # Loads model from file and processes it by adding vanilla pieces and setting up the LUT if necessary.
-def LoadModel(rom, model, age):
+def LoadModel(rom: Rom, model: str, age: int) -> int:
     # age 0 = adult, 1 = child
     linkstart = ADULT_START
     linksize = ADULT_SIZE
@@ -594,10 +604,10 @@ def LoadModel(rom, model, age):
 
 
 # Write in the adult model and repoint references to it
-def patch_model_adult(rom, settings, log):
+def patch_model_adult(rom: Rom, settings: Settings, log: CosmeticsLog) -> None:
     # Get model filepath
     model = settings.model_adult_filepicker
-    # Default to filepicker if non empty
+    # Default to filepicker if non-empty
     if len(model) == 0:
         model = settings.model_adult
         if settings.model_adult == "Random":
@@ -611,7 +621,7 @@ def patch_model_adult(rom, settings, log):
 
     # Load and process model
     dfAddress = LoadModel(rom, model, 0)
-    dfAddress = dfAddress | 0x06000000 # Add segment to DF address
+    dfAddress = dfAddress | 0x06000000  # Add segment to DF address
 
     # Write adult Link pointer data
     writer = ModelPointerWriter(rom)
@@ -706,8 +716,8 @@ def patch_model_adult(rom, settings, log):
     writer.GoTo(0xE6B64)
     writer.SetAdvance(4)
     writer.WriteModelData(Offsets.ADULT_LINK_LUT_DL_BOW_STRING)
-    writer.WriteModelData(0x00000000) # string anchor x: 0.0
-    writer.WriteModelData(0xC3B43333) # string anchor y: -360.4
+    writer.WriteModelData(0x00000000)  # string anchor x: 0.0
+    writer.WriteModelData(0xC3B43333)  # string anchor y: -360.4
 
     writer.GoTo(0x69112)
     writer.WriteModelDataHi(Offsets.ADULT_LINK_LUT_DL_UPGRADE_LFOREARM)
@@ -762,14 +772,14 @@ def patch_model_adult(rom, settings, log):
 
     writer.SetBase('Code')
     writer.GoTo(0xE65A0)
-    writer.WriteModelData(ADULT_HIERARCHY) # Hierarchy pointer
+    writer.WriteModelData(ADULT_HIERARCHY)  # Hierarchy pointer
 
 
 # Write in the child model and repoint references to it
-def patch_model_child(rom, settings, log):
+def patch_model_child(rom: Rom, settings: Settings, log: CosmeticsLog) -> None:
     # Get model filepath
     model = settings.model_child_filepicker
-    # Default to filepicker if non empty
+    # Default to filepicker if non-empty
     if len(model) == 0:
         model = settings.model_child
         if settings.model_child == "Random":
@@ -783,7 +793,7 @@ def patch_model_child(rom, settings, log):
 
     # Load and process model
     dfAddress = LoadModel(rom, model, 1)
-    dfAddress = dfAddress | 0x06000000 # Add segment to DF address
+    dfAddress = dfAddress | 0x06000000  # Add segment to DF address
 
     # Write child Link pointer data
     writer = ModelPointerWriter(rom)
@@ -871,8 +881,8 @@ def patch_model_child(rom, settings, log):
     writer.GoTo(0xE6B74)
     writer.SetAdvance(4)
     writer.WriteModelData(Offsets.CHILD_LINK_LUT_DL_SLINGSHOT_STRING)
-    writer.WriteModelData(0x44178000) # string anchor x: 606.0
-    writer.WriteModelData(0x436C0000) # string anchor y: 236.0
+    writer.WriteModelData(0x44178000)  # string anchor x: 606.0
+    writer.WriteModelData(0x436C0000)  # string anchor y: 236.0
 
     writer.GoTo(0x6922E)
     writer.WriteModelDataHi(Offsets.CHILD_LINK_LUT_DL_GORON_BRACELET)
@@ -927,7 +937,7 @@ def patch_model_child(rom, settings, log):
 
     writer.SetBase('Code')
     writer.GoTo(0xE65A4)
-    writer.WriteModelData(CHILD_HIERARCHY) # Hierarchy pointer
+    writer.WriteModelData(CHILD_HIERARCHY)  # Hierarchy pointer
 
 
 # LUT offsets for adult and child
@@ -1080,10 +1090,10 @@ class Offsets(IntEnum):
 
 
 # Adult model pieces and their offsets, both in the LUT and in vanilla
-AdultPieces = {
+AdultPieces: dict[str, tuple[Offsets, int]] = {
     "Sheath": (Offsets.ADULT_LINK_LUT_DL_SWORD_SHEATH, 0x249D8),
     "FPS.Hookshot": (Offsets.ADULT_LINK_LUT_DL_FPS_HOOKSHOT, 0x2A738),
-    "Hilt.2": (Offsets.ADULT_LINK_LUT_DL_SWORD_HILT, 0x22060), # 0x21F78 + 0xE8, skips blade
+    "Hilt.2": (Offsets.ADULT_LINK_LUT_DL_SWORD_HILT, 0x22060),  # 0x21F78 + 0xE8, skips blade
     "Hilt.3": (Offsets.ADULT_LINK_LUT_DL_LONGSWORD_HILT, 0x238C8),
     "Blade.2": (Offsets.ADULT_LINK_LUT_DL_SWORD_BLADE, 0x21F78),
     "Hookshot.Spike": (Offsets.ADULT_LINK_LUT_DL_HOOKSHOT_HOOK, 0x2B288),
@@ -1104,9 +1114,9 @@ AdultPieces = {
     "Bow.String": (Offsets.ADULT_LINK_LUT_DL_BOW_STRING, 0x2B108),
     "Bow": (Offsets.ADULT_LINK_LUT_DL_BOW, 0x22DA8),
     "Blade.3.Break": (Offsets.ADULT_LINK_LUT_DL_BLADEBREAK, 0x2BA38),
-    "Blade.3": (Offsets.ADULT_LINK_LUT_DL_LONGSWORD_BLADE, 0x23A28), # 0x238C8 + 0x160, skips hilt
+    "Blade.3": (Offsets.ADULT_LINK_LUT_DL_LONGSWORD_BLADE, 0x23A28),  # 0x238C8 + 0x160, skips hilt
     "Bottle": (Offsets.ADULT_LINK_LUT_DL_BOTTLE, 0x2AD58),
-    "Broken.Blade.3": (Offsets.ADULT_LINK_LUT_DL_LONGSWORD_BROKEN, 0x23EB0), # 0x23D50 + 0x160, skips hilt
+    "Broken.Blade.3": (Offsets.ADULT_LINK_LUT_DL_LONGSWORD_BROKEN, 0x23EB0),  # 0x23D50 + 0x160, skips hilt
     "Foot.2.L": (Offsets.ADULT_LINK_LUT_DL_BOOT_LIRON, 0x25918),
     "Foot.2.R": (Offsets.ADULT_LINK_LUT_DL_BOOT_RIRON, 0x25A60),
     "Foot.3.L": (Offsets.ADULT_LINK_LUT_DL_BOOT_LHOVER, 0x25BA8),
@@ -1114,7 +1124,7 @@ AdultPieces = {
     "Hammer": (Offsets.ADULT_LINK_LUT_DL_HAMMER, 0x233E0),
     "Hookshot.Aiming.Reticule": (Offsets.ADULT_LINK_LUT_DL_HOOKSHOT_AIM, 0x2CB48),
     "Hookshot.Chain": (Offsets.ADULT_LINK_LUT_DL_HOOKSHOT_CHAIN, 0x2AFF0),
-    "Ocarina.2": (Offsets.ADULT_LINK_LUT_DL_OCARINA_TIME, 0x248D8), # 0x24698 + 0x240, skips hand
+    "Ocarina.2": (Offsets.ADULT_LINK_LUT_DL_OCARINA_TIME, 0x248D8),  # 0x24698 + 0x240, skips hand
     "Shield.2": (Offsets.ADULT_LINK_LUT_DL_SHIELD_HYLIAN, 0x22970),
     "Shield.3": (Offsets.ADULT_LINK_LUT_DL_SHIELD_MIRROR, 0x241C0),
     "Limb 1": (Offsets.ADULT_LINK_LUT_DL_WAIST, 0x35330),
@@ -1140,7 +1150,7 @@ AdultPieces = {
 # Note: Some skips which can be implemented by skipping the beginning portion of the model
 # rather than specifying those indices here, simply have their offset in the table above
 # increased by whatever amount of starting indices would be skipped.
-adultSkips = {
+adultSkips: dict[str, list[tuple[int, int]]] = {
     "FPS.Hookshot":  [(0x2F0, 0x618)],
     "Hilt.2": [(0x1E8, 0x430)],
     "Hilt.3": [(0x160, 0x480)],
@@ -1150,50 +1160,50 @@ adultSkips = {
     "Blade.3": [(0xB8, 0x320)],
     "Broken.Blade.3": [(0xA0, 0x308)],
     "Hammer": [(0x278, 0x4E0)],
-    "Shield.2": [(0x158, 0x2B8), (0x3A8, 0x430)], # Fist is in 2 pieces
+    "Shield.2": [(0x158, 0x2B8), (0x3A8, 0x430)],  # Fist is in 2 pieces
     "Shield.3": [(0x1B8, 0x3E8)],
 }
 
-adultSkeleton = [
-    [0xFFC7, 0x0D31, 0x0000], # Limb 0
-    [0x0000, 0x0000, 0x0000], # Limb 1
-    [0x03B1, 0x0000, 0x0000], # Limb 2
-    [0xFE71, 0x0045, 0xFF07], # Limb 3
-    [0x051A, 0x0000, 0x0000], # Limb 4
-    [0x04E8, 0x0005, 0x000B], # Limb 5
-    [0xFE74, 0x004C, 0x0108], # Limb 6
-    [0x0518, 0x0000, 0x0000], # Limb 7
-    [0x04E9, 0x0006, 0x0003], # Limb 8
-    [0x0000, 0x0015, 0xFFF9], # Limb 9
-    [0x0570, 0xFEFD, 0x0000], # Limb 10
-    [0xFED6, 0xFD44, 0x0000], # Limb 11
-    [0x0000, 0x0000, 0x0000], # Limb 12
-    [0x040F, 0xFF54, 0x02A8], # Limb 13
-    [0x0397, 0x0000, 0x0000], # Limb 14
-    [0x02F2, 0x0000, 0x0000], # Limb 15
-    [0x040F, 0xFF53, 0xFD58], # Limb 16
-    [0x0397, 0x0000, 0x0000], # Limb 17
-    [0x02F2, 0x0000, 0x0000], # Limb 18
-    [0x03D2, 0xFD4C, 0x0156], # Limb 19
-    [0x0000, 0x0000, 0x0000], # Limb 20
+adultSkeleton: list[list[int]] = [
+    [0xFFC7, 0x0D31, 0x0000],  # Limb 0
+    [0x0000, 0x0000, 0x0000],  # Limb 1
+    [0x03B1, 0x0000, 0x0000],  # Limb 2
+    [0xFE71, 0x0045, 0xFF07],  # Limb 3
+    [0x051A, 0x0000, 0x0000],  # Limb 4
+    [0x04E8, 0x0005, 0x000B],  # Limb 5
+    [0xFE74, 0x004C, 0x0108],  # Limb 6
+    [0x0518, 0x0000, 0x0000],  # Limb 7
+    [0x04E9, 0x0006, 0x0003],  # Limb 8
+    [0x0000, 0x0015, 0xFFF9],  # Limb 9
+    [0x0570, 0xFEFD, 0x0000],  # Limb 10
+    [0xFED6, 0xFD44, 0x0000],  # Limb 11
+    [0x0000, 0x0000, 0x0000],  # Limb 12
+    [0x040F, 0xFF54, 0x02A8],  # Limb 13
+    [0x0397, 0x0000, 0x0000],  # Limb 14
+    [0x02F2, 0x0000, 0x0000],  # Limb 15
+    [0x040F, 0xFF53, 0xFD58],  # Limb 16
+    [0x0397, 0x0000, 0x0000],  # Limb 17
+    [0x02F2, 0x0000, 0x0000],  # Limb 18
+    [0x03D2, 0xFD4C, 0x0156],  # Limb 19
+    [0x0000, 0x0000, 0x0000],  # Limb 20
 ]
 
 
-ChildPieces = {
+ChildPieces: dict[str, tuple[Offsets, int]] = {
     "Slingshot.String": (Offsets.CHILD_LINK_LUT_DL_SLINGSHOT_STRING, 0x221A8),
     "Sheath": (Offsets.CHILD_LINK_LUT_DL_SWORD_SHEATH, 0x15408),
-    "Blade.2": (Offsets.CHILD_LINK_LUT_DL_MASTER_SWORD, 0x15698), # 0x15540 + 0x158, skips fist
-    "Blade.1": (Offsets.CHILD_LINK_LUT_DL_SWORD_BLADE, 0x14110), # 0x13F38 + 0x1D8, skips fist and hilt
+    "Blade.2": (Offsets.CHILD_LINK_LUT_DL_MASTER_SWORD, 0x15698),  # 0x15540 + 0x158, skips fist
+    "Blade.1": (Offsets.CHILD_LINK_LUT_DL_SWORD_BLADE, 0x14110),  # 0x13F38 + 0x1D8, skips fist and hilt
     "Boomerang": (Offsets.CHILD_LINK_LUT_DL_BOOMERANG, 0x14660),
     "Fist.L": (Offsets.CHILD_LINK_LUT_DL_LFIST, 0x13E18),
     "Fist.R": (Offsets.CHILD_LINK_LUT_DL_RFIST, 0x14320),
-    "Hilt.1": (Offsets.CHILD_LINK_LUT_DL_SWORD_HILT, 0x14048), # 0x13F38 + 0x110, skips fist
+    "Hilt.1": (Offsets.CHILD_LINK_LUT_DL_SWORD_HILT, 0x14048),  # 0x13F38 + 0x110, skips fist
     "Shield.1": (Offsets.CHILD_LINK_LUT_DL_SHIELD_DEKU, 0x14440),
-    "Slingshot": (Offsets.CHILD_LINK_LUT_DL_SLINGSHOT, 0x15F08), # 0x15DF0 + 0x118, skips fist
+    "Slingshot": (Offsets.CHILD_LINK_LUT_DL_SLINGSHOT, 0x15F08),  # 0x15DF0 + 0x118, skips fist
     "Ocarina.1": (Offsets.CHILD_LINK_LUT_DL_OCARINA_FAIRY, 0x15BA8),
     "Bottle": (Offsets.CHILD_LINK_LUT_DL_BOTTLE, 0x18478),
-    "Ocarina.2": (Offsets.CHILD_LINK_LUT_DL_OCARINA_TIME, 0x15AB8), # 0x15958 + 0x160, skips hand
-    "Bottle.Hand.L": (Offsets.CHILD_LINK_LUT_DL_LHAND_BOTTLE, 0x18478), # Just the bottle, couldn't find one with hand and bottle
+    "Ocarina.2": (Offsets.CHILD_LINK_LUT_DL_OCARINA_TIME, 0x15AB8),  # 0x15958 + 0x160, skips hand
+    "Bottle.Hand.L": (Offsets.CHILD_LINK_LUT_DL_LHAND_BOTTLE, 0x18478),  # Just the bottle, couldn't find one with hand and bottle
     "GoronBracelet": (Offsets.CHILD_LINK_LUT_DL_GORON_BRACELET, 0x16118),
     "Mask.Bunny": (Offsets.CHILD_LINK_LUT_DL_MASK_BUNNY, 0x2CA38),
     "Mask.Skull": (Offsets.CHILD_LINK_LUT_DL_MASK_SKULL, 0x2AD40),
@@ -1205,7 +1215,7 @@ ChildPieces = {
     "Mask.Zora": (Offsets.CHILD_LINK_LUT_DL_MASK_ZORA, 0x2B580),
     "FPS.Forearm.R": (Offsets.CHILD_LINK_LUT_DL_FPS_RIGHT_ARM, 0x18048),
     "DekuStick": (Offsets.CHILD_LINK_LUT_DL_DEKU_STICK, 0x6CC0),
-    "Shield.2": (Offsets.CHILD_LINK_LUT_DL_SHIELD_HYLIAN_BACK, 0x14C30), # 0x14B40 + 0xF0, skips sheath
+    "Shield.2": (Offsets.CHILD_LINK_LUT_DL_SHIELD_HYLIAN_BACK, 0x14C30),  # 0x14B40 + 0xF0, skips sheath
     "Limb 1": (Offsets.CHILD_LINK_LUT_DL_WAIST, 0x202A8),
     "Limb 3": (Offsets.CHILD_LINK_LUT_DL_RTHIGH, 0x204F0),
     "Limb 4": (Offsets.CHILD_LINK_LUT_DL_RSHIN, 0x206E8),
@@ -1226,35 +1236,35 @@ ChildPieces = {
 }
 
 
-childSkips = {
+childSkips: dict[str, list[tuple[int, int]]] = {
     "Boomerang": [(0x140, 0x240)],
     "Hilt.1": [(0xC8, 0x170)],
     "Shield.1": [(0x140, 0x218)],
     "Ocarina.1": [(0x110, 0x240)],
 }
 
-childSkeleton = [
-    [0x0000, 0x0948, 0x0000], # Limb 0
-    [0xFFFC, 0xFF98, 0x0000], # Limb 1
-    [0x025F, 0x0000, 0x0000], # Limb 2
-    [0xFF54, 0x0032, 0xFF42], # Limb 3
-    [0x02B9, 0x0000, 0x0000], # Limb 4
-    [0x0339, 0x0005, 0x000B], # Limb 5
-    [0xFF56, 0x0039, 0x00C0], # Limb 6
-    [0x02B7, 0x0000, 0x0000], # Limb 7
-    [0x0331, 0x0008, 0x0004], # Limb 8
-    [0x0000, 0xFF99, 0xFFF9], # Limb 9
-    [0x03E4, 0xFF37, 0xFFFF], # Limb 10
-    [0xFE93, 0xFD62, 0x0000], # Limb 11
-    [0x0000, 0x0000, 0x0000], # Limb 12
-    [0x02B8, 0xFF51, 0x01D2], # Limb 13
-    [0x0245, 0x0000, 0x0000], # Limb 14
-    [0x0202, 0x0000, 0x0000], # Limb 15
-    [0x02B8, 0xFF51, 0xFE2E], # Limb 16
-    [0x0241, 0x0000, 0x0000], # Limb 17
-    [0x020D, 0x0000, 0x0000], # Limb 18
-    [0x0291, 0xFDF5, 0x016F], # Limb 19
-    [0x0000, 0x0000, 0x0000], # Limb 20
+childSkeleton: list[list[int]] = [
+    [0x0000, 0x0948, 0x0000],  # Limb 0
+    [0xFFFC, 0xFF98, 0x0000],  # Limb 1
+    [0x025F, 0x0000, 0x0000],  # Limb 2
+    [0xFF54, 0x0032, 0xFF42],  # Limb 3
+    [0x02B9, 0x0000, 0x0000],  # Limb 4
+    [0x0339, 0x0005, 0x000B],  # Limb 5
+    [0xFF56, 0x0039, 0x00C0],  # Limb 6
+    [0x02B7, 0x0000, 0x0000],  # Limb 7
+    [0x0331, 0x0008, 0x0004],  # Limb 8
+    [0x0000, 0xFF99, 0xFFF9],  # Limb 9
+    [0x03E4, 0xFF37, 0xFFFF],  # Limb 10
+    [0xFE93, 0xFD62, 0x0000],  # Limb 11
+    [0x0000, 0x0000, 0x0000],  # Limb 12
+    [0x02B8, 0xFF51, 0x01D2],  # Limb 13
+    [0x0245, 0x0000, 0x0000],  # Limb 14
+    [0x0202, 0x0000, 0x0000],  # Limb 15
+    [0x02B8, 0xFF51, 0xFE2E],  # Limb 16
+    [0x0241, 0x0000, 0x0000],  # Limb 17
+    [0x020D, 0x0000, 0x0000],  # Limb 18
+    [0x0291, 0xFDF5, 0x016F],  # Limb 19
+    [0x0000, 0x0000, 0x0000],  # Limb 20
 ]
 
 # Maps old pipeline limb names to new pipeline names
@@ -1279,39 +1289,39 @@ oldToNewPipeline = {
 }
 
 # Misc. constants
-CODE_START          = 0x00A87000
-PLAYER_START        = 0x00BCDB70
-HOOK_START          = 0x00CAD2C0
-SHIELD_START        = 0x00DB1F40
-STICK_START         = 0x00EAD0F0
-GRAVEYARD_KID_START = 0x00E60920
-GUARD_START         = 0x00D1A690
-RUNNING_MAN_START   = 0x00E50440
+CODE_START: int          = 0x00A87000
+PLAYER_START: int        = 0x00BCDB70
+HOOK_START: int          = 0x00CAD2C0
+SHIELD_START: int        = 0x00DB1F40
+STICK_START: int         = 0x00EAD0F0
+GRAVEYARD_KID_START: int = 0x00E60920
+GUARD_START: int         = 0x00D1A690
+RUNNING_MAN_START: int   = 0x00E50440
 
-BASE_OFFSET         = 0x06000000
-LUT_START           = 0x00005000
-LUT_END             = 0x00005800
-PRE_CONSTANT_START  = 0X0000500C
+BASE_OFFSET: int         = 0x06000000
+LUT_START: int           = 0x00005000
+LUT_END: int             = 0x00005800
+PRE_CONSTANT_START: int  = 0X0000500C
 
-ADULT_START         = 0x00F86000
-ADULT_SIZE          = 0x00037800
-ADULT_HIERARCHY     = 0x06005380
-ADULT_POST_START    = 0x00005238
+ADULT_START: int         = 0x00F86000
+ADULT_SIZE: int          = 0x00037800
+ADULT_HIERARCHY: int     = 0x06005380
+ADULT_POST_START: int    = 0x00005238
 
-CHILD_START         = 0x00FBE000
-CHILD_SIZE          = 0x0002CF80
-CHILD_HIERARCHY     = 0x060053A8
-CHILD_POST_START    = 0x00005228
+CHILD_START: int         = 0x00FBE000
+CHILD_SIZE: int          = 0x0002CF80
+CHILD_HIERARCHY: int     = 0x060053A8
+CHILD_POST_START: int    = 0x00005228
 
 # Parts of the rom to not overwrite when applying a patch file
-restrictiveBytes = [
-    (ADULT_START, ADULT_SIZE), # Ignore adult model
-    (CHILD_START, CHILD_SIZE), # Ignore child model
+restrictiveBytes: list[tuple[int, int]] = [
+    (ADULT_START, ADULT_SIZE),  # Ignore adult model
+    (CHILD_START, CHILD_SIZE),  # Ignore child model
     # Adult model pointers
-    (CODE_START + 0xE6718, 75 * 8), # Writes 75 4-byte pointers with 4 bytes between
-    (CODE_START + 0xE6A4C, 4 * 4), # Writes 4 4-byte pointers
-    (CODE_START + 0xE6B28, 1 * 4), # Writes 1 4-byte pointer
-    (CODE_START + 0xE6B64, 3 * 4), # Writes 1 4-byte pointer and 2 4-byte values
+    (CODE_START + 0xE6718, 75 * 8),  # Writes 75 4-byte pointers with 4 bytes between
+    (CODE_START + 0xE6A4C, 4 * 4),  # Writes 4 4-byte pointers
+    (CODE_START + 0xE6B28, 1 * 4),  # Writes 1 4-byte pointer
+    (CODE_START + 0xE6B64, 3 * 4),  # Writes 1 4-byte pointer and 2 4-byte values
     # 2 byte hi/lo segments of pointers
     (CODE_START + 0x69112, 2),
     (CODE_START + 0x69116, 2),
@@ -1333,28 +1343,28 @@ restrictiveBytes = [
     (HOOK_START + 0xA76, 2),
     (HOOK_START + 0xB66, 2),
     (HOOK_START + 0xB6A, 2),
-    (HOOK_START + 0xBA8, 1 * 2), # Writes 1 2-byte value
-    (STICK_START + 0x32C, 1 * 4), # Writes 1 4-byte pointer
-    (STICK_START + 0x328, 1 * 2), # Writes 1 2-byte value
-    (CODE_START + 0xE65A0, 1 * 4), # Writes 4-byte hierarchy pointer
+    (HOOK_START + 0xBA8, 1 * 2),  # Writes 1 2-byte value
+    (STICK_START + 0x32C, 1 * 4),  # Writes 1 4-byte pointer
+    (STICK_START + 0x328, 1 * 2),  # Writes 1 2-byte value
+    (CODE_START + 0xE65A0, 1 * 4),  # Writes 4-byte hierarchy pointer
     # Child model pointers
-    (CODE_START + 0xE671C, 75 * 8), # Writes 75 4-byte pointers with 4 bytes between
-    (CODE_START + 0xE6B2C, 1 * 8), # Writes 1 4-byte pointer with 4 bytes after
-    (CODE_START + 0xE6B74, 3 * 4), # Writes 1 4-byte pointer and 2 4-byte values
+    (CODE_START + 0xE671C, 75 * 8),  # Writes 75 4-byte pointers with 4 bytes between
+    (CODE_START + 0xE6B2C, 1 * 8),  # Writes 1 4-byte pointer with 4 bytes after
+    (CODE_START + 0xE6B74, 3 * 4),  # Writes 1 4-byte pointer and 2 4-byte values
     (CODE_START + 0x6922E, 2),
     (CODE_START + 0x69232, 2),
     (CODE_START + 0x6A80E, 2),
     (CODE_START + 0x6A812, 2),
-    (STICK_START + 0x334, 1 * 4), # Writes 1 4-byte pointer
-    (STICK_START + 0x330, 1 * 2), # Writes 1 2-byte value
+    (STICK_START + 0x334, 1 * 4),  # Writes 1 4-byte pointer
+    (STICK_START + 0x330, 1 * 2),  # Writes 1 2-byte value
     (SHIELD_START + 0x7EE, 2),
     (SHIELD_START + 0x7F2, 2),
-    (PLAYER_START + 0x2253C, 8 * 4), # Writes 8 4-byte pointers
+    (PLAYER_START + 0x2253C, 8 * 4),  # Writes 8 4-byte pointers
     (GRAVEYARD_KID_START + 0xE62, 2),
     (GRAVEYARD_KID_START + 0xE66, 2),
     (GUARD_START + 0x1EA2, 2),
     (GUARD_START + 0x1EA6, 2),
     (RUNNING_MAN_START + 0x1142, 2),
     (RUNNING_MAN_START + 0x1146, 2),
-    (CODE_START + 0xE65A4, 1 * 4), # Writes 4-byte hierarchy pointer
+    (CODE_START + 0xE65A4, 1 * 4),  # Writes 4-byte hierarchy pointer
 ]

@@ -25,8 +25,7 @@ It is strongly suggested users use the web generator from here:
 https://ootrandomizer.com
 
 If you wish to run the script raw, clone this repository and either run ```Gui.py``` for a
-graphical interface or ```OoTRandomizer.py``` for the command line version. They both require Python 3.6+. This will be fully featured,
-but the seeds you generate will have different random factors than the bundled release.
+graphical interface or ```OoTRandomizer.py``` for the command line version. They both require Python 3.8+.
 To use the GUI, [NodeJS](https://nodejs.org/download/release/v18.12.1/) (v18 LTS, with npm) will additionally need to be installed. NodeJS v14.14.0 and earlier are no longer supported.
 The first time ```Gui.py``` is run it will need to install necessary components, which could take a few minutes. Subsequent instances will run much quicker.
 Supported output formats are .z64 (N64/Emulator), .wad (Wii VC, channel IDs NICE/NRKE recommended), Uncompressed ROM (for developmental purposes, offline build only)
@@ -174,6 +173,7 @@ issue. You should always Hard Reset to avoid this issue entirely.
 * Junk items being sent to another world will now float up into the air to indicate this.
 * An unnecessary polygon check function is skipped to increase game performance.
 * In Triforce Hunt, your current and goal number of triforce pieces are now displayed on the file select screen.
+* Python 3.6 and 3.7 are no longer supported.
 
 #### New Speedups
 * Various cutscenes removed or shortened, such as Water Temple and Gerudo Fortress gates and scarecrow spawn cutscenes.
@@ -187,6 +187,7 @@ issue. You should always Hard Reset to avoid this issue entirely.
 * Error messages for conflicting settings have been improved.
 * Gossip stone text colors are no longer specified in reverse order.
 * Music groups will now add to each other if you have multiple groups of the same name, instead of the last one simply overwriting the others.
+* The legacy starting items dictionary has been renamed to `starting_inventory` to make it more distinct from the new `starting_items` which is part of the Settings dictionary.
 
 ### 7.1
 

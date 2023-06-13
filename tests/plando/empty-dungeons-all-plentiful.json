@@ -18,7 +18,7 @@
           "Shadow Temple",
           "Spirit Temple"
         ],
-        "starting_items": [
+        "starting_inventory": [
           "zeldas_letter"
         ]
     }

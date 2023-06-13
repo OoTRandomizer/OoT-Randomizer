@@ -1,13 +1,22 @@
-#Much of this is heavily inspired from and/or based on az64's / Deathbasket's MM randomizer
-
+# Much of this is heavily inspired from and/or based on az64's / Deathbasket's MM randomizer
+from __future__ import annotations
 import itertools
-import random
 import os
+import random
+from collections.abc import Iterable
+from typing import TYPE_CHECKING, Optional
+
+from Rom import Rom
 from Utils import compare_version, data_path
 
+if TYPE_CHECKING:
+    from Cosmetics import CosmeticsLog
+    from Settings import Settings
+
+AUDIOSEQ_DMADATA_INDEX: int = 4
 
 # Format: (Title, Sequence ID)
-bgm_sequence_ids = (
+bgm_sequence_ids: tuple[tuple[str, int], ...] = (
     ("Hyrule Field", 0x02),
     ("Dodongos Cavern", 0x18),
     ("Kakariko Adult", 0x19),
@@ -54,10 +63,10 @@ bgm_sequence_ids = (
     ("Ganondorf Battle", 0x64),
     ("Ganon Battle", 0x65),
     ("Fire Boss", 0x6B),
-    ("Mini-game", 0x6C)
+    ("Mini-game", 0x6C),
 )
 
-fanfare_sequence_ids = (
+fanfare_sequence_ids: tuple[tuple[str, int], ...] = (
     ("Game Over", 0x20),
     ("Boss Defeated", 0x21),
     ("Item Get", 0x22),
@@ -72,10 +81,10 @@ fanfare_sequence_ids = (
     ("Medallion Get", 0x43),
     ("Zelda Turns Around", 0x51),
     ("Master Sword", 0x53),
-    ("Door of Time", 0x59)
+    ("Door of Time", 0x59),
 )
 
-ocarina_sequence_ids = (
+ocarina_sequence_ids: tuple[tuple[str, int], ...] = (
     ("Prelude of Light", 0x25),
     ("Bolero of Fire", 0x33),
     ("Minuet of Forest", 0x34),
@@ -87,35 +96,38 @@ ocarina_sequence_ids = (
     ("Zelda's Lullaby", 0x46),
     ("Sun's Song", 0x47),
     ("Song of Time", 0x48),
-    ("Song of Storms", 0x49)
+    ("Song of Storms", 0x49),
 )
 
 
 # Represents the information associated with a sequence, aside from the sequence data itself
-class Sequence(object):
-    def __init__(self, name, cosmetic_name, type = 0x0202, instrument_set = 0x03, replaces = -1, vanilla_id = -1):
-        self.name = name
-        self.cosmetic_name = cosmetic_name
-        self.replaces = replaces
-        self.vanilla_id = vanilla_id
-        self.type = type
-        self.instrument_set = instrument_set
+class Sequence:
+    def __init__(self, name: str, cosmetic_name: str, type: int = 0x0202, instrument_set: int = 0x03,
+                 replaces: int = -1, vanilla_id: int = -1) -> None:
+        self.name: str = name
+        self.cosmetic_name: str = cosmetic_name
+        self.replaces: int = replaces
+        self.vanilla_id: int = vanilla_id
+        self.type: int = type
+        self.instrument_set: int = instrument_set
 
-
-    def copy(self):
+    def copy(self) -> Sequence:
         copy = Sequence(self.name, self.cosmetic_name, self.type, self.instrument_set, self.replaces, self.vanilla_id)
         return copy
 
 
 # Represents actual sequence data, along with metadata for the sequence data block
-class SequenceData(object):
-    def __init__(self):
-        self.address = -1
-        self.size = -1
-        self.data = []
+class SequenceData:
+    def __init__(self) -> None:
+        self.address: int = -1
+        self.size: int = -1
+        self.data: bytearray = bytearray()
 
 
-def process_sequences(rom, ids, seq_type='bgm', disabled_source_sequences=None, disabled_target_sequences=None, include_custom=True, sequences=None, target_sequences=None, groups=None):
+def process_sequences(rom: Rom, ids: Iterable[tuple[str, int]], seq_type: str = 'bgm', disabled_source_sequences: Optional[list[str]] = None,
+                      disabled_target_sequences: Optional[dict[str, tuple[str, int]]] = None, include_custom: bool = True,
+                      sequences: Optional[dict[str, Sequence]] = None, target_sequences: Optional[dict[str, Sequence]] = None,
+                      groups: Optional[dict[str, list[str]]] = None) -> tuple[dict[str, Sequence], dict[str, Sequence], dict[str, list[str]]]:
     disabled_source_sequences = [] if disabled_source_sequences is None else disabled_source_sequences
     disabled_target_sequences = {} if disabled_target_sequences is None else disabled_target_sequences
     sequences = {} if sequences is None else sequences
@@ -198,12 +210,13 @@ def process_sequences(rom, ids, seq_type='bgm', disabled_source_sequences=None, 
     return sequences, target_sequences, groups
 
 
-def shuffle_music(log, source_sequences, target_sequences, music_mapping, type="music"):
+def shuffle_music(log: CosmeticsLog, source_sequences: dict[str, Sequence], target_sequences: dict[str, Sequence],
+                  music_mapping: dict[str, str], seq_type: str = "music") -> list[Sequence]:
     sequences = []
     favorites = log.src_dict.get('bgm_groups', {}).get('favorites', []).copy()
 
     if not source_sequences:
-        raise Exception(f"Not enough custom {type} ({len(source_sequences)}) to omit base Ocarina of Time sequences ({len(target_sequences)}).")
+        raise Exception(f"Not enough custom {seq_type} ({len(source_sequences)}) to omit base Ocarina of Time sequences ({len(target_sequences)}).")
 
     # Shuffle the sequences
     sequence_ids = [name for name in source_sequences.keys() if name not in music_mapping.values()]
@@ -228,11 +241,13 @@ def shuffle_music(log, source_sequences, target_sequences, music_mapping, type="
         log.bgm[target_sequence.cosmetic_name] = sequence.cosmetic_name
 
     if refill_needed:
-        log.errors.append(f"Not enough {type} available to not have repeats. There were {len(source_sequences)} sequences available to fill {len(target_sequences)} target tracks.")
+        log.errors.append(f"Not enough {seq_type} available to not have repeats. There were {len(source_sequences)} sequences available to fill {len(target_sequences)} target tracks.")
     return sequences
 
 
-def rebuild_sequences(rom, sequences):
+def rebuild_sequences(rom: Rom, sequences: list[Sequence]) -> None:
+    dma_entry = rom.dma[AUDIOSEQ_DMADATA_INDEX]
+    audioseq_start, audioseq_end, audioseq_size = dma_entry.as_tuple()
     replacement_dict = {seq.replaces: seq for seq in sequences}
     # List of sequences (actual sequence data objects) containing the vanilla sequence data
     old_sequences = []
@@ -248,7 +263,7 @@ def rebuild_sequences(rom, sequences):
 
         # If size > 0, read the sequence data from the rom into the sequence object
         if entry.size > 0:
-            entry.data = rom.read_bytes(entry.address + 0x029DE0, entry.size)
+            entry.data = rom.read_bytes(entry.address + audioseq_start, entry.size)
         else:
             seq = replacement_dict.get(i, None)
             if seq and 0 < entry.address < 128:
@@ -309,15 +324,15 @@ def rebuild_sequences(rom, sequences):
             # Increment the current address by the size of the new sequence
             address += new_entry.size
 
-    new_address = 0x029DE0
+    new_address = audioseq_start
     # Check if the new audio sequence is larger than the vanilla one
-    if address > 0x04F690:
+    if address > audioseq_size:
         # Zero out the old audio sequence
-        rom.buffer[0x029DE0 : 0x029DE0 + 0x04F690] = [0] * 0x04F690
+        rom.buffer[audioseq_start:audioseq_end] = [0] * audioseq_size
 
         # Find free space and update dmatable
-        new_address = rom.free_space()
-        rom.update_dmadata_record(0x029DE0, new_address, new_address + address)
+        new_address = rom.dma.free_space(address)
+        dma_entry.update(new_address, new_address + address)
 
     # Write new audio sequence file
     rom.write_bytes(new_address, new_audio_sequence)
@@ -338,7 +353,7 @@ def rebuild_sequences(rom, sequences):
             rom.write_byte(base, j.instrument_set)
 
 
-def rebuild_pointers_table(rom, sequences):
+def rebuild_pointers_table(rom: Rom, sequences: list[Sequence]) -> None:
     for sequence in [s for s in sequences if s.vanilla_id and s.replaces]:
         bgm_sequence = rom.original.read_bytes(0xB89AE0 + (sequence.vanilla_id * 0x10), 0x10)
         bgm_instrument = rom.original.read_int16(0xB89910 + 0xDD + (sequence.vanilla_id * 2))
@@ -349,7 +364,7 @@ def rebuild_pointers_table(rom, sequences):
     rom.write_int16(0xB89910 + 0xDD + (0x57 * 2), rom.read_int16(0xB89910 + 0xDD + (0x28 * 2)))
 
 
-def randomize_music(rom, settings, log):
+def randomize_music(rom: Rom, settings: Settings, log: CosmeticsLog) -> None:
     shuffled_sequences = shuffled_fanfare_sequences = []
     sequences = fanfare_sequences = target_sequences = target_fanfare_sequences = bgm_groups = fanfare_groups = {}
     disabled_source_sequences = log.src_dict.get('bgm_groups', {}).get('exclude', []).copy()
@@ -422,8 +437,8 @@ def randomize_music(rom, settings, log):
 
     # Handle groups.
     plando_groups = {n: s for n, s in log.src_dict.get('bgm_groups', {}).get('groups', {}).items()}
-    bgm_groups_full = chain_groups([{n: s} for n, s in itertools.chain(bgm_groups.items(), plando_groups.items())], sequences)
-    ff_groups_full = chain_groups([{n: s} for n, s in itertools.chain(fanfare_groups.items(), plando_groups.items())], fanfare_sequences)
+    bgm_groups_full = chain_groups([(n, s) for n, s in itertools.chain(bgm_groups.items(), plando_groups.items())], sequences)
+    ff_groups_full = chain_groups([(n, s) for n, s in itertools.chain(fanfare_groups.items(), plando_groups.items())], fanfare_sequences)
     bgm_groups = {n: s.copy() for n, s in bgm_groups_full.items()}
     ff_groups = {n: s.copy() for n, s in ff_groups_full.items()}
     for target, mapping in music_mapping.copy().items():
@@ -436,7 +451,7 @@ def randomize_music(rom, settings, log):
             groups_alias = ff_groups
             sequences_alias = fanfare_sequences
         else:
-            log.error.append(f'Target sequence "{target}" from plando file is invalid.')
+            log.errors.append(f'Target sequence "{target}" from plando file is invalid.')
             del music_mapping[target]
             continue
 
@@ -508,7 +523,7 @@ def randomize_music(rom, settings, log):
         disable_music(rom, log, disabled_target_sequences.values())
 
 
-def disable_music(rom, log, ids):
+def disable_music(rom: Rom, log: CosmeticsLog, ids: Iterable[tuple[str, int]]) -> None:
     # First track is no music
     blank_track = rom.read_bytes(0xB89AE0 + (0 * 0x10), 0x10)
     for bgm in ids:
@@ -516,7 +531,7 @@ def disable_music(rom, log, ids):
         log.bgm[bgm[0]] = "None"
 
 
-def restore_music(rom):
+def restore_music(rom: Rom) -> None:
     # Restore all music from original
     for bgm in bgm_sequence_ids + fanfare_sequence_ids + ocarina_sequence_ids:
         bgm_sequence = rom.original.read_bytes(0xB89AE0 + (bgm[1] * 0x10), 0x10)
@@ -529,24 +544,23 @@ def restore_music(rom):
     rom.write_int16(0xB89910 + 0xDD + (0x57 * 2), bgm_instrument)
 
     # Rebuild audioseq
-    orig_start, orig_end, orig_size = rom.original._get_dmadata_record(0x7470)
+    orig_start, orig_end, orig_size = rom.original.dma[AUDIOSEQ_DMADATA_INDEX].as_tuple()
     rom.write_bytes(orig_start, rom.original.read_bytes(orig_start, orig_size))
 
     # If Audioseq was relocated
-    start, end, size = rom._get_dmadata_record(0x7470)
-    if start != 0x029DE0:
+    dma_entry = rom.dma[AUDIOSEQ_DMADATA_INDEX]
+    start, end, size = dma_entry.as_tuple()
+    if start != orig_start:
         # Zero out old audioseq
         rom.write_bytes(start, [0] * size)
-        rom.update_dmadata_record(start, orig_start, orig_end)
+        dma_entry.update(orig_start, orig_end, start)
 
 
-def chain_groups(group_list, sequences):
+def chain_groups(group_list: list[tuple[str, list[str] | str]], sequences: dict[str, Sequence]) -> dict[str, list[str]]:
     result = {}
-    for iterator in group_list:
-        for n, s in iterator.items():
-            if isinstance(s, list):
-                result.setdefault(n, []).extend(ns for ns in s if ns in sequences)
-            else:
-                result.setdefault(n, []).append(ns for ns in s if ns in sequences)
+    for group_name, sequence_names in group_list:
+        if isinstance(sequence_names, list):
+            result.setdefault(group_name, []).extend(ns for ns in sequence_names if ns in sequences)
+        elif sequence_names in sequences:
+            result.setdefault(group_name, []).append(sequence_names)
     return result
-

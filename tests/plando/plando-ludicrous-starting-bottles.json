@@ -1,7 +1,7 @@
 {
   "settings": {
     "item_pool_value": "ludicrous",
-    "starting_items": [
+    "starting_inventory": [
       "bottle",
       "bottle2",
       "bottle3",

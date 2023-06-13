@@ -8,7 +8,7 @@
     "shuffle_song_items": "any",
     "starting_age": "child",
     "starting_equipment": ["kokiri_sword"],
-    "starting_items": [
+    "starting_inventory": [
       "bombs",
       "deku_nut",
       "deku_stick",

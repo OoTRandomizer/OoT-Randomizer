@@ -65,7 +65,7 @@
         ],
         "allowed_tricks": [],
         "starting_equipment": [],
-        "starting_items": [
+        "starting_inventory": [
             "zeldas_letter"
         ],
         "starting_songs": [],
@@ -202,7 +202,7 @@
         "starting_equipment": [
             "deku_shield"
         ],
-        "starting_items": [
+        "starting_inventory": [
             "ocarina",
             "zeldas_letter"
         ],
@@ -338,7 +338,7 @@
             "logic_lens_spirit"
         ],
         "starting_equipment": [],
-        "starting_items": [],
+        "starting_inventory": [],
         "starting_songs": [],
         "start_with_consumables": false,
         "start_with_rupees": false,
@@ -470,7 +470,7 @@
             "logic_lens_spirit"
         ],
         "starting_equipment": [],
-        "starting_items": [],
+        "starting_inventory": [],
         "starting_songs": [],
         "start_with_consumables": false,
         "start_with_rupees": false,
@@ -607,7 +607,7 @@
         "starting_equipment": [
             "deku_shield"
         ],
-        "starting_items": [
+        "starting_inventory": [
             "ocarina",
             "lens",
             "zeldas_letter"
@@ -761,7 +761,7 @@
             "logic_dc_scarecrow_gs"
         ],
         "starting_equipment": [],
-        "starting_items": [
+        "starting_inventory": [
             "ocarina",
             "farores_wind",
             "lens",
@@ -1067,7 +1067,7 @@
             "logic_light_trial_mq"
         ],
         "starting_equipment": [],
-        "starting_items": [],
+        "starting_inventory": [],
         "starting_songs": [],
         "start_with_consumables": false,
         "start_with_rupees": false,
@@ -1194,7 +1194,7 @@
             "logic_lens_spirit"
         ],
         "starting_equipment": [],
-        "starting_items": [],
+        "starting_inventory": [],
         "starting_songs": [],
         "start_with_consumables": false,
         "start_with_rupees": false,
@@ -1355,7 +1355,7 @@
         "starting_equipment": [
             "deku_shield"
         ],
-        "starting_items": [
+        "starting_inventory": [
             "ocarina",
             "lens",
             "farores_wind",
@@ -1491,7 +1491,7 @@
             "logic_lens_spirit"
         ],
         "starting_equipment": [],
-        "starting_items": [
+        "starting_inventory": [
             "ocarina",
             "zeldas_letter"
         ],

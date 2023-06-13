@@ -1,46 +1,52 @@
-import re
+from __future__ import annotations
+from collections.abc import Callable, Iterable
+from typing import TYPE_CHECKING, Optional, Any, overload
 
 from ItemList import item_table
 from RulesCommon import allowed_globals, escape_name
 
+if TYPE_CHECKING:
+    from Location import Location
+    from World import World
 
-class ItemInfo(object):
-    items = {}
-    events = {}
-    bottles = set()
-    medallions = set()
-    stones = set()
-    junk = {}
 
-    solver_ids = {}
-    bottle_ids = set()
-    medallion_ids = set()
-    stone_ids = set()
+class ItemInfo:
+    items: dict[str, ItemInfo] = {}
+    events: dict[str, ItemInfo] = {}
+    bottles: set[str] = set()
+    medallions: set[str] = set()
+    stones: set[str] = set()
+    junk_weight: dict[str, int] = {}
 
-    def __init__(self, name='', event=False):
+    solver_ids: dict[str, int] = {}
+    bottle_ids: set[int] = set()
+    medallion_ids: set[int] = set()
+    stone_ids: set[int] = set()
+
+    def __init__(self, name: str = '', event: bool = False) -> None:
         if event:
-            type = 'Event'
+            item_type = 'Event'
             progressive = True
-            itemID = None
+            item_id = None
             special = None
         else:
-            (type, progressive, itemID, special) = item_table[name]
+            (item_type, progressive, item_id, special) = item_table[name]
 
-        self.name = name
-        self.advancement = (progressive is True)
-        self.priority = (progressive is False)
-        self.type = type
-        self.special = special or {}
-        self.index = itemID
-        self.price = self.special.get('price')
-        self.bottle = self.special.get('bottle', False)
-        self.medallion = self.special.get('medallion', False)
-        self.stone = self.special.get('stone', False)
-        self.alias = self.special.get('alias', None)
-        self.junk = self.special.get('junk', None)
-        self.trade = self.special.get('trade', False)
+        self.name: str = name
+        self.advancement: bool = (progressive is True)
+        self.priority: bool = (progressive is False)
+        self.type: str = item_type
+        self.special: dict[str, Any] = special or {}
+        self.index: Optional[int] = item_id
+        self.price: Optional[int] = self.special.get('price', None)
+        self.bottle: bool = self.special.get('bottle', False)
+        self.medallion: bool = self.special.get('medallion', False)
+        self.stone: bool = self.special.get('stone', False)
+        self.alias: Optional[tuple[str, int]] = self.special.get('alias', None)
+        self.junk: Optional[int] = self.special.get('junk', None)
+        self.trade: bool = self.special.get('trade', False)
 
-        self.solver_id = None
+        self.solver_id: Optional[int] = None
         if name and self.junk is None:
             esc = escape_name(name)
             if esc not in ItemInfo.solver_ids:
@@ -49,103 +55,87 @@ class ItemInfo(object):
 
 
 for item_name in item_table:
-    ItemInfo.items[item_name] = ItemInfo(item_name)
-    if ItemInfo.items[item_name].bottle:
+    iteminfo = ItemInfo.items[item_name] = ItemInfo(item_name)
+    if iteminfo.bottle:
         ItemInfo.bottles.add(item_name)
         ItemInfo.bottle_ids.add(ItemInfo.solver_ids[escape_name(item_name)])
-    if ItemInfo.items[item_name].medallion:
+    if iteminfo.medallion:
         ItemInfo.medallions.add(item_name)
         ItemInfo.medallion_ids.add(ItemInfo.solver_ids[escape_name(item_name)])
-    if ItemInfo.items[item_name].stone:
+    if iteminfo.stone:
         ItemInfo.stones.add(item_name)
         ItemInfo.stone_ids.add(ItemInfo.solver_ids[escape_name(item_name)])
-    if ItemInfo.items[item_name].junk is not None:
-        ItemInfo.junk[item_name] = ItemInfo.items[item_name].junk
+    if iteminfo.junk is not None:
+        ItemInfo.junk_weight[item_name] = iteminfo.junk
 
 
-class Item(object):
-
-    def __init__(self, name='', world=None, event=False):
-        self.name = name
-        self.location = None
-        self.event = event
+class Item:
+    def __init__(self, name: str = '', world: Optional[World] = None, event: bool = False) -> None:
+        self.name: str = name
+        self.location: Optional[Location] = None
+        self.event: bool = event
         if event:
             if name not in ItemInfo.events:
                 ItemInfo.events[name] = ItemInfo(name, event=True)
-            self.info = ItemInfo.events[name]
-        else:
-            self.info = ItemInfo.items[name]
-        self.price = self.info.special.get('price')
-        self.world = world
-        self.looks_like_item = None
-        self.advancement = self.info.advancement
-        self.priority = self.info.priority
-        self.type = self.info.type
-        self.special = self.info.special
-        self.index = self.info.index
-        self.alias = self.info.alias
+        self.info: ItemInfo = ItemInfo.events[name] if event else ItemInfo.items[name]
+        self.price: Optional[int] = self.info.special.get('price', None)
+        self.world: Optional[World] = world
+        self.looks_like_item: Optional[Item] = None
+        self.advancement: bool = self.info.advancement
+        self.priority: bool = self.info.priority
+        self.type: str = self.info.type
+        self.special: dict = self.info.special
+        self.index: Optional[int] = self.info.index
+        self.alias: Optional[tuple[str, int]] = self.info.alias
 
-        self.solver_id = self.info.solver_id
+        self.solver_id: Optional[int] = self.info.solver_id
         # Do not alias to junk--it has no solver id!
-        self.alias_id = ItemInfo.solver_ids[escape_name(self.alias[0])] if self.alias else None
+        self.alias_id: Optional[int] = ItemInfo.solver_ids[escape_name(self.alias[0])] if self.alias else None
 
+    def copy(self, *, copy_dict: Optional[dict[int, Any]] = None) -> Item:
+        copy_dict = {} if copy_dict is None else copy_dict
+        if (new_item := copy_dict.get(id(self), None)) and isinstance(new_item, Item):
+            return new_item
 
-    item_worlds_to_fix = {}
+        new_item = Item(name=self.name, world=self.world.copy(copy_dict=copy_dict), event=self.event)
+        copy_dict[id(self)] = new_item
 
-    def copy(self, new_world=None):
-        if new_world is not None and self.world is not None and new_world.id != self.world.id:
-            new_world = None
-
-        new_item = Item(self.name, new_world, self.event)
+        if self.location:
+            new_item.location = self.location.copy(copy_dict=copy_dict)
         new_item.price = self.price
-
-        if new_world is None and self.world is not None:
-            Item.item_worlds_to_fix[new_item] = self.world.id
+        if self.looks_like_item:
+            new_item.looks_like_item = self.looks_like_item.copy(copy_dict=copy_dict)
 
         return new_item
 
-
-    @classmethod
-    def fix_worlds_after_copy(cls, worlds):
-        items_fixed = []
-        for item, world_id in cls.item_worlds_to_fix.items():
-            item.world = worlds[world_id]
-            items_fixed.append(item)
-        for item in items_fixed:
-            del cls.item_worlds_to_fix[item]
-
-
     @property
-    def key(self):
+    def key(self) -> bool:
         return self.smallkey or self.bosskey
 
-
     @property
-    def smallkey(self):
+    def smallkey(self) -> bool:
         return self.type == 'SmallKey' or self.type == 'HideoutSmallKey' or  self.type == 'TCGSmallKey'
 
-
     @property
-    def bosskey(self):
+    def bosskey(self) -> bool:
         return self.type == 'BossKey' or self.type == 'GanonBossKey'
 
-
     @property
-    def map(self):
+    def map(self) -> bool:
         return self.type == 'Map'
 
-
     @property
-    def compass(self):
+    def compass(self) -> bool:
         return self.type == 'Compass'
 
-
     @property
-    def dungeonitem(self):
+    def dungeonitem(self) -> bool:
         return self.smallkey or self.bosskey or self.map or self.compass or self.type == 'SilverRupee'
 
     @property
-    def unshuffled_dungeon_item(self):
+    def unshuffled_dungeon_item(self) -> bool:
+        if self.world is None:
+            return False
         return ((self.type == 'SmallKey' and self.world.settings.shuffle_smallkeys in ('remove', 'vanilla', 'dungeon')) or
                 (self.type == 'HideoutSmallKey' and self.world.settings.shuffle_hideoutkeys == 'vanilla') or
                 (self.type == 'TCGSmallKey' and self.world.settings.shuffle_tcgkeys in ('remove', 'vanilla')) or
@@ -155,7 +145,9 @@ class Item(object):
                 (self.type == 'SilverRupee' and self.world.settings.shuffle_silver_rupees in ['remove','vanilla','dungeon']))
 
     @property
-    def majoritem(self):
+    def majoritem(self) -> bool:
+        if self.world is None:
+            return False
         if self.type == 'Token':
             return (self.world.settings.bridge == 'tokens' or self.world.settings.shuffle_ganon_bosskey == 'tokens' or
                 (self.world.settings.shuffle_ganon_bosskey == 'on_lacs' and self.world.settings.lacs_condition == 'tokens'))
@@ -187,21 +179,30 @@ class Item(object):
 
         return True
 
-
     @property
-    def goalitem(self):
+    def goalitem(self) -> bool:
+        if self.world is None:
+            return False
         return self.name in self.world.goal_items
 
-
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.__unicode__())
 
-
-    def __unicode__(self):
+    def __unicode__(self) -> str:
         return '%s' % self.name
 
 
-def ItemFactory(items, world=None, event=False):
+@overload
+def ItemFactory(items: str, world: Optional[World] = None, event: bool = False) -> Item:
+    pass
+
+
+@overload
+def ItemFactory(items: Iterable[str], world: Optional[World] = None, event: bool = False) -> list[Item]:
+    pass
+
+
+def ItemFactory(items: str | Iterable[str], world: Optional[World] = None, event: bool = False) -> Item | list[Item]:
     if isinstance(items, str):
         if not event and items not in ItemInfo.items:
             raise KeyError('Unknown Item: %s' % items)
@@ -216,7 +217,9 @@ def ItemFactory(items, world=None, event=False):
     return ret
 
 
-def MakeEventItem(name, location, item=None):
+def make_event_item(name: str, location: Location, item: Optional[Item] = None) -> Item:
+    if location.world is None:
+        raise Exception(f"`make_event_item` called with location '{location.name}' that doesn't have a world.")
     if item is None:
         item = Item(name, location.world, event=True)
     location.world.push_item(location, item)
@@ -227,11 +230,11 @@ def MakeEventItem(name, location, item=None):
     return item
 
 
-def IsItem(name):
+def is_item(name: str) -> bool:
     return name in item_table
 
 
-def ItemIterator(predicate=lambda loc: True, world=None):
+def ItemIterator(predicate: Callable[[Item], bool] = lambda item: True, world: Optional[World] = None) -> Iterable[Item]:
     for item_name in item_table:
         item = ItemFactory(item_name, world)
         if predicate(item):

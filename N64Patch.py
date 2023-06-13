@@ -1,17 +1,21 @@
-import struct
-import random
-import io
-import array
-import zlib
+from __future__ import annotations
 import copy
+import random
 import zipfile
+import zlib
+from typing import TYPE_CHECKING, Optional
+
+from Rom import Rom
 from ntype import BigStream
+
+if TYPE_CHECKING:
+    from Settings import Settings
 
 
 # get the next XOR key. Uses some location in the source rom.
 # This will skip of 0s, since if we hit a block of 0s, the
 # patch data will be raw.
-def key_next(rom, key_address, address_range):
+def key_next(rom: Rom, key_address: int, address_range: tuple[int, int]) -> tuple[int, int]:
     key = 0
     while key == 0:
         key_address += 1
@@ -24,7 +28,8 @@ def key_next(rom, key_address, address_range):
 # creates a XOR block for the patch. This might break it up into
 # multiple smaller blocks if there is a concern about the XOR key
 # or if it is too long.
-def write_block(rom, xor_address, xor_range, block_start, data, patch_data):
+def write_block(rom: Rom, xor_address: int, xor_range: tuple[int, int], block_start: int,
+                data: list[int], patch_data: BigStream) -> int:
     new_data = []
     key_offset = 0
     continue_block = False
@@ -60,7 +65,7 @@ def write_block(rom, xor_address, xor_range, block_start, data, patch_data):
             new_data += [b ^ key]
 
             # Break the block if it's too long
-            if (len(new_data) == 0xFFFF):
+            if len(new_data) == 0xFFFF:
                 write_block_section(block_start, key_offset, new_data, patch_data, continue_block)
                 new_data = []
                 key_offset = 0
@@ -72,10 +77,10 @@ def write_block(rom, xor_address, xor_range, block_start, data, patch_data):
 
 
 # This saves a sub-block for the XOR block. If it's the first part
-# then it will include the address to write to. Otherwise it will
+# then it will include the address to write to. Otherwise, it will
 # have a number of XOR keys to skip and then continue writing after
 # the previous block
-def write_block_section(start, key_skip, in_data, patch_data, is_continue):
+def write_block_section(start: int, key_skip: int, in_data: list[int], patch_data: BigStream, is_continue: bool) -> None:
     if not is_continue:
         patch_data.append_int32(start)
     else:
@@ -88,11 +93,11 @@ def write_block_section(start, key_skip, in_data, patch_data, is_continue):
 # xor_range is the range the XOR key will read from. This range is not
 # too important, but I tried to choose from a section that didn't really
 # have big gaps of 0s which we want to avoid.
-def create_patch_file(rom, file, xor_range=(0x00B8AD30, 0x00F029A0)):
-    dma_start, dma_end = rom.get_dma_table_range()
+def create_patch_file(rom: Rom, file: str, xor_range: tuple[int, int] = (0x00B8AD30, 0x00F029A0)) -> None:
+    dma_start, dma_end = rom.dma.dma_start, rom.dma.dma_end
 
     # add header
-    patch_data = BigStream([])
+    patch_data = BigStream(bytearray())
     patch_data.append_bytes(list(map(ord, 'ZPFv1')))
     patch_data.append_int32(dma_start)
     patch_data.append_int32(xor_range[0])
@@ -120,7 +125,7 @@ def create_patch_file(rom, file, xor_range=(0x00B8AD30, 0x00F029A0)):
 
         # Simulate moving the files to know which addresses have changed
         if from_file >= 0:
-            old_dma_start, old_dma_end, old_size = rom.original.get_dmadata_record_by_key(from_file)
+            old_dma_start, old_dma_end, old_size = rom.original.dma.get_dmadata_record_by_key(from_file).as_tuple()
             copy_size = min(size, old_size)
             new_buffer[start:start+copy_size] = rom.original.read_bytes(from_file, copy_size)
             new_buffer[start+copy_size:start+size] = [0] * (size - copy_size)
@@ -133,16 +138,16 @@ def create_patch_file(rom, file, xor_range=(0x00B8AD30, 0x00F029A0)):
 
     # filter down the addresses that will actually need to change.
     # Make sure to not include any of the DMA table addresses
-    changed_addresses = [address for address,value in rom.changed_address.items() \
-        if (address >= dma_end or address < dma_start) and \
-            (address in rom.force_patch or new_buffer[address] != value)]
+    changed_addresses = [address for address, value in rom.changed_address.items()
+                         if (address >= dma_end or address < dma_start) and
+                         (address in rom.force_patch or new_buffer[address] != value)]
     changed_addresses.sort()
 
     # Write the address changes. We'll store the data with XOR so that
     # the patch data won't be raw data from the patched rom.
     data = []
-    block_start = None
-    BLOCK_HEADER_SIZE = 7 # this is used to break up gaps
+    block_start = block_end = None
+    BLOCK_HEADER_SIZE = 7  # this is used to break up gaps
     for address in changed_addresses:
         # if there's a block to write and there's a gap, write it
         if block_start:
@@ -161,7 +166,7 @@ def create_patch_file(rom, file, xor_range=(0x00B8AD30, 0x00F029A0)):
         # save the new data
         data += rom.buffer[block_end+1:address+1]
 
-    # if there was any left over blocks, write them out
+    # if there was any leftover blocks, write them out
     if block_start:
         xor_address = write_block(rom, xor_address, xor_range, block_start, data, patch_data)
 
@@ -175,7 +180,7 @@ def create_patch_file(rom, file, xor_range=(0x00B8AD30, 0x00F029A0)):
 
 
 # This will apply a patch file to a source rom to generate a patched rom.
-def apply_patch_file(rom, settings, sub_file=None):
+def apply_patch_file(rom: Rom, settings: Settings, sub_file: Optional[str] = None) -> None:
     file = settings.patch_file
 
     # load the patch file and decompress
@@ -189,7 +194,7 @@ def apply_patch_file(rom, settings, sub_file=None):
     else:
         with open(file, 'rb') as stream:
             patch_data = stream.read()
-    patch_data = BigStream(zlib.decompress(patch_data))
+    patch_data = BigStream(bytearray(zlib.decompress(patch_data)))
 
     # make sure the header is correct
     if patch_data.read_bytes(length=4) != b'ZPFv':
@@ -230,7 +235,7 @@ def apply_patch_file(rom, settings, sub_file=None):
 
         if from_file != 0xFFFFFFFF:
             # If a source file is listed, copy from there
-            old_dma_start, old_dma_end, old_size = rom.original.get_dmadata_record_by_key(from_file)
+            old_dma_start, old_dma_end, old_size = rom.original.dma.get_dmadata_record_by_key(from_file).as_tuple()
             copy_size = min(size, old_size)
             rom.write_bytes(start, rom.original.read_bytes(from_file, copy_size))
             rom.buffer[start+copy_size:start+size] = [0] * (size - copy_size)
@@ -239,7 +244,7 @@ def apply_patch_file(rom, settings, sub_file=None):
             rom.buffer[start:start+size] = [0] * size
 
     # Read in the XOR data blocks. This goes to the end of the file.
-    block_start = None
+    block_start = 0
     while not patch_data.eof():
         is_new_block = patch_data.read_byte() != 0xFF
 
@@ -273,4 +278,3 @@ def apply_patch_file(rom, settings, sub_file=None):
         else:
             rom.write_bytes(block_start, data)
         block_start = block_start+block_size
-

@@ -8,7 +8,7 @@
       "child",
       "adult"
     ],
-    "starting_items":                          [
+    "starting_inventory":                      [
       "ocarina"
     ],
     "starting_age":                            "adult"

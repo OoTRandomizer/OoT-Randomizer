@@ -2,7 +2,7 @@
   "settings": {
     "item_pool_value": "ludicrous",
     "shuffle_child_trade": [],
-    "starting_items": [
+    "starting_inventory": [
       "zeldas_letter"
     ]
   }

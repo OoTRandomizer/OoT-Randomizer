@@ -1,8 +1,22 @@
+from __future__ import annotations
+import sys
 from collections import OrderedDict
+from typing import Optional
+
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    TypeAlias = str
+
+LocationDefault: TypeAlias = "Optional[int | tuple[int, ...] | list[tuple[int, ...]]]"
+LocationAddress: TypeAlias = "Optional[int | list[int]]"
+LocationAddresses: TypeAlias = "Optional[tuple[LocationAddress, LocationAddress]]"
+LocationFilterTags: TypeAlias = "Optional[tuple[str, ...] | str]"
 
 
-def shop_address(shop_id, shelf_id):
+def shop_address(shop_id: int, shelf_id: int) -> int:
     return 0xC71ED0 + (0x40 * shop_id) + (0x08 * shelf_id)
+
 
 #   Abbreviations
 #       DMC     Death Mountain Crater
@@ -43,7 +57,7 @@ def shop_address(shop_id, shelf_id):
 # Note: for ActorOverride locations, the "Addresses" variable is in the form ([addresses], [bytes]) where addresses is a list of memory locations in ROM to be updated, and bytes is the data that will be written to that location
 
 #   Location:                                                        Type             Scene  Default Addresses                      Vanilla Item                             Categories
-location_table = OrderedDict([
+location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAddresses, Optional[str], LocationFilterTags]] = OrderedDict([
     ## Dungeon Rewards
     ("Links Pocket",                                                 ("Boss",         None,  None, None,                            'Light Medallion',                       None)),
     ("Queen Gohma",                                                  ("Boss",         None,  0x6C, (0x0CA315F, 0x2079571),          'Kokiri Emerald',                        None)),
@@ -674,7 +688,7 @@ location_table = OrderedDict([
     ("LH Lab Dive Red Rupee 1",                                      ("Freestanding", 0x38,  (0,0,2), None,                         'Rupees (20)',                           ("Lake Hylia", "Freestandings",))),
     ("LH Lab Dive Red Rupee 2",                                      ("Freestanding", 0x38,  (0,0,3), None,                         'Rupees (20)',                           ("Lake Hylia", "Freestandings",))),
     ("LH Lab Dive Red Rupee 3",                                      ("Freestanding", 0x38,  (0,0,4), None,                         'Rupees (20)',                           ("Lake Hylia", "Freestandings",))),
-    #Lake Hylia Beehives
+    # Lake Hylia Beehives
     ("LH Grotto Beehive",                                            ("Beehive",      0x3E,  (12,0,0x44 + (0x0F * 2)), None,        'Rupees (20)',                           ("Lake Hylia", "Grottos", "Beehives",))),
 
     # Gerudo Valley
@@ -757,7 +771,7 @@ location_table = OrderedDict([
     # Wasteland Pots/Crates
     ("Wasteland Near GS Pot 1",                                      ("Pot",          0x5E,  (0,0,1), None,                         'Recovery Heart',                        ("Haunted Wasteland", "Pots",))),
     ("Wasteland Near GS Pot 2",                                      ("Pot",          0x5E,  (0,0,2), None,                         'Deku Nuts (5)',                         ("Haunted Wasteland", "Pots",))),
-   #("Wasteland Near GS Pot 3",                                      ("Pot",          0x5E,  (0,0,3), None,                            'Rupees (5)',                            ("Haunted Wasteland", "Pots",))), Fairy
+   #("Wasteland Near GS Pot 3",                                      ("Pot",          0x5E,  (0,0,3), None,                         'Rupees (5)',                            ("Haunted Wasteland", "Pots",))), Fairy
     ("Wasteland Near GS Pot 3",                                      ("Pot",          0x5E,  (0,0,4), None,                         'Rupees (5)',                            ("Haunted Wasteland", "Pots",))),
     ("Wasteland Crate Before Quicksand",                             ("Crate",        0x5E,  (1,0,38),None,                         'Rupee (1)',                             ("Haunted Wasteland", "Crates",))),
     ("Wasteland Crate After Quicksand 1",                            ("Crate",        0x5E,  (1,0,35),None,                         'Rupee (1)',                             ("Haunted Wasteland", "Crates",))),
@@ -1557,7 +1571,7 @@ location_table = OrderedDict([
     ("Shadow Temple 3 Spinning Pots Rupee 7",                        ("RupeeTower",   0x07,  (12,0,26), None,                       'Rupee (1)',                             ("Shadow Temple", "Vanilla Dungeons", "Rupee Towers",))),
     ("Shadow Temple 3 Spinning Pots Rupee 8",                        ("RupeeTower",   0x07,  (12,0,27), None,                       'Rupees (5)',                            ("Shadow Temple", "Vanilla Dungeons", "Rupee Towers",))),
     ("Shadow Temple 3 Spinning Pots Rupee 9",                        ("RupeeTower",   0x07,  (12,0,28), None,                       'Rupees (20)',                           ("Shadow Temple", "Vanilla Dungeons", "Rupee Towers",))),
-    #Shadow Temple Vanilla Pots
+    # Shadow Temple Vanilla Pots
     ("Shadow Temple Whispering Walls Near Dead Hand Pot",            ("Pot",          0x07,  (0,0,1), None,                         'Rupees (5)',                            ("Shadow Temple", "Vanilla Dungeons", "Pots",))),
     ("Shadow Temple Whispering Walls Left Pot 1",                    ("Pot",          0x07,  (0,0,2), None,                         'Rupees (5)',                            ("Shadow Temple", "Vanilla Dungeons", "Pots",))),
     ("Shadow Temple Whispering Walls Left Pot 2",                    ("Pot",          0x07,  (0,0,3), None,                         'Recovery Heart',                        ("Shadow Temple", "Vanilla Dungeons", "Pots",))),
@@ -2247,12 +2261,12 @@ location_table = OrderedDict([
     ("Ganondorf Hint",                                               ("Hint",         None,  None, None,                            None,                                    None)),
 ])
 
-location_sort_order = {
+location_sort_order: dict[str, int] = {
     loc: i for i, loc in enumerate(location_table.keys())
 }
 
 # Business Scrub Details
-business_scrubs = [
+business_scrubs: list[tuple[int, int, int, list[str]]] = [
     # id   price  text   text replacement
     (0x30, 20,   0x10A0, ["Deku Nuts", "a \x05\x42mysterious item\x05\x40"]),
     (0x31, 15,   0x10A1, ["Deku Sticks", "a \x05\x42mysterious item\x05\x40"]),
@@ -2267,8 +2281,8 @@ business_scrubs = [
     (0x79, 40,   0x10DD, ["enable you to pick up more \x05\x41Deku\x01Nuts", "sell you a \x05\x42mysterious item"]),
 ]
 
-dungeons = ('Deku Tree', 'Dodongo\'s Cavern', 'Jabu Jabu\'s Belly', 'Forest Temple', 'Fire Temple', 'Water Temple', 'Spirit Temple', 'Shadow Temple', 'Ice Cavern', 'Bottom of the Well', 'Gerudo Training Ground', 'Ganon\'s Castle')
-location_groups = {
+dungeons: tuple[str, ...] = ('Deku Tree', "Dodongo's Cavern", "Jabu Jabu's Belly", 'Forest Temple', 'Fire Temple', 'Water Temple', 'Spirit Temple', 'Shadow Temple', 'Ice Cavern', 'Bottom of the Well', 'Gerudo Training Ground', "Ganon's Castle")
+location_groups: dict[str, list[str]] = {
     'Song': [name for (name, data) in location_table.items() if data[0] == 'Song'],
     'Chest': [name for (name, data) in location_table.items() if data[0] == 'Chest'],
     'Collectable': [name for (name, data) in location_table.items() if data[0] == 'Collectable'],
@@ -2284,14 +2298,6 @@ location_groups = {
 }
 
 
-def location_is_viewable(loc_name, correct_chest_appearances, fast_chests):
+def location_is_viewable(loc_name: str, correct_chest_appearances: str, fast_chests: bool) -> bool:
     return (((correct_chest_appearances in ['textures', 'both', 'classic'] or not fast_chests) and loc_name in location_groups['Chest'])
-        or loc_name in location_groups['CanSee'])
-
-
-# Function to run exactly once after after placing items in drop locations for each world
-# Sets all Drop locations to a unique name in order to avoid name issues and to identify locations in the spoiler
-def set_drop_location_names(world):
-    for location in world.get_locations():
-        if location.type == 'Drop':
-            location.name = location.parent_region.name + " " + location.name
+            or loc_name in location_groups['CanSee'])

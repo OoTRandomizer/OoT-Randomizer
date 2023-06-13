@@ -1,6 +1,22 @@
-from itertools import chain
+from __future__ import annotations
+import sys
+from collections.abc import Callable, Iterable
 from enum import IntEnum
+from typing import TYPE_CHECKING, Optional, Any
+
 from ItemPool import IGNORE_LOCATION
+
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    TypeAlias = str
+
+if TYPE_CHECKING:
+    from Rom import Rom
+    from World import World
+
+AddressesDict: TypeAlias = "dict[str, Address | dict[str, Address | dict[str, Address]]]"
+
 
 class Scenes(IntEnum):
     # Dungeons
@@ -25,6 +41,7 @@ class Scenes(IntEnum):
     DEATH_MOUNTAIN_CRATER = 0x61
     GORON_CITY = 0x62
 
+
 class FlagType(IntEnum):
     CHEST = 0x00
     SWITCH = 0x01
@@ -34,42 +51,36 @@ class FlagType(IntEnum):
     VISITED_ROOM = 0x05
     VISITED_FLOOR = 0x06
 
-class Address():
-    prev_address = None
+
+class Address:
+    prev_address: int = 0
     EXTENDED_CONTEXT_START = 0x1450
 
-    def __init__(self, address=None, extended=False, size=4, mask=0xFFFFFFFF, max=None, choices=None, value=None):
-        if address is None:
-            self.address = Address.prev_address
-        else:
-            self.address = address
+    def __init__(self, address: Optional[int] = None, extended: bool = False, size: int = 4, mask: int = 0xFFFFFFFF, max: Optional[int] = None,
+                 choices: Optional[dict[str, int]] = None, value: Optional[str] = None) -> None:
+        self.address: int = Address.prev_address if address is None else address
         if extended and address is not None:
             self.address += Address.EXTENDED_CONTEXT_START
-        self.value = value
-        self.size = size
-        self.choices = choices
-        self.mask = mask
+        self.value: Optional[str | int] = value
+        self.size: int = size
+        self.choices: Optional[dict[str, int]] = choices
+        self.mask: int = mask
 
         Address.prev_address = self.address + self.size
 
-        self.bit_offset = 0
+        self.bit_offset: int = 0
         while mask & 1 == 0:
             mask = mask >> 1
             self.bit_offset += 1
 
-        if max is None:
-            self.max = mask
-        else:
-            self.max = max
+        self.max: int = mask if max is None else max
 
-
-    def get_value(self, default=0):
+    def get_value(self, default: str | int = 0) -> str | int:
         if self.value is None:
             return default
         return self.value
 
-
-    def get_value_raw(self):
+    def get_value_raw(self) -> Optional[int]:
         if self.value is None:
             return None
 
@@ -87,8 +98,7 @@ class Address():
         value = (value << self.bit_offset) & self.mask
         return value
 
-
-    def set_value_raw(self, value):
+    def set_value_raw(self, value: int) -> None:
         if value is None:
             self.value = None
             return
@@ -108,8 +118,7 @@ class Address():
 
         self.value = value
 
-
-    def get_writes(self, save_context):
+    def get_writes(self, save_context: SaveContext) -> None:
         if self.value is None:
             return
 
@@ -128,8 +137,8 @@ class Address():
             else:
                 save_context.write_bits(self.address + i, byte, mask=mask)
 
-
-    def to_bytes(value, size):
+    @staticmethod
+    def to_bytes(value: int, size: int) -> list[int]:
         ret = []
         for _ in range(size):
             ret.insert(0, value & 0xFF)
@@ -137,15 +146,14 @@ class Address():
         return ret
 
 
-class SaveContext():
+class SaveContext:
     def __init__(self):
-        self.save_bits = {}
-        self.save_bytes = {}
-        self.addresses = self.get_save_context_addresses()
-
+        self.save_bits: dict[int, int] = {}
+        self.save_bytes: dict[int, int] = {}
+        self.addresses: AddressesDict = self.get_save_context_addresses()
 
     # will set the bits of value to the offset in the save (or'ing them with what is already there)
-    def write_bits(self, address, value, mask=None, predicate=None):
+    def write_bits(self, address: int, value: int, mask: Optional[int] = None, predicate: Optional[Callable[[int], bool]] = None) -> None:
         if predicate and not predicate(value):
             return
 
@@ -165,9 +173,8 @@ class SaveContext():
         else:
             self.save_bits[address] = value
 
-
     # will overwrite the byte at offset with the given value
-    def write_byte(self, address, value, predicate=None):
+    def write_byte(self, address: int, value: int, predicate: Optional[Callable[[int], bool]] = None) -> None:
         if predicate and not predicate(value):
             return
 
@@ -176,14 +183,12 @@ class SaveContext():
 
         self.save_bytes[address] = value
 
-
     # will overwrite the byte at offset with the given value
-    def write_bytes(self, address, bytes, predicate=None):
+    def write_bytes(self, address: int, bytes: Iterable[int], predicate: Optional[Callable[[int], bool]] = None) -> None:
         for i, value in enumerate(bytes):
             self.write_byte(address + i, value, predicate)
 
-
-    def write_save_entry(self, address):
+    def write_save_entry(self, address: Address) -> None:
         if isinstance(address, dict):
             for name, sub_address in address.items():
                 self.write_save_entry(sub_address)
@@ -193,7 +198,7 @@ class SaveContext():
         else:
             address.get_writes(self)
 
-    def write_permanent_flag(self, scene, type, byte_offset, bit_values):
+    def write_permanent_flag(self, scene: int, type: int, byte_offset: int, bit_values: int) -> None:
         # Save format is described here: https://wiki.cloudmodding.com/oot/Save_Format
         # Permanent flags start at offset 0x00D4. Each scene has 7 types of flags, one
         # of which is unused. Each flag type is 4 bytes wide per-scene, thus each scene
@@ -203,11 +208,11 @@ class SaveContext():
         self.write_bits(0x00D4 + scene * 0x1C + type * 0x04 + byte_offset, bit_values)
 
     # write all flags (int32) of a given type at once
-    def write_permanent_flags(self, scene, type, value):
+    def write_permanent_flags(self, scene: Scenes, flag_type: FlagType, value: int) -> None:
         byte_value = value.to_bytes(4, byteorder='big', signed=False)
-        self.write_bytes(0x00D4 + scene * 0x1C + type * 0x04, byte_value)
+        self.write_bytes(0x00D4 + scene * 0x1C + flag_type * 0x04, byte_value)
 
-    def set_ammo_max(self):
+    def set_ammo_max(self) -> None:
         ammo_maxes = {
             'stick'     : ('stick_upgrade', [10,  10,  20,  30]),
             'nut'       : ('nut_upgrade',   [20,  20,  30,  40]),
@@ -228,9 +233,8 @@ class SaveContext():
             else:
                 self.addresses['ammo'][ammo].max = ammo_max
 
-
     # will overwrite the byte at offset with the given value
-    def write_save_table(self, rom):
+    def write_save_table(self, rom: Rom) -> None:
         self.set_ammo_max()
         for name, address in self.addresses.items():
             self.write_save_entry(address)
@@ -262,8 +266,7 @@ class SaveContext():
             raise Exception("The Initial Extended Save Table has exceeded its maximum capacity: 0x%03X/0x100" % extended_table_len)
         rom.write_bytes(rom.sym('EXTENDED_INITIAL_SAVE_DATA'), extended_table)
 
-
-    def give_bottle(self, item, count):
+    def give_bottle(self, item: str, count: int) -> None:
         for bottle_id in range(4):
             item_slot = 'bottle_%d' % (bottle_id + 1)
             if self.addresses['item_slot'][item_slot].get_value(0xFF) != 0xFF:
@@ -275,8 +278,7 @@ class SaveContext():
             if count == 0:
                 return
 
-
-    def give_health(self, health):
+    def give_health(self, health: float):
         health += self.addresses['health_capacity'].get_value(0x30) / 0x10
         health += self.addresses['quest']['heart_pieces'].get_value() / 4
 
@@ -284,8 +286,7 @@ class SaveContext():
         self.addresses['health'].value                = int(health) * 0x10
         self.addresses['quest']['heart_pieces'].value = int((health % 1) * 4) * 0x10
 
-
-    def give_item(self, world, item, count=1):
+    def give_item(self, world: World, item: str, count: int = 1) -> None:
         if item.endswith(')'):
             item_base, implicit_count = item[:-1].split(' (', 1)
             if implicit_count.isdigit():
@@ -424,6 +425,7 @@ class SaveContext():
 
                 address_value = self.addresses
                 prev_sub_address = 'Save Context'
+                sub_address = None
                 for sub_address in address.split('.'):
                     if sub_address not in address_value:
                         raise ValueError('Unknown key %s in %s of SaveContext' % (sub_address, prev_sub_address))
@@ -434,7 +436,7 @@ class SaveContext():
                     address_value = address_value[sub_address]
                     prev_sub_address = sub_address
                 if not isinstance(address_value, Address):
-                    raise ValueError('%s does not resolve to an Address in SaveContext' % (sub_address))
+                    raise ValueError('%s does not resolve to an Address in SaveContext' % sub_address)
 
                 if isinstance(value, int) and value < address_value.get_value():
                     continue
@@ -443,20 +445,16 @@ class SaveContext():
         else:
             raise ValueError("Cannot give unknown starting item %s" % item)
 
-
-    def give_bombchu_item(self, world):
+    def give_bombchu_item(self, world: World) -> None:
         self.give_item(world, "Bombchus", 0)
 
-
-    def equip_default_items(self, age):
+    def equip_default_items(self, age: str) -> None:
         self.equip_items(age, 'equips_' + age)
 
-
-    def equip_current_items(self, age):
+    def equip_current_items(self, age: str) -> None:
         self.equip_items(age, 'equips')
 
-
-    def equip_items(self, age, equip_type):
+    def equip_items(self, age: str, equip_type: str) -> None:
         if age not in ['child', 'adult']:
             raise ValueError("Age must be 'adult' or 'child', not %s" % age)
 
@@ -485,8 +483,8 @@ class SaveContext():
                         self.addresses[equip_type]['button_items']['b'].value = item
                     break
 
-
-    def get_save_context_addresses(self):
+    @staticmethod
+    def get_save_context_addresses() -> AddressesDict:
         return {
             'entrance_index'             : Address(0x0000, size=4),
             'link_age'                   : Address(size=4, max=1),
@@ -890,8 +888,7 @@ class SaveContext():
             }
         }
 
-
-    item_id_map = {
+    item_id_map: dict[str, int] = {
         'none'                : 0xFF,
         'stick'               : 0x00,
         'nut'                 : 0x01,
@@ -1015,8 +1012,7 @@ class SaveContext():
         'small_key'           : 0x67,
     }
 
-
-    slot_id_map = {
+    slot_id_map: dict[str, int] = {
         'stick'               : 0x00,
         'nut'                 : 0x01,
         'bomb'                : 0x02,
@@ -1043,8 +1039,7 @@ class SaveContext():
         'child_trade'         : 0x17,
     }
 
-
-    bottle_types = {
+    bottle_types: dict[str, str] = {
         "Bottle"                   : 'bottle',
         "Bottle with Red Potion"   : 'red_potion',
         "Bottle with Green Potion" : 'green_potion',
@@ -1060,11 +1055,10 @@ class SaveContext():
         "Bottle with Poe"          : 'poe',
     }
 
-
-    save_writes_table = {
+    save_writes_table: dict[str, dict[str, Any]] = {
         "Deku Stick Capacity": {
             'item_slot.stick'            : 'stick',
-            'upgrades.stick_upgrade'     : [2,3],
+            'upgrades.stick_upgrade'     : [2, 3],
         },
         "Deku Stick": {
             'item_slot.stick'            : 'stick',
@@ -1078,7 +1072,7 @@ class SaveContext():
         },
         "Deku Nut Capacity": {
             'item_slot.nut'              : 'nut',
-            'upgrades.nut_upgrade'       : [2,3],
+            'upgrades.nut_upgrade'       : [2, 3],
         },
         "Deku Nuts": {
             'item_slot.nut'              : 'nut',
@@ -1305,8 +1299,8 @@ class SaveContext():
         'Silver Rupee (Ganons Castle Shadow Trial)':           {'silver_rupee_counts.trials_shadow': None},
         'Silver Rupee (Ganons Castle Water Trial)':            {'silver_rupee_counts.trials_water': None},
         'Silver Rupee (Ganons Castle Forest Trial)':           {'silver_rupee_counts.trials_forest': None},
-        #HACK: the following counts aren't used since exact counts based on whether the dungeon is MQ are defined above,
-        # but the entries need to be there for key rings and silver rupee pouches to be valid starting items
+        # HACK: these counts aren't used since exact counts based on whether the dungeon is MQ are defined above,
+        # but the entries need to be there for key rings to be valid starting items
         "Small Key Ring (Forest Temple)"          : {
             'keys.forest': 6,
             'total_keys.forest': 6,
@@ -1371,8 +1365,7 @@ class SaveContext():
         'Silver Rupee Pouch (Ganons Castle Forest Trial)':           {'silver_rupee_counts.trials_forest': 5},
     }
 
-
-    equipable_items = {
+    equipable_items: dict[str, dict[str, list[str]]] = {
         'equips_adult' : {
             'items': [
                 'hookshot',

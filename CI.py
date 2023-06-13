@@ -1,20 +1,22 @@
 # This script is called by GitHub Actions, see .github/workflows/python.yml
 # To fix code style errors, run: python3 ./CI.py --fix --no_unit_tests
 
+import argparse
 import json
-import sys
-from io import StringIO
-import unittest
 import os.path
 import pathlib
-import argparse
+import sys
+import unittest
+from io import StringIO
+from typing import NoReturn
+
 
 import Unittest as Tests
 from SettingsList import logic_tricks, validate_settings
 from Utils import data_path
 
 
-def error(msg, can_fix):
+def error(msg: str, can_fix: bool) -> None:
     if not hasattr(error, "count"):
         error.count = 0
     print(msg, file=sys.stderr)
@@ -25,7 +27,7 @@ def error(msg, can_fix):
         error.cannot_fix = True
 
 
-def run_unit_tests():
+def run_unit_tests() -> None:
     # Run Unit Tests
     stream = StringIO()
     runner = unittest.TextTestRunner(stream=stream)
@@ -34,11 +36,11 @@ def run_unit_tests():
     print(f'Tests run: {result.testsRun}.')
     stream.seek(0)
     print(f'Test output:\n{stream.read()}')
-    if result.errors:
+    if result.errors or result.failures:
         error('Unit Tests had an error, see output above.', False)
 
 
-def check_presets_formatting(fix_errors=False):
+def check_presets_formatting(fix_errors: bool = False) -> None:
     # Check the code style of presets_default.json
     with open(data_path('presets_default.json'), encoding='utf-8') as f:
         presets = json.load(f)
@@ -59,7 +61,8 @@ def check_presets_formatting(fix_errors=False):
                 json.dump(presets, file, indent=4)
                 print(file=file)
 
-def check_hell_mode_tricks(fix_errors=False):
+
+def check_hell_mode_tricks(fix_errors: bool = False) -> None:
     # Check for tricks missing from Hell Mode preset.
     with open(data_path('presets_default.json'), encoding='utf-8') as f:
         presets = json.load(f)
@@ -79,11 +82,11 @@ def check_hell_mode_tricks(fix_errors=False):
             print(file=file)
 
 
-def check_code_style(fix_errors=False):
+def check_code_style(fix_errors: bool = False) -> None:
     # Check for code style errors
     repo_dir = pathlib.Path(os.path.dirname(os.path.realpath(__file__)))
 
-    def check_file_format(path):
+    def check_file_format(path: pathlib.Path):
         fixed = ''
         with path.open(encoding='utf-8', newline='') as file:
             path = path.relative_to(repo_dir)
@@ -129,7 +132,7 @@ def check_code_style(fix_errors=False):
     check_file_format(repo_dir / 'data' / 'presets_default.json')
 
 
-def run_ci_checks():
+def run_ci_checks() -> NoReturn:
     parser = argparse.ArgumentParser()
     parser.add_argument('--no_unit_tests', help="Skip unit tests", action='store_true')
     parser.add_argument('--only_unit_tests', help="Only run unit tests", action='store_true')
@@ -147,7 +150,7 @@ def run_ci_checks():
     exit_ci(args.fix)
 
 
-def exit_ci(fix_errors=False):
+def exit_ci(fix_errors: bool = False) -> NoReturn:
     if hasattr(error, "count") and error.count:
         print(f'CI failed with {error.count} errors.', file=sys.stderr)
         if fix_errors:
