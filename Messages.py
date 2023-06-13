@@ -663,7 +663,7 @@ class TextCode:
 class Message:
     def __init__(self, raw_text: list[int] | bytearray | str, index: int, id: int, opts: int, offset: int, length: int) -> None:
         if isinstance(raw_text, str):
-            raw_text = bytearray(raw_text, encoding='utf-8')
+            raw_text = encode_text_string(raw_text)
         elif not isinstance(raw_text, bytearray):
             raw_text = bytearray(raw_text)
 
