@@ -426,6 +426,17 @@ class HintArea(Enum):
 
         raise HintAreaNotFound('No hint area could be found for %s [World %d]' % (spot, spot.world.id))
 
+    @staticmethod
+    def at_important_check(spot, use_alt_hint=False):
+        # Private hack: when considering hint areas for important check hints specifically, treat Thieves' Hideout as
+        # part of Gerudo Fortress. That keeps the hint quantity at 34 despite the addition of Thieves' Hideout as an
+        # independent HintArea
+        actualRegion = HintArea.at(spot, use_alt_hint)
+        if actualRegion.short_name == "Thieves' Hideout":
+            return HintArea.GERUDO_FORTRESS
+        else:
+            return actualRegion
+
     @classmethod
     def for_dungeon(cls, dungeon_name: str) -> Optional[HintArea]:
         if '(' in dungeon_name and ')' in dungeon_name:
@@ -1096,14 +1107,14 @@ def get_junk_hint(spoiler: Spoiler, world: World, checked: set[str]) -> HintRetu
 def get_important_check_hint(spoiler: Spoiler, world: World, checked: set[str]) -> HintReturn:
     top_level_locations = []
     for location in world.get_filled_locations():
-        if (HintArea.at(location).text(world.settings.clearer_hints) not in top_level_locations
-                and (HintArea.at(location).text(world.settings.clearer_hints) + ' Important Check') not in checked
-                and "pocket" not in HintArea.at(location).text(world.settings.clearer_hints)):
-            top_level_locations.append(HintArea.at(location).text(world.settings.clearer_hints))
+        if (HintArea.at_important_check(location).text(world.settings.clearer_hints) not in top_level_locations
+                and (HintArea.at_important_check(location).text(world.settings.clearer_hints) + ' Important Check') not in checked
+                and "pocket" not in HintArea.at_important_check(location).text(world.settings.clearer_hints)):
+            top_level_locations.append(HintArea.at_important_check(location).text(world.settings.clearer_hints))
     hint_loc = random.choice(top_level_locations)
     item_count = 0
     for location in world.get_filled_locations():
-        region = HintArea.at(location).text(world.settings.clearer_hints)
+        region = HintArea.at_important_check(location).text(world.settings.clearer_hints)
         if region == hint_loc:
             if (location.item.majoritem
                 # exclude locked items
@@ -1111,6 +1122,9 @@ def get_important_check_hint(spoiler: Spoiler, world: World, checked: set[str]) 
                 # exclude triforce pieces as it defeats the idea of a triforce hunt
                 and not location.item.name == 'Triforce Piece'
                 and not (location.name == 'Song from Impa' and 'Zeldas Letter' in world.settings.starting_items and 'Zeldas Letter' not in world.settings.shuffle_child_trade)
+                # Private hack: force BGS and DD to be counted as major items for Important Checks hints. That way they stay in line with chest size.
+                or location.item.name == 'Biggoron Sword'
+                or location.item.name == 'Double Defense'
                 # Handle make keys not in own dungeon major items
                 or (location.item.type == 'SmallKey' and not (world.settings.shuffle_smallkeys == 'dungeon' or world.settings.shuffle_smallkeys == 'vanilla'))
                 or (location.item.type == 'HideoutSmallKey' and not world.settings.shuffle_hideoutkeys == 'vanilla')
