@@ -125,6 +125,7 @@ RANDO_CONTEXT:
 .include "camera_init.asm"
 .include "chest_game.asm"
 .include "en_item00.asm"
+.include "armos.asm"
 
 .align 0x10
 .importobj "../build/bundle.o"

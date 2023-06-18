@@ -49,7 +49,7 @@ def patch_music(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[s
     # patch music
     if settings.background_music != 'normal' or settings.fanfares != 'normal' or log.src_dict.get('bgm', {}):
         Music.restore_music(rom)
-        Music.randomize_music(rom, settings, log)
+        Music.randomize_music(rom, settings, log, symbols)
     else:
         Music.restore_music(rom)
     # Remove battle music
@@ -1097,11 +1097,19 @@ patch_sets[0x1F073FDC] = {
         **patch_sets[0x1F073FDB]["symbols"],
         "CFG_SPEEDUP_MUSIC_FOR_LAST_TRIFORCE_PIECE": 0x0058,
         "CFG_SLOWDOWN_MUSIC_WHEN_LOWHP": 0x0059,
-        "CFG_RAINBOW_TUNIC_ENABLED": 0x005A,
-        "CFG_TUNIC_COLORS": 0x005B,
     }
 }
 
+# 7.1.123
+patch_sets[0x1F073FDD] = {
+    "patches": patch_sets[0x1F073FDC]["patches"] + [
+        patch_music,  # Patch music needs to be moved into a versioned patch after introducing custom instrument sets in order for older patches to still work. This should work because when running the global patches we make sure they're not in the versioned patch set.
+    ],
+    "symbols": {
+        **patch_sets[0x1F073FDC]["symbols"],
+        "CFG_AUDIOBANK_TABLE_EXTENDED_ADDR": 0x0064
+    }
+}
 
 def patch_cosmetics(settings: Settings, rom: Rom) -> CosmeticsLog:
     # re-seed for aesthetic effects. They shouldn't be affected by the generation seed
@@ -1168,6 +1176,8 @@ class CosmeticsLog:
         self.sfx: dict[str, str] = {}
         self.bgm: dict[str, str] = {}
         self.bgm_groups: dict[str, list | dict] = {}
+        self.bank_dma_index: Optional[int] = None
+        self.instr_dma_index: Optional[int] = None
 
         self.src_dict: dict = {}
         self.errors: list[str] = []

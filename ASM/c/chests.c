@@ -41,7 +41,7 @@ void get_chest_override(z64_actor_t *actor) {
             if (CHEST_SIZE_MATCH_CONTENTS || CHEST_SIZE_TEXTURE) {
                 if (item_row->chest_type == BROWN_CHEST || item_row->chest_type == SILVER_CHEST || item_row->chest_type == SKULL_CHEST_SMALL || item_row->chest_type == HEART_CHEST_SMALL) {
                     // Ensure vanilla chest size in Chest Game when not shuffled
-                    size = (scene == 0x10 && !SHUFFLE_CHEST_GAME) ? BROWN_CHEST : SMALL_CHEST;
+                    size = (scene == 0x10 && actor->variable != 0x4ECA && !SHUFFLE_CHEST_GAME) ? BROWN_CHEST : SMALL_CHEST;
                 } else {
                     // These chest_types are big by default
                     size = BROWN_CHEST;

@@ -123,6 +123,7 @@ issue. You should always Hard Reset to avoid this issue entirely.
   * New shuffle setting `Treasure Chest Game Keys` makes it so the keys from the Treasure Chest Game can be found anywhere in the world rather than just in the game itself, and the chests of the minigame can contain any item. It also makes the shopkeeper sell a random item.
   * New World setting `Shuffle Thieves' Hideout Entrances`, which requires first shuffling interior entrances, shuffles the Thieves' Hideout rooms into the interior entrance pool.
   * New shuffle setting `Shuffle Silver Rupees` shuffles the silver rupees into the item pool. To solve a silver rupee puzzle, you will need to find all the associated silver rupees around the world. You can also use the setting `Silver Rupee Pouches` to make some or all of the silver rupees grouped into pouches so that, similar to key rings, all silver rupees for any given puzzle will be found in a single item location.
+  * New timesaver setting `Ruto Already at F1` which, in Vanilla Jabu Jabu, makes it so that Ruto is already present on the first floor of the dungeon (in the room with all the orifices you fall down) instead of having to carry her up there to set that flag.
 * **Hints**
   * New `Important Checks` hint type which hints at how many major items are in a given region.
   * New Misc. Hint `Frogs Ocarina Game` which tells you what item you'll get from the Zora's River frog minigame. The hint appears in the dialog box that's printed before they jump onto the log.
@@ -130,10 +131,14 @@ issue. You should always Hard Reset to avoid this issue entirely.
   * New `MW Season 3 (WotH)` hint distribution which is similar to the `MW Season 3` hint distribution except with Way of the Hero hints instead of goal hints.
   * New Misc. Hint for unique merchants: Bean Salesman, Medigoron, Wasteland Bombchu Salesman, Granny's Potion Shop.
   * Owls are now included in the Warp Songs misc hint and will tell you where they go when enabled.
+  * New options for hint distributions, both of which are lists of gossip stones defined inside the entry for a hint type:
+    * `remove_stones`: When defined, each gossip stone in the list will be excluded from receiving this hint type. For example, if `ToT (Left)` is inserted into the `remove_stones` list inside the dictionary for `always` hints, then no `always` hint will be placed on `ToT (Left)`.
+    * `priority_stones`: When defined, gossip stones in this list will be given priority when placing the specified hint type, in the order they're defined. For example, if `ToT (Left)` and `ToT (Right)` are inserted into the `priority_stones` list, in that order, inside the dictionary for `always` hints, the first `always` hint will be placed on `ToT (Left)` and the second `always` hint will be placed on `ToT (Right)`.
 * **Other**
   * When picking up a small key, the text box will now inform you how many you've found total.
   * The longstanding vanilla bug where using Din's Fire on a white bubble crashes the game has been fixed.
   * There are new chest, pot, and crate textures for Pieces of Heart and Heart Containers.
+  * Custom music has moved to a new format. See `data/Music/README.md` for more details.
 
 #### Bug Fixes
 * **Misc.**
@@ -158,7 +163,7 @@ issue. You should always Hard Reset to avoid this issue entirely.
 * The dummy boss key chest on the wall of Forest Temple's twisted hallway now matches the real version of the chest in the straightened version of the room.
 * The Kakariko Well water will no longer be up as adult to facilitate a glitch strategy for entering the well.
 * The message table has been extended to allow further developments which require more added textboxes.
-* Currently worn mask will now be preserved when transitioning scenes or resetting.
+* New timesaver setting `Maintain Mask Equips through Scene Changes` which makes it so the currently worn mask will now be preserved when transitioning scenes or resetting.
 * The ocarina can now be used in some rooms it cannot normally be used in to allow warping out of them.
 * Link the Goron will now give you the item reward regardless of which dialog option you choose.
 * Models created using the newer ModLoder64 pipeline are now compatible with the randomizer.
@@ -174,6 +179,7 @@ issue. You should always Hard Reset to avoid this issue entirely.
 * An unnecessary polygon check function is skipped to increase game performance.
 * In Triforce Hunt, your current and goal number of triforce pieces are now displayed on the file select screen.
 * Python 3.6 and 3.7 are no longer supported.
+* Some inescapable entrances are no longer valid targets for Overworld Spawn entrances.
 
 #### New Speedups
 * Various cutscenes removed or shortened, such as Water Temple and Gerudo Fortress gates and scarecrow spawn cutscenes.
@@ -181,6 +187,7 @@ issue. You should always Hard Reset to avoid this issue entirely.
 * The cutscene of the Gerudo's Fortress carpenters running out when you free them will be skipped.
 * The cutscene that plays when shooting the sun over Lake Hylia has been skipped.
 * The spinning room in the Forest Temple basement now moves faster, and does not lock Link in place while spinning.
+* Link is now powerful enough to push armos statues more quickly.
 
 #### Plandomizer
 * Plandomizer now allows you to specify locations that are valid but do not exist in your current seed, for example, an MQ-specific location when that dungeon is Vanilla.

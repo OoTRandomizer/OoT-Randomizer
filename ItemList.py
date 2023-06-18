@@ -5,10 +5,14 @@ from typing import Optional, Any
 #              False -> Priority
 #              None  -> Normal
 #    Item:                                            (type, Progressive, GetItemID, special),
+#
+# special "upgrade_ids" correspond to the item IDs in item_table.c for all of the upgrade tiers
+# of that item.
+#
 item_table: dict[str, tuple[str, Optional[bool], Optional[int], Optional[dict[str, Any]]]] = {
     'Bombs (5)':                                       ('Item',     None,  0x0001, {'junk': 8}),
     'Deku Nuts (5)':                                   ('Item',     None,  0x0002, {'junk': 5}),
-    'Bombchus (10)':                                   ('Item',     True,  0x0003, None),
+    'Bombchus (10)':                                   ('Item',     True,  0x0003, {'upgrade_ids': [0x00D4]}),
     'Boomerang':                                       ('Item',     True,  0x0006, None),
     'Deku Stick (1)':                                  ('Item',     None,  0x0007, {'junk': 5}),
     'Lens of Truth':                                   ('Item',     True,  0x000A, None),
@@ -17,7 +21,7 @@ item_table: dict[str, tuple[str, Optional[bool], Optional[int], Optional[dict[st
     'Bottle':                                          ('Item',     True,  0x000F, {'bottle': float('Inf')}),
     'Blue Potion':                                     ('Item',     True,  0x0012, None), # distinct from shop item
     'Bottle with Milk':                                ('Item',     True,  0x0014, {'bottle': float('Inf')}),
-    'Rutos Letter':                                    ('Item',     True,  0x0015, None),
+    'Rutos Letter':                                    ('Item',     True,  0x0015, {'upgrade_ids': [0x000F]}),
     'Deliver Letter':                                  ('Item',     True,  None,   {'bottle': float('Inf')}),
     'Sell Big Poe':                                    ('Item',     True,  None,   {'bottle': float('Inf')}),
     'Magic Bean':                                      ('Item',     True,  0x0016, {'progressive': 10}),
@@ -82,8 +86,8 @@ item_table: dict[str, tuple[str, Optional[bool], Optional[int], Optional[dict[st
     'Bombs (10)':                                      ('Item',     None,  0x0066, {'junk': 2}),
     'Bombs (20)':                                      ('Item',     None,  0x0067, {'junk': 0}),
     'Deku Seeds (30)':                                 ('Item',     None,  0x0069, {'junk': 5}),
-    'Bombchus (5)':                                    ('Item',     True,  0x006A, None),
-    'Bombchus (20)':                                   ('Item',     True,  0x006B, None),
+    'Bombchus (5)':                                    ('Item',     True,  0x006A, {'upgrade_ids': [0x00D4]}),
+    'Bombchus (20)':                                   ('Item',     True,  0x006B, {'upgrade_ids': [0x00D4]}),
     'Small Key (Treasure Chest Game)':              ('TCGSmallKey', True,  0x0071, {'progressive': float('Inf')}),
     'Rupee (Treasure Chest Game) (1)':                 ('Item',     None,  0x0072, None),
     'Rupees (Treasure Chest Game) (5)':                ('Item',     None,  0x0073, None),
@@ -92,17 +96,17 @@ item_table: dict[str, tuple[str, Optional[bool], Optional[int], Optional[dict[st
     'Piece of Heart (Treasure Chest Game)':            ('Item',     True,  0x0076, {'alias': ('Piece of Heart', 1), 'progressive': float('Inf')}),
     'Ice Trap':                                        ('Item',     None,  0x007C, {'junk': 0}),
     'Progressive Hookshot':                            ('Item',     True,  0x0080, {'progressive': 2}),
-    'Progressive Strength Upgrade':                    ('Item',     True,  0x0081, {'progressive': 3}),
+    'Progressive Strength Upgrade':                    ('Item',     True,  0x0081, {'progressive': 3, 'upgrade_ids': [0x0035]}),
     'Bomb Bag':                                        ('Item',     True,  0x0082, None),
-    'Bow':                                             ('Item',     True,  0x0083, None),
-    'Slingshot':                                       ('Item',     True,  0x0084, None),
+    'Bow':                                             ('Item',     True,  0x0083, {'upgrade_ids': [0x0030]}),
+    'Slingshot':                                       ('Item',     True,  0x0084, {'upgrade_ids': [0x0060]}),
     'Progressive Wallet':                              ('Item',     True,  0x0085, {'progressive': 3}),
     'Progressive Scale':                               ('Item',     True,  0x0086, {'progressive': 2}),
     'Deku Nut Capacity':                               ('Item',     None,  0x0087, None),
     'Deku Stick Capacity':                             ('Item',     None,  0x0088, None),
     'Bombchus':                                        ('Item',     True,  0x0089, None),
     'Magic Meter':                                     ('Item',     True,  0x008A, None),
-    'Ocarina':                                         ('Item',     True,  0x008B, None),
+    'Ocarina':                                         ('Item',     True,  0x008B, {'upgrade_ids': [0x000C]}),
     'Bottle with Red Potion':                          ('Item',     True,  0x008C, {'bottle': True, 'shop_object': 0x0F}),
     'Bottle with Green Potion':                        ('Item',     True,  0x008D, {'bottle': True, 'shop_object': 0x0F}),
     'Bottle with Blue Potion':                         ('Item',     True,  0x008E, {'bottle': True, 'shop_object': 0x0F}),

@@ -177,7 +177,7 @@ class World:
         hint_dist_valid = False
         if all(key in self.hint_dist_user['distribution'] for key in hint_dist_keys):
             hint_dist_valid = True
-            sub_keys = {'order', 'weight', 'fixed', 'copies'}
+            sub_keys = {'order', 'weight', 'fixed', 'copies', 'remove_stones', 'priority_stones'}
             for key in self.hint_dist_user['distribution']:
                 if not all(sub_key in sub_keys for sub_key in self.hint_dist_user['distribution'][key]):
                     hint_dist_valid = False
@@ -186,7 +186,8 @@ class World:
                                           (trial, always, dual_always, woth, barren, item, song, overworld, dungeon, entrance,
                                           sometimes, dual, random, junk, named-item, goal). If a hint type should not be
                                           shuffled, set its order to 0. Hint type format is \"type\": {
-                                          \"order\": 0, \"weight\": 0.0, \"fixed\": 0, \"copies\": 0 }""")
+                                          \"order\": 0, \"weight\": 0.0, \"fixed\": 0, \"copies\": 0,
+                                          \"remove_stones\": [], \"priority_stones\": [] }""")
 
         self.added_hint_types: dict[str, list[str]] = {}
         self.item_added_hint_types: dict[str, list[str]] = {}

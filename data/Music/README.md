@@ -1,14 +1,26 @@
-To load custom sequences, you need to have a raw N64 sequence file with a `.seq` file extension and a corresponding file with the same name but with a `.meta` file extension. The `.meta` file should be a plaintext file with two lines. The first line is the name of the sequence to be displayed in the cosmetic log, and the second line is the instrument set number, in base 16.
+# Loading custom sequences
+To load custom sequences, you need to package into a zip archive with a .ootrs extension: 
+  - A raw N64 sequence file with a `.seq` file extension 
+  - A metadata file with a `.meta` file extension. The `.meta` file should be a plaintext file as defined below
 
-For example, if there is a sequence file `Foo.seq` then you need a meta file `Foo.meta` that could contain
-```
-Awesome Name
-C
-```
+Any sub-directories in this folder will also be read from. Only .ootrs files with a minimum of a `.seq` and `.meta` are supported
 
-Additionally, if the sequence is to be shuffled with the non-looping fanfares, a third line must exist containing the word 'fanfare'.
+# .Meta file format
+A .meta file must contain a minimum of two lines.
+  - Line 1: Sequence Name
+  - Line 2: Instrument set to use in base 16. Set to `-` if using a custom instrument set
+  - Line 3: `bgm` or `fanfare` depending on the type of sequence (`bgm` = background music, `fanfare` = non-looping fanfare). If the file is less than 3 lines, `bgm` is assumed
+  - Line 4 (optional): One or more sequence groups, separated by commas
+  - Line 5+: Additional metadata. All additional data should use the format COMMAND:DATA:DATA
+    Currently support additional metadata types:
+    ZSOUND:path_to_zsound_file:bank_address
 
-Any sub-directories in this folder will also be read from, but the .meta file and matching .seq file must be in the same folder.
+# Using custom instrument sets
+Custom instrument sets may be used in sequences. A full tutorial on creating sequences can be found at https://gist.github.com/owlisnotacat1/e5445c154b46a9d7804b139800dfffbe
+To use custom instrument sets, the following additional files must be present in the .ootrs archive
+  - An instrument set (soundfont/bank) file with a `.zbank` file extension
+  - A bank metadata file with a `.bankmeta` file extension
+  - Instrument samples for custom instruments contained in files with `.zsound` (if the custom instrument set also defines new instruments)
 
 Sequences are in the seq64 format. Other known games that use this format and may be compatible are (list from https://github.com/sauraen/seq64)
 ```
@@ -26,7 +38,7 @@ Wave Race 64
 
 There are also tools available to help convert midi files to valid seq64 files.
 
-The instrument list is as follows (from https://sites.google.com/site/deathbasketslair/zelda/ocarina-of-time/instrument-sets-and-sequences and https://github.com/sauraen/seq64):
+The instrument list is as follows (from https://github.com/sauraen/seq64):
 ```
 0x00 - Ocarina Songs?
 0x01 - Actor Sounds

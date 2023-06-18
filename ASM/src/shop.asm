@@ -192,6 +192,59 @@ mask_shop_display:
     jr      ra
     addiu   sp, sp, 0x20
 
+
+; assigns the draw ID for the EnGirlA actor based
+; on the item upgrade, if it exists
+shop_draw_id_hook:
+    addiu   $sp, $sp, -0x20
+    sw      $ra, 0x10($sp)
+    sw      a0,  0x14($sp)
+    sw      a1,  0x18($sp)
+    sw      a2,  0x1C($sp)
+
+    lw      a0, 0x0054($sp) ; playstate pointer
+    or      a1, s0, $zero   ; current EnGirlA pointer
+    or      a2, v1, $zero   ; ShopItemEntry pointer for this shelf slot and shop
+    jal     lookup_shop_draw_id
+    nop
+
+    lw      $ra, 0x10($sp)
+    lw      a0,  0x14($sp)
+    lw      a1,  0x18($sp)
+    lw      a2,  0x1C($sp)
+    jr      $ra
+    addiu   $sp, $sp, 0x20
+
+; updates all EnGirlA actors for the calling
+; EnOssan shopkeeper actor after purchasing an
+; item that may be progressive
+shop_update_offerings_hook:
+    addiu   $sp, $sp, -0x28
+    sw      $ra, 0x10($sp)
+
+    sw      s0,  0x14($sp)
+    sw      s1,  0x18($sp)
+    sw      a0,  0x1C($sp)
+    sw      a1,  0x20($sp)
+    sw      a2,  0x24($sp)
+
+    or      a0, s0, $zero  ; EnOssan pointer
+    jal     update_shop_shelves
+    or      a1, s1, $zero  ; playstate pointer
+
+    ; displaced code
+    lh      t6, 0x001C(s0)
+    addiu   $at, $zero, 0x000A
+
+    lw      $ra, 0x10($sp)
+    lw      s0,  0x14($sp)
+    lw      s1,  0x18($sp)
+    lw      a0,  0x1C($sp)
+    lw      a1,  0x20($sp)
+    lw      a2,  0x24($sp)
+    jr      $ra
+    addiu   $sp, $sp, 0x28
+
 ;==================================================================================================
 
 Deku_Check_Sold_Out:

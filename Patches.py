@@ -26,6 +26,7 @@ from OcarinaSongs import replace_songs
 from Rom import Rom
 from SaveContext import SaveContext, Scenes, FlagType
 from SceneFlags import get_alt_list_bytes, get_collectible_flag_table, get_collectible_flag_table_bytes
+from Sounds import move_audiobank_table
 from Spoiler import Spoiler
 from Utils import data_path
 from World import World
@@ -1241,8 +1242,10 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     save_context.write_bits(0x0F09, 0x10)  # "Met Child Malon at Castle or Market"
     save_context.write_bits(0x0F09, 0x20)  # "Child Malon Said Epona Was Scared of You"
 
-    save_context.write_bits(0x0F21, 0x04)  # "Ruto in JJ (M3) Talk First Time"
-    save_context.write_bits(0x0F21, 0x02)  # "Ruto in JJ (M2) Meet Ruto"
+    save_context.write_bits(0x0F21, 0x04) # "Ruto in JJ (M3) Talk First Time"
+    save_context.write_bits(0x0F21, 0x02) # "Ruto in JJ (M2) Meet Ruto"
+    if world.settings.ruto_already_f1_jabu and not world.dungeon_mq['Jabu Jabus Belly']:
+        save_context.write_bits(0x0F21, 0x80) # Ruto in JJ, Spawns on F1 instead of B1
 
     save_context.write_bits(0x0EE2, 0x01)  # "Began Ganondorf Battle"
     save_context.write_bits(0x0EE3, 0x80)  # "Began Bongo Bongo Battle"
@@ -1608,6 +1611,9 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
                                                shop_item_file.end,
                                                shop_item_vram_start,
                                                shop_item_vram_start + (shop_item_file.end - shop_item_file.start)])
+
+    # Relocate Audiobank_table
+    move_audiobank_table(rom, 0xB896A0, rom.sym('AUDIOBANK_TABLE_EXTENDED'))
 
     # Update DMA Table
     update_dmadata(rom, shop_item_file)
@@ -2416,6 +2422,20 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         symbol = rom.sym('FAST_BUNNY_HOOD_ENABLED')
         rom.write_byte(symbol, 0x01)
 
+    # Automatically re-equip the current mask on scene change
+    if world.settings.auto_equip_masks:
+        rom.write_byte(rom.sym('CFG_MASK_AUTOEQUIP'), 0x01)
+
+        # Remove mask reaction text IDs from all actors not involved in the
+        # mask trading sequence. See z_face_reaction.c in decomp for original
+        # values or https://wiki.cloudmodding.com/oot/Code_(File)/NTSC_1.0#Mask_Reaction_Text.
+        # Text ID 0x0000 is the default if a mask is not being worn.
+        # Convenience hack to allow the player to keep the bunny hood on when interacting
+        # with actors that give items (rolling goron, lab dive, etc.)
+        for mask_segment_id in range(0x00, 0x3C):
+            if mask_segment_id not in [0x05, 0x06, 0x07, 0x0F, 0x15, 0x1C]:
+                rom.write_int16s(0x00B66E60 + mask_segment_id * 0x12, [0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000])
+
     if world.settings.fix_broken_drops:
         symbol = rom.sym('FIX_BROKEN_DROPS')
         rom.write_byte(symbol, 0x01)
@@ -2918,6 +2938,12 @@ def place_shop_items(rom: Rom, world: World, shop_items, messages, locations, in
                 rom_item = read_rom_item(rom, item_display.index)
 
             shop_objs.add(rom_item['object_id'])
+            # Also add any progressive upgrade models to the scene load
+            if 'upgrade_ids' in item_display.special:
+                for item_index in item_display.special['upgrade_ids']:
+                    upgrade_item = read_rom_item(rom, item_index)
+                    shop_objs.add(upgrade_item['object_id'])
+
             shop_id = place_shop_items.shop_id
             rom.write_int16(location.address, shop_id)
             shop_item = shop_items[shop_id]

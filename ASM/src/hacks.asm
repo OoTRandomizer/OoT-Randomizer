@@ -71,6 +71,114 @@ Gameplay_InitSkybox:
 .endarea
 
 ;==================================================================================================
+; Increase Number of Audio Banks, and Audiotable (samples)
+;==================================================================================================
+
+.org 0x800B8888
+    lui     t2, hi(AUDIOBANK_TABLE_EXTENDED)
+.org 0x800B8898
+    addiu   t2, t2, lo(AUDIOBANK_TABLE_EXTENDED)
+
+; Hacks to increase the number of audio banks from 0x30 to 0x80
+; Hacks in AudioHeap_ResetLoadStatus
+; This loop is annoying because it hardcodes the start and end addresses of fontLoadStatus array instead of calculating it.
+; v0 - start of array
+; v1 - end of array
+.org 0x800B3540
+    ; Replaces
+    ; lui   v1, 0x8012
+    ; lui   v0, 0x8012
+    ; addiu v0, v0 0x5660
+    ; addiu v1, v1, 0x5630
+    li      v1, FONTLOADSTATUS_EXTENDED
+    li      v0, FONTLOADSTATUS_EXTENDED + 0x80
+
+.org 0x800B3554
+    ; Replaces:
+    ; lbu   t6, 0x3468(v1)
+    lbu     t6, 0x00(v1)
+
+.org 0x800B3560
+    ; Replaces:
+    ; sb    r0, 0x3468(v1)
+    sb      r0, 0x00(v1)
+
+; Hacks in AudioHeap_PopPersistentCache (I think)
+.org 0x800B3AB8
+    ; Replaces:
+    ; lui   t7, 0x8013
+    ; addiu t7, t7, 0x8A98
+    li  t7, FONTLOADSTATUS_EXTENDED
+
+; Hacks in AudioHeap_AllocCached (I think)
+.org 0x800B3F00
+    ; Replaces:
+    ; lui   t3, 0x8013
+    lui     t3, hi(FONTLOADSTATUS_EXTENDED)
+.org 0x800B3F0C
+    ; Replaces:
+    ; addiu t3, t3, 0x8A98
+    addiu   t3, t3, lo(FONTLOADSTATUS_EXTENDED)
+
+; Hacks in AudioLoad_IsFontLoadComplete
+.org 0x800B6E8C
+; Replaces:
+;   lui     t6, 0x8013
+;   addu    t6, t6, a1
+;   lbu     t6, 0x8A98(t6)
+    lui     t6, hi(FONTLOADSTATUS_EXTENDED)
+    addu    t6, t6, a1
+    lbu     t6, lo(FONTLOADSTATUS_EXTENDED)(t6)
+.org 0x800B6EB4
+; Replaces:
+;   lui     t7, 0x8013
+;   addu    t7, t7, v0
+;   lbu     t7, 0x8A98(t7)
+    lui     t7, hi(FONTLOADSTATUS_EXTENDED)
+    addu    t7, t7, v0
+    lbu     t7, lo(FONTLOADSTATUS_EXTENDED)(t7)
+
+; Hacks in AudioLoad_SetFontLoadStatus
+.org 0x800B6FE0
+; Replaces:
+;   lui     t6, 0x8012
+;   addiu   t6, t6, 0x5630
+;   skip
+;   lbu     t7, 0x3468(v0)
+;   skip
+;   skip
+;   skip
+;   sb      a1, 0x3468(v0)
+    li      t6, FONTLOADSTATUS_EXTENDED
+    .skip   4
+    lbu     t7, 0x00(v0)
+    .skip   12
+    sb      a1, 0x00(v0)
+
+; Hacks in AudioLoad_SyncLoadFont
+.org 0x800B7A2C
+; Replaces:
+;   lui     a1, 0x8012
+;   addiu   a1, a1, 0x5630
+;   addu    t6, a1, v0
+    jal     AudioLoad_SyncLoadFont_StatusHack
+    lui     a1, 0x8012
+    nop
+    lbu     t7, 0x00(t6)
+
+; Hacks in AudioLoad_AsyncLoadInner
+.org 0x800B82D0
+; Replaces:
+;   lui     t7, 0x8013
+    lui     t7, hi(FONTLOADSTATUS_EXTENDED)
+.org 0x800B8310
+; Replaces:
+;   addu    t7, t7, v0
+;   lbu     t7, 0x8A98(t7)
+    addu    t7, t7, v0
+    lbu     t7, lo(FONTLOADSTATUS_EXTENDED)(t7)
+
+;==================================================================================================
 ; Don't Use Sandstorm Transition if gameplay_field_keep is not loaded
 ;==================================================================================================
 
@@ -240,6 +348,35 @@ Gameplay_InitSkybox:
     lh      t6, 0x00A4(a0)
     li      at, 67
     nop
+    nop
+
+;==================================================================================================
+; Speed up armos push
+;==================================================================================================
+; In EnAm_Statue, subtract 0x1000 from this->unk_258 instead of 0x800
+; This value is used as the timer for how long to push for
+; This halves the number of frames that the push will occur over.
+;replaces
+;addiu t0, a2, 0xF800
+.orga 0xC97C68
+    addiu t0, a2, 0xF000
+
+; 1.00973892212 is used instead of 1 because we are setting a speed based on sin(unk_258). When this is discretized and summed up over the duration movement, 1 does not cause the proper amount of movement.
+
+; In EnAm_Statue, when calculating the speed, multiply by 1.00973892212 instead of 0.5 (first instance, used for collision detection?)
+.orga 0xC97D68
+;   replaces
+;   lui     at, 0x3F00
+;   mtc1    at, f8
+    jal     en_am_calculation_1
+    nop
+
+; In EnAm_Statue, when calculating the speed, multiply by 1.00973892212 instead of 0.5
+.orga 0xC97E20
+    ;replaces
+    ;lui at, 0x3F00
+    ;mtc1 at, f10
+    jal     en_am_calculation_2
     nop
 
 ;==================================================================================================
@@ -1349,6 +1486,37 @@ nop
     jal      Shop_Keeper_Init_ID
 .orga 0xC6C920
     jal      Shop_Keeper_Update_ID
+
+; Update object ID and draw ID for progressive items
+.headersize(0x80862C00 - 0xC004E0)
+
+; EnGirlA_InitializeItemAction / func_8086443C
+; Update the IDs
+; Replaces:
+;   lh      t2, 0x0002(v1)
+.org 0x8086476C
+    jal     shop_draw_id_hook
+
+; Remove vanilla line assigning the draw ID.
+; This is handled in the above hook.
+; Replaces:
+;   sh      t2, 0x01BC(s0)
+.org 0x80864778
+    nop
+
+.headersize(0x808CED80 - 0xC6C5E0)
+
+; EnOssan_State_ItemPurchased / func_808D1D08
+; Run update shop items function after an item is purchased.
+; Also reorganize displaced code to preserve $ra
+; Replaces:
+;   lh      t6, 0x001C(s0)
+;   addiu   $at, $zero, 0x000A
+.org 0x808D1D48
+    jal     shop_update_offerings_hook
+    nop
+
+.headersize(0)
 
 ; Override Deku Salescrub sold out check
 ; addiu at, zero, 2
@@ -2615,6 +2783,14 @@ courtyard_guards_kill:
 ;           addiu   a1, a1, -0x6220
 .orga 0xB2E82C ; in memory 0x800B88CC
     lw      a1, 0x8000B188
+
+;==================================================================================================
+; Load Audiobank using dmadata
+;==================================================================================================
+; Replaces: lui     a1, 0x0001
+;           addiu   a1, a1, 0xD390
+.orga 0xB2E840 ; in memory 0x800B88E0
+    lw      a1, 0x8000B178
 
 ;==================================================================================================
 ; Load Audiotable using dmadata

@@ -3033,6 +3033,19 @@ class SettingInfos:
         shared         = True,
     )
 
+    auto_equip_masks = Checkbutton(
+        gui_text       = 'Maintain Mask Equips through Scene Changes',
+        gui_tooltip    = '''\
+            Keep the currently equipped mask equipped after scene
+            changes. Also persists through savewarps. If equip swap
+            is used to wear a mask as adult and the ability to
+            equip swap masks is lost, travelling through time will
+            unequip the mask as adult.
+        ''',
+        default        = False,
+        shared         = True,
+    )
+
     plant_beans = Checkbutton(
         gui_text       = 'Plant Magic Beans',
         gui_tooltip    = '''\
@@ -3131,6 +3144,17 @@ class SettingInfos:
         gui_params     = {
             "hide_when_disabled": True,
         },
+    )
+
+    ruto_already_f1_jabu = Checkbutton(
+        gui_text       = 'Ruto Already at F1',
+        gui_tooltip    = '''\
+            Ruto in Jabu Jabu's Belly will already be at the top floor.
+            Only applied in the original version of the dungeon, since
+            in Master Quest you don't need to bring Ruto up.
+        ''',
+        default        = False,
+        shared         = True,
     )
 
     ocarina_songs = Combobox(

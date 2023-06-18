@@ -29,6 +29,7 @@ import os
 from dataclasses import dataclass
 from enum import Enum
 
+from Rom import Rom
 from Utils import data_path
 
 
@@ -262,3 +263,10 @@ def get_voice_sfx_choices(age: int, include_random: bool = True) -> list[str]:
     if len(names) > 2 and include_random:
         names.append('Random')
     return names
+
+
+def move_audiobank_table(rom: Rom, from_addr: int, to_addr: int) -> None:
+    audiobank_table_header = rom.read_bytes(from_addr, 0x10)
+    num_entries = (audiobank_table_header[0] << 8) + audiobank_table_header[1]
+    audiobank_table_bytes = rom.read_bytes(from_addr, (num_entries+1)*0x10)
+    rom.write_bytes(to_addr, audiobank_table_bytes)

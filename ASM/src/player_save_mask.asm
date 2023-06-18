@@ -1,4 +1,10 @@
+CFG_MASK_AUTOEQUIP:
+.byte 0x00
+.align 4
+
 player_save_mask:
+    lb      t0, CFG_MASK_AUTOEQUIP
+    beqz    t0, @@return
     lhu     t0, 0x1C(a1) ;player->params
     andi    t0, t0, 0xF00
     sra     t0, t0, 0x8
