@@ -1,0 +1,4 @@
+[submodule "OoT-Custom-Sequences"]
+	path = OoT-Custom-Sequences
+	url = https://github.com/DaruniasJoy/OoT-Custom-Sequences
+	ignore = all
