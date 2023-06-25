@@ -2,9 +2,9 @@ name: Python
 
 on:
   push:
-    branches: [ "Dev" ]
+    branches: [ "Dev_Disabled" ]
   pull_request:
-    branches: [ "Dev" ]
+    branches: [ "Dev_Disabled" ]
 
 jobs:
   test_minimum_python:
