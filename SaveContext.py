@@ -861,6 +861,12 @@ class SaveContext:
             },
             'triforce_pieces'            : Address(0xD4 + 0x1C * 0x48 + 0x10, size=4), # Unused word in scene x48
             'pending_freezes'            : Address(0xD4 + 0x1C * 0x49 + 0x10, size=4), # Unused word in scene x49
+            'Ocarina_A_Button'           : Address(0xD4 + 0x1C * 0x50 + 0x10, mask=0x01), # Unused word in scene x50
+            'Ocarina_C_up_Button'        : Address(0xD4 + 0x1C * 0x50 + 0x10, mask=0x02), # Unused word in scene x50
+            'Ocarina_C_down_Button'      : Address(0xD4 + 0x1C * 0x50 + 0x10, mask=0x04), # Unused word in scene x50
+            'Ocarina_C_left_Button'      : Address(0xD4 + 0x1C * 0x50 + 0x10, mask=0x08), # Unused word in scene x50
+            'Ocarina_C_right_Button'     : Address(0xD4 + 0x1C * 0x50 + 0x10, mask=0x10), # Unused word in scene x50
+
             # begin extended save data items
             'silver_rupee_counts' : {
                 'dc_staircase': Address(address=0x00, extended=True, size=1),
@@ -1211,6 +1217,11 @@ class SaveContext:
         },
         "Ice Trap"                  : {'pending_freezes': None},
         "Triforce Piece"            : {'triforce_pieces': None},
+        "Ocarina A Button"          : {'Ocarina_A_Button': True},
+        "Ocarina C up Button"       : {'Ocarina_C_up_Button': True},
+        "Ocarina C down Button"     : {'Ocarina_C_down_Button': True},
+        "Ocarina C left Button"     : {'Ocarina_C_left_Button': True},
+        "Ocarina C right Button"    : {'Ocarina_C_right_Button': True},
         "Boss Key (Forest Temple)"                : {'dungeon_items.forest.boss_key': True},
         "Boss Key (Fire Temple)"                  : {'dungeon_items.fire.boss_key': True},
         "Boss Key (Water Temple)"                 : {'dungeon_items.water.boss_key': True},

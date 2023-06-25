@@ -22,7 +22,7 @@ item_draw_table_entry_t item_draw_table[] = {
     [0x06] = { draw_gi_song_notes,          { 0x06000AE0, 0xC832FFFF, 0 } }, // Music Note (Purple)
     [0x07] = { draw_gi_song_notes,          { 0x06000AE0, 0xC8FF00FF, 0 } }, // Music Note (Yellow)
     [0x08] = { draw_gi_recovery_heart,      { 0x060000E0 } }, // Recovery Heart
-    [0x09] = { draw_gi_boss_keys,           { 0x06000CA0, 0x06000F08, 0xFFAAFFFF, 0xFF0064FF, 0xFFFFFFFF, 0x8C7800FF } }, // Boss Key
+    [0x09] = { draw_gi_boss_keys,           { 0x06000CA0, 0x06000F08, 0xFFAAFFFF, 0xFF0064FF, 0xFFFFFFFF, 0x8C7800FF, 0x6E7467FF, 0x262724FF } }, // Boss Key
     [0x0A] = { draw_gi_compass,             { 0x06000960, 0x06000C50 } }, // Compass
     [0x0B] = { draw_gi_eggs_and_medallions, { 0x06000CB0, 0x06000E18 } }, // Forest Medallion
     [0x0C] = { draw_gi_eggs_and_medallions, { 0x06001AF0, 0x06000E18 } }, // Fire Medallion
@@ -133,15 +133,36 @@ item_draw_table_entry_t item_draw_table[] = {
 
     //Rando-added functions
     [0x75] = { draw_gi_various_opa0,        { 0x06000A30 } }, // Triforce Piece
-    [0x76] = { draw_gi_small_keys,          { 0x060015E8, 0xFFFFFFFF, 0x3C505AFF } }, // Key Ring
-    [0x77] = { draw_gi_song_notes,          { 0x06000EC0, 0x00C800FF, 1 } }, // Music Note inverted (Green)
-    [0x78] = { draw_gi_song_notes,          { 0x06000EC0, 0xFF3200FF, 1 } }, // Music Note inverted (Red)
-    [0x79] = { draw_gi_song_notes,          { 0x06000EC0, 0x0096FFFF, 1 } }, // Music Note inverted (Blue)
-    [0x7A] = { draw_gi_song_notes,          { 0x06000EC0, 0xFF9600FF, 1 } }, // Music Note inverted (Orange)
-    [0x7B] = { draw_gi_song_notes,          { 0x06000EC0, 0xC832FFFF, 1 } }, // Music Note inverted (Purple)
-    [0x7C] = { draw_gi_song_notes,          { 0x06000EC0, 0xC8FF00FF, 1 } }, // Music Note inverted (Yellow)
-    [0x7D] = { draw_gi_various_opa0,        { 0x060016A0 } }, // Bombchu Bag
+    [0x76] = { draw_gi_small_keys,          { 0x060017C0, 0xFFFFFFFF, 0x3C505AFF } }, // Key Ring
+    [0x77] = { draw_gi_song_notes,          { 0x06000F70, 0x00C800FF, 1 } }, // Music Note inverted (Green)
+    [0x78] = { draw_gi_song_notes,          { 0x06000F70, 0xFF3200FF, 1 } }, // Music Note inverted (Red)
+    [0x79] = { draw_gi_song_notes,          { 0x06000F70, 0x0096FFFF, 1 } }, // Music Note inverted (Blue)
+    [0x7A] = { draw_gi_song_notes,          { 0x06000F70, 0xFF9600FF, 1 } }, // Music Note inverted (Orange)
+    [0x7B] = { draw_gi_song_notes,          { 0x06000F70, 0xC832FFFF, 1 } }, // Music Note inverted (Purple)
+    [0x7C] = { draw_gi_song_notes,          { 0x06000F70, 0xC8FF00FF, 1 } }, // Music Note inverted (Yellow)
+    [0x7D] = { draw_gi_chubag,              { 0x060006A0, 0x060008E0, 0x06001280, 0xBA3F3AFF, 0xA5231EFF, 0x1695D2FF, 0x054C7FFF } }, // Bombchu Bag
     [0x7E] = { draw_gi_silver_rupee_pouch,  { 0x06001850, 0x06001750, 0x06001790, 0x060019A0, 0x060017B0, 0x06001A28, 0x060017D0, 0x06001AD8 } }, // Adult's Wallet}
+    [0x7F] = { draw_gi_shrink_keys,         { 0x06001060, 0x94E97BFF, 0x2CCF1AFF } }, // Small Key (Forest)
+    [0x80] = { draw_gi_shrink_keys,         { 0x06000F00, 0xFD9884FF, 0xED1612FF } }, // Small Key (Fire)
+    [0x81] = { draw_gi_shrink_keys,         { 0x06000F40, 0x4C9DEEFF, 0x077AEEFF } }, // Small Key (Water)
+    [0x82] = { draw_gi_shrink_keys,         { 0x06001080, 0xFACD8FFF, 0xF5B433FF } }, // Small Key (Spirit)
+    [0x83] = { draw_gi_shrink_keys,         { 0x06000FC0, 0x9454ebFF, 0x7A18DDFF } }, // Small Key (Shadow)
+    [0x84] = { draw_gi_shrink_keys,         { 0x06000FF0, 0xFAD1FAFF, 0xE9B3EFFF } }, // Small Key (Well)
+    [0x85] = { draw_gi_shrink_keys,         { 0x06001110, 0xFEFB9CFF, 0xE3E312FF } }, // Small Key (GTG)
+    [0x86] = { draw_gi_shrink_keys,         { 0x06001110, 0xFFFFFFFF, 0x8c8c8cFF } }, // Small Key (Thieves)
+    [0x87] = { draw_gi_shrink_keys,         { 0x06000DD0, 0x6E7467FF, 0x262724FF } }, // Small Key (Ganon)
+    [0x88] = { draw_gi_shrink_keys,         { 0x06001080, 0xC79B42FF, 0x9F7937FF } }, // Small Key (Treasure Chest Game)
+    [0x89] = { draw_gi_boss_altered,        { 0x060006D0, 0x06001590, 0x94E97BFF, 0x2CCF1AFF, 0xFFFFFFFF, 0x8C7800FF } }, // Boss Key (Forest)
+    [0x8A] = { draw_gi_boss_altered,        { 0x060006A0, 0x06001500, 0xFD9884FF, 0xED1612FF, 0xFFFFFFFF, 0x8C7800FF } }, // Boss Key (Fire)
+    [0x8B] = { draw_gi_boss_altered,        { 0x060008F0, 0x06001790, 0x4C9DEEFF, 0x077AEEFF, 0xFFFFFFFF, 0x8C7800FF } }, // Boss Key (Water)
+    [0x8C] = { draw_gi_boss_altflip,        { 0x06000E30, 0x060016D0, 0xFACD8FFF, 0xF5B433FF, 0xFFFFFFFF, 0x8C7800FF } }, // Boss Key (Spirit)
+    [0x8D] = { draw_gi_boss_altered,        { 0x06000490, 0x06001350, 0x9454ebFF, 0x7A18DDFF, 0xFFFFFFFF, 0x8C7800FF } }, // Boss Key (Shadow)
+    [0x8E] = { draw_gi_boss_keys,           { 0x06000CA0, 0x06000F08, 0x6E7467FF, 0x262724FF, 0xFFFFFFFF, 0x8C7800FF } }, // Boss Key (Ganon)
+    [0x8F] = { draw_gi_a_button,            { 0x06000DA0, 0x5A5AFFFF } }, // A button
+    [0x90] = { draw_gi_c_button_vertical,   { 0x06000960, 0xFFA000FF, 0 } }, // Cup button
+    [0x91] = { draw_gi_c_button_vertical,   { 0x06000960, 0xFFA000FF, 1 } }, // Cdown button
+    [0x92] = { draw_gi_c_button_horizontal, { 0x06000E10, 0xFFA000FF, 1 } }, // Cleft button
+    [0x93] = { draw_gi_c_button_horizontal, { 0x06000E10, 0xFFA000FF, 0 } }, // Cright button
 };
 
 void base_draw_gi_model(z64_game_t *game, uint32_t draw_id) {

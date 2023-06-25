@@ -20,6 +20,7 @@ The unused field (offset 0x10) of the permanent scene flags (save context + 0xd4
 * Trade Quest Items Owned: Scene 0x60
 * Trade Quest Items Traded: Scene 0x62
 * Expensive Merchants (Granny's Potion Shop only): Scene 4E
+* Unlocked ocarina notes: Scene 0x50
 
 ## Collectibles field
 

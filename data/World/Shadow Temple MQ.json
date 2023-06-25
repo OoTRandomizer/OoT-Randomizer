@@ -6,7 +6,8 @@
             "Graveyard Warp Pad Region": "True",
             "Shadow Temple Beginning": "
                 (logic_lens_shadow_mq or can_use(Lens_of_Truth)) and
-                (can_use(Hover_Boots) or can_use(Hookshot))"
+                (can_use(Hover_Boots) or can_use(Hookshot))",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {
@@ -232,7 +233,9 @@
         "locations": {
             "Shadow Temple MQ After Boat Pot 1": "True",
             "Shadow Temple MQ After Boat Pot 2": "True",
-            "Shadow Temple MQ GS After Ship": "Hookshot"
+            "Shadow Temple MQ GS After Ship": "
+                Hookshot or (logic_shadow_mq_after_boat_gs and
+                   (has_explosives or Bow or can_use(Dins_Fire) or can_shield))"
         },
         "exits": {
             "Shadow Temple Across Chasm": "
@@ -270,7 +273,8 @@
             "Shadow Temple MQ Spike Walls Pot": "(Small_Key_Shadow_Temple, 6)"
         },
         "exits": {
-            "Shadow Temple 3 Spinning Pots Rupees": "Bombs or Progressive_Strength_Upgrade"
+            "Shadow Temple 3 Spinning Pots Rupees": "
+                Bombs or Progressive_Strength_Upgrade or (logic_shadow_triple_pots and has_bombchus)"
         }
     },
     {
@@ -291,6 +295,7 @@
     {
         "region_name": "Shadow Temple Before Boss",
         "dungeon": "Shadow Temple",
+        "savewarp": "Graveyard Warp Pad Region -> Shadow Temple Entryway",
         "locations": {
             "Shadow Temple MQ GS Near Boss": "has_projectile(adult) or can_use(Dins_Fire)"
         },

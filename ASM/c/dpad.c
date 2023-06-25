@@ -101,6 +101,56 @@ void draw_dpad() {
                 }
             }
         }
+        if (CAN_DRAW_OCARINA_BUTTONS) {
+            left = 70;
+            int top = 125;
+            int icon_width = 16;
+            int icon_height = 16;
+
+            // Draw background
+            int bg_width = 5 * icon_width;
+            int bg_left = left;
+            int bg_top = top;
+
+            gDPSetCombineMode(db->p++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
+            gDPSetPrimColor(db->p++, 0, 0, 0x00, 0x00, 0x00, 0xD0);
+            gSPTextureRectangle(db->p++,
+                    bg_left<<2, bg_top<<2,
+                    (bg_left + bg_width)<<2, (bg_top + icon_height)<<2,
+                    0,
+                    0, 0,
+                    1<<10, 1<<10);
+
+            gDPPipeSync(db->p++);
+            gDPSetCombineMode(db->p++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
+            sprite_load(db, &button_sprite, 0, 5);
+
+            gDPSetPrimColor(db->p++, 0, 0, 0x00, 0x00, 0xFF, alpha); // blue
+            if (CFG_CORRECT_MODEL_COLORS) {
+                gDPSetPrimColor(db->p++, 0, 0, CFG_A_BUTTON_COLOR.r, CFG_A_BUTTON_COLOR.g, CFG_A_BUTTON_COLOR.b, alpha);
+            }
+            if (z64_file.scene_flags[0x50].unk_00_ & 1 << 0) { // A
+                sprite_draw(db, &button_sprite, 0, left, top, icon_width, icon_height);
+            }
+
+            gDPSetPrimColor(db->p++, 0, 0, 0xF4, 0xEC, 0x30, alpha); // yellow
+            if (CFG_CORRECT_MODEL_COLORS) {
+                gDPSetPrimColor(db->p++, 0, 0, CFG_C_BUTTON_COLOR.r, CFG_C_BUTTON_COLOR.g, CFG_C_BUTTON_COLOR.b, alpha);
+            }
+            if (z64_file.scene_flags[0x50].unk_00_ & 1 << 2) { // C Down
+                sprite_draw(db, &button_sprite, 1, left + icon_width, top, icon_width, icon_height);
+            }
+            if (z64_file.scene_flags[0x50].unk_00_ & 1 << 4) { // C right
+                sprite_draw(db, &button_sprite, 2, left + 2*icon_width, top, icon_width, icon_height);
+            }
+            if (z64_file.scene_flags[0x50].unk_00_ & 1 << 3) { // C left
+                sprite_draw(db, &button_sprite, 3, left + 3*icon_width, top, icon_width, icon_height);
+            }
+            if (z64_file.scene_flags[0x50].unk_00_ & 1 << 1) { // C up
+                sprite_draw(db, &button_sprite, 4, left + 4*icon_width, top, icon_width, icon_height);
+            }
+        }
+
         if (left == 271) {
             // D-pad under C buttons, if trade slot selector not drawn
             sprite_draw(db, &dpad_sprite, 0, left, 64, 16, 16);

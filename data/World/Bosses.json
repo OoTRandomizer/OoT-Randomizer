@@ -98,7 +98,8 @@
         "scene": "Water Temple Boss",
         "is_boss_room": "True",
         "events": {
-            "Defeat Morpha": "can_use(Hookshot)",
+            "Defeat Morpha": "
+                can_use(Hookshot) or (logic_water_morpha and (is_adult or Kokiri_Sword))",
             "Water Temple Clear": "'Defeat Morpha'"
         },
         "locations": {

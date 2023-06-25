@@ -455,7 +455,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
         if self.world.ensure_tod_access:
             # tod has DAY or (tod == NONE and (ss or find a path from a provider))
             # parsing is better than constructing this expression by hand
-            return ast.parse("(tod & TimeOfDay.DAY) if tod else (state.has_all_of((Ocarina, Suns_Song)) or state.search.can_reach(spot.parent_region, age=age, tod=TimeOfDay.DAY))", mode='eval').body
+            return ast.parse("(tod & TimeOfDay.DAY) if tod else ((state.has_all_of((Ocarina, Suns_Song)) and state.has_all_notes_for_song('Suns Song')) or state.search.can_reach(spot.parent_region, age=age, tod=TimeOfDay.DAY))", mode='eval').body
         return ast.NameConstant(True)
 
     def at_dampe_time(self, node: ast.Call) -> ast.expr:
@@ -472,7 +472,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
         if self.world.ensure_tod_access:
             # tod has DAMPE or (tod == NONE and (ss or find a path from a provider))
             # parsing is better than constructing this expression by hand
-            return ast.parse("(tod & TimeOfDay.DAMPE) if tod else (state.has_all_of((Ocarina, Suns_Song)) or state.search.can_reach(spot.parent_region, age=age, tod=TimeOfDay.DAMPE))", mode='eval').body
+            return ast.parse("(tod & TimeOfDay.DAMPE) if tod else ((state.has_all_of((Ocarina, Suns_Song)) and state.has_all_notes_for_song('Suns Song')) or state.search.can_reach(spot.parent_region, age=age, tod=TimeOfDay.DAMPE))", mode='eval').body
         return ast.NameConstant(True)
 
     # Parse entry point

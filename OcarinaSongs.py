@@ -411,11 +411,8 @@ def generate_song_list(world: World, frog: bool, warp: bool) -> dict[str, Song]:
 
 
 # replace the playback and activation requirements for the ocarina songs
-def replace_songs(world: World, rom: Rom, frog: bool, warp: bool) -> None:
-    songs = generate_song_list(world, frog, warp)
-    world.song_notes = songs
-
-    for name, song in songs.items():
+def patch_songs(world: World, rom: Rom) -> None:
+    for name, song in world.song_notes.items():
         if str(song) == SONG_TABLE[name][2]:
             continue  # song activation is vanilla (possibly because this row wasn't randomized), don't randomize playback
 

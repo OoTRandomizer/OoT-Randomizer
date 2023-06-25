@@ -6,7 +6,8 @@
             "Graveyard Warp Pad Region": "True",
             "Shadow Temple Beginning": "
                 (logic_lens_shadow or can_use(Lens_of_Truth)) and
-                (can_use(Hover_Boots) or can_use(Hookshot))"
+                (can_use(Hover_Boots) or can_use(Hookshot))",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {
@@ -167,7 +168,8 @@
             "Shadow Temple GS Triple Giant Pot": "True"
         },
         "exits": {
-            "Shadow Temple 3 Spinning Pots Rupees": "Bombs or Progressive_Strength_Upgrade",
+            "Shadow Temple 3 Spinning Pots Rupees": "
+                Bombs or Progressive_Strength_Upgrade or (logic_shadow_triple_pots and has_bombchus)",
             "Shadow Temple Beyond Boat Scarecrow": "can_use(Distant_Scarecrow)",
             "Shadow Temple Before Boss": "
                 Bow or (logic_shadow_statue and has_bombchus) or shadow_temple_shortcuts"
@@ -213,6 +215,7 @@
     {
         "region_name": "Shadow Temple Before Boss",
         "dungeon": "Shadow Temple",
+        "savewarp": "Graveyard Warp Pad Region -> Shadow Temple Entryway",
         "locations": {
             "Shadow Temple Near Boss Pot 1": "True",
             "Shadow Temple Near Boss Pot 2": "True"

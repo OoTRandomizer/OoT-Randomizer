@@ -140,7 +140,7 @@ item_row_t item_table[] = {
     [0x006E] = ITEM_ROW(0x53,      GILDED_CHEST, 0x1C, -1, 0x005D, 0x0173, 0x67, no_upgrade, no_effect, -1, -1, NULL), // Blue Fire (Refill)
     [0x006F] = ITEM_ROW(0x53,      GILDED_CHEST, 0x20, -1, 0x0097, 0x0176, 0x6A, no_upgrade, no_effect, -1, -1, NULL), // Poe (Refill)
     [0x0070] = ITEM_ROW(0x53,      GILDED_CHEST, 0x1E, -1, 0x00F9, 0x0176, 0x70, no_upgrade, no_effect, -1, -1, NULL), // Big Poe (Refill)
-    [0x0071] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x913E, 0x00AA, 0x02, no_upgrade, give_small_key, TCG_ID, -1, resolve_text_small_keys), // Small Key (Chest Game)
+    [0x0071] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x913E, 0x00AA, 0x02, upgrade_key_model, give_small_key, TCG_ID, -1, resolve_text_small_keys), // Small Key (Chest Game)
     [0x0072] = ITEM_ROW(0x4D,       BROWN_CHEST, 0x84, -1, 0x00F4, 0x017F, 0x6D, no_upgrade, no_effect, -1, -1, NULL), // Green Rupee (Chest Game)
     [0x0073] = ITEM_ROW(0x4D,       BROWN_CHEST, 0x85, -1, 0x00F5, 0x017F, 0x6E, no_upgrade, no_effect, -1, -1, NULL), // Blue Rupee (Chest Game)
     [0x0074] = ITEM_ROW(0x4D,       BROWN_CHEST, 0x86, -1, 0x00F6, 0x017F, 0x6F, no_upgrade, no_effect, -1, -1, NULL), // Red Rupee (Chest Game)
@@ -179,12 +179,12 @@ item_row_t item_table[] = {
     [0x0093] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00F9, 0x0176, 0x70, no_upgrade, give_bottle, 0x1E, -1, NULL), // Bottle with Big Poe
     [0x0094] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x0097, 0x0176, 0x6A, no_upgrade, give_bottle, 0x20, -1, NULL), // Bottle with Poe
 
-    [0x0095] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x0006, 0x00B9, 0x0A, no_upgrade, give_dungeon_item, 0x01, FOREST_ID,    NULL), // Forest Temple Boss Key
-    [0x0096] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x001C, 0x00B9, 0x0A, no_upgrade, give_dungeon_item, 0x01, FIRE_ID,      NULL), // Fire Temple Boss Key
-    [0x0097] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x001D, 0x00B9, 0x0A, no_upgrade, give_dungeon_item, 0x01, WATER_ID,     NULL), // Water Temple Boss Key
-    [0x0098] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x001E, 0x00B9, 0x0A, no_upgrade, give_dungeon_item, 0x01, SPIRIT_ID,    NULL), // Spirit Temple Boss Key
-    [0x0099] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x002A, 0x00B9, 0x0A, no_upgrade, give_dungeon_item, 0x01, SHADOW_ID,    NULL), // Shadow Temple Boss Key
-    [0x009A] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x0061, 0x00B9, 0x0A, no_upgrade, give_dungeon_item, 0x01, TOWER_ID,     NULL), // Ganon's Castle Boss Key
+    [0x0095] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x0006, 0x00B9, 0x0A, upgrade_key_model, give_dungeon_item, 0x01, FOREST_ID,    NULL), // Forest Temple Boss Key
+    [0x0096] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x001C, 0x00B9, 0x0A, upgrade_key_model, give_dungeon_item, 0x01, FIRE_ID,      NULL), // Fire Temple Boss Key
+    [0x0097] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x001D, 0x00B9, 0x0A, upgrade_key_model, give_dungeon_item, 0x01, WATER_ID,     NULL), // Water Temple Boss Key
+    [0x0098] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x001E, 0x00B9, 0x0A, upgrade_key_model, give_dungeon_item, 0x01, SPIRIT_ID,    NULL), // Spirit Temple Boss Key
+    [0x0099] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x002A, 0x00B9, 0x0A, upgrade_key_model, give_dungeon_item, 0x01, SHADOW_ID,    NULL), // Shadow Temple Boss Key
+    [0x009A] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x0061, 0x00B9, 0x0A, upgrade_key_model, give_dungeon_item, 0x01, TOWER_ID,     NULL), // Ganon's Castle Boss Key
 
     [0x009B] = ITEM_ROW(0x53,       BROWN_CHEST, 0x41, -1, 0x0062, 0x00B8, 0x0B, no_upgrade, give_dungeon_item, 0x02, DEKU_ID,      NULL), // Deku Tree Compass
     [0x009C] = ITEM_ROW(0x53,       BROWN_CHEST, 0x41, -1, 0x0063, 0x00B8, 0x0B, no_upgrade, give_dungeon_item, 0x02, DODONGO_ID,   NULL), // Dodongo's Cavern Compass
@@ -208,15 +208,15 @@ item_row_t item_table[] = {
     [0x00AD] = ITEM_ROW(0x53,       BROWN_CHEST, 0x41, -1, 0x00A5, 0x00C8, 0x1C, no_upgrade, give_dungeon_item, 0x04, BOTW_ID,      NULL), // Bottom of the Well Map
     [0x00AE] = ITEM_ROW(0x53,       BROWN_CHEST, 0x41, -1, 0x0092, 0x00C8, 0x1C, no_upgrade, give_dungeon_item, 0x04, ICE_ID,       NULL), // Ice Cavern Map
 
-    [0x00AF] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x0093, 0x00AA, 0x02, no_upgrade, give_small_key, FOREST_ID, -1, resolve_text_small_keys), // Forest Temple Small Key
-    [0x00B0] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x0094, 0x00AA, 0x02, no_upgrade, give_small_key, FIRE_ID,   -1, resolve_text_small_keys), // Fire Temple Small Key
-    [0x00B1] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x0095, 0x00AA, 0x02, no_upgrade, give_small_key, WATER_ID,  -1, resolve_text_small_keys), // Water Temple Small Key
-    [0x00B2] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00A6, 0x00AA, 0x02, no_upgrade, give_small_key, SPIRIT_ID, -1, resolve_text_small_keys), // Spirit Temple Small Key
-    [0x00B3] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00A9, 0x00AA, 0x02, no_upgrade, give_small_key, SHADOW_ID, -1, resolve_text_small_keys), // Shadow Temple Small Key
-    [0x00B4] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x009B, 0x00AA, 0x02, no_upgrade, give_small_key, BOTW_ID,   -1, resolve_text_small_keys), // Bottom of the Well Small Key
-    [0x00B5] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x009F, 0x00AA, 0x02, no_upgrade, give_small_key, GTG_ID,    -1, resolve_text_small_keys), // Gerudo Training Small Key
-    [0x00B6] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00A0, 0x00AA, 0x02, no_upgrade, give_small_key, FORT_ID,   -1, resolve_text_small_keys), // Gerudo Fortress Small Key
-    [0x00B7] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00A1, 0x00AA, 0x02, no_upgrade, give_small_key, CASTLE_ID, -1, resolve_text_small_keys), // Ganon's Castle Small Key
+    [0x00AF] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x0093, 0x00AA, 0x02, upgrade_key_model, give_small_key, FOREST_ID, -1, resolve_text_small_keys), // Forest Temple Small Key
+    [0x00B0] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x0094, 0x00AA, 0x02, upgrade_key_model, give_small_key, FIRE_ID,   -1, resolve_text_small_keys), // Fire Temple Small Key
+    [0x00B1] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x0095, 0x00AA, 0x02, upgrade_key_model, give_small_key, WATER_ID,  -1, resolve_text_small_keys), // Water Temple Small Key
+    [0x00B2] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00A6, 0x00AA, 0x02, upgrade_key_model, give_small_key, SPIRIT_ID, -1, resolve_text_small_keys), // Spirit Temple Small Key
+    [0x00B3] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00A9, 0x00AA, 0x02, upgrade_key_model, give_small_key, SHADOW_ID, -1, resolve_text_small_keys), // Shadow Temple Small Key
+    [0x00B4] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x009B, 0x00AA, 0x02, upgrade_key_model, give_small_key, BOTW_ID,   -1, resolve_text_small_keys), // Bottom of the Well Small Key
+    [0x00B5] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x009F, 0x00AA, 0x02, upgrade_key_model, give_small_key, GTG_ID,    -1, resolve_text_small_keys), // Gerudo Training Small Key
+    [0x00B6] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00A0, 0x00AA, 0x02, upgrade_key_model, give_small_key, FORT_ID,   -1, resolve_text_small_keys), // Thieves' Hideout Small Key
+    [0x00B7] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00A1, 0x00AA, 0x02, upgrade_key_model, give_small_key, CASTLE_ID, -1, resolve_text_small_keys), // Ganon's Castle Small Key
 
     [0x00B8] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00E9, 0x0194, 0x13, no_upgrade, give_defense,      -1, -1, NULL), // Double Defense
     [0x00B9] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00E4, 0x00CD, 0x1E, no_upgrade, give_magic,        -1, -1, NULL), // Magic Meter
@@ -248,7 +248,7 @@ item_row_t item_table[] = {
     [0x00CF] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x9200, 0x0195, 0x77, no_upgrade, give_small_key_ring, SHADOW_ID, -1, resolve_text_keyrings), // Shadow Temple Small Key Ring
     [0x00D0] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x9200, 0x0195, 0x77, no_upgrade, give_small_key_ring, BOTW_ID,   -1, resolve_text_keyrings), // Bottom of the Well Small Key Ring
     [0x00D1] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x9200, 0x0195, 0x77, no_upgrade, give_small_key_ring, GTG_ID,    -1, resolve_text_keyrings), // Gerudo Training Small Key Ring
-    [0x00D2] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x9200, 0x0195, 0x77, no_upgrade, give_small_key_ring, FORT_ID,   -1, resolve_text_keyrings), // Gerudo Fortress Small Key Ring
+    [0x00D2] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x9200, 0x0195, 0x77, no_upgrade, give_small_key_ring, FORT_ID,   -1, resolve_text_keyrings), // Thieves' Hideout Small Key Ring
     [0x00D3] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x9200, 0x0195, 0x77, no_upgrade, give_small_key_ring, CASTLE_ID, -1, resolve_text_keyrings), // Ganon's Castle Small Key Ring
 
     [0x00D4] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9019, 0x0197, 0x7E, no_upgrade, give_bombchus, 20, -1, NULL), // Bombchu Bag (20)
@@ -299,9 +299,35 @@ item_row_t item_table[] = {
     [0x00FE] = ITEM_ROW(0x4D,      SILVER_CHEST, 0x41, -1, 0x902B, 0x00D1, 0x7F, no_upgrade, give_silver_rupee_pouch, CASTLE_ID,  0x10, resolve_text_silver_rupee_pouches), // Silver Rupee Pouch (Ganons Castle Spirit Trial)
     [0x00FF] = ITEM_ROW(0x4D,      SILVER_CHEST, 0x41, -1, 0x902C, 0x00D1, 0x7F, no_upgrade, give_silver_rupee_pouch, CASTLE_ID,  0x11, resolve_text_silver_rupee_pouches), // Silver Rupee Pouch (Ganons Castle Light Trial)
     [0x0100] = ITEM_ROW(0x4D,      SILVER_CHEST, 0x41, -1, 0x902D, 0x00D1, 0x7F, no_upgrade, give_silver_rupee_pouch, CASTLE_ID,  0x12, resolve_text_silver_rupee_pouches), // Silver Rupee Pouch (Ganons Castle Fire Trial)
-    [0x0101] = ITEM_ROW(0x4D,     SILVER_CHEST, 0x41, -1, 0x902E, 0x00D1, 0x7F, no_upgrade, give_silver_rupee_pouch, CASTLE_ID,  0x13, resolve_text_silver_rupee_pouches), // Silver Rupee Pouch (Ganons Castle Shadow Trial)
-    [0x0102] = ITEM_ROW(0x4D,     SILVER_CHEST, 0x41, -1, 0x902F, 0x00D1, 0x7F, no_upgrade, give_silver_rupee_pouch, CASTLE_ID,  0x14, resolve_text_silver_rupee_pouches), // Silver Rupee Pouch (Ganons Castle Water Trial)
-    [0x0103] = ITEM_ROW(0x4D,     SILVER_CHEST, 0x41, -1, 0x9030, 0x00D1, 0x7F, no_upgrade, give_silver_rupee_pouch, CASTLE_ID,  0x15, resolve_text_silver_rupee_pouches), // Silver Rupee Pouch (Ganons Castle Forest Trial)
+    [0x0101] = ITEM_ROW(0x4D,      SILVER_CHEST, 0x41, -1, 0x902E, 0x00D1, 0x7F, no_upgrade, give_silver_rupee_pouch, CASTLE_ID,  0x13, resolve_text_silver_rupee_pouches), // Silver Rupee Pouch (Ganons Castle Shadow Trial)
+    [0x0102] = ITEM_ROW(0x4D,      SILVER_CHEST, 0x41, -1, 0x902F, 0x00D1, 0x7F, no_upgrade, give_silver_rupee_pouch, CASTLE_ID,  0x14, resolve_text_silver_rupee_pouches), // Silver Rupee Pouch (Ganons Castle Water Trial)
+    [0x0103] = ITEM_ROW(0x4D,      SILVER_CHEST, 0x41, -1, 0x9030, 0x00D1, 0x7F, no_upgrade, give_silver_rupee_pouch, CASTLE_ID,  0x15, resolve_text_silver_rupee_pouches), // Silver Rupee Pouch (Ganons Castle Forest Trial)
+
+    // Ocarina button models
+    [0x0104] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x908C, 0x01A8, 0x90, no_upgrade, unlock_ocarina_note, 0, -1, NULL), // Ocarina A
+    [0x0105] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x908D, 0x01AA, 0x91, no_upgrade, unlock_ocarina_note, 1, -1, NULL), // Ocarina C up
+    [0x0106] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x908E, 0x01AA, 0x92, no_upgrade, unlock_ocarina_note, 2, -1, NULL), // Ocarina C down
+    [0x0107] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x908F, 0x01A9, 0x93, no_upgrade, unlock_ocarina_note, 3, -1, NULL), // Ocarina C left
+    [0x0108] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9090, 0x01A9, 0x94, no_upgrade, unlock_ocarina_note, 4, -1, NULL), // Ocarina C right
+
+    // Custom Key Models
+    [0x0109] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x0006, 0x01A3, 0x8A, no_upgrade, give_dungeon_item, 0x01, FOREST_ID, NULL ), // Forest Temple Boss Key
+    [0x010A] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x001C, 0x01A4, 0x8B, no_upgrade, give_dungeon_item, 0x01, FIRE_ID,   NULL ), // Fire Temple Boss Key
+    [0x010B] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x001D, 0x01A5, 0x8C, no_upgrade, give_dungeon_item, 0x01, WATER_ID,  NULL ), // Water Temple Boss Key
+    [0x010C] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x001E, 0x01A6, 0x8D, no_upgrade, give_dungeon_item, 0x01, SPIRIT_ID, NULL ), // Spirit Temple Boss Key
+    [0x010D] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x002A, 0x01A7, 0x8E, no_upgrade, give_dungeon_item, 0x01, SHADOW_ID, NULL ), // Shadow Temple Boss Key
+    [0x010E] = ITEM_ROW(0x53,        GOLD_CHEST, 0x41, -1, 0x0061, 0x00B9, 0x8F, no_upgrade, give_dungeon_item, 0x01, TOWER_ID,  NULL ), // Ganon's Castle Boss Key
+    [0x010F] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x0093, 0x0199, 0x80, no_upgrade, give_small_key, FOREST_ID, -1, resolve_text_small_keys), // Forest Temple Small Key
+    [0x0110] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x0094, 0x019A, 0x81, no_upgrade, give_small_key, FIRE_ID,   -1, resolve_text_small_keys), // Fire Temple Small Key
+    [0x0111] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x0095, 0x019B, 0x82, no_upgrade, give_small_key, WATER_ID,  -1, resolve_text_small_keys), // Water Temple Small Key
+    [0x0112] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00A6, 0x019C, 0x83, no_upgrade, give_small_key, SPIRIT_ID, -1, resolve_text_small_keys), // Spirit Temple Small Key
+    [0x0113] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00A9, 0x019D, 0x84, no_upgrade, give_small_key, SHADOW_ID, -1, resolve_text_small_keys), // Shadow Temple Small Key
+    [0x0114] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x009B, 0x019E, 0x85, no_upgrade, give_small_key, BOTW_ID,   -1, resolve_text_small_keys), // Bottom of the Well Small Key
+    [0x0115] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x009F, 0x019F, 0x86, no_upgrade, give_small_key, GTG_ID,    -1, resolve_text_small_keys), // Gerudo Training Small Key
+    [0x0116] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00A0, 0x01A0, 0x87, no_upgrade, give_small_key, FORT_ID,   -1, resolve_text_small_keys), // Thieves' Hideout Small Key
+    [0x0117] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00A1, 0x01A1, 0x88, no_upgrade, give_small_key, CASTLE_ID, -1, resolve_text_small_keys), // Ganon's Castle Small Key
+    [0x0118] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x913E, 0x01A2, 0x89, no_upgrade, give_small_key, TCG_ID,    -1, resolve_text_small_keys), // Small Key (Chest Game)
+
 };
 
 /*  Determine which message to display based on the number of silver rupees collected.
@@ -404,7 +430,7 @@ item_row_t *get_item_row(uint16_t item_id) {
 /*
 uint16_t resolve_item_text_id(uint16_t item_id, bool is_outgoing) {
     item_row_t *item_row = get_item_row(item_id);
-    if (((item_id >= 0xAF && item_id < 0xB8) || (SHUFFLE_CHEST_GAME && item_id == 0x71)) && !is_outgoing) {
+    if ((item_id >= 0xAF && item_id < 0xB8) || (item_id >= 0x10F && item_id < 0x118) || (SHUFFLE_CHEST_GAME && (item_id == 0x71 || item_id == 0x118)) && !is_outgoing) {
         return item_row->text_id + (z64_file.scene_flags[item_row->effect_arg1].unk_00_ >> 0x10); // Dynamically select the text box based on key count
     }
     // Change message for key rings when they include boss keys
@@ -422,15 +448,9 @@ uint16_t resolve_item_text_id(item_row_t *item_row, uint16_t item_id, bool is_ou
     }
 }
 
-uint16_t resolve_upgrades(uint16_t item_id) {
-    for (;;) {
-        item_row_t *item_row = get_item_row(item_id);
-        uint16_t new_item_id = item_row->upgrade(&z64_file, item_id);
-        if (new_item_id == item_id) {
-            return item_id;
-        }
-        item_id = new_item_id;
-    }
+uint16_t resolve_upgrades(override_t override) {
+    item_row_t *item_row = get_item_row(override.value.base.item_id);
+    return item_row->upgrade(&z64_file, override);
 }
 
 void call_effect_function(item_row_t *item_row) {

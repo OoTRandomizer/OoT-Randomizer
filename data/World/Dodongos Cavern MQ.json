@@ -6,7 +6,8 @@
             "Death Mountain": "True",
             "Dodongos Cavern Lobby": "
                 here(can_blast_or_smash or Progressive_Strength_Upgrade) or
-                dodongos_cavern_shortcuts"
+                dodongos_cavern_shortcuts",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {

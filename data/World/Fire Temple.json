@@ -9,7 +9,8 @@
                 (Small_Key_Fire_Temple, 2) and
                 (logic_fewer_tunic_requirements or can_use(Goron_Tunic))",
             "Fire Temple Lower Locked Door": "
-                ((Small_Key_Fire_Temple, 8) or (not keysanity)) and can_use(Megaton_Hammer)"
+                ((Small_Key_Fire_Temple, 8) or (not keysanity)) and can_use(Megaton_Hammer)",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {

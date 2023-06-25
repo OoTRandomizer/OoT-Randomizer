@@ -83,7 +83,7 @@ void ObjComb_Draw_Hack(z64_actor_t *this, z64_game_t *game) {
     override_t override = get_beehive_override(this, game);
 
     if(override.key.all != 0) {
-        uint16_t item_id = resolve_upgrades(override.value.item_id);
+        uint16_t item_id = resolve_upgrades(override);
         item_row_t *row = get_item_row(override.value.looks_like_item_id);
         if (row == NULL) {
             row = get_item_row(override.value.item_id);

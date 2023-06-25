@@ -19,9 +19,10 @@ from Item import ItemInfo
 from ItemPool import remove_junk_items, remove_junk_ludicrous_items, ludicrous_items_base, ludicrous_items_extended, trade_items, ludicrous_exclusions
 from LocationList import location_is_viewable
 from Main import main, resolve_settings, build_world_graphs
-from Messages import Message
+from Messages import Message, read_messages, shuffle_messages
 from Settings import Settings, get_preset_files
 from Spoiler import Spoiler
+from Rom import Rom
 
 test_dir = os.path.join(os.path.dirname(__file__), 'tests')
 output_dir = os.path.join(test_dir, 'Output')
@@ -853,3 +854,12 @@ class TestValidSpoilers(unittest.TestCase):
                         json.dump(d, f, indent=0)
                     logging.getLogger('').exception(f'Failed to generate with these settings:\n{settings.get_settings_display()}\n')
                     raise
+
+class TestTextShuffle(unittest.TestCase):
+    def test_text_shuffle(self):
+        if not os.path.isfile('./ZOOTDEC.z64'):
+            self.skipTest("Base ROM file not available.")
+        rom = Rom("./ZOOTDEC.z64")
+        messages = read_messages(rom)
+        shuffle_messages(messages)
+        shuffle_messages(messages, False)

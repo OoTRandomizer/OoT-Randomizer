@@ -10,7 +10,8 @@
         },
         "exits": {
             "SFM Forest Temple Entrance Ledge": "True",
-            "Forest Temple Central Area": "is_adult or can_child_attack or Nuts"
+            "Forest Temple Central Area": "is_adult or can_child_attack or Nuts",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {
@@ -53,7 +54,8 @@
             # Other methods of crossing through the well are not currently relevant.
             "Forest Temple Outdoors High Balconies": "
                 here(is_adult or has_explosives or
-                    ((Boomerang or Nuts or Deku_Shield) and (Sticks or Kokiri_Sword or Slingshot)))"
+                    ((Boomerang or Nuts or Deku_Shield) and (Sticks or Kokiri_Sword or Slingshot)))",
+            "Forest Temple NW Outdoors Freestandings": "logic_forest_courtyard_hearts and can_use(Boomerang)"
         }
     },
     {
@@ -127,12 +129,19 @@
         "region_name": "Forest Temple Outside Upper Ledge",
         "dungeon": "Forest Temple",
         "locations": {
-            "Forest Temple Floormaster Chest": "True",
-            "Forest Temple Courtyard Recovery Heart 1": "True",
-            "Forest Temple Courtyard Recovery Heart 2": "True"
+            "Forest Temple Floormaster Chest": "True"
         },
         "exits": {
-            "Forest Temple NW Outdoors": "True"
+            "Forest Temple NW Outdoors": "True",
+            "Forest Temple NW Outdoors Freestandings": "True"
+        }
+    },
+    {
+        "region_name": "Forest Temple NW Outdoors Freestandings",
+        "dungeon": "Forest Temple",
+        "locations": {
+            "Forest Temple Courtyard Recovery Heart 1": "True",
+            "Forest Temple Courtyard Recovery Heart 2": "True"
         }
     },
     {

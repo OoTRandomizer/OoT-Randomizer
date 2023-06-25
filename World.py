@@ -16,6 +16,7 @@ from Hints import HintArea, hint_dist_keys, hint_dist_files
 from Item import Item, ItemFactory, ItemInfo, make_event_item
 from Location import Location, LocationFactory
 from LocationList import business_scrubs, location_groups
+from OcarinaSongs import generate_song_list, Song
 from Plandomizer import WorldDistribution, InvalidFileException
 from Region import Region, TimeOfDay
 from RuleParser import Rule_AST_Transformer
@@ -150,6 +151,11 @@ class World:
 
         if resolve_randomized_settings:
             self.resolve_random_settings()
+
+        self.song_notes: dict[str, Song] = generate_song_list(self,
+            frog=settings.ocarina_songs in ('frog', 'all'),
+            warp=settings.ocarina_songs in ('warp', 'all'),
+        )
 
         if len(settings.hint_dist_user) == 0:
             for d in hint_dist_files():
@@ -368,6 +374,8 @@ class World:
         new_world.always_hints = list(self.always_hints)
         new_world.max_progressions = copy.copy(self.max_progressions)
         new_world.available_tokens = self.available_tokens
+
+        new_world.song_notes = copy.copy(self.song_notes)
 
         return new_world
 

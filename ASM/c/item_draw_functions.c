@@ -442,13 +442,34 @@ void draw_gi_small_keys(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[0].dlist);
 }
 
+void draw_gi_shrink_keys(z64_game_t *game, uint32_t draw_id) {
+    z64_gfx_t *gfx = game->common.gfx;
+    colorRGBA8_t prim_color = item_draw_table[draw_id].args[1].color;
+    colorRGBA8_t env_color = item_draw_table[draw_id].args[2].color;
+
+    translate_sys_matrix(0, 5, 0, 1);
+    scale_sys_matrix(0.8f, 0.8f, 0.8f, 1);
+
+    append_setup_dl_25_to_opa(gfx);
+    gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gDPSetCombineMode(gfx->poly_opa.p++, G_CC_MODULATEI_PRIM, G_CC_MODULATEI_PRIM);
+    gDPSetPrimColor(gfx->poly_opa.p++, 0, 0x80, prim_color.r, prim_color.g, prim_color.b, prim_color.a);
+    gDPSetEnvColor(gfx->poly_opa.p++, env_color.r, env_color.g, env_color.b, env_color.a);
+    gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[0].dlist);
+}
+
 void draw_gi_boss_keys(z64_game_t *game, uint32_t draw_id) {
     z64_gfx_t *gfx = game->common.gfx;
+
     colorRGBA8_t prim_color = item_draw_table[draw_id].args[2].color;
     colorRGBA8_t env_color = item_draw_table[draw_id].args[3].color;
 
     colorRGBA8_t prim_color_key = item_draw_table[draw_id].args[4].color;
     colorRGBA8_t env_color_key = item_draw_table[draw_id].args[5].color;
+
+    translate_sys_matrix(0, 15, 0, 1);
+    scale_sys_matrix(1.25f, 1.25f, 1.25f, 1);
+
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
     gDPSetPrimColor(gfx->poly_opa.p++, 0, 0x80, prim_color_key.r, prim_color_key.g, prim_color_key.b, prim_color_key.a);
@@ -460,4 +481,130 @@ void draw_gi_boss_keys(z64_game_t *game, uint32_t draw_id) {
     gDPSetPrimColor(gfx->poly_xlu.p++, 0, 0x80, prim_color.r, prim_color.g, prim_color.b, prim_color.a);
     gDPSetEnvColor(gfx->poly_xlu.p++, env_color.r, env_color.g, env_color.b, env_color.a);
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[1].dlist);
+
+}
+// Gem DL First
+void draw_gi_boss_altered(z64_game_t *game, uint32_t draw_id) {
+    z64_gfx_t *gfx = game->common.gfx;
+    // extract gem colors
+    colorRGBA8_t prim_color = item_draw_table[draw_id].args[2].color;
+    colorRGBA8_t env_color = item_draw_table[draw_id].args[3].color;
+    // extract key colors
+    colorRGBA8_t prim_color_key = item_draw_table[draw_id].args[4].color;
+    colorRGBA8_t env_color_key = item_draw_table[draw_id].args[5].color;
+    // Move and Resize
+    translate_sys_matrix(0, 5, 0, 1);
+    scale_sys_matrix(0.8f, 0.8f, 0.8f, 1);
+    // draw key
+    append_setup_dl_25_to_opa(gfx);
+    gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gDPSetPrimColor(gfx->poly_opa.p++, 0, 0x80, prim_color_key.r, prim_color_key.g, prim_color_key.b, prim_color_key.a);
+    gDPSetEnvColor(gfx->poly_opa.p++, env_color_key.r, env_color_key.g, env_color_key.b, env_color_key.a);
+    gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[1].dlist);
+    // draw gem
+    append_setup_dl_25_to_xlu(gfx);
+    gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gDPSetPrimColor(gfx->poly_xlu.p++, 0, 0x80, prim_color.r, prim_color.g, prim_color.b, prim_color.a);
+    gDPSetEnvColor(gfx->poly_xlu.p++, env_color.r, env_color.g, env_color.b, env_color.a);
+    gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[0].dlist);
+}
+// Key DL First
+void draw_gi_boss_altflip(z64_game_t *game, uint32_t draw_id) {
+    z64_gfx_t *gfx = game->common.gfx;
+    // extract gem colors
+    colorRGBA8_t prim_color = item_draw_table[draw_id].args[2].color;
+    colorRGBA8_t env_color = item_draw_table[draw_id].args[3].color;
+    // extract key colors
+    colorRGBA8_t prim_color_key = item_draw_table[draw_id].args[4].color;
+    colorRGBA8_t env_color_key = item_draw_table[draw_id].args[5].color;
+    // Move and Resize
+    translate_sys_matrix(0, 5, 0, 1);
+    scale_sys_matrix(0.8f, 0.8f, 0.8f, 1);
+    // draw key
+    append_setup_dl_25_to_opa(gfx);
+    gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gDPSetPrimColor(gfx->poly_opa.p++, 0, 0x80, prim_color_key.r, prim_color_key.g, prim_color_key.b, prim_color_key.a);
+    gDPSetEnvColor(gfx->poly_opa.p++, env_color_key.r, env_color_key.g, env_color_key.b, env_color_key.a);
+    gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[0].dlist);
+    // draw gem
+    append_setup_dl_25_to_xlu(gfx);
+    gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gDPSetPrimColor(gfx->poly_xlu.p++, 0, 0x80, prim_color.r, prim_color.g, prim_color.b, prim_color.a);
+    gDPSetEnvColor(gfx->poly_xlu.p++, env_color.r, env_color.g, env_color.b, env_color.a);
+    gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[1].dlist);
+}
+
+void draw_gi_chubag(z64_game_t *game, uint32_t draw_id) {
+    z64_gfx_t *gfx = game->common.gfx;
+    // Band
+    colorRGBA8_t prim_color_band = item_draw_table[draw_id].args[5].color;
+    colorRGBA8_t env_color_band = item_draw_table[draw_id].args[6].color;
+    // Front
+    colorRGBA8_t prim_color = item_draw_table[draw_id].args[3].color;
+    colorRGBA8_t env_color = item_draw_table[draw_id].args[4].color;
+    // Band
+    append_setup_dl_25_to_xlu(gfx);
+    gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gDPSetPrimColor(gfx->poly_xlu.p++, 0, 0x80, prim_color_band.r, prim_color_band.g, prim_color_band.b, prim_color_band.a);
+    gDPSetEnvColor(gfx->poly_xlu.p++, env_color_band.r, env_color_band.g, env_color_band.b, env_color_band.a);
+    gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[0].dlist);
+    // Front
+    append_setup_dl_25_to_xlu(gfx);
+    gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gDPSetPrimColor(gfx->poly_xlu.p++, 0, 0x80, prim_color.r, prim_color.g, prim_color.b, prim_color.a);
+    gDPSetEnvColor(gfx->poly_xlu.p++, env_color.r, env_color.g, env_color.b, env_color.a);
+    gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[1].dlist);
+    // Bag
+    append_setup_dl_25_to_opa(gfx);
+    gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[2].dlist);
+}
+
+void draw_gi_a_button(z64_game_t *game, uint32_t draw_id) {
+    z64_gfx_t *gfx = game->common.gfx;
+    colorRGBA8_t prim_color = item_draw_table[draw_id].args[1].color;
+    if (CFG_CORRECT_MODEL_COLORS) {
+        prim_color.r = CFG_A_BUTTON_COLOR.r;
+        prim_color.g = CFG_A_BUTTON_COLOR.g;
+        prim_color.b = CFG_A_BUTTON_COLOR.b;
+    }
+
+    append_setup_dl_25_to_xlu(gfx);
+    gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gDPSetPrimColor(gfx->poly_xlu.p++, 0, 0x80, prim_color.r, prim_color.g, prim_color.b, prim_color.a);
+    gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[0].dlist);
+}
+
+void draw_gi_c_button_vertical(z64_game_t *game, uint32_t draw_id) {
+    z64_gfx_t *gfx = game->common.gfx;
+    colorRGBA8_t prim_color = item_draw_table[draw_id].args[1].color;
+    if (CFG_CORRECT_MODEL_COLORS) {
+        prim_color.r = CFG_C_BUTTON_COLOR.r;
+        prim_color.g = CFG_C_BUTTON_COLOR.g;
+        prim_color.b = CFG_C_BUTTON_COLOR.b;
+    }
+
+    rotate_Z_sys_matrix(item_draw_table[draw_id].args[2].dlist*3.14f, 1);
+
+    append_setup_dl_25_to_opa(gfx);
+    gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gDPSetPrimColor(gfx->poly_opa.p++, 0, 0x80, prim_color.r, prim_color.g, prim_color.b, prim_color.a);
+    gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[0].dlist);
+}
+
+void draw_gi_c_button_horizontal(z64_game_t *game, uint32_t draw_id) {
+    z64_gfx_t *gfx = game->common.gfx;
+    colorRGBA8_t prim_color = item_draw_table[draw_id].args[1].color;
+    if (CFG_CORRECT_MODEL_COLORS) {
+        prim_color.r = CFG_C_BUTTON_COLOR.r;
+        prim_color.g = CFG_C_BUTTON_COLOR.g;
+        prim_color.b = CFG_C_BUTTON_COLOR.b;
+    }
+
+    rotate_Z_sys_matrix(item_draw_table[draw_id].args[2].dlist*3.14f, 1);
+
+    append_setup_dl_25_to_opa(gfx);
+    gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gDPSetPrimColor(gfx->poly_opa.p++, 0, 0x80, prim_color.r, prim_color.g, prim_color.b, prim_color.a);
+    gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[0].dlist);
 }

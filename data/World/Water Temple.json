@@ -29,7 +29,8 @@
                 is_adult and (Zora_Tunic or logic_fewer_tunic_requirements) and
                 ((logic_water_temple_torch_longshot and Longshot) or Iron_Boots)",
             "Water Temple Falling Platform Room": "Raise_Water_Level and (Small_Key_Water_Temple, 4)",
-            "Water Temple Before Boss": "can_use(Longshot)"
+            "Water Temple Before Boss": "can_use(Longshot)",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {
@@ -59,7 +60,7 @@
             "Water Temple Lowered Water Levels": "can_play(Zeldas_Lullaby)",
             "Water Temple North Basement": "
                 (Iron_Boots or can_play(Zeldas_Lullaby)) and
-                (Longshot or (logic_water_boss_key_region and Hover_Boots)) and
+                (Longshot or (logic_water_north_basement and Hover_Boots)) and
                 (Small_Key_Water_Temple, 4)"
         }
     },

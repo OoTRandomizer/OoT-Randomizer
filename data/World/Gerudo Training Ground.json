@@ -23,7 +23,8 @@
             "Gerudo Training Ground Lava Room Front": "
                 here(has_explosives and (is_adult or Kokiri_Sword))",
             "Gerudo Training Ground Central Maze Right": "(Small_Key_Gerudo_Training_Ground, 9)",
-            "Gerudo Training Ground Boulder Room": "is_adult or Kokiri_Sword"
+            "Gerudo Training Ground Boulder Room": "is_adult or Kokiri_Sword",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {

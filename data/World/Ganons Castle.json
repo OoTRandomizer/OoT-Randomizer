@@ -17,7 +17,8 @@
                 (skipped_trials[Water] or 'Water Trial Clear') and
                 (skipped_trials[Shadow] or 'Shadow Trial Clear') and
                 (skipped_trials[Spirit] or 'Spirit Trial Clear') and
-                (skipped_trials[Light] or 'Light Trial Clear')"
+                (skipped_trials[Light] or 'Light Trial Clear')",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {

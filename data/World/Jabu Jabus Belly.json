@@ -4,7 +4,8 @@
         "dungeon": "Jabu Jabus Belly",
         "exits": {
             "Zoras Fountain": "True",
-            "Jabu Jabus Belly Main": "can_use_projectile"
+            "Jabu Jabus Belly Main": "can_use_projectile",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {

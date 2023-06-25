@@ -17,11 +17,13 @@ class ItemInfo:
     medallions: set[str] = set()
     stones: set[str] = set()
     junk_weight: dict[str, int] = {}
+    ocarina_buttons: set[str] = set()
 
     solver_ids: dict[str, int] = {}
     bottle_ids: set[int] = set()
     medallion_ids: set[int] = set()
     stone_ids: set[int] = set()
+    ocarina_buttons_ids: set[int] = set()
 
     def __init__(self, name: str = '', event: bool = False) -> None:
         if event:
@@ -45,6 +47,7 @@ class ItemInfo:
         self.alias: Optional[tuple[str, int]] = self.special.get('alias', None)
         self.junk: Optional[int] = self.special.get('junk', None)
         self.trade: bool = self.special.get('trade', False)
+        self.ocarina_button: bool = self.special.get('ocarina_button', False)
 
         self.solver_id: Optional[int] = None
         if name and self.junk is None:
@@ -65,9 +68,13 @@ for item_name in item_table:
     if iteminfo.stone:
         ItemInfo.stones.add(item_name)
         ItemInfo.stone_ids.add(ItemInfo.solver_ids[escape_name(item_name)])
+
     if iteminfo.junk is not None:
         ItemInfo.junk_weight[item_name] = iteminfo.junk
 
+    if iteminfo.ocarina_button:
+        ItemInfo.ocarina_buttons.add(item_name)
+        ItemInfo.ocarina_buttons_ids.add(ItemInfo.solver_ids[escape_name(item_name)])
 
 class Item:
     def __init__(self, name: str = '', world: Optional[World] = None, event: bool = False) -> None:

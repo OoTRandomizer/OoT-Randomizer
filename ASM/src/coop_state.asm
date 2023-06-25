@@ -1,7 +1,7 @@
 COOP_CONTEXT:
 
 COOP_VERSION:
-.word 4 ; Increment this if layout of co-op state changes
+.word 5 ; Increment this if layout of co-op state changes
 
 PLAYER_ID:
 .byte 0x00 ; Written by frontend
@@ -14,6 +14,10 @@ INCOMING_ITEM:
 MW_SEND_OWN_ITEMS:
 ; Written by multiworld plugin. If nonzero, the OUTGOING fields are set even if
 ; we find our own item, for the plugin's information.
+.byte 0x00
+MW_PROGRESSIVE_ITEMS_ENABLE:
+; Written by multiworld plugin. If nonzero, item upgrades for outgoing items
+; will be based on MW_PROGRESSIVE_ITEMS_STATE.
 .byte 0x00
 .align 4
 
@@ -30,5 +34,10 @@ PLAYER_NAMES:
 
 .area 5, 0x00
 CFG_FILE_SELECT_HASH:
+.endarea
+.align 4
+
+.area 4*256, 0x00
+MW_PROGRESSIVE_ITEMS_STATE:
 .endarea
 .align 4

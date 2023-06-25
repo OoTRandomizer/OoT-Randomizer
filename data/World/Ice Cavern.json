@@ -3,12 +3,15 @@
         "region_name": "Ice Cavern Beginning",
         "dungeon": "Ice Cavern",
         "locations":{
-            "Ice Cavern Frozen Blue Rupee": "Blue_Fire"
+            "Ice Cavern Frozen Blue Rupee": "
+                Blue_Fire or logic_ice_frozen_rupee or
+                (logic_boomerang_boulders and can_use(Boomerang))"
         },
         "exits": {
             "ZF Ice Ledge": "True",
             # Freezards are immune to Kokiri Sword. It would take a lot of sticks.
-            "Ice Cavern Spinning Scythe Room": "here(is_adult or has_explosives or can_use(Dins_Fire))"
+            "Ice Cavern Spinning Scythe Room": "here(is_adult or has_explosives or can_use(Dins_Fire))",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {
@@ -41,7 +44,7 @@
             "Ice Cavern Map Room Recovery Heart 1": "True",
             "Ice Cavern Map Room Recovery Heart 2": "True",
             "Ice Cavern Map Room Recovery Heart 3": "True",
-            "Ice Cavern Frozen Pot": "Blue_Fire",
+            "Ice Cavern Frozen Pot": "Blue_Fire or logic_ice_frozen_pot",
             "Blue Fire": "has_bottle"
         }
     },

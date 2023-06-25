@@ -20,7 +20,8 @@
             "Gerudo Fortress": "True",
             "Gerudo Training Ground Right Side": "here(can_use(Bow) or can_use(Slingshot))",
             "Gerudo Training Ground Left Side": "
-                has_fire_source and (is_adult or Kokiri_Sword or has_explosives)"
+                has_fire_source and (is_adult or Kokiri_Sword or has_explosives)",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {

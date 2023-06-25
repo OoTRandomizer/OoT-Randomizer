@@ -17,7 +17,8 @@
         "exits": {
             "KF Outside Deku Tree": "True",
             "Deku Tree Slingshot Room": "here(has_shield)",
-            "Deku Tree Basement": "deku_tree_shortcuts or here(is_adult or can_child_attack or Nuts)"
+            "Deku Tree Basement": "deku_tree_shortcuts or here(is_adult or can_child_attack or Nuts)",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {

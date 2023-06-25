@@ -2761,6 +2761,20 @@ class SettingInfos:
         },
     )
 
+    shuffle_individual_ocarina_notes = Checkbutton(
+        gui_text       = 'Shuffle Individual Ocarina Notes',
+        gui_tooltip    = '''\
+            Enabling this locks all Ocarina inputs, and adds 5
+            new items to find that each unlock one of the 5
+            Ocarina notes.
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    )
+
     shuffle_loach_reward = Combobox(
         gui_text       = 'Shuffle Hyrule Loach Reward',
         gui_tooltip    = '''\
@@ -3158,7 +3172,7 @@ class SettingInfos:
     )
 
     ocarina_songs = Combobox(
-        gui_text       = 'Randomize Ocarina Song Notes',
+        gui_text       = 'Randomize Ocarina Melodies',
         default        = 'off',
         choices        = {
             'off': 'Off',
@@ -3261,6 +3275,15 @@ class SettingInfos:
             will appear with a golden texture. The texture will revert to the
             original texture once the item is collected.
             Beehives will wiggle until their item is collected.
+        ''',
+        shared         = True,
+    )
+
+    key_appearance_match_dungeon = Checkbutton(
+        gui_text       = 'Key Appearance Matches Dungeon',
+        gui_tooltip    = '''\
+            Small keys and boss keys (not key rings)
+            will use custom models to match their dungeon.
         ''',
         shared         = True,
     )

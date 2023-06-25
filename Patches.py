@@ -21,8 +21,8 @@ from Messages import read_messages, update_message_by_id, read_shop_items, updat
         write_shop_items, remove_unused_messages, make_player_message, \
         add_item_messages, repack_messages, shuffle_messages, \
         get_message_by_id, TextCode
+from OcarinaSongs import patch_songs
 from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
-from OcarinaSongs import replace_songs
 from Rom import Rom
 from SaveContext import SaveContext, Scenes, FlagType
 from SceneFlags import get_alt_list_bytes, get_collectible_flag_table, get_collectible_flag_table_bytes
@@ -64,11 +64,32 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     # Load models into the extended object table.
     zobj_imports = [
-        ('object_gi_triforce', data_path('Triforce.zobj'), 0x193),  # Triforce Piece
-        ('object_gi_keyring',  data_path('KeyRing.zobj'),  0x195),  # Key Rings
-        ('object_gi_warpsong', data_path('Note.zobj'),     0x196),  # Inverted Music Note
-        ('object_gi_chubag',   data_path('ChuBag.zobj'),   0x197),  # Bombchu Bag
+        ('object_gi_triforce',    data_path('items/Triforce.zobj'),             0x193),  # Triforce Piece
+        ('object_gi_keyring',     data_path('items/KeyRing.zobj'),              0x195),  # Key Rings
+        ('object_gi_warpsong',    data_path('items/Note.zobj'),                 0x196),  # Inverted Music Note
+        ('object_gi_chubag',      data_path('items/ChuBag.zobj'),               0x197),  # Bombchu Bag
+        ('object_gi_skeyforest',  data_path('items/SmallForest.zobj'),          0x199),  # Small Key (Forest)
+        ('object_gi_skeyfire',    data_path('items/SmallFire.zobj'),            0x19A),  # Small Key (Fire)
+        ('object_gi_skeywater',   data_path('items/SmallWater.zobj'),           0x19B),  # Small Key (Water)
+        ('object_gi_skeyspirit',  data_path('items/SmallSpirit.zobj'),          0x19C),  # Small Key (Spirit)
+        ('object_gi_skeyshadow',  data_path('items/SmallShadow.zobj'),          0x19D),  # Small Key (Shadow)
+        ('object_gi_skeywell',    data_path('items/SmallWell.zobj'),            0x19E),  # Small Key (Well)
+        ('object_gi_skeygtg',     data_path('items/SmallGTG.zobj'),             0x19F),  # Small Key (GTG)
+        ('object_gi_skeythieves', data_path('items/SmallThieves.zobj'),         0x1A0),  # Small Key (Thieves)
+        ('object_gi_skeyganon',   data_path('items/SmallGanon.zobj'),           0x1A1),  # Small Key (Ganon)
+        ('object_gi_skeyTCG',     data_path('items/SmallTCG.zobj'),             0x1A2),  # Small Key (Chest Game)
+        ('object_gi_bkforest',    data_path('items/BossForest.zobj'),           0x1A3),  # Boss Key (Forest)
+        ('object_gi_bkfire',      data_path('items/BossFire.zobj'),             0x1A4),  # Boss Key (Fire)
+        ('object_gi_bkwater',     data_path('items/BossWater.zobj'),            0x1A5),  # Boss Key (Water)
+        ('object_gi_bkspirit',    data_path('items/BossSpirit.zobj'),           0x1A6),  # Boss Key (Spirit)
+        ('object_gi_bkshadow',    data_path('items/BossShadow.zobj'),           0x1A7),  # Boss Key (Shadow)
+        ('object_gi_abutton',     data_path('items/A_Button.zobj'),             0x1A8),  # A button
+        ('object_gi_cbutton',     data_path('items/C_Button_Horizontal.zobj'),  0x1A9),  # C button Horizontal
+        ('object_gi_cbutton',     data_path('items/C_Button_Vertical.zobj'),    0x1AA),  # C button Vertical
     ]
+
+    if world.settings.key_appearance_match_dungeon:
+        rom.write_byte(rom.sym('CUSTOM_KEY_MODELS'), 0x01)
 
     extended_objects_start = start_address = rom.dma.free_space()
     for (name, zobj_path, object_id) in zobj_imports:
@@ -335,7 +356,8 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     # songs as items flag
     songs_as_items = world.settings.shuffle_song_items != 'song' or \
                      world.distribution.song_as_items or \
-                     any(name in song_list and record.count for name, record in world.settings.starting_items.items())
+                     any(name in song_list and record.count for name, record in world.settings.starting_items.items()) or \
+                     world.settings.shuffle_individual_ocarina_notes
 
     if songs_as_items:
         rom.write_byte(rom.sym('SONGS_AS_ITEMS'), 1)
@@ -1313,7 +1335,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     # Mark unreachable trade-ins as traded. Only applicable with trade quest shuffle off,
     # and only practically affects the Blue Potion purchase from Granny's Potion Shop.
-    if not world.settings.adult_trade_shuffle:
+    if not world.settings.adult_trade_shuffle and len(world.settings.adult_trade_start) > 0:
         def calculate_traded_flags(world):
             traded_flags = 0
             reverting_item_map = {
@@ -2020,7 +2042,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     # mask shop
     shop_objs = place_shop_items(rom, world, shop_items, messages,
-        list(filter(lambda loc: loc.type == 'MaskShop', world.get_region('Market Mask Shop').locations)))
+        list(filter(lambda loc: loc.type == 'MaskShop', world.get_region('Market Mask Shop Storefront').locations)))
     shop_objs |= {0x013E, 0x00B2, 0x0111, 0x00C5, 0x0165} # Shop objects
     rom.write_byte(0x340A029, len(shop_objs))
     rom.write_int32(0x340A02C, 0x0300D400)
@@ -2452,8 +2474,10 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     # available number of skulls in the world instead of 100.
     rom.write_int16(0xBB340E, world.available_tokens)
 
-    replace_songs(world, rom, frog=world.settings.ocarina_songs in ('frog', 'all'),
-                  warp=world.settings.ocarina_songs in ('warp', 'all'))
+    patch_songs(world, rom)
+
+    if world.settings.shuffle_individual_ocarina_notes:
+        rom.write_byte(rom.sym('SHUFFLE_OCARINA_BUTTONS'), 1)
 
     # Sets the torch count to open the entrance to Shadow Temple
     if world.settings.easier_fire_arrow_entry:

@@ -11,12 +11,13 @@
         "exits": {
             "DMC Fire Temple Entrance": "True",
             "Fire Temple Near Boss": "
-                is_adult and has_fire_source and
+                (is_adult or logic_fire_mq_child_flame) and has_fire_source and
                 (logic_fewer_tunic_requirements or Goron_Tunic)",
             "Fire Temple Lower Locked Door": "
                 (Small_Key_Fire_Temple, 5) and (is_adult or Kokiri_Sword)",
             "Fire Temple Big Lava Room": "
-                is_adult and Megaton_Hammer and (logic_fewer_tunic_requirements or Goron_Tunic)"
+                is_adult and Megaton_Hammer and (logic_fewer_tunic_requirements or Goron_Tunic)",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {

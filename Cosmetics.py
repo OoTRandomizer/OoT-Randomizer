@@ -948,6 +948,12 @@ def patch_music_changes(rom: Rom, settings: Settings, log: CosmeticsLog, symbols
         rom.write_byte(symbols['CFG_SLOWDOWN_MUSIC_WHEN_LOWHP'], 0x00)
     log.slowdown_music_when_lowhp = settings.slowdown_music_when_lowhp
 
+def patch_correct_model_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]) -> None:
+    if settings.correct_model_colors:
+        rom.write_byte(symbols['CFG_CORRECT_MODEL_COLORS'], 0x01)
+    else:
+        rom.write_byte(symbols['CFG_CORRECT_MODEL_COLORS'], 0x00)
+    log.correct_model_colors = settings.correct_model_colors
 
 legacy_cosmetic_data_headers: list[int] = [
     0x03481000,
@@ -1111,6 +1117,16 @@ patch_sets[0x1F073FDD] = {
     }
 }
 
+# 7.1.134
+patch_sets[0x1F073FDE] = {
+    "patches": patch_sets[0x1F073FDD]["patches"] + [
+        patch_correct_model_colors,
+    ],
+    "symbols": {
+        **patch_sets[0x1F073FDD]["symbols"],
+        "CFG_CORRECT_MODEL_COLORS": 0x0068
+    }
+}
 def patch_cosmetics(settings: Settings, rom: Rom) -> CosmeticsLog:
     # re-seed for aesthetic effects. They shouldn't be affected by the generation seed
     random.seed()
@@ -1176,8 +1192,6 @@ class CosmeticsLog:
         self.sfx: dict[str, str] = {}
         self.bgm: dict[str, str] = {}
         self.bgm_groups: dict[str, list | dict] = {}
-        self.bank_dma_index: Optional[int] = None
-        self.instr_dma_index: Optional[int] = None
 
         self.src_dict: dict = {}
         self.errors: list[str] = []

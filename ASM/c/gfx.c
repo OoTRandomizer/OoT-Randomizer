@@ -93,6 +93,11 @@ sprite_t heart_sprite = {
     G_IM_FMT_IA, G_IM_SIZ_8b, 1
 };
 
+sprite_t button_sprite = {
+    NULL, 16, 16, 1,
+    G_IM_FMT_IA, G_IM_SIZ_8b, 5
+};
+
 int sprite_bytes_per_tile(sprite_t *sprite) {
     return sprite->tile_w * sprite->tile_h * sprite->bytes_per_texel;
 }
@@ -190,6 +195,7 @@ void gfx_init() {
     item_digit_sprite.buf = parameter_static.buf + 0x000035C0;
     linkhead_skull_sprite.buf = icon_item_dungeon_static.buf + 0x00001980;
     heart_sprite.buf = parameter_static.buf;
+    button_sprite.buf = parameter_static.buf + 0x2940;
 
     int font_bytes = sprite_bytes(&font_sprite);
     font_sprite.buf = heap_alloc(font_bytes);

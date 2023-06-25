@@ -107,7 +107,7 @@ void Actor_StoreChestType(z64_actor_t* actor, z64_game_t* game) {
         if (POTCRATE_TEXTURES_MATCH_CONTENTS == PTMC_UNCHECKED && override.key.all > 0) { // For "unchecked" PTMC setting: Check if we have an override which means it wasn't collected.
             *pChestType = GILDED_CHEST;
         } else if(POTCRATE_TEXTURES_MATCH_CONTENTS == PTMC_CONTENTS) {
-            uint16_t item_id = resolve_upgrades(override.value.base.item_id);
+            uint16_t item_id = resolve_upgrades(override);
             item_row_t *row = get_item_row(override.value.looks_like_item_id);
             if (row == NULL) {
                 row = get_item_row(override.value.base.item_id);

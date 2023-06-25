@@ -32,19 +32,17 @@ void lookup_shop_draw_id(z64_game_t* play, EnGirlA* shelfSlot, ShopItemEntry* it
 
         override_t override = lookup_override(&shelfSlot->actor, z64_game.scene_index, item_id);
         if(override.key.all != 0) {
-            uint16_t override_id;
-            if (override.value.looks_like_item_id) {
-                override_id = override.value.looks_like_item_id;
-            } else {
-                override_id = override.value.base.item_id;
-            }
-            item_row_t *item_row = get_item_row(override_id);
-            uint16_t new_item_id = item_row->upgrade(&z64_file, override_id);
-            item_row = get_item_row(new_item_id);
+            uint16_t base_item_id = override.value.looks_like_item_id ?
+                override.value.looks_like_item_id :
+                override.value.base.item_id;
+            override_t model_override = override;
+            model_override.value.base.item_id = base_item_id;
+            uint16_t resolved_item_id = resolve_upgrades(model_override);
+            item_row_t *item_row = get_item_row(resolved_item_id);
             // object IDs were already set earlier, use as a fallback if the
             // new one isn't loaded.
             int8_t objIndex = z64_ObjectIndex(&play->obj_ctxt, item_row->object_id);
-            if (new_item_id != override_id && objIndex >= 0 && z64_ObjectIsLoaded(&play->obj_ctxt, objIndex)) {
+            if (resolved_item_id != base_item_id && objIndex >= 0 && z64_ObjectIsLoaded(&play->obj_ctxt, objIndex)) {
                 shelfSlot->objBankIndex = objIndex;
                 shelfSlot->actor.alloc_index = shelfSlot->objBankIndex;
                 shelfSlot->giDrawId = item_row->graphic_id - 1;

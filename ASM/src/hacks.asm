@@ -4024,3 +4024,14 @@ courtyard_guards_kill:
 .org 0x800DC568
     j       Message_Decode_Control_Code_Hook
     nop
+
+;===================================================================================================
+; Shuffle individual ocarina notes hack
+;===================================================================================================
+; Ocarina buttons
+.orga 0xB37EB0
+; Replaced code:
+;   lui     at, 0x8012
+;   sw      t7, 0x1F24(at)
+    jal     ocarina_buttons
+    nop

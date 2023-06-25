@@ -16,6 +16,11 @@ Triforce: int = ItemInfo.solver_ids['Triforce']
 Rutos_Letter: int = ItemInfo.solver_ids['Rutos_Letter']
 Piece_of_Heart: int = ItemInfo.solver_ids['Piece_of_Heart']
 
+Ocarina_A_Button: int = ItemInfo.solver_ids['Ocarina_A_Button']
+Ocarina_C_left_Button: int = ItemInfo.solver_ids['Ocarina_C_left_Button']
+Ocarina_C_up_Button: int = ItemInfo.solver_ids['Ocarina_C_up_Button']
+Ocarina_C_down_Button: int = ItemInfo.solver_ids['Ocarina_C_down_Button']
+Ocarina_C_right_Button: int = ItemInfo.solver_ids['Ocarina_C_right_Button']
 
 class State:
     def __init__(self, parent: World) -> None:
@@ -93,8 +98,12 @@ class State:
     def has_stones(self, count: int) -> bool:
         return self.count_of(ItemInfo.stone_ids) >= count
 
+
     def has_dungeon_rewards(self, count: int) -> bool:
         return (self.count_of(ItemInfo.medallion_ids) + self.count_of(ItemInfo.stone_ids)) >= count
+
+    def has_ocarina_buttons(self, count: int) -> bool:
+        return (self.count_of(ItemInfo.ocarina_buttons_ids)) >= count
 
     # TODO: Store the item's solver id in the goal
     def has_item_goal(self, item_goal: dict[str, Any]) -> bool:
@@ -170,6 +179,30 @@ class State:
 
     def region_has_shortcuts(self, region_name: str) -> bool:
         return self.world.region_has_shortcuts(region_name)
+
+    def has_all_notes_for_song(self, song: str) -> bool:
+
+        # Scarecrow needs 2 different notes
+        if song == 'Scarecrow Song':
+            return self.has_ocarina_buttons(2)
+
+        notes = str(self.world.song_notes[song])
+        if 'A' in notes:
+            if not self.has(Ocarina_A_Button):
+                return False
+        if '<' in notes:
+            if not self.has(Ocarina_C_left_Button):
+                return False
+        if '^' in notes:
+            if not self.has(Ocarina_C_up_Button):
+                return False
+        if 'v' in notes:
+            if not self.has(Ocarina_C_down_Button):
+                return False
+        if '>' in notes:
+            if not self.has(Ocarina_C_right_Button):
+                return False
+        return True
 
     def __getstate__(self) -> dict[str, Any]:
         return self.__dict__.copy()

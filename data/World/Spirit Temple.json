@@ -19,7 +19,8 @@
                     (Silver_Rupee_Spirit_Temple_Child_Early_Torches, 5))",
             "Child Spirit Before Locked Door": "is_child",
             "Early Adult Spirit Temple": "can_use(Silver_Gauntlets)",
-            "Spirit Temple Central Chamber": "is_adult and spirit_temple_shortcuts"
+            "Spirit Temple Central Chamber": "is_adult and spirit_temple_shortcuts",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {
@@ -195,13 +196,15 @@
         },
         "exits": {
             "Child Spirit Temple Climb": "True",
-            "Adult Spirit Temple Climb": "spirit_temple_shortcuts and can_use(Hookshot)",
+            "Adult Spirit Temple Climb": "
+                spirit_temple_shortcuts and
+                (can_use(Hookshot) or (logic_spirit_adult_side_hovers and can_use(Hover_Boots)))",
             "Spirit Temple Before Boss": "
                 is_adult and spirit_temple_shortcuts and
                 (Longshot or (logic_spirit_platform_hookshot and Hookshot))",
             # Age-unknown logic is incompatible with the rest of the world.
             # Because adult might unlock all doors, child must require all 5 keys to pass.
-            "Desert Colossus": "
+            "Desert Colossus Hands": "
                 (Small_Key_Spirit_Temple, 5) or
                 (is_adult and has_explosives and (Small_Key_Spirit_Temple, 3))"
         }
@@ -275,6 +278,7 @@
     {
         "region_name": "Spirit Temple Before Boss",
         "dungeon": "Spirit Temple",
+        "savewarp": "Desert Colossus -> Spirit Temple Lobby",
         "exits": {
             "Twinrova Boss Room": "Boss_Key_Spirit_Temple"
         }

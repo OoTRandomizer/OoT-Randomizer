@@ -7,7 +7,8 @@
             "Ganons Castle Main": "
                 here(is_adult or
                     (Kokiri_Sword and (Sticks or has_explosives or Nuts or Boomerang)) or
-                    (has_explosives and (Sticks or ((Nuts or Boomerang) and Slingshot))))"
+                    (has_explosives and (Sticks or ((Nuts or Boomerang) and Slingshot))))",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {
@@ -58,7 +59,8 @@
         "dungeon": "Ganons Castle",
         "locations": {
             "Ganons Castle MQ Water Trial Chest": "Blue_Fire",
-            "Ganons Castle MQ Water Trial Recovery Heart": "Blue_Fire",
+            "Ganons Castle MQ Water Trial Recovery Heart": "
+                Blue_Fire or (logic_boomerang_boulders and can_use(Boomerang))",
             "Blue Fire": "has_bottle"
         },
         "exits": {
@@ -101,7 +103,7 @@
         },
         "exits": {
             "Ganons Castle Shadow Trial Moving Platform": "
-                (logic_lens_castle_mq or can_use(Lens_of_Truth)) and
+                (logic_lens_shadow_trial_mq or can_use(Lens_of_Truth)) and
                 (Hover_Boots or (Bow and Hookshot))"
         }
     },

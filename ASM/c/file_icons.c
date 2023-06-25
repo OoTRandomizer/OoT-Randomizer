@@ -3,10 +3,13 @@
 #include "color.h"
 #include "hud_colors.h"
 #include "triforce.h"
+#include "ocarina_buttons.h"
 
 #define ICON_SIZE    0x0C
 #define MUSIC_WIDTH  0x06
 #define MUSIC_HEIGHT 0x0A
+#define BUTTON_WIDTH  0x09
+#define BUTTON_HEIGHT 0x09
 
 #define NUM_ICON_SPRITES 3
 sprite_t* const icon_sprites[NUM_ICON_SPRITES] = {
@@ -192,6 +195,20 @@ static const music_tile_data_t song_note_data[NUM_SONGS] = {
     {{0xFF, 0xFF, 0xFF}, {0x73, 0x3A}}  // Song of storms
 };
 
+typedef struct {
+    colorRGB8_t color;
+    tile_position pos;
+} button_tile_data_t;
+
+#define NUM_BUTTONS 5
+static const button_tile_data_t button_note_data[NUM_BUTTONS] = {
+    {{0x00, 0x00, 0xFF}, {0x4E, 0x51}}, // A
+    {{0xF4, 0xEC, 0x30}, {0x57, 0x51}}, // C down
+    {{0xF4, 0xEC, 0x30}, {0x60, 0x51}}, // C right
+    {{0xF4, 0xEC, 0x30}, {0x69, 0x51}}, // C left
+    {{0xF4, 0xEC, 0x30}, {0x72, 0x51}}, // C up
+};
+
 #define NUM_COUNTER 6
 #define COUNTER_ICON_SIZE 0x10
 
@@ -211,7 +228,7 @@ typedef struct {
     uint8_t align_center;
 } counter_tile_data_t;
 
-static const counter_tile_data_t counter_positions[NUM_COUNTER] = {
+static counter_tile_data_t counter_positions[NUM_COUNTER] = {
     {{0x05, 0x00}, COUNTER_ICON_SIZE/2, 13, 1}, // Hearts
     {{0x05, 0x15}, COUNTER_ICON_SIZE/2, 13, 1}, // Rupees
     {{0x05, 0x2A}, COUNTER_ICON_SIZE/2, 13, 1}, // Skulltulas
@@ -248,6 +265,10 @@ typedef struct {
     uint16_t bits;
 } music_tile_info_t;
 
+typedef struct {
+    uint16_t bits;
+} button_tile_info_t;
+
 typedef uint8_t digits_t[3];
 
 typedef struct {
@@ -261,6 +282,7 @@ typedef struct {
     variable_tile_info_t variable;
     counter_tile_info_t counters;
     music_tile_info_t songs;
+    button_tile_info_t buttons;
 } file_info_t;
 
 // File data structure
@@ -292,6 +314,14 @@ static void change_meds_and_stones_tiles_for_triforce_hunt(fixed_tile_data_t* fi
     fixed_tile_original[61].pos = light_med_pos;
 }
 
+static void push_down_death_counter_and_soa_for_ocarina_button_shuffle(fixed_tile_data_t* fixed_tile_original,
+                                                                        counter_tile_data_t* counter_data_original) {
+    tile_position soa_pos = {0x6F, 0x5C};
+    fixed_tile_original[53].pos = soa_pos;
+    tile_position death_pos = {0x4D, 0x5C};
+    counter_data_original[5].pos = death_pos;
+}
+
 // Populate fixed tiles
 #define NUM_NORMAL_INVENTORY_SLOTS 18
 static void populate_fixed(const z64_file_t* file, fixed_tile_info_t* info) {
@@ -299,8 +329,12 @@ static void populate_fixed(const z64_file_t* file, fixed_tile_info_t* info) {
     uint32_t inv = 0;
     uint32_t mask = 0x1;
     fixed_tile_data_t* inv_data = fixed_tile_positions;
+    counter_tile_data_t* counter_data = counter_positions;
     if (TRIFORCE_HUNT_ENABLED) {
         change_meds_and_stones_tiles_for_triforce_hunt(inv_data);
+    }
+    if (SHUFFLE_OCARINA_BUTTONS) {
+        push_down_death_counter_and_soa_for_ocarina_button_shuffle(inv_data, counter_data);
     }
     for (int i = 0; i < NUM_NORMAL_INVENTORY_SLOTS; ++i) {
         uint8_t item = file->items[i];
@@ -365,6 +399,26 @@ static void populate_songs(const z64_file_t* file, music_tile_info_t* songs) {
     songs->bits = (uint16_t)((file->quest_items >> SONG_SHIFT) & 0x0FFF);
 }
 
+// Populate button titles
+static void populate_buttons(const z64_file_t* file, button_tile_info_t* buttons) {
+    buttons->bits = 0;
+    if (file->scene_flags[0x50].unk_00_ & 1 << 0) { // A
+       buttons->bits |= 1 << 0;
+    }
+    if (file->scene_flags[0x50].unk_00_ & 1 << 2) { // C Down
+       buttons->bits |= 1 << 1;
+    }
+    if (file->scene_flags[0x50].unk_00_ & 1 << 4) { // C right
+       buttons->bits |= 1 << 2;
+    }
+    if (file->scene_flags[0x50].unk_00_ & 1 << 3) { // C left
+       buttons->bits |= 1 << 3;
+    }
+    if (file->scene_flags[0x50].unk_00_ & 1 << 1) { // C up
+       buttons->bits |= 1 << 4;
+    }
+}
+
 
 // Populate counter tiles
 static void make_digits(uint8_t* digits, int16_t value);
@@ -401,6 +455,7 @@ void read_file_data(const z64_file_t* file) {
     populate_variable(file, &draw_data.variable);
     populate_counts(file, &draw_data.counters);
     populate_songs(file, &draw_data.songs);
+    populate_buttons(file, &draw_data.buttons);
 }
 
 
@@ -497,6 +552,41 @@ static void draw_songs(z64_disp_buf_t* db, const music_tile_info_t* songs, uint8
         bits >>= 1;
         ++data;
         last_color = color;
+    }
+}
+
+// Draw button tiles
+static void draw_buttons(z64_disp_buf_t* db, const button_tile_info_t* buttons, uint8_t alpha) {
+    uint16_t bits = buttons->bits;
+    const button_tile_data_t* data = button_note_data;
+    sprite_load(db, &button_sprite, 0, 5);
+
+    uint8_t bright_alpha = color_product(WHITE.a, alpha);
+    uint8_t dim_alpha = color_product(DIM.a, alpha);
+
+    colorRGBA8_t last_color = {0x00, 0x00, 0x00, 0x00};
+    uint8_t button_index = 0;
+    while (data != button_note_data + NUM_BUTTONS) {
+        colorRGBA8_t color;
+        color.color = data->color;
+        color.a = bright_alpha;
+        if ((bits & 0x1) == 0) {
+            // Dim color
+            color.r = color_product(color.r, DIM.r);
+            color.g = color_product(color.g, DIM.g);
+            color.b = color_product(color.b, DIM.b);
+            color.a = dim_alpha;
+        }
+
+        if (last_color.r != color.r || last_color.g != color.g || last_color.b != color.b || last_color.a != color.a) {
+            gDPSetPrimColor(db->p++, 0, 0, color.r, color.g, color.b, color.a);
+        }
+        sprite_draw(db, &button_sprite, button_index, get_left(data->pos), get_top(data->pos), BUTTON_WIDTH, BUTTON_HEIGHT);
+
+        bits >>= 1;
+        ++data;
+        last_color = color;
+        button_index++;
     }
 }
 
@@ -706,6 +796,9 @@ void draw_file_icons(z64_disp_buf_t* db, const z64_menudata_t* menu_data) {
         draw_fixed(db, &draw_data.fixed, icon_alpha);
         draw_variable(db, &draw_data.variable, icon_alpha);
         draw_songs(db, &draw_data.songs, icon_alpha);
+        if (SHUFFLE_OCARINA_BUTTONS) {
+            draw_buttons(db, &draw_data.buttons, icon_alpha);
+        }
         draw_counts(db, &draw_data.counters, icon_alpha);
     }
 }

@@ -17,7 +17,8 @@
                 is_adult or can_use(Dins_Fire) or
                 (has_explosives and (can_use(Sticks) or can_use(Slingshot) or Kokiri_Sword))",
             "Ice Cavern Compass Room": "is_adult and Blue_Fire",
-            "Ice Cavern Iron Boots Region": "Blue_Fire"
+            "Ice Cavern Iron Boots Region": "Blue_Fire",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {

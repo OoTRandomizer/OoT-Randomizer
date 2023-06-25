@@ -1,4 +1,4 @@
-__version__ = '7.1.133'
+__version__ = '7.1.143'
 
 # This is a supplemental version number for branches based off of main dev.
 supplementary_version = 0

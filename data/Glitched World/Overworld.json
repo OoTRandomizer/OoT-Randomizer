@@ -122,7 +122,7 @@
             "LW Skull Kid": "is_child and can_play(Sarias_Song)",
             "LW Trade Cojiro": "is_adult and Cojiro",
             "LW Trade Odd Potion": "is_adult and Odd_Potion",
-            "LW Ocarina Memory Game": "is_child and Ocarina",
+            "LW Ocarina Memory Game": "is_child and Ocarina and Ocarina_A_Button and Ocarina_C_down_Button and Ocarina_C_right_Button and Ocarina_C_left_Button and Ocarina_C_up_Button",
             "LW Target in Woods": "can_use(Slingshot)",
             "LW Deku Scrub Near Bridge": "is_child and can_stun_deku",
             "LW GS Bean Patch Near Bridge": "can_plant_bugs and can_child_attack",
@@ -229,7 +229,7 @@
         "hint": "LAKE_HYLIA",
         "time_passes": true,
         "events": {
-            "Bonooru": "is_child and Ocarina"
+            "Bonooru": "is_child and Ocarina and has_all_notes_for_song(Scarecrow_Song)"
         },
         "locations": {
             "Pierre": "is_adult and Bonooru and not free_scarecrow",
@@ -411,7 +411,7 @@
             "Ganons Castle Grounds": "is_adult",
             "Market Guard House": "True",
             "Market Bazaar": "is_child",
-            "Market Mask Shop": "is_child",
+            "Market Mask Shop Storefront": "is_child",
             "Market Shooting Gallery": "is_child",
             "Market Bombchu Bowling": "is_child",
             "Market Potion Shop": "is_child",
@@ -535,7 +535,7 @@
         }
     },
     {
-        "region_name": "Market Mask Shop",
+        "region_name": "Market Mask Shop Storefront",
         "events": {
             "Mask Shop Open": "at('HC Garden Locations', is_child) and 'Kakariko Village Gate Open'",
             "Mask of Truth Access": "

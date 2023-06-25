@@ -205,7 +205,8 @@
             "shuffle_beans",
             "shuffle_expensive_merchants",
             "shuffle_frog_song_rupees",
-            "shuffle_loach_reward"
+            "shuffle_loach_reward",
+            "shuffle_individual_ocarina_notes"
           ]
         },
         {
@@ -354,6 +355,7 @@
             "minor_items_as_major_chest",
             "invisible_chests",
             "correct_potcrate_appearances",
+            "key_appearance_match_dungeon",
             "clearer_hints",
             "hints",
             "hint_dist",

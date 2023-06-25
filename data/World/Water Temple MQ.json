@@ -5,8 +5,11 @@
         "exits": {
             "Lake Hylia": "True",
             "Water Temple Dive": "is_adult and (Zora_Tunic or logic_fewer_tunic_requirements) and Iron_Boots",
-            "Water Temple Dark Link Region": "Small_Key_Water_Temple and can_use(Longshot)",
-            "Water Temple Before Boss": "can_use(Longshot)"
+            "Water Temple Dark Link Region": "
+                Small_Key_Water_Temple and is_adult and
+                (Longshot or (logic_water_mq_dark_link and Hover_Boots and Hookshot))",
+            "Water Temple Before Boss": "can_use(Longshot)",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {
@@ -186,14 +189,6 @@
         "region_name": "Water Temple Basement Gated Areas",
         "dungeon": "Water Temple",
         "locations": {
-            "Water Temple MQ Freestanding Key Area Front Crate 1": "can_break_crate",
-            "Water Temple MQ Freestanding Key Area Front Crate 2": "can_break_crate",
-            "Water Temple MQ Freestanding Key Area Submerged Crate 1": "can_bonk or has_bombchus",
-            "Water Temple MQ Freestanding Key Area Submerged Crate 2": "can_bonk or has_bombchus",
-            "Water Temple MQ Freestanding Key Area Submerged Crate 3": "can_bonk or has_bombchus",
-            "Water Temple MQ Freestanding Key Area Submerged Crate 4": "can_bonk or has_bombchus",
-            "Water Temple MQ Freestanding Key Area Submerged Crate 5": "can_bonk or has_bombchus",
-            "Water Temple MQ Freestanding Key Area Submerged Crate 6": "can_bonk or has_bombchus",
             "Water Temple MQ Triple Wall Torch Submerged Crate 1": "can_bonk or has_bombchus",
             "Water Temple MQ Triple Wall Torch Submerged Crate 2": "can_bonk or has_bombchus",
             "Water Temple MQ Triple Wall Torch Submerged Crate 3": "can_bonk or has_bombchus",
@@ -202,10 +197,41 @@
             "Water Temple MQ Triple Wall Torch Submerged Crate 6": "can_bonk or has_bombchus"
         },
         "exits": {
+            "Water Temple Triple Wall Torch": "can_use(Fire_Arrows) and (Hover_Boots or can_use(Scarecrow))",
+            "Water Temple North Basement": "Longshot or (logic_water_north_basement and Hover_Boots)"
+        }
+    },
+    {
+        "region_name": "Water Temple Triple Wall Torch",
+        "dungeon": "Water Temple",
+        "locations": {
+            "Water Temple MQ Triple Wall Torch Pot 1": "True",
+            "Water Temple MQ Triple Wall Torch Pot 2": "True",
+            "Water Temple MQ Triple Wall Torch Pot 3": "True",
+            "Water Temple MQ Triple Wall Torch Pot 4": "True",
+            "Water Temple MQ Triple Wall Torch Behind Gate Crate 1": "can_break_crate",
+            "Water Temple MQ Triple Wall Torch Behind Gate Crate 2": "can_break_crate",
+            "Water Temple MQ Triple Wall Torch Behind Gate Crate 3": "can_break_crate",
+            "Water Temple MQ GS Triple Wall Torch": "True"
+        }
+    },
+    {
+        "region_name": "Water Temple North Basement",
+        "dungeon": "Water Temple",
+        "locations": {
+            "Water Temple MQ Freestanding Key Area Front Crate 1": "can_break_crate",
+            "Water Temple MQ Freestanding Key Area Front Crate 2": "can_break_crate",
+            "Water Temple MQ Freestanding Key Area Submerged Crate 1": "can_bonk or has_bombchus",
+            "Water Temple MQ Freestanding Key Area Submerged Crate 2": "can_bonk or has_bombchus",
+            "Water Temple MQ Freestanding Key Area Submerged Crate 3": "can_bonk or has_bombchus",
+            "Water Temple MQ Freestanding Key Area Submerged Crate 4": "can_bonk or has_bombchus",
+            "Water Temple MQ Freestanding Key Area Submerged Crate 5": "can_bonk or has_bombchus",
+            "Water Temple MQ Freestanding Key Area Submerged Crate 6": "can_bonk or has_bombchus"
+        },
+        "exits": {
             "Water Temple Freestanding Key Room": "
                 Hover_Boots or can_use(Scarecrow) or logic_water_north_basement_ledge_jump",
-            "Water Temple Dodongo Room": "logic_water_mq_locked_gs",
-            "Water Temple Triple Wall Torch": "can_use(Fire_Arrows) and (Hover_Boots or can_use(Scarecrow))"
+            "Water Temple Dodongo Room": "logic_water_mq_locked_gs"
         }
     },
     {
@@ -243,20 +269,6 @@
         },
         "exits": {
             "Water Temple Freestanding Key Room": "(Small_Key_Water_Temple, 2)"
-        }
-    },
-    {
-        "region_name": "Water Temple Triple Wall Torch",
-        "dungeon": "Water Temple",
-        "locations": {
-            "Water Temple MQ Triple Wall Torch Pot 1": "True",
-            "Water Temple MQ Triple Wall Torch Pot 2": "True",
-            "Water Temple MQ Triple Wall Torch Pot 3": "True",
-            "Water Temple MQ Triple Wall Torch Pot 4": "True",
-            "Water Temple MQ Triple Wall Torch Behind Gate Crate 1": "can_break_crate",
-            "Water Temple MQ Triple Wall Torch Behind Gate Crate 2": "can_break_crate",
-            "Water Temple MQ Triple Wall Torch Behind Gate Crate 3": "can_break_crate",
-            "Water Temple MQ GS Triple Wall Torch": "True"
         }
     }
 ]

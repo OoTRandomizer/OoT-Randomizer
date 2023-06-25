@@ -97,15 +97,15 @@
         "locations": {
             "Spirit Temple MQ Leever Room Chest": "True",
             "Spirit Temple MQ Symphony Room Chest": "
-                (Small_Key_Spirit_Temple, 7) and Megaton_Hammer and Ocarina and
-                Song_of_Time and Eponas_Song and Suns_Song and
-                Song_of_Storms and Zeldas_Lullaby",
+                (Small_Key_Spirit_Temple, 7) and Megaton_Hammer and
+                can_play(Song_of_Time) and can_play(Eponas_Song) and can_play(Suns_Song) and
+                can_play(Song_of_Storms) and can_play(Zeldas_Lullaby)",
             "Spirit Temple MQ Entrance Front Right Chest": "Megaton_Hammer",
             "Spirit Temple MQ GS Leever Room": "True",
             "Spirit Temple MQ GS Symphony Room": "
-                (Small_Key_Spirit_Temple, 7) and Megaton_Hammer and Ocarina and
-                Song_of_Time and Eponas_Song and Suns_Song and
-                Song_of_Storms and Zeldas_Lullaby"
+                (Small_Key_Spirit_Temple, 7) and Megaton_Hammer and
+                can_play(Song_of_Time) and can_play(Eponas_Song) and can_play(Suns_Song) and
+                can_play(Song_of_Storms) and can_play(Zeldas_Lullaby)"
         }
     },
     {

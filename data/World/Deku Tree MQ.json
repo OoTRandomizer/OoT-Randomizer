@@ -25,7 +25,8 @@
             "Deku Tree Near Compass Room": "here(has_fire_source_with_torch or can_use(Bow))",
             "Deku Tree Basement Water Room Front": "
                 here(can_use(Slingshot) or can_use(Bow)) and here(has_fire_source_with_torch)",
-            "Deku Tree Basement Ledge": "deku_tree_shortcuts or here(is_adult) or logic_deku_b1_skip"
+            "Deku Tree Basement Ledge": "deku_tree_shortcuts or here(is_adult) or logic_deku_b1_skip",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {

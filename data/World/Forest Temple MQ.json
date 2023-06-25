@@ -11,7 +11,8 @@
         "exits": {
             "SFM Forest Temple Entrance Ledge": "True",
             "Forest Temple Central Area": "
-                (Small_Key_Forest_Temple, 1) and (is_adult or can_child_attack or Nuts)"
+                (Small_Key_Forest_Temple, 1) and (is_adult or can_child_attack or Nuts)",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {
@@ -89,13 +90,11 @@
         "region_name": "Forest Temple Outside Upper Ledge",
         "dungeon": "Forest Temple",
         "locations": {
-            "Forest Temple MQ Redead Chest": "True",
-            "Forest Temple MQ Courtyard Recovery Heart 1": "True",
-            "Forest Temple MQ Courtyard Recovery Heart 2": "True",
-            "Forest Temple MQ Courtyard Recovery Heart 3": "True"
+            "Forest Temple MQ Redead Chest": "True"
         },
         "exits": {
-            "Forest Temple NW Outdoors": "True"
+            "Forest Temple NW Outdoors": "True",
+            "Forest Temple NW Outdoors Freestandings": "True"
         }
     },
     {
@@ -108,7 +107,17 @@
             "Forest Temple NE Outdoors": "
                 can_use(Iron_Boots) or can_use(Longshot) or
                 (Progressive_Scale, 2) or (logic_forest_well_swim and can_use(Hookshot))",
-            "Forest Temple Outdoors High Balconies": "can_use(Fire_Arrows)"
+            "Forest Temple Outdoors High Balconies": "can_use(Fire_Arrows)",
+            "Forest Temple NW Outdoors Freestandings": "logic_forest_courtyard_hearts and can_use(Boomerang)"
+        }
+    },
+    {
+        "region_name": "Forest Temple NW Outdoors Freestandings",
+        "dungeon": "Forest Temple",
+        "locations": {
+            "Forest Temple MQ Courtyard Recovery Heart 1": "True",
+            "Forest Temple MQ Courtyard Recovery Heart 2": "True",
+            "Forest Temple MQ Courtyard Recovery Heart 3": "True"
         }
     },
     {

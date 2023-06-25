@@ -29,6 +29,7 @@ extern sprite_t rupee_digit_sprite;
 extern sprite_t item_digit_sprite;
 extern sprite_t linkhead_skull_sprite;
 extern sprite_t heart_sprite;
+extern sprite_t button_sprite;
 
 void gfx_init();
 

@@ -193,6 +193,11 @@ ludicrous_items_extended: list[str] = [
     'Silver Rupee Pouch (Ganons Castle Shadow Trial)',
     'Silver Rupee Pouch (Ganons Castle Water Trial)',
     'Silver Rupee Pouch (Ganons Castle Forest Trial)',
+    'Ocarina A Button',
+    'Ocarina C up Button',
+    'Ocarina C left Button',
+    'Ocarina C down Button',
+    'Ocarina C right Button',
 ]
 
 ludicrous_exclusions: list[str] = [
@@ -504,12 +509,20 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                     pending_junk_pool.append(f"Silver Rupee ({puzzle})")
         if world.settings.shuffle_song_items == 'any':
             pending_junk_pool.extend(song_list)
+        if world.settings.shuffle_individual_ocarina_notes:
+            pending_junk_pool.extend(['Ocarina A Button', 'Ocarina C up Button', 'Ocarina C left Button', 'Ocarina C down Button', 'Ocarina C right Button'])
 
     if world.settings.item_pool_value == 'ludicrous':
         pending_junk_pool.extend(ludicrous_health)
 
     if world.settings.triforce_hunt:
         pending_junk_pool.extend(['Triforce Piece'] * world.settings.triforce_count_per_world)
+    if world.settings.shuffle_individual_ocarina_notes:
+        pending_junk_pool.append('Ocarina A Button')
+        pending_junk_pool.append('Ocarina C up Button')
+        pending_junk_pool.append('Ocarina C left Button')
+        pending_junk_pool.append('Ocarina C down Button')
+        pending_junk_pool.append('Ocarina C right Button')
 
     # Use the vanilla items in the world's locations when appropriate.
     vanilla_items_processed = Counter()
@@ -956,5 +969,12 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         world.distribution.distribution.search_groups['Junk'] = remove_junk_items
 
     world.distribution.collect_starters(world.state)
+
+    if not world.settings.shuffle_individual_ocarina_notes:
+        world.state.collect(ItemFactory('Ocarina A Button', world))
+        world.state.collect(ItemFactory('Ocarina C up Button', world))
+        world.state.collect(ItemFactory('Ocarina C down Button', world))
+        world.state.collect(ItemFactory('Ocarina C left Button', world))
+        world.state.collect(ItemFactory('Ocarina C right Button', world))
 
     return pool, placed_items

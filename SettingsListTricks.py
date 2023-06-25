@@ -55,24 +55,45 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     Using bombs is already expected on beehives that
                     that are low enough that a bomb throw will reach.
                     '''},
-    'Hammer Rusted Switches Through Walls': {
+    'Boulder Freestandings with Boomerang' : {
+        'name'    : 'logic_boomerang_boulders',
+        'tags'    : ("General", "Freestandings", "Lost Woods", "Death Mountain Trail", "Ice Cavern", "Ganon's Castle MQ", "Vanilla Dungeons", "Master Quest", "Overworld", "Entrance Shuffle", "Child",),
+        'tooltip' : '''\
+                    Obtain freestandings inside boulders or red ice
+                    without having to remove the boulder first.
+                    Applies to:
+                    - LW Under Boulder Blue Rupee
+                    - DMT Rock Blue Rupee
+                    - DMT Rock Red Rupee
+                    - Ice Cavern Frozen Blue Rupee
+                    - Ganons Castle MQ Water Trial Recovery Heart
+                    '''},
+    'Hammer Rusted Switches and Boulders Through Walls': {
         'name'    : 'logic_rusted_switches',
-        'tags'    : ("General", "Fire Temple", "Fire Temple MQ", "Ganon's Castle MQ", "Master Quest", "Vanilla Dungeons", "Adult",),
+        'tags'    : ("General", "Fire Temple", "Fire Temple MQ", "Spirit Temple MQ", "Ganon's Castle MQ", "Master Quest", "Vanilla Dungeons", "Adult",),
         'tooltip' : '''\
                     Applies to:
-                    - Fire Temple Highest Goron Chest.
-                    - MQ Fire Temple Lizalfos Maze.
-                    - MQ Spirit Trial.
+                    - Fire Temple Highest Goron Rusted Switch
+                    - MQ Fire Temple Lizalfos Maze Rusted Switch
+                    - MQ Spirit Child Crawlspace Boulder
+                    - MQ Spirit Trial Rusted Switch
                     '''},
 
     # Overworld tricks
 
     'Adult Kokiri Forest GS with Hover Boots': {
-        'name'    : 'logic_adult_kokiri_gs',
+        'name'    : 'logic_adult_kokiri_gs_hovers',
         'tags'    : ("Kokiri Forest", "Gold Skulltulas", "Overworld", "Adult",),
         'tooltip' : '''\
                     Can be obtained without Hookshot by using the Hover
                     Boots off of one of the roots.
+                    '''},
+    'Adult Kokiri Forest GS with Nothing': {
+        'name'    : 'logic_adult_kokiri_gs_nothing',
+        'tags'    : ("Kokiri Forest", "Gold Skulltulas", "Overworld", "Adult",),
+        'tooltip' : '''\
+                    Can be obtained without Hookshot by using a precise
+                    jump off of one of the roots.
                     '''},
     'Jump onto the Lost Woods Bridge as Adult with Nothing': {
         'name'    : 'logic_lost_woods_bridge',
@@ -188,32 +209,13 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     flower. You must backwalk with the flower and then
                     quickly throw it toward the wall.
                     '''},
-    'Death Mountain Trail Lower Red Rock GS with Hookshot': {
-        'name'    : 'logic_trail_gs_lower_hookshot',
+    'Death Mountain Trail Lower Red Rock GS with Jump Slash': {
+        'name'    : 'logic_trail_gs_lower',
         'tags'    : ("Death Mountain Trail", "Gold Skulltulas", "Overworld", "Adult",),
         'tooltip' : '''\
                     After killing the Skulltula, the token can be fished
                     out of the rock without needing to destroy it, by
-                    using the Hookshot in the correct way.
-                    '''},
-    'Death Mountain Trail Lower Red Rock GS with Hover Boots': {
-        'name'    : 'logic_trail_gs_lower_hovers',
-        'tags'    : ("Death Mountain Trail", "Gold Skulltulas", "Overworld", "Adult",),
-        'tooltip' : '''\
-                    After killing the Skulltula, the token can be
-                    collected without needing to destroy the rock by
-                    backflipping down onto it with the Hover Boots.
-                    First use the Hover Boots to stand on a nearby
-                    fence, and go for the Skulltula Token from there.
-                    '''},
-    'Death Mountain Trail Lower Red Rock GS with Magic Bean': {
-        'name'    : 'logic_trail_gs_lower_bean',
-        'tags'    : ("Death Mountain Trail", "Gold Skulltulas", "Overworld", "Adult",),
-        'tooltip' : '''\
-                    After killing the Skulltula, the token can be
-                    collected without needing to destroy the rock by
-                    jumping down onto it from the bean plant,
-                    midflight, with precise timing and positioning.
+                    jumpslashing into it from a precise position.
                     '''},
     'Death Mountain Trail Climb with Hover Boots': {
         'name'    : 'logic_dmt_climb_hovers',
@@ -437,6 +439,16 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     there, without going through the interiors of the
                     Thieves' Hideout.
                     '''},
+    'Gerudo\'s Fortress Break Room Entrance with Precise Jump': {
+        'name'    : 'logic_gf_break_room_jump',
+        'tags'    : ("Gerudo's Fortress", "Overworld", "Adult", "Entrance Shuffle", "Pots", "Crates",),
+        'tooltip' : '''\
+                    With a precise jump from the ledge below the
+                    Gold Skullula, Adult can access the break room
+                    entrance with no additional items. This trick
+                    is only relevant if Thieves' Hideout entrances,
+                    overworld pots, or overworld crates are shuffled.
+                    '''},
     'Wasteland Crossing without Hover Boots or Longshot': {
         'name'    : 'logic_wasteland_crossing',
         'tags'    : ("Haunted Wasteland", "Overworld", "Child", "Adult",),
@@ -469,9 +481,6 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     To cross the river of sand with no additional items,
                     be sure to also enable "Wasteland Crossing without
                     Hover Boots or Longshot".
-                    Unless Thieves' Hideout entrances or all overworld
-                    entrances are randomized, child Link will not be
-                    expected to do anything at Gerudo's Fortress.
                     '''},
     'Colossus Hill GS with Hookshot': {
         'name'    : 'logic_colossus_gs',
@@ -586,6 +595,14 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
         'tooltip' : '''\
                     The jump is adult Link only. Applies to both Vanilla and MQ.
                     '''},
+    'Dodongo\'s Cavern Bombchu the Eyes from Below': {
+        'name'    : 'logic_dc_chu_eyes',
+        'tags'    : ("Dodongo's Cavern", "Vanilla Dungeons", "Child", "Adult",),
+        'tooltip' : '''\
+                    You can use Bombchus to skip needing
+                    to go through the dungeon, allowing
+                    immediate access to the back areas.
+                    '''},
     'Dodongo\'s Cavern Smash the Boss Lobby Floor': {
         'name'    : 'logic_dc_hammer_floor',
         'tags'    : ("Dodongo's Cavern", "Dodongo's Cavern MQ", "Entrance Shuffle", "Master Quest", "Vanilla Dungeons", "Adult",),
@@ -648,7 +665,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     '''},
     'Jabu Near Boss Ceiling Switch/GS without Boomerang or Explosives': {
         'name'    : 'logic_jabu_near_boss_ranged',
-        'tags'    : ("Jabu Jabu's Belly", "Jabu Jabu's Belly MQ", "Gold Skulltulas", "Entrance Shuffle", "Master Quest", "Vanilla Dungeons", "Child", "Adult",),
+        'tags'    : ("Jabu Jabu's Belly", "Jabu Jabu's Belly MQ", "Gold Skulltulas", "Entrance Shuffle", "Master Quest", "Vanilla Dungeons", "Child", "Adult", "Shortcuts",),
         'tooltip' : '''\
                     Vanilla Jabu: From near the entrance into the room, you can
                     hit the switch that opens the door to the boss room using a
@@ -682,7 +699,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     '''},
     'Jabu MQ Compass Chest with Boomerang': {
         'name'    : 'logic_jabu_mq_rang_jump',
-        'tags'    : ("Jabu Jabu's Belly MQ", "Master Quest", "Child",),
+        'tags'    : ("Jabu Jabu's Belly MQ", "Master Quest", "Child", "Shortcuts",),
         'tooltip' : '''\
                     Boomerang can reach the cow switch to spawn the chest by
                     targeting the cow, jumping off of the ledge where the
@@ -746,6 +763,15 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     Also allows killing it as Child with a Bomb throw. It's
                     much more difficult to use a Bomb as child due to
                     Child Link's shorter height.
+                    '''},
+    'Forest Temple West Courtyard Hearts with Boomerang': {
+        'name'    : 'logic_forest_courtyard_hearts',
+        'tags'    : ("Forest Temple", "Forest Temple MQ", "Entrance Shuffle", "Vanilla Dungeons", "Master Quest", "Child", "Freestandings"),
+        'tooltip' : '''\
+                    The recovery hearts in the western courtyard can be
+                    obtained from below with a precise Boomerang throw.
+                    Only relevant if dungeon Freestandings are shuffled.
+                    Applies in both Vanilla and Master Quest.
                     '''},
     'Forest Temple East Courtyard GS with Boomerang': {
         'name'    : 'logic_forest_outdoor_east_gs',
@@ -885,6 +911,18 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     Allows you to progress without needing either a
                     Small Key or Hover Boots.
                     '''},
+    'Fire Temple MQ Entrance Flame Wall Skip as Child': {
+        'name'    : 'logic_fire_mq_child_flame',
+        'tags'    : ("Fire Temple MQ", "Master Quest", "Child", "Entrance Shuffle", "Crates"),
+        'tooltip' : '''\
+                    If you move quickly you can sneak past the edge of
+                    a flame wall before it can rise up to block you.
+                    To do it without taking damage is more precise.
+                    Allows child to reach two crates in the room before
+                    the boss. This trick is only relevant if both dungeon
+                    entrances and dungeon crates are shuffled, and the
+                    trick "Fewer Tunic Requirements" is also enabled.
+                    '''},
     'Fire Temple MQ Chest Near Boss without Breaking Crate': {
         'name'    : 'logic_fire_mq_near_boss',
         'tags'    : ("Fire Temple MQ", "Master Quest", "Adult",),
@@ -1003,16 +1041,17 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     level. This trick supersedes "Water Temple
                     Cracked Wall with Hover Boots".
                     '''},
-    'Water Temple Boss Key Region with Hover Boots': {
-        'name'    : 'logic_water_boss_key_region',
-        'tags'    : ("Water Temple", "Vanilla Dungeons", "Adult",),
+    'Water Temple North Basement with Hover Boots': {
+        'name'    : 'logic_water_north_basement',
+        'tags'    : ("Water Temple", "Water Temple MQ", "Vanilla Dungeons", "Master Quest", "Adult",),
         'tooltip' : '''\
-                    With precise Hover Boots movement it is possible
-                    to reach the boss key chest's region without
-                    needing the Longshot. It is not necessary to take
-                    damage from the spikes. The Gold Skulltula Token
-                    in the following room can also be obtained with
-                    just the Hover Boots.
+                    With precise Hover Boots movement it is possible to reach
+                    the northern basement region without needing the Longshot.
+                    It is not necessary to take damage from the spikes. In
+                    Vanilla, the Gold Skulltula Token in the following room can
+                    also be obtained with just the Hover Boots. In Master Quest,
+                    this trick is only relevant if "Water Temple MQ Reach Dark
+                    Link without Longshot" is also enabled.
                     '''},
     'Water Temple North Basement Ledge with Precise Jump': {
         'name'    : 'logic_water_north_basement_ledge_jump',
@@ -1132,6 +1171,15 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     Temple Dragon Statue Switch from Above the Water as Adult"
                     for adult's variant of this trick.
                     '''},
+    'Water Temple Morpha without Hookshot': {
+        'name'    : 'logic_water_morpha',
+        'tags'    : ("Water Temple", "Water Temple MQ", "Entrance Shuffle", "Vanilla Dungeons", "Master Quest", "Child", "Adult",),
+        'tooltip' : '''\
+                    Morpha sometimes bounces out of the water,
+                    and during that time it is possible to hit
+                    it with a sword. This is only relevant in
+                    conjunction with shuffled boss entrances.
+                    '''},
     'Water Temple MQ Central Pillar with Fire Arrows': {
         'name'    : 'logic_water_mq_central_pillar',
         'tags'    : ("Water Temple MQ", "Master Quest", "Adult",),
@@ -1144,6 +1192,14 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     torches in the central pillar of MQ Water Temple are
                     a particularly egregious example. Logic normally
                     expects Din's Fire and Song of Time.
+                    '''},
+    'Water Temple MQ Reach Dark Link without Longshot': {
+        'name'    : 'logic_water_mq_dark_link',
+        'tags'    : ("Water Temple MQ", "Master Quest", "Adult",),
+        'tooltip' : '''\
+                    The chasm before Dark Link can be crossed
+                    with precise use of the Hover Boots and
+                    the Hookshot.
                     '''},
     'Water Temple MQ North Basement GS without Small Key': {
         'name'    : 'logic_water_mq_locked_gs',
@@ -1218,9 +1274,18 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     needing a Bow.
                     Applies in both vanilla and MQ Shadow.
                     '''},
+    'Shadow Temple Triple Spinning Pots with Bombchus': {
+        'name'    : 'logic_shadow_triple_pots',
+        'tags'    : ("Shadow Temple", "Shadow Temple MQ", "Vanilla Dungeons", "Master Quest", "Adult", "Freestandings"),
+        'tooltip' : '''\
+                    Release the Bombchus with good timing so that
+                    they explode near the bottoms of the pots.
+                    This trick is only relevant if dungeon
+                    freestandings are shuffled.
+                    '''},
     'Shadow Temple Bongo Bongo without projectiles': {
         'name'    : 'logic_shadow_bongo',
-        'tags'    : ("Shadow Temple", "Shadow Temple MQ", "Entrance Shuffle", "Vanilla Dungeons", "Master Quest", "Child", "Adult",),
+        'tags'    : ("Shadow Temple", "Shadow Temple MQ", "Entrance Shuffle", "Vanilla Dungeons", "Master Quest", "Child", "Adult", "Shortcuts",),
         'tooltip' : '''\
                     Using precise sword slashes, Bongo Bongo can be
                     defeated without using projectiles. This is
@@ -1293,7 +1358,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     '''},
     'Shadow Temple MQ Windy Walkway Reverse without Hover Boots': {
         'name'    : 'logic_shadow_mq_windy_walkway',
-        'tags'    : ("Shadow Temple MQ", "Master Quest", "Adult",),
+        'tags'    : ("Shadow Temple MQ", "Master Quest", "Adult", "Shortcuts",),
         'tooltip' : '''\
                     With shadow dungeon shortcuts enabled, it is possible
                     to jump from the alcove in the windy hallway to the
@@ -1302,6 +1367,19 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     to be pushed by the fan there towards the platform ledge.
                     Note that jumps of this distance are inconsistent, but
                     still possible.
+                    '''},
+    'Shadow Temple MQ After Boat GS without Hookshot': {
+        'name'    : 'logic_shadow_mq_after_boat_gs',
+        'tags'    : ("Shadow Temple MQ", "Master Quest", "Adult", "Gold Skulltulas", "Shortcuts",),
+        'tooltip' : '''\
+                    To obtain this Skulltula Token without the Hookshot
+                    entails falling into the chasm. Any projectile or
+                    Din's Fire can be used to kill the Skulltula, and
+                    you can also use a nearby pot. However, with the
+                    statue down, any trajectory to throw a pot is
+                    blocked, so you must jump above the Skulltula and
+                    shield-drop the pot onto it. This trick is only
+                    relevant if Shadow dungeon shortcuts are enabled.
                     '''},
     'Spirit Temple without Lens of Truth': {
         'name'    : 'logic_lens_spirit',
@@ -1359,13 +1437,22 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     '''},
     'Spirit Temple Main Room Hookshot to Boss Platform': {
         'name'    : 'logic_spirit_platform_hookshot',
-        'tags'    : ("Spirit Temple", "Vanilla Dungeons", "Adult",),
+        'tags'    : ("Spirit Temple", "Vanilla Dungeons", "Adult", "Shortcuts",),
         'tooltip' : '''\
                     Precise hookshot aiming at the platform chains can be
                     used to reach the boss platform from the middle landings.
                     Using a jump slash immediately after reaching a chain
                     makes aiming more lenient. Relevant only when Spirit
                     Temple boss shortcuts are on.
+                    '''},
+    'Spirit Temple Climb to Adult Side with Hover Boots': {
+        'name'    : 'logic_spirit_adult_side_hovers',
+        'tags'    : ("Spirit Temple", "Vanilla Dungeons", "Adult", "Shortcuts",),
+        'tooltip' : '''\
+                    With some help from the nearby Armos, Adult
+                    can use the Hover Boots to climb to the Adult
+                    side of the dungeon. Relevant only when
+                    Spirit Temple boss shortcuts are on.
                     '''},
     'Spirit Temple Map Chest with Bow': {
         'name'    : 'logic_spirit_map_chest',
@@ -1444,6 +1531,30 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     torch. The only way to find a line of sight for this
                     shot is to first spawn a Song of Time block, and then
                     stand on the very edge of it.
+                    '''},
+    'Spirit Temple MQ Water Jet Silver Rupee without Hammer': {
+        'name'    : 'logic_spirit_mq_water_rupee',
+        'tags'    : ("Spirit Temple MQ", "Master Quest", "Adult", "Silver Rupees"),
+        'tooltip' : '''\
+                    You can obtain the Silver Rupee inside the water
+                    jet by Longshotting through it to a chest in the
+                    first room. Because this is the very chest that
+                    collecting this rupee normally spawns, this trick
+                    is only relevant when Silver Rupees are shuffled.
+                    '''},
+    'Ice Cavern Frozen Rupee with Nothing': {
+        'name'    : 'logic_ice_frozen_rupee',
+        'tags'    : ("Ice Cavern", "Vanilla Dungeons", "Freestandings", "Child", "Adult",),
+        'tooltip' : '''\
+                    This rupee can be obtain with no items by
+                    side-hopping into the corner behind the ice.
+                    '''},
+    'Ice Cavern Frozen Pot with No Additional Items': {
+        'name'    : 'logic_ice_frozen_pot',
+        'tags'    : ("Ice Cavern", "Vanilla Dungeons", "Pots", "Adult",),
+        'tooltip' : '''\
+                    A spin attack can slash the
+                    pot through the red ice.
                     '''},
     'Ice Cavern Block Room GS with Hover Boots': {
         'name'    : 'logic_ice_block_gs',
@@ -1581,12 +1692,23 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     The highest rupee can be obtained as either age by performing
                     a precise jump and a well-timed jumpslash off of an Armos.
                     '''},
-    'Ganon\'s Castle MQ without Lens of Truth': {
+    'Ganon\'s Castle MQ Except Shadow Trial without Lens of Truth': {
         'name'    : 'logic_lens_castle_mq',
         'tags'    : ("Lens of Truth", "Ganon's Castle MQ", "Master Quest", "Child", "Adult",),
         'tooltip' : '''\
                     Removes the requirements for the Lens of Truth
-                    in Ganon's Castle MQ.
+                    in Ganon's Castle MQ, except for the Lens
+                    requirements in Shadow Trial.
+                    '''},
+    'Ganon\'s Castle MQ Shadow Trial without Lens of Truth': {
+        'name'    : 'logic_lens_shadow_trial_mq',
+        'tags'    : ("Lens of Truth", "Ganon's Castle MQ", "Master Quest", "Adult",),
+        'tooltip' : '''\
+                    Removes the requirements for the Lens of Truth
+                    in the Shadow Trial in Ganon's Castle MQ.
+                    Be sure to also enable "Ganon\'s Castle MQ Except
+                    Shadow Trial without Lens of Truth" to remove
+                    the Lens requirement for the rest of the Castle.
                     '''},
     'Fire Trial MQ with Hookshot': {
         'name'    : 'logic_fire_trial_mq',

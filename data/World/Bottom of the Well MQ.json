@@ -4,7 +4,8 @@
         "dungeon": "Bottom of the Well",
         "exits": {
             "Kakariko Village": "True",
-            "Bottom of the Well Perimeter": "is_child"
+            "Bottom of the Well Perimeter": "is_child",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {
