@@ -640,7 +640,7 @@ def get_goal_hint(spoiler: Spoiler, world: World, checked: set[str]) -> HintRetu
 
         # Collect set of unhinted locations for the category. Reduces the bias
         # from locations in multiple goals for the category.
-        location_reverse_map = defaultdict(set)
+        location_reverse_map = defaultdict(list)
         for goal in goals:
             if zero_weights or goal.weight > 0:
                 goal_locations = list(filter(lambda location:
@@ -652,7 +652,7 @@ def get_goal_hint(spoiler: Spoiler, world: World, checked: set[str]) -> HintRetu
                     goal.required_locations))
                 for location in goal_locations:
                     for world_id in location[3]:
-                        location_reverse_map[location[0]].add((goal, world_id))
+                        location_reverse_map[location[0]].append((goal, world_id))
 
         if not location_reverse_map:
             del world.goal_categories[goal_category.name]
@@ -662,8 +662,8 @@ def get_goal_hint(spoiler: Spoiler, world: World, checked: set[str]) -> HintRetu
             else:
                 goals = goal_category.goals
 
-    location, goal_set = random.choice(list(location_reverse_map.items()))
-    goal, world_id = random.choice(list(goal_set))
+    location, goal_list = random.choice(list(location_reverse_map.items()))
+    goal, world_id = random.choice(goal_list)
     checked.add(location.name)
 
     # Make sure this wasn't the last hintable location for other goals.
