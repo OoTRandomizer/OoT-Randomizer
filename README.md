@@ -126,6 +126,7 @@ issue. You should always Hard Reset to avoid this issue entirely.
   * New timesaver setting `Ruto Already at F1` which, in Vanilla Jabu Jabu, makes it so that Ruto is already present on the first floor of the dungeon (in the room with all the orifices you fall down) instead of having to carry her up there to set that flag.
   * New setting `Key Appearance Matches Dungeon` which changes the models for small keys and boss keys to indicate which dungeon the key belongs to.
   * New setting `Shuffle Individual Ocarina Notes`, which shuffles items representing each of the 5 ocarina notes into the item pool. You cannot play any note on the ocarina until you find its corresponding item.
+  * New cosmetic setting `Uninvert Y-Axis in First Person Camera` which makes tilting the joystick up or down in first person look those respective directions, instead of the opposite direction.
 * **Hints**
   * New `Important Checks` hint type which hints at how many major items are in a given region.
     * Double Defense and Biggoron's Sword are counted as major for this hint type.
@@ -203,6 +204,7 @@ issue. You should always Hard Reset to avoid this issue entirely.
 * Gossip stone text colors are no longer specified in reverse order.
 * Music groups will now add to each other if you have multiple groups of the same name, instead of the last one simply overwriting the others.
 * The legacy starting items dictionary has been renamed to `starting_inventory` to make it more distinct from the new `starting_items` which is part of the Settings dictionary.
+* The `#Vanilla` item category is now usable for dungeon rewards.
 
 ### 7.1
 

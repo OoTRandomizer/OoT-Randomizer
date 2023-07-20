@@ -1402,7 +1402,7 @@
         "scene": "Market Mask Shop",
         "exits": {
             "Market": "True",
-            "Market Mask Shop Storefront": "'Kakariko Village Gate Open'"
+            "Market Mask Shop Storefront": "Zeldas_Letter and 'Kakariko Village Gate Open'"
         }
     },
     {

@@ -1490,19 +1490,8 @@ nop
 ; Update object ID and draw ID for progressive items
 .headersize(0x80862C00 - 0xC004E0)
 
-; EnGirlA_InitializeItemAction / func_8086443C
-; Update the IDs
-; Replaces:
-;   lh      t2, 0x0002(v1)
-.org 0x8086476C
-    jal     shop_draw_id_hook
-
-; Remove vanilla line assigning the draw ID.
-; This is handled in the above hook.
-; Replaces:
-;   sh      t2, 0x01BC(s0)
-.org 0x80864778
-    nop
+.org 0x8086498C
+    jal     shop_draw_hook
 
 .headersize(0x808CED80 - 0xC6C5E0)
 
@@ -1512,9 +1501,9 @@ nop
 ; Replaces:
 ;   lh      t6, 0x001C(s0)
 ;   addiu   $at, $zero, 0x000A
-.org 0x808D1D48
-    jal     shop_update_offerings_hook
-    nop
+;.org 0x808D1D48
+;    jal     shop_update_offerings_hook
+;    nop
 
 .headersize(0)
 

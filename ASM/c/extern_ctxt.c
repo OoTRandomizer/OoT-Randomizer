@@ -149,13 +149,13 @@ void process_extern_ctxt() {
 
     /* Top-Down Camera */
     if (extern_ctxt.topdown_cam == 1) {
-        if (freecam_modes[z64_game.camera_mode]) {
-            z64_game.camera_mode = 0x35;
+        if (freecam_modes[z64_game.camera_setting]) {
+            z64_game.camera_setting = 0x35;
         }
     }
     else if (extern_ctxt.topdown_cam == 2) {
-        if (freecam_modes[z64_game.camera_mode]) {
-            z64_game.camera_mode = 0x1F;
+        if (freecam_modes[z64_game.camera_setting]) {
+            z64_game.camera_setting = 0x1F;
         }
         extern_ctxt.topdown_cam = 0;
     }

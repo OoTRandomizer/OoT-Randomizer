@@ -5,6 +5,7 @@
 #include "item_draw_table.h"
 #include "util.h"
 #include "z64.h"
+#include "shop_actors.h"
 
 #define slot_count 24
 #define object_size 0x1E70
@@ -104,7 +105,9 @@ void draw_model(model_t model, z64_actor_t *actor, z64_game_t *game, float base_
     loaded_object_t *object = get_object(model.object_id);
     if (object != NULL) {
         set_object_segment(object);
-        scale_top_matrix(scale_factor(model.graphic_id, actor, base_scale));
+        if (base_scale != 0.0) {
+            scale_top_matrix(scale_factor(model.graphic_id, actor, base_scale));
+        }
         draw_model_low_level(model.graphic_id - 1, actor, game);
     }
 }
@@ -138,6 +141,35 @@ void lookup_model_by_override(model_t *model, override_t override) {
 void lookup_model(model_t *model, z64_actor_t *actor, z64_game_t *game, uint16_t base_item_id) {
     override_t override = lookup_override(actor, game->scene_index, base_item_id);
     lookup_model_by_override(model, override);
+}
+
+// Shop draw function for each shelf slot, replaces GetItem_Draw inside of EnGirlA_Draw
+void shop_draw(z64_actor_t *actor, z64_game_t *game) {
+    EnGirlA *this = (EnGirlA *)actor;
+    model_t model = {
+        .object_id = 0x0000,
+        .graphic_id = 0x00,
+    };
+    override_t override = lookup_override((z64_actor_t*) this, z64_game.scene_index, this->getItemId);
+
+    /*
+        SOLD OUT is given a get item ID of 0x53 for the slot,
+        which conflicts with the Gerudo Mask override if it's
+        shuffled and the override in the Gerudo Mask slot happens
+        to be progressive. To prevent the mask shop from filling up
+        with longshots or golden gauntlets, check the currently loaded
+        object ID for OBJECT_GI_SOLDOUT (0x148) before attempting to use
+        the override model.
+    */
+    if (override.key.all && this->getItemId && game->obj_ctxt.objects[this->objBankIndex].id != 0x148) {
+        lookup_model_by_override(&model, override);
+        if (model.object_id != 0x0000) {
+            draw_model(model, actor, game, 0.0);
+        }
+    } else {
+        // vanilla draw function if the slot is a regular shop item, shuffled or unshuffled
+        GetItem_Draw(game, this->giDrawId);
+    }
 }
 
 // Collectible draw function for rupees/recovery hearts

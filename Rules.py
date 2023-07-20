@@ -140,7 +140,7 @@ def set_shop_rules(world: World):
     for location in world.get_filled_locations():
         if location.item.type == 'Shop':
             # Add wallet requirements
-            if location.item.name in ['Buy Arrows (50)', 'Buy Fish', 'Buy Goron Tunic', 'Buy Bombchu (20)', 'Buy Bombs (30)']:
+            if location.item.name in ['Buy Fish', 'Buy Goron Tunic', 'Buy Bombchu (20)', 'Buy Bombs (30)']:
                 location.add_rule(wallet)
             elif location.item.name in ['Buy Zora Tunic', 'Buy Blue Fire']:
                 location.add_rule(wallet2)

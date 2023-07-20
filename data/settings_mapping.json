@@ -398,7 +398,8 @@
             "display_dpad",
             "dpad_dungeon_menu",
             "correct_model_colors",
-            "randomize_all_cosmetics"
+            "randomize_all_cosmetics",
+            "uninvert_y_axis_in_first_person_camera"
           ]
         },
         {

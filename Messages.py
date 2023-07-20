@@ -350,7 +350,7 @@ KEYSANITY_MESSAGES: list[tuple[int, str]] = [
     (0x9036, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x44invisible blade room\x05\x40 in\x01the \x05\x45Shadow Temple\x05\x40!\x09"),
     (0x9037, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46huge pit\x05\x40 in the\x01\x05\x45Shadow Temple\x05\x40!\x09"),
     (0x9038, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the room with \x05\x45invisible\x01spikes\x05\x40 in the \x05\x45Shadow Temple\x05\x40!\x09"),
-    (0x9039, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46sloped room\x05\x40in the\x01\x05\x46Gerudo Training Ground\x05\x40!\x09"),
+    (0x9039, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46sloped room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40!\x09"),
     (0x903A, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x41lava room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40!\x09"),
     (0x903B, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x43water room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40!\x09"),
     (0x903C, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x41torch room\x05\x40 in the\x01child side of the \x05\x46Spirit Temple\x05\x40!\x09"),
@@ -372,7 +372,7 @@ KEYSANITY_MESSAGES: list[tuple[int, str]] = [
     (0x904E, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x44invisible blade room\x05\x40 in\x01the \x05\x45Shadow Temple\x05\x40! Now you can\x01access the \x05\x44chest\x05\x40 there!\x09"),
     (0x904F, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46huge pit\x05\x40 in the\x01\x05\x45Shadow Temple\x05\x40! A \x05\x46chest\x05\x40 has\x01appeared!\x09"),
     (0x9050, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the room with \x05\x45invisible\x01spikes\x05\x40 in the \x05\x45Shadow Temple\x05\x40! The\x01way to the \x05\x45Stalfos room\x05\x40 is open!\x09"),
-    (0x9051, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46sloped room\x05\x40in the\x01\x05\x46Gerudo Training Ground\x05\x40! The way to\x01the room with the \x05\x46heavy block\x05\x40 is\x04open!\x09"),
+    (0x9051, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46sloped room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40! The way to\x01the room with the \x05\x46heavy block\x05\x40 is\x04open!\x09"),
     (0x9052, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x41lava room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40! The way to\x01the \x05\x41water room\x05\x40 is open!\x09"),
     (0x9053, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x43water room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40! A \x05\x43chest\x05\x40\x01has appeared!\x09"),
     # 0x9054 and 0x9055 unused
@@ -393,7 +393,7 @@ KEYSANITY_MESSAGES: list[tuple[int, str]] = [
     # 0x9064 unused
     (0x9065, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46huge pit\x05\x40 in the\x01\x05\x45Shadow Temple\x05\x40! The way to the\x01room with \x05\x46falling spikes\x05\x40 is open!\x09"),
     (0x9066, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the room with \x05\x45invisible\x01spikes\x05\x40 in the \x05\x45Shadow Temple\x05\x40! The\x01way to the room with the \x05\x45giant pot\x05\x40\x04is open!\x09"),
-    (0x9067, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46sloped room\x05\x40in the\x01\x05\x46Gerudo Training Ground\x05\x40! The way to\x01the room with the \x05\x46heavy block\x05\x40 is\x04open!\x09"),
+    (0x9067, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46sloped room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40! The way to\x01the room with the \x05\x46heavy block\x05\x40 is\x04open!\x09"),
     (0x9068, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x41lava room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40! The way to\x01the \x05\x41water room\x05\x40 is open!\x09"),
     (0x9069, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x43water room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40! A \x05\x43chest\x05\x40\x01has appeared!\x09"),
     (0x906A, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x41torch room\x05\x40 in the\x01child side of the \x05\x46Spirit Temple\x05\x40! Now\x01the \x05\x41metal bridge\x05\x40 there is lowered!\x09"),

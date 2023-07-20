@@ -2962,11 +2962,6 @@ def place_shop_items(rom: Rom, world: World, shop_items, messages, locations, in
                 rom_item = read_rom_item(rom, item_display.index)
 
             shop_objs.add(rom_item['object_id'])
-            # Also add any progressive upgrade models to the scene load
-            if 'upgrade_ids' in item_display.special:
-                for item_index in item_display.special['upgrade_ids']:
-                    upgrade_item = read_rom_item(rom, item_index)
-                    shop_objs.add(upgrade_item['object_id'])
 
             shop_id = place_shop_items.shop_id
             rom.write_int16(location.address, shop_id)

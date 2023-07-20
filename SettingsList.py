@@ -3746,12 +3746,24 @@ class SettingInfos:
         shared         = False,
         cosmetic       = True,
         gui_tooltip    = '''\
-            Randomize all cosmetics settings.
+            Randomize all cosmetics settings, except those in the "General Cosmetics" and the "Player Models" sections.
         ''',
         default        = False,
         disable        = {
             True: {'sections': ["equipment_color_section", "ui_color_section", "misc_color_section"]},
         }
+    )
+
+    uninvert_y_axis_in_first_person_camera = Checkbutton(
+        gui_text       = 'Uninvert Y-Axis in First Person Camera',
+        shared         = False,
+        cosmetic       = True,
+        gui_tooltip    = '''\
+            Uninvert the Y axis in first person camera.
+            Note that this can make some tricks or glitches
+            harder to pull off.
+        ''',
+        default        = False,
     )
 
     model_adult = Combobox(
@@ -4425,7 +4437,7 @@ class SettingInfos:
         shared         = False,
         cosmetic       = True,
         gui_tooltip    = '''\
-            Randomize all sound effects and music settings (ear safe)
+            Randomize all sound effects and music settings (ear safe), except the "Adult Voice" and "Child Voice" options and those in the "General" section.
         ''',
         default        = False,
         disable    = {
