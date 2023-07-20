@@ -1779,8 +1779,12 @@ def build_misc_location_hints(world: World, messages: list[Message]) -> None:
         if hint_type in world.settings.misc_hints:
             if hint_type in world.misc_hint_location_items:
                 item = world.misc_hint_location_items[hint_type]
-                text = data['location_text'].format(item=get_hint(get_item_generic_name(item),
-                                                                  world.settings.clearer_hints).text)
+
+                # Private hack: add player ID to misc hints (Skulls and Frogs 2)
+                optional_player_text = "" if (world.id == item.world.id) else f" for Player {item.world.id + 1}"
+
+                text = data['location_text'].format(item=get_hint(get_item_generic_name(item), world.settings.clearer_hints).text,
+                                                    optional_player_text=optional_player_text)
 
         update_message_by_id(messages, data['id'], str(GossipText(text, ['Green'], prefix='')), 0x23)
 
