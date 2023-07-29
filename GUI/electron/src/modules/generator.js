@@ -160,6 +160,9 @@ function romBuilding(pythonPath, randoPath, settings) {
         if (romBuildingGenerator)
           treeKill(romBuildingGenerator.pid);
       }
+      else if (data.toString().includes("Seed:")) {
+        module.exports.emit('setSeedId', { message: data.toString().split("\n")[0] });
+      }
     }
 
     romBuildingGenerator.stderr.on('data', data => {

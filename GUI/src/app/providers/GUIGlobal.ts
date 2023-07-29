@@ -1221,6 +1221,20 @@ export class GUIGlobal implements OnDestroy {
 
           reject({ short: "Generation cancelled.", long: "Generation cancelled." });
         });
+
+        var listenerSetSeedId = post.once('generateSeedSetId', function (event) {
+
+          // Note: I have no idea what I'm doing, but this seems to work!
+          let data = event.data;
+          let pattern = /.*Seed: (.*)\r$/g;
+          let matches = pattern.exec(data.message);
+
+          if (progressWindowRef) {
+            progressWindowRef.seedId = matches[1];
+            progressWindowRef.refreshLayout();
+          }
+
+        });
       }).catch(err => {
         console.error("[generateSeedElectron] Post-Robot Error:", err);
         reject({ short: err, long: err });

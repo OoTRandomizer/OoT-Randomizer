@@ -6,7 +6,7 @@ import { ErrorDetailsWindowComponent } from '../errorDetailsWindow/errorDetailsW
   template: `
     <nb-card class="progress-window">
       <nb-card-header>
-      Generating Seed
+      Generating Seed {{seedId}}
       <button nbButton class="headerButton" size="xsmall" status="danger" [disabled]="cancellationInProgress" (click)="cancelGeneration()">X</button>
       </nb-card-header>
       <nb-card-body>
@@ -42,6 +42,8 @@ export class ProgressWindowComponent {
 
   cancellationInProgress: boolean = false;
   closed: boolean = false;
+
+  seedId: string = "";
 
   constructor(protected ref: NbDialogRef<ProgressWindowComponent>, private cd: ChangeDetectorRef, private dialogService: NbDialogService) {
   }

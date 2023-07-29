@@ -357,6 +357,10 @@ generator.on("patchJobProgress", status => {
   post.send(window, 'generateSeedProgress', status);
 });
 
+generator.on("setSeedId", status => {
+  post.send(window, 'generateSeedSetId', status);
+});
+
 
 //STARTUP
 //Test if we are in the proper path, else exit
