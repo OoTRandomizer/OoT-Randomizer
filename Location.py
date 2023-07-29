@@ -159,6 +159,9 @@ class Location:
     def __unicode__(self) -> str:
         return '%s' % self.name
 
+    def __repr__(self) -> str:
+        return "W%d %s with %s" % (self.world.id, self.name, self.item.__repr__() if self.item else "<empty>")
+
 
 @overload
 def LocationFactory(locations: str) -> Location:
