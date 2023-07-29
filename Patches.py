@@ -1190,7 +1190,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         # Spirit
         if not world.dungeon_mq['Spirit Temple']:
             save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x1, 0x80)  # Spirit Chains
-            save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x2, 0x02 + 0x08 + 0x10)  # Spirit main room elevator (N block, Rusted Switch, E block)
+            # save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x2, 0x02 + 0x08 + 0x10)  # Spirit main room elevator (N block, Rusted Switch, E block)
             save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x3, 0x10)  # Spirit Face
         else:
             save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x2, 0x10)  # Spirit Bombchu Boulder

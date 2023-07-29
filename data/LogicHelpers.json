@@ -138,6 +138,7 @@
     "forest_temple_shortcuts": "'Forest Temple' in dungeon_shortcuts",
     "fire_temple_shortcuts": "'Fire Temple' in dungeon_shortcuts",
     "shadow_temple_shortcuts": "'Shadow Temple' in dungeon_shortcuts",
-    "spirit_temple_shortcuts": "'Spirit Temple' in dungeon_shortcuts",
+    "spirit_temple_shortcuts": "'replaced by private hack' in dungeon_shortcuts",
+    "spirit_temple_nerfed_shortcuts": "'Spirit Temple' in dungeon_shortcuts",
     "king_dodongo_shortcuts": "region_has_shortcuts('King Dodongo Boss Room')"
 }

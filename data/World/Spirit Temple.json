@@ -200,7 +200,7 @@
                 spirit_temple_shortcuts and
                 (can_use(Hookshot) or (logic_spirit_adult_side_hovers and can_use(Hover_Boots)))",
             "Spirit Temple Before Boss": "
-                is_adult and spirit_temple_shortcuts and
+                is_adult and (spirit_temple_shortcuts or spirit_temple_nerfed_shortcuts) and
                 (Longshot or (logic_spirit_platform_hookshot and Hookshot))",
             # Age-unknown logic is incompatible with the rest of the world.
             # Because adult might unlock all doors, child must require all 5 keys to pass.
