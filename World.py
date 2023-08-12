@@ -671,7 +671,7 @@ class World:
                     shuffle_setting = self.settings.shuffle_bosskeys
                 elif item.type == 'SilverRupee':
                     dungeon_collection = dungeon.silver_rupees
-                    shuffle_setting = self.settings.shuffle_silver_rupees
+                    shuffle_setting = item.silver_rupee_placement
 
                 if dungeon_collection is not None and item not in dungeon_collection:
                     dungeon_collection.append(item)

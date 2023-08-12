@@ -149,7 +149,7 @@ class Item:
                 (self.type == 'BossKey' and self.world.settings.shuffle_bosskeys in ('remove', 'vanilla', 'dungeon')) or
                 (self.type == 'GanonBossKey' and self.world.settings.shuffle_ganon_bosskey in ('remove', 'vanilla', 'dungeon')) or
                 ((self.map or self.compass) and (self.world.settings.shuffle_mapcompass in ('remove', 'startwith', 'vanilla', 'dungeon'))) or
-                (self.type == 'SilverRupee' and self.world.settings.shuffle_silver_rupees in ['remove','vanilla','dungeon']))
+                (self.type == 'SilverRupee' and self.silver_rupee_placement in ['remove','vanilla','dungeon']))
 
     @property
     def majoritem(self) -> bool:
@@ -181,10 +181,17 @@ class Item:
             return False
         if self.type == 'GanonBossKey' and self.world.settings.shuffle_ganon_bosskey in ['dungeon', 'vanilla']:
             return False
-        if self.type == 'SilverRupee' and self.world.settings.shuffle_silver_rupees in ['dungeon', 'vanilla']:
+        if self.type == 'SilverRupee' and self.silver_rupee_placement in ['dungeon', 'vanilla']:
             return False
 
         return True
+    
+    @property
+    def silver_rupee_placement(self) -> str:
+        # If pouches are on, any remaining individual silver rupees are forced vanilla
+        if self.world.settings.silver_rupee_pouches_choice != 'off' and not 'Pouch' in self.name:
+            return 'vanilla'
+        return self.world.settings.shuffle_silver_rupees
 
     @property
     def goalitem(self) -> bool:
