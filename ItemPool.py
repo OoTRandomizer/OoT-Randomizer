@@ -4,7 +4,6 @@ from collections import Counter
 from collections.abc import Sequence
 from decimal import Decimal, ROUND_UP
 from typing import TYPE_CHECKING, Optional
-from Hints import HintArea
 
 from Item import Item, ItemInfo, ItemFactory
 from Location import DisableType
