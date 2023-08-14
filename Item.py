@@ -99,19 +99,12 @@ class Item:
         # Do not alias to junk--it has no solver id!
         self.alias_id: Optional[int] = ItemInfo.solver_ids[escape_name(self.alias[0])] if self.alias else None
 
-    def copy(self, *, copy_dict: Optional[dict[int, Any]] = None) -> Item:
-        copy_dict = {} if copy_dict is None else copy_dict
-        if (new_item := copy_dict.get(id(self), None)) and isinstance(new_item, Item):
-            return new_item
+    def copy(self) -> Item:
+        new_item = Item(name=self.name, world=self.world, event=self.event)
 
-        new_item = Item(name=self.name, world=self.world.copy(copy_dict=copy_dict), event=self.event)
-        copy_dict[id(self)] = new_item
-
-        if self.location:
-            new_item.location = self.location.copy(copy_dict=copy_dict)
+        new_item.location = self.location
         new_item.price = self.price
-        if self.looks_like_item:
-            new_item.looks_like_item = self.looks_like_item.copy(copy_dict=copy_dict)
+        new_item.looks_like_item = self.looks_like_item
 
         return new_item
 

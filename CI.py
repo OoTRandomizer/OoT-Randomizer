@@ -12,7 +12,7 @@ from typing import NoReturn
 
 
 import Unittest as Tests
-from SettingsList import logic_tricks, validate_settings
+from SettingsList import SettingInfos, logic_tricks, validate_settings
 from Utils import data_path
 
 
@@ -45,17 +45,43 @@ def check_presets_formatting(fix_errors: bool = False) -> None:
     with open(data_path('presets_default.json'), encoding='utf-8') as f:
         presets = json.load(f)
 
+    any_errors = False
     for preset_name, preset in presets.items():
         try:
             validate_settings(preset, check_conflicts=False)
         except Exception as e:
             error(f'Error in {preset_name} preset: {e}', False)
+        for setting_name, setting in SettingInfos.setting_infos.items():
+            if setting_name != 'starting_items' and setting.shared and setting_name not in preset:
+                error(f'Missing setting {setting_name} in {preset_name} preset', False)
+                any_errors = True
+    if any_errors:
+        return
 
     with open(data_path('presets_default.json'), encoding='utf-8') as f:
         presets_str = f.read()
 
     if presets_str != json.dumps(presets, indent=4) + '\n':
         error('presets not formatted correctly', True)
+        if fix_errors:
+            with open(data_path('presets_default.json'), 'w', encoding='utf-8', newline='') as file:
+                json.dump(presets, file, indent=4)
+                print(file=file)
+        else:
+            return
+
+    presets = {
+        preset_name: {
+            # sort the settings within each preset
+            setting_name: preset[setting_name]
+            for setting_name, setting in SettingInfos.setting_infos.items()
+            if setting_name != 'starting_items' and setting.shared and setting_name in preset
+        }
+        for preset_name, preset in presets.items()
+    }
+
+    if presets_str != json.dumps(presets, indent=4) + '\n':
+        error('presets not sorted correctly', True)
         if fix_errors:
             with open(data_path('presets_default.json'), 'w', encoding='utf-8', newline='') as file:
                 json.dump(presets, file, indent=4)

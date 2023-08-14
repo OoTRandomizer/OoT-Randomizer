@@ -340,13 +340,8 @@ class World:
         self.locked_goal_categories: dict[str, GoalCategory] = {name: category for (name, category) in self.goal_categories.items() if category.lock_entrances}
         self.unlocked_goal_categories: dict[str, GoalCategory] = {name: category for (name, category) in self.goal_categories.items() if not category.lock_entrances}
 
-    def copy(self, *, copy_dict: Optional[dict[int, Any]] = None) -> World:
-        copy_dict = {} if copy_dict is None else copy_dict
-        if (new_world := copy_dict.get(id(self), None)) and isinstance(new_world, World):
-            return new_world
-
+    def copy(self) -> World:
         new_world = World(self.id, self.settings, False)
-        copy_dict[id(self)] = new_world
 
         new_world.skipped_trials = copy.copy(self.skipped_trials)
         new_world.dungeon_mq = copy.copy(self.dungeon_mq)
@@ -358,13 +353,13 @@ class World:
         new_world.maximum_wallets = self.maximum_wallets
         new_world.distribution = self.distribution
 
-        new_world.dungeons = [dungeon.copy(copy_dict=copy_dict) for dungeon in self.dungeons]
-        new_world.regions = [region.copy(copy_dict=copy_dict) for region in self.regions]
-        new_world.itempool = [item.copy(copy_dict=copy_dict) for item in self.itempool]
+        new_world.dungeons = [dungeon for dungeon in self.dungeons]
+        new_world.regions = [region for region in self.regions]
+        new_world.itempool = [item for item in self.itempool]
         new_world.state = self.state.copy(new_world)
 
         # TODO: Why is this necessary over copying region.entrances on region copy?
-        new_world.initialize_entrances()
+        # new_world.initialize_entrances()
 
         # copy any randomized settings to match the original copy
         new_world.randomized_list = list(self.randomized_list)

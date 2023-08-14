@@ -194,6 +194,10 @@ CFG_DUNGEON_INFO_SILVER_RUPEES:
 .byte 0x00
 CUSTOM_KEY_MODELS:
 .byte 0x00
+SHUFFLE_OCARINA_BUTTONS:
+.byte 0x00
+EPONAS_SONG_NOTES:
+.halfword 0x0000
 .align 4
 
 ; These configuration values are given fixed addresses to aid auto-trackers.

@@ -1,7 +1,3 @@
-SHUFFLE_OCARINA_BUTTONS:
-.byte 0x00
-.align 8
-
 ocarina_buttons:
     addiu   sp, sp, -0x20
     sw      v0, 0x10(sp)
