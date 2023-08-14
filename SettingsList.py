@@ -3578,7 +3578,8 @@ class SettingInfos:
         },
         gui_tooltip    = '''\
             'Ludicrous': Every item in the game is a major
-            item. Incompatible with one major item per dungeon.
+            item. Incompatible with one major item per dungeon
+            and precompleted dungeons.
 
             'Plentiful': One additional copy of each major
             item is added.
