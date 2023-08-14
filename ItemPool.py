@@ -4,6 +4,7 @@ from collections import Counter
 from collections.abc import Sequence
 from decimal import Decimal, ROUND_UP
 from typing import TYPE_CHECKING, Optional
+from Hints import HintArea
 
 from Item import Item, ItemInfo, ItemFactory
 from Location import DisableType
@@ -963,6 +964,13 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         # Update pattern matcher since all normal junk is removed.
         item_groups['Junk'] = remove_junk_ludicrous_items
         world.distribution.distribution.search_groups['Junk'] = remove_junk_ludicrous_items
+        #Precomplete Dungeons with Ludicrious Item Pool
+        if world.settings.empty_dungeons_mode != 'none':
+            precomplete_locations: list[str] = [location in world.empty_dungeons]
+            for location in precomplete_locations:
+                pool.remove(random.choice(duplicate_items))
+            for location in precomplete_locations:
+                pool.append(random.choice(remove_junk_ludicrous_items))
     else:
         # Fix for unit tests reusing globals after ludicrous pool mutates them
         item_groups['Junk'] = remove_junk_items
