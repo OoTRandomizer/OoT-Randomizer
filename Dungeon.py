@@ -27,19 +27,14 @@ class Dungeon:
                 region.dungeon = self
                 self.regions.append(region)
 
-    def copy(self, *, copy_dict: Optional[dict[int, Any]] = None) -> Dungeon:
-        copy_dict = {} if copy_dict is None else copy_dict
-        if (new_dungeon := copy_dict.get(id(self), None)) and isinstance(new_dungeon, Dungeon):
-            return new_dungeon
+    def copy(self) -> Dungeon:
+        new_dungeon = Dungeon(world=self.world, name=self.name, hint=self.hint, regions=[])
 
-        new_dungeon = Dungeon(world=self.world.copy(copy_dict=copy_dict), name=self.name, hint=self.hint, regions=[])
-        copy_dict[id(self)] = new_dungeon
-
-        new_dungeon.regions = [region.copy(copy_dict=copy_dict) for region in self.regions]
-        new_dungeon.boss_key = [item.copy(copy_dict=copy_dict) for item in self.boss_key]
-        new_dungeon.small_keys = [item.copy(copy_dict=copy_dict) for item in self.small_keys]
-        new_dungeon.dungeon_items = [item.copy(copy_dict=copy_dict) for item in self.dungeon_items]
-        new_dungeon.silver_rupees = [item.copy(copy_dict=copy_dict) for item in self.silver_rupees]
+        new_dungeon.regions = [region for region in self.regions]
+        new_dungeon.boss_key = [item for item in self.boss_key]
+        new_dungeon.small_keys = [item for item in self.small_keys]
+        new_dungeon.dungeon_items = [item for item in self.dungeon_items]
+        new_dungeon.silver_rupees = [item for item in self.silver_rupees]
 
         return new_dungeon
 

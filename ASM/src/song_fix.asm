@@ -55,6 +55,10 @@ warp_song_fix:
 ; Change Epona check for owning or being able to play the song
 ;==================================================================================================
 Check_Has_Epona_Song:
+
+    addiu   sp, sp, -0x18
+    sw      ra, 0x14(sp)
+
     ; If not Epona owned flag, then return result
     li      at, 0x18
     bne     a0, at, @@return
@@ -70,6 +74,12 @@ Check_Has_Epona_Song:
     lb      t0, 0xA6(t2)
     andi    t0, t0, 0x20
     beqz    t0, @@return     ; Return False if no song
+    li      v0, 0
+
+    ; Check if Epona's Song can be played
+    jal     can_spawn_epona
+    nop
+    beqz    v0, @@return  ; Return False if not all notes obtained
     li      v0, 0
 
     ; Check if has Ocarina
@@ -92,5 +102,6 @@ Check_Has_Epona_Song:
     li      v0, 1
 
 @@return:
+    lw      ra, 0x14(sp)
     jr      ra
-    nop
+    addiu   sp, sp, 0x18

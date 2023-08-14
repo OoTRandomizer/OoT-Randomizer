@@ -247,7 +247,6 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Market Bazaar Item 6",                                         ("Shop",         0x2C,  0x35, (shop_address(4, 5), None),      'Buy Arrows (50)',                       ("Market", "Shops",))),
     ("Market Bazaar Item 7",                                         ("Shop",         0x2C,  0x36, (shop_address(4, 6), None),      'Buy Deku Stick (1)',                    ("Market", "Shops",))),
     ("Market Bazaar Item 8",                                         ("Shop",         0x2C,  0x37, (shop_address(4, 7), None),      'Buy Arrows (30)',                       ("Market", "Shops",))),
-
     ("Market Potion Shop Item 1",                                    ("Shop",         0x31,  0x30, (shop_address(3, 0), None),      'Buy Green Potion',                      ("Market", "Shops",))),
     ("Market Potion Shop Item 2",                                    ("Shop",         0x31,  0x31, (shop_address(3, 1), None),      'Buy Blue Fire',                         ("Market", "Shops",))),
     ("Market Potion Shop Item 3",                                    ("Shop",         0x31,  0x32, (shop_address(3, 2), None),      'Buy Red Potion for 30 Rupees',          ("Market", "Shops",))),
@@ -256,7 +255,6 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Market Potion Shop Item 6",                                    ("Shop",         0x31,  0x35, (shop_address(3, 5), None),      'Buy Bottle Bug',                        ("Market", "Shops",))),
     ("Market Potion Shop Item 7",                                    ("Shop",         0x31,  0x36, (shop_address(3, 6), None),      'Buy Poe',                               ("Market", "Shops",))),
     ("Market Potion Shop Item 8",                                    ("Shop",         0x31,  0x37, (shop_address(3, 7), None),      'Buy Fish',                              ("Market", "Shops",))),
-
     ("Market Bombchu Shop Item 1",                                   ("Shop",         0x32,  0x30, (shop_address(2, 0), None),      'Buy Bombchu (5)',                       ("Market", "Shops",))),
     ("Market Bombchu Shop Item 2",                                   ("Shop",         0x32,  0x31, (shop_address(2, 1), None),      'Buy Bombchu (10)',                      ("Market", "Shops",))),
     ("Market Bombchu Shop Item 3",                                   ("Shop",         0x32,  0x32, (shop_address(2, 2), None),      'Buy Bombchu (10)',                      ("Market", "Shops",))),
@@ -267,7 +265,6 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Market Bombchu Shop Item 8",                                   ("Shop",         0x32,  0x37, (shop_address(2, 7), None),      'Buy Bombchu (20)',                      ("Market", "Shops",))),
 
     ("ToT Light Arrows Cutscene",                                    ("Cutscene",     0xFF,  0x01, None,                            'Light Arrows',                          ("Temple of Time", "NPCs",))),
-
     # Market Pots/Crates
     ("Market Night Red Rupee Crate",                                 ("Crate",        0x21,  (0,0,23), None,                        'Rupees (20)',                           ("Market", "Crates",))),
     ("Market Night Green Rupee Crate 1",                             ("Crate",        0x21,  (0,0,24), None,                        'Rupee (1)',                             ("Market", "Crates",))),
@@ -378,7 +375,7 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     # Lon Lon Ranch Beehives
     ("LLR Grotto Beehive",                                           ("Beehive",      0x3E,  (12,0,0x44 + (0x1C * 2)), None,        'Rupees (20)',                           ("Lon Lon Ranch", "Grottos", "Beehives",))),
 
-    # Kakariko
+    # Kakariko Village
     ("Kak Anju as Child",                                            ("NPC",          0x52,  0x0F, None,                            'Bottle',                                ("Kakariko Village", "Minigames",))),
     ("Kak Anju as Adult",                                            ("NPC",          0x52,  0x1D, None,                            'Pocket Egg',                            ("Kakariko Village", "NPCs",))),
     ("Kak Anju Trade Pocket Cucco",                                  ("NPC",          0x52,  0x0E, None,                            'Cojiro',                                ("Kakariko Village", "Kakariko",))),
@@ -418,7 +415,7 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Kak Potion Shop Item 6",                                       ("Shop",         0x30,  0x35, (shop_address(1, 5), None),      'Buy Bottle Bug',                        ("Kakariko Village", "Shops",))),
     ("Kak Potion Shop Item 7",                                       ("Shop",         0x30,  0x36, (shop_address(1, 6), None),      'Buy Poe',                               ("Kakariko Village", "Shops",))),
     ("Kak Potion Shop Item 8",                                       ("Shop",         0x30,  0x37, (shop_address(1, 7), None),      'Buy Fairy\'s Spirit',                   ("Kakariko Village", "Shops",))),
-    # Kak Pots
+    # Kakariko Village Pots
     ("Kak Near Potion Shop Pot 1",                                   ("Pot",          0x52,  [(0,0,9),(0,1,8)],   None,             'Recovery Heart',                        ("Kakariko Village", "Pots",))),
     ("Kak Near Potion Shop Pot 2",                                   ("Pot",          0x52,  [(0,0,10),(0,1,9)],  None,             'Recovery Heart',                        ("Kakariko Village", "Pots",))),
     ("Kak Near Potion Shop Pot 3",                                   ("Pot",          0x52,  [(0,0,11),(0,1,10)], None,             'Recovery Heart',                        ("Kakariko Village", "Pots",))),
@@ -432,7 +429,7 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Kak Near Odd Medicine Building Pot 2",                         ("Pot",          0x52,  [(0,0,19),(0,1,18)], None,             'Recovery Heart',                        ("Kakariko Village", "Pots",))),
     ("Kak Adult Red Rupee Crate",                                    ("Crate",        0x52,  [(0,2,46),(0,3,43)], None,             'Rupees (20)',                           ("Kakariko Village", "Crates",))), # update crate flags to not conflict w/ child pots. These move day/night
     ("Kak Adult Arrows Crate",                                       ("Crate",        0x52,  [(0,2,37),(0,3,40)], None,             'Arrows (10)',                           ("Kakariko Village", "Crates",))), # update crate flags to not conflict w/ child pots. These move day/night
-    # Kak Beehives
+    # Kakariko Village Beehives
     ("Kak Open Grotto Beehive 1",                                    ("Beehive",      0x3E,  (0,0,0x48 + (0x08 * 2)), None,         'Rupees (5)',                            ("Kakariko Village", "Grottos", "Beehives",))),
     ("Kak Open Grotto Beehive 2",                                    ("Beehive",      0x3E,  (0,0,0x49 + (0x08 * 2)), None,         'Rupees (20)',                           ("Kakariko Village", "Grottos", "Beehives",))),
 
@@ -502,8 +499,8 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("GC Rolling Goron as Adult",                                    ("NPC",          0x62,  0x2C, None,                            'Goron Tunic',                           ("Goron City", "NPCs",))),
     ("GC Medigoron",                                                 ("NPC",          0x62,  0x28, None,                            'Giants Knife',                          ("Goron City", "NPCs",))),
     ("GC Maze Left Chest",                                           ("Chest",        0x62,  0x00, None,                            'Rupees (200)',                          ("Goron City", "Chests",))),
-    ("GC Maze Right Chest",                                          ("Chest",        0x62,  0x01, None,                            'Rupees (50)',                           ("Goron City", "Chests",))),
     ("GC Maze Center Chest",                                         ("Chest",        0x62,  0x02, None,                            'Rupees (50)',                           ("Goron City", "Chests",))),
+    ("GC Maze Right Chest",                                          ("Chest",        0x62,  0x01, None,                            'Rupees (50)',                           ("Goron City", "Chests",))),
     ("GC Deku Scrub Grotto Left",                                    ("GrottoScrub",  0xFB,  0x30, None,                            'Buy Deku Nut (5)',                      ("Goron City", "Deku Scrubs", "Grottos",))),
     ("GC Deku Scrub Grotto Center",                                  ("GrottoScrub",  0xFB,  0x33, None,                            'Buy Arrows (30)',                       ("Goron City", "Deku Scrubs", "Grottos",))),
     ("GC Deku Scrub Grotto Right",                                   ("GrottoScrub",  0xFB,  0x37, None,                            'Buy Bombs (5) for 35 Rupees',           ("Goron City", "Deku Scrubs", "Grottos",))),
@@ -525,7 +522,7 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("GC Spinning Pot Rupee Drop 3",                                 ("RupeeTower",   0x62,  (3,0,0x46), None,                      'Rupee (1)',                             ("Goron City", "Rupee Towers",))),
     ("GC Spinning Pot PoH Drop Rupee 1",                             ("RupeeTower",   0x62,  (3,0,0x47), None,                      'Rupees (20)',                           ("Goron City", "Rupee Towers",))),
     ("GC Spinning Pot PoH Drop Rupee 2",                             ("RupeeTower",   0x62,  (3,0,0x48), None,                      'Rupees (5)',                            ("Goron City", "Rupee Towers",))),
-    # Goron City Pots.
+    # Goron City Pots
     ("GC Darunia Pot 1",                                             ("Pot",          0x62,  [(1,0,6),(1,2,2)], None,               'Deku Stick (1)',                        ("Goron City", "Pots",))),
     ("GC Darunia Pot 2",                                             ("Pot",          0x62,  [(1,0,7),(1,2,3)], None,               'Rupee (1)',                             ("Goron City", "Pots",))),
     ("GC Darunia Pot 3",                                             ("Pot",          0x62,  [(1,0,8),(1,2,4)], None,               'Deku Stick (1)',                        ("Goron City", "Pots",))),
@@ -764,11 +761,11 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Hideout 2 Torch Jail Crate 1",                                 ("Crate",        0x0C,  (5,0,16), None,                        'Rupee (1)',                             ("Thieves' Hideout", "Crates",))),
     ("Hideout 2 Torch Jail Crate 2",                                 ("Crate",        0x0C,  (5,0,17), None,                        'Rupee (1)',                             ("Thieves' Hideout", "Crates",))),
 
-    # Wasteland
+    # Haunted Wasteland
     ("Wasteland Bombchu Salesman",                                   ("NPC",          0x5E,  0x03, None,                            'Bombchus (10)',                         ("Haunted Wasteland", "NPCs",))),
     ("Wasteland Chest",                                              ("Chest",        0x5E,  0x00, None,                            'Rupees (50)',                           ("Haunted Wasteland", "Chests",))),
     ("Wasteland GS",                                                 ("GS Token",     0x15,  0x02, None,                            'Gold Skulltula Token',                  ("Haunted Wasteland", "Gold Skulltulas",))),
-    # Wasteland Pots/Crates
+    # Haunted Wasteland Pots/Crates
     ("Wasteland Near GS Pot 1",                                      ("Pot",          0x5E,  (0,0,1), None,                         'Recovery Heart',                        ("Haunted Wasteland", "Pots",))),
     ("Wasteland Near GS Pot 2",                                      ("Pot",          0x5E,  (0,0,2), None,                         'Deku Nuts (5)',                         ("Haunted Wasteland", "Pots",))),
    #("Wasteland Near GS Pot 3",                                      ("Pot",          0x5E,  (0,0,3), None,                         'Rupees (5)',                            ("Haunted Wasteland", "Pots",))), Fairy
@@ -779,7 +776,7 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Wasteland Crate After Quicksand 3",                            ("Crate",        0x5E,  (1,0,37),None,                         'Rupee (1)',                             ("Haunted Wasteland", "Crates",))),
     ("Wasteland Crate Near Colossus",                                ("Crate",        0x5E,  (1,0,34),None,                         'Rupee (1)',                             ("Haunted Wasteland", "Crates",))),
 
-    # Colossus
+    # Desert Colossus
     ("Colossus Great Fairy Reward",                                  ("Cutscene",     0xFF,  0x12, None,                            'Nayrus Love',                           ("Desert Colossus", "Great Fairies",))),
     ("Colossus Freestanding PoH",                                    ("Collectable",  0x5C,  0x0D, None,                            'Piece of Heart',                        ("Desert Colossus", "Freestandings",))),
     ("Colossus Deku Scrub Grotto Front",                             ("GrottoScrub",  0xFD,  0x3A, None,                            'Buy Green Potion',                      ("Desert Colossus", "Deku Scrubs", "Grottos",))),
@@ -787,7 +784,7 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Colossus GS Bean Patch",                                       ("GS Token",     0x15,  0x01, None,                            'Gold Skulltula Token',                  ("Desert Colossus", "Gold Skulltulas",))),
     ("Colossus GS Tree",                                             ("GS Token",     0x15,  0x08, None,                            'Gold Skulltula Token',                  ("Desert Colossus", "Gold Skulltulas",))),
     ("Colossus GS Hill",                                             ("GS Token",     0x15,  0x04, None,                            'Gold Skulltula Token',                  ("Desert Colossus", "Gold Skulltulas",))),
-    # Colossus Beehives
+    # Desert Colossus Beehives
     ("Colossus Grotto Beehive",                                      ("Beehive",      0x3E,  (9,0,0x43 + (0x1D * 2)), None,         'Rupees (20)',                           ("Desert Colossus", "Grottos", "Beehives",))),
 
     # Outside Ganon's Castle
@@ -962,7 +959,6 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Dodongos Cavern MQ Larvae Room Crate 6",                       ("Crate",        0x1,   (6,0,12), None,                        'Rupee (1)',                             ("Dodongo's Cavern MQ", "Master Quest", "Crates",))),
     ("Dodongos Cavern MQ After Upper Lizalfos Crate 1",              ("Crate",        0x1,   (12,0,11), None,                       'Rupee (1)',                             ("Dodongo's Cavern MQ", "Master Quest", "Crates",))),
     ("Dodongos Cavern MQ After Upper Lizalfos Crate 2",              ("Crate",        0x1,   (12,0,12), None,                       'Rupee (1)',                             ("Dodongo's Cavern MQ", "Master Quest", "Crates",))),
-
     # Dodongo's Cavern MQ Silver Rupees
     ("Dodongos Cavern MQ Staircase Silver Rupee Beamos",             ("SilverRupee",  0x1,   (2,0,11), None,                     'Silver Rupee (Dodongos Cavern Staircase)', ("Dodongo's Cavern MQ", "Master Quest", "Silver Rupees"))),
     ("Dodongos Cavern MQ Staircase Silver Rupee Lower Crate",        ("SilverRupee",  0x1,   (2,0,12), None,                     'Silver Rupee (Dodongos Cavern Staircase)', ("Dodongo's Cavern MQ", "Master Quest", "Silver Rupees"))),
@@ -1089,7 +1085,6 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Bottom of the Well West Inner Room Flying Pot 1",              ("FlyingPot",    0x08,  (6,0,3), None,                         'Recovery Heart',                        ("Bottom of the Well", "Vanilla Dungeons", "Flying Pots",))),
     ("Bottom of the Well West Inner Room Flying Pot 2",              ("FlyingPot",    0x08,  (6,0,4), None,                         'Recovery Heart',                        ("Bottom of the Well", "Vanilla Dungeons", "Flying Pots",))),
     ("Bottom of the Well West Inner Room Flying Pot 3",              ("FlyingPot",    0x08,  (6,0,5), None,                         'Recovery Heart',                        ("Bottom of the Well", "Vanilla Dungeons", "Flying Pots",))),
-
     # Bottom of the Well Silver Rupees
     ("Bottom of the Well Basement Silver Rupee Wood Beam Front",     ("SilverRupee",  0x08, (1,0,43), None,                    'Silver Rupee (Bottom of the Well Basement)', ("Bottom of the Well", "Vanilla Dungeons", "Silver Rupees"))),
     ("Bottom of the Well Basement Silver Rupee Wood Beam Back",      ("SilverRupee",  0x08, (1,0,42), None,                    'Silver Rupee (Bottom of the Well Basement)', ("Bottom of the Well", "Vanilla Dungeons", "Silver Rupees"))),
@@ -1118,7 +1113,7 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Bottom of the Well MQ Center Room Right Pot 1",                ("Pot",          0x08,  (0,0,41), None,                        'Recovery Heart',                        ("Bottom of the Well MQ", "Master Quest", "Pots",))),
     ("Bottom of the Well MQ Center Room Right Pot 2",                ("Pot",          0x08,  (0,0,43), None,                        'Arrows (10)',                           ("Bottom of the Well MQ", "Master Quest", "Pots",))),
     ("Bottom of the Well MQ Center Room Right Pot 3",                ("Pot",          0x08,  (0,0,45), None,                        'Bombs (5)',                             ("Bottom of the Well MQ", "Master Quest", "Pots",))),
-   #("Bottom of the Well MQ Perimiter Behind Gate Bot",              ("Pot",          0x08,  0x2A, None,                            'N/A',                                   ("Bottom of the Well MQ", "Master Quest", "Pots",))),
+   #("Bottom of the Well MQ Perimeter Behind Gate Pot",              ("Pot",          0x08,  0x2A, None,                            'N/A',                                   ("Bottom of the Well MQ", "Master Quest", "Pots",))),
     ("Bottom of the Well MQ East Inner Room Pot 1",                  ("Pot",          0x08,  (5,0,7), None,                         'Recovery Heart',                        ("Bottom of the Well MQ", "Master Quest", "Pots",))),
     ("Bottom of the Well MQ East Inner Room Pot 2",                  ("Pot",          0x08,  (5,0,8), None,                         'Recovery Heart',                        ("Bottom of the Well MQ", "Master Quest", "Pots",))),
     ("Bottom of the Well MQ East Inner Room Pot 3",                  ("Pot",          0x08,  (5,0,9), None,                         'Recovery Heart',                        ("Bottom of the Well MQ", "Master Quest", "Pots",))),
@@ -1596,20 +1591,17 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
    #("Shadow Temple After Boat Pot 2"                                ("Pot",          0x07,  (21,0,18), None,                        'Recovery Heart',                        ("Shadow Temple", "Vanilla Dungeons", "Pots",))),
     ("Shadow Temple Near Boss Pot 1",                                ("Pot",          0x07,  (21,0,19), None,                       'Arrows (30)',                           ("Shadow Temple", "Vanilla Dungeons", "Pots",))),
     ("Shadow Temple Near Boss Pot 2",                                ("Pot",          0x07,  (21,0,20), None,                       'Rupees (5)',                            ("Shadow Temple", "Vanilla Dungeons", "Pots",))),
-
     # Shadow Temple Silver Rupees
     ("Shadow Temple Scythe Shortcut Silver Rupee Center Left",       ("SilverRupee",  0x07,  (6,0,1), None,                  'Silver Rupee (Shadow Temple Scythe Shortcut)', ("Shadow Temple", "Vanilla Dungeons", "Silver Rupees"))),
     ("Shadow Temple Scythe Shortcut Silver Rupee Center Right",      ("SilverRupee",  0x07,  (6,0,5), None,                  'Silver Rupee (Shadow Temple Scythe Shortcut)', ("Shadow Temple", "Vanilla Dungeons", "Silver Rupees"))),
     ("Shadow Temple Scythe Shortcut Silver Rupee Left Alcove",       ("SilverRupee",  0x07,  (6,0,4), None,                  'Silver Rupee (Shadow Temple Scythe Shortcut)', ("Shadow Temple", "Vanilla Dungeons", "Silver Rupees"))),
     ("Shadow Temple Scythe Shortcut Silver Rupee Back Alcove",       ("SilverRupee",  0x07,  (6,0,3), None,                  'Silver Rupee (Shadow Temple Scythe Shortcut)', ("Shadow Temple", "Vanilla Dungeons", "Silver Rupees"))),
     ("Shadow Temple Scythe Shortcut Silver Rupee Ledge",             ("SilverRupee",  0x07,  (6,0,2), None,                  'Silver Rupee (Shadow Temple Scythe Shortcut)', ("Shadow Temple", "Vanilla Dungeons", "Silver Rupees"))),
-
     ("Shadow Temple Huge Pit Silver Rupee Left",                     ("SilverRupee",  0x07,  (9,0,8),  None,                        'Silver Rupee (Shadow Temple Huge Pit)', ("Shadow Temple", "Vanilla Dungeons", "Silver Rupees"))),
     ("Shadow Temple Huge Pit Silver Rupee Center Front",             ("SilverRupee",  0x07,  (9,0,10), None,                        'Silver Rupee (Shadow Temple Huge Pit)', ("Shadow Temple", "Vanilla Dungeons", "Silver Rupees"))),
     ("Shadow Temple Huge Pit Silver Rupee Center",                   ("SilverRupee",  0x07,  (9,0,9),  None,                        'Silver Rupee (Shadow Temple Huge Pit)', ("Shadow Temple", "Vanilla Dungeons", "Silver Rupees"))),
     ("Shadow Temple Huge Pit Silver Rupee Center Back",              ("SilverRupee",  0x07,  (9,0,11),  None,                       'Silver Rupee (Shadow Temple Huge Pit)', ("Shadow Temple", "Vanilla Dungeons", "Silver Rupees"))),
     ("Shadow Temple Huge Pit Silver Rupee Right",                    ("SilverRupee",  0x07,  (9,0,7),  None,                        'Silver Rupee (Shadow Temple Huge Pit)', ("Shadow Temple", "Vanilla Dungeons", "Silver Rupees"))),
-
     ("Shadow Temple Invisible Spikes Silver Rupee Right",            ("SilverRupee",  0x07,  (11,0,4), None,                'Silver Rupee (Shadow Temple Invisible Spikes)', ("Shadow Temple", "Vanilla Dungeons", "Silver Rupees"))),
     ("Shadow Temple Invisible Spikes Silver Rupee Center",           ("SilverRupee",  0x07,  (11,0,5), None,                'Silver Rupee (Shadow Temple Invisible Spikes)', ("Shadow Temple", "Vanilla Dungeons", "Silver Rupees"))),
     ("Shadow Temple Invisible Spikes Silver Rupee Left",             ("SilverRupee",  0x07,  (11,0,6), None,                'Silver Rupee (Shadow Temple Invisible Spikes)', ("Shadow Temple", "Vanilla Dungeons", "Silver Rupees"))),
@@ -1687,7 +1679,6 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Shadow Temple MQ Truth Spinner Small Wooden Crate 2",          ("SmallCrate",   0x07,  (2,0,17), None,                        'Rupees (5)',                            ("Shadow Temple MQ", "Master Quest", "Small Crates",))),
     ("Shadow Temple MQ Truth Spinner Small Wooden Crate 3",          ("SmallCrate",   0x07,  (2,0,18), None,                        'Bombs (5)',                             ("Shadow Temple MQ", "Master Quest", "Small Crates",))),
     ("Shadow Temple MQ Truth Spinner Small Wooden Crate 4",          ("SmallCrate",   0x07,  (2,0,19), None,                        'Recovery Heart',                        ("Shadow Temple MQ", "Master Quest", "Small Crates",))),
-
     # Shadow Temple MQ Silver Rupees
     ("Shadow Temple MQ Scythe Shortcut Silver Rupee Center Left",    ("SilverRupee", 0x07, (6,0,7), None,                    'Silver Rupee (Shadow Temple Scythe Shortcut)', ("Shadow Temple MQ", "Master Quest", "Silver Rupees"))),
     ("Shadow Temple MQ Scythe Shortcut Silver Rupee Center Right",   ("SilverRupee", 0x07, (6,0,8), None,                    'Silver Rupee (Shadow Temple Scythe Shortcut)', ("Shadow Temple MQ", "Master Quest", "Silver Rupees"))),
@@ -1779,13 +1770,11 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Spirit Temple MQ GS Nine Thrones Room North",                  ("GS Token",     0x06,  0x10, None,                            'Gold Skulltula Token',                  ("Spirit Temple MQ", "Master Quest", "Gold Skulltulas",))),
 
     ("Spirit Temple Twinrova Heart",                                 ("BossHeart",    0x17,  0x4F, None,                            'Heart Container',                       ("Spirit Temple", "Spirit Temple MQ", "Vanilla Dungeons", "Master Quest",))),
-
     # Spirit Temple Freestanding
     ("Spirit Temple Shifting Wall Recovery Heart 1",                 ("Freestanding", 0x06,  (23,0,3), None,                        'Recovery Heart',                        ("Spirit Temple", "Vanilla Dungeons", "Freestandings",))),
     ("Spirit Temple Shifting Wall Recovery Heart 2",                 ("Freestanding", 0x06,  (23,0,4), None,                        'Recovery Heart',                        ("Spirit Temple", "Vanilla Dungeons", "Freestandings",))),
     ("Spirit Temple MQ Child Recovery Heart 1",                      ("Freestanding", 0x06,  (1,0,14), None,                        'Recovery Heart',                        ("Spirit Temple MQ", "Master Quest", "Freestandings",))),
     ("Spirit Temple MQ Child Recovery Heart 2",                      ("Freestanding", 0x06,  (1,0,15), None,                        'Recovery Heart',                        ("Spirit Temple MQ", "Master Quest", "Freestandings",))),
-
     # Spirit Temple Vanilla Pots/Crates
     ("Spirit Temple Lobby Pot 1",                                    ("Pot",          0x06,  (0,0,11), None,                        'Recovery Heart',                        ("Spirit Temple", "Vanilla Dungeons", "Pots",))),
     ("Spirit Temple Lobby Pot 2",                                    ("Pot",          0x06,  (0,0,12), None,                        'Rupees (5)',                            ("Spirit Temple", "Vanilla Dungeons", "Pots",))),
@@ -1818,7 +1807,6 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Spirit Temple Big Mirror Flying Pot 4",                        ("FlyingPot",    0x06,  (25,0,8), None,                        'Recovery Heart',                        ("Spirit Temple", "Vanilla Dungeons", "Flying Pots",))),
     ("Spirit Temple Big Mirror Flying Pot 5",                        ("FlyingPot",    0x06,  (25,0,9), None,                        'Recovery Heart',                        ("Spirit Temple", "Vanilla Dungeons", "Flying Pots",))),
     ("Spirit Temple Big Mirror Flying Pot 6",                        ("FlyingPot",    0x06,  (25,0,10), None,                       'Recovery Heart',                        ("Spirit Temple", "Vanilla Dungeons", "Flying Pots",))),
-
     #Spirit Temple Vanilla Silver Rupees
     ("Spirit Temple Adult Boulder Silver Rupee Ledge",               ("SilverRupee", 0x06, (13,0,11), None,                   'Silver Rupee (Spirit Temple Adult Boulders)', ("Spirit Temple", "Vanilla Dungeons", "Silver Rupees"))),
     ("Spirit Temple Adult Boulder Silver Rupee Front Left",          ("SilverRupee", 0x06, (13,0,8),  None,                   'Silver Rupee (Spirit Temple Adult Boulders)', ("Spirit Temple", "Vanilla Dungeons", "Silver Rupees"))),
@@ -1835,8 +1823,6 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Spirit Temple Child Early Torches Silver Rupee Bottom Left",   ("SilverRupee", 0x06, (2,0,15), None,               'Silver Rupee (Spirit Temple Child Early Torches)', ("Spirit Temple", "Vanilla Dungeons", "Silver Rupees"))),
     ("Spirit Temple Child Early Torches Silver Rupee Top Left",      ("SilverRupee", 0x06, (2,0,16), None,               'Silver Rupee (Spirit Temple Child Early Torches)', ("Spirit Temple", "Vanilla Dungeons", "Silver Rupees"))),
     ("Spirit Temple Child Early Torches Silver Rupee Near Torch",    ("SilverRupee", 0x06, (2,0,17), None,               'Silver Rupee (Spirit Temple Child Early Torches)', ("Spirit Temple", "Vanilla Dungeons", "Silver Rupees"))),
-
-
     # Spirit Temple MQ Silver Rupees
     ("Spirit Temple MQ Lobby and Lower Adult Silver Rupee Left Boulder",("SilverRupee",0x06,(0,0,12), None,            'Silver Rupee (Spirit Temple Lobby and Lower Adult)', ("Spirit Temple MQ", "Master Quest", "Silver Rupees"))),
     ("Spirit Temple MQ Lobby and Lower Adult Silver Rupee Right Boulder",("SilverRupee",0x06,(0,0,11),None,            'Silver Rupee (Spirit Temple Lobby and Lower Adult)', ("Spirit Temple MQ", "Master Quest", "Silver Rupees"))),
@@ -1848,8 +1834,6 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Spirit Temple MQ Adult Climb Silver Rupee 3",                  ("SilverRupee", 0x06, (23,0,15), None,                      'Silver Rupee (Spirit Temple Adult Climb)', ("Spirit Temple MQ", "Master Quest", "Silver Rupees"))),
     ("Spirit Temple MQ Adult Climb Silver Rupee 4",                  ("SilverRupee", 0x06, (23,0,13), None,                      'Silver Rupee (Spirit Temple Adult Climb)', ("Spirit Temple MQ", "Master Quest", "Silver Rupees"))),
     ("Spirit Temple MQ Adult Climb Silver Rupee 5",                  ("SilverRupee", 0x06, (23,0,14), None,                      'Silver Rupee (Spirit Temple Adult Climb)', ("Spirit Temple MQ", "Master Quest", "Silver Rupees"))),
-
-
     # Spirit Temple MQ Pots
     ("Spirit Temple MQ Lobby Pot 1",                                 ("Pot",          0x06,  (0,0,18), None,                        'Bombs (5)',                             ("Spirit Temple MQ", "Master Quest", "Pots",))),
     ("Spirit Temple MQ Lobby Pot 2",                                 ("Pot",          0x06,  (0,0,19), None,                        'Recovery Heart',                        ("Spirit Temple MQ", "Master Quest", "Pots",))),
@@ -1917,7 +1901,6 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Ice Cavern Near End Pot 1",                                    ("Pot",          0x09,  (6,0,1), None,                         'Recovery Heart',                        ("Ice Cavern", "Vanilla Dungeons", "Pots",))),
     ("Ice Cavern Near End Pot 2",                                    ("Pot",          0x09,  (6,0,2), None,                         'Recovery Heart',                        ("Ice Cavern", "Vanilla Dungeons", "Pots",))),
     ("Ice Cavern Frozen Pot",                                        ("Pot",          0x09,  (9,0,10), None,                        'Rupees (50)',                           ("Ice Cavern", "Vanilla Dungeons", "Pots",))),
-
     # Ice Cavern Silver Rupees
     ("Ice Cavern Spinning Scythe Silver Rupee Icicles",              ("SilverRupee",  0x09,  (3,0,3), None,                     'Silver Rupee (Ice Cavern Spinning Scythe)', ("Ice Cavern", "Vanilla Dungeons", "Silver Rupees"))),
     ("Ice Cavern Spinning Scythe Silver Rupee Center Left",          ("SilverRupee",  0x09,  (3,0,4), None,                     'Silver Rupee (Ice Cavern Spinning Scythe)', ("Ice Cavern", "Vanilla Dungeons", "Silver Rupees"))),
@@ -1977,20 +1960,17 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     # Gerudo Training Ground Vanilla Freestanding
     ("Gerudo Training Ground Beamos Recovery Heart 1",               ("Freestanding", 0x0B,  (7,0,11), None,                        'Recovery Heart',                        ("Gerudo Training Ground", "Vanilla Dungeons", "Freestandings",))),
     ("Gerudo Training Ground Beamos Recovery Heart 2",               ("Freestanding", 0x0B,  (7,0,12), None,                        'Recovery Heart',                        ("Gerudo Training Ground", "Vanilla Dungeons", "Freestandings",))),
-
     # Gerudo Training Ground Silver Rupees
     ("Gerudo Training Ground Lava Room Silver Rupee Front Left",     ("SilverRupee",  0x0B,  (6,0,11), None,                    'Silver Rupee (Gerudo Training Ground Lava)', ("Gerudo Training Ground", "Vanilla Dungeons", "Silver Rupees"))),
     ("Gerudo Training Ground Lava Room Silver Rupee Front Right",    ("SilverRupee",  0x0B,  (6,0,12), None,                    'Silver Rupee (Gerudo Training Ground Lava)', ("Gerudo Training Ground", "Vanilla Dungeons", "Silver Rupees"))),
     ("Gerudo Training Ground Lava Room Silver Rupee Flame Circle",   ("SilverRupee",  0x0B,  (6,0,13), None,                    'Silver Rupee (Gerudo Training Ground Lava)', ("Gerudo Training Ground", "Vanilla Dungeons", "Silver Rupees"))),
     ("Gerudo Training Ground Lava Room Silver Rupee Center Right",   ("SilverRupee",  0x0B,  (6,0,15), None,                    'Silver Rupee (Gerudo Training Ground Lava)', ("Gerudo Training Ground", "Vanilla Dungeons", "Silver Rupees"))),
     ("Gerudo Training Ground Lava Room Silver Rupee Hookshot Target",("SilverRupee",  0x0B,  (6,0,14), None,                    'Silver Rupee (Gerudo Training Ground Lava)', ("Gerudo Training Ground", "Vanilla Dungeons", "Silver Rupees"))),
-
     ("Gerudo Training Ground Underwater Silver Rupee Top",           ("SilverRupee",  0x0B,  (9,0,18), None,                   'Silver Rupee (Gerudo Training Ground Water)', ("Gerudo Training Ground", "Vanilla Dungeons", "Silver Rupees"))),
     ("Gerudo Training Ground Underwater Silver Rupee Middle",        ("SilverRupee",  0x0B,  (9,0,20), None,                   'Silver Rupee (Gerudo Training Ground Water)', ("Gerudo Training Ground", "Vanilla Dungeons", "Silver Rupees"))),
     ("Gerudo Training Ground Underwater Silver Rupee Bottom Front Right",("SilverRupee",0x0B,(9,0,21), None,                   'Silver Rupee (Gerudo Training Ground Water)', ("Gerudo Training Ground", "Vanilla Dungeons", "Silver Rupees"))),
     ("Gerudo Training Ground Underwater Silver Rupee Bottom Center", ("SilverRupee",  0x0B,  (9,0,17), None,                   'Silver Rupee (Gerudo Training Ground Water)', ("Gerudo Training Ground", "Vanilla Dungeons", "Silver Rupees"))),
     ("Gerudo Training Ground Underwater Silver Rupee Bottom Back Left",("SilverRupee",0x0B,  (9,0,19), None,                   'Silver Rupee (Gerudo Training Ground Water)', ("Gerudo Training Ground", "Vanilla Dungeons", "Silver Rupees"))),
-
     ("Gerudo Training Ground Boulder Room Silver Rupee Bottom Right",("SilverRupee",  0x0B,  (2,0,10), None,                  'Silver Rupee (Gerudo Training Ground Slopes)', ("Gerudo Training Ground", "Vanilla Dungeons", "Silver Rupees"))),
     ("Gerudo Training Ground Boulder Room Silver Rupee Bottom Left", ("SilverRupee",  0x0B,  (2,0,11), None,                  'Silver Rupee (Gerudo Training Ground Slopes)', ("Gerudo Training Ground", "Vanilla Dungeons", "Silver Rupees"))),
     ("Gerudo Training Ground Boulder Room Silver Rupee Ceiling",     ("SilverRupee",  0x0B,  (2,0,12), None,                  'Silver Rupee (Gerudo Training Ground Slopes)', ("Gerudo Training Ground", "Vanilla Dungeons", "Silver Rupees"))),
@@ -2013,29 +1993,26 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Gerudo Training Ground MQ Dinolfos Chest",                     ("Chest",        0x0B,  0x01, None,                            'Small Key (Gerudo Training Ground)',    ("Gerudo Training Ground MQ", "Master Quest", "Chests",))),
     ("Gerudo Training Ground MQ Hidden Ceiling Chest",               ("Chest",        0x0B,  0x0B, None,                            'Rupees (50)',                           ("Gerudo Training Ground MQ", "Master Quest", "Chests",))),
     ("Gerudo Training Ground MQ Maze Path First Chest",              ("Chest",        0x0B,  0x06, None,                            'Rupee (1)',                             ("Gerudo Training Ground MQ", "Master Quest", "Chests",))),
-    ("Gerudo Training Ground MQ Maze Path Third Chest",              ("Chest",        0x0B,  0x09, None,                            'Rupee (Treasure Chest Game) (1)',       ("Gerudo Training Ground MQ", "Master Quest", "Chests",))),
     ("Gerudo Training Ground MQ Maze Path Second Chest",             ("Chest",        0x0B,  0x0A, None,                            'Rupees (20)',                           ("Gerudo Training Ground MQ", "Master Quest", "Chests",))),
+    ("Gerudo Training Ground MQ Maze Path Third Chest",              ("Chest",        0x0B,  0x09, None,                            'Rupee (Treasure Chest Game) (1)',       ("Gerudo Training Ground MQ", "Master Quest", "Chests",))),
     # Gerudo Training Ground MQ Pots/Crates
     ("Gerudo Training Ground MQ Lobby Left Pot 1",                   ("Pot",          0x0B,  (0,0,6), None,                         'Recovery Heart',                        ("Gerudo Training Ground MQ", "Master Quest", "Pots",))),
     ("Gerudo Training Ground MQ Lobby Left Pot 2",                   ("Pot",          0x0B,  (0,0,7), None,                         'Rupees (5)',                            ("Gerudo Training Ground MQ", "Master Quest", "Pots",))),
     ("Gerudo Training Ground MQ Lobby Right Pot 1",                  ("Pot",          0x0B,  (0,0,8), None,                         'Rupees (5)',                            ("Gerudo Training Ground MQ", "Master Quest", "Pots",))),
     ("Gerudo Training Ground MQ Lobby Right Pot 2",                  ("Pot",          0x0B,  (0,0,9), None,                         'Recovery Heart',                        ("Gerudo Training Ground MQ", "Master Quest", "Pots",))),
     ("Gerudo Training Ground MQ Maze Crate",                         ("Crate",        0x0B,  (8,0,2), None,                         'Rupee (1)',                             ("Gerudo Training Ground MQ", "Master Quest", "Crates",))),
-
     # Gerudo Training Ground MQ Silver Rupees
     ("Gerudo Training Ground MQ Icicle Room Silver Rupee Freezard",  ("SilverRupee",  0x0B,  (2,0,28), None,                 'Silver Rupee (Gerudo Training Ground Slopes)', ("Gerudo Training Ground MQ", "Master Quest", "Silver Rupees"))),
     ("Gerudo Training Ground MQ Icicle Room Silver Rupee Icicles",   ("SilverRupee",  0x0B,  (2,0,25), None,                 'Silver Rupee (Gerudo Training Ground Slopes)', ("Gerudo Training Ground MQ", "Master Quest", "Silver Rupees"))),
     ("Gerudo Training Ground MQ Icicle Room Silver Rupee Center",    ("SilverRupee",  0x0B,  (2,0,26), None,                 'Silver Rupee (Gerudo Training Ground Slopes)', ("Gerudo Training Ground MQ", "Master Quest", "Silver Rupees"))),
     ("Gerudo Training Ground MQ Icicle Room Silver Rupee Ceiling",   ("SilverRupee",  0x0B,  (2,0,27), None,                 'Silver Rupee (Gerudo Training Ground Slopes)', ("Gerudo Training Ground MQ", "Master Quest", "Silver Rupees"))),
     ("Gerudo Training Ground MQ Icicle Room Silver Rupee Above Void",("SilverRupee",  0x0B,  (2,0,29), None,                 'Silver Rupee (Gerudo Training Ground Slopes)', ("Gerudo Training Ground MQ", "Master Quest", "Silver Rupees"))),
-
     ("Gerudo Training Ground MQ Lava Room Silver Rupee Front Left",  ("SilverRupee",  0x0B,  (6,0,12), None,                   'Silver Rupee (Gerudo Training Ground Lava)', ("Gerudo Training Ground MQ", "Master Quest", "Silver Rupees"))),
     ("Gerudo Training Ground MQ Lava Room Silver Rupee Front Center",("SilverRupee",  0x0B,  (6,0,13), None,                   'Silver Rupee (Gerudo Training Ground Lava)', ("Gerudo Training Ground MQ", "Master Quest", "Silver Rupees"))),
     ("Gerudo Training Ground MQ Lava Room Silver Rupee Front Right", ("SilverRupee",  0x0B,  (6,0,11), None,                   'Silver Rupee (Gerudo Training Ground Lava)', ("Gerudo Training Ground MQ", "Master Quest", "Silver Rupees"))),
     ("Gerudo Training Ground MQ Lava Room Silver Rupee Back Left",   ("SilverRupee",  0x0B,  (6,0,9),  None,                   'Silver Rupee (Gerudo Training Ground Lava)', ("Gerudo Training Ground MQ", "Master Quest", "Silver Rupees"))),
     ("Gerudo Training Ground MQ Lava Room Silver Rupee Back Center", ("SilverRupee",  0x0B,  (6,0,10), None,                   'Silver Rupee (Gerudo Training Ground Lava)', ("Gerudo Training Ground MQ", "Master Quest", "Silver Rupees"))),
     ("Gerudo Training Ground MQ Lava Room Silver Rupee Back Right",  ("SilverRupee",  0x0B,  (6,0,8),  None,                   'Silver Rupee (Gerudo Training Ground Lava)', ("Gerudo Training Ground MQ", "Master Quest", "Silver Rupees"))),
-
     ("Gerudo Training Ground MQ Underwater Silver Rupee Middle",     ("SilverRupee",  0x0B,  (9,0,13), None,                  'Silver Rupee (Gerudo Training Ground Water)', ("Gerudo Training Ground MQ", "Master Quest", "Silver Rupees"))),
     ("Gerudo Training Ground MQ Underwater Silver Rupee Front Right",("SilverRupee",  0x0B,  (9,0,14), None,                  'Silver Rupee (Gerudo Training Ground Water)', ("Gerudo Training Ground MQ", "Master Quest", "Silver Rupees"))),
     ("Gerudo Training Ground MQ Underwater Silver Rupee Back Left",  ("SilverRupee",  0x0B,  (9,0,12), None,                  'Silver Rupee (Gerudo Training Ground Water)', ("Gerudo Training Ground MQ", "Master Quest", "Silver Rupees"))),
@@ -2060,13 +2037,13 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Ganons Castle Deku Scrub Center-Left",                         ("Scrub",        0x0D,  0x37, None,                            'Buy Bombs (5) for 35 Rupees',           ("Ganon's Castle", "Vanilla Dungeons", "Deku Scrubs",))),
     ("Ganons Castle Deku Scrub Center-Right",                        ("Scrub",        0x0D,  0x33, None,                            'Buy Arrows (30)',                       ("Ganon's Castle", "Vanilla Dungeons", "Deku Scrubs",))),
     ("Ganons Castle Deku Scrub Right",                               ("Scrub",        0x0D,  0x39, None,                            'Buy Red Potion for 30 Rupees',          ("Ganon's Castle", "Vanilla Dungeons", "Deku Scrubs",))),
-    # Ganons Castle Vanilla Freestanding
+    # Ganon's Castle Vanilla Freestanding
     ("Ganons Castle Shadow Trial Recovery Heart 1",                  ("Freestanding", 0x0D,  (12,0,9), None,                        'Recovery Heart',                        ("Ganon's Castle", "Vanilla Dungeons", "Freestandings",))),
     ("Ganons Castle Shadow Trial Recovery Heart 2",                  ("Freestanding", 0x0D,  (12,0,11), None,                       'Recovery Heart',                        ("Ganon's Castle", "Vanilla Dungeons", "Freestandings",))),
     ("Ganons Castle Shadow Trial Recovery Heart 3",                  ("Freestanding", 0x0D,  (12,0,13), None,                       'Recovery Heart',                        ("Ganon's Castle", "Vanilla Dungeons", "Freestandings",))),
     ("Ganons Castle Fire Trial Recovery Heart",                      ("Freestanding", 0x0D,  (14,0,20), None,                       'Recovery Heart',                        ("Ganon's Castle", "Vanilla Dungeons", "Freestandings",))),
     ("Ganons Castle Spirit Trial Recovery Heart",                    ("Freestanding", 0x0D,  (17,0,28), None,                       'Recovery Heart',                        ("Ganon's Castle", "Vanilla Dungeons", "Freestandings",))),
-    # Ganons Castle Vanilla Pots
+    # Ganon's Castle Vanilla Pots
     ("Ganons Castle Water Trial Pot 1",                              ("Pot",          0x0D,  (4,0,5), None,                         'Recovery Heart',                        ("Ganon's Castle", "Vanilla Dungeons", "Pots",))),
     ("Ganons Castle Water Trial Pot 2",                              ("Pot",          0x0D,  (4,0,6), None,                         'Rupees (5)',                            ("Ganon's Castle", "Vanilla Dungeons", "Pots",))),
     ("Ganons Castle Forest Trial Pot 1",                             ("Pot",          0x0D,  (7,0,5), None,                         'Recovery Heart',                        ("Ganon's Castle", "Vanilla Dungeons", "Pots",))),
@@ -2082,8 +2059,7 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Ganons Castle Fire Trial Pot 2",                               ("Pot",          0x0D,  (15,0,6), None,                        'Rupees (5)',                            ("Ganon's Castle", "Vanilla Dungeons", "Pots",))),
     ("Ganons Castle Spirit Trial Pot 1",                             ("Pot",          0x0D,  (19,0,5), None,                        'Deku Nuts (5)',                         ("Ganon's Castle", "Vanilla Dungeons", "Pots",))),
     ("Ganons Castle Spirit Trial Pot 2",                             ("Pot",          0x0D,  (19,0,6), None,                        'Rupees (5)',                            ("Ganon's Castle", "Vanilla Dungeons", "Pots",))),
-
-    # Ganons Castle Silver Rupees
+    # Ganon's Castle Silver Rupees
     ("Ganons Castle Spirit Trial Silver Rupee Ceiling",              ("SilverRupee",  0x0D,  (17,0,22), None,                   'Silver Rupee (Ganons Castle Spirit Trial)', ("Ganon's Castle", "Vanilla Dungeons", "Silver Rupees"))),
     ("Ganons Castle Spirit Trial Silver Rupee Front Right",          ("SilverRupee",  0x0D,  (17,0,23), None,                   'Silver Rupee (Ganons Castle Spirit Trial)', ("Ganon's Castle", "Vanilla Dungeons", "Silver Rupees"))),
     ("Ganons Castle Spirit Trial Silver Rupee Center",               ("SilverRupee",  0x0D,  (17,0,24), None,                   'Silver Rupee (Ganons Castle Spirit Trial)', ("Ganon's Castle", "Vanilla Dungeons", "Silver Rupees"))),
@@ -2141,8 +2117,7 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Ganons Castle MQ Fire Trial Pot 2",                            ("Pot",          0x0D,  (15,0,6), None,                        'Recovery Heart',                        ("Ganon's Castle MQ", "Master Quest", "Pots",))),
     ("Ganons Castle MQ Spirit Trial Pot 1",                          ("Pot",          0x0D,  (19,0,5), None,                        'Rupees (5)',                            ("Ganon's Castle MQ", "Master Quest", "Pots",))),
     ("Ganons Castle MQ Spirit Trial Pot 2",                          ("Pot",          0x0D,  (19,0,6), None,                        'Deku Nuts (5)',                         ("Ganon's Castle MQ", "Master Quest", "Pots",))),
-
-    # Ganons Castle MQ Silver Rupees
+    # Ganon's Castle MQ Silver Rupees
     ("Ganons Castle MQ Fire Trial Silver Rupee Rising Platform",     ("SilverRupee", 0x0D, (14,0,22), None,                       'Silver Rupee (Ganons Castle Fire Trial)', ("Ganon's Castle MQ", "Master Quest", "Silver Rupees"))),
     ("Ganons Castle MQ Fire Trial Silver Rupee Beamos",              ("SilverRupee", 0x0D, (14,0,19), None,                       'Silver Rupee (Ganons Castle Fire Trial)', ("Ganon's Castle MQ", "Master Quest", "Silver Rupees"))),
     ("Ganons Castle MQ Fire Trial Silver Rupee Left Front",          ("SilverRupee", 0x0D, (14,0,23), None,                       'Silver Rupee (Ganons Castle Fire Trial)', ("Ganon's Castle MQ", "Master Quest", "Silver Rupees"))),

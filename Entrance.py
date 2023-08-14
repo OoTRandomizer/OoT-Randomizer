@@ -26,24 +26,15 @@ class Entrance:
         self.never: bool = False
         self.rule_string: Optional[str] = None
 
-    def copy(self, *, copy_dict: Optional[dict[int, Any]] = None) -> Entrance:
-        copy_dict = {} if copy_dict is None else copy_dict
-        if (new_entrance := copy_dict.get(id(self), None)) and isinstance(new_entrance, Entrance):
-            return new_entrance
+    def copy(self) -> Entrance:
+        new_entrance = Entrance(self.name, self.parent_region)
 
-        new_entrance = Entrance(self.name, self.parent_region.copy(copy_dict=copy_dict) if self.parent_region else None)
-        copy_dict[id(self)] = new_entrance
-
-        if self.connected_region is not None:
-            new_entrance.connected_region = self.connected_region.copy(copy_dict=copy_dict)
+        new_entrance.connected_region = self.connected_region
         new_entrance.access_rule = self.access_rule
         new_entrance.access_rules = list(self.access_rules)
-        if self.reverse:
-            new_entrance.reverse = self.reverse.copy(copy_dict=copy_dict)
-        if self.replaces:
-            new_entrance.replaces = self.replaces.copy(copy_dict=copy_dict)
-        if self.assumed:
-            new_entrance.assumed = self.assumed.copy(copy_dict=copy_dict)
+        new_entrance.reverse = self.reverse
+        new_entrance.replaces = self.replaces
+        new_entrance.assumed = self.assumed
         new_entrance.type = self.type
         new_entrance.shuffled = self.shuffled
         new_entrance.data = self.data
@@ -74,7 +65,10 @@ class Entrance:
     def disconnect(self) -> Optional[Region]:
         if self.connected_region is None:
             raise Exception(f"`disconnect()` called without a valid `connected_region` for entrance {self.name}.")
-        self.connected_region.entrances.remove(self)
+        try:
+            self.connected_region.entrances.remove(self)
+        except ValueError as e:
+            raise e
         previously_connected = self.connected_region
         self.connected_region = None
         return previously_connected

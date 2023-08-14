@@ -1,7 +1,8 @@
 from __future__ import annotations
-from collections import OrderedDict
 import logging
 import random
+from collections import OrderedDict
+from itertools import chain
 from typing import TYPE_CHECKING, Any
 
 from Item import Item
@@ -9,10 +10,12 @@ from LocationList import location_sort_order
 from Search import Search, RewindableSearch
 
 if TYPE_CHECKING:
+    from Dungeon import Dungeon
     from Entrance import Entrance
     from Goals import GoalCategory
     from Hints import GossipText
     from Location import Location
+    from Region import Region
     from Settings import Settings
     from World import World
 
@@ -118,8 +121,8 @@ class Spoiler:
             self.entrances[world.id] = spoiler_entrances
 
     def copy_worlds(self) -> list[World]:
-        copy_dict: dict[int, Any] = {}
-        worlds = [world.copy(copy_dict=copy_dict) for world in self.worlds]
+        copier = Copier(self)
+        worlds = copier.copy()
         return worlds
 
     def find_misc_hint_items(self) -> None:
@@ -285,3 +288,89 @@ class Spoiler:
 
         if worlds[0].entrance_shuffle:
             self.entrance_playthrough = OrderedDict((str(i + 1), list(sphere)) for i, sphere in enumerate(entrance_spheres))
+
+
+class Copier:
+    def __init__(self, spoiler: Spoiler) -> None:
+        self.spoiler: Spoiler = spoiler
+        self.worlds: dict[int, World] = {}
+        self.dungeons: dict[int, Dungeon] = {}
+        self.regions: dict[int, Region] = {}
+        self.entrances: dict[int, Entrance] = {}
+        self.locations: dict[int, Location] = {}
+        self.items: dict[int, Item] = {}
+
+    def copy(self) -> list[World]:
+        if self.worlds:
+            return list(self.worlds.values())
+
+        # Make copies.
+        for world in self.spoiler.worlds:
+            self.worlds[id(world)] = world.copy()
+            for dungeon in world.dungeons:
+                self.dungeons[id(dungeon)] = dungeon.copy()
+                for item in chain(dungeon.boss_key, dungeon.small_keys, dungeon.dungeon_items, dungeon.silver_rupees):
+                    if id(item) in self.items:
+                        continue
+                    self.items[id(item)] = item.copy()
+            for region in world.regions:
+                self.regions[id(region)] = region.copy()
+                for entrance in chain(region.entrances, region.exits, [region.savewarp] if region.savewarp else []):
+                    if id(entrance) in self.entrances:
+                        continue
+                    self.entrances[id(entrance)] = entrance.copy()
+                for location in region.locations:
+                    if id(location) in self.locations:
+                        continue
+                    self.locations[id(location)] = location.copy()
+                    if location.item and id(location.item) not in self.items:
+                        self.items[id(location.item)] = location.item.copy()
+            for item in world.itempool:
+                if id(item) in self.items:
+                    continue
+                self.items[id(item)] = item.copy()
+
+        # Update references.
+        for world in self.worlds.values():
+            world.dungeons = [self.dungeons.get(id(dungeon), dungeon) for dungeon in world.dungeons]
+            world.regions = [self.regions.get(id(region), region) for region in world.regions]
+            world.itempool = [self.items.get(id(item), item) for item in world.itempool]
+
+        for dungeon in self.dungeons.values():
+            dungeon.world = self.worlds.get(id(dungeon.world), dungeon.world)
+            dungeon.regions = [self.regions.get(id(region), region) for region in dungeon.regions]
+            dungeon.boss_key = [self.items.get(id(item), item) for item in dungeon.boss_key]
+            dungeon.small_keys = [self.items.get(id(item), item) for item in dungeon.small_keys]
+            dungeon.dungeon_items = [self.items.get(id(item), item) for item in dungeon.dungeon_items]
+            dungeon.silver_rupees = [self.items.get(id(item), item) for item in dungeon.silver_rupees]
+
+        for region in self.regions.values():
+            region.world = self.worlds.get(id(region.world), region.world)
+            region.entrances = [self.entrances.get(id(entrance), entrance) for entrance in region.entrances]
+            region.exits = [self.entrances.get(id(entrance), entrance) for entrance in region.exits]
+            region.locations = [self.locations.get(id(location), location) for location in region.locations]
+            region.dungeon = self.dungeons.get(id(region.dungeon), region.dungeon)
+            region.savewarp = self.entrances.get(id(region.savewarp), region.savewarp)
+
+        for entrance in self.entrances.values():
+            entrance.world = self.worlds.get(id(entrance.world), entrance.world)
+            entrance.parent_region = self.regions.get(id(entrance.parent_region), entrance.parent_region)
+            entrance.connected_region = self.regions.get(id(entrance.connected_region), entrance.connected_region)
+            entrance.reverse = self.entrances.get(id(entrance.reverse), entrance.reverse)
+            entrance.replaces = self.entrances.get(id(entrance.replaces), entrance.replaces)
+            entrance.assumed = self.entrances.get(id(entrance.assumed), entrance.assumed)
+
+        for location in self.locations.values():
+            location.world = self.worlds.get(id(location.world), location.world)
+            location.parent_region = self.regions.get(id(location.parent_region), location.parent_region)
+            location.item = self.items.get(id(location.item), location.item)
+
+        for item in self.items.values():
+            item.world = self.worlds.get(id(item.world), item.world)
+            item.location = self.locations.get(id(item.location), item.location)
+            item.looks_like_item = self.items.get(id(item.looks_like_item), item.looks_like_item)
+
+        for world in self.worlds.values():
+            world.initialize_entrances()
+
+        return list(self.worlds.values())
