@@ -760,7 +760,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
 
             # Boss Key
             if location.vanilla_item == dungeon.item_name("Boss Key"):
-                if (world.settings.shuffle_smallkeys in ['any_dungeon', 'overworld', 'keysanity', 'regional']
+                if (world.settings.shuffle_smallkeys in ['any_dungeon', 'overworld', 'keysanity', 'regional', 'dungeon']
                         and dungeon.name in world.settings.key_rings and world.settings.keyring_give_bk
                         and dungeon.name in ['Forest Temple', 'Fire Temple', 'Water Temple', 'Shadow Temple', 'Spirit Temple']):
                     item = get_junk_item()[0]
