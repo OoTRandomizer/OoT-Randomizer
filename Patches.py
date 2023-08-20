@@ -1888,8 +1888,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         rom.write_byte(0xBC7794 + 0x5D, 0x09)
         rom.write_byte(0xBC7794 + 0x5E, 0x09)
         rom.write_byte(0xBC7794 + 0x5F, 0x09)
-        # D-pad boots as both ages
-        rom.write_byte(rom.sym('CFG_AGELESS_BOOTS'), 0x01)
 
     permutation = None
 
