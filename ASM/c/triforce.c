@@ -65,9 +65,10 @@ void draw_triforce_count(z64_disp_buf_t* db) {
     // Setup draw location
     int str_len = required_digits + pieces_digits + 1;
     int total_w = str_len * font_sprite.tile_w + triforce_sprite.tile_w;
-    int draw_x = Z64_SCREEN_WIDTH / 2 - total_w / 2;
-    int draw_y_text = Z64_SCREEN_HEIGHT - (font_sprite.tile_h * 1.5) + 1;
-    int draw_y_triforce = Z64_SCREEN_HEIGHT - (triforce_sprite.tile_h * 1.5) + 3 + 1;
+    // Draw the counter symmetric to the rupee icon at (left, top) = (26, 206)
+    int draw_x = (Z64_SCREEN_WIDTH - 26) - total_w;
+    int draw_y_text = 206;
+    int draw_y_triforce = 206;
 
     // Create collected/required string
     char text[str_len + 1];
