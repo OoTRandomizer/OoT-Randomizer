@@ -219,8 +219,8 @@ item_row_t item_table[] = {
     [0x00B7] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00A1, 0x00AA, 0x02, upgrade_key_model, give_small_key, CASTLE_ID, -1, resolve_text_small_keys), // Ganon's Castle Small Key
 
     [0x00B8] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00E9, 0x0194, 0x13, no_upgrade, give_defense,      -1, -1, NULL), // Double Defense
-    [0x00B9] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00E4, 0x00CD, 0x1E, no_upgrade, give_magic,        -1, -1, NULL), // Magic Meter
-    [0x00BA] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00E8, 0x00CD, 0x1F, no_upgrade, give_double_magic, -1, -1, NULL), // Double Magic
+    [0x00B9] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00E4, 0x01AB, 0x1E, no_upgrade, give_magic,        -1, -1, NULL), // Magic Meter
+    [0x00BA] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00E8, 0x01AB, 0x1F, no_upgrade, give_double_magic, -1, -1, NULL), // Double Magic
 
     [0x00BB] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9091, 0x0196, 0x78, no_upgrade, give_song, 6, -1, NULL), // Minuet of Forest
     [0x00BC] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9092, 0x0196, 0x79, no_upgrade, give_song, 7, -1, NULL), // Bolero of Fire

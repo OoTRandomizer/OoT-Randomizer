@@ -119,6 +119,17 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             (0x05CC, [0xFF, 0xFF, 0xFF]), # Outer Primary Color?
             (0x05D4, [0xFF, 0xFF, 0xFF]), # Outer Env Color?
         ]),
+        ('object_gi_magic_pot', 0x0154C000, 0x0154D1D0, 0x1AB, # Magic Jar -> Magic Meter
+        [
+            (0x0598, rom.read_bytes(0x0154C650, 8)), # Small Jar Primary Color <- Band Primary Color
+            (0x05A0, rom.read_bytes(0x0154C658, 8)), # Small Jar Env Color <- Band Env Color
+            (0x0650, rom.read_bytes(0x0154C598, 8)), # Small Jar Band Primary Color <- Primary Color
+            (0x0658, rom.read_bytes(0x0154C5A0, 8)), # Small Jar Band Env Color <- Env Color
+            (0x0EF8, rom.read_bytes(0x0154CFB0, 8)), # Large Jar Primary Color <- Band Primary Color
+            (0x0F00, rom.read_bytes(0x0154CFB8, 8)), # Large Jar Env Color <- Band Env Color
+            (0x0FB0, rom.read_bytes(0x0154CEF8, 8)), # Large Jar Band Primary Color <- Primary Color
+            (0x0FB8, rom.read_bytes(0x0154CF00, 8)), # Large Jar Band Env Color <- Env Color
+        ]),
     ]
 
     # Add the new models to the extended object file.
@@ -2599,10 +2610,10 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 NUM_VANILLA_OBJECTS: int = 0x192
 
 
-def add_to_extended_object_table(rom: Rom, object_id: int, start_adddress: int, end_address: int) -> None:
+def add_to_extended_object_table(rom: Rom, object_id: int, start_address: int, end_address: int) -> None:
     extended_id = object_id - NUM_VANILLA_OBJECTS - 1
     extended_object_table = rom.sym('EXTENDED_OBJECT_TABLE')
-    rom.write_int32s(extended_object_table + extended_id * 8, [start_adddress, end_address])
+    rom.write_int32s(extended_object_table + extended_id * 8, [start_address, end_address])
 
 
 item_row_struct = struct.Struct('>BBHHBBIIhhBxxxI') # Match item_row_t in item_table.h
