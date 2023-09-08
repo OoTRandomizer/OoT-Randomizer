@@ -58,7 +58,7 @@ item_table: dict[str, tuple[str, Optional[bool], Optional[int], Optional[dict[st
     'Compass':                                         ('Compass',  None,  0x0040, None),
     'Map':                                             ('Map',      None,  0x0041, None),
     'Small Key':                                       ('SmallKey', True,  0x0042, {'progressive': float('Inf')}),
-    'Small Magic Jar':                                 ('Item',     None,  0x0043, {'junk': 0}),
+    'Small Magic Jar':                                 ('Item',     None,  0x0043, {'junk': 1}),
     'Large Magic Jar':                                 ('Item',     None,  0x0044, {'junk': 1}),
     'Weird Egg':                                       ('Item',     True,  0x0047, {'trade': True}),
     'Recovery Heart':                                  ('Item',     None,  0x0048, {'junk': 0}),

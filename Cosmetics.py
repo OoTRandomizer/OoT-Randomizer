@@ -665,8 +665,6 @@ def patch_magic_meter_colors(rom: Rom, settings: Settings, _log: CosmeticsLog, s
                        []]
     if settings.magic_color != 'Green' and settings.correct_model_colors:
         patch_model_colors(rom, color, model_addresses)
-    else:
-        patch_model_colors(rom, None, model_addresses)
 
 
 def patch_button_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]) -> None:
