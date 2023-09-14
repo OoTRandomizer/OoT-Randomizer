@@ -47,7 +47,9 @@
 #define BASE_REG(n, r) REG_EDITOR_DATA[(n)*REGS_PER_GROUP + (r)]
 #define REG(r) BASE_REG(0, (r))
 #define SREG(r) BASE_REG(1, (r))
+#define WREG(r) BASE_REG(18, (r))
 #define R_PAUSE_BG_PRERENDER_STATE SREG(94)
+#define R_MINIMAP_DISABLED         WREG(31)
 
 typedef struct {
   /* index of z64_col_type in scene file */

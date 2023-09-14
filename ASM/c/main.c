@@ -40,6 +40,7 @@ void c_init() {
 void before_game_state_update() {
     handle_pending_items();
     handle_dpad();
+    handle_lbutton_and_minimap_state();
     update_misc_colors();
     update_hud_colors();
     process_extern_ctxt();
@@ -53,6 +54,7 @@ void after_game_state_update() {
     // Else this will cause graphical and/or lag issues on some emulators when pausing.
     if (R_PAUSE_BG_PRERENDER_STATE != PAUSE_BG_PRERENDER_PROCESS) {
         draw_dungeon_info(&(z64_ctxt.gfx->overlay));
+        draw_skull_count(&(z64_ctxt.gfx->overlay));
         draw_triforce_count(&(z64_ctxt.gfx->overlay));
         draw_silver_rupee_count(&z64_game, &(z64_ctxt.gfx->overlay));
         draw_illegal_model_text(&(z64_ctxt.gfx->overlay));

@@ -14,6 +14,7 @@
     "AUDIO_THREAD_MEM_START": "034AE400",
 =======
 <<<<<<< refs/remotes/upstream/Dev
+<<<<<<< refs/remotes/upstream/Dev
     "AUDIO_THREAD_MEM_START": "034A7D00",
 =======
 <<<<<<< Dev
@@ -22,8 +23,17 @@
     "AUDIO_THREAD_MEM_START": "034A7B10",
 >>>>>>> Move Triforce counter
 >>>>>>> Move Triforce counter
+<<<<<<< HEAD
 >>>>>>> 5a0a8b68 (Move Triforce counter)
+<<<<<<< HEAD
 >>>>>>> 8e2ca738 (Move Triforce counter)
+=======
+=======
+=======
+    "AUDIO_THREAD_MEM_START": "034A80E0",
+>>>>>>> press L to switch minimap to Triforce/Token counter
+>>>>>>> 9e7ac841 (press L to switch minimap to Triforce/Token counter)
+>>>>>>> 87ddcd5c (press L to switch minimap to Triforce/Token counter)
     "AUTO_TRACKER_CONTEXT": "03481328",
     "AUTO_TRACKER_VERSION": "03481328",
     "BONK_LAST_FRAME": "03483BE8",
@@ -104,6 +114,7 @@
     "COMPLETE_MASK_QUEST": "034AB630",
 =======
 <<<<<<< refs/remotes/upstream/Dev
+<<<<<<< refs/remotes/upstream/Dev
     "CHEST_SIZE_MATCH_CONTENTS": "0349E9B4",
     "CHEST_SIZE_TEXTURE": "0349E9B0",
     "CHEST_TEXTURE_MATCH_CONTENTS": "0349E9B8",
@@ -121,8 +132,20 @@
     "COMPLETE_MASK_QUEST": "0349E808",
 >>>>>>> Move Triforce counter
 >>>>>>> Move Triforce counter
+<<<<<<< HEAD
 >>>>>>> 5a0a8b68 (Move Triforce counter)
+<<<<<<< HEAD
 >>>>>>> 8e2ca738 (Move Triforce counter)
+=======
+=======
+=======
+    "CHEST_SIZE_MATCH_CONTENTS": "0349ED8C",
+    "CHEST_SIZE_TEXTURE": "0349ED88",
+    "CHEST_TEXTURE_MATCH_CONTENTS": "0349ED90",
+    "COMPLETE_MASK_QUEST": "0349EDD8",
+>>>>>>> press L to switch minimap to Triforce/Token counter
+>>>>>>> 9e7ac841 (press L to switch minimap to Triforce/Token counter)
+>>>>>>> 87ddcd5c (press L to switch minimap to Triforce/Token counter)
     "COOP_CONTEXT": "03480020",
     "COOP_VERSION": "03480020",
     "COSMETIC_CONTEXT": "03480C3C",
@@ -157,6 +180,7 @@
 =======
     "DISABLE_TIMERS": "03481315",
 <<<<<<< refs/remotes/upstream/Dev
+<<<<<<< refs/remotes/upstream/Dev
     "DPAD_TEXTURE": "034A6500",
 =======
 <<<<<<< Dev
@@ -165,11 +189,15 @@
     "DPAD_TEXTURE": "034A6308",
 >>>>>>> Move Triforce counter
 >>>>>>> Move Triforce counter
+=======
+    "DPAD_TEXTURE": "034A68D8",
+>>>>>>> press L to switch minimap to Triforce/Token counter
     "DUNGEONS_SHUFFLED": "03481316",
     "EPONAS_SONG_NOTES": "03481323",
     "EXTENDED_INITIAL_SAVE_DATA": "03481140",
     "EXTENDED_OBJECT_TABLE": "03481240",
     "EXTERN_DAMAGE_MULTIPLYER": "03483B71",
+<<<<<<< refs/remotes/upstream/Dev
 <<<<<<< refs/remotes/upstream/Dev
     "EXTRA_BOWLING_SHUFFLE": "0349E9AC",
 =======
@@ -204,8 +232,27 @@
     "GANON_BOSS_KEY_CONDITION_COUNT": "0349E7CE",
 >>>>>>> Move Triforce counter
 >>>>>>> Move Triforce counter
+<<<<<<< HEAD
 >>>>>>> 5a0a8b68 (Move Triforce counter)
+<<<<<<< HEAD
 >>>>>>> 8e2ca738 (Move Triforce counter)
+=======
+=======
+=======
+    "EXTRA_BOWLING_SHUFFLE": "0349ED84",
+    "FAST_BUNNY_HOOD_ENABLED": "03481319",
+    "FAST_CHESTS": "0348130F",
+    "FILENAME_ENCODING": "0349E7F8",
+    "FIX_BROKEN_DROPS": "0348131A",
+    "FONTLOADSTATUS_EXTENDED": "03484A80",
+    "FONT_TEXTURE": "034A5410",
+    "FREE_BOMBCHU_DROPS": "03481300",
+    "FREE_SCARECROW_ENABLED": "03481308",
+    "GANON_BOSS_KEY_CONDITION": "0349EDA0",
+    "GANON_BOSS_KEY_CONDITION_COUNT": "0349ED9E",
+>>>>>>> press L to switch minimap to Triforce/Token counter
+>>>>>>> 9e7ac841 (press L to switch minimap to Triforce/Token counter)
+>>>>>>> 87ddcd5c (press L to switch minimap to Triforce/Token counter)
     "GET_CHEST_OVERRIDE_WRAPPER": "0348349C",
     "GET_ITEM_SEQ_ID": "03480C92",
     "GET_ITEM_TRIGGERED": "03481E34",
@@ -225,6 +272,7 @@
     "INITIAL_SAVE_DATA": "03480D40",
     "JABU_ELEVATOR_ENABLE": "0348130C",
 <<<<<<< refs/remotes/upstream/Dev
+<<<<<<< refs/remotes/upstream/Dev
     "KAKARIKO_WEATHER_FORECAST": "0349EA30",
 =======
 <<<<<<< Dev
@@ -233,6 +281,9 @@
     "KAKARIKO_WEATHER_FORECAST": "0349E838",
 >>>>>>> Move Triforce counter
 >>>>>>> Move Triforce counter
+=======
+    "KAKARIKO_WEATHER_FORECAST": "0349EE0C",
+>>>>>>> press L to switch minimap to Triforce/Token counter
     "KEYRING_BOSSKEY_CONDITION": "0348131E",
 >>>>>>> 5a0a8b68 (Move Triforce counter)
     "KING_DODONGO_BONKS": "03483D48",
@@ -248,6 +299,7 @@
 =======
     "MALON_TEXT_ID": "03481314",
 <<<<<<< refs/remotes/upstream/Dev
+<<<<<<< refs/remotes/upstream/Dev
     "MAX_RUPEES": "0349EA02",
 =======
 <<<<<<< Dev
@@ -256,8 +308,17 @@
     "MAX_RUPEES": "0349E80A",
 >>>>>>> Move Triforce counter
 >>>>>>> Move Triforce counter
+<<<<<<< HEAD
 >>>>>>> 5a0a8b68 (Move Triforce counter)
+<<<<<<< HEAD
 >>>>>>> 8e2ca738 (Move Triforce counter)
+=======
+=======
+=======
+    "MAX_RUPEES": "0349EDDA",
+>>>>>>> press L to switch minimap to Triforce/Token counter
+>>>>>>> 9e7ac841 (press L to switch minimap to Triforce/Token counter)
+>>>>>>> 87ddcd5c (press L to switch minimap to Triforce/Token counter)
     "MOVED_ADULT_KING_ZORA": "03484B50",
     "MW_PROGRESSIVE_ITEMS_ENABLE": "0348002B",
     "MW_PROGRESSIVE_ITEMS_STATE": "0348083C",
@@ -273,6 +334,7 @@
 =======
     "NO_COLLECTIBLE_HEARTS": "0348130E",
 <<<<<<< refs/remotes/upstream/Dev
+<<<<<<< refs/remotes/upstream/Dev
     "NO_ESCAPE_SEQUENCE": "0349E9C4",
     "OCARINAS_SHUFFLED": "0348130D",
     "OPEN_KAKARIKO": "0349EA01",
@@ -287,8 +349,19 @@
     "OPEN_KAKARIKO": "0349E809",
 >>>>>>> Move Triforce counter
 >>>>>>> Move Triforce counter
+<<<<<<< HEAD
 >>>>>>> 5a0a8b68 (Move Triforce counter)
+<<<<<<< HEAD
 >>>>>>> 8e2ca738 (Move Triforce counter)
+=======
+=======
+=======
+    "NO_ESCAPE_SEQUENCE": "0349ED9C",
+    "OCARINAS_SHUFFLED": "0348130D",
+    "OPEN_KAKARIKO": "0349EDD9",
+>>>>>>> press L to switch minimap to Triforce/Token counter
+>>>>>>> 9e7ac841 (press L to switch minimap to Triforce/Token counter)
+>>>>>>> 87ddcd5c (press L to switch minimap to Triforce/Token counter)
     "OUTGOING_ITEM": "03480030",
     "OUTGOING_KEY": "0348002C",
     "OUTGOING_PLAYER": "03480032",
@@ -313,6 +386,7 @@
     "RNG_SEED_INT": "034A226C",
 =======
 <<<<<<< refs/remotes/upstream/Dev
+<<<<<<< refs/remotes/upstream/Dev
     "RANDOMIZER_RNG_SEED": "0349EA14",
     "RANDO_CONTEXT": "03480000",
     "RNG_SEED_INT": "0349E9A4",
@@ -327,8 +401,19 @@
     "RNG_SEED_INT": "0349E7AC",
 >>>>>>> Move Triforce counter
 >>>>>>> Move Triforce counter
+<<<<<<< HEAD
 >>>>>>> 5a0a8b68 (Move Triforce counter)
+<<<<<<< HEAD
 >>>>>>> 8e2ca738 (Move Triforce counter)
+=======
+=======
+=======
+    "RANDOMIZER_RNG_SEED": "0349EDEC",
+    "RANDO_CONTEXT": "03480000",
+    "RNG_SEED_INT": "0349ED7C",
+>>>>>>> press L to switch minimap to Triforce/Token counter
+>>>>>>> 9e7ac841 (press L to switch minimap to Triforce/Token counter)
+>>>>>>> 87ddcd5c (press L to switch minimap to Triforce/Token counter)
     "SET_BONK_FLAG": "03483C20",
     "SHOW_CHEST_WITH_INVERTED_LENS": "0348355C",
     "SHUFFLE_BEANS": "03483DB8",
@@ -591,6 +676,7 @@
     "triforce_sprite": "0349E9B8"
 =======
 <<<<<<< refs/remotes/upstream/Dev
+<<<<<<< refs/remotes/upstream/Dev
     "Sram_InitNewSave": "0349E9A8",
     "TIME_STRING_TXT": "03480D1C",
     "TIME_TRAVEL_SAVED_EQUIPS": "0348267C",
@@ -611,12 +697,20 @@
     "TRIFORCE_ICON_TEXTURE": "034A6B08",
 >>>>>>> Move Triforce counter
 >>>>>>> Move Triforce counter
+=======
+    "Sram_InitNewSave": "0349ED80",
+    "TIME_STRING_TXT": "03480D1C",
+    "TIME_TRAVEL_SAVED_EQUIPS": "0348267C",
+    "TRIFORCE_HUNT_ENABLED": "03481370",
+    "TRIFORCE_ICON_TEXTURE": "034A70D8",
+>>>>>>> press L to switch minimap to Triforce/Token counter
     "TRIFORCE_PIECES_REQUIRED": "03481372",
     "TWINROVA_ACTION_TIMER": "03484BD4",
     "VERSION_STRING_TXT": "03480CE8",
     "WINDMILL_SONG_ID": "03481312",
     "WINDMILL_TEXT_ID": "03481313",
     "WORLD_STRING_TXT": "03480D0C",
+<<<<<<< refs/remotes/upstream/Dev
 <<<<<<< refs/remotes/upstream/Dev
     "a_button": "0349E978",
     "a_note_b": "0349E964",
@@ -908,6 +1002,110 @@
     "triforce_sprite": "0349ACD8"
 >>>>>>> Move Triforce counter
 >>>>>>> Move Triforce counter
+<<<<<<< HEAD
 >>>>>>> 5a0a8b68 (Move Triforce counter)
+<<<<<<< HEAD
 >>>>>>> 8e2ca738 (Move Triforce counter)
+=======
+=======
+=======
+    "a_button": "0349ED50",
+    "a_note_b": "0349ED3C",
+    "a_note_font_glow_base": "0349ED24",
+    "a_note_font_glow_max": "0349ED20",
+    "a_note_g": "0349ED40",
+    "a_note_glow_base": "0349ED2C",
+    "a_note_glow_max": "0349ED28",
+    "a_note_r": "0349ED44",
+    "active_item_action_id": "0349EDC0",
+    "active_item_fast_chest": "0349EDB0",
+    "active_item_graphic_id": "0349EDB4",
+    "active_item_object_id": "0349EDB8",
+    "active_item_row": "0349EDC4",
+    "active_item_text_id": "0349EDBC",
+    "active_override": "0349F328",
+    "active_override_is_outgoing": "0349EDC8",
+    "adultSkeleton": "0349E9F4",
+    "adult_safe": "0349EDE2",
+    "alt_overrides": "0349EED0",
+    "b_button": "0349ED4C",
+    "beating_dd": "0349ED58",
+    "beating_no_dd": "0349ED60",
+    "button_sprite": "0349B238",
+    "c_button": "0349ED48",
+    "c_note_b": "0349ED30",
+    "c_note_font_glow_base": "0349ED14",
+    "c_note_font_glow_max": "0349ED10",
+    "c_note_g": "0349ED34",
+    "c_note_glow_base": "0349ED1C",
+    "c_note_glow_max": "0349ED18",
+    "c_note_r": "0349ED38",
+    "cfg_item_overrides": "0349F338",
+    "childSkeleton": "0349E8F8",
+    "child_safe": "0349EDE1",
+    "collectible_mutex": "0349EDA4",
+    "collectible_override": "0349EE40",
+    "collectible_override_flags": "0349EDA8",
+    "collectible_scene_flags_table": "0349F0D0",
+    "curr_scene_setup": "0349EDF0",
+    "defaultDDHeart": "0349ED64",
+    "defaultHeart": "0349ED6C",
+    "dpad_sprite": "0349B2B8",
+    "drop_collectible_override_flag": "0349EDCC",
+    "dummy_actor": "0349EDD0",
+    "dungeon_count": "0349ECE0",
+    "dungeons": "0349AF38",
+    "empty_dlist": "0349ECF8",
+    "extended_savectx": "034A53F8",
+    "extern_ctxt": "0349B06C",
+    "font_sprite": "0349B2C8",
+    "freecam_modes": "0349A8C4",
+    "hash_sprites": "0349ECEC",
+    "hash_symbols": "0349B1A0",
+    "heap_next": "0349EE08",
+    "heart_sprite": "0349B248",
+    "icon_sprites": "0349A988",
+    "illegal_model": "0349EDE4",
+    "item_digit_sprite": "0349B268",
+    "item_draw_table": "0349B340",
+    "item_overrides_count": "0349EDD4",
+    "item_table": "0349C93C",
+    "items": "0349B220",
+    "items_sprite": "0349B2E8",
+    "key_counts": "0349C918",
+    "key_rupee_clock_sprite": "0349B288",
+    "last_fog_distance": "0349ECE4",
+    "linkhead_skull_sprite": "0349B258",
+    "medals": "0349AF20",
+    "medals_sprite": "0349B2F8",
+    "minimap_triforce_state": "0349EDFC",
+    "missing_dlist": "0349EDE0",
+    "normal_dd": "0349ED54",
+    "normal_no_dd": "0349ED5C",
+    "num_override_flags": "0349EDAC",
+    "num_to_bits": "0349B1E0",
+    "object_slots": "034A5338",
+    "outgoing_queue": "0349EE50",
+    "quest_items_sprite": "0349B2D8",
+    "reward_rows": "0349AF14",
+    "rupee_colors": "0349A9AC",
+    "rupee_digit_sprite": "0349B278",
+    "satisified_pending_frames": "0349EDAE",
+    "scene_fog_distance": "0349ECE8",
+    "setup_db": "0349B318",
+    "silver_rupee_vars": "0349C810",
+    "song_note_sprite": "0349B298",
+    "stones_sprite": "0349B308",
+    "text_cursor_border_base": "0349ED04",
+    "text_cursor_border_max": "0349ED00",
+    "text_cursor_inner_base": "0349ED0C",
+    "text_cursor_inner_max": "0349ED08",
+    "text_height": "0349ED74",
+    "text_width": "0349ED78",
+    "texture_table": "0349EAF0",
+    "trade_quest_items": "0349AB58",
+    "triforce_sprite": "0349B2A8"
+>>>>>>> press L to switch minimap to Triforce/Token counter
+>>>>>>> 9e7ac841 (press L to switch minimap to Triforce/Token counter)
+>>>>>>> 87ddcd5c (press L to switch minimap to Triforce/Token counter)
 }
