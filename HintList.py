@@ -507,6 +507,8 @@ hintTable: dict[str, tuple[list[str] | str, Optional[str], str | list[str]]] = {
     'Bombs (5)':                                                (["a few explosives", "a few blast balls"], "Bombs (5 pieces)", 'item'),
     'Bombs (10)':                                               (["some explosives", "some blast balls"], "Bombs (10 pieces)", 'item'),
     'Bombs (20)':                                               (["lots-o-explosives", "plenty of blast balls"], "Bombs (20 pieces)", 'item'),
+    'Small Magic Jar':                                          (["a small vial of mojo", "a small wizardly receptacle", "a small urn of sorcery"], "a Small Magic Jar", 'item'),
+    'Large Magic Jar':                                          (["a large vial of mojo", "a large wizardly receptacle", "a large urn of sorcery"], "a Large Magic Jar", 'item'),
     'Ice Trap':                                                 (["a gift from Ganon", "a chilling discovery", "frosty fun"], "an Ice Trap", 'item'),
     'Magic Bean':                                               (["a wizardly legume"], "a Magic Bean", 'item'),
     'Buy Magic Bean':                                           (["a wizardly legume"], "a Magic Bean", 'item'),

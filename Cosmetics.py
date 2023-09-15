@@ -649,6 +649,24 @@ def patch_magic_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols:
         })
 
 
+NUM_VANILLA_OBJECTS: int = 0x192
+
+
+def patch_magic_meter_colors(rom: Rom, settings: Settings, _log: CosmeticsLog, symbols: dict[str, int]) -> None:
+    cfg_magic_color = symbols['CFG_MAGIC_COLOR'] # Relies on the magic color being patched first
+    color = [rom.read_int16(cfg_magic_color),
+             rom.read_int16(cfg_magic_color + 2),
+             rom.read_int16(cfg_magic_color + 4)]
+    extended_id = 0x01AB - NUM_VANILLA_OBJECTS - 1 # Magic meter index in the extended object table
+    extended_object_table = rom.sym('EXTENDED_OBJECT_TABLE')
+    start_address = rom.read_int32(extended_object_table + extended_id * 8)
+    model_addresses = [[start_address + 0x059C, start_address + 0x0EFC],
+                       [start_address + 0x05A4, start_address + 0x0F04],
+                       []]
+    if settings.magic_color != 'Green' and settings.correct_model_colors:
+        patch_model_colors(rom, color, model_addresses)
+
+
 def patch_button_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]) -> None:
     buttons = [
         ('A Button Color', 'a_button_color', Colors.a_button_colors,
@@ -1161,6 +1179,16 @@ patch_sets[0x1F073FE0] = {
     "symbols": {
         **patch_sets[0x1F073FDF]["symbols"],
         "CFG_DPAD_ON_THE_LEFT": 0x006A,
+    }
+}
+
+# 7.1.176
+patch_sets[0x1F073FE1] = {
+    "patches": patch_sets[0x1F073FE0]["patches"] + [
+        patch_magic_meter_colors,
+    ],
+    "symbols": {
+        **patch_sets[0x1F073FE0]["symbols"],
     }
 }
 
