@@ -1324,7 +1324,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     # latest shuffled item in the trade sequence, calculated in
     # Plandomizer.WorldDistribution.configure_effective_starting_items.
     owned_flags = 0
-    for item_name in world.distribution.starting_items.keys():
+    for item_name in world.settings.starting_items.keys():
         if item_name in child_trade_items:
             owned_flags += 0x1 << (child_trade_items.index(item_name))
         if item_name in trade_items:
@@ -1370,7 +1370,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         save_context.write_bits(0x0EDD, 0x01) # "Obtained Zelda's Letter"
         save_context.write_bits(0x0EDE, 0x02) # "Learned Zelda's Lullaby"
         save_context.write_bits(0x00D4 + 0x5F * 0x1C + 0x04 + 0x3, 0x10) # "Moved crates to access the courtyard"
-    if world.skip_child_zelda or "Zeldas Letter" in world.distribution.starting_items.keys():
+    if 'Zeldas Letter' in world.settings.starting_items:
         if world.settings.open_kakariko != 'closed':
             save_context.write_bits(0x0F07, 0x40)  # "Spoke to Gate Guard About Mask Shop"
         if world.settings.complete_mask_quest:
@@ -1435,11 +1435,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     else:
         rom.write_byte(symbol, 0)
         rom.write_int16(count_symbol, 0)
-
-    # Set Boss Key collection in Key Ring.
-    symbol = rom.sym('KEYRING_BOSSKEY_CONDITION')
-    if world.settings.keyring_give_bk:
-        rom.write_byte(symbol, 1)
 
     # Set up LACS conditions.
     symbol = rom.sym('LACS_CONDITION')
@@ -2211,7 +2206,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     for _, [door_byte, door_bits] in locked_doors.items():
         save_context.write_bits(door_byte, door_bits)
 
-    # Fix chest animations
+    # Update chest type appearance
     BROWN_CHEST = 0
     GOLD_CHEST = 2
     GILDED_CHEST = 12
@@ -2225,33 +2220,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         item = read_rom_item(rom, 0x71)
         item['chest_type'] = BROWN_CHEST
         write_rom_item(rom, 0x71, item)
-    if world.settings.free_bombchu_drops or world.settings.minor_items_as_major_chest:
-        bombchu_ids = [0x6A, 0x03, 0x6B]
-        for i in bombchu_ids:
-            item = read_rom_item(rom, i)
-            item['chest_type'] = GILDED_CHEST
-            write_rom_item(rom, i, item)
-    if world.settings.bridge == 'tokens' or world.settings.lacs_condition == 'tokens' or world.settings.shuffle_ganon_bosskey == 'tokens':
-        item = read_rom_item(rom, 0x5B)
-        item['chest_type'] = SKULL_CHEST_BIG
-        write_rom_item(rom, 0x5B, item)
-    if world.settings.bridge == 'hearts' or world.settings.lacs_condition == 'hearts' or world.settings.shuffle_ganon_bosskey == 'hearts':
-        heart_ids = [0x3D, 0x3E, 0x76]
-        for i in heart_ids:
-            item = read_rom_item(rom, i)
-            item['chest_type'] = HEART_CHEST_BIG
-            write_rom_item(rom, i, item)
-    if world.settings.minor_items_as_major_chest:
-        # Deku
-        item = read_rom_item(rom, 0x29)
-        item['chest_type'] = GILDED_CHEST
-        write_rom_item(rom, 0x29, item)
-        # Hylian
-        item = read_rom_item(rom, 0x2A)
-        item['chest_type'] = GILDED_CHEST
-        write_rom_item(rom, 0x2A, item)
 
-    # Update chest type appearance
     if world.settings.correct_chest_appearances == 'textures':
         symbol = rom.sym('CHEST_TEXTURE_MATCH_CONTENTS')
         rom.write_int32(symbol, 0x00000001)
@@ -2430,11 +2399,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         # increase cylinder radius/height for red ice sheets
         rom.write_byte(0xDB391B, 0x50)
         rom.write_byte(0xDB3927, 0x5A)
-
-        bfa_message = "\x08\x13\x0CYou got the \x05\x43Blue Fire Arrow\x05\x40!\x01This is a cool arrow you can\x01use on red ice."
-        if world.settings.world_count > 1:
-            bfa_message = make_player_message(bfa_message)
-        update_message_by_id(messages, 0x0071, bfa_message, 0x23)
 
         with open(data_path('blue_fire_arrow_item_name_eng.ia4'), 'rb') as stream:
             bfa_name_bytes = stream.read()

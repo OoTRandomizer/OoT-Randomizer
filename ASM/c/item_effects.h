@@ -14,7 +14,7 @@ void give_biggoron_sword(z64_file_t *save, int16_t arg1, int16_t arg2);
 void give_bottle(z64_file_t *save, int16_t bottle_item_id, int16_t arg2);
 void give_dungeon_item(z64_file_t *save, int16_t mask, int16_t dungeon_id);
 void give_small_key(z64_file_t *save, int16_t dungeon_id, int16_t arg2);
-void give_small_key_ring(z64_file_t *save, int16_t dungeon_id, int16_t arg2);
+void give_small_key_ring(z64_file_t *save, int16_t dungeon_id, int16_t include_boss_key);
 void give_silver_rupee(z64_file_t *save, int16_t dungeon_id, int16_t silver_rupee_id);
 void give_silver_rupee_pouch(z64_file_t *save, int16_t dungeon_id, int16_t silver_rupee_id);
 void give_defense(z64_file_t *save, int16_t arg1, int16_t arg2);
@@ -29,7 +29,6 @@ void clear_excess_hearts(z64_file_t *save, int16_t arg1, int16_t arg2);
 void open_mask_shop(z64_file_t *save, int16_t arg1, int16_t arg2);
 void give_bombchus(z64_file_t *save, int16_t arg1, int16_t arg2);
 void trade_quest_upgrade(z64_file_t *save, int16_t item_id, int16_t arg2);
-extern uint8_t KEYRING_BOSSKEY_CONDITION;
 void unlock_ocarina_note(z64_file_t *save, int16_t arg1, int16_t arg2);
 
 typedef enum dungeon {

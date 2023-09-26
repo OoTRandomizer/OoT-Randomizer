@@ -28,24 +28,29 @@ class FillError(ShuffleError):
 
 # Places all items into the world
 def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[list[Location]] = None) -> None:
-    if worlds[0].settings.shuffle_song_items == 'song':
-        song_location_names = location_groups['Song']
-    elif worlds[0].settings.shuffle_song_items == 'dungeon':
-        song_location_names = [
-            'Deku Tree Queen Gohma Heart', 'Dodongos Cavern King Dodongo Heart',
-            'Jabu Jabus Belly Barinade Heart', 'Forest Temple Phantom Ganon Heart',
-            'Fire Temple Volvagia Heart', 'Water Temple Morpha Heart',
-            'Spirit Temple Twinrova Heart', 'Shadow Temple Bongo Bongo Heart',
-            'Sheik in Ice Cavern', 'Song from Impa',
-            'Gerudo Training Ground MQ Ice Arrows Chest',
-            'Gerudo Training Ground Maze Path Final Chest',
-            'Bottom of the Well Lens of Truth Chest',
-            'Bottom of the Well MQ Lens of Truth Chest']
-    else:
-        song_location_names = []
-
     song_locations = []
     for world in worlds:
+        if world.settings.shuffle_song_items == 'song':
+            song_location_names = location_groups['Song']
+        elif world.settings.shuffle_song_items == 'dungeon':
+            song_location_names = (
+                'Song from Impa',
+                'Deku Tree Queen Gohma Heart',
+                'Dodongos Cavern King Dodongo Heart',
+                'Jabu Jabus Belly Barinade Heart',
+                'Forest Temple Phantom Ganon Heart',
+                'Fire Temple Volvagia Heart',
+                'Water Temple Morpha Heart',
+                'Shadow Temple Bongo Bongo Heart',
+                'Spirit Temple Twinrova Heart',
+                'Sheik in Ice Cavern',
+                'Bottom of the Well Lens of Truth Chest',
+                'Bottom of the Well MQ Lens of Truth Chest',
+                'Gerudo Training Ground Maze Path Final Chest',
+                'Gerudo Training Ground MQ Ice Arrows Chest',
+            )
+        else:
+            song_location_names = ()
         for location_name in song_location_names:
             try:
                 song_locations.append(world.get_location(location_name))
@@ -61,16 +66,14 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
             if location not in song_locations
                 and location not in shop_locations
                 and not location.type.startswith('Hint')]
-    world_states = [world.state for world in worlds]
 
     # Generate the itempools
     shopitempool = [item for world in worlds for item in world.itempool if item.type == 'Shop']
-    songitempool = [item for world in worlds for item in world.itempool if item.type == 'Song']
-    itempool =     [item for world in worlds for item in world.itempool if item.type != 'Shop' and item.type != 'Song']
+    songitempool = []
+    itempool =     [item for world in worlds for item in world.itempool if item.type not in ('Shop', 'Song')]
 
-    if worlds[0].settings.shuffle_song_items == 'any':
-        itempool.extend(songitempool)
-        songitempool = []
+    for world in worlds:
+        (itempool if world.settings.shuffle_song_items == 'any' else songitempool).extend(item for item in world.itempool if item.type == 'Song')
 
     # Unrestricted dungeon items are already in main item pool
     dungeon_items = [item for world in worlds for item in world.get_restricted_dungeon_items()]
@@ -97,25 +100,42 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
     junk_items = remove_junk_items.copy()
     junk_items.remove('Ice Trap')
     major_items = [name for name, item in ItemInfo.items.items() if item.type == 'Item' and item.advancement and item.index is not None]
-    fake_items = []
-    if worlds[0].settings.ice_trap_appearance == 'major_only':
-        model_items = [item for item in itempool if item.majoritem]
-        if len(model_items) == 0:  # All major items were somehow removed from the pool (can happen in plando)
-            model_items = ItemFactory(major_items)
-    elif worlds[0].settings.ice_trap_appearance == 'junk_only':
-        model_items = [item for item in itempool if item.name in junk_items]
-        if len(model_items) == 0:  # All junk was removed
-            model_items = ItemFactory(junk_items)
-    else:  # world[0].settings.ice_trap_appearance == 'anything':
-        model_items = [item for item in itempool if item.name != 'Ice Trap']
-        if len(model_items) == 0:  # All major items and junk were somehow removed from the pool (can happen in plando)
-            model_items = ItemFactory(major_items) + ItemFactory(junk_items)
-    while len(ice_traps) > len(fake_items):
-        # if there are more ice traps than model items, then double up on model items
-        fake_items.extend(model_items)
-    for random_item in random.sample(fake_items, len(ice_traps)):
-        ice_trap = ice_traps.pop(0)
-        ice_trap.looks_like_item = random_item
+    major_fake_items = []
+    junk_fake_items = []
+    any_fake_items = []
+    if any(world.settings.ice_trap_appearance == 'major_only' for world in worlds):
+        major_model_items = [item for item in itempool if item.majoritem]
+        if len(major_model_items) == 0:  # All major items were somehow removed from the pool (can happen in plando)
+            major_model_items = ItemFactory(major_items)
+        while len(ice_traps) > len(major_fake_items):
+            # if there are more ice traps than model items, then double up on model items
+            major_fake_items.extend(major_model_items)
+        random.shuffle(major_fake_items)
+    if any(world.settings.ice_trap_appearance == 'junk_only' for world in worlds):
+        junk_model_items = [item for item in itempool if item.name in junk_items]
+        if len(junk_model_items) == 0:  # All junk was removed
+            junk_model_items = ItemFactory(junk_items)
+        while len(ice_traps) > len(junk_fake_items):
+            # if there are more ice traps than model items, then double up on model items
+            junk_fake_items.extend(junk_model_items)
+        random.shuffle(junk_fake_items)
+    if any(world.settings.ice_trap_appearance == 'anything' for world in worlds):
+        any_model_items = [item for item in itempool if item.name != 'Ice Trap']
+        if len(any_model_items) == 0:  # All major items and junk items were somehow removed from the pool (can happen in plando)
+            any_model_items = ItemFactory(major_items) + ItemFactory(junk_items)
+        while len(ice_traps) > len(any_fake_items):
+            # if there are more ice traps than model items, then double up on model items
+            any_fake_items.extend(any_model_items)
+        random.shuffle(any_fake_items)
+
+    for ice_trap in ice_traps:
+        if ice_trap.world.settings.ice_trap_appearance == 'major_only':
+            fake_item = major_fake_items.pop()
+        elif ice_trap.world.settings.ice_trap_appearance == 'junk_only':
+            fake_item = junk_fake_items.pop()
+        else:
+            fake_item = any_fake_items.pop()
+        ice_trap.looks_like_item = fake_item
 
     # Start a search cache here.
     search = Search([world.state for world in worlds])
@@ -144,7 +164,7 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
         search.collect_locations()
 
     # If some dungeons are supposed to be empty, fill them with useless items.
-    if worlds[0].settings.empty_dungeons_mode != 'none':
+    if any(world.settings.empty_dungeons_mode != 'none' for world in worlds):
         empty_locations = [location for location in fill_locations
                            if location.world.empty_dungeons[HintArea.at(location).dungeon_name].empty]
         for location in empty_locations:
@@ -152,21 +172,17 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
             location.world.hint_type_overrides['sometimes'].append(location.name)
             location.world.hint_type_overrides['random'].append(location.name)
 
-        if worlds[0].settings.shuffle_mapcompass in ['any_dungeon', 'overworld', 'keysanity', 'regional']:
-            # Non-empty dungeon items are present in restitempool but yet we
-            # don't want to place them in an empty dungeon
-            restdungeon, restother = [], []
-            for item in restitempool:
-                if item.dungeonitem:
-                    restdungeon.append(item)
-                else:
-                    restother.append(item)
-            fast_fill(empty_locations, restother)
-            restitempool = restdungeon + restother
-            random.shuffle(restitempool)
-        else:
-            # We don't have to worry about this if dungeon items stay in their own dungeons
-            fast_fill(empty_locations, restitempool)
+        # Non-empty dungeon items may be present in restitempool but yet we
+        # don't want to place them in an empty dungeon
+        restdungeon, restother = [], []
+        for item in restitempool:
+            if item.dungeonitem and not item.unshuffled_dungeon_item:
+                restdungeon.append(item)
+            else:
+                restother.append(item)
+        fast_fill(empty_locations, restother)
+        restitempool = restdungeon + restother
+        random.shuffle(restitempool)
 
     # places the songs into the world
     # Currently places songs only at song locations. if there's an option
@@ -174,7 +190,7 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
     # Placing songs on their own since they have a relatively high chance
     # of failing compared to other item type. So this way we only have retry
     # the song locations only.
-    if worlds[0].settings.shuffle_song_items != 'any':
+    if any(world.settings.shuffle_song_items != 'any' for world in worlds):
         logger.info('Placing song items.')
         fill_ownworld_restrictive(worlds, search, song_locations, songitempool, progitempool, "song")
         search.collect_locations()
@@ -182,7 +198,7 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
 
     # Put one item in every dungeon, needs to be done before other items are
     # placed to ensure there is a spot available for them
-    if worlds[0].settings.one_item_per_dungeon:
+    if any(world.settings.one_item_per_dungeon for world in worlds):
         logger.info('Placing one major item per dungeon.')
         fill_dungeon_unique_item(worlds, search, fill_locations, progitempool)
         search.collect_locations()
@@ -268,10 +284,14 @@ def fill_dungeon_unique_item(worlds: list[World], search: Search, fill_locations
     major_items = [item for item in itempool if item.majoritem]
     minor_items = [item for item in itempool if not item.majoritem]
 
-    if worlds[0].settings.empty_dungeons_mode != 'none':
-        dungeons = [dungeon for world in worlds for dungeon in world.dungeons if not world.empty_dungeons[dungeon.name].empty]
-    else:
-        dungeons = [dungeon for world in worlds for dungeon in world.dungeons]
+    dungeons = [
+        dungeon
+        for world in worlds
+        if world.settings.one_item_per_dungeon
+        and world.settings.empty_dungeons_mode != 'none'
+        for dungeon in world.dungeons
+        if not world.empty_dungeons[dungeon.name].empty
+    ]
 
     double_dungeons = []
     for dungeon in dungeons:
@@ -428,18 +448,22 @@ def fill_restrictive(worlds: list[World], base_search: Search, locations: list[L
         max_search.collect_locations()
 
         # perform_access_check checks location reachability
-        if worlds[0].check_beatable_only:
-            if worlds[0].settings.reachable_locations == 'goals':
-                # If this item is required for a goal, it must be placed somewhere reachable.
-                # We also need to check to make sure the game is beatable, since custom goals might not imply that.
-                predicate = lambda state: state.won() and state.has_all_item_goals()
+        predicates = []
+        for world in worlds:
+            if world.check_beatable_only:
+                if world.settings.reachable_locations == 'goals':
+                    # If this item is required for a goal, it must be placed somewhere reachable.
+                    # We also need to check to make sure the game is beatable, since custom goals might not imply that.
+                    predicates.append(lambda state: state.won() and state.has_all_item_goals())
+                else:
+                    # If the game is not beatable without this item, it must be placed somewhere reachable.
+                    predicates.append(State.won)
             else:
-                # If the game is not beatable without this item, it must be placed somewhere reachable.
-                predicate = State.won
-            perform_access_check = not max_search.can_beat_game(scan_for_items=False, predicate=predicate)
+                # All items must be placed somewhere reachable.
+                perform_access_check = True
+                break
         else:
-            # All items must be placed somewhere reachable.
-            perform_access_check = True
+            perform_access_check = not max_search.can_beat_game(scan_for_items=False, predicates=predicates)
 
         # find a location that the item can be placed. It must be a valid location
         # in the world we are placing it (possibly checking for reachability)
@@ -527,7 +551,7 @@ def fill_restrictive_fast(worlds: list[World], locations: list[Location], itempo
         # we don't need to check beatability since world must be beatable
         # at this point
         if spot_to_fill is None:
-            if not worlds[0].check_beatable_only:
+            if not all(world.check_beatable_only for world in worlds):
                 logger.debug('Not all items placed. Game beatable anyway.')
             break
 

@@ -1289,6 +1289,8 @@ def build_gossip_hints(spoiler: Spoiler, worlds: list[World]) -> None:
 
     # Build all the hints.
     for world in worlds:
+        world.update_exclude_item_list()
+    for world in worlds:
         world.update_useless_areas(spoiler)
         build_world_gossip_hints(spoiler, world, checked_locations.pop(world.id, None))
 

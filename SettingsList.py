@@ -1,6 +1,7 @@
 from __future__ import annotations
 import difflib
 import json
+import re
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Optional, Any
 
@@ -5040,8 +5041,12 @@ def build_close_match(name: str, value_type: str, source_list: Optional[list[str
     return ""  # No matches
 
 
-def validate_settings(settings_dict: dict[str, Any], *, check_conflicts: bool = True) -> None:
+def validate_settings(settings_dict: dict[str, Any], *, allow_world_entries: bool = True, check_conflicts: bool = True) -> None:
     for setting, choice in settings_dict.items():
+        # Handle per-world settings
+        if allow_world_entries and re.fullmatch('World [0-9]+', setting):
+            validate_settings(choice, allow_world_entries=False, check_conflicts=check_conflicts)
+            continue
         # Ensure the supplied setting name is a real setting
         if setting not in SettingInfos.setting_infos:
             raise TypeError('%r is not a valid setting. %s' % (setting, build_close_match(setting, 'setting')))

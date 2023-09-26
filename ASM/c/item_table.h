@@ -56,6 +56,6 @@ uint16_t resolve_text_silver_rupees(item_row_t *item_row, uint16_t item_id, bool
 uint16_t resolve_text_silver_rupee_pouches(item_row_t *item_row, uint16_t item_id, bool is_outgoing);
 uint16_t resolve_text_small_keys(item_row_t *item_row, uint16_t item_id, bool is_outgoing);
 uint16_t resolve_text_small_keys_cmg(item_row_t *item_row, uint16_t item_id, bool is_outgoing);
-uint16_t resolve_text_keyrings(item_row_t *item_row, uint16_t item_id, bool is_outgoing);
+uint16_t resolve_text_skull_token(item_row_t *item_row, uint16_t item_id, bool is_outgoing);
 
 #endif

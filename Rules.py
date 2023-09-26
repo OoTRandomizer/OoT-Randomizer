@@ -33,7 +33,8 @@ def set_rules(world: World) -> None:
                         and item.type != 'Song')
                     or (item.type == 'Song' and item.world.id == location.world.id))
             else:
-                add_item_rule(location, lambda location, item: item.type != 'Song')
+                # “anywhere” songs from other worlds are still allowed to be placed here
+                add_item_rule(location, lambda location, item: item.type != 'Song' or location.world.id != item.world.id)
 
         if location.type == 'Shop':
             if location.name in world.shop_prices:

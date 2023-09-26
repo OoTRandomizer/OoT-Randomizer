@@ -242,10 +242,13 @@ class Search:
     # conditions are possible, such as in Triforce Hunt, where only the total
     # amount of an item across all worlds matter, not specifcally who has it
     #
-    # predicate must be a function (state) -> bool, that will be applied to all states
-    def can_beat_game(self, scan_for_items: bool = True, predicate: Callable[[State], bool] = State.won) -> bool:
+    # predicates must be an iterable of functions (state) -> bool, that will be applied to each state in order
+    def can_beat_game(self, scan_for_items: bool = True, predicates: Optional[Iterable[Callable[[State], bool]]] = None) -> bool:
+        if predicates is None:
+            predicates = [State.won] * len(self.state_list)
+
         # Check if already beaten
-        if all(map(predicate, self.state_list)):
+        if all(predicate(state) for predicate, state in zip(predicates, self.state_list)):
             return True
 
         if scan_for_items:
@@ -254,7 +257,7 @@ class Search:
             search = self.copy()
             search.collect_locations()
             # if every state got the Triforce, then return True
-            return all(map(predicate, search.state_list))
+            return all(predicate(state) for predicate, state in zip(predicates, search.state_list))
         else:
             return False
 

@@ -186,7 +186,6 @@ ITEM_MESSAGES: list[tuple[int, str]] = [
     (0x006C, "\x08\x13\x49Your \x05\x41Deku Seeds Bullet Bag \x01\x05\x40has become bigger!\x01This bag can hold \x05\x4650\x05\x41 \x05\x40bullets!"),
     (0x006F, "\x08You got a \x05\x42Green Rupee\x05\x40!\x01That's \x05\x42one Rupee\x05\x40!"),
     (0x0070, "\x08\x13\x04You got the \x05\x41Fire Arrow\x05\x40!\x01If you hit your target,\x01it will catch fire."),
-    (0x0071, "\x08\x13\x0CYou got the \x05\x43Ice Arrow\x05\x40!\x01If you hit your target,\x01it will freeze."),
     (0x0072, "\x08\x13\x12You got the \x05\x44Light Arrow\x05\x40!\x01The light of justice\x01will smite evil!"),
     (0x0079, "\x08\x13\x50You got the \x05\x41Goron's Bracelet\x05\x40!\x01Now you can pull up Bomb\x01Flowers."),
     (0x007B, "\x08\x13\x70You obtained the \x05\x41Gerudo's \x01Membership Card\x05\x40!\x01You can get into the Gerudo's\x01training ground."),
@@ -204,6 +203,7 @@ ITEM_MESSAGES: list[tuple[int, str]] = [
     (0x00AF, "\x08\x13\x13You got \x05\x43Nayru's Love\x05\x40!\x01Cast this to create a powerful\x01protective barrier."),
     (0x00B4, "\x08You got a \x05\x41Gold Skulltula Token\x05\x40!\x01You've collected \x05\x41\x19\x05\x40 tokens in total."),
     (0x00B5, "\x08You destroyed a \x05\x41Gold Skulltula\x05\x40.\x01You got a token proving you \x01destroyed it!"), #Unused
+    (0x9047, "\x08You got a \x05\x41Gold Skulltula Token\x05\x40!"), # tokens for other players
     (0x00C2, "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01Collect four pieces total to get\x01another Heart Container."),
     (0x90C2, "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01You are already at\x01maximum health."),
     (0x00C3, "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01So far, you've collected two \x01pieces."),
@@ -289,6 +289,7 @@ KEYSANITY_MESSAGES: list[tuple[int, str]] = [
     (0x0063, "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for \x05\x41Dodongo's Cavern\x05\x40!\x09"),
     (0x0064, "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for \x05\x43Jabu Jabu's Belly\x05\x40!\x09"),
     (0x0065, "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x42Forest Temple\x05\x40!\x09"),
+    (0x0071, "\x08\x13\x0CYou got the \x05\x43Ice Arrow\x05\x40!\x01If you hit your target,\x01it will freeze."),
     (0x007C, "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x41Fire Temple\x05\x40!\x09"),
     (0x007D, "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x43Water Temple\x05\x40!\x09"),
     (0x007E, "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x46Spirit Temple\x05\x40!\x09"),
@@ -362,7 +363,7 @@ KEYSANITY_MESSAGES: list[tuple[int, str]] = [
     (0x9044, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x45Shadow Trial\x05\x40 in\x01\x05\x41Ganon's Castle\x05\x40!\x09"),
     (0x9045, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x43Water Trial\x05\x40 in\x01\x05\x41Ganon's Castle\x05\x40!\x09"),
     (0x9046, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x42Forest Trial\x05\x40 in\x01\x05\x41Ganon's Castle\x05\x40!\x09"),
-    # 0x9048 used above
+    # 0x9047 and 0x9048 used above
     # Silver Rupee messages for MQ dungeons when all have been collected. Offset 0x2E from the base messages.
     (0x9049, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the staircase room in\x01\x05\x41Dodongo's Cavern\x05\x40! The way to the\x01hanging bridge is open!\x09"),
     # 0x904A, 0x904B, and 0x904C unused
@@ -373,7 +374,8 @@ KEYSANITY_MESSAGES: list[tuple[int, str]] = [
     (0x9051, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46sloped room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40! The way to\x01the room with the \x05\x46heavy block\x05\x40 is\x04open!\x09"),
     (0x9052, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x41lava room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40! The way to\x01the \x05\x41water room\x05\x40 is open!\x09"),
     (0x9053, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x43water room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40! A \x05\x43chest\x05\x40\x01has appeared!\x09"),
-    # 0x9054 and 0x9055 unused
+    (0x9054, "\x08\x13\x0CYou got the \x05\x43Blue Fire Arrow\x05\x40!\x01This is a cool arrow you can\x01use on red ice."),
+    # 0x9055 unused
     (0x9056, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x44lobby and adult side\x05\x40\x01of the \x05\x46Spirit Temple\x05\x40! A \x05\x44chest\x05\x40 has\x01appeared!\x09"),
     # 0x9057 unused
     (0x9058, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x43climbable wall\x05\x40 in the\x01\x05\x46Spirit Temple\x05\x40! The way to the\x01\x05\x43upstairs\x05\x40 is open!\x09"),

@@ -76,8 +76,7 @@ class World:
 
         self.ensure_tod_access: bool = bool(self.shuffle_interior_entrances or settings.shuffle_overworld_entrances or settings.spawn_positions)
         self.disable_trade_revert: bool = self.shuffle_interior_entrances or settings.shuffle_overworld_entrances or settings.adult_trade_shuffle
-        self.skip_child_zelda: bool = 'Zeldas Letter' not in settings.shuffle_child_trade and \
-                                      'Zeldas Letter' in self.distribution.starting_items
+        self.skip_child_zelda: bool = 'Zeldas Letter' not in settings.shuffle_child_trade and 'Zeldas Letter' in settings.starting_items
         self.selected_adult_trade_item: str = ''
         self.adult_trade_starting_inventory: str = ''
 
@@ -86,9 +85,18 @@ class World:
                  or settings.warp_songs or settings.spawn_positions)):
             self.settings.open_forest = 'closed_deku'
 
-        if settings.triforce_goal_per_world > settings.triforce_count_per_world:
+        self.triforce_goal: int = sum(
+            world_dist.settings.triforce_goal_per_world
+            for world_dist in settings.distribution.world_dists
+            if world_dist.settings.triforce_hunt
+        )
+        triforce_count = sum(
+            world_dist.settings.triforce_count_per_world
+            for world_dist in settings.distribution.world_dists
+            if world_dist.settings.triforce_hunt
+        )
+        if self.triforce_goal > triforce_count:
             raise ValueError("Triforces required cannot be more than the triforce count.")
-        self.triforce_goal: int = settings.triforce_goal_per_world * settings.world_count
 
         if settings.triforce_hunt:
             # Pin shuffle_ganon_bosskey to 'triforce' when triforce_hunt is enabled
@@ -341,7 +349,7 @@ class World:
         self.unlocked_goal_categories: dict[str, GoalCategory] = {name: category for (name, category) in self.goal_categories.items() if not category.lock_entrances}
 
     def copy(self) -> World:
-        new_world = World(self.id, self.settings, False)
+        new_world = World(self.id, self.settings.copy(), False)
 
         new_world.skipped_trials = copy.copy(self.skipped_trials)
         new_world.dungeon_mq = copy.copy(self.dungeon_mq)
@@ -1157,6 +1165,70 @@ class World:
             if location.type == 'Drop':
                 location.name = location.parent_region.name + " " + location.name
 
+    def update_exclude_item_list(self) -> None:
+        # these are items that can never be required but are still considered major items
+        self.exclude_item_list = [
+            'Double Defense',
+            'Ice Arrows',
+        ]
+
+        if (self.settings.damage_multiplier != 'ohko' and self.settings.damage_multiplier != 'quadruple' and
+            self.settings.shuffle_scrubs == 'off' and not self.settings.shuffle_grotto_entrances):
+            # Nayru's Love may be required to prevent forced damage
+            self.exclude_item_list.append('Nayrus Love')
+        if 'logic_grottos_without_agony' in self.settings.allowed_tricks and self.settings.hints != 'agony':
+            # Stone of Agony skippable if not used for hints or grottos
+            self.exclude_item_list.append('Stone of Agony')
+        if not self.shuffle_special_interior_entrances and not self.settings.shuffle_overworld_entrances and not self.settings.warp_songs:
+            # Serenade and Prelude are never required unless one of those settings is enabled
+            self.exclude_item_list.append('Serenade of Water')
+            self.exclude_item_list.append('Prelude of Light')
+        if self.settings.logic_rules == 'glitchless':
+            # Both two-handed swords can be required in glitch logic, so only consider them foolish in glitchless
+            self.exclude_item_list.append('Biggoron Sword')
+            self.exclude_item_list.append('Giants Knife')
+        if self.settings.plant_beans:
+            # Magic Beans are useless if beans are already planted
+            self.exclude_item_list.append('Magic Bean')
+            self.exclude_item_list.append('Buy Magic Bean')
+            self.exclude_item_list.append('Magic Bean Pack')
+        if 'logic_lens_botw' in self.settings.allowed_tricks or self.settings.shuffle_pots in ('off', 'overworld'):
+            # These silver rupees unlock a door to an area that's also reachable with lens
+            self.exclude_item_list.append('Silver Rupee (Bottom of the Well Basement)')
+            self.exclude_item_list.append('Silver Rupee Pouch (Bottom of the Well Basement)')
+        if self.dungeon_mq['Shadow Temple'] and self.settings.shuffle_mapcompass == 'vanilla':
+            # These silver rupees only unlock the map chest
+            self.exclude_item_list.append('Silver Rupee (Shadow Temple Scythe Shortcut)')
+            self.exclude_item_list.append('Silver Rupee Pouch (Shadow Temple Scythe Shortcut)')
+        if 'logic_spirit_sun_chest_no_rupees' in self.settings.allowed_tricks and 'logic_spirit_sun_chest_bow' not in self.settings.allowed_tricks:
+            # With this trickset, these silver rupees are logically irrelevant
+            self.exclude_item_list.append('Silver Rupee (Spirit Temple Sun Block)')
+            self.exclude_item_list.append('Silver Rupee Pouch (Spirit Temple Sun Block)')
+        if self.settings.shuffle_pots in ('off', 'overworld') and self.settings.trials == 0:
+            # These silver rupees only lock pots and trial completion
+            self.exclude_item_list.append('Silver Rupee (Ganons Castle Light Trial)')
+            self.exclude_item_list.append('Silver Rupee Pouch (Ganons Castle Light Trial)')
+            self.exclude_item_list.append('Silver Rupee (Ganons Castle Fire Trial)')
+            self.exclude_item_list.append('Silver Rupee Pouch (Ganons Castle Fire Trial)')
+            self.exclude_item_list.append('Silver Rupee (Ganons Castle Shadow Trial)')
+            self.exclude_item_list.append('Silver Rupee Pouch (Ganons Castle Shadow Trial)')
+            self.exclude_item_list.append('Silver Rupee (Ganons Castle Water Trial)')
+            self.exclude_item_list.append('Silver Rupee Pouch (Ganons Castle Water Trial)')
+            self.exclude_item_list.append('Silver Rupee (Ganons Castle Forest Trial)')
+            self.exclude_item_list.append('Silver Rupee Pouch (Ganons Castle Forest Trial)')
+            if self.dungeon_mq['Ganons Castle'] and self.settings.shuffle_freestanding_items in ('off', 'overworld') and not self.shuffle_silver_rupees:
+                # MQ Ganon small keys only lock pots, freestanding recovery hearts, silver rupees, and trial completion
+                self.exclude_item_list.append('Small Key (Ganons Castle)')
+                self.exclude_item_list.append('Small Key Ring (Ganons Castle)')
+
+        for i in self.item_hint_type_overrides['barren']:
+            if i in self.exclude_item_list:
+                self.exclude_item_list.remove(i)
+
+        for i in self.item_added_hint_types['barren']:
+            if not (i in self.exclude_item_list):
+                self.exclude_item_list.append(i)
+
     # Useless areas are areas that have contain no items that could ever
     # be used to complete the seed. Unfortunately this is very difficult
     # to calculate since that involves trying every possible path and item
@@ -1208,71 +1280,6 @@ class World:
             # to make all areas have a more uniform chance of being chosen
             area_info['weight'] = len(area_info['locations'])
 
-        # these are items that can never be required but are still considered major items
-        exclude_item_list = [
-            'Double Defense',
-        ]
-
-        if (self.settings.damage_multiplier != 'ohko' and self.settings.damage_multiplier != 'quadruple' and
-            self.settings.shuffle_scrubs == 'off' and not self.settings.shuffle_grotto_entrances):
-            # nayru's love may be required to prevent forced damage
-            exclude_item_list.append('Nayrus Love')
-        if 'logic_grottos_without_agony' in self.settings.allowed_tricks and self.settings.hints != 'agony':
-            # Stone of Agony skippable if not used for hints or grottos
-            exclude_item_list.append('Stone of Agony')
-        if not self.shuffle_special_interior_entrances and not self.settings.shuffle_overworld_entrances and not self.settings.warp_songs:
-            # Serenade and Prelude are never required unless one of those settings is enabled
-            exclude_item_list.append('Serenade of Water')
-            exclude_item_list.append('Prelude of Light')
-        if self.settings.logic_rules == 'glitchless':
-            # Both two-handed swords can be required in glitch logic, so only consider them foolish in glitchless
-            exclude_item_list.append('Biggoron Sword')
-            exclude_item_list.append('Giants Knife')
-        if self.settings.plant_beans:
-            # Magic Beans are useless if beans are already planted
-            exclude_item_list.append('Magic Bean')
-            exclude_item_list.append('Buy Magic Bean')
-            exclude_item_list.append('Magic Bean Pack')
-        if not self.settings.blue_fire_arrows:
-            # Ice Arrows can only be required when the Blue Fire Arrows setting is enabled
-            exclude_item_list.append('Ice Arrows')
-        if 'logic_lens_botw' in self.settings.allowed_tricks or self.settings.shuffle_pots in ('off', 'overworld'):
-            # These silver rupees unlock a door to an area that's also reachable with lens
-            exclude_item_list.append('Silver Rupee (Bottom of the Well Basement)')
-            exclude_item_list.append('Silver Rupee Pouch (Bottom of the Well Basement)')
-        if self.dungeon_mq['Shadow Temple'] and self.settings.shuffle_mapcompass == 'vanilla':
-            # These silver rupees only unlock the map chest
-            exclude_item_list.append('Silver Rupee (Shadow Temple Scythe Shortcut)')
-            exclude_item_list.append('Silver Rupee Pouch (Shadow Temple Scythe Shortcut)')
-        if 'logic_spirit_sun_chest_no_rupees' in self.settings.allowed_tricks and 'logic_spirit_sun_chest_bow' not in self.settings.allowed_tricks:
-            # With this trickset, these silver rupees are logically irrelevant
-            exclude_item_list.append('Silver Rupee (Spirit Temple Sun Block)')
-            exclude_item_list.append('Silver Rupee Pouch (Spirit Temple Sun Block)')
-        if self.settings.shuffle_pots in ('off', 'overworld') and self.settings.trials == 0:
-            # These silver rupees only lock pots and trial completion
-            exclude_item_list.append('Silver Rupee (Ganons Castle Light Trial)')
-            exclude_item_list.append('Silver Rupee Pouch (Ganons Castle Light Trial)')
-            exclude_item_list.append('Silver Rupee (Ganons Castle Fire Trial)')
-            exclude_item_list.append('Silver Rupee Pouch (Ganons Castle Fire Trial)')
-            exclude_item_list.append('Silver Rupee (Ganons Castle Shadow Trial)')
-            exclude_item_list.append('Silver Rupee Pouch (Ganons Castle Shadow Trial)')
-            exclude_item_list.append('Silver Rupee (Ganons Castle Water Trial)')
-            exclude_item_list.append('Silver Rupee Pouch (Ganons Castle Water Trial)')
-            exclude_item_list.append('Silver Rupee (Ganons Castle Forest Trial)')
-            exclude_item_list.append('Silver Rupee Pouch (Ganons Castle Forest Trial)')
-            if self.dungeon_mq['Ganons Castle'] and self.settings.shuffle_freestanding_items in ('off', 'overworld') and not self.shuffle_silver_rupees:
-                # MQ Ganon small keys only lock pots, freestanding recovery hearts, silver rupees, and trial completion
-                exclude_item_list.append('Small Key (Ganons Castle)')
-                exclude_item_list.append('Small Key Ring (Ganons Castle)')
-
-        for i in self.item_hint_type_overrides['barren']:
-            if i in exclude_item_list:
-                exclude_item_list.remove(i)
-
-        for i in self.item_added_hint_types['barren']:
-            if not (i in exclude_item_list):
-                exclude_item_list.append(i)
-
         # The idea here is that if an item shows up in woth, then the only way
         # that another copy of that major item could ever be required is if it
         # is a progressive item. Normally this applies to things like bows, bombs
@@ -1313,7 +1320,7 @@ class World:
                 world_id = location.item.world.id
                 item = location.item
 
-                if ((not location.item.majoritem) or (location.item.name in exclude_item_list)) and \
+                if ((not location.item.majoritem) or (location.item.name in location.item.world.exclude_item_list)) and \
                     (location.item.name not in self.item_hint_type_overrides['barren']):
                     # Minor items are always useless in logic
                     continue

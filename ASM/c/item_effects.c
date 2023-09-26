@@ -19,6 +19,13 @@ void full_heal(z64_file_t *save, int16_t arg1, int16_t arg2) {
 }
 
 void give_triforce_piece(z64_file_t *save, int16_t arg1, int16_t arg2) {
+    if (!TRIFORCE_HUNT_ENABLED) {
+        // With per-world settings, Defeat Ganon worlds should behave as if Triforce pieces didn't exist.
+        // However, multiworld plugins don't know about this and will indiscriminately send pieces to all worlds.
+        // So we just ignore them here.
+        return;
+    }
+
     save->scene_flags[0x48].unk_00_ += 1; //Unused word in scene x48.
     set_triforce_render();
 
@@ -95,10 +102,10 @@ void give_small_key(z64_file_t *save, int16_t dungeon_id, int16_t arg2) {
     }
 }
 
-void give_small_key_ring(z64_file_t *save, int16_t dungeon_id, int16_t arg2) {
+void give_small_key_ring(z64_file_t *save, int16_t dungeon_id, int16_t include_boss_key) {
     int8_t current_keys = save->dungeon_keys[dungeon_id] > 0 ? save->dungeon_keys[dungeon_id] : 0;
     save->dungeon_keys[dungeon_id] = current_keys + key_counts[dungeon_id][CFG_DUNGEON_IS_MQ[dungeon_id]];
-    if (KEYRING_BOSSKEY_CONDITION && dungeon_id > 2 && dungeon_id < 8) {
+    if (include_boss_key) {
         save->dungeon_items[dungeon_id].boss_key = 1;
     }
     uint32_t flag = save->scene_flags[dungeon_id].unk_00_;

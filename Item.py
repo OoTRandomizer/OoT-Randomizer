@@ -92,7 +92,6 @@ class Item:
         self.priority: bool = self.info.priority
         self.type: str = self.info.type
         self.special: dict = self.info.special
-        self.index: Optional[int] = self.info.index
         self.alias: Optional[tuple[str, int]] = self.info.alias
 
         self.solver_id: Optional[int] = self.info.solver_id
@@ -107,6 +106,26 @@ class Item:
         new_item.looks_like_item = self.looks_like_item
 
         return new_item
+
+    @property
+    def index(self) -> Optional[int]:
+        idx = self.info.index
+        if self.type == 'Shop':
+            # Some shop items have the same item IDs as unrelated regular items. Make sure these don't get turned into nonsense.
+            return idx
+        # use different item IDs for items with conditional chest appearances so they appear according to the setting in the item's world, not the location's
+        if idx == 0x005B and (self.world.settings.bridge == 'tokens' or self.world.settings.lacs_condition == 'tokens' or self.world.settings.shuffle_ganon_bosskey == 'tokens'):
+            return 0x0128
+        if idx in (0x003D, 0x003E, 0x0076) and (self.world.settings.bridge == 'hearts' or self.world.settings.lacs_condition == 'hearts' or self.world.settings.shuffle_ganon_bosskey == 'hearts'):
+            return {0x003D: 0x0129, 0x003E: 0x012A, 0x0076: 0x012B}[idx]
+        if idx in (0x0029, 0x002A) and self.world.settings.minor_items_as_major_chest:
+            return {0x0029: 0x012C, 0x002A: 0x012D}[idx]
+        if idx in (0x006A, 0x0003, 0x006B) and (self.world.settings.free_bombchu_drops or self.world.settings.minor_items_as_major_chest):
+            return {0x006A: 0x012E, 0x0003: 0x012F, 0x006B: 0x0130}[idx]
+        # use different item IDs for keyrings that include boss keys so the effect and text box displayed depend on the setting in the item's world, not the location's
+        if idx in range(0x00CB, 0x00D0) and self.world.settings.keyring_give_bk:
+            return idx + 0x0122 - 0x00CB
+        return idx
 
     @property
     def key(self) -> bool:

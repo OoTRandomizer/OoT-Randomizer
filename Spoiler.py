@@ -140,14 +140,14 @@ class Spoiler:
 
     def create_playthrough(self) -> None:
         logger = logging.getLogger('')
-        if self.worlds[0].check_beatable_only and not Search([world.state for world in self.worlds]).can_beat_game():
+        if not Search([world.state for world in self.worlds]).can_beat_game():
             raise RuntimeError('Game unbeatable after placing all items.')
 
         # create a copy as we will modify it
         worlds = self.copy_worlds()
 
         # if we only check for beatable, we can do this sanity check first before writing down spheres
-        if worlds[0].check_beatable_only and not Search([world.state for world in worlds]).can_beat_game():
+        if not Search([world.state for world in worlds]).can_beat_game():
             raise RuntimeError('Uncopied world beatable but copied world is not.')
 
         search = RewindableSearch([world.state for world in worlds])
@@ -286,7 +286,7 @@ class Spoiler:
             for hint_type, item_location in w.misc_hint_item_locations.items():
                 sw.misc_hint_item_locations[hint_type] = self.worlds[item_location.world.id].get_location(item_location.name)
 
-        if worlds[0].entrance_shuffle:
+        if any(world.entrance_shuffle for world in worlds):
             self.entrance_playthrough = OrderedDict((str(i + 1), list(sphere)) for i, sphere in enumerate(entrance_spheres))
 
 

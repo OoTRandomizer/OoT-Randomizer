@@ -657,12 +657,12 @@ class TestEntranceRandomizer(unittest.TestCase):
         ]
         for filename in filenames:
             distribution_file = load_spoiler(os.path.join(test_dir, 'plando', filename + '.json'))
-            settings = load_settings(distribution_file['settings'], seed='TESTTESTTEST', filename=filename)
-            resolve_settings(settings)
+            base_settings = load_settings(distribution_file['settings'], seed='TESTTESTTEST', filename=filename)
+            _, world_settings = resolve_settings(base_settings)
             # Test for an entrance shuffle error during world validation.
             # If the test succeeds, this confirms Serenade and Prelude can be foolish.
             with self.assertRaises(EntranceShuffleError):
-                build_world_graphs(settings)
+                build_world_graphs(world_settings)
 
 
 class TestValidSpoilers(unittest.TestCase):
@@ -758,10 +758,10 @@ class TestValidSpoilers(unittest.TestCase):
         locations, items, locitems = self.loc_item_collection(pl)
         self.required_checks(spoiler, locations, items, locitems)
         # Everybody reached the win condition in the playthrough
-        if spoiler['settings'].get('triforce_hunt', False) or spoiler['randomized_settings'].get('triforce_hunt', False):
+        if self.normalize_worlds_dict(spoiler['settings'])[1].get('triforce_hunt', False) or self.normalize_worlds_dict(spoiler['randomized_settings'])[1].get('triforce_hunt', False):
             item_pool = self.normalize_worlds_dict(spoiler['item_pool'])
             # playthrough assumes each player gets exactly the goal
-            req = spoiler['settings'].get('triforce_goal_per_world', None) or spoiler['randomized_settings'].get('triforce_goal_per_world', None)
+            req = self.normalize_worlds_dict(spoiler['settings'])[1].get('triforce_goal_per_world', None) or self.normalize_worlds_dict(spoiler['randomized_settings'])[1].get('triforce_goal_per_world', None)
             self.assertEqual(
                 {p: req or item_pool[p]['Triforce Piece']
                     for p in items},
