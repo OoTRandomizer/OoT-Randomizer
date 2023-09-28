@@ -3,9 +3,9 @@
     "zora_fountain": "open"
   },
   "locations": {
-    "KF Midos Top Left Chest":                                   "#Bottle",
-    "KF Midos Top Right Chest":                                  "#Bottle",
-    "KF Midos Bottom Left Chest":                                "#Bottle",
-    "KF Midos Bottom Right Chest":                               "#Bottle"
+    "KF Midos House Top Left Chest":                                   "#Bottle",
+    "KF Midos House Top Right Chest":                                  "#Bottle",
+    "KF Midos House Bottom Left Chest":                                "#Bottle",
+    "KF Midos House Bottom Right Chest":                               "#Bottle"
   }
 }

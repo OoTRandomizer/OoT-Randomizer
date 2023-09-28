@@ -873,7 +873,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         world.state.collect(ItemFactory('Small Key (Fire Temple)', world))
 
     if world.settings.shuffle_ganon_bosskey == 'on_lacs':
-        placed_items['ToT Light Arrows Cutscene'] = ItemFactory('Boss Key (Ganons Castle)', world)
+        placed_items['Temple of Time Light Arrow Cutscene'] = ItemFactory('Boss Key (Ganons Castle)', world)
 
     if world.settings.shuffle_ganon_bosskey in ['stones', 'medallions', 'dungeons', 'tokens', 'hearts', 'triforce']:
         placed_items['Gift from Sages'] = ItemFactory('Boss Key (Ganons Castle)', world)

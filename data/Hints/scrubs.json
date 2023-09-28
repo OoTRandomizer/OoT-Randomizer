@@ -4,7 +4,7 @@
     "description":           "Tournament hints used for Scrubs Races. Duplicates of each hint, HBA 1000, Ice Cavern Iron Boots and OGC Great Fairy are always hints, 5 WotH, 3 Foolish (no Dungeons), 7 sometimes.",
     "add_locations":         [
         { "location": "GF HBA 1000 Points", "types": ["always"] },
-        { "location": "OGC Great Fairy Reward", "types": ["always"] },
+        { "location": "OGC Great Fairy Fountain Reward", "types": ["always"] },
         { "location": "Ice Cavern Iron Boots Chest", "types": ["always"] },
         { "location": "Deku Theater Skull Mask", "types": ["always"] },
         { "location": "Deku Theater Mask of Truth", "types": ["always"] }

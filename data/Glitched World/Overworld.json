@@ -50,7 +50,7 @@
             "KF Sarias House": "True",
             "KF House of Twins": "True",
             "KF Know It All House": "True",
-            "KF Kokiri Shop": "True",
+            "KF Shop": "True",
             "KF Outside Deku Tree": "'Showed Mido Sword & Shield' or Sticks or is_adult",
             "Lost Woods": "True",
             "LW Bridge": "can_leave_forest",
@@ -87,10 +87,10 @@
     {
         "region_name": "KF Midos House",
         "locations": {
-            "KF Midos Top Left Chest": "True",
-            "KF Midos Top Right Chest": "True",
-            "KF Midos Bottom Left Chest": "True",
-            "KF Midos Bottom Right Chest": "True"
+            "KF Midos House Top Left Chest": "True",
+            "KF Midos House Top Right Chest": "True",
+            "KF Midos House Bottom Left Chest": "True",
+            "KF Midos House Bottom Right Chest": "True"
         }
     },
     {
@@ -103,7 +103,7 @@
         "region_name": "KF Know It All House"
     },
     {
-        "region_name": "KF Kokiri Shop",
+        "region_name": "KF Shop",
         "locations": {
             "KF Shop Item 1": "True",
             "KF Shop Item 2": "True",
@@ -263,20 +263,20 @@
     {
         "region_name": "LH Lab",
         "locations": {
-            "LH Trade Eyeball Frog": "is_adult and Eyeball_Frog",
+            "LH Lab Trade Eyeball Frog": "is_adult and Eyeball_Frog",
             "LH Lab Dive": "
                 (Progressive_Scale, 2) or
                 (Iron_Boots and can_use(Hookshot)) or (has_bottle and can_use(Hover_Boots))",
-            "LH GS Lab Crate": "Iron_Boots and can_use(Hookshot)"
+            "LH Lab GS Crate": "Iron_Boots and can_use(Hookshot)"
         }
     },
     {
         "region_name": "LH Fishing Hole",
         "time_passes": true,
         "locations": {
-            "LH Child Fishing": "is_child",
-            "LH Adult Fishing": "is_adult",
-            "LH Loach Fishing": "True"
+            "LH Fishing Hole Child Reward": "is_child",
+            "LH Fishing Hole Adult Reward": "is_adult",
+            "LH Fishing Hole Loach Reward": "True"
         }
     },
     {
@@ -392,7 +392,7 @@
     {
         "region_name": "Colossus Great Fairy Fountain",
         "locations": {
-            "Colossus Great Fairy Reward": "can_play(Zeldas_Lullaby)"
+            "Colossus Great Fairy Fountain Reward": "can_play(Zeldas_Lullaby)"
         }
     },
     {
@@ -429,7 +429,7 @@
             "Temple of Time Access": "True"
         },
         "locations": {
-            "ToT Light Arrows Cutscene": "is_adult and can_trigger_lacs",
+            "Temple of Time Light Arrow Cutscene": "is_adult and can_trigger_lacs",
             "ToT Child Altar Hint": "is_child",
             "ToT Adult Altar Hint": "is_adult"
         },
@@ -488,7 +488,7 @@
     {
         "region_name": "HC Great Fairy Fountain",
         "locations": {
-            "HC Great Fairy Reward": "can_play(Zeldas_Lullaby)"
+            "HC Great Fairy Fountain Reward": "can_play(Zeldas_Lullaby)"
         }
     },
     {
@@ -506,7 +506,7 @@
     {
         "region_name": "OGC Great Fairy Fountain",
         "locations": {
-            "OGC Great Fairy Reward": "can_play(Zeldas_Lullaby)"
+            "OGC Great Fairy Fountain Reward": "can_play(Zeldas_Lullaby)"
         }
     },
     {
@@ -515,10 +515,10 @@
             "Sell Big Poe": "is_adult and Bottle_with_Big_Poe"
         },
         "locations": {
-            "Market 10 Big Poes": "
+            "Market Guard House 10 Big Poes": "
                 is_adult and
                 (Big_Poe or (Bottle_with_Big_Poe, big_poe_count))",
-            "Market GS Guard House": "is_child"
+            "Market Guard House GS": "is_child"
         }
     },
     {
@@ -700,11 +700,11 @@
     {
         "region_name": "Kak House of Skulltula",
         "locations": {
-            "Kak 10 Gold Skulltula Reward": "(Gold_Skulltula_Token, 10)",
-            "Kak 20 Gold Skulltula Reward": "(Gold_Skulltula_Token, 20)",
-            "Kak 30 Gold Skulltula Reward": "(Gold_Skulltula_Token, 30)",
-            "Kak 40 Gold Skulltula Reward": "(Gold_Skulltula_Token, 40)",
-            "Kak 50 Gold Skulltula Reward": "(Gold_Skulltula_Token, 50)",
+            "Kak House of Skulltula 10 Gold Skulltula Reward": "(Gold_Skulltula_Token, 10)",
+            "Kak House of Skulltula 20 Gold Skulltula Reward": "(Gold_Skulltula_Token, 20)",
+            "Kak House of Skulltula 30 Gold Skulltula Reward": "(Gold_Skulltula_Token, 30)",
+            "Kak House of Skulltula 40 Gold Skulltula Reward": "(Gold_Skulltula_Token, 40)",
+            "Kak House of Skulltula 50 Gold Skulltula Reward": "(Gold_Skulltula_Token, 50)",
             "10 Skulltulas Reward Hint": "True",
             "20 Skulltulas Reward Hint": "True",
             "30 Skulltulas Reward Hint": "True",
@@ -772,12 +772,12 @@
     {
         "region_name": "Kak Odd Medicine Building",
         "locations": {
-            "Kak Granny Trade Odd Mushroom": "is_adult and Odd_Mushroom",
+            "Kak Odd Medicine Building Trade Odd Mushroom": "is_adult and Odd_Mushroom",
             # Granny will not sell her item without turning in odd mushroom
             # If the adult trade item(s) in the world are all after odd mushroom,
             # allow any of the later sequence items to satisfy logic. The patcher
             # sets the flag needed for her to sell stuff if odd mushroom can't be obtained.
-            "Kak Granny Buy Blue Potion": "Progressive_Wallet and is_adult and
+            "Kak Odd Medicine Building Buy Blue Potion": "Progressive_Wallet and is_adult and
                 (Odd_Mushroom or ((Odd_Potion or Poachers_Saw or Broken_Sword or
                 Prescription or Eyeball_Frog or Eyedrops or Claim_Check) and not adult_trade_shuffle))"
         }
@@ -829,8 +829,8 @@
         "region_name": "Graveyard Dampes Grave",
         "hint": "GRAVEYARD",
         "locations": {
-            "Graveyard Dampe Race Hookshot Chest": "True",
-            "Graveyard Dampe Race Freestanding PoH": "True",
+            "Graveyard Dampes Grave Hookshot Chest": "True",
+            "Graveyard Dampes Grave Freestanding PoH": "True",
             "Nut Pot": "True"
         }
     },
@@ -1053,13 +1053,13 @@
     {
         "region_name": "DMC Great Fairy Fountain",
         "locations": {
-            "DMC Great Fairy Reward": "can_play(Zeldas_Lullaby)"
+            "DMC Great Fairy Fountain Reward": "can_play(Zeldas_Lullaby)"
         }
     },
     {
         "region_name": "DMT Great Fairy Fountain",
         "locations": {
-            "DMT Great Fairy Reward": "can_play(Zeldas_Lullaby)"
+            "DMT Great Fairy Fountain Reward": "can_play(Zeldas_Lullaby)"
         }
     },
     {
@@ -1174,7 +1174,7 @@
     {
         "region_name": "ZF Great Fairy Fountain",
         "locations": {
-            "ZF Great Fairy Reward": "can_play(Zeldas_Lullaby)"
+            "ZF Great Fairy Fountain Reward": "can_play(Zeldas_Lullaby)"
         }
     },
     {
@@ -1202,7 +1202,7 @@
     {
         "region_name": "LLR Talons House",
         "locations": {
-            "LLR Talons Chickens": "is_child and (skip_child_zelda or at('Hyrule Castle Grounds', is_child and (Weird_Egg or Chicken)))"
+            "LLR Talons House Chickens": "is_child and (skip_child_zelda or at('Hyrule Castle Grounds', is_child and (Weird_Egg or Chicken)))"
         }
     },
     {
@@ -1215,7 +1215,7 @@
     {
         "region_name": "LLR Tower",
         "locations": {
-            "LLR Freestanding PoH": "True",
+            "LLR Tower Freestanding PoH": "True",
             "LLR Tower Left Cow": "can_play(Eponas_Song)",
             "LLR Tower Right Cow": "can_play(Eponas_Song)"
         }
@@ -1253,8 +1253,8 @@
     {
         "region_name": "LW Scrubs Grotto",
         "locations": {
-            "LW Deku Scrub Grotto Rear": "True",
-            "LW Deku Scrub Grotto Front": "True"
+            "LW Scrubs Grotto Deku Scrub Rear": "True",
+            "LW Scrubs Grotto Deku Scrub Front": "True"
         }
     },
     {
@@ -1266,8 +1266,8 @@
     {
         "region_name": "SFM Storms Grotto",
         "locations": {
-            "SFM Deku Scrub Grotto Rear": "True",
-            "SFM Deku Scrub Grotto Front": "True"
+            "SFM Storms Grotto Deku Scrub Rear": "True",
+            "SFM Storms Grotto Deku Scrub Front": "True"
         }
     },
     {
@@ -1279,9 +1279,9 @@
     {
         "region_name": "LLR Grotto",
         "locations": {
-            "LLR Deku Scrub Grotto Left": "True",
-            "LLR Deku Scrub Grotto Right": "True",
-            "LLR Deku Scrub Grotto Center": "True"
+            "LLR Grotto Deku Scrub Left": "True",
+            "LLR Grotto Deku Scrub Right": "True",
+            "LLR Grotto Deku Scrub Center": "True"
         }
     },
     {
@@ -1301,13 +1301,13 @@
     {
         "region_name": "HF Inside Fence Grotto",
         "locations": {
-            "HF Deku Scrub Grotto": "can_stun_deku"
+            "HF Inside Fence Grotto Deku Scrub": "can_stun_deku"
         }
     },
     {
         "region_name": "HF Cow Grotto",
         "locations": {
-            "HF GS Cow Grotto": "
+            "HF Cow Grotto GS": "
                 has_fire_source and (can_use(Hookshot) or can_use(Boomerang))",
             "HF Cow Grotto Cow": "has_fire_source and can_play(Eponas_Song)",
             "HF Cow Grotto Gossip Stone": "has_fire_source"
@@ -1326,7 +1326,7 @@
     {
         "region_name": "HF Near Kak Grotto",
         "locations": {
-            "HF GS Near Kak Grotto": "can_use(Boomerang) or can_use(Hookshot)"
+            "HF Near Kak Grotto GS": "can_use(Boomerang) or can_use(Hookshot)"
         }
     },
     {
@@ -1339,7 +1339,7 @@
     {
         "region_name": "HC Storms Grotto",
         "locations": {
-            "HC GS Storms Grotto": "(can_use(Boomerang) or can_isg) and (has_explosives or Blue_Fire)",
+            "HC Storms Grotto GS": "(can_use(Boomerang) or can_isg) and (has_explosives or Blue_Fire)",
             "HC Storms Grotto Gossip Stone": "has_explosives or Blue_Fire"
         }
     },
@@ -1372,9 +1372,9 @@
     {
         "region_name": "GC Grotto",
         "locations": {
-            "GC Deku Scrub Grotto Left": "True",
-            "GC Deku Scrub Grotto Right": "True",
-            "GC Deku Scrub Grotto Center": "True"
+            "GC Grotto Deku Scrub Left": "True",
+            "GC Grotto Deku Scrub Right": "True",
+            "GC Grotto Deku Scrub Center": "True"
         }
     },
     {
@@ -1387,9 +1387,9 @@
     {
         "region_name": "DMC Hammer Grotto",
         "locations": {
-            "DMC Deku Scrub Grotto Left": "True",
-            "DMC Deku Scrub Grotto Right": "True",
-            "DMC Deku Scrub Grotto Center": "True"
+            "DMC Hammer Grotto Deku Scrub Left": "True",
+            "DMC Hammer Grotto Deku Scrub Right": "True",
+            "DMC Hammer Grotto Deku Scrub Center": "True"
         }
     },
     {
@@ -1405,30 +1405,30 @@
     {
         "region_name": "ZR Storms Grotto",
         "locations": {
-            "ZR Deku Scrub Grotto Rear": "True",
-            "ZR Deku Scrub Grotto Front": "True"
+            "ZR Storms Grotto Deku Scrub Rear": "True",
+            "ZR Storms Grotto Deku Scrub Front": "True"
         }
     },
     {
         "region_name": "LH Grotto",
         "locations": {
-            "LH Deku Scrub Grotto Left": "True",
-            "LH Deku Scrub Grotto Right": "True",
-            "LH Deku Scrub Grotto Center": "True"
+            "LH Grotto Deku Scrub Left": "True",
+            "LH Grotto Deku Scrub Right": "True",
+            "LH Grotto Deku Scrub Center": "True"
         }
     },
     {
         "region_name": "Colossus Grotto",
         "locations": {
-            "Colossus Deku Scrub Grotto Rear": "True",
-            "Colossus Deku Scrub Grotto Front": "True"
+            "Colossus Grotto Deku Scrub Rear": "True",
+            "Colossus Grotto Deku Scrub Front": "True"
         }
     },
     {
         "region_name": "GV Storms Grotto",
         "locations": {
-            "GV Deku Scrub Grotto Rear": "True",
-            "GV Deku Scrub Grotto Front": "True"
+            "GV Storms Grotto Deku Scrub Rear": "True",
+            "GV Storms Grotto Deku Scrub Front": "True"
         }
     }
 ]

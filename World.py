@@ -258,7 +258,7 @@ class World:
             max_tokens = max(max_tokens, self.settings.ganon_bosskey_tokens)
         tokens = [50, 40, 30, 20, 10]
         for t in tokens:
-            if f'Kak {t} Gold Skulltula Reward' not in self.settings.disabled_locations:
+            if f'Kak House of Skulltula {t} Gold Skulltula Reward' not in self.settings.disabled_locations:
                 max_tokens = max(max_tokens, t)
                 break
         self.max_progressions['Gold Skulltula Token'] = max_tokens

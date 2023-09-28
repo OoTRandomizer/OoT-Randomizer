@@ -1975,7 +1975,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     shuffle_messages.shop_item_messages = []
 
     # kokiri shop
-    shop_locations = [location for location in world.get_region('KF Kokiri Shop').locations if location.type == 'Shop'] # Need to filter because of the freestanding item in KF Shop
+    shop_locations = [location for location in world.get_region('KF Shop').locations if location.type == 'Shop'] # Need to filter because of the freestanding item in KF Shop
     shop_objs = place_shop_items(rom, world, shop_items, messages, shop_locations, True)
     shop_objs |= {0x00FC, 0x00B2, 0x0101, 0x0102, 0x00FD, 0x00C5}  # Shop objects
     rom.write_byte(0x2587029, len(shop_objs))
@@ -2061,9 +2061,9 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         return message
 
     single_item_scrubs = {
-        0x3E: world.get_location("HF Deku Scrub Grotto"),
+        0x3E: world.get_location("HF Inside Fence Grotto Deku Scrub"),
         0x77: world.get_location("LW Deku Scrub Near Bridge"),
-        0x79: world.get_location("LW Deku Scrub Grotto Front"),
+        0x79: world.get_location("LW Scrubs Grotto Deku Scrub Front"),
     }
 
     scrub_message_dict = {}
@@ -2175,7 +2175,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         if 'unique_merchants' not in world.settings.misc_hints:
             update_message_by_id(messages, 0x500C, "Mysterious item! How about\x01\x05\x41100 Rupees\x05\x40?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
         else:
-            location = world.get_location("Kak Granny Buy Blue Potion")
+            location = world.get_location("Kak Odd Medicine Building Buy Blue Potion")
             item_text = get_hint(get_item_generic_name(location.item), True).text
             wrapped_item_text = line_wrap(item_text, False, False, False)
             if wrapped_item_text != item_text:

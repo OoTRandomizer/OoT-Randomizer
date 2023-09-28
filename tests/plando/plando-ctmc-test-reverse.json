@@ -143,10 +143,10 @@
     "Child Spawn -> KF Links House": {"region": "KF Midos House", "from": "Kokiri Forest"}
   },
   "locations":                 {
-    "KF Midos Top Left Chest":                                 "Small Key (Forest Temple)",
-    "KF Midos Top Right Chest":                                "Boss Key (Forest Temple)",
-    "KF Midos Bottom Left Chest":                              "Kokiri Sword",
-    "KF Midos Bottom Right Chest":                             "Deku Nuts (5)",
+    "KF Midos House Top Left Chest":                           "Small Key (Forest Temple)",
+    "KF Midos House Top Right Chest":                          "Boss Key (Forest Temple)",
+    "KF Midos House Bottom Left Chest":                        "Kokiri Sword",
+    "KF Midos House Bottom Right Chest":                       "Deku Nuts (5)",
     "KF Kokiri Sword Chest":                                   "Small Key (Forest Temple)",
     "Shadow Temple Hover Boots Chest":                         "Small Key (Shadow Temple)",
     "Gerudo Training Ground Maze Path First Chest":            "Progressive Scale",

@@ -185,7 +185,7 @@
             "KF Sarias House": "True",
             "KF House of Twins": "True",
             "KF Know It All House": "True",
-            "KF Kokiri Shop": "True",
+            "KF Shop": "True",
             "KF Outside Deku Tree": "is_adult or open_forest == 'open' or 'Showed Mido Sword & Shield'",
             "Lost Woods": "True",
             "LW Bridge From Forest": "can_leave_forest",
@@ -231,10 +231,10 @@
         "region_name": "KF Midos House",
         "scene": "KF Midos House",
         "locations": {
-            "KF Midos Top Left Chest": "True",
-            "KF Midos Top Right Chest": "True",
-            "KF Midos Bottom Left Chest": "True",
-            "KF Midos Bottom Right Chest": "True"
+            "KF Midos House Top Left Chest": "True",
+            "KF Midos House Top Right Chest": "True",
+            "KF Midos House Bottom Left Chest": "True",
+            "KF Midos House Bottom Right Chest": "True"
         },
         "exits": {
             "Kokiri Forest": "True"
@@ -276,8 +276,8 @@
         }
     },
     {
-        "region_name": "KF Kokiri Shop",
-        "scene": "KF Kokiri Shop",
+        "region_name": "KF Shop",
+        "scene": "KF Shop",
         "locations": {
             "KF Shop Blue Rupee": "True",
             "KF Shop Item 1": "True",
@@ -550,14 +550,14 @@
                 (('Eyeball Frog Access' and not adult_trade_shuffle) or (Eyeball_Frog and disable_trade_revert))"
         },
         "locations": {
-            "LH Trade Eyeball Frog": "'Eyedrops Access'",
+            "LH Lab Trade Eyeball Frog": "'Eyedrops Access'",
             "LH Lab Dive": "
                 (Progressive_Scale, 2) or
                 (logic_lab_diving and is_adult and Iron_Boots and Hookshot)",
             "LH Lab Dive Red Rupee 1": "(Progressive_Scale, 2) or can_use(Iron_Boots)",
             "LH Lab Dive Red Rupee 2": "(Progressive_Scale, 2) or can_use(Iron_Boots)",
             "LH Lab Dive Red Rupee 3": "(Progressive_Scale, 2) or can_use(Iron_Boots)",
-            "LH GS Lab Crate": "
+            "LH Lab GS Crate": "
                 Iron_Boots and can_use(Hookshot) and
                 (deadly_bonks != 'ohko' or Fairy or (can_use(Nayrus_Love) and not shuffle_interior_entrances))"
         },
@@ -569,9 +569,9 @@
         "region_name": "LH Fishing Hole",
         "scene": "LH Fishing Hole",
         "locations": {
-            "LH Child Fishing": "is_child",
-            "LH Adult Fishing": "is_adult",
-            "LH Loach Fishing": "True"
+            "LH Fishing Hole Child Reward": "is_child",
+            "LH Fishing Hole Adult Reward": "is_adult",
+            "LH Fishing Hole Loach Reward": "True"
         },
         "exits": {
             "LH Fishing Island": "True"
@@ -1114,7 +1114,7 @@
         "region_name": "Colossus Great Fairy Fountain",
         "scene": "Colossus Great Fairy Fountain",
         "locations": {
-            "Colossus Great Fairy Reward": "can_play(Zeldas_Lullaby)"
+            "Colossus Great Fairy Fountain Reward": "can_play(Zeldas_Lullaby)"
         },
         "exits": {
             "Desert Colossus": "True"
@@ -1199,7 +1199,7 @@
             "Temple of Time Access": "True"
         },
         "locations": {
-            "ToT Light Arrows Cutscene": "is_adult and can_trigger_lacs",
+            "Temple of Time Light Arrow Cutscene": "is_adult and can_trigger_lacs",
             "ToT Child Altar Hint": "is_child",
             "ToT Adult Altar Hint": "is_adult"
         },
@@ -1274,7 +1274,7 @@
         "region_name": "HC Great Fairy Fountain",
         "scene": "HC Great Fairy Fountain",
         "locations": {
-            "HC Great Fairy Reward": "can_play(Zeldas_Lullaby)"
+            "HC Great Fairy Fountain Reward": "can_play(Zeldas_Lullaby)"
         },
         "exits": {
             "Castle Grounds": "True"
@@ -1307,7 +1307,7 @@
         "region_name": "OGC Great Fairy Fountain",
         "scene": "OGC Great Fairy Fountain",
         "locations": {
-            "OGC Great Fairy Reward": "can_play(Zeldas_Lullaby)"
+            "OGC Great Fairy Fountain Reward": "can_play(Zeldas_Lullaby)"
         },
         "exits": {
             "Castle Grounds": "True"
@@ -1320,7 +1320,7 @@
             "Sell Big Poe": "is_adult and Bottle_with_Big_Poe"
         },
         "locations": {
-            "Market 10 Big Poes": "
+            "Market Guard House 10 Big Poes": "
                 is_adult and (Big_Poe or (Bottle_with_Big_Poe, big_poe_count))",
             "Market Guard House Child Crate": "is_child and can_break_crate",
             "Market Guard House Child Pot 1": "is_child",
@@ -1374,7 +1374,7 @@
             "Market Guard House Adult Pot 5": "is_adult",
             "Market Guard House Adult Pot 6": "is_adult",
             "Market Guard House Adult Pot 7": "is_adult",
-            "Market GS Guard House": "is_child and can_break_crate"
+            "Market Guard House GS": "is_child and can_break_crate"
         },
         "exits": {
             "Market Entrance": "True"
@@ -1668,11 +1668,11 @@
         "region_name": "Kak House of Skulltula",
         "scene": "Kak House of Skulltula",
         "locations": {
-            "Kak 10 Gold Skulltula Reward": "(Gold_Skulltula_Token, 10)",
-            "Kak 20 Gold Skulltula Reward": "(Gold_Skulltula_Token, 20)",
-            "Kak 30 Gold Skulltula Reward": "(Gold_Skulltula_Token, 30)",
-            "Kak 40 Gold Skulltula Reward": "(Gold_Skulltula_Token, 40)",
-            "Kak 50 Gold Skulltula Reward": "(Gold_Skulltula_Token, 50)",
+            "Kak House of Skulltula 10 Gold Skulltula Reward": "(Gold_Skulltula_Token, 10)",
+            "Kak House of Skulltula 20 Gold Skulltula Reward": "(Gold_Skulltula_Token, 20)",
+            "Kak House of Skulltula 30 Gold Skulltula Reward": "(Gold_Skulltula_Token, 30)",
+            "Kak House of Skulltula 40 Gold Skulltula Reward": "(Gold_Skulltula_Token, 40)",
+            "Kak House of Skulltula 50 Gold Skulltula Reward": "(Gold_Skulltula_Token, 50)",
             "10 Skulltulas Reward Hint": "True",
             "20 Skulltulas Reward Hint": "True",
             "30 Skulltulas Reward Hint": "True",
@@ -1787,12 +1787,12 @@
                 (('Odd Mushroom Access' and not adult_trade_shuffle) or (Odd_Mushroom and disable_trade_revert))"
         },
         "locations": {
-            "Kak Granny Trade Odd Mushroom": "'Odd Potion Access'",
+            "Kak Odd Medicine Building Trade Odd Mushroom": "'Odd Potion Access'",
             # Granny will not sell her item without turning in odd mushroom
             # If the adult trade item(s) in the world are all after odd mushroom,
             # allow any of the later sequence items to satisfy logic. The patcher
             # sets the flag needed for her to sell stuff if odd mushroom can't be obtained.
-            "Kak Granny Buy Blue Potion": "Progressive_Wallet and is_adult and
+            "Kak Odd Medicine Building Buy Blue Potion": "Progressive_Wallet and is_adult and
                 (Odd_Mushroom or ((Odd_Potion or Poachers_Saw or Broken_Sword or
                 Prescription or Eyeball_Frog or Eyedrops or Claim_Check) and not adult_trade_shuffle))"
         },
@@ -1864,22 +1864,22 @@
             "Dampes Windmill Access": "is_adult and can_play(Song_of_Time)"
         },
         "locations": {
-            "Graveyard Dampe Race Hookshot Chest": "True",
-            "Graveyard Dampe Race Freestanding PoH": "is_adult or logic_child_dampe_race_poh",
-            "Graveyard Dampe Race Rupee 1": "True",
-            "Graveyard Dampe Race Rupee 2": "True",
-            "Graveyard Dampe Race Rupee 3": "True",
-            "Graveyard Dampe Race Rupee 4": "True",
-            "Graveyard Dampe Race Rupee 5": "True",
-            "Graveyard Dampe Race Rupee 6": "True",
-            "Graveyard Dampe Race Rupee 7": "True",
-            "Graveyard Dampe Race Rupee 8": "True",
-            "Graveyard Dampe Pot 1": "True",
-            "Graveyard Dampe Pot 2": "True",
-            "Graveyard Dampe Pot 3": "True",
-            "Graveyard Dampe Pot 4": "True",
-            "Graveyard Dampe Pot 5": "True",
-            "Graveyard Dampe Pot 6": "True",
+            "Graveyard Dampes Grave Hookshot Chest": "True",
+            "Graveyard Dampes Grave Freestanding PoH": "is_adult or logic_child_dampe_race_poh",
+            "Graveyard Dampes Grave Rupee 1": "True",
+            "Graveyard Dampes Grave Rupee 2": "True",
+            "Graveyard Dampes Grave Rupee 3": "True",
+            "Graveyard Dampes Grave Rupee 4": "True",
+            "Graveyard Dampes Grave Rupee 5": "True",
+            "Graveyard Dampes Grave Rupee 6": "True",
+            "Graveyard Dampes Grave Rupee 7": "True",
+            "Graveyard Dampes Grave Rupee 8": "True",
+            "Graveyard Dampes Grave Pot 1": "True",
+            "Graveyard Dampes Grave Pot 2": "True",
+            "Graveyard Dampes Grave Pot 3": "True",
+            "Graveyard Dampes Grave Pot 4": "True",
+            "Graveyard Dampes Grave Pot 5": "True",
+            "Graveyard Dampes Grave Pot 6": "True",
             "Nut Pot": "True"
         },
         "exits": {
@@ -2284,7 +2284,7 @@
         "region_name": "DMC Great Fairy Fountain",
         "scene": "DMC Great Fairy Fountain",
         "locations": {
-            "DMC Great Fairy Reward": "can_play(Zeldas_Lullaby)"
+            "DMC Great Fairy Fountain Reward": "can_play(Zeldas_Lullaby)"
         },
         "exits": {
             "DMC Lower Local": "True"
@@ -2294,7 +2294,7 @@
         "region_name": "DMT Great Fairy Fountain",
         "scene": "DMT Great Fairy Fountain",
         "locations": {
-            "DMT Great Fairy Reward": "can_play(Zeldas_Lullaby)"
+            "DMT Great Fairy Fountain Reward": "can_play(Zeldas_Lullaby)"
         },
         "exits": {
             "Death Mountain Summit": "True"
@@ -2538,7 +2538,7 @@
         "region_name": "ZF Great Fairy Fountain",
         "scene": "ZF Great Fairy Fountain",
         "locations": {
-            "ZF Great Fairy Reward": "can_play(Zeldas_Lullaby)"
+            "ZF Great Fairy Fountain Reward": "can_play(Zeldas_Lullaby)"
         },
         "exits": {
             "Zoras Fountain": "True"
@@ -2582,7 +2582,7 @@
         "region_name": "LLR Talons House",
         "scene": "LLR Talons House",
         "locations": {
-            "LLR Talons Chickens": "
+            "LLR Talons House Chickens": "
                 is_child and at_day and
                 (skip_child_zelda or at('Hyrule Castle Grounds', is_child and (Weird_Egg or Chicken)))",
             "LLR Talons House Pot 1": "True",
@@ -2608,7 +2608,7 @@
         "region_name": "LLR Tower",
         "scene": "LLR Tower",
         "locations": {
-            "LLR Freestanding PoH": "is_child",
+            "LLR Tower Freestanding PoH": "is_child",
             "LLR Tower Left Cow": "can_play(Eponas_Song)",
             "LLR Tower Right Cow": "can_play(Eponas_Song)"
         },
@@ -2685,8 +2685,8 @@
         "region_name": "LW Scrubs Grotto",
         "scene": "LW Scrubs Grotto",
         "locations": {
-            "LW Deku Scrub Grotto Rear": "can_stun_deku",
-            "LW Deku Scrub Grotto Front": "can_stun_deku",
+            "LW Scrubs Grotto Deku Scrub Rear": "can_stun_deku",
+            "LW Scrubs Grotto Deku Scrub Front": "can_stun_deku",
             "LW Scrubs Grotto Beehive": "can_break_upper_beehive"
         },
         "exits": {
@@ -2707,8 +2707,8 @@
         "region_name": "SFM Storms Grotto",
         "scene": "SFM Storms Grotto",
         "locations": {
-            "SFM Deku Scrub Grotto Rear": "can_stun_deku",
-            "SFM Deku Scrub Grotto Front": "can_stun_deku",
+            "SFM Storms Grotto Deku Scrub Rear": "can_stun_deku",
+            "SFM Storms Grotto Deku Scrub Front": "can_stun_deku",
             "SFM Storms Grotto Beehive": "can_break_upper_beehive"
         },
         "exits": {
@@ -2730,9 +2730,9 @@
         "region_name": "LLR Grotto",
         "scene": "LLR Grotto",
         "locations": {
-            "LLR Deku Scrub Grotto Left": "can_stun_deku",
-            "LLR Deku Scrub Grotto Right": "can_stun_deku",
-            "LLR Deku Scrub Grotto Center": "can_stun_deku",
+            "LLR Grotto Deku Scrub Left": "can_stun_deku",
+            "LLR Grotto Deku Scrub Right": "can_stun_deku",
+            "LLR Grotto Deku Scrub Center": "can_stun_deku",
             "LLR Grotto Beehive": "can_break_upper_beehive"
         },
         "exits": {
@@ -2777,7 +2777,7 @@
         "region_name": "HF Inside Fence Grotto",
         "scene": "HF Inside Fence Grotto",
         "locations": {
-            "HF Deku Scrub Grotto": "can_stun_deku",
+            "HF Inside Fence Grotto Deku Scrub": "can_stun_deku",
             "HF Inside Fence Grotto Beehive": "can_break_lower_beehive"
         },
         "exits": {
@@ -2788,7 +2788,7 @@
         "region_name": "HF Cow Grotto",
         "scene": "HF Cow Grotto",
         "locations": {
-            "HF GS Cow Grotto": "has_fire_source and (can_use(Hookshot) or can_use(Boomerang))",
+            "HF Cow Grotto GS": "has_fire_source and (can_use(Hookshot) or can_use(Boomerang))",
             "HF Cow Grotto Cow": "has_fire_source and can_play(Eponas_Song)",
             "HF Cow Grotto Pot 1": "has_fire_source",
             "HF Cow Grotto Pot 2": "has_fire_source",
@@ -2832,7 +2832,7 @@
         "region_name": "HF Near Kak Grotto",
         "scene": "HF Near Kak Grotto",
         "locations": {
-            "HF GS Near Kak Grotto": "can_use(Boomerang) or can_use(Hookshot)"
+            "HF Near Kak Grotto GS": "can_use(Boomerang) or can_use(Hookshot)"
         },
         "exits": {
             "Hyrule Field": "True"
@@ -2852,7 +2852,7 @@
         "region_name": "HC Storms Grotto",
         "scene": "HC Storms Grotto",
         "locations": {
-            "HC GS Storms Grotto": "
+            "HC Storms Grotto GS": "
                 (can_blast_or_smash or (is_child and logic_castle_storms_gs)) and
                 (can_use(Boomerang) or can_use(Hookshot))",
             "HC Storms Grotto Pot 1": "can_blast_or_smash",
@@ -2938,9 +2938,9 @@
         "region_name": "GC Grotto",
         "scene": "GC Grotto",
         "locations": {
-            "GC Deku Scrub Grotto Left": "can_stun_deku",
-            "GC Deku Scrub Grotto Right": "can_stun_deku",
-            "GC Deku Scrub Grotto Center": "can_stun_deku",
+            "GC Grotto Deku Scrub Left": "can_stun_deku",
+            "GC Grotto Deku Scrub Right": "can_stun_deku",
+            "GC Grotto Deku Scrub Center": "can_stun_deku",
             "GC Grotto Beehive": "can_break_upper_beehive"
         },
         "exits": {
@@ -2968,9 +2968,9 @@
         "region_name": "DMC Hammer Grotto",
         "scene": "DMC Hammer Grotto",
         "locations": {
-            "DMC Deku Scrub Grotto Left": "can_stun_deku",
-            "DMC Deku Scrub Grotto Right": "can_stun_deku",
-            "DMC Deku Scrub Grotto Center": "can_stun_deku",
+            "DMC Hammer Grotto Deku Scrub Left": "can_stun_deku",
+            "DMC Hammer Grotto Deku Scrub Right": "can_stun_deku",
+            "DMC Hammer Grotto Deku Scrub Center": "can_stun_deku",
             "DMC Hammer Grotto Beehive": "can_break_upper_beehive"
         },
         "exits": {
@@ -3008,8 +3008,8 @@
         "region_name": "ZR Storms Grotto",
         "scene": "ZR Storms Grotto",
         "locations": {
-            "ZR Deku Scrub Grotto Rear": "can_stun_deku",
-            "ZR Deku Scrub Grotto Front": "can_stun_deku",
+            "ZR Storms Grotto Deku Scrub Rear": "can_stun_deku",
+            "ZR Storms Grotto Deku Scrub Front": "can_stun_deku",
             "ZR Storms Grotto Beehive": "can_break_upper_beehive"
         },
         "exits": {
@@ -3020,9 +3020,9 @@
         "region_name": "LH Grotto",
         "scene": "LH Grotto",
         "locations": {
-            "LH Deku Scrub Grotto Left": "can_stun_deku",
-            "LH Deku Scrub Grotto Right": "can_stun_deku",
-            "LH Deku Scrub Grotto Center": "can_stun_deku",
+            "LH Grotto Deku Scrub Left": "can_stun_deku",
+            "LH Grotto Deku Scrub Right": "can_stun_deku",
+            "LH Grotto Deku Scrub Center": "can_stun_deku",
             "LH Grotto Beehive": "can_break_upper_beehive"
         },
         "exits": {
@@ -3033,8 +3033,8 @@
         "region_name": "Colossus Grotto",
         "scene": "Colossus Grotto",
         "locations": {
-            "Colossus Deku Scrub Grotto Rear": "can_stun_deku",
-            "Colossus Deku Scrub Grotto Front": "can_stun_deku",
+            "Colossus Grotto Deku Scrub Rear": "can_stun_deku",
+            "Colossus Grotto Deku Scrub Front": "can_stun_deku",
             "Colossus Grotto Beehive": "can_break_upper_beehive"
         },
         "exits": {
@@ -3062,8 +3062,8 @@
         "region_name": "GV Storms Grotto",
         "scene": "GV Storms Grotto",
         "locations": {
-            "GV Deku Scrub Grotto Rear": "can_stun_deku",
-            "GV Deku Scrub Grotto Front": "can_stun_deku",
+            "GV Storms Grotto Deku Scrub Rear": "can_stun_deku",
+            "GV Storms Grotto Deku Scrub Front": "can_stun_deku",
             "GV Storms Grotto Beehive": "can_break_upper_beehive"
         },
         "exits": {
