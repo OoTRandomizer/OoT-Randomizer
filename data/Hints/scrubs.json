@@ -9,7 +9,7 @@
     ],
     "remove_locations":      [
         { "location": "Hyrule Castle", "types": ["barren"] },
-        { "location": "OGC Great Fairy Reward", "types": ["always"] },
+        { "location": "OGC Great Fairy Fountain Reward", "types": ["always"] },
         { "location": "Sheik at Temple", "types": ["always", "sometimes"] },
         { "location": "ZR Frogs Rewards", "types": ["dual_always", "dual"] },
         { "location": "Sheik in Forest", "types": ["sometimes"] },

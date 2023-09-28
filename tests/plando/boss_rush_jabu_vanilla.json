@@ -84,7 +84,7 @@
     "Ganons Castle":          "vanilla"
   },
   "entrances": {
-    "Child Spawn -> KF Links House":                        {"region": "Kokiri Forest", "from": "KF Kokiri Shop"},
+    "Child Spawn -> KF Links House":                        {"region": "Kokiri Forest", "from": "KF Shop"},
     "KF Outside Deku Tree -> Deku Tree Lobby":                            {"region": "Jabu Jabus Belly Beginning", "from": "Zoras Fountain"}
   }
 }
