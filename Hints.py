@@ -1458,7 +1458,13 @@ def build_world_gossip_hints(spoiler: Spoiler, world: World, checked_locations: 
             if '#' not in location_text:
                 location_text = '#%s#' % location_text
             item_text = get_hint(get_item_generic_name(location.item), world.settings.clearer_hints).text
-            add_hint(spoiler, world, stone_groups, GossipText('%s #%s#.' % (location_text, item_text), ['Red', 'Green'], [location.name], [location.item.name]), hint_dist['always'][1], [location], force_reachable=True, hint_type='always')
+
+            colors = ['Red']
+            while location_text.count('#') > 2 * len(colors):
+                colors.append('Red')
+            colors.append('Green')
+
+            add_hint(spoiler, world, stone_groups, GossipText('%s #%s#.' % (location_text, item_text), colors, [location.name], [location.item.name]), hint_dist['always'][1], [location], force_reachable=True, hint_type='always')
             logging.getLogger('').debug('Placed always hint for %s.', location.name)
 
     # Add required entrance hints, only if hint copies > 0
