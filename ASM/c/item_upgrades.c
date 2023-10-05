@@ -29,6 +29,7 @@ extern uint8_t PLAYER_ID;
 extern uint8_t MW_PROGRESSIVE_ITEMS_ENABLE;
 extern mw_progressive_items_state_t MW_PROGRESSIVE_ITEMS_STATE[256];
 
+uint8_t upgradeful_item_flags = 0;
 
 uint16_t no_upgrade(z64_file_t *save, override_t override) {
     return override.value.base.item_id;
@@ -58,6 +59,14 @@ uint16_t bomb_bag_upgrade(z64_file_t *save, override_t override) {
 }
 
 uint16_t bow_upgrade(z64_file_t *save, override_t override) {
+    if (upgradeful_item_flags & (1 << PROG_ID_BOW)) {
+        save->quiver &= ~0x00000007;
+        save->quiver |= 3 << 0;
+
+        save->items[Z64_SLOT_BOW] = ITEM_BOW;
+        save->ammo[Z64_SLOT_BOW] = 50;
+    }
+
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->quiver : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].bow) {
         case 0: return 0x04; // Bow
         case 1: return 0x30; // Big Quiver
