@@ -60,11 +60,15 @@ uint16_t bomb_bag_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t bow_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_BOW)) {
-        save->quiver &= ~0x00000007;
-        save->quiver |= 3 << 0;
+        z64_Inventory_ChangeUpgrade(UPG_QUIVER, 3);
+        //save->quiver &= ~0x00000007;
+        //save->quiver |= 3 << 0;
 
-        save->items[Z64_SLOT_BOW] = ITEM_BOW;
+        //save->items[Z64_SLOT_BOW] = ITEM_BOW;
+        INV_CONTENT(ITEM_BOW) = ITEM_BOW;
+
         save->ammo[Z64_SLOT_BOW] = 50;
+        //AMMO(ITEM_BOW) = CAPACITY(UPG_QUIVER, 3);
     }
 
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->quiver : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].bow) {

@@ -1854,11 +1854,25 @@ typedef enum {
 } PauseBgPreRenderState;
 
 
+typedef enum UpgradeType {
+    /* 0x00 */ UPG_QUIVER,
+    /* 0x01 */ UPG_BOMB_BAG,
+    /* 0x02 */ UPG_STRENGTH,
+    /* 0x03 */ UPG_SCALE,
+    /* 0x04 */ UPG_WALLET,
+    /* 0x05 */ UPG_BULLET_BAG,
+    /* 0x06 */ UPG_DEKU_STICKS,
+    /* 0x07 */ UPG_DEKU_NUTS,
+    /* 0x08 */ UPG_MAX
+} UpgradeType;
+
+extern uint8_t gItemSlots[56];
 
 /* helper macros */
 #define LINK_IS_ADULT (z64_file.link_age == 0)
 #define SLOT(item) gItemSlots[item]
 #define INV_CONTENT(item) z64_file.items[SLOT(item)]
+#define AMMO(item) gSaveContext.inventory.ammo[SLOT(item)]
 
 /* dram addresses */
 #define z64_EnItem00Action_addr                 0x800127E0
@@ -2080,6 +2094,8 @@ typedef uint16_t (*z64_Audio_GetActiveSeqId_proc)(uint8_t seqId);
 #define z64_DisplayTextbox      ((z64_DisplayTextbox_proc)                    \
                                                       z64_DisplayTextbox_addr)
 #define z64_GiveItem            ((z64_GiveItem_proc)  z64_GiveItem_addr)
+
+void z64_Inventory_ChangeUpgrade(int16_t upgrade, int16_t value);
 
 #define z64_LinkDamage          ((z64_LinkDamage_proc)z64_LinkDamage_addr)
 #define z64_LinkInvincibility   ((z64_LinkInvincibility_proc)                 \
