@@ -2590,6 +2590,28 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     # Static initial seed value for one-time random actions like the Hylian Shield discount
     rom.write_int32(rom.sym('RANDOMIZER_RNG_SEED'), spoiler.settings.numeric_seed & 0xFFFFFFFF)
 
+    upgradeful_items = [
+        "Hookshot",
+        "Strength",
+        "Bomb Bag",
+        "Bow",
+        "Slingshot",
+        "Wallet",
+        "Scale",
+        "Nut Capacity",
+        "Stick Capacity",
+        "Bombchus",
+        "Magic Meter",
+        "Ocarina",
+    ]
+    upgradeful_flags = 0
+    for i, name in enumerate(upgradeful_items):
+        if name in world.settings.upgradeful_items:
+            upgradeful_flags |= 1 << i
+
+    if upgradeful_flags:
+        rom.write_int32(rom.sym('UPGRADEFUL_ITEM_FLAGS'), upgradeful_flags)
+
     return rom
 
 

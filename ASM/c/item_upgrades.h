@@ -5,21 +5,21 @@
 #include "z64.h"
 
 typedef enum ProgressiveItemIdentifier {
-    /* 0 */ PROG_ID_HOOKSHOT,
-    /* 1 */ PROG_ID_STRENGTH,
-    /* 1 */ PROG_ID_BOMB_BAG,
-    /* 1 */ PROG_ID_BOW,
-    /* 1 */ PROG_ID_SLINGSHOT,
-    /* 1 */ PROG_ID_WALLET,
-    /* 1 */ PROG_ID_SCALE,
-    /* 1 */ PROG_ID_NUT,
-    /* 1 */ PROG_ID_STICK,
-    /* 1 */ PROG_ID_BOMBCHU,
-    /* 1 */ PROG_ID_MAGIC,
-    /* 1 */ PROG_ID_OCARINA,
+    /*  0 */ PROG_ID_HOOKSHOT,
+    /*  1 */ PROG_ID_STRENGTH,
+    /*  2 */ PROG_ID_BOMB_BAG,
+    /*  3 */ PROG_ID_BOW,
+    /*  4 */ PROG_ID_SLINGSHOT,
+    /*  5 */ PROG_ID_WALLET,
+    /*  6 */ PROG_ID_SCALE,
+    /*  7 */ PROG_ID_NUT,
+    /*  8 */ PROG_ID_STICK,
+    /*  9 */ PROG_ID_BOMBCHU,
+    /* 10 */ PROG_ID_MAGIC,
+    /* 11 */ PROG_ID_OCARINA,
 } ProgressiveItemIdentifier;
 
-extern uint8_t upgradeful_item_flags;
+extern uint8_t UPGRADEFUL_ITEM_FLAGS;
 
 extern uint8_t CUSTOM_KEY_MODELS;
 

@@ -2775,6 +2775,29 @@ class SettingInfos:
         },
     )
 
+    upgradeful_items = MultipleSelect(
+        gui_text       = 'Upgradeful Items',
+        default        = [],
+        choices        = {
+            'Hookshot':       'Hookshot',
+            'Strength':       'Strength',
+            'Bomb Bag':       'Bomb Bag',
+            'Bow':            'Bow',
+            'Slingshot':      'Slingshot',
+            'Wallet':         'Wallet',
+            'Scale':          'Scale',
+            'Nut Capacity':   'Nut Capacity',
+            'Stick Capacity': 'Stick Capacity',
+            'Bombchus':       'Bombchus',
+            'Magic Meter':    'Magic Meter',
+            'Ocarina':        'Ocarina',
+        },
+        gui_tooltip    = '''\
+            .
+        ''',
+        shared         = True,
+    )
+
     shuffle_loach_reward = Combobox(
         gui_text       = 'Shuffle Hyrule Loach Reward',
         gui_tooltip    = '''\

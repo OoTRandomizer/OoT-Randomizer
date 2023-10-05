@@ -29,7 +29,7 @@ extern uint8_t PLAYER_ID;
 extern uint8_t MW_PROGRESSIVE_ITEMS_ENABLE;
 extern mw_progressive_items_state_t MW_PROGRESSIVE_ITEMS_STATE[256];
 
-uint8_t upgradeful_item_flags = 0;
+uint8_t UPGRADEFUL_ITEM_FLAGS = 0;
 
 uint16_t no_upgrade(z64_file_t *save, override_t override) {
     return override.value.base.item_id;
@@ -59,7 +59,7 @@ uint16_t bomb_bag_upgrade(z64_file_t *save, override_t override) {
 }
 
 uint16_t bow_upgrade(z64_file_t *save, override_t override) {
-    if (upgradeful_item_flags & (1 << PROG_ID_BOW)) {
+    if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_BOW)) {
         save->quiver &= ~0x00000007;
         save->quiver |= 3 << 0;
 
