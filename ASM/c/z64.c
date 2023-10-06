@@ -9,3 +9,8 @@ asm("\
 .global gItemSlots; \
 .equ gItemSlots, 0x800F8F34; \
 ");
+
+asm("\
+.global gUpgradeCapacities; \
+.equ gUpgradeCapacities, 0x800F8CCC; \
+");

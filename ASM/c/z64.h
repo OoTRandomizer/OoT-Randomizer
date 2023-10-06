@@ -1867,12 +1867,14 @@ typedef enum UpgradeType {
 } UpgradeType;
 
 extern uint8_t gItemSlots[56];
+extern uint16_t gUpgradeCapacities[UPG_MAX][4];
 
 /* helper macros */
 #define LINK_IS_ADULT (z64_file.link_age == 0)
 #define SLOT(item) gItemSlots[item]
 #define INV_CONTENT(item) z64_file.items[SLOT(item)]
-#define AMMO(item) gSaveContext.inventory.ammo[SLOT(item)]
+#define AMMO(item) z64_file.ammo[SLOT(item)]
+#define CAPACITY(upg, value) gUpgradeCapacities[upg][value]
 
 /* dram addresses */
 #define z64_EnItem00Action_addr                 0x800127E0
