@@ -328,9 +328,19 @@ item_row_t item_table[] = {
     [0x0117] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00A1, 0x01A1, 0x88, no_upgrade, give_small_key, CASTLE_ID, -1, resolve_text_small_keys), // Ganon's Castle Small Key
     [0x0118] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x913E, 0x01A2, 0x89, no_upgrade, give_small_key, TCG_ID,    -1, resolve_text_small_keys_cmg), // Small Key (Chest Game)
 
-    [0x0119] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x90B4, 0x00BF, 0x18, no_upgrade, give_upgradeful_bomb_bag, -1, -1, NULL), // Upgradeful bomb bag
-    [0x011A] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x90B5, 0x00E9, 0x35, no_upgrade, give_upgradeful_bow, -1, -1, NULL), // Upgradeful bow
-    [0x011B] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x90B6, 0x00E7, 0x33, no_upgrade, give_upgradeful_slingshot, -1, -1, NULL), // Upgradeful slingshot
+    [0x0119] = ITEM_ROW(0x53,      GILDED_CHEST, 0x0B, -1, 0x004F, 0x00DD, 0x2E, no_upgrade, no_effect, -1, -1, NULL), // Upgradeful Hookshot
+    [0x011A] = ITEM_ROW(0x53,      GILDED_CHEST, 0x52, -1, 0x005C, 0x012D, 0x4A, no_upgrade, no_effect, -1, -1, NULL), // Upgradeful Strength
+    [0x011B] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x90B4, 0x00BF, 0x18, no_upgrade, give_upgradeful_bomb_bag, -1, -1, NULL), // Upgradeful Bomb Bag
+    [0x011C] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x90B5, 0x00E9, 0x35, no_upgrade, give_upgradeful_bow, -1, -1, NULL), // Upgradeful Bow
+    [0x011D] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x90B6, 0x00E7, 0x33, no_upgrade, give_upgradeful_slingshot, -1, -1, NULL), // Upgradeful Slingshot
+    [0x011E] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00F8, 0x00D1, 0x23, no_upgrade, give_tycoon_wallet, 3, -1, NULL), // Upgradeful Wallet
+    [0x011F] = ITEM_ROW(0x53,      GILDED_CHEST, 0x54, -1, 0x00CE, 0x00DB, 0x2B, no_upgrade, no_effect, -1, -1, NULL), // Upgradeful Scale
+    [0x0120] = ITEM_ROW(0x53,       BROWN_CHEST, 0x9B, -1, 0x00A8, 0x00BB, 0x12, no_upgrade, no_effect, -1, -1, NULL), // Upgradeful Nut
+    [0x0121] = ITEM_ROW(0x53,       BROWN_CHEST, 0x99, -1, 0x0091, 0x00C7, 0x1B, no_upgrade, no_effect, -1, -1, NULL), // Upgradeful Stick
+    [0x0122] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9019, 0x0197, 0x7E, no_upgrade, give_bombchus, 20, -1, NULL), // Upgradeful Bombchu
+    [0x0123] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00E8, 0x00CD, 0x1F, no_upgrade, give_double_magic, -1, -1, NULL), // Upgradeful Magic
+    [0x0124] = ITEM_ROW(0x53,      GILDED_CHEST, 0x08, -1, 0x003A, 0x00DE, 0x2F, no_upgrade, no_effect, -1, -1, NULL), // Upgradeful Ocarina
+
 };
 
 /*  Determine which message to display based on the number of silver rupees collected.
