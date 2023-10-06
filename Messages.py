@@ -276,6 +276,7 @@ ITEM_MESSAGES: list[tuple[int, str]] = [
     (0x90B1, "\x08You got a \x05\x45Recovery Heart\x05\x40!\x01Your life energy is recovered!"),
     (0x90B2, "\x08You got a \x05\x46bundle of arrows\x05\x40!"),
     (0x90B3, "\x08\x13\x58You got \x05\x41Deku Seeds\x05\x40!\x01Use these as bullets\x01for your Slingshot."),
+    (0x90B4, "\x08\x13\x03You found the \x05\x41Fairy Bow\x05\x40 and \x05\x43all\x01of its upgrades\x05\x40!"),
 ]
 
 KEYSANITY_MESSAGES: list[tuple[int, str]] = [

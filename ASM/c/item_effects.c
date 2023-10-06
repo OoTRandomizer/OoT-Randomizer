@@ -267,3 +267,9 @@ void unlock_ocarina_note(z64_file_t *save, int16_t arg1, int16_t arg2) {
             break;
     }
 }
+
+void give_upgradeful_bow(z64_file_t *save, int16_t arg1, int16_t arg2) {
+    z64_Inventory_ChangeUpgrade(UPG_QUIVER, 3);
+    INV_CONTENT(ITEM_BOW) = ITEM_BOW;
+    AMMO(ITEM_BOW) = CAPACITY(UPG_QUIVER, 3);
+}

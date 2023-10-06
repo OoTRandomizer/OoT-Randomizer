@@ -78,10 +78,10 @@ uint16_t bomb_bag_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t bow_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_BOW)) {
-        z64_Inventory_ChangeUpgrade(UPG_QUIVER, 3);
-        INV_CONTENT(ITEM_BOW) = ITEM_BOW;
-        AMMO(ITEM_BOW) = CAPACITY(UPG_QUIVER, 3);
-        return 0x31; // Biggest Quiver
+        //z64_Inventory_ChangeUpgrade(UPG_QUIVER, 3);
+        //INV_CONTENT(ITEM_BOW) = ITEM_BOW;
+        //AMMO(ITEM_BOW) = CAPACITY(UPG_QUIVER, 3);
+        return 0x0119; // Upgradeful bow
     }
 
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->quiver : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].bow) {

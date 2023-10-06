@@ -6,7 +6,7 @@
       "trials": 0
   },
   "locations":                 {
-    "KF Midos Bottom Right Chest":                             "Bow",
+    "KF Midos Bottom Right Chest":                             "Ocarina",
     "KF Midos Bottom Left Chest":                              "Progressive Hookshot",
     "KF Midos Top Right Chest":                                "Magic Meter",
     "KF Midos Top Left Chest":                                 "Bomb Bag",
@@ -16,6 +16,6 @@
     "KF Sarias House Recovery Heart 4":                        "Progressive Scale",
     "KF Top of Sarias Recovery Heart 1":                       "Deku Nut Capacity",
     "KF Top of Sarias Recovery Heart 2":                       "Deku Stick Capacity",
-    "KF Top of Sarias Recovery Heart 3":                       "Ocarina"
+    "KF Top of Sarias Recovery Heart 3":                       "Bow"
   }
 }
