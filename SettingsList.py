@@ -2775,8 +2775,8 @@ class SettingInfos:
         },
     )
 
-    upgradeful_items = MultipleSelect(
-        gui_text       = 'Upgradeful Items',
+    max_upgrade_items = MultipleSelect(
+        gui_text       = 'Max Upgrade Items',
         default        = [],
         choices        = {
             'Hookshot':       'Hookshot',

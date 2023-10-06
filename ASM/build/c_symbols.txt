@@ -171,7 +171,6 @@ SYMBOL TABLE:
 000113d0 g     F .text	00000078 object_index_or_spawn
 0000985c g     F .text	00000088 give_ice_trap
 00000000         *UND*	00000000 SHUFFLE_OCARINA_BUTTONS
-0000d7f0 g     F .text	00000048 give_upgradeful_slingshot
 00011e18 g     F .text	00000214 Sram_WriteSave
 00011de8 g     F .text	00000030 SsSram_ReadWrite_Safe
 0000edac g     F .text	00000274 update_bombchu_trail_colors
@@ -249,12 +248,12 @@ SYMBOL TABLE:
 00000000         *UND*	00000000 CFG_DISPLAY_DPAD
 0000e5a4 g     F .text	0000003c before_skybox_init
 000086a4 g     F .text	000000ac dispatch_item
-0000d760 g     F .text	00000048 give_upgradeful_bomb_bag
 00000064 g     O .sbss	00000002 illegal_model
 00000030 g     O .sbss	00000004 active_item_graphic_id
 000003a8 g     O .data	00000010 dpad_sprite
 00000070 g     O .sdata	00000004 a_button
 00000000         *UND*	00000000 CFG_SHOW_SETTING_INFO
+0000d7f0 g     F .text	00000048 give_max_upgrade_slingshot
 0000000c g     O .sdata	00000008 hash_sprites
 00007478 g     F .text	00000140 activate_override
 0000e4e8 g     F .text	0000004c before_game_state_update
@@ -344,6 +343,7 @@ SYMBOL TABLE:
 0001191c g     F .text	0000001c draw_flying_pot_hack
 0000d460 g     F .text	000000c4 give_silver_rupee_pouch
 00000bb8 g     F .text	00000024 get_chest_type
+0000d7a8 g     F .text	00000048 give_max_upgrade_bow
 0000e360 g     F .text	00000040 health_upgrade_cap
 00002fd4 g     F .text	00001ff4 draw_dungeon_info
 0000e5e0 g     F .text	0000004c after_scene_init
@@ -435,6 +435,7 @@ SYMBOL TABLE:
 00001a2c g     O .data	0000200c item_table
 00000000         *UND*	00000000 CFG_UNINVERT_YAXIS_IN_FIRST_PERSON_CAMERA
 000003b8 g     O .data	00000010 font_sprite
+0000d760 g     F .text	00000048 give_max_upgrade_bomb_bag
 00000228 g     F .text	00000050 Actor_After_UpdateAll_Hack
 00010f48 g     F .text	000000b4 get_smallcrate_override
 0000002a g     O .sbss	00000001 satisified_pending_frames
@@ -632,7 +633,6 @@ SYMBOL TABLE:
 0000d974 g     F .text	0000009c resolve_text_small_keys
 00013fe8 g     F .text	00000014 heap_init
 0000105c g     F .text	000000d4 draw_forest_hallway_chest_lid
-0000d7a8 g     F .text	00000048 give_upgradeful_bow
 0000f984 g     F .text	000000e0 FindHierarchy
 00000000         *UND*	00000000 CFG_RAINBOW_NAVI_PROP_INNER_ENABLED
 000104f0 g     F .text	00000064 heart_container_draw

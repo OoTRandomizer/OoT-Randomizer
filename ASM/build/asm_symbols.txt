@@ -1274,9 +1274,9 @@
 80413A20 give_bombchus,00000018
 80413A38 trade_quest_upgrade,0000001C
 80413A54 unlock_ocarina_note,0000007C
-80413AD0 give_upgradeful_bomb_bag,00000048
-80413B18 give_upgradeful_bow,00000048
-80413B60 give_upgradeful_slingshot,00000048
+80413AD0 give_max_upgrade_bomb_bag,00000048
+80413B18 give_max_upgrade_bow,00000048
+80413B60 give_max_upgrade_slingshot,00000048
 80413BA8 resolve_text_silver_rupees,000000B0
 80413C58 resolve_text_silver_rupee_pouches,0000008C
 80413CE4 resolve_text_small_keys,0000009C
