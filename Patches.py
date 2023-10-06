@@ -42,6 +42,31 @@ else:
 OverrideEntry: TypeAlias = "tuple[int, int, int, int, int, int]"
 
 
+def patch_upgradeful_flags(spoiler: Spoiler, world: World, rom: Rom):
+    # This list must have the same elements and order as the ProgressiveItemIdentifier enum
+    upgradeful_items = [
+        "Hookshot",
+        "Strength",
+        "Bomb Bag",
+        "Bow",
+        "Slingshot",
+        "Wallet",
+        "Scale",
+        "Nut Capacity",
+        "Stick Capacity",
+        "Bombchus",
+        "Magic Meter",
+        "Ocarina",
+    ]
+    upgradeful_flags = 0
+    for i, name in enumerate(upgradeful_items):
+        if name in world.settings.upgradeful_items:
+            upgradeful_flags |= 1 << i
+
+    if upgradeful_flags:
+        rom.write_int16(rom.sym('UPGRADEFUL_ITEM_FLAGS'), upgradeful_flags)
+
+
 def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     with open(data_path('generated/rom_patch.txt'), 'r') as stream:
         for line in stream:
@@ -2590,28 +2615,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     # Static initial seed value for one-time random actions like the Hylian Shield discount
     rom.write_int32(rom.sym('RANDOMIZER_RNG_SEED'), spoiler.settings.numeric_seed & 0xFFFFFFFF)
 
-    # This list must have the same elements and order as the ProgressiveItemIdentifier enum
-    upgradeful_items = [
-        "Hookshot",
-        "Strength",
-        "Bomb Bag",
-        "Bow",
-        "Slingshot",
-        "Wallet",
-        "Scale",
-        "Nut Capacity",
-        "Stick Capacity",
-        "Bombchus",
-        "Magic Meter",
-        "Ocarina",
-    ]
-    upgradeful_flags = 0
-    for i, name in enumerate(upgradeful_items):
-        if name in world.settings.upgradeful_items:
-            upgradeful_flags |= 1 << i
-
-    if upgradeful_flags:
-        rom.write_int32(rom.sym('UPGRADEFUL_ITEM_FLAGS'), upgradeful_flags)
+    patch_upgradeful_flags(spoiler, world, rom)
 
     return rom
 

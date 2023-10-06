@@ -428,6 +428,7 @@ uint16_t resolve_text_keyrings(item_row_t *item_row, uint16_t item_id, bool is_o
     }
     return item_row->text_id + dungeon_id;
 }
+
 item_row_t *get_item_row(uint16_t item_id) {
     if (item_id >= array_size(item_table)) {
         return NULL;
