@@ -2798,9 +2798,6 @@ class SettingInfos:
 
             For example, picking up a Bow will grant the Fairy Bow
             and the Biggest Quiver.
-
-            This option is recommended when playing with the Scarce
-            or Minimal item pools
         ''',
         shared         = True,
     )
