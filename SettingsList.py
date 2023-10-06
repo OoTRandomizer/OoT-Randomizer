@@ -2793,7 +2793,14 @@ class SettingInfos:
             'Ocarina':        'Ocarina',
         },
         gui_tooltip    = '''\
-            .
+            Select the items that, when obtained, will also give all
+            of its upgrades.
+
+            For example, finding the first Bow will grant the Fairy
+            Bow and the Biggest Quiver.
+
+            This option is recommended when playing with the Scarce
+            or Minimal item pools
         ''',
         shared         = True,
     )
