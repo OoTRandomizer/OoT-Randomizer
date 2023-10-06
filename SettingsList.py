@@ -2788,7 +2788,7 @@ class SettingInfos:
             'Scale':          'Scale',
             'Nut Capacity':   'Nut Capacity',
             'Stick Capacity': 'Stick Capacity',
-            'Bombchus':       'Bombchus',
+            # 'Bombchus':       'Bombchus', # Bombchus don't have an upgrade system yet
             'Magic Meter':    'Magic Meter',
             'Ocarina':        'Ocarina',
         },

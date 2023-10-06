@@ -122,9 +122,6 @@ uint16_t scale_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t nut_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_NUT)) {
-        INV_CONTENT(ITEM_NUT) = ITEM_NUT;
-        z64_Inventory_ChangeUpgrade(UPG_DEKU_NUTS, 3);
-        AMMO(ITEM_NUT) = CAPACITY(UPG_DEKU_NUTS, 3);
         return 0x7A; // 40 Nuts
     }
 
@@ -137,9 +134,6 @@ uint16_t nut_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t stick_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_STICK)) {
-        INV_CONTENT(ITEM_STICK) = ITEM_STICK;
-        z64_Inventory_ChangeUpgrade(UPG_DEKU_STICKS, 3);
-        AMMO(ITEM_STICK) = CAPACITY(UPG_DEKU_STICKS, 3);
         return 0x78; // 30 Sticks
     }
 
@@ -175,7 +169,6 @@ uint16_t bombchu_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t ocarina_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_OCARINA)) {
-        INV_CONTENT(ITEM_OCARINA_TIME) = ITEM_OCARINA_TIME;
         return 0x0C; // Ocarina of Time
     }
 

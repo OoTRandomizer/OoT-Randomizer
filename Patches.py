@@ -2590,6 +2590,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     # Static initial seed value for one-time random actions like the Hylian Shield discount
     rom.write_int32(rom.sym('RANDOMIZER_RNG_SEED'), spoiler.settings.numeric_seed & 0xFFFFFFFF)
 
+    # This list must have the same elements and order as the ProgressiveItemIdentifier enum
     upgradeful_items = [
         "Hookshot",
         "Strength",
