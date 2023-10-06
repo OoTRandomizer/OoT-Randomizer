@@ -63,10 +63,7 @@ uint16_t strength_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t bomb_bag_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_BOMB_BAG)) {
-        z64_Inventory_ChangeUpgrade(UPG_BOMB_BAG, 3);
-        INV_CONTENT(ITEM_BOMB) = ITEM_BOMB;
-        AMMO(ITEM_BOMB) = CAPACITY(UPG_BOMB_BAG, 3);
-        return 0x34;
+        return 0x0119; // Upgradeful bomb bag
     }
 
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->bomb_bag : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].bomb_bag) {
@@ -78,10 +75,7 @@ uint16_t bomb_bag_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t bow_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_BOW)) {
-        //z64_Inventory_ChangeUpgrade(UPG_QUIVER, 3);
-        //INV_CONTENT(ITEM_BOW) = ITEM_BOW;
-        //AMMO(ITEM_BOW) = CAPACITY(UPG_QUIVER, 3);
-        return 0x0119; // Upgradeful bow
+        return 0x011A; // Upgradeful bow
     }
 
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->quiver : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].bow) {
@@ -93,10 +87,7 @@ uint16_t bow_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t slingshot_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_SLINGSHOT)) {
-        z64_Inventory_ChangeUpgrade(UPG_BULLET_BAG, 3);
-        INV_CONTENT(ITEM_SLINGSHOT) = ITEM_SLINGSHOT;
-        AMMO(ITEM_SLINGSHOT) = CAPACITY(UPG_BULLET_BAG, 3);
-        return 0x7B; // Bullet Bag (50)
+        return 0x011B; // Upgradeful slingshot
     }
 
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->bullet_bag : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].slingshot) {
@@ -108,8 +99,6 @@ uint16_t slingshot_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t wallet_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_WALLET)) {
-        // TODO ?
-        // z64_Inventory_ChangeUpgrade(UPG_WALLET, 2);
         return 0xC7; // Tycoon's Wallet
     }
 
@@ -122,7 +111,6 @@ uint16_t wallet_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t scale_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_SCALE)) {
-        z64_Inventory_ChangeUpgrade(UPG_SCALE, 2);
         return 0x38; // Gold Scale
     }
 
