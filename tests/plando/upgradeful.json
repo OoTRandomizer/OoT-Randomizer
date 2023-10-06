@@ -7,8 +7,8 @@
   },
   "locations":                 {
     "KF Midos Bottom Right Chest":                             "Bow",
-    "KF Midos Bottom Left Chest":                             "Bow",
-    "KF Midos Top Right Chest":                             "Bow",
-    "KF Midos Top Left Chest":                             "Bow"
+    "KF Midos Bottom Left Chest":                             "Progressive Hookshot",
+    "KF Midos Top Right Chest":                             "Magic Meter",
+    "KF Midos Top Left Chest":                             "Bomb Bag"
   }
 }

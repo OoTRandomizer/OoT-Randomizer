@@ -50,7 +50,7 @@ uint16_t hookshot_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t strength_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_STRENGTH)) {
-        Inventory_ChangeUpgrade(UPG_STRENGTH, 3);
+        z64_Inventory_ChangeUpgrade(UPG_STRENGTH, 3);
         return 0x36; // Gold Gauntlets
     }
 
@@ -63,7 +63,7 @@ uint16_t strength_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t bomb_bag_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_BOMB_BAG)) {
-        Inventory_ChangeUpgrade(UPG_BOMB_BAG, 3);
+        z64_Inventory_ChangeUpgrade(UPG_BOMB_BAG, 3);
         INV_CONTENT(ITEM_BOMB) = ITEM_BOMB;
         AMMO(ITEM_BOMB) = CAPACITY(UPG_BOMB_BAG, 3);
         return 0x34;
@@ -93,7 +93,7 @@ uint16_t bow_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t slingshot_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_SLINGSHOT)) {
-        Inventory_ChangeUpgrade(UPG_BULLET_BAG, 3);
+        z64_Inventory_ChangeUpgrade(UPG_BULLET_BAG, 3);
         INV_CONTENT(ITEM_SLINGSHOT) = ITEM_SLINGSHOT;
         AMMO(ITEM_SLINGSHOT) = CAPACITY(UPG_BULLET_BAG, 3);
         return 0x7B; // Bullet Bag (50)
@@ -109,7 +109,7 @@ uint16_t slingshot_upgrade(z64_file_t *save, override_t override) {
 uint16_t wallet_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_WALLET)) {
         // TODO ?
-        // Inventory_ChangeUpgrade(UPG_WALLET, 2);
+        // z64_Inventory_ChangeUpgrade(UPG_WALLET, 2);
         return 0xC7; // Tycoon's Wallet
     }
 
@@ -122,7 +122,7 @@ uint16_t wallet_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t scale_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_SCALE)) {
-        Inventory_ChangeUpgrade(UPG_SCALE, 2);
+        z64_Inventory_ChangeUpgrade(UPG_SCALE, 2);
         return 0x38; // Gold Scale
     }
 
@@ -135,7 +135,7 @@ uint16_t scale_upgrade(z64_file_t *save, override_t override) {
 uint16_t nut_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_NUT)) {
         INV_CONTENT(ITEM_NUT) = ITEM_NUT;
-        Inventory_ChangeUpgrade(UPG_DEKU_NUTS, 3);
+        z64_Inventory_ChangeUpgrade(UPG_DEKU_NUTS, 3);
         AMMO(ITEM_NUT) = CAPACITY(UPG_DEKU_NUTS, 3);
         return 0x7A; // 40 Nuts
     }
@@ -150,7 +150,7 @@ uint16_t nut_upgrade(z64_file_t *save, override_t override) {
 uint16_t stick_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_STICK)) {
         INV_CONTENT(ITEM_STICK) = ITEM_STICK;
-        Inventory_ChangeUpgrade(UPG_DEKU_STICKS, 3);
+        z64_Inventory_ChangeUpgrade(UPG_DEKU_STICKS, 3);
         AMMO(ITEM_STICK) = CAPACITY(UPG_DEKU_STICKS, 3);
         return 0x78; // 30 Sticks
     }
