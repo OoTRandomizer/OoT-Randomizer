@@ -37,6 +37,11 @@ uint16_t no_upgrade(z64_file_t *save, override_t override) {
 }
 
 uint16_t hookshot_upgrade(z64_file_t *save, override_t override) {
+    if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_HOOKSHOT)) {
+        INV_CONTENT(ITEM_LONGSHOT) = ITEM_LONGSHOT;
+        return 0x09; // Longshot
+    }
+
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->items[Z64_SLOT_HOOKSHOT] : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].hookshot) {
         case -1: case 0: return 0x08; // Hookshot
         default: return 0x09; // Longshot
@@ -44,6 +49,11 @@ uint16_t hookshot_upgrade(z64_file_t *save, override_t override) {
 }
 
 uint16_t strength_upgrade(z64_file_t *save, override_t override) {
+    if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_STRENGTH)) {
+        Inventory_ChangeUpgrade(UPG_STRENGTH, 3);
+        return 0x36; // Gold Gauntlets
+    }
+
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->strength_upgrade : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].strength) {
         case 0: return 0x54; // Goron Bracelet
         case 1: return 0x35; // Silver Gauntlets
@@ -52,6 +62,13 @@ uint16_t strength_upgrade(z64_file_t *save, override_t override) {
 }
 
 uint16_t bomb_bag_upgrade(z64_file_t *save, override_t override) {
+    if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_BOMB_BAG)) {
+        Inventory_ChangeUpgrade(UPG_BOMB_BAG, 3);
+        INV_CONTENT(ITEM_BOMB) = ITEM_BOMB;
+        AMMO(ITEM_BOMB) = CAPACITY(UPG_BOMB_BAG, 3);
+        return 0x34;
+    }
+
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->bomb_bag : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].bomb_bag) {
         case 0: return 0x32; // Bomb Bag
         case 1: return 0x33; // Bigger Bomb Bag
@@ -64,6 +81,7 @@ uint16_t bow_upgrade(z64_file_t *save, override_t override) {
         z64_Inventory_ChangeUpgrade(UPG_QUIVER, 3);
         INV_CONTENT(ITEM_BOW) = ITEM_BOW;
         AMMO(ITEM_BOW) = CAPACITY(UPG_QUIVER, 3);
+        return 0x31; // Biggest Quiver
     }
 
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->quiver : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].bow) {
@@ -74,6 +92,13 @@ uint16_t bow_upgrade(z64_file_t *save, override_t override) {
 }
 
 uint16_t slingshot_upgrade(z64_file_t *save, override_t override) {
+    if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_SLINGSHOT)) {
+        Inventory_ChangeUpgrade(UPG_BULLET_BAG, 3);
+        INV_CONTENT(ITEM_SLINGSHOT) = ITEM_SLINGSHOT;
+        AMMO(ITEM_SLINGSHOT) = CAPACITY(UPG_BULLET_BAG, 3);
+        return 0x7B; // Bullet Bag (50)
+    }
+
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->bullet_bag : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].slingshot) {
         case 0: return 0x05; // Slingshot
         case 1: return 0x60; // Bullet Bag (40)
@@ -82,6 +107,12 @@ uint16_t slingshot_upgrade(z64_file_t *save, override_t override) {
 }
 
 uint16_t wallet_upgrade(z64_file_t *save, override_t override) {
+    if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_WALLET)) {
+        // TODO ?
+        // Inventory_ChangeUpgrade(UPG_WALLET, 2);
+        return 0xC7; // Tycoon's Wallet
+    }
+
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->wallet : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].wallet) {
         case 0: return 0x45; // Adult's Wallet
         case 1: return 0x46; // Giant's Wallet
@@ -90,6 +121,11 @@ uint16_t wallet_upgrade(z64_file_t *save, override_t override) {
 }
 
 uint16_t scale_upgrade(z64_file_t *save, override_t override) {
+    if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_SCALE)) {
+        Inventory_ChangeUpgrade(UPG_SCALE, 2);
+        return 0x38; // Gold Scale
+    }
+
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->diving_upgrade : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].scale) {
         case 0: return 0x37; // Silver Scale
         default: return 0x38; // Gold Scale
@@ -97,6 +133,13 @@ uint16_t scale_upgrade(z64_file_t *save, override_t override) {
 }
 
 uint16_t nut_upgrade(z64_file_t *save, override_t override) {
+    if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_NUT)) {
+        INV_CONTENT(ITEM_NUT) = ITEM_NUT;
+        Inventory_ChangeUpgrade(UPG_DEKU_NUTS, 3);
+        AMMO(ITEM_NUT) = CAPACITY(UPG_DEKU_NUTS, 3);
+        return 0x7A; // 40 Nuts
+    }
+
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->nut_upgrade : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].nuts) {
         case 0: return 0x79; // 30 Nuts. 0 and 1 are both starting capacity
         case 1: return 0x79; // 30 Nuts
@@ -105,6 +148,13 @@ uint16_t nut_upgrade(z64_file_t *save, override_t override) {
 }
 
 uint16_t stick_upgrade(z64_file_t *save, override_t override) {
+    if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_STICK)) {
+        INV_CONTENT(ITEM_STICK) = ITEM_STICK;
+        Inventory_ChangeUpgrade(UPG_DEKU_STICKS, 3);
+        AMMO(ITEM_STICK) = CAPACITY(UPG_DEKU_STICKS, 3);
+        return 0x78; // 30 Sticks
+    }
+
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->stick_upgrade : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].sticks) {
         case 0: return 0x77; // 20 Sticks. 0 and 1 are both starting capacity
         case 1: return 0x77; // 20 Sticks
@@ -113,6 +163,8 @@ uint16_t stick_upgrade(z64_file_t *save, override_t override) {
 }
 
 uint16_t magic_upgrade(z64_file_t *save, override_t override) {
+    // TODO
+
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->magic_acquired : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].magic) {
         case 0: return 0xB9; // Single Magic
         default: return 0xBA; // Double Magic
@@ -120,6 +172,8 @@ uint16_t magic_upgrade(z64_file_t *save, override_t override) {
 }
 
 uint16_t bombchu_upgrade(z64_file_t *save, override_t override) {
+    // TODO
+
     if (save->items[Z64_SLOT_BOMBCHU] == -1) {
         return 0x6B; // Bombchu 20 pack
     }
@@ -130,6 +184,11 @@ uint16_t bombchu_upgrade(z64_file_t *save, override_t override) {
 }
 
 uint16_t ocarina_upgrade(z64_file_t *save, override_t override) {
+    if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_OCARINA)) {
+        INV_CONTENT(ITEM_OCARINA_TIME) = ITEM_OCARINA_TIME;
+        return 0x0C; // Ocarina of Time
+    }
+
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->items[Z64_SLOT_OCARINA] : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].ocarina) {
         case -1: case 0: return 0x3B; // Fairy Ocarina
         default: return 0x0C; // Ocarina of Time
