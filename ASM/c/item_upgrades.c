@@ -163,7 +163,9 @@ uint16_t stick_upgrade(z64_file_t *save, override_t override) {
 }
 
 uint16_t magic_upgrade(z64_file_t *save, override_t override) {
-    // TODO
+    if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_MAGIC)) {
+        return 0xBA; // Double Magic
+    }
 
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->magic_acquired : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].magic) {
         case 0: return 0xB9; // Single Magic
@@ -174,10 +176,10 @@ uint16_t magic_upgrade(z64_file_t *save, override_t override) {
 uint16_t bombchu_upgrade(z64_file_t *save, override_t override) {
     // TODO
 
-    if (save->items[Z64_SLOT_BOMBCHU] == -1) {
+    if (INV_CONTENT(ITEM_BOMBCHU) == ITEM_NONE) {
         return 0x6B; // Bombchu 20 pack
     }
-    if (save->ammo[8] <= 5) {
+    if (AMMO(ITEM_BOMBCHU) <= 5) {
         return 0x03; // Bombchu 10 pack
     }
     return 0x6A; // Bombchu 5 pack
