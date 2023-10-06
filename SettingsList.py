@@ -2779,18 +2779,18 @@ class SettingInfos:
         gui_text       = 'Max Upgrade Items',
         default        = [],
         choices        = {
-            'Hookshot':       'Hookshot',
-            'Strength':       'Strength',
-            'Bomb Bag':       'Bomb Bag',
-            'Bow':            'Bow',
-            'Slingshot':      'Slingshot',
-            'Wallet':         'Wallet',
-            'Scale':          'Scale',
-            'Nut Capacity':   'Nut Capacity',
-            'Stick Capacity': 'Stick Capacity',
-            # 'Bombchus':       'Bombchus', # Bombchus don't have an upgrade system yet
-            'Magic Meter':    'Magic Meter',
-            'Ocarina':        'Ocarina',
+            'Progressive Hookshot':         'Hookshot',
+            'Progressive Strength Upgrade': 'Strength',
+            'Bomb Bag':                     'Bomb Bag',
+            'Bow':                          'Bow',
+            'Slingshot':                    'Slingshot',
+            'Progressive Wallet':           'Wallet',
+            'Progressive Scale':            'Scale',
+            'Deku Nut Capacity':            'Nut Capacity',
+            'Deku Stick Capacity':          'Stick Capacity',
+           #'Bombchus':                     'Bombchus', # Bombchus don't have an upgrade system yet
+            'Magic Meter':                  'Magic Meter',
+            'Ocarina':                      'Ocarina',
         },
         gui_tooltip    = '''\
             Select the items that, when obtained, will also give all

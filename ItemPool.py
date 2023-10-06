@@ -347,6 +347,21 @@ exclude_from_major: list[str] = [
     'Piece of Heart (Treasure Chest Game)',
 ]
 
+max_upgrade_items: dict[str, str] = {
+    'Progressive Hookshot': 'Max Upgrade Hookshot',
+    'Progressive Strength Upgrade': 'Max Upgrade Strength',
+    'Bomb Bag': 'Max Upgrade Bomb Bag',
+    'Bow': 'Max Upgrade Bow',
+    'Slingshot': 'Max Upgrade Slingshot',
+    'Progressive Wallet': 'Max Upgrade Wallet',
+    'Progressive Scale': 'Max Upgrade Scale',
+    'Deku Nut Capacity': 'Max Upgrade Nut',
+    'Deku Stick Capacity': 'Max Upgrade Stick',
+    'Bombchus': 'Max Upgrade Bombchu',
+    'Magic Meter': 'Max Upgrade Magic',
+    'Ocarina': 'Max Upgrade Ocarina',
+}
+
 item_groups: dict[str, Sequence[str]] = {
     'Junk': remove_junk_items,
     'JunkSong': ('Prelude of Light', 'Serenade of Water'),
@@ -555,10 +570,6 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         # Business Scrubs
         elif location.type in ["Scrub", "GrottoScrub"]:
             if location.vanilla_item in ['Piece of Heart', 'Deku Stick Capacity', 'Deku Nut Capacity']:
-                if location.vanilla_item == 'Deku Stick Capacity' and 'Stick Capacity' in world.settings.max_upgrade_items:
-                    item = 'Max Upgrade Stick'
-                if location.vanilla_item == 'Deku Nut Capacity' and 'Nut Capacity' in world.settings.max_upgrade_items:
-                    item = 'Max Upgrade Nut'
                 shuffle_item = True
             elif world.settings.shuffle_scrubs == 'off':
                 shuffle_item = False
@@ -581,8 +592,6 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         # Ocarinas
         elif location.vanilla_item == 'Ocarina':
             shuffle_item = world.settings.shuffle_ocarinas
-            if 'Ocarina' in world.settings.max_upgrade_items:
-                item = 'Max Upgrade Ocarina'
 
         # Giant's Knife
         elif location.vanilla_item == 'Giants Knife':
@@ -714,66 +723,6 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                 shuffle_item = False
                 location.disabled = DisableType.DISABLED
 
-        # Max Upgrade Hookshot
-        elif location.vanilla_item == 'Progressive Hookshot':
-            if 'Hookshot' in world.settings.max_upgrade_items:
-                item = 'Max Upgrade Hookshot'
-                shuffle_item = True
-
-        # Max Upgrade Strength
-        elif location.vanilla_item == 'Progressive Strength Upgrade':
-            if 'Strength' in world.settings.max_upgrade_items:
-                item = 'Max Upgrade Strength'
-                shuffle_item = True
-
-        # Max Upgrade Bomb Bag
-        elif location.vanilla_item == 'Bomb Bag':
-            if 'Bomb Bag' in world.settings.max_upgrade_items:
-                item = 'Max Upgrade Bomb Bag'
-                shuffle_item = True
-
-        # Max Upgrade Bow
-        elif location.vanilla_item == 'Bow':
-            if 'Bow' in world.settings.max_upgrade_items:
-                item = 'Max Upgrade Bow'
-                shuffle_item = True
-
-        # Max Upgrade Slingshot
-        elif location.vanilla_item == 'Slingshot':
-            if 'Slingshot' in world.settings.max_upgrade_items:
-                item = 'Max Upgrade Slingshot'
-                shuffle_item = True
-
-        # Max Upgrade Wallet
-        elif location.vanilla_item == 'Progressive Wallet':
-            if 'Wallet' in world.settings.max_upgrade_items:
-                item = 'Max Upgrade Wallet'
-                shuffle_item = True
-
-        # Max Upgrade Scale
-        elif location.vanilla_item == 'Progressive Scale':
-            if 'Scale' in world.settings.max_upgrade_items:
-                item = 'Max Upgrade Scale'
-                shuffle_item = True
-
-        # Max Upgrade Nut
-        elif location.vanilla_item == 'Deku Nut Capacity':
-            if 'Nut Capacity' in world.settings.max_upgrade_items:
-                item = 'Max Upgrade Nut'
-                shuffle_item = True
-
-        # Max Upgrade Stick
-        elif location.vanilla_item == 'Deku Stick Capacity':
-            if 'Stick Capacity' in world.settings.max_upgrade_items:
-                item = 'Max Upgrade Stick'
-                shuffle_item = True
-
-        # Max Upgrade Magic Meter
-        elif location.vanilla_item == 'Magic Meter':
-            if 'Magic Meter' in world.settings.max_upgrade_items:
-                item = 'Max Upgrade Magic'
-                shuffle_item = True
-
         # Freestanding Rupees and Hearts
         elif location.type in ['ActorOverride', 'Freestanding', 'RupeeTower']:
             if world.settings.shuffle_freestanding_items == 'all':
@@ -883,6 +832,10 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         # The rest of the overworld items.
         elif location.type in ["Chest", "NPC", "Song", "Collectable", "Cutscene", "BossHeart"]:
             shuffle_item = True
+
+        # Replace with max upgrade item if enabled.
+        if item in max_upgrade_items and item in world.settings.max_upgrade_items:
+            item = max_upgrade_items[item]
 
         # Now, handle the item as necessary.
         if shuffle_item:
