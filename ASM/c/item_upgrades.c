@@ -29,7 +29,8 @@ extern uint8_t PLAYER_ID;
 extern uint8_t MW_PROGRESSIVE_ITEMS_ENABLE;
 extern mw_progressive_items_state_t MW_PROGRESSIVE_ITEMS_STATE[256];
 
-uint8_t UPGRADEFUL_ITEM_FLAGS = 0;
+// 0x80000000 is used as a way to avoid this symbol to be placed on bss
+uint32_t UPGRADEFUL_ITEM_FLAGS = 0x80000000;
 
 uint16_t no_upgrade(z64_file_t *save, override_t override) {
     return override.value.base.item_id;

@@ -158,7 +158,7 @@ SYMBOL TABLE:
 00000000 l    df *ABS*	00000000 weather.c
 00000000 l    df *ABS*	00000000 z64.c
 0000aad4 g     F .text	00000114 draw_gi_deku_nut
-0000009c g     O .sdata	00000004 RNG_SEED_INT
+000000a0 g     O .sdata	00000004 RNG_SEED_INT
 0000fe54 g     F .text	00000054 scale_factor
 00008dfc g     F .text	0000034c sprite_texture
 00012f5c g     F .text	0000003c SaveFile_SetMaskAsPaid
@@ -203,7 +203,7 @@ SYMBOL TABLE:
 00012db8 g     F .text	00000038 SaveFile_TradeItemIsOwned
 00007424 g     F .text	00000054 lookup_override
 00012bc8 g     F .text	00000054 init_textures
-00000094 g     O .sdata	00000004 text_height
+00000098 g     O .sdata	00000004 text_height
 00000000         *UND*	00000000 CFG_CORRECT_MODEL_COLORS
 0000dea8 g     F .text	00000068 stick_upgrade
 00003ae4 g     O .data	000000fc adultSkeleton
@@ -417,7 +417,7 @@ SYMBOL TABLE:
 000003f8 g     O .data	00000010 stones_sprite
 00000000         *UND*	00000000 NO_COLLECTIBLE_HEARTS
 00000000         *UND*	00000000 OUTGOING_KEY
-00000098 g     O .sdata	00000004 text_width
+0000009c g     O .sdata	00000004 text_width
 0000015c g     O .data	00000014 extern_ctxt
 0001312c g     F .text	000000e8 UpdateTradeEquips
 0000e094 g     F .text	00000078 bombs_to_rupee
@@ -448,7 +448,7 @@ SYMBOL TABLE:
 00000058 g     O .sdata	00000004 c_note_r
 00000000         *UND*	00000000 CFG_C_BUTTON_COLOR
 0000db8c g     F .text	0000007c bomb_bag_upgrade
-000000a0 g     O .sdata	00000004 Sram_InitNewSave
+000000a4 g     O .sdata	00000004 Sram_InitNewSave
 0000e5d8 g     F .text	00000090 Message_AddCharacter
 0000df10 g     F .text	00000060 magic_upgrade
 0000d9ec g     F .text	00000030 resolve_item_text_id
@@ -601,7 +601,7 @@ SYMBOL TABLE:
 0000b798 g     F .text	000001ec draw_gi_fairy_lantern
 00011014 g     F .text	0000006c ObjKibako2_SpawnCollectible_Hack
 000112f4 g     F .text	000000ac enitem00_set_link_incoming_item_id
-00000057 g     O .sbss	00000001 UPGRADEFUL_ITEM_FLAGS
+00000094 g     O .sdata	00000004 UPGRADEFUL_ITEM_FLAGS
 0000b298 g     F .text	000001a4 draw_gi_mirror_shield
 00000000         *UND*	00000000 PLAYER_NAMES
 000132e4 g     F .text	0000012c Inventory_ReplaceItem_Override

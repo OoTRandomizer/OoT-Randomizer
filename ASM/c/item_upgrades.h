@@ -19,7 +19,7 @@ typedef enum ProgressiveItemIdentifier {
     /* 11 */ PROG_ID_OCARINA,
 } ProgressiveItemIdentifier;
 
-extern uint8_t UPGRADEFUL_ITEM_FLAGS;
+extern uint32_t UPGRADEFUL_ITEM_FLAGS;
 
 extern uint8_t CUSTOM_KEY_MODELS;
 
