@@ -17,6 +17,7 @@ typedef enum ProgressiveItemIdentifier {
     /*  9 */ PROG_ID_BOMBCHU,
     /* 10 */ PROG_ID_MAGIC,
     /* 11 */ PROG_ID_OCARINA,
+    /* 12 */ PROG_ID_MAX,
 } ProgressiveItemIdentifier;
 
 extern uint32_t UPGRADEFUL_ITEM_FLAGS;

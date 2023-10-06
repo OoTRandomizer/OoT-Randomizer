@@ -38,7 +38,7 @@ uint16_t no_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t hookshot_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_HOOKSHOT)) {
-        INV_CONTENT(ITEM_LONGSHOT) = ITEM_LONGSHOT;
+        //INV_CONTENT(ITEM_LONGSHOT) = ITEM_LONGSHOT;
         return 0x09; // Longshot
     }
 
@@ -50,7 +50,7 @@ uint16_t hookshot_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t strength_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_STRENGTH)) {
-        z64_Inventory_ChangeUpgrade(UPG_STRENGTH, 3);
+        //z64_Inventory_ChangeUpgrade(UPG_STRENGTH, 3);
         return 0x36; // Gold Gauntlets
     }
 
