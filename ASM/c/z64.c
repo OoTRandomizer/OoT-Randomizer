@@ -5,7 +5,7 @@
  *
  * `.global SYM_NAME` tells the assembler that the symbol should be global,
  * i.e. accessable from other files
- * 
+ *
  * `.equ SYM_NAME, 0xF00DFACE` sets the symbol `SYM_NAME` to have address
  * `0xF00DFACE`
  */
