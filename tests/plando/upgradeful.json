@@ -3,6 +3,7 @@
       "create_spoiler": true,
       "hints": "none",
       "shuffle_pots" : "all",
+      "shuffle_freestanding_items": "all",
       "trials": 0
   },
   "locations":                 {

@@ -29,8 +29,7 @@ extern uint8_t PLAYER_ID;
 extern uint8_t MW_PROGRESSIVE_ITEMS_ENABLE;
 extern mw_progressive_items_state_t MW_PROGRESSIVE_ITEMS_STATE[256];
 
-// 0x80000000 is used as a way to avoid this symbol to be placed on bss
-uint32_t UPGRADEFUL_ITEM_FLAGS = 0x80000000;
+uint16_t UPGRADEFUL_ITEM_FLAGS = 0;
 
 uint16_t no_upgrade(z64_file_t *save, override_t override) {
     return override.value.base.item_id;
@@ -38,7 +37,6 @@ uint16_t no_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t hookshot_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_HOOKSHOT)) {
-        //INV_CONTENT(ITEM_LONGSHOT) = ITEM_LONGSHOT;
         return 0x09; // Longshot
     }
 
@@ -50,7 +48,6 @@ uint16_t hookshot_upgrade(z64_file_t *save, override_t override) {
 
 uint16_t strength_upgrade(z64_file_t *save, override_t override) {
     if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_STRENGTH)) {
-        //z64_Inventory_ChangeUpgrade(UPG_STRENGTH, 3);
         return 0x36; // Gold Gauntlets
     }
 
@@ -156,7 +153,9 @@ uint16_t magic_upgrade(z64_file_t *save, override_t override) {
 }
 
 uint16_t bombchu_upgrade(z64_file_t *save, override_t override) {
-    // TODO
+    if (UPGRADEFUL_ITEM_FLAGS & (1 << PROG_ID_BOMBCHU)) {
+        // This condition is left empty since bombchus don't have upgrades yet
+    }
 
     if (INV_CONTENT(ITEM_BOMBCHU) == ITEM_NONE) {
         return 0x6B; // Bombchu 20 pack
