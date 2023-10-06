@@ -2796,8 +2796,8 @@ class SettingInfos:
             Select the items that, when obtained, will also give all
             of its upgrades.
 
-            For example, finding the first Bow will grant the Fairy
-            Bow and the Biggest Quiver.
+            For example, picking up a Bow will grant the Fairy Bow
+            and the Biggest Quiver.
 
             This option is recommended when playing with the Scarce
             or Minimal item pools
