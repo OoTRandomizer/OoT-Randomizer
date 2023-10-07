@@ -525,6 +525,19 @@ hintTable: dict[str, tuple[list[str] | str, Optional[str], str | list[str]]] = {
     'Ocarina C left Button':                                    (["a somewhat high note"], "the Ocarina C left Button", 'item'),
     'Ocarina C right Button':                                   (["a middle note"], "the Ocarina C right Button", 'item'),
 
+    'Max Upgrade Hookshot':                                     (["Dampé's keepsake", "the Grapple Beam", "the BOING! chain"], "a Hookshot", 'item'),
+    'Max Upgrade Strength':                                     (["power gloves", "metal mittens", "the heavy lifty"], "a Strength Upgrade", 'item'),
+    'Max Upgrade Bomb Bag':                                     (["an explosive container", "a blast bag"], "a Bomb Bag", 'item'),
+    'Max Upgrade Bow':                                          (["an archery enabler", "a danger dart launcher"], "a Bow", 'item'),
+    'Max Upgrade Slingshot':                                    (["a seed shooter", "a rubberband", "a child's catapult"], "a Slingshot", 'item'),
+    'Max Upgrade Wallet':                                       (["a mo' money holder", "a gem purse", "a portable bank"], "a Wallet", 'item'),
+    'Max Upgrade Scale':                                        (["a deeper dive", "a piece of Zora"], "a Zora Scale", 'item'),
+    'Max Upgrade Nut':                                          (["more nuts", "flashbang storage"], "Deku Nut Capacity", 'item'),
+    'Max Upgrade Stick':                                        (["a lumber rack", "more flammable twigs"], "Deku Stick Capacity", 'item'),
+    'Max Upgrade Bombchu':                                      (["plenty of mice bombs", "plenty of proximity mice", "plenty of wall crawlers", "plenty of trail blazers"], "Bombchus (20 pieces)", 'item'),
+    'Max Upgrade Magic':                                        (["mystic training", "pixie dust", "a green rectangle"], "a Magic Meter", 'item'),
+    'Max Upgrade Ocarina':                                      (["a flute", "a music maker"], "an Ocarina", 'item'),
+
     'ZR Frogs Ocarina Game':                                       (["an #amphibian feast# yields", "the #croaking choir's magnum opus# awards", "the #froggy finale# yields"], "the final reward from the #Frogs of Zora's River# is", ['overworld', 'sometimes']),
     'KF Links House Cow':                                          ("the #bovine bounty of a horseback hustle# gifts", "#Malon's obstacle course# leads to", 'always'),
 
