@@ -44,5 +44,6 @@ uint16_t letter_to_bottle(z64_file_t *save, override_t override);
 uint16_t health_upgrade_cap(z64_file_t *save, override_t override);
 uint16_t bombchus_to_bag(z64_file_t *save, override_t override);
 uint16_t upgrade_key_model(z64_file_t *save, override_t override);
+uint16_t max_upgrade_wallet_upgrade(z64_file_t *save, override_t override);
 
 #endif

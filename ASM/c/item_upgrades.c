@@ -2,6 +2,7 @@
 
 #include "get_items.h"
 #include "z64.h"
+#include "shop.h"
 
 extern uint32_t FREE_BOMBCHU_DROPS;
 
@@ -175,6 +176,13 @@ uint16_t ocarina_upgrade(z64_file_t *save, override_t override) {
         case -1: case 0: return 0x3B; // Fairy Ocarina
         default: return 0x0C; // Ocarina of Time
     }
+}
+
+uint16_t max_upgrade_wallet_upgrade(z64_file_t *save, override_t override) {
+    if (CFG_SHOPSANITY_ENABLED) {
+        return 0xC7; // Tycoon's Wallet
+    }
+    return 0x46; // Giant's Wallet
 }
 
 uint16_t arrows_to_rupee(z64_file_t *save, override_t override) {
