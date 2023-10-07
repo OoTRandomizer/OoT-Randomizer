@@ -7,16 +7,16 @@
       "trials": 0
   },
   "locations":                 {
-    "KF Midos Bottom Right Chest":                             "Ocarina",
-    "KF Midos Bottom Left Chest":                              "Progressive Hookshot",
-    "KF Midos Top Right Chest":                                "Magic Meter",
-    "KF Midos Top Left Chest":                                 "Bomb Bag",
-    "KF Sarias House Recovery Heart 1":                        "Progressive Strength Upgrade",
-    "KF Sarias House Recovery Heart 2":                        "Slingshot",
-    "KF Sarias House Recovery Heart 3":                        "Progressive Wallet",
-    "KF Sarias House Recovery Heart 4":                        "Progressive Scale",
-    "KF Top of Sarias Recovery Heart 1":                       "Deku Nut Capacity",
-    "KF Top of Sarias Recovery Heart 2":                       "Deku Stick Capacity",
-    "KF Top of Sarias Recovery Heart 3":                       "Bow"
+    "KF Midos Bottom Right Chest":                             "Max Upgrade Hookshot",
+    "KF Midos Bottom Left Chest":                              "Max Upgrade Strength",
+    "KF Midos Top Right Chest":                                "Max Upgrade Bomb Bag",
+    "KF Midos Top Left Chest":                                 "Max Upgrade Bow",
+    "KF Sarias House Recovery Heart 1":                        "Max Upgrade Slingshot",
+    "KF Sarias House Recovery Heart 2":                        "Max Upgrade Wallet",
+    "KF Sarias House Recovery Heart 3":                        "Max Upgrade Scale",
+    "KF Sarias House Recovery Heart 4":                        "Max Upgrade Nut",
+    "KF Top of Sarias Recovery Heart 1":                       "Max Upgrade Stick",
+    "KF Top of Sarias Recovery Heart 2":                       "Max Upgrade Magic",
+    "KF Top of Sarias Recovery Heart 3":                       "Max Upgrade Ocarina"
   }
 }
