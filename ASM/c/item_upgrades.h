@@ -20,8 +20,6 @@ typedef enum ProgressiveItemIdentifier {
     /* 12 */ PROG_ID_MAX,
 } ProgressiveItemIdentifier;
 
-extern uint16_t UPGRADEFUL_ITEM_FLAGS;
-
 extern uint8_t CUSTOM_KEY_MODELS;
 
 uint16_t no_upgrade(z64_file_t *save, override_t override);
