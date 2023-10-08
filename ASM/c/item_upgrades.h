@@ -4,22 +4,6 @@
 #include "get_items.h"
 #include "z64.h"
 
-typedef enum ProgressiveItemIdentifier {
-    /*  0 */ PROG_ID_HOOKSHOT,
-    /*  1 */ PROG_ID_STRENGTH,
-    /*  2 */ PROG_ID_BOMB_BAG,
-    /*  3 */ PROG_ID_BOW,
-    /*  4 */ PROG_ID_SLINGSHOT,
-    /*  5 */ PROG_ID_WALLET,
-    /*  6 */ PROG_ID_SCALE,
-    /*  7 */ PROG_ID_NUT,
-    /*  8 */ PROG_ID_STICK,
-    /*  9 */ PROG_ID_BOMBCHU,
-    /* 10 */ PROG_ID_MAGIC,
-    /* 11 */ PROG_ID_OCARINA,
-    /* 12 */ PROG_ID_MAX,
-} ProgressiveItemIdentifier;
-
 extern uint8_t CUSTOM_KEY_MODELS;
 
 uint16_t no_upgrade(z64_file_t *save, override_t override);
