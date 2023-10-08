@@ -3,7 +3,7 @@ LD = mips64-ld
 OBJDUMP = mips64-objdump
 
 CFLAGS = -O1 -fno-reorder-blocks -march=vr4300 -mtune=vr4300 -mabi=32 -mno-gpopt -mdivide-breaks \
-	-mexplicit-relocs
+	-mexplicit-relocs -fno-zero-initialized-in-bss
 CPPFLAGS = -DF3DEX_GBI_2
 
 OUTDIR := build

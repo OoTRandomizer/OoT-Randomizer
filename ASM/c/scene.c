@@ -1,6 +1,6 @@
 #include "z64.h"
 
-int8_t curr_scene_setup; // Global containing the current scene setup.
+int8_t curr_scene_setup = 0; // Global containing the current scene setup.
 
 // Determine the current scene setup and set it in the curr_scene_setup global.
 // See https://wiki.cloudmodding.com/oot/Scenes_and_Rooms#Alternate_Header_List:

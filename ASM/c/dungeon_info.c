@@ -241,7 +241,7 @@ void draw_dungeon_info(z64_disp_buf_t *db) {
                 // Medal color index was changed to hint order,
                 // moving Light from the end to the beginning.
                 // Spirit/Shadow are also swapped.
-                int reward_index;
+                int reward_index = 0;
                 if (reward < 3) {
                     reward_index = reward + 1;
                 } else if (reward == 3) {

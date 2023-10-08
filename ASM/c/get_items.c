@@ -44,17 +44,17 @@ uint8_t satisified_pending_frames = 0;
 
 // This table contains the offset (in bytes) of the start of a particular scene/room/setup flag space in collectible_override_flags.
 // Call get_collectible_flag_offset to retrieve the desired offset.
-uint8_t collectible_scene_flags_table[600];
-alt_override_t alt_overrides[64];
+uint8_t collectible_scene_flags_table[600] = { 0 };
+alt_override_t alt_overrides[64] = { 0 };
 
 extern int8_t curr_scene_setup;
 extern uint16_t CURR_ACTOR_SPAWN_INDEX;
 
 // Total amount of memory required for each flag table (in bytes).
-uint16_t num_override_flags;
+uint16_t num_override_flags = 0;
 
 // Pointer to a variable length array that will contain the collectible flags for each scene.
-uint8_t *collectible_override_flags;
+uint8_t *collectible_override_flags __attribute__ ((section (".keep")));
 
 // Initialize the override flag tables on the heap.
 void override_flags_init() {
@@ -415,7 +415,7 @@ void get_item(z64_actor_t *from_actor, z64_link_t *link, int8_t incoming_item_id
     override_t override = { 0 };
     int incoming_negative = incoming_item_id < 0;
     int8_t item_id = 0;
-    item_row_t *row;
+    item_row_t *row = 0;
 
     if (from_actor && incoming_item_id != 0) {
         item_id = incoming_negative ? -incoming_item_id : incoming_item_id;
@@ -521,7 +521,7 @@ uint8_t items[] = {
 
 EnItem00 *collectible_mutex = 0;
 
-override_t collectible_override;
+override_t collectible_override __attribute__ ((section (".keep")));
 
 void reset_collectible_mutex() {
     collectible_mutex = NULL;

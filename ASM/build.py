@@ -77,7 +77,10 @@ with open('build/c_symbols.txt', 'r') as f:
         if m:
             sym_type = m.group(1)
             name = m.group(2)
-            c_sym_types[name] = 'code' if sym_type == 'text' else 'data'
+            if sym_type == "bss" or sym_type == "sbss":
+                print(f"{name} is in the .bss or .sbss section, initialize it to 0 or use __attribute__ to move it to the .keep section")
+                exit(1)
+            c_sym_types[name] = 'code' if sym_type == 'text' or sym_type == 'keep' else 'data'
 
 symbols = {}
 

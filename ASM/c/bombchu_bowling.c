@@ -17,7 +17,7 @@ uint32_t EXTRA_BOWLING_SHUFFLE = 0;
 */
 
 int16_t select_bombchu_bowling_prize(int16_t prizeSelect) {
-    int16_t prizeTemp;
+    int16_t prizeTemp = 0;
 
     uint32_t prizeFlag = (1 << prizeSelect);
 

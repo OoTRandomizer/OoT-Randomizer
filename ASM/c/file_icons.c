@@ -286,7 +286,7 @@ typedef struct {
 } file_info_t;
 
 // File data structure
-static file_info_t draw_data;
+static file_info_t draw_data __attribute__ ((section (".keep")));
 
 
 /*=============================================================================

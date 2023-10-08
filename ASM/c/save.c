@@ -25,7 +25,7 @@ extern uint16_t SRAM_SLOTS[6];
 
 typedef void (*Sram_InitNewSave_Func)(void);
 Sram_InitNewSave_Func Sram_InitNewSave = (Sram_InitNewSave_Func)(0x8008FFC0);
-extended_savecontext_static_t extended_savectx;
+extended_savecontext_static_t extended_savectx __attribute__ ((section (".keep")));
 
 void SsSram_ReadWrite_Safe(uint32_t addr, void *dramAddr, size_t size, uint32_t direction);
 
