@@ -2775,36 +2775,6 @@ class SettingInfos:
         },
     )
 
-    max_upgrade_items = MultipleSelect(
-        gui_text       = 'Max Upgrade Items',
-        default        = [],
-        choices        = {
-            'Progressive Hookshot':         'Hookshot',
-            'Progressive Strength Upgrade': 'Strength',
-            'Bomb Bag':                     'Bomb Bag',
-            'Bow':                          'Bow',
-            'Slingshot':                    'Slingshot',
-            'Progressive Wallet':           'Wallet',
-            'Progressive Scale':            'Scale',
-            'Deku Nut Capacity':            'Nut Capacity',
-            'Deku Stick Capacity':          'Stick Capacity',
-           #'Bombchus':                     'Bombchus', # Bombchus don't have an upgrade system yet
-            'Magic Meter':                  'Magic Meter',
-            'Ocarina':                      'Ocarina',
-        },
-        gui_tooltip    = '''\
-            Select the items that, when obtained, will also give all
-            of its upgrades.
-
-            For example, picking up a Bow will grant the Fairy Bow
-            and the Biggest Quiver.
-
-            The amount of items in each pool is not modified by this
-            setting.
-        ''',
-        shared         = True,
-    )
-
     shuffle_loach_reward = Combobox(
         gui_text       = 'Shuffle Hyrule Loach Reward',
         gui_tooltip    = '''\
@@ -3592,6 +3562,36 @@ class SettingInfos:
             logic might require you to get a deku shield this way. There is a
             magic jar on top of the Gerudo Training Ground eye statue that does
             not always refill your magic in the vanilla game.
+        ''',
+        shared         = True,
+    )
+
+    max_upgrade_items = MultipleSelect(
+        gui_text       = 'Max Upgrade Items',
+        default        = [],
+        choices        = {
+            'Progressive Hookshot':         'Hookshot',
+            'Progressive Strength Upgrade': 'Strength',
+            'Bomb Bag':                     'Bomb Bag',
+            'Bow':                          'Bow',
+            'Slingshot':                    'Slingshot',
+            'Progressive Wallet':           'Wallet',
+            'Progressive Scale':            'Scale',
+            'Deku Nut Capacity':            'Nut Capacity',
+            'Deku Stick Capacity':          'Stick Capacity',
+           #'Bombchus':                     'Bombchus', # Bombchus don't have an upgrade system yet
+            'Magic Meter':                  'Magic Meter',
+            'Ocarina':                      'Ocarina',
+        },
+        gui_tooltip    = '''\
+            Select the items that, when obtained, will also give all
+            of its upgrades.
+
+            For example, picking up a Bow will grant the Fairy Bow
+            and the Biggest Quiver.
+
+            The amount of items in each pool is not modified by this
+            setting.
         ''',
         shared         = True,
     )

@@ -206,8 +206,7 @@
             "shuffle_expensive_merchants",
             "shuffle_frog_song_rupees",
             "shuffle_loach_reward",
-            "shuffle_individual_ocarina_notes",
-            "max_upgrade_items"
+            "shuffle_individual_ocarina_notes"
           ]
         },
         {
@@ -368,7 +367,8 @@
             "no_collectible_hearts",
             "starting_tod",
             "blue_fire_arrows",
-            "fix_broken_drops"
+            "fix_broken_drops",
+            "max_upgrade_items"
           ]
         },
         {
