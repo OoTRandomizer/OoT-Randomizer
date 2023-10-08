@@ -2798,6 +2798,9 @@ class SettingInfos:
 
             For example, picking up a Bow will grant the Fairy Bow
             and the Biggest Quiver.
+
+            The amount of items in each pool is not modified by this
+            setting.
         ''',
         shared         = True,
     )
