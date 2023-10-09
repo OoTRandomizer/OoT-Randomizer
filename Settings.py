@@ -10,6 +10,7 @@ import re
 import string
 import sys
 import textwrap
+import pybase32k
 from collections.abc import Iterable
 from typing import Any, Optional
 
@@ -33,33 +34,43 @@ class ArgumentDefaultsHelpFormatter(argparse.RawTextHelpFormatter):
             return textwrap.dedent(action.help)
 
 
-# 32 characters
-letters: str = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"
-index_to_letter: dict[int, str] = {i: letters[i] for i in range(32)}
-letter_to_index: dict[str, int] = {v: k for k, v in index_to_letter.items()}
+def to_bytes(bits: list[int]) -> bytes:
+    """
+    Converts chunks of 8bits into ints
+    :param bits: a list of bits
+    :return: an iterator of ints
+    """
+    assert len(bits) % 8 == 0
+    s: str = "".join(map(str, bits))
+    return bytes(int(s[i:i + 8], 2) for i in range(0, len(s), 8))
+
+
+def to_bits(bytes_: bytes) -> list[int]:
+    """
+    Converts a bytes object into a list of bits
+    :param bytes_: a bytes object
+    :return: an interator of bits
+    """
+    return [(byte >> i) & 1 for byte in bytes_ for i in range(7, -1, -1)]
+
+
+def pad_list(li: list[int], chunk_size: int, padding: int):
+    mod: int = len(li) % chunk_size
+    if mod > 0:
+        return li + [padding] * (chunk_size - mod)
+    return li
 
 
 def bit_string_to_text(bits: list[int]) -> str:
-    # pad the bits array to be multiple of 5
-    if len(bits) % 5 > 0:
-        bits += [0] * (5 - len(bits) % 5)
-    # convert to characters
-    result = ""
-    for i in range(0, len(bits), 5):
-        chunk = bits[i:i + 5]
-        value = 0
-        for b in range(5):
-            value |= chunk[b] << b
-        result += index_to_letter[value]
-    return result
+    bits = pad_list(bits, 8, 0)
+    b: bytes = to_bytes(bits)
+    s: str = pybase32k.encode(b)
+    return s
 
 
 def text_to_bit_string(text: str) -> list[int]:
-    bits = []
-    for c in text:
-        index = letter_to_index[c]
-        for b in range(5):
-            bits += [ (index >> b) & 1 ]
+    b: bytes = pybase32k.decode(text)
+    bits: list[int] = list(to_bits(b))
     return bits
 
 
