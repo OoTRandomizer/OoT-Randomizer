@@ -36,25 +36,35 @@ class ArgumentDefaultsHelpFormatter(argparse.RawTextHelpFormatter):
 
 def to_bytes(bits: list[int]) -> bytes:
     """
-    Converts chunks of 8bits into ints
-    :param bits: a list of bits
-    :return: an iterator of ints
+    Interprets the ints of the list as bits and converts them into bytes.
+    Every chunk of 8 ints is interpreted as one byte. The list must be a multiple of 8.
+    :param bits: a list of ints in the range of [0-1]
+    :return: a bytes object
     """
-    assert len(bits) % 8 == 0
+    assert len(bits) % 8 == 0, f"The list must be a multiple of 8. List length: {len(bits)}"
     s: str = "".join(map(str, bits))
     return bytes(int(s[i:i + 8], 2) for i in range(0, len(s), 8))
 
 
 def to_bits(bytes_: bytes) -> list[int]:
     """
-    Converts a bytes object into a list of bits
+    Converts a bytes object into a list of ints in the range of [0-1].
+    The ints resemble the bits of the bytes object.
     :param bytes_: a bytes object
-    :return: an interator of bits
+    :return: a list of ints in the range of [0-1]
     """
     return [(byte >> i) & 1 for byte in bytes_ for i in range(7, -1, -1)]
 
 
 def pad_list(li: list[int], chunk_size: int, padding: int):
+    """
+    If the input list is not a multiple of the chunk size, it will be padded with the given padding.
+    :param li: the input list
+    :param chunk_size: the multiple to pad to
+    :param padding: the padding to use
+    :example: pad_list([1, 1, 0, 1, 1], 8, 0) -> [1, 1, 0, 1, 1, 0, 0, 0]
+    :return:
+    """
     mod: int = len(li) % chunk_size
     if mod > 0:
         return li + [padding] * (chunk_size - mod)
@@ -62,6 +72,12 @@ def pad_list(li: list[int], chunk_size: int, padding: int):
 
 
 def bit_string_to_text(bits: list[int]) -> str:
+    """
+    Converts a list of ints in the range of [0-1] into a Base32768 string.
+    If the list is not a multiple of 8, it will be padded with zeros.
+    :param bits: a list of ints in the range of [0-1]
+    :return: a Base32768 string
+    """
     bits = pad_list(bits, 8, 0)
     b: bytes = to_bytes(bits)
     s: str = pybase32k.encode(b)
@@ -69,6 +85,11 @@ def bit_string_to_text(bits: list[int]) -> str:
 
 
 def text_to_bit_string(text: str) -> list[int]:
+    """
+    Converts a Base32768 string into a list of ints in the range of [0-1].
+    :param text: a Base32768 string
+    :return: a list of ints in the range of [0-1]
+    """
     b: bytes = pybase32k.decode(text)
     bits: list[int] = list(to_bits(b))
     return bits
