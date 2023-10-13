@@ -14,49 +14,47 @@ void set_triforce_render() {
     frames = frames > TRIFORCE_FRAMES_FADE_INTO ? TRIFORCE_FRAMES_FADE_INTO : frames;
 }
 
-void handle_lbutton_and_minimap_state()
-{
-    switch (minimap_triforce_state)
-    {
+void handle_lbutton_and_minimap_state() {
+    switch (minimap_triforce_state) {
         case MINIMAP_ON_SCREEN:
             R_MINIMAP_DISABLED = render_triforce_flag == 1;
+            if (z64_game.common.input[0].pad_pressed.l) {
+                minimap_triforce_state++;
+                if (minimap_triforce_state > NONE_ON_SCREEN) {
+                    minimap_triforce_state = MINIMAP_ON_SCREEN;
+                }
+                PlaySFX(0x4820); //NA_SE_SY_DUMMY_32 (Notification)
+                R_MINIMAP_DISABLED = 0;
+            }
             break;
         case TRIFORCE_OR_SKULL_ON_SCREEN:
             R_MINIMAP_DISABLED = 1;
+            if (z64_game.common.input[0].pad_pressed.l) {
+                minimap_triforce_state++;
+                if (minimap_triforce_state > NONE_ON_SCREEN) {
+                    minimap_triforce_state = MINIMAP_ON_SCREEN;
+                }
+                PlaySFX(0x4813); //NA_SE_SY_CAMERA_ZOOM_UP
+                R_MINIMAP_DISABLED = 1;
+            }
             break;
         case NONE_ON_SCREEN:
             R_MINIMAP_DISABLED = 1;
+            if (z64_game.common.input[0].pad_pressed.l) {
+                minimap_triforce_state++;
+                if (minimap_triforce_state > NONE_ON_SCREEN) {
+                    minimap_triforce_state = MINIMAP_ON_SCREEN;
+                }
+                PlaySFX(0x4814); //NA_SE_SY_CAMERA_ZOOM_DOWN
+                R_MINIMAP_DISABLED = 1;
+            }
             break;
         default:
             break;
     }
-
-    if (z64_game.common.input[0].pad_pressed.l) {
-        minimap_triforce_state++;
-        if (minimap_triforce_state > NONE_ON_SCREEN) {
-            minimap_triforce_state = MINIMAP_ON_SCREEN;
-        }
-        switch (minimap_triforce_state)
-        {
-            case MINIMAP_ON_SCREEN:
-                R_MINIMAP_DISABLED = 0;
-                PlaySFX(0x4814); //NA_SE_SY_CAMERA_ZOOM_DOWN
-                break;
-            case TRIFORCE_OR_SKULL_ON_SCREEN:
-                R_MINIMAP_DISABLED = 1;
-                PlaySFX(0x4845); //NA_SE_SY_CARROT_RECOVER
-                break;
-            case NONE_ON_SCREEN:
-                R_MINIMAP_DISABLED = 1;
-                PlaySFX(0x4813); //NA_SE_SY_CAMERA_ZOOM_UP
-                break;
-            default:
-                break;
-        }
-    }
 }
 
-void draw_skull_count(z64_disp_buf_t *db) {
+void draw_skull_count(z64_disp_buf_t* db) {
 
     if (!CAN_DRAW_TRIFORCE || !(minimap_triforce_state == TRIFORCE_OR_SKULL_ON_SCREEN)) {
         return;
@@ -89,8 +87,6 @@ void draw_skull_count(z64_disp_buf_t *db) {
     gSPDisplayList(db->p++, &setup_db);
     gDPPipeSync(db->p++);
 
-    //text_print(text, draw_x, draw_y_text);
-    //text_flush(db);
     colorRGBA8_t color = { 0xFF, 0xFF, 0xFF, 0xFF};
     draw_int(db, z64_file.gs_tokens, draw_x, draw_y_text, color);
     draw_x += str_len * font_sprite.tile_w + 1;
@@ -101,7 +97,7 @@ void draw_skull_count(z64_disp_buf_t *db) {
     sprite_draw(db, &quest_items_sprite, 0, draw_x, draw_y_skull, triforce_sprite.tile_w * 0.9, triforce_sprite.tile_h * 0.9);
 }
 
-void draw_triforce_count(z64_disp_buf_t *db) {
+void draw_triforce_count(z64_disp_buf_t* db) {
 
     // Must be triforce hunt and triforce should be drawable, and we should either be on the pause screen or the render triforce flag should be set
     if (!(TRIFORCE_HUNT_ENABLED && CAN_DRAW_TRIFORCE &&
