@@ -1,3 +1,18 @@
+pre-trade quest rework Biggoron hack (Patches.py starting at line 824, after Spirit Temple check for different rewards for scene)
+    # Fix Biggoron to check a different flag.
+    rom.write_byte(0xED329B, 0x72)
+    rom.write_byte(0xED43E7, 0x72)
+    rom.write_bytes(0xED3370, [0x3C, 0x0D, 0x80, 0x12])
+    rom.write_bytes(0xED3378, [0x91, 0xB8, 0xA6, 0x42, 0xA1, 0xA8, 0xA6, 0x42])
+    rom.write_bytes(0xED6574, [0x00, 0x00, 0x00, 0x00])
+
+This disassembles to:
+    lui   $t5, 0x8012
+    lbu   $t8, -0x59BE($t5)
+    sb    $t0, -0x59BE($t5)
+
+which links to unk_07_ in save context?? 0x80120000 - 0x59BE - 0x8011A5D0 = 0x72 offset in save context
+
 en_ko fado actor
 vram start: 80AD1C20
 vrom start: E51A60

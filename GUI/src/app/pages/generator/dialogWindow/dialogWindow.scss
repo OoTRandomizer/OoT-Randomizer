@@ -18,13 +18,13 @@
       }
 
       button + button {
-        margin-left: 1rem;
+        margin-left: 14px;
       }
     }
 
-    @media (min-width: 40rem) {
+    @media (min-width: 560px) {
       .dialog-window {
-        width: 38rem;
+        width: 532px;
       }
     }
   }

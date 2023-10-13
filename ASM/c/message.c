@@ -2,6 +2,29 @@
 #include "stdbool.h"
 #include "save.h"
 
+// no support for kana since they're not part of the message charset
+char FILENAME_ENCODING[256] = {
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '?', '?', '?', '?', '?', '?',
+    '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?',
+    '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?',
+    '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?',
+    '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?',
+    '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?',
+    '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?',
+    '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?',
+    '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?',
+    '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?',
+    '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', 'A', 'B', 'C', 'D', 'E',
+    'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U',
+    'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k',
+    'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', ' ',
+    '?', '?', '!', ':', '-', '(', ')', '?', '?', ',', '.', '/', '?', '?', '?', '?',
+    '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?', '?',
+};
+
+extern uint8_t PLAYER_NAMES[256][8];
+extern uint8_t PLAYER_NAME_ID;
+
 // Helper function for adding characters to the decoded message buffer
 void Message_AddCharacter(MessageContext *msgCtx, void *pFont, uint32_t *pDecodedBufPos, uint32_t *pCharTexIdx, uint8_t charToAdd) {
     uint32_t decodedBufPosVal = *pDecodedBufPos;
@@ -43,6 +66,18 @@ void Message_AddString(MessageContext *msgCtx, void *pFont, uint32_t *pDecodedBu
     }
 }
 
+// Helper function for adding a filename to the decoded message buffer. Filenames use a different character set from other text.
+void Message_AddFileName(MessageContext *msgCtx, void *pFont, uint32_t *pDecodedBufPos, uint32_t *pCharTexIdx, uint8_t *filenameToAdd) {
+    int end = 8;
+    while (filenameToAdd[end - 1] == 0xDF) {
+        // trim trailing space
+        end--;
+    }
+    for (int i = 0; i < end; i++) {
+        Message_AddCharacter(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, FILENAME_ENCODING[filenameToAdd[i]]);
+    }
+}
+
 // Hack to add additional text control codes.
 // If additional codes need to be read after the primary code, increment msgCtx->msgBufPos and index msgRaw
 // To add a new control code:
@@ -72,6 +107,12 @@ bool Message_Decode_Additional_Control_Codes(uint8_t currChar, uint32_t *pDecode
             uint8_t dungeon = msgRaw[++(msgCtx->msgBufPos)];
             uint8_t count = z64_file.scene_flags[dungeon].unk_00_ >> 0x10;
             Message_AddInteger(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, count);
+            (*pDecodedBufPos)--;
+            return true;
+        }
+        case 0xF2: {
+            // Outgoing item filename
+            Message_AddFileName(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, PLAYER_NAMES[PLAYER_NAME_ID]);
             (*pDecodedBufPos)--;
             return true;
         }

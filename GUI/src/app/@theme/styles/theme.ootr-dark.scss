@@ -96,6 +96,8 @@ $nb-themes: nb-register-theme(
       text-control-color: color-basic-100,
       text-disabled-color: color-basic-100,
       text-hint-color: color-basic-700,
+      text-paragraph-font-size: 13.125px,
+      text-paragraph-line-height: 17.5px,
 
       divider-color: color-basic-700,
       divider-width: 1px,
@@ -110,7 +112,6 @@ $nb-themes: nb-register-theme(
       tile-padding: 3px,
       scrollbar-width: 3px,
       filter-icon: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="grey" d="M0 64l192 192v192l128-32V256L512 64H0z"/></svg>'),
-      footer-height: 203px,
       menu-hover-font-weight: 600,
       padding-top-nb-tab: 7px,
       headline-padding-top: 8px,
@@ -120,6 +121,25 @@ $nb-themes: nb-register-theme(
       backdrop-popup: #232323,
       picker-font-weight: 600,
       tooltip-src: url('data:image/svg+xml;utf8,<?xml version="1.0" ?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><g data-name="Layer 2"><g fill="rgb(170,170,170)" data-name="info"><rect width="24" height="24" transform="rotate(180 12 12)" opacity="0"/><path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z"/><circle cx="12" cy="8" r="1"/><path d="M12 10a1 1 0 0 0-1 1v5a1 1 0 0 0 2 0v-5a1 1 0 0 0-1-1z"/></g></g></svg>'),
+
+      layout-text-font-size: 13.125px,
+      layout-text-line-height: 17.5px,
+
+      header-text-font-size: 13.125px,
+      header-text-line-height: 17.5px,
+
+      footer-height: 203px,
+      footer-text-font-size: 13.125px,
+      footer-text-line-height: 17.5px,
+
+      header-height: 66.5px,
+      header-padding: 17.5px,
+      header-shadow: 0 7px 14px 0 rgba(44, 51, 73, 0.1),
+
+      button-filled-border-width: 0.875px,
+      button-small-text-line-height: 14px,
+      button-medium-text-line-height: 14px,
+      button-large-text-line-height: 14px,
     ),
     ootr-dark,
     default

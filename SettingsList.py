@@ -3702,7 +3702,7 @@ class SettingInfos:
         },
     )
 
-    display_dpad = Checkbutton(
+    display_dpad = Combobox(
         gui_text       = 'Display D-Pad HUD',
         shared         = False,
         cosmetic       = True,
@@ -3710,7 +3710,12 @@ class SettingInfos:
             Shows an additional HUD element displaying
             current available options on the D-Pad.
         ''',
-        default        = True,
+        default        = 'right',
+        choices        = {
+            'off':   'Off',
+            'left': 'On the left',
+            'right': 'On the right',
+        },
     )
 
     dpad_dungeon_menu = Checkbutton(
@@ -4539,6 +4544,25 @@ class SettingInfos:
         ''',
         gui_params  = {
             "hide_when_disabled": True,
+            'randomize_key': 'randomize_all_sfx',
+            'distribution': [
+                (True, 1),
+            ],
+        },
+        default        = False,
+    )
+
+    credits_music = Checkbutton(
+        gui_text       = 'Credits music as BGM',
+        shared         = False,
+        cosmetic       = True,
+        gui_tooltip    = '''\
+            Include the songs that play when the credits
+            roll as part of the music pool when
+            shuffling music.
+        ''',
+        gui_params  = {
+            "hide_when_disabled": False,
             'randomize_key': 'randomize_all_sfx',
             'distribution': [
                 (True, 1),

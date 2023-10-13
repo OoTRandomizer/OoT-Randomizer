@@ -7,13 +7,13 @@
     border: 1px solid nb-theme(color-info-800);
     border-radius: 8px;
     position: relative;
-    min-height: calc(100% - 4.9rem);
-    max-height: calc(100% - 4.9rem);
+    min-height: calc(100% - 68.6px);
+    max-height: calc(100% - 68.6px);
     height: 100%;
 
     @media (max-width: 960px) and (max-height: 960px) {
-      min-height: calc(100% - 3.5rem);
-      max-height: calc(100% - 3.5rem);
+      min-height: calc(100% - 49px);
+      max-height: calc(100% - 49px);
     }
   }
 
@@ -23,12 +23,12 @@
     border: 1px solid nb-theme(color-info-800);
     border-radius: 8px;
     position: relative;
-    min-height: calc(100% - 7.2rem);
-    max-height: calc(100% - 7.2rem);
+    min-height: calc(100% - 100.8px);
+    max-height: calc(100% - 100.8px);
 
     @media (max-width: 960px) and (max-height: 960px) {
-      min-height: calc(100% - 4.9rem);
-      max-height: calc(100% - 5.0rem);
+      min-height: calc(100% - 68.6px);
+      max-height: calc(100% - 70px);
     }
   }
 
@@ -84,20 +84,20 @@
     border-bottom: none;
   }
 
-.record-picker label {
-  display: inline-block;
-  line-height: 1.25;
-  cursor: pointer;
-  font-weight: inherit;
-  font-size: 14px;
-  padding: 4px;
-  margin-bottom: -1px;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+  .record-picker label {
+    display: inline-block;
+    line-height: 1.25;
+    cursor: pointer;
+    font-weight: inherit;
+    font-size: 14px;
+    padding: 4px;
+    margin-bottom: -1px;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 
     @media (max-width: 1900px) {
       font-size: 13px;
@@ -166,6 +166,7 @@
     width: 28%;
     margin-right: 3px;
   }
+
   .buttonBox .switchButton {
     width: 40%;
 
@@ -216,7 +217,7 @@
   .tagFilterSelect {
     max-width: 100%;
     width: 100%;
-    padding-bottom: 0.3rem !important;
+    padding-bottom: 4.2px !important;
 
     ::ng-deep button {
       max-width: 100% !important;

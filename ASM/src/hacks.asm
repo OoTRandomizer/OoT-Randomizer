@@ -91,7 +91,7 @@ Gameplay_InitSkybox:
     ; addiu v0, v0 0x5660
     ; addiu v1, v1, 0x5630
     li      v1, FONTLOADSTATUS_EXTENDED
-    li      v0, FONTLOADSTATUS_EXTENDED + 0x80
+    li      v0, FONTLOADSTATUS_EXTENDED + 0xA0
 
 .org 0x800B3554
     ; Replaces:
@@ -1586,37 +1586,6 @@ nop
 ;   jal     0x80057030 ; copies Scarecrow Song from active space to save context
 .orga 0xB55A64 ; In memory 800DFB04
     jal     save_scarecrow_song
-
-;==================================================================================================
-; Override Player Name Text
-;==================================================================================================
-
-; Replaces
-;   lui   t2,0x8012
-;   addu  t2,t2,s3
-;   lbu   t2,-23053(t2)
-.orga 0xB51694
-    jal     get_name_char_1
-    ;addi    a0, s3, -1
-    ;ori     t2, v0, 0
-
-; Replaces
-;   lui   s0,0x8012
-;   addu  s0,s0,s2
-;   lbu   s0,-23052(s0)
-.orga 0xB516C4
-    jal     get_name_char_2
-    ;ori     a0, s2, 0
-    ;ori     s0, v0, 0
-
-; Replaces
-;   lw      s6,48(sp)
-;   lw      s7,52(sp)
-;   lw      s8,56(sp)
-.orga 0xB52784
-    jal     reset_player_name_id
-    nop
-    lw      ra, 0x3C (sp)
 
 ;==================================================================================================
 ; Text Fixes
@@ -4023,4 +3992,12 @@ courtyard_guards_kill:
 ;   lui     at, 0x8012
 ;   sw      t7, 0x1F24(at)
     jal     ocarina_buttons
+    nop
+
+;===================================================================================================
+; Overrides the function that gives Fairy Ocarina on the Lost Woods Bridge
+;===================================================================================================
+.orga 0xACCDFC
+; Replaces Item_Give(play, ITEM_OCARINA_FAIRY)
+    jal      fairy_ocarina_getitem_override
     nop

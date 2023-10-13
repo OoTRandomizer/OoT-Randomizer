@@ -99,10 +99,5 @@ void draw_triforce_count(z64_disp_buf_t *db) {
     sprite_load(db, &triforce_sprite, sprite, 1);
     sprite_draw(db, &triforce_sprite, 0, draw_x, draw_y_triforce, triforce_sprite.tile_w, triforce_sprite.tile_h);
 
-    // If model text needs to be drawn as well, don't end DL yet
     text_flush(db);
-    if (!illegal_model) {
-        gDPFullSync(db->p++);
-        gSPEndDisplayList(db->p++);
-    }
 }

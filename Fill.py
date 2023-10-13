@@ -311,7 +311,10 @@ def fill_dungeon_unique_item(worlds: list[World], search: Search, fill_locations
                 major_items.append(item)
 
         # place 1 item into the dungeon
-        fill_restrictive(worlds, base_search, dungeon_locations, major_items, 1)
+        try:
+            fill_restrictive(worlds, base_search, dungeon_locations, major_items, 1)
+        except FillError as e:
+            raise FillError(f'Could not place a major item in {dungeon} because there are no remaining locations in the dungeon. If you have excluded some of the locations in this dungeon, try reincluding one.') from e
 
         # update the location and item pool, removing any placed items and filled locations
         # the fact that you can remove items from a list you're iterating over is python magic
@@ -328,7 +331,7 @@ def fill_dungeon_unique_item(worlds: list[World], search: Search, fill_locations
     # Error out if we have any items that won't be placeable in the overworld left.
     for item in major_items:
         if not item.world.get_region('Root').can_fill(item):
-            raise FillError(f"No more dungeon locations available for {item.name} to be placed with 'Dungeons Have One Major Item' enabled.")
+            raise FillError(f"No more dungeon locations available for {item.name} to be placed with 'Dungeons Have One Major Item' enabled. To fix this, either disable 'Dungeons Have One Major Item' or enable some settings that add more locations for shuffled items in the overworld.")
 
     logger.info("Unique dungeon items placed")
 

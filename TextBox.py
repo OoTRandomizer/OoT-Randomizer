@@ -167,7 +167,7 @@ def get_character_width(character: str) -> int:
     try:
         return character_table[character]
     except KeyError:
-        if ord(character) < 0x20:
+        if character in Messages.CONTROL_CODES:
             if character in control_code_width:
                 return sum([character_table[c] for c in control_code_width[character]])
             else:
@@ -186,6 +186,9 @@ control_code_width: dict[str, str] = {
     '\x1D': '00',
     '\x1E': '00000',
     '\x1F': '00\'00"',
+    '\xF0': '10',
+    '\xF1': '0',
+    '\xF2': '00000000',
 }
 
 
@@ -279,6 +282,7 @@ character_table: dict[str, int] = {
     '(':  42900,  # LINE_WIDTH /  42
     ')':  42900,  # LINE_WIDTH /  42
     '$':  51480,  # LINE_WIDTH /  35
+    '\xF2': 655200,
 }
 
 

@@ -121,6 +121,9 @@ APPLY_BONK_DAMAGE:
     li      t4, 0x0010                  ; Treasure Box Shop scene number
     bne     t3, t4, @@return_bonk
     nop
+    lb      t3, SHUFFLE_CHEST_GAME      ; don't reset anything if TCG shuffle is enabled
+    bnez    t3, @@return_bonk
+    nop
     ; Set scene temp flags to zero to re-lock doors
     sw      $zero, 0x1D2C(t7)
     ; Chests should be reset on scene load, but just in case

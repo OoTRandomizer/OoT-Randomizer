@@ -30,6 +30,7 @@ from Sounds import move_audiobank_table
 from Spoiler import Spoiler
 from Utils import data_path
 from World import World
+from TextBox import line_wrap
 from texture_util import ci4_rgba16patch_to_ci8, rgba16_patch
 from version import __version__
 
@@ -277,7 +278,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         world_str = ""
     rom.write_bytes(rom.sym('WORLD_STRING_TXT'), make_bytes(world_str, 12))
 
-    time_str = datetime.datetime.utcnow().strftime("%Y-%m-%d %H:%M") + " UTC"
+    time_str = datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M") + " UTC"
     rom.write_bytes(rom.sym('TIME_STRING_TXT'), make_bytes(time_str, 25))
 
     if world.settings.show_seed_info:
@@ -661,9 +662,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     # Speed obtaining Fairy Ocarina
     rom.write_bytes(0x2151230, [0x00, 0x72, 0x00, 0x3C, 0x00, 0x3D, 0x00, 0x3D])
-    block_code = [0x00, 0x4A, 0x00, 0x00, 0x00, 0x3A, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF,
-                  0xFF, 0xFF, 0x00, 0x3C, 0x00, 0x81, 0xFF, 0xFF]
-    rom.write_bytes(0x2151240, block_code)
     rom.write_bytes(0x2150E20, [0xFF, 0xFF, 0xFA, 0x4C])
 
     if world.settings.shuffle_ocarinas:
@@ -2133,7 +2131,11 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         else:
             location = world.get_location("ZR Magic Bean Salesman")
             item_text = get_hint(get_item_generic_name(location.item), True).text
-            update_message_by_id(messages, 0x405E, "\x1AChomp chomp chomp...We have...\x01\x05\x41" + item_text + "\x05\x40! \x01Do you want it...huh? Huh?\x04\x05\x41\x0860 Rupees\x05\x40 and it's yours!\x01Keyahahah!\x01\x1B\x05\x42Yes\x01No\x05\x40\x02")
+            wrapped_item_text = line_wrap(item_text, False, False, False)
+            if wrapped_item_text != item_text:
+                update_message_by_id(messages, 0x405E, "\x1AChomp chomp chomp...We have...\x01\x05\x41" + wrapped_item_text + "\x05\x40!\x04\x05\x41\x0860 Rupees\x05\x40 and it's yours!\x01Keyahahah!\x01\x1B\x05\x42Yes\x01No\x05\x40\x02")
+            else:
+                update_message_by_id(messages, 0x405E, "\x1AChomp chomp chomp...We have...\x01\x05\x41" + item_text + "\x05\x40! \x01Do you want it...huh? Huh?\x04\x05\x41\x0860 Rupees\x05\x40 and it's yours!\x01Keyahahah!\x01\x1B\x05\x42Yes\x01No\x05\x40\x02")
         update_message_by_id(messages, 0x4069, "You don't have enough money.\x01I can't sell it to you.\x01Chomp chomp...\x02")
         update_message_by_id(messages, 0x406C, "We hope you like it!\x01Chomp chomp chomp.\x02")
         # Change first magic bean to cost 60 (is used as the price for the one time item when beans are shuffled)
@@ -2147,7 +2149,11 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         else:
             location = world.get_location("Wasteland Bombchu Salesman")
             item_text = get_hint(get_item_generic_name(location.item), True).text
-            update_message_by_id(messages, 0x6077, "\x06\x41Well Come!\x04I am selling stuff, strange and \x01rare, from all over the world to \x01everybody. Today's special is...\x01\x05\x41"+ item_text + "\x05\x40! \x01\x04How about \x05\x41200 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
+            wrapped_item_text = line_wrap(item_text, False, False, False)
+            if wrapped_item_text != item_text:
+                update_message_by_id(messages, 0x6077, "\x06\x41Well Come!\x04I am selling stuff, strange and \x01rare. Today's special is...\x01\x05\x41"+ wrapped_item_text + "\x05\x40!\x04How about \x05\x41200 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
+            else:
+                update_message_by_id(messages, 0x6077, "\x06\x41Well Come!\x04I am selling stuff, strange and \x01rare, from all over the world to \x01everybody. Today's special is...\x01\x05\x41"+ wrapped_item_text + "\x05\x40! \x01\x04How about \x05\x41200 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
         update_message_by_id(messages, 0x6078, "Thank you very much!\x04The mark that will lead you to\x01the Spirit Temple is the \x05\x41flag on\x01the left \x05\x40outside the shop.\x01Be seeing you!\x02")
 
         rom.write_byte(rom.sym('SHUFFLE_MEDIGORON'), 0x01)
@@ -2159,7 +2165,11 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         else:
             location = world.get_location("GC Medigoron")
             item_text = get_hint(get_item_generic_name(location.item), True).text
-            update_message_by_id(messages, 0x304F, "For 200 Rupees, how about buying \x01\x05\x41" + item_text + "\x05\x40?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
+            wrapped_item_text = line_wrap(item_text, False, False, False)
+            if wrapped_item_text != item_text:
+                update_message_by_id(messages, 0x304F, "For 200 Rupees, how about buying...\x04\x05\x41" + wrapped_item_text + "\x05\x40?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
+            else:
+                update_message_by_id(messages, 0x304F, "For 200 Rupees, how about buying \x01\x05\x41" + item_text + "\x05\x40?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
 
         rom.write_byte(rom.sym('SHUFFLE_GRANNYS_POTION_SHOP'), 0x01)
         if 'unique_merchants' not in world.settings.misc_hints:
@@ -2167,7 +2177,11 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         else:
             location = world.get_location("Kak Granny Buy Blue Potion")
             item_text = get_hint(get_item_generic_name(location.item), True).text
-            update_message_by_id(messages, 0x500C, "How about \x05\x41100 Rupees\x05\x40 for\x01\x05\x41"+ item_text +"\x05\x40?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
+            wrapped_item_text = line_wrap(item_text, False, False, False)
+            if wrapped_item_text != item_text:
+                update_message_by_id(messages, 0x500C, "How about \x05\x41100 Rupees\x05\x40 for...\x04\x05\x41"+ wrapped_item_text +"\x05\x40?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
+            else:
+                update_message_by_id(messages, 0x500C, "How about \x05\x41100 Rupees\x05\x40 for\x01\x05\x41"+ item_text +"\x05\x40?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
 
     new_message = "All right. You don't have to play\x01if you don't want to.\x0B\x02"
     update_message_by_id(messages, 0x908B, new_message, 0x00)
@@ -2182,7 +2196,11 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         else:
             location = world.get_location("Market Treasure Chest Game Salesman")
             item_text = get_hint(get_item_generic_name(location.item), True).text
-            update_message_by_id(messages, 0x6D, "I seem to have misplaced my\x01keys, but I have a fun item to\x01sell instead.\x04How about \x05\x4110 Rupees\x05\x40 for\x01\x05\x41" + item_text + "\x05\x40?\x01\x1B\x05\x42Buy\x01Don't Buy\x05\x40\x02")
+            wrapped_item_text = line_wrap(item_text, False, False, False)
+            if wrapped_item_text != item_text:
+                update_message_by_id(messages, 0x6D, "I seem to have misplaced my\x01keys, but I have a fun item to\x01sell instead.\x01How about \x05\x4110 Rupees\x05\x40 for...\x04\x05\x41" + wrapped_item_text + "\x05\x40?\x01\x1B\x05\x42Buy\x01Don't Buy\x05\x40\x02")
+            else:
+                update_message_by_id(messages, 0x6D, "I seem to have misplaced my\x01keys, but I have a fun item to\x01sell instead.\x04How about \x05\x4110 Rupees\x05\x40 for\x01\x05\x41" + item_text + "\x05\x40?\x01\x1B\x05\x42Buy\x01Don't Buy\x05\x40\x02")
         update_message_by_id(messages, 0x908B, "That's OK!\x01More fun for me.\x0B\x02", 0x00)
         update_message_by_id(messages, 0x6E, "Wait, that room was off limits!\x02")
         update_message_by_id(messages, 0x704C, "I hope you like it!\x02")
@@ -2478,6 +2496,19 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     if world.settings.shuffle_individual_ocarina_notes:
         rom.write_byte(rom.sym('SHUFFLE_OCARINA_BUTTONS'), 1)
+        epona_notes = str(world.song_notes['Eponas Song'])
+        song_layout_in_byte_form = 0
+        if 'A' in epona_notes:
+            song_layout_in_byte_form |= 1 << 0
+        if '^' in epona_notes:
+            song_layout_in_byte_form |= 1 << 1
+        if 'v' in epona_notes:
+            song_layout_in_byte_form |= 1 << 2
+        if '<' in epona_notes:
+            song_layout_in_byte_form |= 1 << 3
+        if '>' in epona_notes:
+            song_layout_in_byte_form |= 1 << 4
+        rom.write_int16(rom.sym('EPONAS_SONG_NOTES'), song_layout_in_byte_form)
 
     # Sets the torch count to open the entrance to Shadow Temple
     if world.settings.easier_fire_arrow_entry:
@@ -2999,17 +3030,30 @@ def place_shop_items(rom: Rom, world: World, shop_items, messages, locations, in
                 [shop_item.description_message, shop_item.purchase_message])
 
             if item_display.dungeonitem:
-                split_item_name = item_display.name.split('(')
-                split_item_name[1] = '(' + split_item_name[1]
+                base_name, extra_name = item_display.name[:-1].split('(')
+
+                extra_name = {
+                    'Dodongos Cavern': "Dodongo's Cavern",
+                    'Jabu Jabus Belly': "Jabu Jabu's Belly",
+                    'Thieves Hideout': "Thieves' Hideout",
+                    'Ganons Castle': "Ganon's Castle",
+                    'Dodongos Cavern Staircase': "Dodongo's Cavern Staircase",
+                    'Ganons Castle Spirit Trial': "Ganon's Castle Spirit Trial",
+                    'Ganons Castle Light Trial': "Ganon's Castle Light Trial",
+                    'Ganons Castle Fire Trial': "Ganon's Castle Fire Trial",
+                    'Ganons Castle Shadow Trial': "Ganon's Castle Shadow Trial",
+                    'Ganons Castle Water Trial': "Ganon's Castle Water Trial",
+                    'Ganons Castle Forest Trial': "Ganon's Castle Forest Trial",
+                }.get(extra_name, extra_name)
 
                 if location.item.name == 'Ice Trap':
-                    split_item_name[0] = create_fake_name(split_item_name[0])
+                    base_name = create_fake_name(base_name)
 
                 if world.settings.world_count > 1:
-                    description_text = '\x08\x05\x41%s  %d Rupees\x01%s\x01\x05\x42Player %d\x05\x40\x01Special deal! ONE LEFT!\x09\x0A\x02' % (split_item_name[0], shop_item.price, split_item_name[1], location.item.world.id + 1)
+                    description_text = f'\x08\x05\x41{base_name}  {shop_item.price} Rupees\x01({extra_name})\x01\x05\x42Player {location.item.world.id + 1}\x05\x40\x01Special deal! ONE LEFT!\x09\x0A\x02'
                 else:
-                    description_text = '\x08\x05\x41%s  %d Rupees\x01%s\x01\x05\x40Special deal! ONE LEFT!\x01Get it while it lasts!\x09\x0A\x02' % (split_item_name[0], shop_item.price, split_item_name[1])
-                purchase_text = '\x08%s  %d Rupees\x09\x01%s\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02' % (split_item_name[0], shop_item.price, split_item_name[1])
+                    description_text = f'\x08\x05\x41{base_name}  {shop_item.price} Rupees\x01({extra_name})\x01\x05\x40Special deal! ONE LEFT!\x01Get it while it lasts!\x09\x0A\x02'
+                purchase_text = f'\x08{base_name}  {shop_item.price} Rupees\x09\x01({extra_name})\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02'
             else:
                 shop_item_name = get_simple_hint_no_prefix(item_display)
                 if location.item.name == 'Ice Trap':

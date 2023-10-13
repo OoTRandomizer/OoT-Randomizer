@@ -1,7 +1,7 @@
 {
     "name":                  "league",
     "gui_name":              "League",
-    "description":           "Hint Distribution for the S4 of League. 5 Always, 5 Path, 3 Barren, 7 Sometimes & Dual Hints weighted towards sometimes, 30/40/50 skull hints in house of skulltula",
+    "description":           "Hint Distribution for the S5 of League. 5 Always, 5 Path, 3 Barren, 7 Sometimes & Dual Hints weighted towards sometimes, 30/40/50 skull hints in house of skulltula",
     "add_locations":         [
         { "location": "Deku Theater Skull Mask", "types": ["always"] },
         { "location": "Sheik in Kakariko", "types": ["always"] }
@@ -14,6 +14,8 @@
         {"location": "Sheik at Colossus", "types": ["sometimes"]},
         {"location": "Sheik in Ice Cavern", "types": ["sometimes"]},
         {"location": "LH Sun", "types": ["sometimes"]},
+        {"location": "HC Great Fairy Reward", "types": ["sometimes"]},
+        {"location": "OGC Great Fairy Reward", "types": ["sometimes"]},
         {"location": "Kak 20 Gold Skulltula Reward", "types": ["sometimes"]},
         {"location": "GF HBA 1500 Points", "types": ["sometimes"]},
         {"location": "GC Maze Left Chest", "types": ["sometimes"]},
@@ -44,7 +46,8 @@
     ],
     "add_items":             [],
     "remove_items":          [
-        { "item": "Zeldas Lullaby", "types": ["goal"] }
+        { "item": "Zeldas Lullaby", "types": ["goal"] },
+        { "item": "Nocturne of Shadow", "types": ["goal"] }
     ],
     "dungeons_woth_limit":   2,
     "dungeons_barren_limit": 1,

@@ -45,10 +45,14 @@ void before_game_state_update() {
 }
 
 void after_game_state_update() {
-    draw_dungeon_info(&(z64_ctxt.gfx->overlay));
-    draw_triforce_count(&(z64_ctxt.gfx->overlay));
-    draw_silver_rupee_count(&z64_game, &(z64_ctxt.gfx->overlay));
-    draw_illegal_model_text(&(z64_ctxt.gfx->overlay));
+    // Checks if the prerender screen is being drawn before drawing new HUD things.
+    // Else this will cause graphical and/or lag issues on some emulators when pausing.
+    if (R_PAUSE_BG_PRERENDER_STATE != PAUSE_BG_PRERENDER_PROCESS) {
+        draw_dungeon_info(&(z64_ctxt.gfx->overlay));
+        draw_triforce_count(&(z64_ctxt.gfx->overlay));
+        draw_silver_rupee_count(&z64_game, &(z64_ctxt.gfx->overlay));
+        draw_illegal_model_text(&(z64_ctxt.gfx->overlay));
+    }
     give_ganon_boss_key();
 }
 

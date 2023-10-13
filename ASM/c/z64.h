@@ -40,7 +40,14 @@
 
 #define OFFSETOF(structure, member) ((size_t)&(((structure *)0)->member))
 
-
+#define REG_PAGES 6
+#define REGS_PER_PAGE 16
+#define REGS_PER_GROUP (REG_PAGES * REGS_PER_PAGE)
+#define REG_EDITOR_DATA ((int16_t *)0x801C6EA4)
+#define BASE_REG(n, r) REG_EDITOR_DATA[(n)*REGS_PER_GROUP + (r)]
+#define REG(r) BASE_REG(0, (r))
+#define SREG(r) BASE_REG(1, (r))
+#define R_PAUSE_BG_PRERENDER_STATE SREG(94)
 
 typedef struct
 {
@@ -1838,6 +1845,16 @@ typedef struct EnGSwitch
   /* 0x01C8 */ uint8_t effects[0x1130]; // EnGSwitchEffect[100]
 } EnGSwitch; // size = 0x12F8
 
+typedef enum {
+    /* 0 */ PAUSE_BG_PRERENDER_OFF, // Inactive, do nothing.
+    /* 1 */ PAUSE_BG_PRERENDER_SETUP, // The current frame is only drawn for the purpose of serving as the pause background.
+    /* 2 */ PAUSE_BG_PRERENDER_PROCESS, // The previous frame was PAUSE_BG_PRERENDER_SETUP, now apply prerender filters.
+    /* 3 */ PAUSE_BG_PRERENDER_READY, // The pause background is ready to be used.
+    /* 4 */ PAUSE_BG_PRERENDER_MAX
+} PauseBgPreRenderState;
+
+
+
 /* helper macros */
 #define LINK_IS_ADULT (z64_file.link_age == 0)
 #define SLOT(item) gItemSlots[item]
@@ -1922,6 +1939,7 @@ typedef struct EnGSwitch
 #define z64_ScalePitchAndTempo_addr             0x800C64A0
 #define Font_LoadChar_addr                      0x8005BCE4
 #define GetItem_Draw_addr                       0x800570C0
+#define z64_Audio_GetActiveSeqId_addr           0x800CAB18
 
 /* rom addresses */
 #define z64_icon_item_static_vaddr              0x007BD000
@@ -2004,6 +2022,7 @@ typedef void(*Message_ContinueTextbox_proc) (z64_game_t *play, uint16_t textId);
 typedef void(*PlaySFX_proc) (uint16_t sfxId);
 typedef void(*z64_ScalePitchAndTempo_proc)(float scaleTempoAndFreq, uint8_t duration);
 typedef void(*GetItem_Draw_proc)(z64_game_t *game, int16_t drawId);
+typedef uint16_t (*z64_Audio_GetActiveSeqId_proc)(uint8_t seqId);
 
 /* data */
 #define z64_file_mq             (*(OSMesgQueue*)      z64_file_mq_addr)
@@ -2089,6 +2108,7 @@ typedef void(*GetItem_Draw_proc)(z64_game_t *game, int16_t drawId);
 
 #define Message_ContinueTextbox ((Message_ContinueTextbox_proc)Message_ContinueTextbox_addr)
 #define z64_ScalePitchAndTempo        ((z64_ScalePitchAndTempo_proc)z64_ScalePitchAndTempo_addr)
+#define z64_Audio_GetActiveSeqId ((z64_Audio_GetActiveSeqId_proc)z64_Audio_GetActiveSeqId_addr)
 
 #define PlaySFX ((PlaySFX_proc)PlaySFX_addr)
 #define Font_LoadChar ((Font_LoadChar_proc)Font_LoadChar_addr)

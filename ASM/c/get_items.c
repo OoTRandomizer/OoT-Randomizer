@@ -424,8 +424,15 @@ void get_item(z64_actor_t *from_actor, z64_link_t *link, int8_t incoming_item_id
         row = get_item_row(item_id);
         if (row) {
             int16_t action_id = row->action_id;
-            if (CFG_ADULT_TRADE_SHUFFLE && action_id > 0 && from_actor->actor_id != 0x0A && IsAdultTradeItem(action_id)) {
-                if (action_id == Z64_ITEM_BIGGORON_SWORD) {
+            // Set adult trade item "traded" flags to prevent duping.
+            // Only necessary for full adult trade shuffle, except for Biggoron who always sets his flag.
+            if ((CFG_ADULT_TRADE_SHUFFLE || action_id == Z64_ITEM_BIGGORON_SWORD) // full adult trade shuffle on, or vanilla incoming item is Biggoron Sword
+                && action_id > 0 // filter invalid items
+                && from_actor->actor_id != 0x000A && from_actor->actor_id != 0x013D // filter chests (0x000A) and Medigoron (0x013D) as they aren't trading actors
+                // Fun fact, Medigoron's incoming item GI_GIANTS_KNIFE (0x0028) has the same action ID as Biggoron Sword, which could prevent trading to Biggoron
+                // if you talked to Medigoron first without this filter. Same thing happens without full adult trade shuffle and the Biggoron dupe fix above
+                && IsAdultTradeItem(action_id)) { // Only set traded flags for adult trade items. Child is handled separately.
+                if (action_id == Z64_ITEM_BIGGORON_SWORD) { // special case for biggoron sword as its ID isn't contiguous with the other trade items
                     TurnInTradeItem(Z64_ITEM_CLAIM_CHECK);
                 } else {
                     TurnInTradeItem(action_id - 1);
@@ -894,4 +901,24 @@ int give_sarias_gift() {
 
     // return 1 to skip the cutscene
     return OCARINAS_SHUFFLED || received_sarias_gift;
+}
+
+// called as part of the cutscene
+void fairy_ocarina_getitem() {
+    override_key_t lw_gift_from_saria = { .scene = 0xFF, .type = OVR_DELAYED, .flag = 0x02 };
+    override_t override = lookup_override_by_key(lw_gift_from_saria);
+    uint16_t resolved_item_id = resolve_upgrades(override);
+    switch (resolved_item_id) {
+        case 0x003B: { // Fairy Ocarina
+            z64_file.items[Z64_SLOT_OCARINA] = 0x07;
+            break;
+        }
+        case 0x000C: { // Ocarina of Time
+            z64_file.items[Z64_SLOT_OCARINA] = 0x08;
+            break;
+        }
+    }
+    item_row_t *item_row = get_item_row(resolved_item_id);
+    PLAYER_NAME_ID = override.value.base.player;
+    z64_DisplayTextbox(&z64_game, resolve_item_text_id(item_row, resolved_item_id, PLAYER_NAME_ID != PLAYER_ID), 0);
 }

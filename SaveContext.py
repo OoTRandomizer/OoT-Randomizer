@@ -288,7 +288,7 @@ class SaveContext:
 
     def give_item(self, world: World, item: str, count: int = 1) -> None:
         if item.endswith(')'):
-            item_base, implicit_count = item[:-1].split(' (', 1)
+            item_base, implicit_count = item[:-1].rsplit(' (', 1)
             if implicit_count.isdigit():
                 item = item_base
                 count *= int(implicit_count)

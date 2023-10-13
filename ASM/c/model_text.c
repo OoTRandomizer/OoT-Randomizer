@@ -46,9 +46,6 @@ void draw_illegal_model_text(z64_disp_buf_t *db) {
     //Set text to print and flush it
     text_print_size(text, draw_x, draw_y_text, text_width);
     text_flush_size(db, text_width, text_height, 0, 0);
-
-    gDPFullSync(db->p++);
-    gSPEndDisplayList(db->p++);
 }
 
 typedef struct Limb {

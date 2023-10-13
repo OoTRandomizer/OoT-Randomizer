@@ -18,8 +18,8 @@
         left: 0px;
         width: 100%;
         text-align: left;
-        padding-left: 0.375rem !important;
-        margin-right: 1.0rem !important;
+        padding-left: 5.25px !important;
+        margin-right: 14px !important;
       }
 
       .footerButtonWrapper {
@@ -27,13 +27,13 @@
       }
 
       button + button {
-        margin-left: 1rem;
+        margin-left: 14px;
       }
     }
 
-    @media (min-width: 40rem) {
+    @media (min-width: 560px) {
       .textInput-window {
-        width: 38rem;
+        width: 532px;
       }
     }
   }

@@ -1,7 +1,7 @@
 @fanfare_audioseq_size equ 0x1000
 @fanfare_audiobank_size equ 0x4800
 @fanfare_unk_size equ 0
-@bgm_audioseq_size equ 0x7000
+@bgm_audioseq_size equ 0xE000
 @bgm_audiobank_size equ 0x4800
 @bgm_unk_size equ 0
 
@@ -27,11 +27,11 @@ AUDIO_THREAD_INFO_MEM_SIZE:
 
 .align 0x10
 AUDIOBANK_TABLE_EXTENDED:
-.area 0x800, 0
+.area 0xA00, 0
 .endarea
 
 FONTLOADSTATUS_EXTENDED:
-.area 0x80, 0
+.area 0xA0, 0
 .endarea
 
 .align 0x10

@@ -85,15 +85,15 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
         'name'    : 'logic_adult_kokiri_gs_hovers',
         'tags'    : ("Kokiri Forest", "Gold Skulltulas", "Overworld", "Adult",),
         'tooltip' : '''\
-                    Can be obtained without Hookshot by using the Hover
-                    Boots off of one of the roots.
+                    The Skulltula can be obtained without Hookshot
+                    by using the Hover Boots off of one of the roots.
                     '''},
     'Adult Kokiri Forest GS with Nothing': {
         'name'    : 'logic_adult_kokiri_gs_nothing',
         'tags'    : ("Kokiri Forest", "Gold Skulltulas", "Overworld", "Adult",),
         'tooltip' : '''\
-                    Can be obtained without Hookshot by using a precise
-                    jump off of one of the roots.
+                    The Skulltula can be obtained without Hookshot by
+                    using a precise jump off of one of the roots.
                     '''},
     'Jump onto the Lost Woods Bridge as Adult with Nothing': {
         'name'    : 'logic_lost_woods_bridge',
@@ -131,7 +131,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
         'name'    : 'logic_man_on_roof',
         'tags'    : ("Kakariko Village", "Overworld", "Child", "Adult",),
         'tooltip' : '''\
-                    Can be reached by side-hopping off
+                    He can be reached by side-hopping off
                     the watchtower as either age, or by
                     jumping onto the potion shop's roof
                     from the ledge as adult.
@@ -151,7 +151,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
         'name'    : 'logic_windmill_poh',
         'tags'    : ("Kakariko Village", "Overworld", "Adult",),
         'tooltip' : '''\
-                    Can jump up to the spinning platform from
+                    You can jump up to the spinning platform from
                     below as adult.
                     '''},
     'Kakariko Rooftop GS with Hover Boots': {
@@ -273,7 +273,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
         'name'    : 'logic_child_rolling_with_strength',
         'tags'    : ("Goron City", "Overworld", "Child",),
         'tooltip' : '''\
-                    Use the bombflower on the stairs or near Medigoron.
+                    Use the bomb flower on the stairs or near Medigoron.
                     Timing is tight, especially without backwalking.
                     '''},
     'Stop Link the Goron with Din\'s Fire': {
@@ -312,7 +312,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
         'name'    : 'logic_crater_bolero_jump',
         'tags'    : ("Death Mountain Crater", "Overworld", "Adult",),
         'tooltip' : '''\
-                    As Adult , using a shield to drop a pot while you have
+                    As Adult, using a shield to drop a pot while you have
                     the perfect speed and position, the pot can
                     push you that little extra distance you
                     need to jump across the gap in the bridge.
@@ -329,7 +329,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
         'name'    : 'logic_crater_boulder_skip',
         'tags'    : ("Death Mountain Crater", "Overworld", "Adult",),
         'tooltip' : '''\
-                    As adult, With careful positioning, you can jump to the ledge
+                    As adult, with careful positioning, you can jump to the ledge
                     where the boulder is, then use repeated ledge grabs
                     to shimmy to a climbable ledge. This trick supersedes
                     "Death Mountain Crater Upper to Lower with Hammer".
@@ -339,7 +339,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
         'tags'    : ("Zora's River", "Overworld", "Adult",),
         'tooltip' : '''\
                     Adult can reach this PoH with a precise jump,
-                    no Hover Boots required.
+                    no Hover Boots or Bean required.
                     '''},
     'Zora\'s River Upper Freestanding PoH as Adult with Nothing': {
         'name'    : 'logic_zora_river_upper',
@@ -359,7 +359,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
         'name'    : 'logic_zora_with_hovers',
         'tags'    : ("Zora's River", "Overworld", "Adult",),
         'tooltip' : '''\
-                    Can hover behind the waterfall as adult.
+                    You can hover behind the waterfall as adult.
                     '''},
     'Zora\'s River Rupees with Jump Dive': {
         'name'    : 'logic_zora_river_rupees',
@@ -491,13 +491,14 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     to aim more carefully.
                     '''},
 
-    # Dungeons
+    # Dungeon tricks
 
     'Deku Tree Basement Vines GS with Jump Slash': {
         'name'    : 'logic_deku_basement_gs',
         'tags'    : ("Deku Tree", "Gold Skulltulas", "Vanilla Dungeons", "Child", "Adult",),
         'tooltip' : '''\
-                    Can be defeated by doing a precise jump slash.
+                    The Skulltula can be defeated by doing
+                    a precise jump slash.
                     '''},
     'Deku Tree Basement without Slingshot': {
         'name'    : 'logic_deku_b1_skip',
@@ -703,7 +704,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
         'tooltip' : '''\
                     Boomerang can reach the cow switch to spawn the chest by
                     targeting the cow, jumping off of the ledge where the
-                    chest spawns, and throwing the Boomerang in midair. This
+                    chest spawns, and throwing the Boomerang in mid-air. This
                     is only relevant with Jabu Jabu's Belly dungeon shortcuts
                     enabled.
                     '''},
@@ -796,8 +797,8 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     to this ledge from upper balconies. If done precisely
                     enough, it is not necessary to take fall damage.
                     In MQ, this skips a Longshot requirement.
-                    In Vanilla, this can skip a Hookshot requirement in
-                    entrance randomizer.
+                    In Vanilla, this can skip a Hookshot requirement if
+                    dungeon entrances are randomized.
                     '''},
     'Forest Temple East Courtyard Door Frame with Hover Boots': {
         'name'    : 'logic_forest_door_frame',
@@ -1120,6 +1121,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
         'tooltip' : '''\
                     If you stand on the very edge of the platform, this
                     Gold Skulltula can be obtained with only the Boomerang.
+                    This trick is only relevant if dungeon entrances are randomized.
                     '''},
     'Water Temple River GS without Iron Boots': {
         'name'    : 'logic_water_river_gs',
@@ -1546,7 +1548,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
         'name'    : 'logic_ice_frozen_rupee',
         'tags'    : ("Ice Cavern", "Vanilla Dungeons", "Freestandings", "Child", "Adult",),
         'tooltip' : '''\
-                    This rupee can be obtain with no items by
+                    This rupee can be obtained with no items by
                     side-hopping into the corner behind the ice.
                     '''},
     'Ice Cavern Frozen Pot with No Additional Items': {

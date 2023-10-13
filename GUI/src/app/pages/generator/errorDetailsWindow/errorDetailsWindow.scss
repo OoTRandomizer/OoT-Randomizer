@@ -26,8 +26,8 @@
         max-height: 200px;
         font-family: "Courier New", sans-serif;
         font-weight: 500;
-        font-size: 0.9rem;
-        line-height: 1rem;
+        font-size: 12.6px;
+        line-height: 14px;
       }
 
       .footerButtonWrapper {
@@ -35,13 +35,13 @@
       }
 
       button + button {
-        margin-left: 1rem;
+        margin-left: 14px;
       }
     }
 
-    @media (min-width: 40rem) {
+    @media (min-width: 560px) {
       .error-window {
-        width: 38rem;
+        width: 532px;
       }
     }
   }

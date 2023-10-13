@@ -31,7 +31,7 @@ def patch_targeting(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: di
 
 def patch_dpad(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]) -> None:
     # Display D-Pad HUD
-    if settings.display_dpad:
+    if settings.display_dpad != 'off':
         rom.write_byte(symbols['CFG_DISPLAY_DPAD'], 0x01)
     else:
         rom.write_byte(symbols['CFG_DISPLAY_DPAD'], 0x00)
@@ -962,6 +962,13 @@ def patch_yaxis(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[s
         rom.write_byte(symbols['CFG_UNINVERT_YAXIS_IN_FIRST_PERSON_CAMERA'], 0x00)
     log.uninvert_y_axis_in_first_person_camera = settings.uninvert_y_axis_in_first_person_camera
 
+def patch_dpad_left(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]) -> None:
+    if settings.display_dpad == 'left':
+        rom.write_byte(symbols['CFG_DPAD_ON_THE_LEFT'], 0x01)
+    else:
+        rom.write_byte(symbols['CFG_DPAD_ON_THE_LEFT'], 0x00)
+    log.display_dpad = settings.display_dpad
+
 legacy_cosmetic_data_headers: list[int] = [
     0x03481000,
     0x03480810,
@@ -1143,6 +1150,17 @@ patch_sets[0x1F073FDF] = {
     "symbols": {
         **patch_sets[0x1F073FDE]["symbols"],
         "CFG_UNINVERT_YAXIS_IN_FIRST_PERSON_CAMERA": 0x0069,
+    }
+}
+
+# 7.1.144
+patch_sets[0x1F073FE0] = {
+    "patches": patch_sets[0x1F073FDF]["patches"] + [
+        patch_dpad_left,
+    ],
+    "symbols": {
+        **patch_sets[0x1F073FDF]["symbols"],
+        "CFG_DPAD_ON_THE_LEFT": 0x006A,
     }
 }
 

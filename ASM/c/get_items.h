@@ -22,7 +22,7 @@ enum override_type {
 };
 
 
-typedef union overide_key_t {
+typedef union override_key_t {
     uint32_t all;
     struct {
         uint8_t scene;

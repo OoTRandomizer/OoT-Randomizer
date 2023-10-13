@@ -9,7 +9,8 @@ extern uint32_t FREE_BOMBCHU_DROPS;
 // The layout of this struct is part of the definition of the co-op context.
 // If you change it, bump the co-op context version in coop_state.asm and update Notes/coop-ctx.md
 typedef struct {
-    uint16_t _pad : 10;  // reserved for future use
+    uint16_t _pad : 9;  // reserved for future use
+    bool chu_bag : 1;  // added in version 6 of the co-op context
     uint8_t ocarina : 2;  // 0 = no ocarina, 1 = fairy ocarina, 2 = ocarina of time
     uint8_t magic : 2;  // 0 = no magic, 1 = single magic, 2 = double magic
     uint8_t sticks : 2;  // 0 = no sticks, 1 = 10, 2 = 20, 3 = 30
@@ -162,7 +163,7 @@ uint16_t health_upgrade_cap(z64_file_t *save, override_t override) {
 }
 
 uint16_t bombchus_to_bag(z64_file_t *save, override_t override) {
-    if (save->items[Z64_SLOT_BOMBCHU] == -1 && FREE_BOMBCHU_DROPS) {
+    if (FREE_BOMBCHU_DROPS && ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->items[Z64_SLOT_BOMBCHU] == -1 : !MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].chu_bag)) {
         // First chu pack found, convert to bombchu bag to
         // tell player about chu drops. Different bags
         // to preserve original chu refill count.

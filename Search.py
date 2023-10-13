@@ -135,7 +135,7 @@ class Search:
                     # If it found a new tod, make sure we try other entrances again.
                     # Probably would take too long and not be worth it if we only grabbed the exits
                     # for the given world...
-                    if exit.connected_region.provides_time and not regions[exit.world.get_region('Root')] & exit.connected_region.provides_time:
+                    if exit.connected_region.provides_time and ~regions[exit.world.get_region('Root')] & exit.connected_region.provides_time:
                         exit_queue.extend(failed)
                         failed = []
                         regions[exit.world.get_region('Root')] |= exit.connected_region.provides_time

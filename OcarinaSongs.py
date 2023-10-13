@@ -236,6 +236,27 @@ class Song:
         self.playback.append({'note': 0xFF, 'duration': duration_needed, 'volume': 0})
         self.format_playback_data()
 
+    def fix_song_duration(self, duration: int) -> None:
+        if self.total_duration == duration:
+            return
+
+        # If too short, we just increase it.
+        if self.total_duration < duration:
+            self.increase_duration_to(duration)
+            return
+
+        # Else reduce the duration equitably.
+        total_duration_to_cut = self.total_duration - duration
+        duration_to_cut_for_each_note = total_duration_to_cut // len(self.playback) + 1
+        for note_index, note in enumerate(self.playback):
+            if note['duration'] <= duration_to_cut_for_each_note:
+                raise ShuffleError('Could not fix song duration')
+            note['duration'] -= duration_to_cut_for_each_note
+        self.format_playback_data()
+        duration_to_add_back_on_last = duration - self.total_duration
+        self.playback[-1]['duration'] += duration_to_add_back_on_last
+        self.format_playback_data()
+
     def two_piece_playback(self, piece: list[int], extra_position: str = 'none', activation_transform: ActivationTransform = identity,
                            playback_transform: PlaybackTransform = identity) -> None:
         piece_length = len(piece)
@@ -416,9 +437,13 @@ def patch_songs(world: World, rom: Rom) -> None:
         if str(song) == SONG_TABLE[name][2]:
             continue  # song activation is vanilla (possibly because this row wasn't randomized), don't randomize playback
 
-        # fix the song of time and sun's song
-        if name == 'Song of Time' or name == 'Suns Song':
+        # fix the song of time
+        if name == 'Song of Time':
             song.increase_duration_to(260)
+
+        # Suns Song having a different length than vanilla duration can lead to it sometimes not working, notably in MQ Spirit Symphony room.
+        if name == 'Suns Song':
+            song.fix_song_duration(208)
 
         # write the song to the activation table
         cur_offset = ACTIVATION_START + SONG_TABLE[name][0] * ACTIVATION_LENGTH

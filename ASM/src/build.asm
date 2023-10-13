@@ -65,7 +65,6 @@ RANDO_CONTEXT:
 .include "scarecrow.asm"
 .include "empty_bomb.asm"
 .include "initial_save.asm"
-.include "textbox.asm"
 .include "fishing.asm"
 .include "bgs_fix.asm"
 .include "chus_in_logic.asm"
@@ -128,6 +127,7 @@ RANDO_CONTEXT:
 
 .include "armos.asm"
 .include "ocarina_buttons.asm"
+.include "fairy_ocarina.asm"
 
 
 .align 0x10

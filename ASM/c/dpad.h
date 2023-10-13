@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "ocarina_buttons.h"
 #include "item_draw_functions.h"
+extern uint8_t CFG_DPAD_ON_THE_LEFT;
 
 // PLAYER_STATE1_0 : Scene transition
 // PLAYER_STATE1_SWINGING_BOTTLE
@@ -73,6 +74,6 @@ extern uint16_t CFG_CHILD_TRADE_SHUFFLE;
 #define CAN_USE_CHILD_TRADE (z64_game.pause_ctxt.state == 0 && z64_file.items[Z64_SLOT_CHILD_TRADE] >= Z64_ITEM_WEIRD_EGG && z64_file.items[Z64_SLOT_CHILD_TRADE] <= Z64_ITEM_MASK_OF_TRUTH && !z64_game.restriction_flags.trade_items && ((z64_link.state_flags_1 & BLOCK_ITEMS) == 0))
 
 void handle_dpad();
-void draw_dpad();
+void draw_dpad_and_menu_utilities();
 
 #endif

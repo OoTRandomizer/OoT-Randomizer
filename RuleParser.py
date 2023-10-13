@@ -53,7 +53,7 @@ def load_aliases() -> None:
 
 
 def isliteral(expr: ast.expr) -> bool:
-    return isinstance(expr, (ast.Num, ast.Str, ast.Bytes, ast.NameConstant))
+    return isinstance(expr, ast.Constant)
 
 
 class Rule_AST_Transformer(ast.NodeTransformer):
@@ -111,8 +111,8 @@ class Rule_AST_Transformer(ast.NodeTransformer):
         else:
             raise Exception('Parse Error: invalid node name %s' % node.id, self.current_spot, ast.dump(node, False))
 
-    def visit_Str(self, node: ast.Str) -> Any:
-        esc = escape_name(node.s)
+    def visit_Str(self, node: ast.Constant) -> Any:
+        esc = escape_name(node.value)
         if esc not in ItemInfo.solver_ids:
             self.events.add(esc.replace('_', ' '))
             Item(esc, event=True)
@@ -121,13 +121,13 @@ class Rule_AST_Transformer(ast.NodeTransformer):
                 value=ast.Name(id='state', ctx=ast.Load()),
                 attr='has',
                 ctx=ast.Load()),
-            args=[ast.Name(id=escape_name(node.s), ctx=ast.Load())],
+            args=[ast.Name(id=escape_name(node.value), ctx=ast.Load())],
             keywords=[])
 
     # python 3.8 compatibility: ast walking now uses visit_Constant for Constant subclasses
     # this includes Num, Str, NameConstant, Bytes, and Ellipsis. We only handle Str.
     def visit_Constant(self, node: ast.Constant) -> Any:
-        if isinstance(node, ast.Str):
+        if isinstance(node.value, str):
             return self.visit_Str(node)
         return node
 
@@ -137,12 +137,12 @@ class Rule_AST_Transformer(ast.NodeTransformer):
 
         item, count = node.elts
 
-        if not isinstance(item, (ast.Name, ast.Str)):
+        if not isinstance(item, ast.Name) and not (isinstance(item, ast.Constant) and isinstance(item.value, str)):
             raise Exception('Parse Error: first value must be an item. Got %s' % item.__class__.__name__, self.current_spot.name, ast.dump(node, False))
-        if isinstance(item, ast.Str):
-            item = ast.Name(id=escape_name(item.s), ctx=ast.Load())
+        if isinstance(item, ast.Constant) and isinstance(item.value, str):
+            item = ast.Name(id=escape_name(item.value), ctx=ast.Load())
 
-        if not (isinstance(count, ast.Name) or isinstance(count, ast.Num)):
+        if not (isinstance(count, ast.Name) or (isinstance(count, ast.Constant) and isinstance(count.value, int))):
             raise Exception('Parse Error: second value must be a number. Got %s' % item.__class__.__name__, self.current_spot.name, ast.dump(node, False))
 
         if isinstance(count, ast.Name):
@@ -177,8 +177,6 @@ class Rule_AST_Transformer(ast.NodeTransformer):
                     val = arg_val.id
                 elif isinstance(arg_val, ast.Constant):
                     val = repr(arg_val.value)
-                elif isinstance(arg_val, ast.Str):
-                    val = repr(arg_val.s)
                 else:
                     raise Exception('Parse Error: invalid argument %s' % ast.dump(arg_val, False),
                             self.current_spot, ast.dump(node, False))
@@ -211,11 +209,11 @@ class Rule_AST_Transformer(ast.NodeTransformer):
                     child = self.visit(child)
                 elif child.id in escaped_items:
                     logging.getLogger('').debug(f'Call? {node.func.id} with {child.id}')
-                    child = ast.Str(escaped_items[child.id])
+                    child = ast.Constant(escaped_items[child.id])
                 else:
                     logging.getLogger('').debug(f'Call? {node.func.id} with {child.id}')
-                    child = ast.Str(child.id.replace('_', ' '))
-            elif not isinstance(child, ast.Str):
+                    child = ast.Constant(child.id.replace('_', ' '))
+            elif not (isinstance(child, ast.Constant) and isinstance(child.value, str)):
                 child = self.visit(child)
             new_args.append(child)
 
@@ -232,7 +230,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
                         ctx=ast.Load()),
                     attr=node.value.id,
                     ctx=ast.Load()),
-                slice=ast.Index(value=ast.Str(s.id.replace('_', ' '))),
+                slice=ast.Index(value=ast.Constant(s.id.replace('_', ' '))),
                 ctx=node.ctx)
         else:
             return node
@@ -240,8 +238,8 @@ class Rule_AST_Transformer(ast.NodeTransformer):
     def visit_Compare(self, node: ast.Compare) -> Any:
         def escape_or_string(n: ast.AST) -> Any:
             if isinstance(n, ast.Name) and n.id in escaped_items:
-                return ast.Str(escaped_items[n.id])
-            elif not isinstance(n, ast.Str):
+                return ast.Constant(escaped_items[n.id])
+            elif not (isinstance(n, ast.Constant) and isinstance(n.value, str)):
                 return self.visit(n)
             return n
 
@@ -250,7 +248,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
                 and isinstance(node.left, ast.Name) and isinstance(node.comparators[0], ast.Name)
                 and node.left.id not in self.world.__dict__ and node.comparators[0].id not in self.world.__dict__
                 and node.left.id not in self.world.settings.settings_dict and node.comparators[0].id not in self.world.settings.settings_dict):
-            return ast.NameConstant(node.left.id == node.comparators[0].id)
+            return ast.Constant(node.left.id == node.comparators[0].id)
 
         node.left = escape_or_string(node.left)
         node.comparators = list(map(escape_or_string, node.comparators))
@@ -294,8 +292,8 @@ class Rule_AST_Transformer(ast.NodeTransformer):
         # if any elt is True(And)/False(Or), we can omit it
         # if any is False(And)/True(Or), the whole node can be replaced with it
         for elt in list(node.values):
-            if isinstance(elt, ast.Str):
-                items.add(escape_name(elt.s))
+            if isinstance(elt, ast.Constant) and isinstance(elt.value, str):
+                items.add(escape_name(elt.value))
             elif (isinstance(elt, ast.Name) and elt.id not in rule_aliases
                     and elt.id not in self.world.__dict__
                     and elt.id not in self.world.settings.settings_dict
@@ -306,15 +304,15 @@ class Rule_AST_Transformer(ast.NodeTransformer):
                 # It's possible this returns a single item check,
                 # but it's already wrapped in a Call.
                 elt = self.visit(elt)
-                if isinstance(elt, ast.NameConstant):
+                if isinstance(elt, ast.Constant) and isinstance(elt.value, bool):
                     if elt.value == early_return:
                         return elt
                     # else omit it
                 elif (isinstance(elt, ast.Call) and isinstance(elt.func, ast.Attribute)
                         and elt.func.attr in ('has', groupable) and len(elt.args) == 1):
                     args = elt.args[0]
-                    if isinstance(args, ast.Str):
-                        items.add(escape_name(args.s))
+                    if isinstance(args, ast.Constant) and isinstance(args.value, str):
+                        items.add(escape_name(args.value))
                     elif isinstance(args, ast.Name):
                         items.add(args.id)
                     else:
@@ -327,7 +325,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
         # package up the remaining items and values
         if not items and not new_values:
             # all values were True(And)/False(Or)
-            return ast.NameConstant(not early_return)
+            return ast.Constant(not early_return)
 
         if items:
             node.values = [ast.Call(
@@ -438,9 +436,9 @@ class Rule_AST_Transformer(ast.NodeTransformer):
     # Creates an internal event at the remote region and depends on it.
     def at(self, node: ast.Call) -> ast.Call:
         # Cache this under the target (region) name
-        if len(node.args) < 2 or not isinstance(node.args[0], ast.Str):
+        if len(node.args) < 2 or not (isinstance(node.args[0], ast.Constant) and isinstance(node.args[0].value, str)):
             raise Exception('Parse Error: invalid at() arguments', self.current_spot.name, ast.dump(node, False))
-        return self.replace_subrule(node.args[0].s, node.args[1])
+        return self.replace_subrule(node.args[0].value, node.args[1])
 
     # here(rule)
     # Creates an internal event in the same region and depends on it.
@@ -456,14 +454,14 @@ class Rule_AST_Transformer(ast.NodeTransformer):
             # tod has DAY or (tod == NONE and (ss or find a path from a provider))
             # parsing is better than constructing this expression by hand
             return ast.parse("(tod & TimeOfDay.DAY) if tod else ((state.has_all_of((Ocarina, Suns_Song)) and state.has_all_notes_for_song('Suns Song')) or state.search.can_reach(spot.parent_region, age=age, tod=TimeOfDay.DAY))", mode='eval').body
-        return ast.NameConstant(True)
+        return ast.Constant(True)
 
     def at_dampe_time(self, node: ast.Call) -> ast.expr:
         if self.world.ensure_tod_access:
             # tod has DAMPE or (tod == NONE and (find a path from a provider))
             # parsing is better than constructing this expression by hand
             return ast.parse("(tod & TimeOfDay.DAMPE) if tod else state.search.can_reach(spot.parent_region, age=age, tod=TimeOfDay.DAMPE)", mode='eval').body
-        return ast.NameConstant(True)
+        return ast.Constant(True)
 
     def at_night(self, node: ast.Call) -> ast.expr:
         if self.current_spot.type == 'GS Token' and self.world.settings.logic_no_night_tokens_without_suns_song:
@@ -473,7 +471,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
             # tod has DAMPE or (tod == NONE and (ss or find a path from a provider))
             # parsing is better than constructing this expression by hand
             return ast.parse("(tod & TimeOfDay.DAMPE) if tod else ((state.has_all_of((Ocarina, Suns_Song)) and state.has_all_notes_for_song('Suns Song')) or state.search.can_reach(spot.parent_region, age=age, tod=TimeOfDay.DAMPE))", mode='eval').body
-        return ast.NameConstant(True)
+        return ast.Constant(True)
 
     # Parse entry point
     # If spot is None, here() rules won't work.

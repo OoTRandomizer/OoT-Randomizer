@@ -124,13 +124,13 @@
         background-color: nb-theme(color-basic-100) !important;
         display: block;
         width: 100%;
-        font-size: 1rem;
+        font-size: 14px;
         line-height: 1.5;
         color: nb-theme(color-basic-600);
         background-clip: padding-box;
-        border-radius: 0.25rem;
+        border-radius: 3.5px;
         transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
-        padding: 0.75rem 1.125rem;
+        padding: 10.5px 15.75px;
         font-family: Roboto, "Helvetica Neue", sans-serif;
         font-weight: 400;
       }
@@ -163,10 +163,10 @@
               color: nb-theme(color-basic-100);
             }
 
-            padding: 0.5rem 1.25rem;
-            font-size: .75rem;
+            padding: 7px 17.5px;
+            font-size: 10.5px;
             line-height: 1.25;
-            border-radius: 0.75rem;
+            border-radius: 10.5px;
             color: nb-theme(color-basic-100);
             font-weight: nb-theme(picker-font-weight);
             font-family: Exo;
@@ -209,8 +209,8 @@
 
       input.form-control.ng-valid.size-medium.status-basic.shape-rectangle {
         max-width: unset;
-        border-radius: 0.17rem;
-        padding: 0.75rem 1.125rem;
+        border-radius: 2.38px;
+        padding: 10.5px 15.75px;
         height: 28px;
         margin: 1px 0 9px 0;
         background-color: white;
@@ -219,38 +219,38 @@
       nb-dialog-container {
         input.size-small.status-basic.shape-rectangle {
           line-height: unset;
-          padding: 0.375rem 1.125rem;
+          padding: 5.25px 15.75px;
         }
 
         nb-card-header {
           border: 0;
-          padding: 1.25rem;
+          padding: 17.5px;
           font-family: Exo;
-          font-size: 1.125rem;
+          font-size: 15.75px;
           font-weight: 600;
 
           button[nbbutton] {
-            padding: 0.5rem 1.25rem;
-            font-size: 0.75rem;
+            padding: 7px 17.5px;
+            font-size: 10.5px;
             box-shadow: unset;
           }
         }
 
         nb-card-footer {
           border: 0;
-          padding: 1.25rem;
+          padding: 17.5px;
         }
 
         .footerButtonWrapper {
           padding: 0;
           font-family: Exo;
-          font-size: 1.125rem;
+          font-size: 15.75px;
           font-weight: 600;
 
           button[nbbutton].shape-rectangle {
-            line-height: 1.0rem;
-            padding: 0.75rem 1.5rem;
-            font-size: 0.875rem;
+            line-height: 14px;
+            padding: 10.5px 21px;
+            font-size: 12.25px;
 
             &.status-basic, &.status-primary {
               background-color: nb-theme(color-warning-200);
@@ -268,7 +268,7 @@
             }
 
             &.status-danger {
-              padding: 0.75rem 1.5rem;
+              padding: 10.5px 21px;
               background-image: unset;
               box-shadow: unset;
             }
@@ -282,13 +282,13 @@
         button[nbbutton] {
           font-family: Exo;
           font-weight: 500;
-          font-size: 0.875rem;
+          font-size: 12.25px;
           background-image: unset;
 
           &.status-danger {
-            font-size: 0.875rem;
+            font-size: 12.25px;
             line-height: 1.25;
-            border-radius: 0.75rem;
+            border-radius: 10.5px;
             background-color: nb-theme(color-warning-900);
             border-color: nb-theme(color-warning-900);
             color: nb-theme(color-success-700);
@@ -302,9 +302,9 @@
 
       input.size-small.status-basic.shape-rectangle {
         font-family: Roboto, "Helvetica Neue", sans-serif;
-        border-radius: 0.17rem;
-        font-size: 0.875rem;
-        padding: 0.1rem 1.125rem;
+        border-radius: 2.38px;
+        font-size: 12.25px;
+        padding: 1.4px 15.75px;
         position: relative;
         left: 0;
         max-width: unset;
@@ -337,8 +337,8 @@
           min-width: 30px;
           width: auto;
           text-align: center;
-          padding-top: 0.15rem;
-          padding-bottom: 0.15rem;
+          padding-top: 2.1px;
+          padding-bottom: 2.1px;
         }
       }
 
@@ -405,7 +405,7 @@
         }
 
         nb-layout-column {
-          padding: 0 2.25rem 0;
+          padding: 0 31.5px 0;
         }
       }
 
@@ -421,12 +421,12 @@
 
       nb-card {
         border: 0;
-        font-size: 1rem;
+        font-size: 14px;
         line-height: 1.25;
         background: nb-theme(background-basic-color-1);
         color: #000;
-        margin-bottom: 1.5rem;
-        border-radius: 0.17rem;
+        margin-bottom: 21px;
+        border-radius: 2.38px;
         box-shadow: none;
         font-weight: 400;
 
@@ -441,7 +441,7 @@
 
         nb-option {
           background-color: nb-theme(color-basic-700);
-          padding: 0.75rem 1.5rem;
+          padding: 10.5px 21px;
           -webkit-user-select: none;
           -moz-user-select: none;
           user-select: none;
@@ -465,8 +465,8 @@
 
       .form-control.ng-pristine.ng-valid.size-medium.status-basic.shape-rectangle {
         &.ng-untouched, &.ng-touched {
-          border-radius: 0.17rem;
-          padding: 0.75rem 1.125rem;
+          border-radius: 2.38px;
+          padding: 10.5px 15.75px;
           height: 28px;
           margin: 1px 0 9px 0;
           background-color: white;
@@ -492,9 +492,9 @@
             background-color: nb-theme(color-warning-200);
             border-color: nb-theme(color-warning-200);
             color: nb-theme(color-info-300);
-            padding: 0.75rem 1.5rem;
+            padding: 10.5px 21px;
             font-family: Exo;
-            font-size: 1rem;
+            font-size: 14px;
             font-weight: 500;
           }
 
@@ -527,6 +527,9 @@
       }
 
       [nbButton].appearance-filled.status-info {
+        font-family: Exo;
+        font-weight: 500;
+        font-size: 14px;
         color: nb-theme(color-info-300);
         background-color: nb-theme(color-info-500);
         border-color: nb-theme(color-info-500);
@@ -534,9 +537,9 @@
       }
 
       button.size-small.status-info.shape-rectangle {
-        font-size: 0.875rem;
+        font-size: 12.25px;
         font-weight: 500;
-        padding: 0.275rem 1.5rem;
+        padding: 3.85px 21px;
         font-family: Exo;
         letter-spacing: 0.4px;
         background-color: nb-theme(color-info-500);
@@ -571,7 +574,7 @@
         position: fixed;
         bottom: 0;
         left: 0;
-        padding: 1.25rem;
+        padding: 17.5px;
         height: 40px;
         width: 100%;
         background: nb-theme(color-warning-800);
@@ -584,7 +587,7 @@
 
       nb-tab {
         font-family: Roboto, "Helvetica Neue", sans-serif;
-        font-size: 1rem;
+        font-size: 14px;
 
         h3 {
           font-family: Exo;
@@ -627,14 +630,14 @@
       nb-tabset a.tab-link {
         background-color: transparent;
         cursor: pointer;
-        padding: 1rem 1rem 0.6rem 1rem;
+        padding: 14px 14px 8.4px 14px;
         color: nb-theme(color-basic-1000);
         font-family: Exo;
-        font-size: 1.125rem;
+        font-size: 15.75px;
         font-weight: 700;
-        line-height: 1rem;
+        line-height: 14px;
         text-transform: uppercase;
-        margin-top: 0.5rem;
+        margin-top: 7px;
       }
 
       mat-grid-tile.mat-grid-tile {
@@ -692,6 +695,6 @@
   }
 }
 
-html {
+ngx-app {
   font-size: 14px;
 }

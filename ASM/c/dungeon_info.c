@@ -845,9 +845,5 @@ void draw_dungeon_info(z64_disp_buf_t *db) {
     }
 
     // Finish
-
     text_flush(db);
-
-    gDPFullSync(db->p++);
-    gSPEndDisplayList(db->p++);
 }

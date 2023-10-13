@@ -4,7 +4,8 @@
     "description":           "Hint distribution for weekly races. 5 Goal hints, 3 Barren hints, 6 Entrance/Sometimes hints, 6 Always hints (including Skull Mask and Sheik in Kakariko).",
     "add_locations":         [
         { "location": "Deku Theater Skull Mask", "types": ["always"] },
-        { "location": "Sheik in Kakariko", "types": ["always"] }
+        { "location": "Sheik in Kakariko", "types": ["always"] },
+        { "location": "DMC Deku Scrub", "types": ["always"] }
     ],
     "remove_locations":      [
         { "location": "Ganons Castle Shadow Trial Golden Gauntlets Chest", "types": ["sometimes"] },

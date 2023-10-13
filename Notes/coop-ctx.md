@@ -1,6 +1,6 @@
 The **co-op context** is a region of memory where a portion of the randomizer's configuration variables are stored in a versioned layout defined below. It is the interface used by emulator plugins to implement [Multiworld](https://wiki.ootrandomizer.com/index.php?title=Multiworld).
 
-The starting address of the co-op context is listed at address `0x8040_0000` (at the start of the randomizer context). On versions of the randomizer before this feature was added, the starting address is given as zero. At that address, a 4-byte integer can be found. This is the version number of the co-op context and defines the layout of the remainder of the context according to the sections below. The current version is 5.
+The starting address of the co-op context is listed at address `0x8040_0000` (at the start of the randomizer context). On versions of the randomizer before this feature was added, the starting address is given as zero. At that address, a 4-byte integer can be found. This is the version number of the co-op context and defines the layout of the remainder of the context according to the sections below. The current version is 6.
 
 # Version 1
 
@@ -14,7 +14,7 @@ The starting address of the co-op context is listed at address `0x8040_0000` (at
 |`0x0e`|`OUTGOING_PLAYER`|1|`0x0002`|The world number of the outgoing item's recipient, or `0` if no item is being sent. The multiworld plugin should set this to `0` after handling an outgoing item.|
 |`0x10`|`PLAYER_NAMES`|1|`0x0800`|An array of 256 player names, each 8 bytes long, that must be populated by the multiworld plugin. `PLAYER_NAME_ID` is used as an index into this array, and index 0 is unused.|
 
-# Versions 2–5
+# Versions 2–6
 
 |Offset|Name|Min version|Size|Description|
 |--:|---|--:|--:|---|
@@ -29,4 +29,4 @@ The starting address of the co-op context is listed at address `0x8040_0000` (at
 |`0x0012`|`OUTGOING_PLAYER`|2|`0x0002`|The world number of the outgoing item's recipient, or `0` if no item is being sent. The multiworld plugin should set this to `0` after handling an outgoing item.|
 |`0x0014`|`PLAYER_NAMES`|2|`0x0800`|An array of 256 player names, each 8 bytes long, that must be populated by the multiworld plugin. `PLAYER_NAME_ID` is used as an index into this array, and index 0 is unused.|
 |`0x0814`|`CFG_FILE_SELECT_HASH`|4|`0x0005`|The 5 icons displayed at the top of the file select screen, represented as indices into the `HASH_ICONS` list in Spoiler.py.|
-|`0x081c`|`MW_PROGRESSIVE_ITEMS_STATE`|5|`0x0400`|The multiworld plugin can store data representing the state of progressive items of all players here. If `MW_PROGRESSIVE_ITEMS_ENABLE` is set to `1`, the game will use this to render outgoing progressive items instead of basing them on the sender's inventory. The data is an array of 256 bitfields, each 4 bytes long, with the entry at index 0 unused. For documentation of the bitflags, see `mw_progressive_items_state_t` in `item_upgrades.c`.|
+|`0x081c`|`MW_PROGRESSIVE_ITEMS_STATE`|5|`0x0400`|The multiworld plugin can store data representing the state of progressive items of all players here. If `MW_PROGRESSIVE_ITEMS_ENABLE` is set to `1`, the game will use this to render outgoing progressive items instead of basing them on the sender's inventory. The data is an array of 256 bitfields, each 4 bytes long, with the entry at index 0 unused. For documentation of the bitflags, see `mw_progressive_items_state_t` in `item_upgrades.c`. Note that the `chu_bag` flag only has any effect in versions 6+ of the co-op context.|
