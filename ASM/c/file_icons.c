@@ -4,6 +4,7 @@
 #include "hud_colors.h"
 #include "triforce.h"
 #include "ocarina_buttons.h"
+#include "ganon_boss_key.h"
 
 #define ICON_SIZE    0x0C
 #define MUSIC_WIDTH  0x06
@@ -40,6 +41,7 @@ static int get_top(tile_position pos) {
 static const colorRGBA8_t WHITE = {0xFF, 0xFF, 0xFF, 0xFF};
 static const colorRGBA8_t DIM   = {0x40, 0x40, 0x40, 0x90};
 static int hasTriforceGoalBeenReached = 0;
+static int hasAllSixMeds = 0;
 
 // Approximate product of two colors. Result is within 1 of true product.
 static uint8_t color_product(uint8_t c1, uint8_t c2) {
@@ -314,6 +316,43 @@ static void change_meds_and_stones_tiles_for_triforce_hunt(fixed_tile_data_t* fi
     fixed_tile_original[61].pos = light_med_pos;
 }
 
+static uint16_t frame_med_counter = 0;
+static uint8_t FOREST_POS = 0;
+static uint8_t FIRE_POS = 1;
+static uint8_t WATER_POS = 2;
+static uint8_t SPIRIT_POS = 3;
+static uint8_t SHADOW_POS = 4;
+static uint8_t LIGHT_POS = 5;
+void switch_meds_around(fixed_tile_data_t* fixed_tile_original) {
+    tile_position forest_ori_pos = {0x37, 0x0A};
+    tile_position fire_ori_pos = {0x37, 0x1A};
+    tile_position water_ori_pos = {0x29, 0x22};
+    tile_position spirit_ori_pos = {0x1B, 0x1A};
+    tile_position shadow_ori_pos = {0x1B, 0x0A};
+    tile_position light_ori_pos = {0x29, 0x02};
+
+    tile_position tiles[6] = {forest_ori_pos, fire_ori_pos, water_ori_pos, spirit_ori_pos, shadow_ori_pos, light_ori_pos};
+
+    if (frame_med_counter % 30 == 0) {
+        fixed_tile_original[56].pos = tiles[(FOREST_POS++) % 6];
+        fixed_tile_original[57].pos = tiles[(FIRE_POS++) % 6];
+        fixed_tile_original[58].pos = tiles[(WATER_POS++) % 6];
+        fixed_tile_original[60].pos = tiles[(SPIRIT_POS++) % 6];
+        fixed_tile_original[59].pos = tiles[(SHADOW_POS++) % 6];
+        fixed_tile_original[61].pos = tiles[(LIGHT_POS++) % 6];
+
+        frame_med_counter = 0;
+        FOREST_POS = FOREST_POS > 5 ? 0 : FOREST_POS;
+        FIRE_POS = FIRE_POS > 5 ? 0 : FIRE_POS;
+        WATER_POS = WATER_POS > 5 ? 0 : WATER_POS;
+        SPIRIT_POS = SPIRIT_POS > 5 ? 0 : SPIRIT_POS;
+        SHADOW_POS = SHADOW_POS > 5 ? 0 : SHADOW_POS;
+        LIGHT_POS = LIGHT_POS > 5 ? 0 : LIGHT_POS;
+    }
+
+    frame_med_counter++;
+}
+
 static void push_down_death_counter_and_soa_for_ocarina_button_shuffle(fixed_tile_data_t* fixed_tile_original,
                                                                         counter_tile_data_t* counter_data_original) {
     tile_position soa_pos = {0x6F, 0x5C};
@@ -348,6 +387,7 @@ static void populate_fixed(const z64_file_t* file, fixed_tile_info_t* info) {
 
     // medallions
     info->medallion_bits = (uint8_t)(file->quest_items & 0x0000003F);
+    hasAllSixMeds = countSetBitsRec(info->medallion_bits) == 6;
 
     // equipment
     uint16_t equipment = file->equipment;
@@ -476,6 +516,12 @@ static void draw_fixed(z64_disp_buf_t* db, const fixed_tile_info_t* info, uint8_
         if (TRIFORCE_HUNT_ENABLED) {
             change_meds_and_stones_tiles_for_triforce_hunt(data);
         }
+        else {
+            if (hasAllSixMeds) {
+                switch_meds_around(data);
+            }
+        }
+
 
         // Read one bit at a time, from least significant to most significant
         for (int i = 0; i < NUM_FIXED_WORDS; ++i) {
