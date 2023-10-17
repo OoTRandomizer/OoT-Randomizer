@@ -770,7 +770,13 @@ typedef struct
   char            unk_14_[0x000A];          /* 0x13D6 */
   int8_t          seq_index;                /* 0x13E0 */
   int8_t          night_sfx;                /* 0x13E1 */
-  char            unk_15_[0x0012];          /* 0x13E2 */
+  char            unk_15_[0x0006];          /* 0x13E2 */
+  uint16_t        next_hud_visibility_mode; /* 0x13E8 */
+  uint16_t        hud_visibility_mode;      /* 0x13EA */
+  uint16_t        hud_visibility_mode_timer; /* 0x13EC */
+  uint16_t        prev_hud_visibility_mode; /* 0x13EE */
+  int16_t         magic_consume_state;      /* 0x13F0 */
+  char            unk_15_1[0x0002];         /* 0x13F2 */
   uint16_t        magic_meter_size;         /* 0x13F4 */
   char            unk_16_[0x0004];          /* 0x13F6 */
   uint16_t        event_inf[4];             /* 0x13FA */
@@ -995,7 +1001,13 @@ struct z64_actor_s
 typedef struct
 {
   z64_actor_t  common;               /* 0x0000 */
-  char         unk_00_[0x0013];      /* 0x013C */
+  char         unk_00_[0x0004];      /* 0x013C */
+  uint8_t      item_button;          /* 0x0140 */
+  int8_t       item_action_param;    /* 0x0141 */
+  uint8_t      held_item_id;         /* 0x0142 */
+  int8_t       boots;                /* 0x0143 */
+  int8_t       held_item_action_param; /* 0x0144 */
+  char         unk_00_1[0x000A];     /* 0x0145 */
   uint8_t      current_mask;         /* 0x014F */
   char         unk_01_[0x02D4];      /* 0x0150 */
   int8_t       incoming_item_id;     /* 0x0424 */
@@ -1726,6 +1738,29 @@ typedef enum {
     /* 0xFF */ ITEM_NONE = 0xFF
 } ItemID;
 
+typedef enum {
+	ACTOR_EN_ARROW = 0x0016,
+} ActorID;
+
+typedef enum {
+	HUD_VISIBILITY_NO_CHANGE       = 0,
+	HUD_VISIBILITY_NOTHING,
+	HUD_VISIBILITY_NOTHING_ALT,
+	HUD_VISIBILITY_HEARTS_FORCE,
+	HUD_VISIBILITY_A,
+	HUD_VISIBILITY_A_HEARTS_MAGIC_FORCE,
+	HUD_VISIBILITY_A_HEARTS_MAGIC_MINIMAP_FORCE,
+	HUD_VISIBILITY_ALL_NO_MINIMAP_BY_BTN_STATUS,
+	HUD_VISIBILITY_B,
+	HUD_VISIBILITY_HEARTS_MAGIC,
+	HUD_VISIBILITY_B_ALT,
+	HUD_VISIBILITY_HEARTS,
+	HUD_VISIBILITY_A_B_MINIMAP,
+	HUD_VISIBILITY_HEARTS_MAGIC_FORCE,
+	HUD_VISIBILITY_ALL             = 50,
+	HUD_VISIBILITY_NOTHING_INSTANT = 52
+} HUDVisibilityMode;
+
 typedef struct EnGSwitch
 {
   /* 0x0000 */ z64_actor_t actor;
@@ -1830,6 +1865,7 @@ typedef struct EnGSwitch
 #define Rupees_ChangeBy_addr                    0x800721CC
 #define Message_ContinueTextbox_addr            0x800DCE80
 #define PlaySFX_addr                            0x800646F0
+#define z64_actor_ovl_table_addr                0x800E8530
 
 /* rom addresses */
 #define z64_icon_item_static_vaddr              0x007BD000
@@ -1909,6 +1945,36 @@ typedef void(*Rupees_ChangeBy_proc)         (int16_t rupeeChange);
 typedef void(*Message_ContinueTextbox_proc) (z64_game_t *play, uint16_t textId);
 
 typedef void(*PlaySFX_proc) (uint16_t sfxId);
+typedef void(*z64_Actor_proc)               (z64_actor_t *actor, z64_game_t *ctxt);
+
+typedef struct
+{
+   int16_t        id;           /* 0x00 */ 
+   uint8_t        type;         /* 0x02 */
+   uint32_t       flags;        /* 0x04 */ 
+   int16_t        objectId;     /* 0x08 */ 
+   uint32_t       instanceSize; /* 0x0C */ 
+   z64_Actor_proc init;         /* 0x10 */ 
+   z64_Actor_proc destroy;      /* 0x14 */ 
+   z64_Actor_proc update;       /* 0x18 */ 
+   z64_Actor_proc draw;         /* 0x1C */ 
+                                /* 0x20 */ 
+} z64_actor_init_t;
+
+typedef struct
+{
+   uint32_t          vrom_start;      /* 0x00 */ 
+   uint32_t          vrom_end;        /* 0x04 */
+   void*             vram_start;      /* 0x08 */ 
+   void*             vram_end;        /* 0x0C */ 
+   void*             loaded_ram_addr; /* 0x10 */ 
+   z64_actor_init_t* init_info;       /* 0x14 */ 
+   char*             name;            /* 0x18 */ 
+   uint16_t          alloc_type;      /* 0x1C */ 
+   int8_t            nb_loaded;       /* 0x1E */ 
+   char              unk_01_[0x1];    /* 0x1F */ 
+                                      /* 0x20 */ 
+} z64_actor_ovl_t;
 
 /* data */
 #define z64_file_mq             (*(OSMesgQueue*)      z64_file_mq_addr)
@@ -1934,6 +2000,7 @@ typedef void(*PlaySFX_proc) (uint16_t sfxId);
 #define z64_state_ovl_tab       (*(z64_state_ovl_t(*)[6])                     \
                                                       z64_state_ovl_tab_addr)
 #define z64_event_state_1       (*(uint32_t*)         z64_event_state_1_addr)
+#define z64_actor_ovl_table     ((z64_actor_ovl_t*)   z64_actor_ovl_table_addr)
 
 
 /* functions */
