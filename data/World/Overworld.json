@@ -1102,12 +1102,21 @@
         }
     },
     {
-        "region_name": "Desert Colossus Hands",
+        "region_name": "Desert Colossus Right Hand",
         "scene": "Desert Colossus",
         "time_passes": true,
-        "savewarp": "Desert Colossus -> Spirit Temple Lobby",
         "exits": {
-            "Desert Colossus": "True"
+            "Desert Colossus": "True",
+            "Spirit Temple Right Hand Iron Knuckle": "True"
+        }
+    },
+    {
+        "region_name": "Desert Colossus Left Hand",
+        "scene": "Desert Colossus",
+        "time_passes": true,
+        "exits": {
+            "Desert Colossus": "True",
+            "Spirit Temple Left Hand Iron Knuckle": "True"
         }
     },
     {

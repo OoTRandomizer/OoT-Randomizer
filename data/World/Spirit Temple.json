@@ -204,9 +204,28 @@
                 (Longshot or (logic_spirit_platform_hookshot and Hookshot))",
             # Age-unknown logic is incompatible with the rest of the world.
             # Because adult might unlock all doors, child must require all 5 keys to pass.
-            "Desert Colossus Hands": "
-                (Small_Key_Spirit_Temple, 5) or
-                (is_adult and has_explosives and (Small_Key_Spirit_Temple, 3))"
+            "Spirit Temple Right Hand Iron Knuckle": "
+                (Small_Key_Spirit_Temple, 5)",
+            "Spirit Temple Left Hand Iron Knuckle": "
+                is_adult and has_explosives and (Small_Key_Spirit_Temple, 3)"
+        }
+    },
+    {
+        "region_name": "Spirit Temple Right Hand Iron Knuckle",
+        "dungeon": "Spirit Temple",
+        "savewarp": "Desert Colossus -> Spirit Temple Lobby",
+        "exits": {
+            "Spirit Temple Central Chamber": "False",
+            "Desert Colossus Right Hand": "True"
+        }
+    },
+    {
+        "region_name": "Spirit Temple Left Hand Iron Knuckle",
+        "dungeon": "Spirit Temple",
+        "savewarp": "Desert Colossus -> Spirit Temple Lobby",
+        "exits": {
+            "Spirit Temple Central Chamber": "False",
+            "Desert Colossus Left Hand": "True"
         }
     },
     {

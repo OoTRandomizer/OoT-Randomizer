@@ -126,11 +126,30 @@
                 is_adult"
         },
         "exits": {
-            "Desert Colossus Hands": "
-                ((Small_Key_Spirit_Temple, 7) and
-                    (can_play(Song_of_Time) or logic_spirit_mq_sun_block_sot or is_adult)) or
-                ((Small_Key_Spirit_Temple, 4) and can_play(Song_of_Time) and (has_explosives or Nuts) and
-                    (logic_lens_spirit_mq or can_use(Lens_of_Truth)) and is_adult)"
+            "Spirit Temple Right Hand Iron Knuckle": "
+                (Small_Key_Spirit_Temple, 7) and
+                    (can_play(Song_of_Time) or logic_spirit_mq_sun_block_sot or is_adult)",
+            "Spirit Temple Left Hand Iron Knuckle": "
+                (Small_Key_Spirit_Temple, 4) and can_play(Song_of_Time) and (has_explosives or Nuts) and
+                    (logic_lens_spirit_mq or can_use(Lens_of_Truth)) and is_adult"
+        }
+    },
+    {
+        "region_name": "Spirit Temple Right Hand Iron Knuckle",
+        "dungeon": "Spirit Temple",
+        "savewarp": "Desert Colossus -> Spirit Temple Lobby",
+        "exits": {
+            "Spirit Temple Shared": "False",
+            "Desert Colossus Right Hand": "True"
+        }
+    },
+    {
+        "region_name": "Spirit Temple Left Hand Iron Knuckle",
+        "dungeon": "Spirit Temple",
+        "savewarp": "Desert Colossus -> Spirit Temple Lobby",
+        "exits": {
+            "Spirit Temple Shared": "False",
+            "Desert Colossus Left Hand": "True"
         }
     },
     {
