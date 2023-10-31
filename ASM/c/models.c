@@ -153,6 +153,7 @@ void shop_draw(z64_actor_t *actor, z64_game_t *game) {
  
     //See if there is cached data stored in the actor's isInitialized variable at 0x018C. 
     //Cached data is as follows:
+    //1 byte: The original boolean value
     //2 bytes: model object_id
     //1 byte: model graphic_id
     uint16_t object_id = (((uint8_t*)this)[0x018D] << 1) | ((uint8_t*)this)[0x018E];
@@ -167,8 +168,9 @@ void shop_draw(z64_actor_t *actor, z64_game_t *game) {
         object ID for OBJECT_GI_SOLDOUT (0x148) before attempting to use
         the override model.
     */
-    // There is already cached model data, use it instead of doing lookups
-    if (object_id > 0 && graphic_id > 0 && graphic_id != 0xFF && game->obj_ctxt.objects[this->objBankIndex].id != 0x148) {       
+    
+    if (object_id > 0 && graphic_id > 0 && graphic_id != 0xFF && game->obj_ctxt.objects[this->objBankIndex].id != 0x148) {
+        // There is already cached model data, use it instead of doing lookups   
         model.object_id = object_id;
         model.graphic_id = graphic_id;
         draw_model(model, actor, game, 0.0);
@@ -177,8 +179,8 @@ void shop_draw(z64_actor_t *actor, z64_game_t *game) {
 
     // There is no cached data, check if there needs to be
     if (this->getItemId && game->obj_ctxt.objects[this->objBankIndex].id != 0x148) {
-        // If the item isn't overridden then we don't want to do an unnecessary lookup, so we store -1 in graphic_id
-        if (graphic_id != -1) {
+        // If the item isn't overridden then we don't want to do an unnecessary lookup, so we store 0xFF in graphic_id
+        if (graphic_id != 0xFF) {
             // Look up the override so we can either cache its model data, or cache that it doesn't exist
             override_t override = lookup_override((z64_actor_t*) this, z64_game.scene_index, this->getItemId);
             if (override.key.all) { // Override exists, cache the model data and load
