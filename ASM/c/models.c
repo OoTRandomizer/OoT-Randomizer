@@ -150,15 +150,15 @@ void shop_draw(z64_actor_t *actor, z64_game_t *game) {
         .object_id = 0x0000,
         .graphic_id = 0x00,
     };
- 
-    //See if there is cached data stored in the actor's isInitialized variable at 0x018C. 
+
+    //See if there is cached data stored in the actor's isInitialized variable at 0x018C.
     //Cached data is as follows:
     //1 byte: The original boolean value
     //2 bytes: model object_id
     //1 byte: model graphic_id
     uint16_t object_id = (((uint8_t*)this)[0x018D] << 1) | ((uint8_t*)this)[0x018E];
-    uint8_t graphic_id = ((uint8_t*)this)[0x18F];    
- 
+    uint8_t graphic_id = ((uint8_t*)this)[0x18F];
+
     /*
         SOLD OUT is given a get item ID of 0x53 for the slot,
         which conflicts with the Gerudo Mask override if it's
@@ -168,9 +168,9 @@ void shop_draw(z64_actor_t *actor, z64_game_t *game) {
         object ID for OBJECT_GI_SOLDOUT (0x148) before attempting to use
         the override model.
     */
-    
+
     if (object_id > 0 && graphic_id > 0 && graphic_id != 0xFF && game->obj_ctxt.objects[this->objBankIndex].id != 0x148) {
-        // There is already cached model data, use it instead of doing lookups   
+        // There is already cached model data, use it instead of doing lookups
         model.object_id = object_id;
         model.graphic_id = graphic_id;
         draw_model(model, actor, game, 0.0);
