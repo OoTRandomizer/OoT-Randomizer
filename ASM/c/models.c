@@ -150,8 +150,14 @@ void shop_draw(z64_actor_t *actor, z64_game_t *game) {
         .object_id = 0x0000,
         .graphic_id = 0x00,
     };
-    override_t override = lookup_override((z64_actor_t*) this, z64_game.scene_index, this->getItemId);
-
+ 
+    //See if there is cached data stored in the actor's isInitialized variable at 0x018C. 
+    //Cached data is as follows:
+    //2 bytes: model object_id
+    //1 byte: model graphic_id
+    uint16_t object_id = (((uint8_t*)this)[0x018D] << 1) | ((uint8_t*)this)[0x018E];
+    uint8_t graphic_id = ((uint8_t*)this)[0x18F];    
+ 
     /*
         SOLD OUT is given a get item ID of 0x53 for the slot,
         which conflicts with the Gerudo Mask override if it's
@@ -161,15 +167,41 @@ void shop_draw(z64_actor_t *actor, z64_game_t *game) {
         object ID for OBJECT_GI_SOLDOUT (0x148) before attempting to use
         the override model.
     */
-    if (override.key.all && this->getItemId && game->obj_ctxt.objects[this->objBankIndex].id != 0x148) {
-        lookup_model_by_override(&model, override);
-        if (model.object_id != 0x0000) {
-            draw_model(model, actor, game, 0.0);
-        }
-    } else {
-        // vanilla draw function if the slot is a regular shop item, shuffled or unshuffled
-        GetItem_Draw(game, this->giDrawId);
+    // There is already cached model data, use it instead of doing lookups
+    if (object_id > 0 && graphic_id > 0 && graphic_id != 0xFF && game->obj_ctxt.objects[this->objBankIndex].id != 0x148) {       
+        model.object_id = object_id;
+        model.graphic_id = graphic_id;
+        draw_model(model, actor, game, 0.0);
+        return;
     }
+
+    // There is no cached data, check if there needs to be
+    if (this->getItemId && game->obj_ctxt.objects[this->objBankIndex].id != 0x148) {
+        // If the item isn't overridden then we don't want to do an unnecessary lookup, so we store -1 in graphic_id
+        if (graphic_id != -1) {
+            // Look up the override so we can either cache its model data, or cache that it doesn't exist
+            override_t override = lookup_override((z64_actor_t*) this, z64_game.scene_index, this->getItemId);
+            if (override.key.all) { // Override exists, cache the model data and load
+                lookup_model_by_override(&model, override);
+                if (model.object_id != 0x0000) {
+                    // Cache object_id and graphic_id
+                    ((uint8_t*)this)[0x18D] = (model.object_id >> 1) & 0xFF;
+                    ((uint8_t*)this)[0x18E] = model.object_id & 0xFF;
+                    ((uint8_t*)this)[0x18F] = model.graphic_id;
+                    draw_model(model, actor, game, 0.0);
+                }
+                return;
+            }
+            else { // Override does not exist
+                ((uint8_t*)this)[0x18D] = 0;
+                ((uint8_t*)this)[0x18E] = 0;
+                ((uint8_t*)this)[0x18F] = 0xFF;
+            }
+        }
+    }
+
+    // vanilla draw function if the slot is a regular shop item, shuffled or unshuffled
+    GetItem_Draw(game, this->giDrawId);
 }
 
 // Collectible draw function for rupees/recovery hearts
