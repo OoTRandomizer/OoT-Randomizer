@@ -355,7 +355,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.write_bytes(0x1FC0CF8, block_code)
 
     # songs as items flag
-    songs_as_items = world.settings.shuffle_song_items != 'song' or \
+    songs_as_items = world.settings.shuffle_song_items not in ('vanilla', 'song') or \
                      world.distribution.song_as_items or \
                      any(name in song_list and record.count for name, record in world.settings.starting_items.items()) or \
                      world.settings.shuffle_individual_ocarina_notes

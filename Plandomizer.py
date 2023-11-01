@@ -889,7 +889,7 @@ class WorldDistribution:
             if record.item in item_groups['DungeonReward']:
                 raise RuntimeError('Cannot place dungeon reward %s in world %d in location %s.' % (record.item, self.id + 1, location_name))
 
-            if record.item == '#Junk' and location.type == 'Song' and world.settings.shuffle_song_items == 'song' and not any(name in song_list and r.count for name, r in world.settings.starting_items.items()):
+            if record.item == '#Junk' and location.type == 'Song' and world.settings.shuffle_song_items in ('vanilla', 'song') and not any(name in song_list and r.count for name, r in world.settings.starting_items.items()):
                 record.item = '#JunkSong'
 
             adult_trade_matcher  = self.pattern_matcher("#AdultTrade")
@@ -899,9 +899,9 @@ class WorldDistribution:
 
             ignore_pools = None
             is_invert = self.pattern_matcher(record.item)('!')
-            if is_invert and location.type != 'Song' and world.settings.shuffle_song_items == 'song':
+            if is_invert and location.type != 'Song' and world.settings.shuffle_song_items in ('vanilla', 'song'):
                 ignore_pools = [2]
-            if is_invert and location.type == 'Song' and world.settings.shuffle_song_items == 'song':
+            if is_invert and location.type == 'Song' and world.settings.shuffle_song_items in ('vanilla', 'song'):
                 ignore_pools = [i for i in range(len(item_pools)) if i != 2]
             # location.price will be None for Shop Buy items
             if location.type == 'Shop' and location.price is None:
@@ -1101,7 +1101,7 @@ class WorldDistribution:
             skipped_locations_from_dungeons = []
             if True: #TODO dungeon rewards not shuffled
                 skipped_locations_from_dungeons += location_groups['Boss']
-            if world.settings.shuffle_song_items == 'song':
+            if world.settings.shuffle_song_items in ('vanilla', 'song'):
                 skipped_locations_from_dungeons += location_groups['Song']
             elif world.settings.shuffle_song_items == 'dungeon':
                 skipped_locations_from_dungeons += location_groups['BossHeart']

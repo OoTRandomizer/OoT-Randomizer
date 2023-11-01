@@ -799,8 +799,11 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                     if vanilla_items_processed[location.vanilla_item]:
                         item = get_junk_item()[0]
                         shuffle_item = True
+            # Song
+            elif location.type == 'Song':
+                shuffle_item = world.settings.shuffle_song_items != 'vanilla'
             # Any other item in a dungeon.
-            elif location.type in ["Chest", "NPC", "Song", "Collectable", "Cutscene", "BossHeart"]:
+            elif location.type in ["Chest", "NPC", "Collectable", "Cutscene", "BossHeart"]:
                 shuffle_item = True
 
             # Handle dungeon item.
@@ -814,8 +817,12 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                 elif shuffle_item is None:
                     dungeon_collection.append(ItemFactory(item, world))
 
+        # Songs
+        elif location.type == 'Song':
+            shuffle_item = world.settings.shuffle_song_items != 'vanilla'
+
         # The rest of the overworld items.
-        elif location.type in ["Chest", "NPC", "Song", "Collectable", "Cutscene", "BossHeart"]:
+        elif location.type in ["Chest", "NPC", "Collectable", "Cutscene", "BossHeart"]:
             shuffle_item = True
 
         # Now, handle the item as necessary.

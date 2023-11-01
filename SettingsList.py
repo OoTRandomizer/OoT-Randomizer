@@ -2341,12 +2341,15 @@ class SettingInfos:
         gui_text       = 'Shuffle Songs',
         default        = 'song',
         choices        = {
+            'vanilla': 'Vanilla Locations',
             'song':    'Song Locations',
             'dungeon': 'Dungeon Rewards',
             'any':     'Anywhere',
             },
         gui_tooltip    = '''\
             This restricts where song items can appear.
+
+            'Vanilla Locations': Songs will remain unshuffled.
 
             'Song Locations': Song will only appear at locations that
             normally teach songs. In Multiworld, songs will only
@@ -2370,7 +2373,8 @@ class SettingInfos:
         gui_params     = {
             'randomize_key': 'randomize_settings',
             'distribution':  [
-                ('song',    2),
+                ('vanilla', 1),
+                ('song',    1),
                 ('dungeon', 1),
                 ('any',     1),
             ],

@@ -59,6 +59,8 @@ class World:
         self.keysanity: bool = settings.shuffle_smallkeys in ['keysanity', 'remove', 'any_dungeon', 'overworld', 'regional']
         self.shuffle_silver_rupees = settings.shuffle_silver_rupees != 'vanilla'
         self.check_beatable_only: bool = settings.reachable_locations != 'all'
+        if settings.starting_age == 'adult' and settings.shuffle_song_items == 'vanilla' and settings.reachable_locations == 'all' and not settings.open_door_of_time:
+            raise ValueError("Cannot combine songs on vanilla locations, adult start, all locations reachable, and closed Door of Time since access to the Song of Time would be locked behind itself.")
 
         self.shuffle_special_interior_entrances: bool = settings.shuffle_interior_entrances == 'all'
         self.shuffle_interior_entrances: bool = settings.shuffle_interior_entrances in ['simple', 'all']
@@ -429,7 +431,7 @@ class World:
         if (self.settings.starting_age == 'random'
             and ('starting_age' not in dist_keys
              or self.distribution.distribution.src_dict['_settings']['starting_age'] == 'random')):
-            if self.settings.open_forest == 'closed':
+            if self.settings.open_forest == 'closed' or (self.settings.shuffle_song_items == 'vanilla' and self.settings.reachable_locations == 'all' and not self.settings.open_door_of_time):
                 # adult is not compatible
                 self.settings.starting_age = 'child'
             else:
