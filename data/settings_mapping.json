@@ -136,6 +136,7 @@
           "row_span": [6,6,9],
           "settings": [
             "open_forest",
+            "require_gohma",
             "open_kakariko",
             "open_door_of_time",
             "zora_fountain",

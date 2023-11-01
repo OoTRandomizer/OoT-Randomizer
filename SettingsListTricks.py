@@ -506,8 +506,8 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
         'tooltip' : '''\
                     A precise jump can be used to skip
                     needing to use the Slingshot to go
-                    around B1 of the Deku Tree. If used
-                    with the "Closed Forest" setting, a
+                    around B1 of the Deku Tree. If using
+                    "Closed Forest Requires Gohma", a
                     Slingshot will not be guaranteed to
                     exist somewhere inside the Forest.
                     This trick applies to both Vanilla

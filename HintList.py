@@ -309,6 +309,7 @@ hintTable: dict[str, tuple[list[str] | str, Optional[str], str | list[str]]] = {
     'Magic Meter':                                              (["mystic training", "pixie dust", "a green rectangle"], "a Magic Meter", 'item'),
     'Double Defense':                                           (["a white outline", "damage decrease", "strengthened love"], "Double Defense", 'item'),
     'Slingshot':                                                (["a seed shooter", "a rubberband", "a child's catapult"], "a Slingshot", 'item'),
+    'Deku Seed Bag':                                            (["a seed shooter", "a rubberband", "a child's catapult"], "a Slingshot", 'item'),
     'Boomerang':                                                (["a banana", "a stun stick"], "the Boomerang", 'item'),
     'Bow':                                                      (["an archery enabler", "a danger dart launcher"], "a Bow", 'item'),
     'Bomb Bag':                                                 (["an explosive container", "a blast bag"], "a Bomb Bag", 'item'),

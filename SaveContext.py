@@ -1107,6 +1107,10 @@ class SaveContext:
             'item_slot.slingshot'        : 'slingshot',
             'upgrades.bullet_bag'        : None,
         },
+        "Deku Seed Bag"    : {
+            'item_slot.slingshot'        : 'slingshot',
+            'upgrades.bullet_bag'        : None,
+        },
         "Deku Seeds" : {
             'ammo.slingshot'             : None,
         },

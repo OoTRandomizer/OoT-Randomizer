@@ -81,11 +81,6 @@ class World:
         self.selected_adult_trade_item: str = ''
         self.adult_trade_starting_inventory: str = ''
 
-        if (settings.open_forest == 'closed'
-            and (self.shuffle_special_interior_entrances or settings.shuffle_hideout_entrances or settings.shuffle_overworld_entrances
-                 or settings.warp_songs or settings.spawn_positions)):
-            self.settings.open_forest = 'closed_deku'
-
         if settings.triforce_goal_per_world > settings.triforce_count_per_world:
             raise ValueError("Triforces required cannot be more than the triforce count.")
         self.triforce_goal: int = settings.triforce_goal_per_world * settings.world_count
@@ -429,11 +424,7 @@ class World:
         if (self.settings.starting_age == 'random'
             and ('starting_age' not in dist_keys
              or self.distribution.distribution.src_dict['_settings']['starting_age'] == 'random')):
-            if self.settings.open_forest == 'closed':
-                # adult is not compatible
-                self.settings.starting_age = 'child'
-            else:
-                self.settings.starting_age = random.choice(['child', 'adult'])
+            self.settings.starting_age = random.choice(['child', 'adult'])
             self.randomized_list.append('starting_age')
         if self.settings.chicken_count_random and 'chicken_count' not in dist_keys:
             self.settings.chicken_count = random.randint(0, 7)
@@ -1110,16 +1101,12 @@ class World:
         if not isinstance(location, Location):
             location = self.get_location(location)
 
-        # This check should never be false normally, but is here as a sanity check
-        if location.can_fill_fast(item, manual) and item.world:
-            location.item = item
-            item.location = location
-            item.price = location.price if location.price is not None else item.price
-            location.price = item.price
+        location.item = item
+        item.location = location
+        item.price = location.price if location.price is not None else item.price
+        location.price = item.price
 
-            logging.getLogger('').debug('Placed %s [World %d] at %s [World %d]', item, item.world.id if hasattr(item, 'world') else -1, location, location.world.id if hasattr(location, 'world') else -1)
-        else:
-            raise RuntimeError('Cannot assign item %s to location %s.' % (item, location))
+        logging.getLogger('').debug('Placed %s [World %d] at %s [World %d]', item, item.world.id if hasattr(item, 'world') else -1, location, location.world.id if hasattr(location, 'world') else -1)
 
     def get_locations(self) -> list[Location]:
         if not self._cached_locations:

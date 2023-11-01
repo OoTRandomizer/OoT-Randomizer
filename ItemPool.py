@@ -13,6 +13,21 @@ if TYPE_CHECKING:
     from World import World
 
 
+closed_forest_restricted_items: tuple[str, ...] = (
+    'Bomb Bag',
+    'Bombchus (5)',
+    'Bombchus (10)',
+    'Bombchus (20)',
+    'Bombchus',
+    'Dins Fire',
+    'Progressive Scale',
+    'Bolero of Fire',
+    'Serenade of Water',
+    'Nocturne of Shadow',
+    'Requiem of Spirit',
+    'Prelude of Light',
+)
+
 plentiful_items: list[str] = ([
     'Biggoron Sword',
     'Boomerang',
@@ -34,7 +49,7 @@ plentiful_items: list[str] = ([
     'Deku Stick Capacity',
     'Deku Nut Capacity',
     'Bow',
-    'Slingshot',
+    'Deku Seed Bag',
     'Bomb Bag',
     'Double Defense'] +
     ['Heart Container'] * 8
@@ -70,7 +85,7 @@ ludicrous_items_base: list[str] = [
     'Progressive Wallet',
     'Magic Meter',
     'Bow',
-    'Slingshot',
+    'Deku Seed Bag',
     'Bomb Bag',
     'Bombchus (10)',
     'Lens of Truth',
@@ -226,7 +241,7 @@ item_difficulty_max: dict[str, dict[str, int]] = {
         'Deku Stick Capacity': 1,
         'Deku Nut Capacity': 1,
         'Bow': 2,
-        'Slingshot': 2,
+        'Deku Seed Bag': 1,
         'Bomb Bag': 2,
         'Heart Container': 0,
     },
@@ -240,7 +255,7 @@ item_difficulty_max: dict[str, dict[str, int]] = {
         'Deku Stick Capacity': 0,
         'Deku Nut Capacity': 0,
         'Bow': 1,
-        'Slingshot': 1,
+        'Deku Seed Bag': 0,
         'Bomb Bag': 1,
         'Heart Container': 0,
         'Piece of Heart': 0,
