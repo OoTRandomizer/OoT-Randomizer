@@ -178,7 +178,8 @@
             "triforce_count_per_world",
             "triforce_goal_per_world",
             "free_bombchu_drops",
-            "one_item_per_dungeon"
+            "one_item_per_dungeon",
+            "plandomized_locations"
           ]
         },
         {
