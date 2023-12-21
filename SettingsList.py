@@ -3412,7 +3412,7 @@ class SettingInfos:
         gui_type       = None,
         gui_text       = None,
         shared         = True,
-        choices        = [name for name, item in ItemInfo.items.items() if item.type == 'Item']
+        choices        = [name for name, item in ItemInfo.items.items() if item.type not in ['Drop', 'Event', 'Refill', 'Shop']]
     )
 
     hint_dist_user = SettingInfoDict(None, None, True, {})
