@@ -117,6 +117,7 @@ fileselect_sequence_id: tuple[tuple[str, int], ...] = (
     ("File Select", 0x57),
 )
 
+
 class Bank:
     def __init__(self, index: int, meta: bytearray, data: bytes) -> None:
         self.index: int = index
@@ -504,9 +505,9 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
     bank_index_base = (rom.read_int32(symbols['CFG_AUDIOBANK_TABLE_EXTENDED_ADDR']) - 0x80400000) + 0x3480000
     # Build new fanfare banks by copying each entry in audiobank_index
     for i in range(0, 0x26):
-        bank_entry = rom.read_bytes(bank_index_base + 0x10 + (0x10*i), 0x10) # Get the vanilla entry
+        bank_entry = rom.read_bytes(bank_index_base + 0x10 + 0x10 * i, 0x10) # Get the vanilla entry
         bank_entry[9] = 1 # Update the cache type to 1
-        rom.write_bytes(bank_index_base + 0x270 + 0x10*i, bank_entry) # Write the new entry at the end of the bank table.
+        rom.write_bytes(bank_index_base + 0x270 + 0x10 * i, bank_entry) # Write the new entry at the end of the bank table.
     rom.write_byte(bank_index_base + 0x01, 0x4C) # Updates AudioBank Index Header if no custom banks are present as this would be 0x26 which would crash the game if a fanfare was played
 
     added_banks = []  # Store copies of all the banks we've added
@@ -645,6 +646,7 @@ def randomize_music(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: di
     sequences = fanfare_sequences = target_sequences = target_fanfare_sequences = bgm_groups = fanfare_groups = {}
     disabled_source_sequences = log.src_dict.get('bgm_groups', {}).get('exclude', []).copy()
     disabled_target_sequences = {}
+    available_sequences = log.src_dict.get('sequences_available', {}) if not settings.generating_patch_file else {}
     music_mapping = log.src_dict.get('bgm', {}).copy()
     bgm_ids = {bgm[0]: bgm for bgm in bgm_sequence_ids}
     ff_ids = {bgm[0]: bgm for bgm in fanfare_sequence_ids}
@@ -666,6 +668,10 @@ def randomize_music(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: di
         if compare_version(rom_version, '4.11.13') < 0:
             log.errors.append("Custom music is not supported by this patch version. Only randomizing vanilla music.")
             custom_sequences_enabled = False
+
+    # If "sequences_available" is in the cosmetics plando, don't bother trying to scan for custom sequences.
+    if available_sequences:
+        custom_sequences_enabled = False
 
     # Check if we have mapped music for BGM, Fanfares, Ocarina Songs or Credits Sequences
     bgm_mapped = any(name in music_mapping for name in bgm_ids)
@@ -698,7 +704,7 @@ def randomize_music(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: di
     if settings.fanfares == 'normal' and ocarina_mapped:
         normal_ids += [music_id for music_id in ocarina_ids.values()]
     if settings.credits_music == 'false' and credits_mapped:
-        normal_ids += [music_id for music_id in credits_mapped.values()]
+        normal_ids += [music_id for music_id in credits_ids.values()]
     for bgm in normal_ids:
         if bgm[0] not in music_mapping:
             music_mapping[bgm[0]] = bgm[0]
@@ -716,11 +722,17 @@ def randomize_music(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: di
         sequences, target_sequences, bgm_groups = process_sequences(rom, bgm_ids.values(), 'bgm', disabled_source_sequences, disabled_target_sequences, custom_sequences_enabled, include_custom_audiobanks=custom_audiobanks_enabled)
         if settings.background_music == 'random_custom_only':
             sequences = {name: seq for name, seq in sequences.items() if name not in bgm_ids or name in music_mapping.values()}
+        if available_sequences:
+            for sequence_name in available_sequences.get("bgm", []):
+                sequences[sequence_name] = Sequence(sequence_name, sequence_name)
 
     if settings.fanfares in ['random', 'random_custom_only'] or ff_mapped or ocarina_mapped:
         fanfare_sequences, target_fanfare_sequences, fanfare_groups = process_sequences(rom, ff_ids.values(), 'fanfare', disabled_source_sequences, disabled_target_sequences, custom_sequences_enabled, include_custom_audiobanks=custom_audiobanks_enabled)
         if settings.fanfares == 'random_custom_only':
             fanfare_sequences = {name: seq for name, seq in fanfare_sequences.items() if name not in ff_ids or name in music_mapping.values()}
+        if available_sequences:
+            for sequence_name in available_sequences.get("fanfare", []):
+                fanfare_sequences[sequence_name] = Sequence(sequence_name, sequence_name)
 
     # Handle groups.
     plando_groups = {n: s for n, s in log.src_dict.get('bgm_groups', {}).get('groups', {}).items()}
@@ -743,7 +755,6 @@ def randomize_music(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: di
             continue
 
         source = mapping
-        group = group_name = None
         if isinstance(mapping, list):
             # Try to find a valid source in the defined list
             while len(mapping) > 0:
@@ -802,6 +813,10 @@ def randomize_music(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: di
     if fanfare_sequences and target_fanfare_sequences:
         shuffled_fanfare_sequences = shuffle_music(log, fanfare_sequences, target_fanfare_sequences, music_mapping, "fanfares")
 
+    # If "sequences_available" is in the cosmetic plando, just skip the actual patching portion and leave that to the web patcher
+    if available_sequences:
+        return
+
     # Patch the randomized sequences into the ROM.
     patch_music = rebuild_sequences if custom_sequences_enabled else rebuild_pointers_table
     patch_music(rom, shuffled_sequences + shuffled_fanfare_sequences, log, symbols)
@@ -841,6 +856,7 @@ def restore_music(rom: Rom) -> None:
         # Zero out old audioseq
         rom.write_bytes(start, [0] * size)
         dma_entry.update(orig_start, orig_end, start)
+
 
 def chain_groups(group_list: list[tuple[str, list[str] | str]], sequences: dict[str, Sequence]) -> dict[str, list[str]]:
     result = {}

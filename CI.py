@@ -112,8 +112,9 @@ def check_code_style(fix_errors: bool = False) -> None:
     # Check for code style errors
     repo_dir = pathlib.Path(os.path.dirname(os.path.realpath(__file__)))
 
-    def check_file_format(path: pathlib.Path):
+    def check_file_format(path: pathlib.Path, *, allow_trailing_spaces: bool = False):
         fixed = ''
+        empty_lines = 0
         with path.open(encoding='utf-8', newline='') as file:
             path = path.relative_to(repo_dir)
             for i, line in enumerate(file, start=1):
@@ -121,6 +122,10 @@ def check_code_style(fix_errors: bool = False) -> None:
                     error(f'Missing line break at end of {path}', True)
                     line += '\n'
                 line = line.rstrip('\n')
+                if line:
+                    empty_lines = 0
+                else:
+                    empty_lines += 1
                 if '\t' in line:
                     error(f'Hard tab on line {i} of {path}', True)
                     fixed_line = ''
@@ -130,10 +135,13 @@ def check_code_style(fix_errors: bool = False) -> None:
                         else:
                             fixed_line += c
                     line = fixed_line
-                if line.endswith(' '):
+                if line.endswith(' ') and not allow_trailing_spaces:
                     error(f'Trailing whitespace on line {i} of {path}', True)
                     line = line.rstrip(' ')
                 fixed += line + '\n'
+        if empty_lines > 0:
+            error(f'Multiple trailing newlines at end of {path}', True)
+            fixed = fixed.rstrip('\n') + '\n'
         if fix_errors:
             with path.open('w', encoding='utf-8', newline='') as file:
                 file.write(fixed)
@@ -154,8 +162,13 @@ def check_code_style(fix_errors: bool = False) -> None:
         for path in (repo_dir / 'data' / subdir).iterdir():
             if path.suffix == '.json':
                 check_file_format(path)
+    for path in (repo_dir / 'Notes').iterdir():
+        if path.suffix == '.md':
+            # In Markdown, 2 trailing spaces indicate a hard line break.
+            check_file_format(path, allow_trailing_spaces=True)
     check_file_format(repo_dir / 'data' / 'LogicHelpers.json')
     check_file_format(repo_dir / 'data' / 'presets_default.json')
+    check_file_format(repo_dir / 'data' / 'settings_mapping.json')
 
 
 def run_ci_checks() -> NoReturn:

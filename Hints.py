@@ -49,12 +49,12 @@ defaultHintDists: list[str] = [
     'bingo.json',
     'chaos.json',
     'chaos_no_goal.json',
-    'coop2.json',
+    'coop.json',
     'ddr.json',
     'important_checks.json',
     'league.json',
-    'mw3.json',
-    'mw3_woth.json',
+    'mw_path.json',
+    'mw_woth.json',
     'scrubs.json',
     'strong.json',
     'tournament.json',
@@ -1120,7 +1120,7 @@ def get_important_check_hint(spoiler: Spoiler, world: World, checked: set[str]) 
     for location in world.get_filled_locations():
         if (HintArea.at(location).text(world.settings.clearer_hints) not in top_level_locations
                 and (HintArea.at(location).text(world.settings.clearer_hints) + ' Important Check') not in checked
-                and "pocket" not in HintArea.at(location).text(world.settings.clearer_hints)):
+                and HintArea.at(location) != HintArea.ROOT):
             top_level_locations.append(HintArea.at(location).text(world.settings.clearer_hints))
     hint_loc = random.choice(top_level_locations)
     item_count = 0
@@ -1181,28 +1181,10 @@ hint_func: dict[str, HintFunc | BarrenFunc] = {
     'random':           get_random_location_hint,
     'junk':             get_junk_hint,
     'named-item':       get_specific_item_hint,
-    'important_check':  get_important_check_hint
+    'important_check':  get_important_check_hint,
 }
 
-hint_dist_keys: set[str] = {
-    'trial',
-    'always',
-    'dual_always',
-    'entrance_always',
-    'woth',
-    'goal',
-    'barren',
-    'item',
-    'song',
-    'overworld',
-    'dungeon',
-    'entrance',
-    'sometimes',
-    'dual',
-    'random',
-    'junk',
-    'named-item'
-}
+hint_dist_keys: set[str] = set(hint_func)
 
 
 def build_bingo_hint_list(board_url: str) -> list[str]:
@@ -1487,13 +1469,19 @@ def build_world_gossip_hints(spoiler: Spoiler, world: World, checked_locations: 
         elif world.settings.trials_random and world.settings.trials == 0:
             add_hint(spoiler, world, stone_groups, GossipText("Sheik dispelled the barrier around #Ganon's Tower#.", ['Yellow']), hint_dist['trial'][1], force_reachable=True, hint_type='trial')
         elif 3 < world.settings.trials < 6:
-            for trial, skipped in world.skipped_trials.items():
-                if skipped:
-                    add_hint(spoiler, world, stone_groups, GossipText("the #%s Trial# was dispelled by Sheik." % trial, ['Yellow']), hint_dist['trial'][1], force_reachable=True, hint_type='trial')
+            if world.hint_dist_user['combine_trial_hints'] and world.settings.trials < 5:
+                add_hint(spoiler, world, stone_groups, GossipText("the #%s Trials# were dispelled by Sheik." % natjoin(trial for trial, skipped in world.skipped_trials.items() if skipped), ['Yellow']), hint_dist['trial'][1], force_reachable=True, hint_type='trial')
+            else:
+                for trial, skipped in world.skipped_trials.items():
+                    if skipped:
+                        add_hint(spoiler, world, stone_groups, GossipText("the #%s Trial# was dispelled by Sheik." % trial, ['Yellow']), hint_dist['trial'][1], force_reachable=True, hint_type='trial')
         elif 0 < world.settings.trials <= 3:
-            for trial, skipped in world.skipped_trials.items():
-                if not skipped:
-                    add_hint(spoiler, world, stone_groups, GossipText("the #%s Trial# protects Ganon's Tower." % trial, ['Pink']), hint_dist['trial'][1], force_reachable=True, hint_type='trial')
+            if world.hint_dist_user['combine_trial_hints'] and world.settings.trials > 1:
+                add_hint(spoiler, world, stone_groups, GossipText("the #%s Trials# protect Ganon's Tower." % natjoin(trial for trial, skipped in world.skipped_trials.items() if not skipped), ['Pink']), hint_dist['trial'][1], force_reachable=True, hint_type='trial')
+            else:
+                for trial, skipped in world.skipped_trials.items():
+                    if not skipped:
+                        add_hint(spoiler, world, stone_groups, GossipText("the #%s Trial# protects Ganon's Tower." % trial, ['Pink']), hint_dist['trial'][1], force_reachable=True, hint_type='trial')
 
     # Add user-specified hinted item locations if using a built-in hint distribution
     # Raise error if hint copies is zero
@@ -1654,7 +1642,7 @@ def build_boss_string(reward: str, color: str, world: World) -> str:
 
 
 def build_bridge_reqs_string(world: World) -> str:
-    string = "\x13\x12" # Light Arrow Icon
+    string = "\x13\x3C" # Master Sword icon
     if world.settings.bridge == 'open':
         string += "The awakened ones will have #already created a bridge# to the castle where the evil dwells."
     else:
@@ -1669,7 +1657,10 @@ def build_bridge_reqs_string(world: World) -> str:
                 'hearts':     (world.settings.bridge_hearts,     "#heart#",                        "#hearts#"),
             }[world.settings.bridge]
             item_req_string = f'{count} {singular if count == 1 else plural}'
-        string += f"The awakened ones will await for the Hero to collect {item_req_string}."
+        if world.settings.clearer_hints:
+            string += f"The rainbow bridge will be built once the Hero collects {item_req_string}."
+        else:
+            string += f"The awakened ones will await for the Hero to collect {item_req_string}."
     return str(GossipText(string, ['Green'], prefix=''))
 
 
@@ -1782,6 +1773,20 @@ def get_raw_text(string: str) -> str:
         else:
             text += char
     return text
+
+
+# build a list of elements in English
+def natjoin(elements: Iterable[str], conjunction: str = 'and') -> Optional[str]:
+    elements = list(elements)
+    if len(elements) == 0:
+        return None
+    elif len(elements) == 1:
+        return elements[0]
+    elif len(elements) == 2:
+        return f'{elements[0]} {conjunction} {elements[1]}'
+    else:
+        *rest, last = elements
+        return f'{", ".join(rest)}, {conjunction} {last}'
 
 
 def hint_dist_files() -> list[str]:

@@ -10,4 +10,3 @@ void check_ganon_entry() {
         health_and_magic_refill();
     }
 }
-

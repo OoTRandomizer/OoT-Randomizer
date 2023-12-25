@@ -591,9 +591,9 @@ def LoadModel(rom: Rom, model: str, age: int) -> int:
             zobj[hierarchy - BASE_OFFSET + i] = hierarchyBytes[i]
         zobj[hierarchy - BASE_OFFSET + 4] = 0x15 # Number of limbs
         zobj[hierarchy - BASE_OFFSET + 8] = 0x12 # Number of limbs to draw
-        # # Save zobj for testing
-        # with open(path + "/Test_Processed.zobj", "wb") as f:
-        #     f.write(zobj)
+        # Save zobj for testing
+        #with open(path + "/Test_Processed.zobj", "wb") as f:
+        #    f.write(zobj)
     # Correct skeleton if it should be corrected
     CorrectSkeleton(zobj, skeleton, agestr)
     # Write zobj to vanilla object (object_link_boy or object_link_child)

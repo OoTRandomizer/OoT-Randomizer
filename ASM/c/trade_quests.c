@@ -231,7 +231,7 @@ uint32_t IsClaimCheckTraded() {
     return SaveFile_TradeItemIsTraded(Z64_ITEM_CLAIM_CHECK);
 }
 
-z64_actor_t* IsTradeItemTraded(int16_t itemActionParam, z64_actor_t *targetActor) {
+z64_actor_t* IsTradeItemTraded(int16_t itemActionParam, z64_actor_t* targetActor) {
     if ((itemActionParam >= PLAYER_AP_LETTER_ZELDA && itemActionParam <= PLAYER_AP_CHICKEN) ||
         (itemActionParam >= PLAYER_AP_POCKET_EGG && itemActionParam < PLAYER_AP_CLAIM_CHECK)) {
         uint16_t itemId = GetTradeItemByAP(itemActionParam);

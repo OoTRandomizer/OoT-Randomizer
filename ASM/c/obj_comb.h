@@ -5,7 +5,7 @@
 
 struct ObjComb;
 
-typedef void (*ObjCombActionFunc)(struct ObjComb *, z64_game_t *);
+typedef void (*ObjCombActionFunc)(struct ObjComb*, z64_game_t*);
 
 typedef struct ObjComb {
     /* 0x0000 */ z64_actor_t actor;
@@ -16,6 +16,6 @@ typedef struct ObjComb {
     /* 0x01A4 */ uint8_t chest_type;
 } ObjComb; // size = 0x01A4
 
-override_t get_beehive_override(z64_actor_t *actor, z64_game_t *game);
+override_t get_beehive_override(z64_actor_t* actor, z64_game_t* game);
 
 #endif

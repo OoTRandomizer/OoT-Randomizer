@@ -88,7 +88,11 @@
                 (can_play(Song_of_Time) and (can_use(Boomerang) or can_use(Hookshot)))",
             "Deku Tree MQ GS Basement Back Room": "
                 here(has_fire_source_with_torch) and
-                (can_use(Hookshot) or can_use(Boomerang))"
+                (can_use(Hookshot) or can_use(Boomerang))",
+            "Deku Tree MQ Basement Graves Wonderitem 1": "can_jumpslash",
+            "Deku Tree MQ Basement Graves Wonderitem 2": "can_jumpslash",
+            "Deku Tree MQ Basement Graves Wonderitem 3": "can_jumpslash",
+            "Deku Tree MQ Basement Graves Wonderitem 4": "can_jumpslash"
         },
         "exits": {
             "Deku Tree Basement Ledge": "is_child",

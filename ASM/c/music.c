@@ -6,8 +6,8 @@ extern uint8_t CFG_SLOWDOWN_MUSIC_WHEN_LOWHP;
 static uint16_t previousSeqIndexChange = 0;
 static uint8_t isSlowedDown = 0;
 static uint8_t isSpeedup = 0;
-void manage_music_changes() {
 
+void manage_music_changes() {
     if (CFG_SPEEDUP_MUSIC_FOR_LAST_TRIFORCE_PIECE && !isSlowedDown) {
         if (z64_file.scene_flags[0x48].unk_00_ == TRIFORCE_PIECES_REQUIRED - 1 &&
             z64_Audio_GetActiveSeqId(0) != previousSeqIndexChange) {
@@ -26,8 +26,7 @@ void manage_music_changes() {
                 isSlowedDown = 1;
                 isSpeedup = 0;
             }
-        }
-        else if (isSlowedDown) {
+        } else if (isSlowedDown) {
             z64_ScalePitchAndTempo(1.0f, 0);
             isSlowedDown = 0;
             previousSeqIndexChange = 0;
@@ -48,7 +47,7 @@ _Bool Health_IsCritical(void) {
         criticalHealth = 0x2C;
     }
 
-    if ((criticalHealth >= z64_file.energy) && (z64_file.energy > 0)) {
+    if (criticalHealth >= z64_file.energy && z64_file.energy > 0) {
         return true;
     } else {
         return false;

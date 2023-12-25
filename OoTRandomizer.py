@@ -26,8 +26,7 @@ def start() -> None:
         ts = time.time()
         st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H-%M-%S')
         log_dir = local_path('Logs')
-        if not os.path.exists(log_dir):
-            os.makedirs(log_dir)
+        os.makedirs(log_dir, exist_ok=True)
         log_path = os.path.join(log_dir, '%s.log' % st)
         log_file = logging.FileHandler(log_path)
         log_file.setFormatter(logging.Formatter('[%(asctime)s] %(message)s', datefmt='%H:%M:%S'))

@@ -24,9 +24,9 @@ def apply_ootr_3_web_patch(settings, rom: Rom) -> None:
         else:
             minibsdiff_path += "minibsdiff32.exe"
     elif platform.system() == 'Linux':
-        if platform.machine() in ['arm64', 'aarch64', 'aarch64_be', 'armv8b', 'armv8l']:
+        if platform.machine() in ('arm64', 'aarch64', 'aarch64_be', 'armv8b', 'armv8l'):
             minibsdiff_path += "minibsdiff_ARM64"
-        elif platform.machine() in ['arm', 'armv7l', 'armhf']:
+        elif platform.machine() in ('arm', 'armv7l', 'armhf'):
             minibsdiff_path += "minibsdiff_ARM32"
         else:
             minibsdiff_path += "minibsdiff"

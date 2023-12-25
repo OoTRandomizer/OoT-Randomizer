@@ -200,14 +200,14 @@ ludicrous_items_extended: list[str] = [
     'Ocarina C right Button',
 ]
 
-ludicrous_exclusions: list[str] = [
+ludicrous_exclusions: tuple[str, ...] = (
     'Triforce Piece',
     'Gold Skulltula Token',
     'Rutos Letter',
     'Heart Container',
     'Piece of Heart',
-    'Piece of Heart (Treasure Chest Game)'
-]
+    'Piece of Heart (Treasure Chest Game)',
+)
 
 item_difficulty_max: dict[str, dict[str, int]] = {
     'ludicrous': {
@@ -311,7 +311,7 @@ child_trade_items: tuple[str, ...] = (
     "Mask of Truth",
 )
 
-normal_bottles: list[str] = [bottle for bottle in sorted(ItemInfo.bottles) if bottle not in ['Deliver Letter', 'Sell Big Poe']] + ['Bottle with Big Poe']
+normal_bottles: list[str] = [bottle for bottle in sorted(ItemInfo.bottles) if bottle not in ('Deliver Letter', 'Sell Big Poe')] + ['Bottle with Big Poe']
 song_list: list[str] = [item.name for item in sorted([i for n, i in ItemInfo.items.items() if i.type == 'Song'], key=lambda x: x.index if x.index is not None else 0)]
 junk_pool_base: list[tuple[str, int]] = [(item, weight) for (item, weight) in sorted(ItemInfo.junk_weight.items()) if weight > 0]
 remove_junk_items: list[str] = [item for (item, weight) in sorted(ItemInfo.junk_weight.items()) if weight >= 0]
@@ -375,7 +375,7 @@ item_groups: dict[str, Sequence[str]] = {
     'WarpSong': song_list[0:6],
     'HealthUpgrade': ('Heart Container', 'Piece of Heart', 'Piece of Heart (Treasure Chest Game)'),
     'ProgressItem': sorted([name for name, item in ItemInfo.items.items() if item.type == 'Item' and item.advancement]),
-    'MajorItem': sorted([name for name, item in ItemInfo.items.items() if item.type in ['Item', 'Song'] and item.advancement and name not in exclude_from_major]),
+    'MajorItem': sorted([name for name, item in ItemInfo.items.items() if item.type in ('Item', 'Song') and item.advancement and name not in exclude_from_major]),
     'DungeonReward': [item.name for item in sorted([i for n, i in ItemInfo.items.items() if i.type == 'DungeonReward'], key=lambda x: x.special['item_id'])],
     'Map': sorted([name for name, item in ItemInfo.items.items() if item.type == 'Map']),
     'Compass': sorted([name for name, item in ItemInfo.items.items() if item.type == 'Compass']),
@@ -422,7 +422,7 @@ def generate_itempool(world: World) -> None:
     junk_pool[:] = list(junk_pool_base)
     if world.settings.junk_ice_traps == 'on':
         junk_pool.append(('Ice Trap', 10))
-    elif world.settings.junk_ice_traps in ['mayhem', 'onslaught']:
+    elif world.settings.junk_ice_traps in ('mayhem', 'onslaught'):
         junk_pool[:] = [('Ice Trap', 1)]
 
     # set up item pool
@@ -457,7 +457,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
     if world.settings.zora_fountain == 'open':
         ruto_bottles = 0
 
-    if world.settings.shopsanity not in ['off', '0']:
+    if world.settings.shopsanity not in ('off', '0'):
         pending_junk_pool.append('Progressive Wallet')
 
     if world.settings.item_pool_value == 'plentiful':
@@ -469,7 +469,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
             if 'Weird Egg' in world.settings.shuffle_child_trade and 'Chicken' in world.settings.shuffle_child_trade:
                 pending_junk_pool.remove('Chicken')
             if world.skip_child_zelda:
-                for item in ['Weird Egg', 'Chicken', 'Zeldas Letter']:
+                for item in ('Weird Egg', 'Chicken', 'Zeldas Letter'):
                     if item in pending_junk_pool:
                         pending_junk_pool.remove(item)
         if world.settings.adult_trade_shuffle:
@@ -491,32 +491,32 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         if world.settings.shuffle_beans and world.distribution.get_starting_item('Magic Bean') < 10:
             pending_junk_pool.append('Magic Bean Pack')
         if (world.settings.gerudo_fortress != "open"
-                and world.settings.shuffle_hideoutkeys in ['any_dungeon', 'overworld', 'keysanity', 'regional']):
+                and world.settings.shuffle_hideoutkeys in ('any_dungeon', 'overworld', 'keysanity', 'regional')):
             if 'Thieves Hideout' in world.settings.key_rings and world.settings.gerudo_fortress != "fast":
-                pending_junk_pool.extend(['Small Key Ring (Thieves Hideout)'])
+                pending_junk_pool.append('Small Key Ring (Thieves Hideout)')
             else:
                 pending_junk_pool.append('Small Key (Thieves Hideout)')
-        if world.settings.shuffle_tcgkeys in ['any_dungeon', 'overworld', 'keysanity', 'regional']:
+        if world.settings.shuffle_tcgkeys in ('any_dungeon', 'overworld', 'keysanity', 'regional'):
             if 'Treasure Chest Game' in world.settings.key_rings:
-                pending_junk_pool.extend(['Small Key Ring (Treasure Chest Game)'])
+                pending_junk_pool.append('Small Key Ring (Treasure Chest Game)')
             else:
                 pending_junk_pool.append('Small Key (Treasure Chest Game)')
         if world.settings.shuffle_gerudo_card:
             pending_junk_pool.append('Gerudo Membership Card')
-        if world.settings.shuffle_smallkeys in ['any_dungeon', 'overworld', 'keysanity', 'regional']:
-            for dungeon in ['Forest Temple', 'Fire Temple', 'Water Temple', 'Shadow Temple', 'Spirit Temple',
-                            'Bottom of the Well', 'Gerudo Training Ground', 'Ganons Castle']:
+        if world.settings.shuffle_smallkeys in ('any_dungeon', 'overworld', 'keysanity', 'regional'):
+            for dungeon in ('Forest Temple', 'Fire Temple', 'Water Temple', 'Shadow Temple', 'Spirit Temple',
+                            'Bottom of the Well', 'Gerudo Training Ground', 'Ganons Castle'):
                 if dungeon in world.settings.key_rings:
                     pending_junk_pool.append(f"Small Key Ring ({dungeon})")
                 else:
                     pending_junk_pool.append(f"Small Key ({dungeon})")
-        if world.settings.shuffle_bosskeys in ['any_dungeon', 'overworld', 'keysanity', 'regional']:
-            for dungeon in ['Forest Temple', 'Fire Temple', 'Water Temple', 'Shadow Temple', 'Spirit Temple']:
+        if world.settings.shuffle_bosskeys in ('any_dungeon', 'overworld', 'keysanity', 'regional'):
+            for dungeon in ('Forest Temple', 'Fire Temple', 'Water Temple', 'Shadow Temple', 'Spirit Temple'):
                 if not world.settings.keyring_give_bk or dungeon not in world.settings.key_rings or world.settings.shuffle_smallkeys == 'vanilla':
                     pending_junk_pool.append(f"Boss Key ({dungeon})")
-        if world.settings.shuffle_ganon_bosskey in ['any_dungeon', 'overworld', 'keysanity', 'regional']:
+        if world.settings.shuffle_ganon_bosskey in ('any_dungeon', 'overworld', 'keysanity', 'regional'):
             pending_junk_pool.append('Boss Key (Ganons Castle)')
-        if world.settings.shuffle_silver_rupees in ['any_dungeon', 'overworld', 'anywhere', 'regional']:
+        if world.settings.shuffle_silver_rupees in ('any_dungeon', 'overworld', 'anywhere', 'regional'):
             for puzzle in world.silver_rupee_puzzles():
                 if puzzle in world.settings.silver_rupee_pouches:
                     pending_junk_pool.append(f"Silver Rupee Pouch ({puzzle})")
@@ -549,8 +549,8 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         shuffle_item = None  # None for don't handle, False for place item, True for add to pool.
 
         # Always Placed Items
-        if (location.vanilla_item in ['Triforce', 'Scarecrow Song',
-                                      'Deliver Letter', 'Time Travel', 'Bombchu Drop']
+        if (location.vanilla_item in ('Triforce', 'Scarecrow Song',
+                                      'Deliver Letter', 'Time Travel', 'Bombchu Drop')
                 or location.type == 'Drop'):
             shuffle_item = False
 
@@ -568,8 +568,8 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                 remain_shop_items.append(item)
 
         # Business Scrubs
-        elif location.type in ["Scrub", "GrottoScrub"]:
-            if location.vanilla_item in ['Piece of Heart', 'Deku Stick Capacity', 'Deku Nut Capacity']:
+        elif location.type in ("Scrub", "GrottoScrub"):
+            if location.vanilla_item in ('Piece of Heart', 'Deku Stick Capacity', 'Deku Nut Capacity'):
                 shuffle_item = True
             elif world.settings.shuffle_scrubs == 'off':
                 shuffle_item = False
@@ -598,11 +598,11 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
             shuffle_item = world.settings.shuffle_expensive_merchants
 
         # Bombchu Bowling 3rd and 4th prizes (must be checked before Bombchu vanilla items!)
-        elif location.name in ['Market Bombchu Bowling Bombchus', 'Market Bombchu Bowling Bomb']:
+        elif location.name in ('Market Bombchu Bowling Bombchus', 'Market Bombchu Bowling Bomb'):
             shuffle_item = False
 
         # Bombchus
-        elif location.vanilla_item in ['Bombchus', 'Bombchus (5)', 'Bombchus (10)', 'Bombchus (20)']:
+        elif location.vanilla_item in ('Bombchus', 'Bombchus (5)', 'Bombchus (10)', 'Bombchus (20)'):
             shuffle_item = location.name != 'Wasteland Bombchu Salesman' or world.settings.shuffle_expensive_merchants
 
         # Blue Potion from Granny's Potion Shop
@@ -632,7 +632,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                     world.state.collect(ItemFactory(item))
 
         # Bottles
-        elif location.vanilla_item in ['Bottle', 'Bottle with Milk', 'Rutos Letter']:
+        elif location.vanilla_item in ('Bottle', 'Bottle with Milk', 'Rutos Letter'):
             if ruto_bottles:
                 item = 'Rutos Letter'
                 ruto_bottles -= 1
@@ -662,9 +662,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         elif location.vanilla_item in trade_items:
             if not world.settings.adult_trade_shuffle:
                 if location.vanilla_item == 'Pocket Egg' and world.settings.adult_trade_start:
-                    potential_trade_items = world.settings.adult_trade_start
-                    item = random.choice(potential_trade_items)
-                    world.selected_adult_trade_item = item
+                    item = world.selected_adult_trade_item
                     shuffle_item = True
                 else:
                     shuffle_item = False
@@ -710,7 +708,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
 
         # Treasure Chest Game Key Shuffle
         elif location.vanilla_item != 'Piece of Heart (Treasure Chest Game)' and location.scene == 0x10:
-            if world.settings.shuffle_tcgkeys in ['regional', 'overworld', 'any_dungeon', 'keysanity']:
+            if world.settings.shuffle_tcgkeys in ('regional', 'overworld', 'any_dungeon', 'keysanity'):
                 if 'Treasure Chest Game' in world.settings.key_rings and location.vanilla_item == 'Small Key (Treasure Chest Game)':
                     item = get_junk_item()[0] if location.name != 'Market Treasure Chest Game Salesman' else 'Small Key Ring (Treasure Chest Game)'
                 shuffle_item = True
@@ -724,7 +722,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                 location.disabled = DisableType.DISABLED
 
         # Freestanding Rupees and Hearts
-        elif location.type in ['ActorOverride', 'Freestanding', 'RupeeTower']:
+        elif location.type in ('ActorOverride', 'Freestanding', 'RupeeTower'):
             if world.settings.shuffle_freestanding_items == 'all':
                 shuffle_item = True
             elif world.settings.shuffle_freestanding_items == 'dungeons' and location.dungeon is not None:
@@ -736,7 +734,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                 location.disabled = DisableType.DISABLED
 
         # Pots
-        elif location.type in ['Pot', 'FlyingPot']:
+        elif location.type in ('Pot', 'FlyingPot'):
             if world.settings.shuffle_pots == 'all':
                 shuffle_item = True
             elif world.settings.shuffle_pots == 'dungeons' and (location.dungeon is not None or (location.parent_region is not None and location.parent_region.is_boss_room)):
@@ -748,7 +746,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                 location.disabled = DisableType.DISABLED
 
         # Crates
-        elif location.type in ['Crate', 'SmallCrate']:
+        elif location.type in ('Crate', 'SmallCrate'):
             if world.settings.shuffle_crates == 'all':
                 shuffle_item = True
             elif world.settings.shuffle_crates == 'dungeons' and location.dungeon is not None:
@@ -767,6 +765,14 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                 shuffle_item = False
                 location.disabled = DisableType.DISABLED
 
+        # Wonderitems
+        elif location.type == 'Wonderitem':
+            if world.settings.shuffle_wonderitems:
+                shuffle_item = True
+            else:
+                shuffle_item = False
+                location.disabled = DisableType.DISABLED
+
         # Dungeon Items
         elif location.dungeon is not None:
             dungeon = location.dungeon
@@ -777,7 +783,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
             if location.vanilla_item == dungeon.item_name("Boss Key"):
                 if (world.settings.shuffle_smallkeys != 'vanilla'
                         and dungeon.name in world.settings.key_rings and world.settings.keyring_give_bk
-                        and dungeon.name in ['Forest Temple', 'Fire Temple', 'Water Temple', 'Shadow Temple', 'Spirit Temple']):
+                        and dungeon.name in ('Forest Temple', 'Fire Temple', 'Water Temple', 'Shadow Temple', 'Spirit Temple')):
                     item = get_junk_item()[0]
                     shuffle_item = True
                 else:
@@ -786,7 +792,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                     if shuffle_setting == 'vanilla':
                         shuffle_item = False
             # Map or Compass
-            elif location.vanilla_item in [dungeon.item_name("Map"), dungeon.item_name("Compass")]:
+            elif location.vanilla_item in (dungeon.item_name("Map"), dungeon.item_name("Compass")):
                 shuffle_setting = world.settings.shuffle_mapcompass
                 dungeon_collection = dungeon.dungeon_items
                 if shuffle_setting == 'vanilla':
@@ -815,22 +821,22 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                         item = get_junk_item()[0]
                         shuffle_item = True
             # Any other item in a dungeon.
-            elif location.type in ["Chest", "NPC", "Song", "Collectable", "Cutscene", "BossHeart"]:
+            elif location.type in ("Chest", "NPC", "Song", "Collectable", "Cutscene", "BossHeart"):
                 shuffle_item = True
 
             # Handle dungeon item.
             if shuffle_setting is not None and dungeon_collection is not None and not shuffle_item:
-                if shuffle_setting in ['remove', 'startwith']:
+                if shuffle_setting in ('remove', 'startwith'):
                     world.state.collect(ItemFactory(item, world))
                     item = get_junk_item()[0]
                     shuffle_item = True
-                elif shuffle_setting in ['any_dungeon', 'overworld', 'keysanity', 'regional', 'anywhere'] and not world.empty_dungeons[dungeon.name].empty:
+                elif shuffle_setting in ('any_dungeon', 'overworld', 'keysanity', 'regional', 'anywhere') and not world.empty_dungeons[dungeon.name].empty:
                     shuffle_item = True
                 elif shuffle_item is None:
                     dungeon_collection.append(ItemFactory(item, world))
 
         # The rest of the overworld items.
-        elif location.type in ["Chest", "NPC", "Song", "Collectable", "Cutscene", "BossHeart"]:
+        elif location.type in ("Chest", "NPC", "Song", "Collectable", "Cutscene", "BossHeart"):
             shuffle_item = True
 
         # Replace with max upgrade item if enabled.
@@ -859,7 +865,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
             pool.extend(get_junk_item(shop_non_item_count))
 
     # Extra rupees for shopsanity.
-    if world.settings.shopsanity not in ['off', '0']:
+    if world.settings.shopsanity not in ('off', '0'):
         for rupee in shopsanity_rupees:
             if 'Rupees (5)' in pool:
                 pool[pool.index('Rupees (5)')] = rupee
@@ -894,7 +900,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
     if world.settings.shuffle_ganon_bosskey == 'on_lacs':
         placed_items['ToT Light Arrows Cutscene'] = ItemFactory('Boss Key (Ganons Castle)', world)
 
-    if world.settings.shuffle_ganon_bosskey in ['stones', 'medallions', 'dungeons', 'tokens', 'hearts', 'triforce']:
+    if world.settings.shuffle_ganon_bosskey in ('stones', 'medallions', 'dungeons', 'tokens', 'hearts', 'triforce'):
         placed_items['Gift from Sages'] = ItemFactory('Boss Key (Ganons Castle)', world)
         pool.extend(get_junk_item())
     else:

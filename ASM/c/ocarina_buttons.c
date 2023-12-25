@@ -19,7 +19,7 @@ uint8_t c_block_ocarina() {
     }
     return res;
 }
-extern int16_t EPONAS_SONG_NOTES;
+extern uint8_t EPONAS_SONG_NOTES;
 int8_t can_spawn_epona() {
     if (!SHUFFLE_OCARINA_BUTTONS) {
         return 1;

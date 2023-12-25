@@ -7,6 +7,7 @@
 #include "ocarina_buttons.h"
 #include "item_draw_functions.h"
 extern uint8_t CFG_DPAD_ON_THE_LEFT;
+#include "debug.h"
 
 // PLAYER_STATE1_0 : Scene transition
 // PLAYER_STATE1_SWINGING_BOTTLE
@@ -55,7 +56,8 @@ extern uint16_t CFG_CHILD_TRADE_SHUFFLE;
                             ((uint32_t)z64_ctxt.state_dtor==z64_state_ovl_tab[3].vram_dtor) && \
                             (z64_file.game_mode == 0) && \
                             ((z64_event_state_1 & 0x20) == 0) && \
-                            (!CAN_DRAW_DUNGEON_INFO || !CFG_DPAD_DUNGEON_INFO_ENABLE))
+                            (!CAN_DRAW_DUNGEON_INFO || !CFG_DPAD_DUNGEON_INFO_ENABLE) && \
+                            !(debug_menu_is_drawn()))
 // Not in pause menu
 // Ocarina in inventory
 // Scenes ocarina restrictions, specific to each scene

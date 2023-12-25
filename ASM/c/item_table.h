@@ -29,9 +29,9 @@ typedef enum {
 
 struct item_row_t;
 
-typedef uint16_t (*upgrade_fn)(z64_file_t *save, override_t override);
-typedef void (*effect_fn)(z64_file_t *save, int16_t arg1, int16_t arg2);
-typedef uint16_t (*alt_text_fn)(struct item_row_t *this, uint16_t item_id, bool is_outgoing);
+typedef uint16_t (*upgrade_fn)(z64_file_t* save, override_t override);
+typedef void (*effect_fn)(z64_file_t* save, int16_t arg1, int16_t arg2);
+typedef uint16_t (*alt_text_fn)(struct item_row_t* this, bool is_outgoing);
 
 typedef struct item_row_t {
     int8_t      base_item_id;
@@ -49,13 +49,13 @@ typedef struct item_row_t {
 } item_row_t;
 
 uint16_t resolve_upgrades(override_t override);
-item_row_t *get_item_row(uint16_t item_id);
-void call_effect_function(item_row_t *item_row);
-uint16_t resolve_item_text_id(item_row_t *item_row, uint16_t item_id, bool is_outgoing);
-uint16_t resolve_text_silver_rupees(item_row_t *item_row, uint16_t item_id, bool is_outgoing);
-uint16_t resolve_text_silver_rupee_pouches(item_row_t *item_row, uint16_t item_id, bool is_outgoing);
-uint16_t resolve_text_small_keys(item_row_t *item_row, uint16_t item_id, bool is_outgoing);
-uint16_t resolve_text_small_keys_cmg(item_row_t *item_row, uint16_t item_id, bool is_outgoing);
-uint16_t resolve_text_keyrings(item_row_t *item_row, uint16_t item_id, bool is_outgoing);
+item_row_t* get_item_row(uint16_t item_id);
+void call_effect_function(item_row_t* item_row);
+uint16_t resolve_item_text_id(item_row_t* item_row, bool is_outgoing);
+uint16_t resolve_text_silver_rupees(item_row_t* item_row, bool is_outgoing);
+uint16_t resolve_text_silver_rupee_pouches(item_row_t* item_row, bool is_outgoing);
+uint16_t resolve_text_small_keys(item_row_t* item_row, bool is_outgoing);
+uint16_t resolve_text_small_keys_cmg(item_row_t* item_row, bool is_outgoing);
+uint16_t resolve_text_keyrings(item_row_t* item_row, bool is_outgoing);
 
 #endif

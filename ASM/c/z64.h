@@ -38,29 +38,26 @@
 
 #define FONT_CHAR_TEX_SIZE ((16 * 16) / 2) // 16x16 I4 texture
 
-#define OFFSETOF(structure, member) ((size_t)&(((structure *)0)->member))
+#define OFFSETOF(structure, member) ((size_t)&(((structure*)0)->member))
 
 #define REG_PAGES 6
 #define REGS_PER_PAGE 16
 #define REGS_PER_GROUP (REG_PAGES * REGS_PER_PAGE)
-#define REG_EDITOR_DATA ((int16_t *)0x801C6EA4)
+#define REG_EDITOR_DATA ((int16_t*)0x801C6EA4)
 #define BASE_REG(n, r) REG_EDITOR_DATA[(n)*REGS_PER_GROUP + (r)]
 #define REG(r) BASE_REG(0, (r))
 #define SREG(r) BASE_REG(1, (r))
 #define R_PAUSE_BG_PRERENDER_STATE SREG(94)
 
-typedef struct
-{
+typedef struct {
   /* index of z64_col_type in scene file */
   uint16_t    type;
   /* vertex indices, a and b are bitmasked for some reason */
-  struct
-  {
+  struct {
     uint16_t  unk_00_ : 3;
     uint16_t  va      : 13;
   };
-  struct
-  {
+  struct {
     uint16_t  unk_01_ : 3;
     uint16_t  vb      : 13;
   };
@@ -71,10 +68,8 @@ typedef struct
   int16_t     dist;
 } z64_col_poly_t;
 
-typedef struct
-{
-  struct
-  {
+typedef struct {
+  struct {
     uint32_t  unk_00_     : 1;
     uint32_t  drop        : 1; /* link drops one unit into the floor */
     uint32_t  special     : 4;
@@ -84,8 +79,7 @@ typedef struct
     uint32_t  exit        : 5;
     uint32_t  camera      : 8;
   } flags_1;                    /* 0x0000 */
-  struct
-  {
+  struct {
     uint32_t  pad_00_     : 4;
     uint32_t  wall_damage : 1;
     uint32_t  unk_00_     : 6;
@@ -98,28 +92,24 @@ typedef struct
   } flags_2;                    /* 0x0004 */
 } z64_col_type_t;
 
-typedef struct
-{
+typedef struct {
   z64_xyz_t pos;
   z64_xyz_t rot;
   int16_t   fov;
   int16_t   unk_00_;
 } z64_camera_params_t;
 
-typedef struct
-{
+typedef struct {
   uint16_t mode;
   uint16_t unk_01_;
   uint32_t seg_params; /* segment address of z64_camera_params_t */
 } z64_camera_t;
 
-typedef struct
-{
+typedef struct {
   z64_xyz_t     pos;
   int16_t       width;
   int16_t       depth;
-  struct
-  {
+  struct {
     uint32_t    unk_00_ : 12;
     uint32_t    active  : 1;
     uint32_t    group   : 6; /* ? */
@@ -128,8 +118,7 @@ typedef struct
   } flags;
 } z64_col_water_t;
 
-typedef struct
-{
+typedef struct {
   z64_xyz_t         min;
   z64_xyz_t         max;
   uint16_t          n_vtx;
@@ -142,8 +131,7 @@ typedef struct
   z64_col_water_t  *water;
 } z64_col_hdr_t;
 
-typedef enum
-{
+typedef enum {
   Z64_ITEM_NULL = -1,
   Z64_ITEM_STICK,
   Z64_ITEM_NUT,
@@ -269,8 +257,7 @@ typedef enum
   Z64_ITEM_MAGIC_LARGE,
 } z64_item_t;
 
-typedef enum
-{
+typedef enum {
   Z64_EXCH_ITEM_NONE,
   Z64_EXCH_ITEM_LETTER_ZELDA,
   Z64_EXCH_ITEM_WEIRD_EGG,
@@ -375,8 +362,7 @@ typedef enum {
   PLAYER_AP_MAX
 } z64_action_parameter_t;
 
-typedef enum
-{
+typedef enum {
   SI_DEKU_NUTS_5,
   SI_ARROWS_30,
   SI_ARROWS_50,
@@ -430,8 +416,7 @@ typedef enum
   SI_MAX
 } z64_shop_item_t;
 
-typedef enum
-{
+typedef enum {
   Z64_SLOT_STICK,
   Z64_SLOT_NUT,
   Z64_SLOT_BOMB,
@@ -458,16 +443,14 @@ typedef enum
   Z64_SLOT_CHILD_TRADE,
 } z64_slot_t;
 
-typedef enum
-{
+typedef enum {
   Z64_ITEMBTN_B,
   Z64_ITEMBTN_CL,
   Z64_ITEMBTN_CD,
   Z64_ITEMBTN_CR,
 } z64_itembtn_t;
 
-typedef struct
-{
+typedef struct {
   char      unk_00_[0x006E];        /* 0x0000 */
   int16_t   run_speed_limit;        /* 0x006E */
   char      unk_01_[0x0004];        /* 0x0070 */
@@ -542,8 +525,7 @@ typedef struct
                                     /* 0x0FBC */
 } z64_gameinfo_t;
 
-typedef struct
-{
+typedef struct {
   /* data */
   uint8_t   unk_00_[0x1C9EE];     /* 0x0000 */
   uint16_t  deaths[3];            /* 0x1C9EE */
@@ -558,8 +540,7 @@ typedef struct
   int16_t   copyDestFileIndex;    /* 0x1CA50 */
 } z64_FileChooseContext_t;
 
-typedef struct
-{
+typedef struct {
   int32_t         entrance_index;           /* 0x0000 */
   int32_t         link_age;                 /* 0x0004 */
   char            unk_00_[0x0002];          /* 0x0008 */
@@ -588,11 +569,9 @@ typedef struct
   char            unk_05_;                  /* 0x003F */
   int8_t          child_button_items[4];    /* 0x0040 */
   int8_t          child_c_button_slots[3];  /* 0x0044 */
-  union
-  {
+  union {
     uint16_t      child_equips;             /* 0x0048 */
-    struct
-    {
+    struct {
       uint16_t    child_equip_boots   : 4;
       uint16_t    child_equip_tunic   : 4;
       uint16_t    child_equip_shield  : 4;
@@ -601,11 +580,9 @@ typedef struct
   };
   int8_t          adult_button_items[4];    /* 0x004A */
   int8_t          adult_c_button_slots[3];  /* 0x004E */
-  union
-  {
+  union {
     uint16_t      adult_equips;             /* 0x0052 */
-    struct
-    {
+    struct {
       uint16_t    adult_equip_boots   : 4;
       uint16_t    adult_equip_tunic   : 4;
       uint16_t    adult_equip_shield  : 4;
@@ -616,11 +593,9 @@ typedef struct
   int16_t         scene_index;              /* 0x0066 */
   int8_t          button_items[4];          /* 0x0068 */
   int8_t          c_button_slots[3];        /* 0x006C */
-  union
-  {
+  union {
     uint16_t      equips;                   /* 0x0070 */
-    struct
-    {
+    struct {
       uint16_t    equip_boots         : 4;
       uint16_t    equip_tunic         : 4;
       uint16_t    equip_shield        : 4;
@@ -631,11 +606,9 @@ typedef struct
   int8_t          items[24];                /* 0x0074 */
   int8_t          ammo[15];                 /* 0x008C */
   uint8_t         magic_beans_sold;         /* 0x009B */
-  union
-  {
+  union {
     uint16_t      equipment;                /* 0x009C */
-    struct
-    {
+    struct {
       uint16_t                        : 1;
       uint16_t    hover_boots         : 1;
       uint16_t    iron_boots          : 1;
@@ -655,11 +628,9 @@ typedef struct
     };
   };
   char            unk_08_[0x0002];          /* 0x009E */
-  union
-  {
+  union {
     uint32_t      equipment_items;          /* 0x00A0 */
-    struct
-    {
+    struct {
       uint32_t                        : 9;
       uint32_t    nut_upgrade         : 3;
       uint32_t    stick_upgrade       : 3;
@@ -671,11 +642,9 @@ typedef struct
       uint32_t    quiver              : 3;
     };
   };
-  union
-  {
+  union {
     uint32_t      quest_items;              /* 0x00A4 */
-    struct
-    {
+    struct {
       uint32_t    heart_pieces        : 8;
       uint32_t    gold_skulltula      : 1;
       uint32_t    gerudos_card        : 1;
@@ -703,11 +672,9 @@ typedef struct
       uint32_t    forest_medallion    : 1;
     };
   };
-  union
-  {
+  union {
     uint8_t       items;
-    struct
-    {
+    struct {
       uint8_t                         : 5;
       uint8_t     map                 : 1;
       uint8_t     compass             : 1;
@@ -718,8 +685,7 @@ typedef struct
   uint8_t         defense_hearts;           /* 0x00CF */
   int16_t         gs_tokens;                /* 0x00D0 */
   char            unk_09_[0x0002];          /* 0x00D2 */
-  struct
-  {
+  struct {
     uint32_t      chest;
     uint32_t      swch;
     uint32_t      clear;
@@ -786,13 +752,13 @@ typedef struct
   char            unk_1C_[0x0010];          /* 0x1414 */
   uint16_t        refill_hearts;            /* 0x1424 */
   char            unk_1D_[0x000A];          /* 0x1426 */
-  z64_gameinfo_t *gameinfo;                 /* 0x1430 */
+  z64_gameinfo_t* gameinfo;                 /* 0x1430 */
   char            unk_1E_[0x001C];          /* 0x1434 */
                                             /* 0x1450 */
 } z64_file_t;
 
 typedef struct {
-  uint8_t *readBuff;  /* 0x00 */
+  uint8_t* readBuff;  /* 0x00 */
 } SramContext; // size = 0x4
 
 typedef struct {
@@ -804,8 +770,7 @@ typedef struct {
   extended_save_data_t additional_save_data;
 } extended_sram_file_t;
 
-typedef struct
-{
+typedef struct {
     uint8_t               sound_options;           /* 0x0000 */
     uint8_t               z_target_options;        /* 0x0001 */
     uint8_t               language_options;        /* 0x0002 */
@@ -816,20 +781,16 @@ typedef struct
                                                    /* 0x7A00 */
 } z64_sram_data_t;
 
-typedef struct
-{
+typedef struct {
   uint32_t seg[16];
 } z64_stab_t;
 
-typedef struct
-{
+typedef struct {
   uint8_t       scene_index;
   uint8_t       entrance_index;
-  union
-  {
+  union {
     uint16_t    variable;
-    struct
-    {
+    struct {
       uint16_t  transition_out  : 7;
       uint16_t  transition_in   : 7;
       uint16_t  unk_00_         : 1;
@@ -838,8 +799,7 @@ typedef struct
   };
 } z64_entrance_table_t;
 
-typedef struct
-{
+typedef struct {
   uint32_t scene_vrom_start;
   uint32_t scene_vrom_end;
   uint32_t title_vrom_start;
@@ -850,16 +810,14 @@ typedef struct
   char     padding_00_;
 } z64_scene_table_t;
 
-typedef struct
-{
+typedef struct {
   uint32_t        size;                 /* 0x0000 */
   Gfx            *buf;                  /* 0x0004 */
   Gfx            *p;                    /* 0x0008 */
   Gfx            *d;                    /* 0x000C */
 } z64_disp_buf_t;
 
-typedef struct
-{
+typedef struct {
   Gfx            *poly_opa_w;           /* 0x0000 */
   Gfx            *poly_xlu_w;           /* 0x0004 */
   char            unk_00_[0x0008];      /* 0x0008 */
@@ -881,10 +839,8 @@ typedef struct
                                         /* 0x02EC */
 } z64_gfx_t;
 
-typedef union
-{
-  struct
-  {
+typedef union {
+  struct {
     uint16_t  a  : 1;
     uint16_t  b  : 1;
     uint16_t  z  : 1;
@@ -904,8 +860,7 @@ typedef union
   uint16_t    pad;
 } pad_t;
 
-typedef struct
-{
+typedef struct {
   pad_t         pad;
   int8_t        x;
   int8_t        y;
@@ -954,7 +909,7 @@ struct z64_actor_s
   float           gravity;          /* 0x006C */
   float           min_vel_y;        /* 0x0070 */
   void           *unk_08_;          /* 0x0074 */
-  z64_col_poly_t *floor_poly;       /* 0x0078 */
+  z64_col_poly_t* floor_poly;       /* 0x0078 */
   char            unk_09_[0x000C];  /* 0x007C */
   uint16_t        unk_flags_00;     /* 0x0088 */
   int16_t         unk_roty;         /* 0x008A */
@@ -997,23 +952,22 @@ typedef struct {
     /* 0x0E */ uint16_t   params;
 } ActorEntry; // size = 0x10
 
-typedef struct
-{
+typedef struct {
   z64_actor_t  common;               /* 0x0000 */
   char         unk_00_[0x0013];      /* 0x013C */
   uint8_t      current_mask;         /* 0x014F */
   char         unk_01_[0x02D4];      /* 0x0150 */
   int8_t       incoming_item_id;     /* 0x0424 */
   char         unk_02_[0x0003];      /* 0x0425 */
-  z64_actor_t *incoming_item_actor;  /* 0x0428 */
+  z64_actor_t* incoming_item_actor;  /* 0x0428 */
   char         unk_03_[0x0008];      /* 0x042C */
   uint8_t      action;               /* 0x0434 */
   char         unk_04_[0x0237];      /* 0x0435 */
   uint32_t     state_flags_1;        /* 0x066C */
   uint32_t     state_flags_2;        /* 0x0670 */
   char         unk_05_[0x0004];      /* 0x0674 */
-  z64_actor_t *boomerang_actor;      /* 0x0678 */
-  z64_actor_t *navi_actor;           /* 0x067C */
+  z64_actor_t* boomerang_actor;      /* 0x0678 */
+  z64_actor_t* navi_actor;           /* 0x067C */
   uint16_t     naviTextId;           /* 0x0680 */
   uint8_t      state_flags_3;        /* 0x0682 */
   int8_t       exchange_item_id;     /* 0x0683 */
@@ -1041,8 +995,7 @@ typedef struct DynaPolyActor {
   int16_t      unk_162;  /* 0x162 */
 } DynaPolyActor; // size = 0x164
 
-typedef struct
-{
+typedef struct {
   z64_controller_t  raw;
   uint16_t          unk_00_;
   z64_controller_t  raw_prev;
@@ -1058,8 +1011,7 @@ typedef struct
 } z64_input_t;
 
 /* context base */
-typedef struct
-{
+typedef struct {
   z64_gfx_t      *gfx;                    /* 0x0000 */
   void           *state_main;             /* 0x0004 */
   void           *state_dtor;             /* 0x0008 */
@@ -1078,8 +1030,7 @@ typedef struct
                                           /* 0x00A4 */
 } z64_ctxt_t;
 
-typedef struct
-{
+typedef struct {
   /* file loading params */
   uint32_t      vrom_addr;
   void         *dram_addr;
@@ -1094,8 +1045,7 @@ typedef struct
 } z64_getfile_t;
 
 /* object structs */
-typedef struct
-{
+typedef struct {
   int16_t       id;
   void         *data;
   z64_getfile_t getfile;
@@ -1103,8 +1053,7 @@ typedef struct
   OSMesg        load_m;
 } z64_mem_obj_t;
 
-typedef struct
-{
+typedef struct {
   void         *obj_space_start;
   void         *obj_space_end;
   uint8_t       n_objects;
@@ -1114,15 +1063,13 @@ typedef struct
   z64_mem_obj_t objects[19];
 } z64_obj_ctxt_t;
 
-typedef struct
-{
+typedef struct {
   uint8_t       code;
   uint8_t       data1;
   uint32_t      data2;
 } z64_scene_command;
 
-typedef struct
-{
+typedef struct {
     char              unk_00_[0x0128];          /* 0x0000 */
     void             *icon_item;                /* 0x0128 */
     void             *icon_item_24;             /* 0x012C */
@@ -1167,21 +1114,18 @@ typedef struct
                                                 /* 0x02B4 */
 } z64_pause_ctxt_t;
 
-typedef struct
-{
+typedef struct {
   uint32_t vrom_start;
   uint32_t vrom_end;
 } z64_object_table_t;
 
 /* lighting structs */
-typedef struct
-{
+typedef struct {
   int8_t  dir[3];
   uint8_t col[3];
 } z64_light1_t;
 
-typedef struct
-{
+typedef struct {
   int16_t x;
   int16_t y;
   int16_t z;
@@ -1189,14 +1133,12 @@ typedef struct
   int16_t intensity;
 } z64_light2_t;
 
-typedef union
-{
+typedef union {
   z64_light1_t  light1;
   z64_light2_t  light2;
 } z64_lightn_t;
 
-typedef struct
-{
+typedef struct {
   uint8_t       type;
   z64_lightn_t  lightn;
 } z64_light_t;
@@ -1205,21 +1147,19 @@ typedef struct z64_light_node_s z64_light_node_t;
 struct z64_light_node_s
 {
   z64_light_t      *light;
-  z64_light_node_t *prev;
-  z64_light_node_t *next;
+  z64_light_node_t* prev;
+  z64_light_node_t* next;
 };
 
-typedef struct
-{
-  z64_light_node_t *light_list;
+typedef struct {
+  z64_light_node_t* light_list;
   uint8_t           ambient[3];
   uint8_t           fog[3];
   int16_t           fog_position;
   int16_t           draw_distance;
 } z64_lighting_t;
 
-typedef struct
-{
+typedef struct {
   int8_t  numlights;
   Lightsn lites;
 } z64_gbi_lights_t;
@@ -1227,8 +1167,7 @@ typedef struct
 typedef void (*z64_light_handler_t)(z64_gbi_lights_t*, z64_lightn_t*,
                                     z64_actor_t*);
 
-typedef struct
-{
+typedef struct {
   uint8_t          freeze_flash_timer; /* 0x0000 */
   char             unk_01_[0x01];      /* 0x0001 */
   uint8_t          unk_02;             /* 0x0002 */
@@ -1329,8 +1268,7 @@ typedef enum {
 } CameraModeType;
 
 /* game context */
-typedef struct
-{
+typedef struct {
   z64_ctxt_t       common;                 /* 0x00000 */
   uint16_t         scene_index;            /* 0x000A4 */
   uint8_t          scene_config;           /* 0x000A6  */
@@ -1364,8 +1302,7 @@ typedef struct
   z64_actor_ctxt_t actor_ctxt;             /* 0x01C24 */
   uint8_t          n_actors_loaded;        /* 0x01C2C */
   char             unk_0A_[0x0003];        /* 0x01C2D */
-  struct
-  {
+  struct {
     uint32_t       length;
     z64_actor_t   *first;
   }                actor_list[12];         /* 0x01C30 */
@@ -1375,8 +1312,7 @@ typedef struct
   char             unk_0C_1_[0x000A];      /* 0x01CD0 */
   uint8_t          target_actor_type;      /* 0x01CDA */
   char             unk_0C_2_[0x0005];      /* 0x01CDB */
-  struct
-  {
+  struct {
     z64_xyzf_t     pos;
     float          unk;
     colorRGB8_t    color;
@@ -1413,8 +1349,7 @@ typedef struct
     uint16_t       minimap;
   }                hud_alpha_channels;    /* 0x10732 */
   char             unk_13_[0x000C];       /* 0x10746 */
-  struct
-  {
+  struct {
     uint8_t        unk_00_;
     uint8_t        b_button;
     uint8_t        unk_01_;
@@ -1461,8 +1396,7 @@ typedef struct
 } z64_game_t;
 
 
-typedef struct
-{
+typedef struct {
   char              unk_00_[0x01D8];          /* 0x00000 */
   z64_sram_data_t  *sram_buffer;              /* 0x001D8 */
   char              unk_01_[0x1C812];         /* 0x001DC */
@@ -1513,8 +1447,7 @@ typedef struct
   colorRGB16_t      cursor_color;             /* 0x1CA94 */
 } z64_menudata_t;
 
-typedef struct
-{
+typedef struct {
   void             *ptr;                      /* 0x0000 */
   uint32_t          vrom_start;               /* 0x0004 */
   uint32_t          vrom_end;                 /* 0x0008 */
@@ -1528,8 +1461,7 @@ typedef struct
                                               /* 0x0030 */
 } z64_state_ovl_t;
 
-typedef struct
-{
+typedef struct {
   /* state ? */
   int32_t           state;                    /* 0x0000 */
   /* elapsed time */
@@ -1548,8 +1480,7 @@ typedef struct
                                               /* 0x0018 */
 } z64_trail_cp_t;
 
-typedef struct
-{
+typedef struct {
   /* control points */
   z64_trail_cp_t    cp[16];                   /* 0x0000 */
   /* interpolation mode ? */
@@ -1594,8 +1525,7 @@ typedef struct
                                               /* 0x01AC */
 } z64_trail_fx_t;
 
-typedef struct
-{
+typedef struct {
   uint8_t           active;                   /* 0x0000 */
   char              pad_00_[0x0003];          /* 0x0001 */
   z64_trail_fx_t    fx;                       /* 0x0004 */
@@ -1824,7 +1754,7 @@ typedef enum {
 typedef struct EnGSwitch
 {
   /* 0x0000 */ z64_actor_t actor;
-  /* 0x014C */ void *actionFunc;   // EnGSwitchActionFunc
+  /* 0x014C */ void* actionFunc;   // EnGSwitchActionFunc
   /* 0x0150 */ int16_t type;
   /* 0x0152 */ int16_t silverCount;
   /* 0x0154 */ int16_t switchFlag;
@@ -1850,7 +1780,7 @@ typedef enum {
     /* 1 */ PAUSE_BG_PRERENDER_SETUP, // The current frame is only drawn for the purpose of serving as the pause background.
     /* 2 */ PAUSE_BG_PRERENDER_PROCESS, // The previous frame was PAUSE_BG_PRERENDER_SETUP, now apply prerender filters.
     /* 3 */ PAUSE_BG_PRERENDER_READY, // The pause background is ready to be used.
-    /* 4 */ PAUSE_BG_PRERENDER_MAX
+    /* 4 */ PAUSE_BG_PRERENDER_MAX,
 } PauseBgPreRenderState;
 
 
@@ -1879,7 +1809,11 @@ typedef enum UpgradeType {
 #define z64_Message_GetState_addr               0x800DD464
 #define z64_SetCollectibleFlags_addr            0x8002071C
 #define z64_GetCollectibleFlags_addr            0x800206E8
+#define z64_Flags_GetClear_addr                 0x80020640
+#define z64_Flags_SetSwitch_addr                0x800204D0
+#define z64_Flags_GetSwitch_addr                0x8002049C
 #define z64_Audio_PlaySoundGeneral_addr         0x800C806C
+#define z64_PlaySFXID_addr                      0x800646F0
 #define z64_Audio_PlayFanFare_addr              0x800C69A0
 #define z64_osSendMesg_addr                     0x80001E20
 #define z64_osRecvMesg_addr                     0x80002030
@@ -1943,9 +1877,9 @@ typedef enum UpgradeType {
 #define z64_bzero_addr                          0x80002E80
 #define z64_Item_DropCollectible_addr           0x80013678
 #define z64_Item_DropCollectible2_addr          0x800138B0
+#define z64_Item_DropCollectibleRandom_addr     0x80013A84
 #define z64_Gfx_DrawDListOpa_addr               0x80028048
 #define z64_Math_SinS_addr                      0x800636C4
-#define z64_Rand_ZeroOne_addr                   0x800CDCCC
 #define z64_RandSeed_addr                       0x800CDCC0
 #define z64_Rand_ZeroOne_addr                   0x800CDCCC
 #define Interface_LoadItemIcon1_addr            0x8006FB50
@@ -1956,6 +1890,8 @@ typedef enum UpgradeType {
 #define Font_LoadChar_addr                      0x8005BCE4
 #define GetItem_Draw_addr                       0x800570C0
 #define z64_Audio_GetActiveSeqId_addr           0x800CAB18
+#define z64_Play_SetupRespawnPoint_addr         0x8009D94C
+#define z64_EffectSsKiraKira_SpawnSmall_addr    0x8001C66C
 
 /* rom addresses */
 #define z64_icon_item_static_vaddr              0x007BD000
@@ -1979,68 +1915,73 @@ typedef enum UpgradeType {
 #define z64_ctxt_game_size                      0x00012518
 
 /* function prototypes */
-typedef void(*z64_ActorKillFunc)(z64_actor_t *);
-typedef uint8_t(*z64_Message_GetStateFunc)(uint8_t *);
-typedef void(*z64_Flags_SetCollectibleFunc)(z64_game_t *game, uint32_t flag);
-typedef int32_t (*z64_Flags_GetCollectibleFunc)(z64_game_t *game, uint32_t flag);
-typedef void(*z64_Audio_PlaySoundGeneralFunc)(uint16_t sfxId, void *pos, uint8_t token, float *freqScale, float *a4, uint8_t *reverbAdd);
+typedef void(*z64_ActorKillFunc)(z64_actor_t*);
+typedef uint8_t(*z64_Message_GetStateFunc)(uint8_t*);
+typedef void(*z64_Flags_SetCollectibleFunc)(z64_game_t* game, uint32_t flag);
+typedef int32_t (*z64_Flags_GetCollectibleFunc)(z64_game_t* game, uint32_t flag);
+typedef void(*z64_Audio_PlaySoundGeneralFunc)(uint16_t sfxId, void* pos, uint8_t token, float* freqScale, float* a4, uint8_t* reverbAdd);
+typedef int32_t (*z64_Flags_GetClearFunc)(z64_game_t* game, int32_t flag);
+typedef void (*z64_Flags_SetSwitchFunc)(z64_game_t* game, int32_t flag);
+typedef int32_t (*z64_Flags_GetSwitchFunc)(z64_game_t* game, int32_t flag);
+typedef void(*z64_PlaySFXIDFunc)(int16_t sfxId);
 typedef void(*z64_Audio_PlayFanFareFunc)(uint16_t);
-typedef void (*z64_DrawActors_proc)       (z64_game_t *game, void *actor_ctxt);
-typedef void (*z64_DeleteActor_proc)      (z64_game_t *game, void *actor_ctxt,
-                                           z64_actor_t *actor);
-typedef z64_actor_t* (*z64_SpawnActor_proc)       (void *actor_ctxt, z64_game_t *game,
+typedef void (*z64_DrawActors_proc)       (z64_game_t* game, void* actor_ctxt);
+typedef void (*z64_DeleteActor_proc)      (z64_game_t* game, void* actor_ctxt,
+                                           z64_actor_t* actor);
+typedef z64_actor_t* (*z64_SpawnActor_proc)       (void* actor_ctxt, z64_game_t* game,
                                            int actor_id, float x, float y,
                                            float z, uint16_t rx, uint16_t ry,
                                            uint16_t rz, uint16_t variable);
 typedef void (*z64_SwitchAgeEquips_proc)  (void);
-typedef void (*z64_UpdateItemButton_proc) (z64_game_t *game, int button_index);
-typedef void (*z64_UpdateEquipment_proc)  (z64_game_t *game, z64_link_t *link);
-typedef void (*z64_LoadRoom_proc)         (z64_game_t *game,
-                                           void *p_ctxt_room_index,
+typedef void (*z64_UpdateItemButton_proc) (z64_game_t* game, int button_index);
+typedef void (*z64_UpdateEquipment_proc)  (z64_game_t* game, z64_link_t* link);
+typedef void (*z64_LoadRoom_proc)         (z64_game_t* game,
+                                           void* p_ctxt_room_index,
                                            uint8_t room_index);
-typedef void (*z64_UnloadRoom_proc)       (z64_game_t *game,
-                                           void *p_ctxt_room_index);
-typedef void (*z64_Io_proc)               (uint32_t dev_addr, void *dram_addr,
+typedef void (*z64_UnloadRoom_proc)       (z64_game_t* game,
+                                           void* p_ctxt_room_index);
+typedef void (*z64_Io_proc)               (uint32_t dev_addr, void* dram_addr,
                                            uint32_t size, int32_t direction);
-typedef void (*z64_SceneConfig_proc)      (z64_game_t *game);
-typedef void (*z64_DisplayTextbox_proc)   (z64_game_t *game, uint16_t text_id,
+typedef void (*z64_SceneConfig_proc)      (z64_game_t* game);
+typedef void (*z64_DisplayTextbox_proc)   (z64_game_t* game, uint16_t text_id,
                                            int unknown_);
-typedef void (*z64_GiveItem_proc)         (z64_game_t *game, uint8_t item);
+typedef void (*z64_GiveItem_proc)         (z64_game_t* game, uint8_t item);
 
 typedef void (*z64_Inventory_ChangeUpgrade_proc)(int16_t upgrade, int16_t value);
 
-typedef void(*z64_LinkDamage_proc)        (z64_game_t *ctxt, z64_link_t *link,
+typedef void(*z64_LinkDamage_proc)        (z64_game_t* ctxt, z64_link_t *link,
                                            uint8_t damage_type, float unk_00, uint32_t unk_01,
                                            uint16_t unk_02);
-typedef void(*z64_LinkInvincibility_proc) (z64_link_t *link, uint8_t frames);
-typedef float *(*z64_GetMatrixStackTop_proc)();
-typedef void (*SsSram_ReadWrite_proc)(uint32_t addr, void *dramAddr, size_t size, uint32_t direction);
-typedef void *(*z64_memcopy_proc)(void *dest, void *src, uint32_t size);
-typedef void (*z64_bzero_proc)(void *__s, uint32_t __n);
-typedef void (*z64_Gfx_DrawDListOpa_proc)(z64_game_t *game, z64_gfx_t *dlist);
+typedef void(*z64_LinkInvincibility_proc) (z64_link_t* link, uint8_t frames);
+typedef float* (*z64_GetMatrixStackTop_proc)();
+typedef void (*SsSram_ReadWrite_proc)(uint32_t addr, void* dramAddr, size_t size, uint32_t direction);
+typedef void* (*z64_memcopy_proc)(void* dest, void* src, uint32_t size);
+typedef void (*z64_bzero_proc)(void* __s, uint32_t __n);
+typedef void (*z64_Gfx_DrawDListOpa_proc)(z64_game_t* game, z64_gfx_t* dlist);
 typedef float (*z64_Math_SinS_proc)(int16_t angle);
+typedef void (*z64_EffectSsKiraKira_SpawnSmall_proc)(z64_game_t* globalCtx, z64_xyzf_t* pos, z64_xyzf_t* velocity, z64_xyzf_t* accel, colorRGBA8_t* primColor, colorRGBA8_t* envColor);
 
-typedef int32_t(*z64_ObjectSpawn_proc)    (z64_obj_ctxt_t *object_ctx, int16_t object_id);
-typedef int32_t(*z64_ObjectIndex_proc)    (z64_obj_ctxt_t *object_ctx, int16_t object_id);
-typedef int32_t(*z64_ObjectIsLoaded_proc) (z64_obj_ctxt_t *object_ctx, int32_t bank_index);
+typedef int32_t(*z64_ObjectSpawn_proc)    (z64_obj_ctxt_t* object_ctx, int16_t object_id);
+typedef int32_t(*z64_ObjectIndex_proc)    (z64_obj_ctxt_t* object_ctx, int16_t object_id);
+typedef int32_t(*z64_ObjectIsLoaded_proc) (z64_obj_ctxt_t* object_ctx, int32_t bank_index);
 
-typedef int32_t(*z64_ActorSetLinkIncomingItemId_proc) (z64_actor_t *actor, z64_game_t *game,
+typedef int32_t(*z64_ActorSetLinkIncomingItemId_proc) (z64_actor_t* actor, z64_game_t* game,
                                                        int32_t get_item_id, float xz_range, float y_range);
-typedef float (*z64_Rand_ZeroOne_proc)();
 typedef void(*z64_RandSeed_proc) (uint32_t seed);
 typedef float(*z64_Rand_ZeroOne_proc)();
 typedef void(*Font_LoadChar_proc)(void* font, uint8_t character, uint16_t codePointIndex);
 
-typedef void(*Interface_LoadItemIcon1_proc) (z64_game_t *game, uint16_t button);
+typedef void(*Interface_LoadItemIcon1_proc) (z64_game_t* game, uint16_t button);
 
 typedef void(*Rupees_ChangeBy_proc)         (int16_t rupeeChange);
 
-typedef void(*Message_ContinueTextbox_proc) (z64_game_t *play, uint16_t textId);
+typedef void(*Message_ContinueTextbox_proc) (z64_game_t* play, uint16_t textId);
 
 typedef void(*PlaySFX_proc) (uint16_t sfxId);
 typedef void(*z64_ScalePitchAndTempo_proc)(float scaleTempoAndFreq, uint8_t duration);
-typedef void(*GetItem_Draw_proc)(z64_game_t *game, int16_t drawId);
+typedef void(*GetItem_Draw_proc)(z64_game_t* game, int16_t drawId);
 typedef uint16_t (*z64_Audio_GetActiveSeqId_proc)(uint8_t seqId);
+typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawnMode, int32_t playerParams);
 
 /* data */
 #define z64_file_mq             (*(OSMesgQueue*)      z64_file_mq_addr)
@@ -2079,9 +2020,12 @@ typedef uint16_t (*z64_Audio_GetActiveSeqId_proc)(uint8_t seqId);
 #define z64_MessageGetState         ((z64_Message_GetStateFunc)z64_Message_GetState_addr)
 #define z64_SetCollectibleFlags     ((z64_Flags_SetCollectibleFunc)z64_SetCollectibleFlags_addr)
 #define z64_Flags_GetCollectible    ((z64_Flags_GetCollectibleFunc)z64_GetCollectibleFlags_addr)
+#define z64_Flags_GetClear          ((z64_Flags_GetClearFunc)z64_Flags_GetClear_addr)
+#define z64_Flags_SetSwitch         ((z64_Flags_SetSwitchFunc)z64_Flags_SetSwitch_addr)
+#define z64_Flags_GetSwitch         ((z64_Flags_GetSwitchFunc)z64_Flags_GetSwitch_addr)
 #define z64_Audio_PlaySoundGeneral  ((z64_Audio_PlaySoundGeneralFunc)z64_Audio_PlaySoundGeneral_addr)
 #define z64_Audio_PlayFanFare       ((z64_Audio_PlayFanFareFunc)z64_Audio_PlayFanFare_addr)
-
+#define z64_PlaySFXID               ((z64_PlaySFXIDFunc)z64_PlaySFXID_addr)
 #define z64_osSendMesg          ((osSendMesg_t)       z64_osSendMesg_addr)
 #define z64_osRecvMesg          ((osRecvMesg_t)       z64_osRecvMesg_addr)
 #define z64_osCreateMesgQueue   ((osCreateMesgQueue_t)                        \
@@ -2124,9 +2068,11 @@ typedef uint16_t (*z64_Audio_GetActiveSeqId_proc)(uint8_t seqId);
 #define z64_bzero ((z64_bzero_proc)z64_bzero_addr)
 #define z64_Item_DropCollectible ((z64_Item_DropCollectible_proc)z64_Item_DropCollectible_addr)
 #define z64_Item_DropCollectible2 ((z64_Item_DropCollectible_proc)z64_Item_DropCollectible2_addr)
+#define z64_Item_DropCollectibleRandom ((z64_Item_DropCollectibleRandom_proc)z64_Item_DropCollectibleRandom_addr)
 #define z64_Gfx_DrawDListOpa ((z64_Gfx_DrawDListOpa_proc)z64_Gfx_DrawDListOpa_addr)
 #define z64_Math_SinS ((z64_Math_SinS_proc)z64_Math_SinS_addr)
 #define z64_Rand_ZeroOne ((z64_Rand_ZeroOne_proc)z64_Rand_ZeroOne_addr)
+#define z64_EffectSsKiraKira_SpawnSmall ((z64_EffectSsKiraKira_SpawnSmall_proc)z64_EffectSsKiraKira_SpawnSmall_addr)
 #define Interface_LoadItemIcon1 ((Interface_LoadItemIcon1_proc)Interface_LoadItemIcon1_addr)
 
 #define Rupees_ChangeBy         ((Rupees_ChangeBy_proc)Rupees_ChangeBy_addr)
@@ -2134,6 +2080,7 @@ typedef uint16_t (*z64_Audio_GetActiveSeqId_proc)(uint8_t seqId);
 #define Message_ContinueTextbox ((Message_ContinueTextbox_proc)Message_ContinueTextbox_addr)
 #define z64_ScalePitchAndTempo        ((z64_ScalePitchAndTempo_proc)z64_ScalePitchAndTempo_addr)
 #define z64_Audio_GetActiveSeqId ((z64_Audio_GetActiveSeqId_proc)z64_Audio_GetActiveSeqId_addr)
+#define z64_Play_SetupRespawnPoint ((z64_Play_SetupRespawnPoint_proc)z64_Play_SetupRespawnPoint_addr)
 
 #define PlaySFX ((PlaySFX_proc)PlaySFX_addr)
 #define Font_LoadChar ((Font_LoadChar_proc)Font_LoadChar_addr)

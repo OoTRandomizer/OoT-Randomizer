@@ -383,7 +383,6 @@ class Room:
 
         code = rom.read_byte(headcur)
         loop = 0x20
-
         while loop != 0 and code != 0x14:  # terminator
             loop -= 1
 

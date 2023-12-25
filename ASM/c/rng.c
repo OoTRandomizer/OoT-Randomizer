@@ -33,7 +33,7 @@ void Seeded_Reset() {
 float Seeded_Rand_ZeroOne() {
     RNG_SEED_INT = (RNG_SEED_INT * 1664525) + 1013904223;
     RNG_SEED_FLOAT = ((RNG_SEED_INT >> 9) | 0x3F800000);
-    return *((float*)&RNG_SEED_FLOAT) - 1.0f;
+    return* ((float*)&RNG_SEED_FLOAT) - 1.0f;
 }
 
 /**
@@ -43,5 +43,5 @@ float Seeded_Rand_ZeroOne() {
 float Seeded_Rand_Centered() {
     RNG_SEED_INT = (RNG_SEED_INT * 1664525) + 1013904223;
     RNG_SEED_FLOAT = ((RNG_SEED_INT >> 9) | 0x3F800000);
-    return *((float*)&RNG_SEED_FLOAT) - 1.5f;
+    return* ((float*)&RNG_SEED_FLOAT) - 1.5f;
 }

@@ -96,7 +96,4 @@ class Entrance:
         return self.assumed
 
     def __str__(self) -> str:
-        return str(self.__unicode__())
-
-    def __unicode__(self) -> str:
-        return '%s' % self.name
+        return self.name

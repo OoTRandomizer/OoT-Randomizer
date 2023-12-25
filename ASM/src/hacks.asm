@@ -841,6 +841,70 @@ bg_spot18_basket_rupees_loopstart: ; our new loop branch target
 .orga 0xA99C98 ; In memory: 0x80023D38
     jal     Player_SpawnEntry_Hack
 
+; Hack the function that kills actor when changing rooms to not kill overridden collectibles?
+; Hack at the call to Actor_Kill
+.orga 0xA9ADAC ; In memory: 0x80024E4C
+; Replaces:
+;   jal     Actor_Kill
+    jal     Room_Change_Actor_Kill_Hack
+
+; ====== Wonderitem Shuffle ======
+
+; Increase the size of wonderitem to store when they are being overridden
+.orga 0xDE96FA
+.halfword 0x01D0
+
+; Hack EnWonderItem_Init to not kill the actor if the switch flag is set but it should be overridden
+; Replaces
+;   jal     Actor_Kill
+.orga 0xDE8E54
+    jal     EnWonderItem_Kill_Hack
+    nop
+    nop
+    nop
+    nop
+
+; Hack EnWonderItem_MultitagFree to show the remaining tags
+.orga 0xDE9198
+; Replaces:
+;   lwc1    f4, 0x0024(a2)
+;   lwc1    f8, 0x0028(a2)
+    jal     EnWonderItem_Multitag_DrawHook
+    nop
+
+; Hack EnWonderItem_MultitagOrdered to show the remaining tags
+.orga 0xDE9408
+; Replaces:
+;   lwc1    f4, 0x0024(a2)
+;   lwc1    f8, 0x0028(a2)
+    jal     EnWonderItem_MultitagOrdered_DrawHook
+    nop
+
+; Hack at the end of EnWonderItem_MultitagFree to not set the switch flag. It is set inside EnWonderItem_DropCollectible
+.orga 0xDE9250
+; Replaces:
+;   bltzl   a1, 0x801F8EE4
+;   or      a0, s0, r0
+;   jal     0x800204D0 ;Flags_SetSwitch
+;   lw      a0, 0x0024(sp)
+    nop
+    nop
+    nop
+    nop
+
+; Hack at the beginning of EnWonderItem_Update to draw a marker for the location (other than multitags)
+.orga 0xDE9630
+; Replaces:
+;   lw      t9, 0x013c(s0)
+;   or      a0, s0, r0
+    jal       EnWonderItem_Update_Hook
+    nop
+
+; Hack EnWonderItem_DropCollectible to drop flagged collectibles
+.orga 0xDE8C94
+    j       EnWonderItem_DropCollectible_Hack
+    nop
+
 ; Runs when storing an incoming item to the player instance
 ; Replaces:
 ;   sb      a2, 0x0424 (a3)
@@ -3637,7 +3701,7 @@ courtyard_guards_kill:
 ; Allow ice arrows to melt red ice
 ;===================================================================================================
 .orga 0xDB32C8
-    jal blue_fire_arrows ; replaces addiu at, zero, 0x00F0
+    jal     blue_fire_arrows ; replaces addiu at, zero, 0x00F0
 
 ;===================================================================================================
 ; Give each cursed skulltula house resident a different text ID, for skulltula reward hints
@@ -3723,7 +3787,7 @@ courtyard_guards_kill:
     lw      s0, 0x4(sp)
     jr      ra
     addiu   sp, sp, 0x10
-    ;Remove the rest of the old function
+    ; Remove the rest of the old function
     nop
     nop
     nop
@@ -3737,8 +3801,8 @@ courtyard_guards_kill:
 ;==================================================================================================
 ; Load current mask on scene change
 ;==================================================================================================
-;Player_Init (0x80844DE8)
-;Replaces:
+; Player_Init (0x80844DE8)
+; Replaces:
 ;jal     func_80834000
 .orga 0xBE28EC
     jal     player_save_mask

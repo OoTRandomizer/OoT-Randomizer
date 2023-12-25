@@ -160,7 +160,7 @@
                         <ng-container *ngSwitchCase="'Button'">
                           <button class="settingButton" [disabled]="!global.generator_settingsVisibilityMap[setting.name]" nbButton status="info" size="small" (click)="this[setting.function]()">{{setting.text}}</button>
                         </ng-container>
-                        <!--Exclusive to Main Tab-->
+                        <!--File Select-->
                         <ng-container *ngSwitchCase="'Fileinput'">
                           <p class="ioInputLabel" [ngClass]="{'disabled': !global.generator_settingsVisibilityMap[setting.name]}">{{setting.text}}</p>
                           <!--Electron-->
@@ -186,12 +186,24 @@
                             <button class="ioInputBrowseButton" [disabled]="!global.generator_settingsVisibilityMap[setting.name]" nbButton status="info" size="small" (click)="global.generator_settingsMap[setting.name] = ''">Clear</button>
                           </ng-container>
                         </ng-container>
+                        <!--Directory Select-->
                         <ng-container *ngSwitchCase="'Directoryinput'">
                           <p class="ioInputLabel" [ngClass]="{'disabled': !global.generator_settingsVisibilityMap[setting.name]}">{{setting.text}}</p>
-                          <input class="ioInput" nbInput [disabled]="!global.generator_settingsVisibilityMap[setting.name]" type="text" maxlength="260" fieldSize="small"
-                                 (focus)="inputFocusIn(setting.name)" (focusout)="inputFocusOut(setting.name, false)" [(ngModel)]="global.generator_settingsMap[setting.name]"
-                                 [nbPopover]="tooltipComponent" [nbPopoverContext]="{tooltip: setting.tooltip}" [nbPopoverTrigger]="setting.tooltip && setting.tooltip.length > 0 ? 'hint' : 'noop'" nbPopoverPlacement="top" nbPopoverAdjustment="clockwise">
-                          <button class="ioInputBrowseButton" [disabled]="!global.generator_settingsVisibilityMap[setting.name]" nbButton status="info" size="small" (click)="browseForDirectory(setting)">Browse</button>
+                          <!--Electron-->
+                          <ng-container *ngIf="global.getGlobalVar('electronAvailable')">
+                            <input class="ioInput" nbInput [disabled]="!global.generator_settingsVisibilityMap[setting.name]" type="text" maxlength="260" fieldSize="small"
+                                   (focus)="inputFocusIn(setting.name)" (focusout)="inputFocusOut(setting.name, false)" [(ngModel)]="global.generator_settingsMap[setting.name]"
+                                   [nbPopover]="tooltipComponent" [nbPopoverContext]="{tooltip: setting.tooltip}" [nbPopoverTrigger]="setting.tooltip && setting.tooltip.length > 0 ? 'hint' : 'noop'" nbPopoverPlacement="top" nbPopoverAdjustment="clockwise">
+                            <button class="ioInputBrowseButton" [disabled]="!global.generator_settingsVisibilityMap[setting.name]" nbButton status="info" size="small" (click)="browseForDirectory(setting)">Browse</button>
+                          </ng-container>
+                          <!--Web-->
+                          <ng-container *ngIf="!global.getGlobalVar('electronAvailable')">
+                            <input class="ioInputWeb" nbInput [disabled]="!global.generator_settingsVisibilityMap[setting.name]" readonly type="text" maxlength="260" fieldSize="small" [(ngModel)]="getVariableType(global.generator_settingsMap[setting.name]) === 'string' ? global.generator_settingsMap[setting.name] : global.generator_settingsMap[setting.name].name"
+                                   (ngModelChange)="afterSettingChange()" [nbPopover]="tooltipComponent" [nbPopoverContext]="{tooltip: setting.tooltip}" [nbPopoverTrigger]="setting.tooltip && setting.tooltip.length > 0 ? 'hint' : 'noop'" nbPopoverPlacement="top" nbPopoverAdjustment="clockwise" (dragover)="onDirectoryDragOverWeb($event, setting)" (drop)="onDirectoryDropWeb($event, setting)">
+                            <input #refHiddenDirectoryInput class="ioHiddenInputWeb" type="file" webkitdirectory multiple (change)="onDirectorySelectedWeb($event, setting)">
+                            <button class="ioInputBrowseButton" [disabled]="!global.generator_settingsVisibilityMap[setting.name]" nbButton status="info" size="small" (click)="refHiddenDirectoryInput.click()">Browse</button>
+                            <button class="ioInputBrowseButton" [disabled]="!global.generator_settingsVisibilityMap[setting.name]" nbButton status="info" size="small" (click)="global.generator_settingsMap[setting.name] = ''">Clear</button>
+                          </ng-container>
                         </ng-container>
                         <ng-container *ngSwitchCase="'Presetinput'">
                           <div class="select-wrapper">
@@ -245,7 +257,7 @@
           <p class="footerInputLabel">Settings String</p>
           <!--Electron-->
           <ng-container *ngIf="global.getGlobalVar('electronAvailable')">
-            <input class="footerInput" nbInput type="text" maxlength="1000" fieldSize="small" (focus)="inputFocusIn('settings_string')" (focusout)="inputFocusOut('settings_string', true)" [(ngModel)]="global.generator_settingsMap['settings_string']">
+            <input class="footerInput" nbInput type="text" maxlength="2000" fieldSize="small" (focus)="inputFocusIn('settings_string')" (focusout)="inputFocusOut('settings_string', true)" [(ngModel)]="global.generator_settingsMap['settings_string']">
             <button class="footerButton" nbButton status="info" size="small" (click)="copySettingsString()">Copy</button>
             <button class="footerButton" nbButton status="info" size="small" (click)="importSettingsString()">Import</button>
             <!--Padding-->
@@ -258,7 +270,7 @@
           </ng-container>
           <!--Web-->
           <ng-container *ngIf="!global.getGlobalVar('electronAvailable')">
-            <input class="footerInputShort" nbInput type="text" maxlength="1000" fieldSize="small" (focus)="inputFocusIn('settings_string')" (focusout)="inputFocusOut('settings_string', true)" [(ngModel)]="global.generator_settingsMap['settings_string']">
+            <input class="footerInputShort" nbInput type="text" maxlength="2000" fieldSize="small" (focus)="inputFocusIn('settings_string')" (focusout)="inputFocusOut('settings_string', true)" [(ngModel)]="global.generator_settingsMap['settings_string']">
             <button class="footerButton" nbButton status="info" size="small" (click)="copySettingsString()">Copy</button>
             <button class="footerButton" nbButton status="info" size="small" (click)="settingsBusy = true; getSettingsString()">Get</button>
             <button class="footerButton" nbButton status="info" size="small" (click)="importSettingsString()">Import</button>

@@ -8,6 +8,7 @@ This is a randomizer for _The Legend of Zelda: Ocarina of Time_ for the Nintendo
   * [Settings](#settings)
   * [Known Issues](#known-issues)
 * [Changelog](#changelog)
+  * [8.0](#80)
   * [7.1](#71)
   * [7.0](#70)
   * [6.2](#62)
@@ -36,7 +37,7 @@ the user wishes a pre-decompressed ROM may be supplied as input. Please be sure 
 playing via any means other than on real N64 hardware, the use of the "Compress patched ROM" flag is strongly encouraged as uncompressed ROMs are
 impossible to inject for the Virtual Console and have random crashing problems on all emulators.
 
-For general use, there are four recommended emulators: [Project 64 (v3.0+)](https://wiki.ootrandomizer.com/index.php?title=Project64), [Bizhawk](https://wiki.ootrandomizer.com/index.php?title=Bizhawk), [RetroArch](https://wiki.ootrandomizer.com/index.php?title=Retroarch) and [Dolphin (latest beta)](https://wiki.ootrandomizer.com/index.php?title=Dolphin). All are race-legal when configured appropriately.
+For general use, there are four recommended emulators: [Project64 (v3.0+)](https://wiki.ootrandomizer.com/index.php?title=Project64), [Bizhawk](https://wiki.ootrandomizer.com/index.php?title=Bizhawk), [RetroArch](https://wiki.ootrandomizer.com/index.php?title=Retroarch) and [Dolphin (latest beta)](https://wiki.ootrandomizer.com/index.php?title=Dolphin). All are race-legal when configured appropriately.
 In a nutshell the differences are:
 * Project64 is the lightest emulator and the easiest to setup, however, you will need the 3.0.0 version or later to run OoTR well (and earlier versions are not permitted for use in OoTR races).
 * Bizhawk is the most resource-intensive, but easier to set up than RetroArch and the only race-legal emulator to support [Multiworld](https://wiki.ootrandomizer.com/index.php?title=Multiworld).
@@ -101,13 +102,23 @@ Unfortunately, a few known issues exist. These will hopefully be addressed in fu
 * The fishing minigame sometimes refuses to allow you to catch fish when playing specifically on Bizhawk. Save and Hard Reset (NOT savestate) and return to fix the
 issue. You should always Hard Reset to avoid this issue entirely.
 * Versions older than 3.0 of Project64 have known compatablity issues with OoTR. To avoid this either 
-[update to v3.0 and follow the rest of our PJ64 guide](https://wiki.ootrandomizer.com/index.php?title=Project64) or change to one of our other two supported emulators.
+[update to v3.0 and follow the rest of our Project64 guide](https://wiki.ootrandomizer.com/index.php?title=Project64) or change to one of our other two supported emulators.
 * Executing the collection delay glitch on various NPCs may have unpredictable and undesirable consequences.
 * This randomizer is based on the 1.0 version of _Ocarina of Time_, so some of its specific bugs remain.
 
 ## Changelog
 
 ### Dev
+
+#### New Features
+* **Settings**
+  * `Minor Items in Big/Gold chests` has been converted into a multiselect so you may granularly make bombchus, shields, or stick/nut capacity appear in big chests.
+  * New shuffle `Shuffle Wonderitems` which allows shuffling items the game refers to as Wonderitems. These items are obtained through a few ways: invisible items which drop when Link touches them (such as the rupees above the Hyrule Castle Town drawbridge), interactable switches (such as the torches on Hyrule Castle which drop items when shot with the slingshot), free multitag which gives an item when a certain set of points are touched (the stepping stones in Kokiri Forest), and ordered multitag where a set of points must be touched in a particular order (the grass stepping stones in Kokiri Forest). Wonderitems will indicate their prescence with sparkles color-coded to the type of wonderitem.
+* **Hints**
+  * The `Clearer Hints` option now provides clearer hints for the rainbow bridge text on the altar in the Temple of Time.
+  * New option in hint distribution `combine_trial_hints` which combines multiple trials hints into one.
+
+### 8.0
 
 #### New Features
 * **Settings**

@@ -19,7 +19,7 @@
 #define HEALTH_OFFSET OFFSETOF(z64_file_t, energy )
 
 
-extern uint8_t *collectible_override_flags;
+extern uint8_t* collectible_override_flags;
 extern uint16_t num_override_flags;
 extern uint16_t SRAM_SLOTS[6];
 
@@ -27,17 +27,17 @@ typedef void (*Sram_InitNewSave_Func)(void);
 Sram_InitNewSave_Func Sram_InitNewSave = (Sram_InitNewSave_Func)(0x8008FFC0);
 extended_savecontext_static_t extended_savectx;
 
-void SsSram_ReadWrite_Safe(uint32_t addr, void *dramAddr, size_t size, uint32_t direction);
+void SsSram_ReadWrite_Safe(uint32_t addr, void* dramAddr, size_t size, uint32_t direction);
 
 // Override Sram_WriteSave to include the collectible flags in the checksum calculation.
-void Sram_WriteSave(SramContext *sramCtx) {
+void Sram_WriteSave(SramContext* sramCtx) {
     uint16_t offset;
     uint16_t checksum;
-    uint16_t *ptr;
+    uint16_t* ptr;
 
     z64_file.checksum = 0;
 
-    ptr = (uint16_t *)&z64_file;
+    ptr = (uint16_t*)&z64_file;
     checksum = 0;
 
     // Checksum calculation for original SaveContext data
@@ -45,13 +45,13 @@ void Sram_WriteSave(SramContext *sramCtx) {
         checksum += *ptr++;
     }
 
-    ptr = (uint16_t *)&extended_savectx;
+    ptr = (uint16_t*)&extended_savectx;
     for (offset = 0; offset < sizeof(extended_savectx) / 2; offset++) {
         checksum += *ptr++;
     }
 
     // Calculate the collectible flags in the checksum
-    ptr = (uint16_t *)collectible_override_flags;
+    ptr = (uint16_t*)collectible_override_flags;
     for (offset = 0; offset < num_override_flags / 2; offset++) {
         checksum += *ptr++;
     }
@@ -80,19 +80,18 @@ void Sram_WriteSave(SramContext *sramCtx) {
     // Write the extended Save Context data to the backup slot
     offset = SRAM_SLOTS[z64_file.file_index + 3] + SRAM_ORIGINAL_SLOT_SIZE;
     SsSram_ReadWrite_Safe(SRAM_BASE + offset, &extended_savectx, sizeof(extended_savecontext_static_t), OS_WRITE);
-
 }
 
 // Override the Sram_VerifyAndLoadAllSaves function. Only check our new 2 slots (and their backups).
 // And include the collectible flags in the checksum.
-void Sram_VerifyAndLoadAllSaves(z64_FileChooseContext_t *fileChooseCtx, SramContext *sramCtx) {
+void Sram_VerifyAndLoadAllSaves(z64_FileChooseContext_t* fileChooseCtx, SramContext* sramCtx) {
     uint16_t i;
     uint16_t newChecksum;
     uint16_t slotNum;
     uint16_t offset;
     uint16_t j;
     uint16_t oldChecksum;
-    uint16_t *ptr;
+    uint16_t* ptr;
     uint16_t dayTime;
 
     // Read SRAM to RAM buffer
@@ -109,18 +108,18 @@ void Sram_VerifyAndLoadAllSaves(z64_FileChooseContext_t *fileChooseCtx, SramCont
         z64_memcopy(collectible_override_flags, sramCtx->readBuff + offset + SLOT_SIZE - (num_override_flags),  num_override_flags);
         oldChecksum = z64_file.checksum;
         z64_file.checksum = 0;
-        ptr = (uint16_t *)&z64_file;
+        ptr = (uint16_t*)&z64_file;
 
         for (i = newChecksum = j = 0; i < CHECKSUM_SIZE; i++) {
             newChecksum += *ptr++;
         }
         // Calculate the extended savectx in the checksum
-        ptr = (uint16_t *)&extended_savectx;
+        ptr = (uint16_t*)&extended_savectx;
         for (i = 0; i < sizeof(extended_savectx) / 2; i++) {
             newChecksum += *ptr++;
         }
         // Calculate the collectible flags in the checksum
-        ptr = (uint16_t *)collectible_override_flags;
+        ptr = (uint16_t*)collectible_override_flags;
         for (i = 0; i < num_override_flags / 2; i++) {
             newChecksum += *ptr++;
         }
@@ -134,13 +133,13 @@ void Sram_VerifyAndLoadAllSaves(z64_FileChooseContext_t *fileChooseCtx, SramCont
             z64_memcopy(collectible_override_flags, sramCtx->readBuff + offset + SLOT_SIZE - num_override_flags, num_override_flags);
             oldChecksum = z64_file.checksum;
             z64_file.checksum = 0;
-            ptr = (uint16_t *)&z64_file;
+            ptr = (uint16_t*)&z64_file;
 
             for (i = newChecksum = j = 0; i < CHECKSUM_SIZE; i++) {
                 newChecksum += *ptr++;
             }
             // Calculate the collectible flags in the checksum
-            ptr = (uint16_t *)collectible_override_flags;
+            ptr = (uint16_t*)collectible_override_flags;
             for (i = 0; i < num_override_flags / 2; i++) {
                 newChecksum += *ptr++;
             }
@@ -159,7 +158,7 @@ void Sram_VerifyAndLoadAllSaves(z64_FileChooseContext_t *fileChooseCtx, SramCont
 
                 Sram_InitNewSave();
 
-                ptr = (uint16_t *)&z64_file;
+                ptr = (uint16_t*)&z64_file;
 
                 for (i = newChecksum = j = 0; i < CHECKSUM_SIZE; i++) {
                     newChecksum += *ptr++;
@@ -211,7 +210,7 @@ void Sram_VerifyAndLoadAllSaves(z64_FileChooseContext_t *fileChooseCtx, SramCont
 // Overrides the original Sram_CopySave function.
 // SRAM is now split into 4 equal size slots, instead of the original 6 slots of sizeof(SaveContext).
 // So instead of just copying the data for the SaveContext, we just copy the whole slot
-void Sram_CopySave(z64_FileChooseContext_t *fileChooseCtx, SramContext *sramCtx) {
+void Sram_CopySave(z64_FileChooseContext_t* fileChooseCtx, SramContext* sramCtx) {
     int32_t src_offset = SRAM_SLOTS[fileChooseCtx->selectedFileIndex];
     int32_t dst_offset = SRAM_SLOTS[fileChooseCtx->copyDestFileIndex];
 
@@ -240,7 +239,7 @@ void Sram_CopySave(z64_FileChooseContext_t *fileChooseCtx, SramContext *sramCtx)
 }
 
 // Hook the Save Write function to write the flags to SRAM
-void Save_Write_Hook(uint32_t addr, void *dramAddr, size_t size, uint32_t direction) {
+void Save_Write_Hook(uint32_t addr, void* dramAddr, size_t size, uint32_t direction) {
     // Save the original data to SRAM
     SsSram_ReadWrite_Safe(addr, dramAddr, size, direction);
 
@@ -250,7 +249,7 @@ void Save_Write_Hook(uint32_t addr, void *dramAddr, size_t size, uint32_t direct
 }
 
 // Hook the Save open function to load the saved collectible flags
-void Save_Open(char *sramBuffer) {
+void Save_Open(char* sramBuffer) {
     uint16_t slot_offset = SRAM_SLOTS[z64_file.file_index] + SLOT_SIZE - (num_override_flags);
     z64_memcopy(collectible_override_flags, sramBuffer + slot_offset, num_override_flags);
 
@@ -259,7 +258,7 @@ void Save_Open(char *sramBuffer) {
 }
 
 // Hook the init save function's call to SsSram_ReadWrite in order to zeroize the the collectible flags.
-void Save_Init_Write_Hook(uint32_t addr, void *dramAddr, size_t size, uint32_t direction) {
+void Save_Init_Write_Hook(uint32_t addr, void* dramAddr, size_t size, uint32_t direction) {
     // zeroize the new collectible flags in the sram buffer (dramAddr)
     // zeroize the free space in the sram buffer (after the original slot up to the end of the slot)
 
@@ -267,8 +266,8 @@ void Save_Init_Write_Hook(uint32_t addr, void *dramAddr, size_t size, uint32_t d
     z64_bzero(dramAddr + slot_offset + SRAM_ORIGINAL_SLOT_SIZE, SLOT_SIZE - SRAM_ORIGINAL_SLOT_SIZE);
 
     // write initial extended save data.
-    uint8_t *extended_slot = dramAddr + slot_offset + SRAM_ORIGINAL_SLOT_SIZE;
-    extended_initial_save_entry *entry = &EXTENDED_INITIAL_SAVE_DATA;
+    uint8_t* extended_slot = dramAddr + slot_offset + SRAM_ORIGINAL_SLOT_SIZE;
+    extended_initial_save_entry* entry = &EXTENDED_INITIAL_SAVE_DATA;
     while (entry->all != 0) {
         extended_slot[entry->offset] = entry->value;
         entry++;
@@ -278,7 +277,7 @@ void Save_Init_Write_Hook(uint32_t addr, void *dramAddr, size_t size, uint32_t d
     SsSram_ReadWrite_Safe(SRAM_BASE, dramAddr, SRAM_SIZE, direction);
 }
 
-void SsSram_ReadWrite_Safe(uint32_t addr, void *dramAddr, size_t size, uint32_t direction) {
+void SsSram_ReadWrite_Safe(uint32_t addr, void* dramAddr, size_t size, uint32_t direction) {
     if (size > 0) {
         SsSram_ReadWrite(addr, dramAddr, size, direction);
     }

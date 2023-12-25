@@ -29,7 +29,7 @@ utils/settings_list.json contains every single setting of the GUI as an array of
 * text &rarr; Name of the setting as shown to the user
 * tooltip &rarr; The tooltip shown to the user when he hovers/clicks on the setting. Line breaks are inserted by adding a HTML `<br>` tag into the string
 * type &rarr; Type of the GUI element to use to control the setting. Available types are:
-    
+
   1. Checkbutton: A boolean on/off toggle
   2. Radiobutton: A radio in-line list of buttons you can select one option of
   3. Combobox: A dropdown box that offers multiple options you can select one of
@@ -104,7 +104,7 @@ The GUI/run.js is used to boot the GUI as conveniently as possible for the user 
 
 ## Angular
 
-### Overview 
+### Overview
 
 The Angular source is contained in the GUI/src folder and consists of components and modules. Each component has a HTML template with custom Angular specific directives, styles written in Sass (a CSS extension) and component code written in TypeScript. The src/index.html serves as the entry point and bootstraps Angular.
 
@@ -120,9 +120,9 @@ src/app/@theme/layouts/GUI assembles the header bar, generator component and foo
 
 In addition to individual angular component styles, files for global styling exist under GUI/src/app/@theme/styles.
 
-Two themes exist at the moment. The default theme and the dark mode theme. Dark mode is an Electron-only feature and can be activated by clicking on the moon symbol in the header bar.  
+Two themes exist at the moment. The default theme and the dark mode theme. Dark mode is an Electron-only feature and can be activated by clicking on the moon symbol in the header bar.
 
-Colors and theme related properties are stored within theme.ootr-dark.scss and theme.ootr-default.scss. 
+Colors and theme related properties are stored within theme.ootr-dark.scss and theme.ootr-default.scss.
 
 To support theming it is crucial to work with $nb-theme() variables whenever colorizing backgrounds, texts, borders, etc.
 

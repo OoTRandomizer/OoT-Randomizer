@@ -221,9 +221,9 @@ def compress_rom(input_file: str, output_file: str, delete_input: bool = False) 
         else:
             compressor_path += "Compress32.exe"
     elif platform.system() == 'Linux':
-        if platform.machine() in ['arm64', 'aarch64', 'aarch64_be', 'armv8b', 'armv8l']:
+        if platform.machine() in ('arm64', 'aarch64', 'aarch64_be', 'armv8b', 'armv8l'):
             compressor_path += "Compress_ARM64"
-        elif platform.machine() in ['arm', 'armv7l', 'armhf']:
+        elif platform.machine() in ('arm', 'armv7l', 'armhf'):
             compressor_path += "Compress_ARM32"
         else:
             compressor_path += "Compress"
@@ -258,9 +258,9 @@ def generate_wad(wad_file: str, rom_file: str, output_file: str, channel_title: 
         else:
             gzinject_path += "gzinject32.exe"
     elif platform.system() == 'Linux':
-        if platform.machine() in ['arm64', 'aarch64', 'aarch64_be', 'armv8b', 'armv8l']:
+        if platform.machine() in ('arm64', 'aarch64', 'aarch64_be', 'armv8b', 'armv8l'):
             gzinject_path += "gzinject_ARM64"
-        elif platform.machine() in ['arm', 'armv7l', 'armhf']:
+        elif platform.machine() in ('arm', 'armv7l', 'armhf'):
             gzinject_path += "gzinject_ARM32"
         else:
             gzinject_path += "gzinject"

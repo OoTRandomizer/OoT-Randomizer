@@ -609,13 +609,13 @@ sos_handle_item:
 
 ;if link is getting an item dont allow the windmill guy to talk
 sos_talk_prevention:
-    lh      t7, 0xB6(s0)   ;displaced
-    lhu     t9, 0xB4AE(t9) ;displaced
+    lh      t7, 0xB6(s0)   ; displaced
+    lhu     t9, 0xB4AE(t9) ; displaced
     la      t1, PLAYER_ACTOR
-    lw      t2, 0x428(t1)  ;interactRangeActor
+    lw      t2, 0x428(t1)  ; interactRangeActor
     beqz    t2, @@no_item
     nop
-    lb      t2, 0x424(t1)  ;get item id
+    lb      t2, 0x424(t1)  ; get item id
     li      t1, 0x7E
     bne     t2, t1, @@item
     nop

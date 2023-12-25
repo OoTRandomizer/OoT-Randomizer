@@ -19,4 +19,4 @@ typedef union {
 extern extended_initial_save_entry EXTENDED_INITIAL_SAVE_DATA;
 extern extended_savecontext_static_t extended_savectx;
 
-void SsSram_ReadWrite_Safe(uint32_t addr, void *dramAddr, size_t size, uint32_t direction);
+void SsSram_ReadWrite_Safe(uint32_t addr, void* dramAddr, size_t size, uint32_t direction);

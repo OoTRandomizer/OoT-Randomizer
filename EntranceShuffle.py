@@ -980,8 +980,8 @@ def validate_world(world: World, worlds: list[World], entrance_placed: Optional[
         # Note this creates new empty states rather than reuse the worlds' states (which already have starting items)
         no_items_search = Search([State(w) for w in worlds])
 
-        valid_starting_regions = ['Kokiri Forest', 'Kakariko Village']
-        if not any(region for region in valid_starting_regions if no_items_search.can_reach(world.get_region(region))):
+        valid_starting_regions = ('Kokiri Forest', 'Kakariko Village')
+        if not any(no_items_search.can_reach(world.get_region(region)) for region in valid_starting_regions):
             raise EntranceShuffleError('Invalid starting area')
 
         # Check that a region where time passes is always reachable as both ages without having collected any items
@@ -1071,9 +1071,11 @@ def get_entrance_replacing(region: Region, entrance_name: str) -> Optional[Entra
         return original_entrance
 
     try:
-        return next(filter(lambda entrance: entrance.replaces and entrance.replaces.name == entrance_name and \
-                                            entrance.parent_region and entrance.parent_region.name != 'Root Exits' and \
-                                            entrance.type not in ('OverworldOneWay', 'OwlDrop', 'Spawn', 'WarpSong', 'BlueWarp'), region.entrances))
+        return next(filter(lambda entrance:
+            entrance.replaces and entrance.replaces.name == entrance_name
+            and entrance.parent_region and entrance.parent_region.name != 'Root Exits'
+            and entrance.type not in ('OverworldOneWay', 'OwlDrop', 'Spawn', 'WarpSong', 'BlueWarp'),
+        region.entrances))
     except StopIteration:
         return None
 

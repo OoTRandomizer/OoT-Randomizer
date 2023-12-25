@@ -107,16 +107,19 @@ class Region:
         is_dungeon_restricted = False
         is_overworld_restricted = False
 
-        if item.type in ['Map', 'Compass', 'SmallKey', 'HideoutSmallKey', 'TCGSmallKey', 'BossKey', 'GanonBossKey', 'SilverRupee']:
-            shuffle_setting = (self.world.settings.shuffle_mapcompass if item.type in ['Map', 'Compass'] else
-                               self.world.settings.shuffle_smallkeys if item.type == 'SmallKey' else
-                               self.world.settings.shuffle_hideoutkeys if item.type == 'HideoutSmallKey' else
-                               self.world.settings.shuffle_tcgkeys if item.type == 'TCGSmallKey' else
-                               self.world.settings.shuffle_bosskeys if item.type == 'BossKey' else
-                               self.world.settings.shuffle_ganon_bosskey if item.type == 'GanonBossKey' else
-                               self.world.settings.shuffle_silver_rupees if item.type == 'SilverRupee' else None)
+        if item.type in ('Map', 'Compass', 'SmallKey', 'HideoutSmallKey', 'TCGSmallKey', 'BossKey', 'GanonBossKey', 'SilverRupee'):
+            shuffle_setting = (
+                self.world.settings.shuffle_mapcompass if item.type in ('Map', 'Compass') else
+                self.world.settings.shuffle_smallkeys if item.type == 'SmallKey' else
+                self.world.settings.shuffle_hideoutkeys if item.type == 'HideoutSmallKey' else
+                self.world.settings.shuffle_tcgkeys if item.type == 'TCGSmallKey' else
+                self.world.settings.shuffle_bosskeys if item.type == 'BossKey' else
+                self.world.settings.shuffle_ganon_bosskey if item.type == 'GanonBossKey' else
+                self.world.settings.shuffle_silver_rupees if item.type == 'SilverRupee' else
+                None
+            )
 
-            is_self_dungeon_restricted = shuffle_setting in ['dungeon', 'vanilla'] and item.type not in ['HideoutSmallKey', 'TCGSmallKey']
+            is_self_dungeon_restricted = shuffle_setting in ('dungeon', 'vanilla') and item.type not in ('HideoutSmallKey', 'TCGSmallKey')
             is_self_region_restricted = [HintArea.GERUDO_FORTRESS, HintArea.THIEVES_HIDEOUT] if shuffle_setting == 'fortress' else None
             is_hint_color_restricted = [HintArea.for_dungeon(item.name).color] if shuffle_setting == 'regional' else None
             is_dungeon_restricted = shuffle_setting == 'any_dungeon'
@@ -152,7 +155,7 @@ class Region:
             return None
 
     def __str__(self) -> str:
-        return str(self.__unicode__())
+        return self.name
 
-    def __unicode__(self) -> str:
-        return '%s' % self.name
+    def __repr__(self) -> str:
+        return f"{self.world.__repr__()} {self.name}"

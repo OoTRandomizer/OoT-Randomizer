@@ -10,6 +10,7 @@ export enum OOTR_THEME {
 @Injectable()
 export class ThemeSwitcher {
 
+  themeReady: boolean;
   isDarkThemeActive: boolean;
 
   private renderer: Renderer2;
@@ -35,9 +36,28 @@ export class ThemeSwitcher {
     this.removeAllThemes(this.generatorContainer);
 
     this.renderer.addClass(this.generatorContainer, this.isDarkThemeActive ? OOTR_THEME.DARK : OOTR_THEME.DEFAULT);
+    this.themeReady = true;
+
+    //Subscribe to external event
+    this.global.globalEmitter.subscribe(eventObj => {
+      if (eventObj?.name === 'theme_switch') {
+
+        let theme = eventObj?.message;
+
+        //Ensure the theme actually needs to switch
+        if ((theme === 'ootr-dark' && this.isDarkThemeActive) || (theme === 'ootr-default' && !this.isDarkThemeActive))
+          return;
+
+        this.switchTheme();
+      }
+    });
   }
 
   switchTheme() {
+
+    if (!this.themeReady)
+      return;
+
     if (this.isDarkThemeActive) {
       this.renderer.addClass(this.generatorContainer, OOTR_THEME.DEFAULT);
       this.renderer.removeClass(this.generatorContainer, OOTR_THEME.DARK);

@@ -64,36 +64,36 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             rom.write_bytes(write_address, new_bytes)
 
     # Load models into the extended object table.
-    zobj_imports = [
-        ('object_gi_triforce',    data_path('items/Triforce.zobj'),             0x193),  # Triforce Piece
-        ('object_gi_keyring',     data_path('items/KeyRing.zobj'),              0x195),  # Key Rings
-        ('object_gi_warpsong',    data_path('items/Note.zobj'),                 0x196),  # Inverted Music Note
-        ('object_gi_chubag',      data_path('items/ChuBag.zobj'),               0x197),  # Bombchu Bag
-        ('object_gi_skeyforest',  data_path('items/SmallForest.zobj'),          0x199),  # Small Key (Forest)
-        ('object_gi_skeyfire',    data_path('items/SmallFire.zobj'),            0x19A),  # Small Key (Fire)
-        ('object_gi_skeywater',   data_path('items/SmallWater.zobj'),           0x19B),  # Small Key (Water)
-        ('object_gi_skeyspirit',  data_path('items/SmallSpirit.zobj'),          0x19C),  # Small Key (Spirit)
-        ('object_gi_skeyshadow',  data_path('items/SmallShadow.zobj'),          0x19D),  # Small Key (Shadow)
-        ('object_gi_skeywell',    data_path('items/SmallWell.zobj'),            0x19E),  # Small Key (Well)
-        ('object_gi_skeygtg',     data_path('items/SmallGTG.zobj'),             0x19F),  # Small Key (GTG)
-        ('object_gi_skeythieves', data_path('items/SmallThieves.zobj'),         0x1A0),  # Small Key (Thieves)
-        ('object_gi_skeyganon',   data_path('items/SmallGanon.zobj'),           0x1A1),  # Small Key (Ganon)
-        ('object_gi_skeyTCG',     data_path('items/SmallTCG.zobj'),             0x1A2),  # Small Key (Chest Game)
-        ('object_gi_bkforest',    data_path('items/BossForest.zobj'),           0x1A3),  # Boss Key (Forest)
-        ('object_gi_bkfire',      data_path('items/BossFire.zobj'),             0x1A4),  # Boss Key (Fire)
-        ('object_gi_bkwater',     data_path('items/BossWater.zobj'),            0x1A5),  # Boss Key (Water)
-        ('object_gi_bkspirit',    data_path('items/BossSpirit.zobj'),           0x1A6),  # Boss Key (Spirit)
-        ('object_gi_bkshadow',    data_path('items/BossShadow.zobj'),           0x1A7),  # Boss Key (Shadow)
-        ('object_gi_abutton',     data_path('items/A_Button.zobj'),             0x1A8),  # A button
-        ('object_gi_cbutton',     data_path('items/C_Button_Horizontal.zobj'),  0x1A9),  # C button Horizontal
-        ('object_gi_cbutton',     data_path('items/C_Button_Vertical.zobj'),    0x1AA),  # C button Vertical
-    ]
+    zobj_imports = (
+        ('object_gi_triforce',    data_path('items/Triforce.zobj'),            0x193),  # Triforce Piece
+        ('object_gi_keyring',     data_path('items/KeyRing.zobj'),             0x195),  # Key Rings
+        ('object_gi_warpsong',    data_path('items/Note.zobj'),                0x196),  # Inverted Music Note
+        ('object_gi_chubag',      data_path('items/ChuBag.zobj'),              0x197),  # Bombchu Bag
+        ('object_gi_skeyforest',  data_path('items/SmallForest.zobj'),         0x199),  # Small Key (Forest)
+        ('object_gi_skeyfire',    data_path('items/SmallFire.zobj'),           0x19A),  # Small Key (Fire)
+        ('object_gi_skeywater',   data_path('items/SmallWater.zobj'),          0x19B),  # Small Key (Water)
+        ('object_gi_skeyspirit',  data_path('items/SmallSpirit.zobj'),         0x19C),  # Small Key (Spirit)
+        ('object_gi_skeyshadow',  data_path('items/SmallShadow.zobj'),         0x19D),  # Small Key (Shadow)
+        ('object_gi_skeywell',    data_path('items/SmallWell.zobj'),           0x19E),  # Small Key (Well)
+        ('object_gi_skeygtg',     data_path('items/SmallGTG.zobj'),            0x19F),  # Small Key (GTG)
+        ('object_gi_skeythieves', data_path('items/SmallThieves.zobj'),        0x1A0),  # Small Key (Thieves)
+        ('object_gi_skeyganon',   data_path('items/SmallGanon.zobj'),          0x1A1),  # Small Key (Ganon)
+        ('object_gi_skeyTCG',     data_path('items/SmallTCG.zobj'),            0x1A2),  # Small Key (Chest Game)
+        ('object_gi_bkforest',    data_path('items/BossForest.zobj'),          0x1A3),  # Boss Key (Forest)
+        ('object_gi_bkfire',      data_path('items/BossFire.zobj'),            0x1A4),  # Boss Key (Fire)
+        ('object_gi_bkwater',     data_path('items/BossWater.zobj'),           0x1A5),  # Boss Key (Water)
+        ('object_gi_bkspirit',    data_path('items/BossSpirit.zobj'),          0x1A6),  # Boss Key (Spirit)
+        ('object_gi_bkshadow',    data_path('items/BossShadow.zobj'),          0x1A7),  # Boss Key (Shadow)
+        ('object_gi_abutton',     data_path('items/A_Button.zobj'),            0x1A8),  # A button
+        ('object_gi_cbutton',     data_path('items/C_Button_Horizontal.zobj'), 0x1A9),  # C button Horizontal
+        ('object_gi_cbutton',     data_path('items/C_Button_Vertical.zobj'),   0x1AA),  # C button Vertical
+    )
 
     if world.settings.key_appearance_match_dungeon:
         rom.write_byte(rom.sym('CUSTOM_KEY_MODELS'), 0x01)
 
     extended_objects_start = start_address = rom.dma.free_space()
-    for (name, zobj_path, object_id) in zobj_imports:
+    for name, zobj_path, object_id in zobj_imports:
         with open(zobj_path, 'rb') as stream:
             obj_data = stream.read()
             rom.write_bytes(start_address, obj_data)
@@ -103,23 +103,21 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         start_address = end_address
 
     # Make new models by applying patches to existing ones
-    zobj_patches = [
-        ('object_gi_hearts', 0x014D9000, 0x014DA590, 0x194, # Heart Container -> Double Defense
-        [
+    zobj_patches = (
+        ('object_gi_hearts', 0x014D9000, 0x014DA590, 0x194, ( # Heart Container -> Double Defense
             (0x1294, [0xFF, 0xCF, 0x0F]), # Exterior Primary Color
             (0x12B4, [0xFF, 0x46, 0x32]), # Exterior Env Color
             (0x1474, [0xFF, 0xFF, 0xFF]), # Interior Primary Color
             (0x1494, [0xFF, 0xFF, 0xFF]), # Interior Env Color
             (0x12A8, [0xFC, 0x17, 0x3C, 0x60, 0x15, 0x0C, 0x93, 0x7F]), # Exterior Combine Mode
-        ]),
-        ('object_gi_rupy', 0x01914000, 0x01914800, 0x198, # Huge Rupee -> Silver Rupee
-        [
+        )),
+        ('object_gi_rupy', 0x01914000, 0x01914800, 0x198, ( # Huge Rupee -> Silver Rupee
             (0x052C, [0xAA, 0xAA, 0xAA]), # Inner Primary Color?
             (0x0534, [0x5A, 0x5A, 0x5A]), # Inner Env Color?
             (0x05CC, [0xFF, 0xFF, 0xFF]), # Outer Primary Color?
             (0x05D4, [0xFF, 0xFF, 0xFF]), # Outer Env Color?
-        ]),
-    ]
+        )),
+    )
 
     # Add the new models to the extended object file.
     for name, start, end, object_id, patches in zobj_patches:
@@ -143,15 +141,15 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     # texture list. See textures.h for texture IDs
     #   ID, texture_name,                   Rom Address    CI4 Pallet Addr  Size    Patching function           Patch file (None for default)
     crate_textures = [
-        (1, 'texture_pot_gold',             0x01738000,    None,            2048,   rgba16_patch,               'textures/pot/pot_gold_rgba16_patch.bin'),
-        (2, 'texture_pot_key',              0x01738000,    None,            2048,   rgba16_patch,               'textures/pot/pot_key_rgba16_patch.bin'),
-        (3, 'texture_pot_bosskey',          0x01738000,    None,            2048,   rgba16_patch,               'textures/pot/pot_bosskey_rgba16_patch.bin'),
-        (4, 'texture_pot_skull',            0x01738000,    None,            2048,   rgba16_patch,               'textures/pot/pot_skull_rgba16_patch.bin'),
-        (5, 'texture_crate_default',        0x18B6020,     0x018B6000,      4096,   ci4_rgba16patch_to_ci8,     None),
-        (6, 'texture_crate_gold',           0x18B6020,     0x018B6000,      4096,   ci4_rgba16patch_to_ci8,     'textures/crate/crate_gold_rgba16_patch.bin'),
-        (7, 'texture_crate_key',            0x18B6020,     0x018B6000,      4096,   ci4_rgba16patch_to_ci8,     'textures/crate/crate_key_rgba16_patch.bin'),
-        (8, 'texture_crate_skull',          0x18B6020,     0x018B6000,      4096,   ci4_rgba16patch_to_ci8,     'textures/crate/crate_skull_rgba16_patch.bin'),
-        (9, 'texture_crate_bosskey',        0x18B6020,     0x018B6000,      4096,   ci4_rgba16patch_to_ci8,     'textures/crate/crate_bosskey_rgba16_patch.bin'),
+        ( 1, 'texture_pot_gold',            0x01738000,    None,            2048,   rgba16_patch,               'textures/pot/pot_gold_rgba16_patch.bin'),
+        ( 2, 'texture_pot_key',             0x01738000,    None,            2048,   rgba16_patch,               'textures/pot/pot_key_rgba16_patch.bin'),
+        ( 3, 'texture_pot_bosskey',         0x01738000,    None,            2048,   rgba16_patch,               'textures/pot/pot_bosskey_rgba16_patch.bin'),
+        ( 4, 'texture_pot_skull',           0x01738000,    None,            2048,   rgba16_patch,               'textures/pot/pot_skull_rgba16_patch.bin'),
+        ( 5, 'texture_crate_default',       0x18B6020,     0x018B6000,      4096,   ci4_rgba16patch_to_ci8,     None),
+        ( 6, 'texture_crate_gold',          0x18B6020,     0x018B6000,      4096,   ci4_rgba16patch_to_ci8,     'textures/crate/crate_gold_rgba16_patch.bin'),
+        ( 7, 'texture_crate_key',           0x18B6020,     0x018B6000,      4096,   ci4_rgba16patch_to_ci8,     'textures/crate/crate_key_rgba16_patch.bin'),
+        ( 8, 'texture_crate_skull',         0x18B6020,     0x018B6000,      4096,   ci4_rgba16patch_to_ci8,     'textures/crate/crate_skull_rgba16_patch.bin'),
+        ( 9, 'texture_crate_bosskey',       0x18B6020,     0x018B6000,      4096,   ci4_rgba16patch_to_ci8,     'textures/crate/crate_bosskey_rgba16_patch.bin'),
         (10, 'texture_smallcrate_gold',     0xF7ECA0,      None,            2048,   rgba16_patch,               'textures/crate/smallcrate_gold_rgba16_patch.bin' ),
         (11, 'texture_smallcrate_key',      0xF7ECA0,      None,            2048,   rgba16_patch,               'textures/crate/smallcrate_key_rgba16_patch.bin'),
         (12, 'texture_smallcrate_skull',    0xF7ECA0,      None,            2048,   rgba16_patch,               'textures/crate/smallcrate_skull_rgba16_patch.bin'),
@@ -336,7 +334,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.write_bytes(0xCD5E76, [0x0E, 0xDC])
     rom.write_bytes(0xCD5E12, [0x0E, 0xDC])
 
-    # Cutscene for all medallions never triggers when leaving shadow or spirit temples(hopefully stops warp to colossus on shadow completion with boss reward shuffle)
+    # Cutscene for all medallions never triggers when leaving shadow or spirit temples (hopefully stops warp to colossus on shadow completion with boss reward shuffle)
     rom.write_byte(0xACA409, 0xAD)
     rom.write_byte(0xACA49D, 0xCE)
 
@@ -345,7 +343,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.write_byte(0xEFCBA7, 0x08)
     rom.write_byte(0xEFE7C7, 0x05)
     #rom.write_byte(0xEFEAF7, 0x08)
-    #rom.write_byte(0xEFE7C7, 0x05)
     rom.write_bytes(0xEFE938, [0x00, 0x00, 0x00, 0x00])
     rom.write_bytes(0xEFE948, [0x00, 0x00, 0x00, 0x00])
     rom.write_bytes(0xEFE950, [0x00, 0x00, 0x00, 0x00])
@@ -355,10 +352,12 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.write_bytes(0x1FC0CF8, block_code)
 
     # songs as items flag
-    songs_as_items = world.settings.shuffle_song_items != 'song' or \
-                     world.distribution.song_as_items or \
-                     any(name in song_list and record.count for name, record in world.settings.starting_items.items()) or \
-                     world.settings.shuffle_individual_ocarina_notes
+    songs_as_items = (
+        world.settings.shuffle_song_items != 'song'
+        or world.distribution.song_as_items
+        or any(name in song_list and record.count for name, record in world.settings.starting_items.items())
+        or world.settings.shuffle_individual_ocarina_notes
+    )
 
     if songs_as_items:
         rom.write_byte(rom.sym('SONGS_AS_ITEMS'), 1)
@@ -692,7 +691,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.write_bytes(0x292D810, [0x00, 0x02, 0x00, 0x3C])
     rom.write_bytes(0x292D924, [0xFF, 0xFF, 0x00, 0x14, 0x00, 0x96, 0xFF, 0xFF])
 
-    # Speed Pushing of All Pushable Objects
+    # Speed Pushing of All Pushable Objects (other than armos statues, which are handled in ASM)
     rom.write_bytes(0xDD2B86, [0x40, 0x80])  # block speed
     rom.write_bytes(0xDD2D26, [0x00, 0x01])  # block delay
     rom.write_bytes(0xDD9682, [0x40, 0x80])  # milk crate speed
@@ -736,7 +735,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     # Ruto never disappears from Jabu Jabu's Belly
     rom.write_byte(0xD01EA3, 0x00)
 
-    # Shift octorock in jabu forward
+    # Shift octorok in jabu forward
     rom.write_bytes(0x275906E, [0xFF, 0xB3, 0xFB, 0x20, 0xF9, 0x56])
 
     # Move fire/forest temple switches down 1 unit to make it easier to press
@@ -918,14 +917,12 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     for address in short_item_descriptions:
         rom.write_byte(address, 0x02)
 
-    et_original = rom.read_bytes(0xB6FBF0, 4 * 0x0614)
-
     exit_updates = []
 
     def generate_exit_lookup_table() -> dict[int, list[int]]:
         # Assumes that the last exit on a scene's exit list cannot be 0000
         exit_table = {
-            0x0028: [0xAC95C2]  # Jabu with the fish is entered from a cutscene hardcode
+            0x0028: [0xAC95C2],  # Jabu with the fish is entered from a cutscene hardcode
         }
 
         def add_scene_exits(scene_start: int, offset: int = 0) -> None:
@@ -1065,7 +1062,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         rom.write_byte(rom.sym('DISABLE_TIMERS'), 0x01)
         rom.write_int16s(0xB6D460, [0x0030, 0x0035, 0x0036])  # Change trade items revert table to prevent all reverts
 
-    if world.settings.adult_trade_shuffle or world.settings.item_pool_value in ['plentiful', 'ludicrous']:
+    if world.settings.adult_trade_shuffle or world.settings.item_pool_value in ('plentiful', 'ludicrous'):
         rom.write_int16(rom.sym('CFG_ADULT_TRADE_SHUFFLE'), 0x0001)
         move_fado_in_lost_woods(rom)
     if world.settings.shuffle_child_trade or world.settings.logic_rules == 'glitched':
@@ -1128,9 +1125,10 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     )
     set_entrance_updates(entrance for entrance in world.get_shufflable_entrances() if entrance.shuffled or (patch_blue_warps and entrance.type == 'BlueWarp'))
 
-    for k, v in [(k, v) for k, v in exit_updates if k in exit_table]:
-        for addr in exit_table[k]:
-            rom.write_int16(addr, v)
+    for k, v in exit_updates:
+        if k in exit_table:
+            for addr in exit_table[k]:
+                rom.write_int16(addr, v)
 
     # Fix text for Pocket Cucco.
     rom.write_byte(0xBEEF45, 0x0B)
@@ -1338,7 +1336,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             traded_flags = 0
             reverting_item_map = {
                 "Cojiro": ["Odd Mushroom"],
-                "Prescription": ["Eyeball Frog", "Eyedrops"]
+                "Prescription": ["Eyeball Frog", "Eyedrops"],
             }
             if world.adult_trade_starting_inventory:
                 trade_item = world.adult_trade_starting_inventory
@@ -1363,7 +1361,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         rom.write_byte(rom.sym('COMPLETE_MASK_QUEST'), 1)
 
     if world.skip_child_zelda:
-        if all(trade_item not in world.settings.shuffle_child_trade for trade_item in ['Weird Egg', 'Chicken']):
+        if all(trade_item not in world.settings.shuffle_child_trade for trade_item in ('Weird Egg', 'Chicken')):
             save_context.write_bits(0x0ED7, 0x04) # "Obtained Malon's Item"
         save_context.write_bits(0x0ED7, 0x08) # "Woke Talon in castle"
         save_context.write_bits(0x0ED7, 0x10) # "Talon has fled castle"
@@ -1515,7 +1513,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     # start with maps/compasses
     if world.settings.shuffle_mapcompass == 'startwith':
-        for dungeon in ['deku', 'dodongo', 'jabu', 'forest', 'fire', 'water', 'spirit', 'shadow', 'botw', 'ice']:
+        for dungeon in ('deku', 'dodongo', 'jabu', 'forest', 'fire', 'water', 'spirit', 'shadow', 'botw', 'ice'):
             save_context.addresses['dungeon_items'][dungeon]['compass'].value = True
             save_context.addresses['dungeon_items'][dungeon]['map'].value = True
 
@@ -1704,7 +1702,29 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             if locations:
                 # Location types later in the list will be preferred over earlier ones or ones not in the list.
                 # This ensures that if the region behind the boss door is a boss arena, the medallion or stone will be used.
-                priority_types = ("Freestanding", "ActorOverride", "RupeeTower", "Pot", "Crate", "FlyingPot", "SmallCrate", "Beehive", "SilverRupee", "GS Token", "GrottoScrub", "Scrub", "Shop", "NPC", "Collectable", "Chest", "Cutscene", "Song", "BossHeart", "Boss")
+                priority_types = (
+                    "Freestanding",
+                    "ActorOverride",
+                    "RupeeTower",
+                    "Pot",
+                    "Crate",
+                    "FlyingPot",
+                    "SmallCrate",
+                    "Beehive",
+                    "SilverRupee",
+                    "GS Token",
+                    "GrottoScrub",
+                    "Scrub",
+                    "Shop",
+                    "MaskShop",
+                    "NPC",
+                    "Collectable",
+                    "Chest",
+                    "Cutscene",
+                    "Song",
+                    "BossHeart",
+                    "Boss",
+                )
                 best_type = max((location.type for location in locations), key=lambda type: priority_types.index(type) if type in priority_types else -1)
                 location = random.choice(list(filter(lambda loc: loc.type == best_type, locations)))
                 break
@@ -1807,8 +1827,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     # Make the cursed skulltula people come down instantly when entering if skull hints are on.
     # Change  lui     $at, 0x4320 to  lui     $at, 0x44C8
-    if ('10_skulltulas' in world.settings.misc_hints or '20_skulltulas' in world.settings.misc_hints or '30_skulltulas' in world.settings.misc_hints or
-     '40_skulltulas' in world.settings.misc_hints or '50_skulltulas' in world.settings.misc_hints):
+    if any(hint_type in world.settings.misc_hints for hint_type in ('10_skulltulas', '20_skulltulas', '30_skulltulas', '40_skulltulas', '50_skulltulas')):
         rom.write_int16(0xEA185A, 0x44C8)
 
     # Patch freestanding items
@@ -1837,20 +1856,20 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     collectible_flag_table, alt_list = get_collectible_flag_table(world)
     collectible_flag_table_bytes, num_collectible_flags = get_collectible_flag_table_bytes(collectible_flag_table)
     alt_list_bytes = get_alt_list_bytes(alt_list)
-    if len(collectible_flag_table_bytes) > 600:
-        raise RuntimeError(f'Exceeded collectible override table size: {len(collectible_flag_table_bytes)}')
+    if(len(collectible_flag_table_bytes) > 1000):
+        raise(RuntimeError(f'Exceeded collectible override table size: {len(collectible_flag_table_bytes)}'))
     rom.write_bytes(rom.sym('collectible_scene_flags_table'), collectible_flag_table_bytes)
     num_collectible_flags += num_collectible_flags % 8
     rom.write_bytes(rom.sym('num_override_flags'), num_collectible_flags.to_bytes(2, 'big'))
-    if len(alt_list) > 64:
+    if len(alt_list) >= 90:
         raise RuntimeError(f'Exceeded alt override table size: {len(alt_list)}')
     rom.write_bytes(rom.sym('alt_overrides'), alt_list_bytes)
 
     # Write item overrides
     check_location_dupes(world)
     override_table = get_override_table(world)
-    if len(override_table) >= 1536:
-        raise RuntimeError(f'Exceeded override table size: {len(override_table)}')
+    if len(override_table) >= 2200:
+        raise(RuntimeError("Exceeded override table size: " + str(len(override_table))))
     rom.write_bytes(rom.sym('cfg_item_overrides'), get_override_table_bytes(override_table))
     rom.write_byte(rom.sym('PLAYER_ID'), world.id + 1)  # Write player ID
 
@@ -2225,34 +2244,43 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     HEART_CHEST_BIG = 17
     if world.settings.shuffle_tcgkeys == 'vanilla':
         # Force key chests in Treasure Chest Game to use the default chest texture when not shuffled
-        item = read_rom_item(rom, 0x71)
+        item = read_rom_item(rom, 0x0071)
         item['chest_type'] = BROWN_CHEST
-        write_rom_item(rom, 0x71, item)
-    if world.settings.free_bombchu_drops or world.settings.minor_items_as_major_chest:
-        bombchu_ids = [0x6A, 0x03, 0x6B]
+        write_rom_item(rom, 0x0071, item)
+    if world.settings.free_bombchu_drops or 'bombchus' in world.settings.minor_items_as_major_chest:
+        bombchu_ids = [0x006A, 0x0003, 0x006B]
         for i in bombchu_ids:
             item = read_rom_item(rom, i)
             item['chest_type'] = GILDED_CHEST
             write_rom_item(rom, i, item)
     if world.settings.bridge == 'tokens' or world.settings.lacs_condition == 'tokens' or world.settings.shuffle_ganon_bosskey == 'tokens':
-        item = read_rom_item(rom, 0x5B)
+        item = read_rom_item(rom, 0x005B)
         item['chest_type'] = SKULL_CHEST_BIG
-        write_rom_item(rom, 0x5B, item)
+        write_rom_item(rom, 0x005B, item)
     if world.settings.bridge == 'hearts' or world.settings.lacs_condition == 'hearts' or world.settings.shuffle_ganon_bosskey == 'hearts':
-        heart_ids = [0x3D, 0x3E, 0x76]
+        heart_ids = [0x003D, 0x003E, 0x0076]
         for i in heart_ids:
             item = read_rom_item(rom, i)
             item['chest_type'] = HEART_CHEST_BIG
             write_rom_item(rom, i, item)
-    if world.settings.minor_items_as_major_chest:
+    if 'shields' in world.settings.minor_items_as_major_chest:
         # Deku
-        item = read_rom_item(rom, 0x29)
+        item = read_rom_item(rom, 0x0029)
         item['chest_type'] = GILDED_CHEST
-        write_rom_item(rom, 0x29, item)
+        write_rom_item(rom, 0x0029, item)
         # Hylian
-        item = read_rom_item(rom, 0x2A)
+        item = read_rom_item(rom, 0x002A)
         item['chest_type'] = GILDED_CHEST
-        write_rom_item(rom, 0x2A, item)
+        write_rom_item(rom, 0x002A, item)
+    if 'capacity' in world.settings.minor_items_as_major_chest:
+        # Nuts
+        item = read_rom_item(rom, 0x0087)
+        item['chest_type'] = GILDED_CHEST
+        write_rom_item(rom, 0x0087, item)
+        # Sticks
+        item = read_rom_item(rom, 0x0088)
+        item['chest_type'] = GILDED_CHEST
+        write_rom_item(rom, 0x0088, item)
 
     # Update chest type appearance
     if world.settings.correct_chest_appearances == 'textures':
@@ -2446,7 +2474,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     repack_messages(rom, messages, permutation)
 
     # output a text dump, for testing...
-    #with open('keysanity_' + str(world.settings.seed) + '_dump.txt', 'w', encoding='utf-16') as f:
+    #with open('messages_' + str(world.settings.seed) + '_dump.txt', 'w', encoding='utf-16') as f:
     #     messages = read_messages(rom)
     #     f.write('item_message_strings = {\n')
     #     for m in messages:
@@ -2476,7 +2504,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         # Convenience hack to allow the player to keep the bunny hood on when interacting
         # with actors that give items (rolling goron, lab dive, etc.)
         for mask_segment_id in range(0x00, 0x3C):
-            if mask_segment_id not in [0x05, 0x06, 0x07, 0x0F, 0x15, 0x1C]:
+            if mask_segment_id not in (0x05, 0x06, 0x07, 0x0F, 0x15, 0x1C):
                 rom.write_int16s(0x00B66E60 + mask_segment_id * 0x12, [0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000])
 
     if world.settings.fix_broken_drops:
@@ -2511,7 +2539,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             song_layout_in_byte_form |= 1 << 3
         if '>' in epona_notes:
             song_layout_in_byte_form |= 1 << 4
-        rom.write_int16(rom.sym('EPONAS_SONG_NOTES'), song_layout_in_byte_form)
+        rom.write_byte(rom.sym('EPONAS_SONG_NOTES'), song_layout_in_byte_form)
 
     # Sets the torch count to open the entrance to Shadow Temple
     if world.settings.easier_fire_arrow_entry:
@@ -2554,11 +2582,11 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     # Fix shadow temple redead shared flags for silver rupee shuffle
     if world.settings.shuffle_silver_rupees != 'vanilla':
         if not world.dungeon_mq['Shadow Temple']: # Patch for redeads in vanilla
-            rom.write_byte(0x280905E,0)
-            rom.write_byte(0x280906E,0)
+            rom.write_byte(0x280905E, 0)
+            rom.write_byte(0x280906E, 0)
         else: # Patch for redeads in MQ. ROM positions are calculated dyanmically by MQ.py but should remain static.
-            rom.write_byte(0x280CDDE,0)
-            rom.write_byte(0x280CDEE,0)
+            rom.write_byte(0x280CDDE, 0)
+            rom.write_byte(0x280CDEE, 0)
 
     # actually write the save table to rom
     world.distribution.give_items(world, save_context)
@@ -2599,10 +2627,10 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 NUM_VANILLA_OBJECTS: int = 0x192
 
 
-def add_to_extended_object_table(rom: Rom, object_id: int, start_adddress: int, end_address: int) -> None:
+def add_to_extended_object_table(rom: Rom, object_id: int, start_address: int, end_address: int) -> None:
     extended_id = object_id - NUM_VANILLA_OBJECTS - 1
     extended_object_table = rom.sym('EXTENDED_OBJECT_TABLE')
-    rom.write_int32s(extended_object_table + extended_id * 8, [start_adddress, end_address])
+    rom.write_int32s(extended_object_table + extended_id * 8, [start_address, end_address])
 
 
 item_row_struct = struct.Struct('>BBHHBBIIhhBxxxI') # Match item_row_t in item_table.h
@@ -2648,7 +2676,7 @@ def get_override_table(world: World):
     return list(filter(lambda val: val is not None, map(get_override_entry, world.get_filled_locations())))
 
 
-override_struct = struct.Struct('>BBHxxxxHBxHxx')  # match override_t in get_items.c
+override_struct = struct.Struct('>BBHxxxxHBxHxx')  # match override_t in get_items.h
 
 
 def get_override_table_bytes(override_table):
@@ -2663,7 +2691,7 @@ def get_override_entry(location: Location) -> Optional[OverrideEntry]:
         return None
 
     # Don't add freestanding items, pots/crates, beehives to the override table if they're disabled. We use this check to determine how to draw and interact with them
-    if location.type in ("ActorOverride", "Freestanding", "RupeeTower", "Pot", "Crate", "FlyingPot", "SmallCrate", "Beehive") and location.disabled != DisableType.ENABLED:
+    if location.type in ["ActorOverride", "Freestanding", "RupeeTower", "Pot", "Crate", "FlyingPot", "SmallCrate", "Beehive", "Wonderitem"] and location.disabled != DisableType.ENABLED:
         return None
 
     player_id = location.item.world.id + 1
@@ -2677,7 +2705,7 @@ def get_override_entry(location: Location) -> Optional[OverrideEntry]:
     elif location.type == 'Chest':
         type = 1
         default &= 0x1F
-    elif location.type in ['Freestanding', 'Pot', 'Crate', 'FlyingPot', 'SmallCrate', 'RupeeTower', 'Beehive', 'SilverRupee']:
+    elif location.type in ['Freestanding', 'Pot', 'Crate', 'FlyingPot', 'SmallCrate', 'RupeeTower', 'Beehive', 'SilverRupee', 'Wonderitem']:
         type = 6
         if not (isinstance(location.default, list) or isinstance(location.default, tuple)):
             raise Exception("Not right")
@@ -3018,11 +3046,11 @@ def place_shop_items(rom: Rom, world: World, shop_items, messages, locations, in
             # Without complete mask quest, trading all masks will automatically
             # give it and set this as sold out.
             # With complete mask quest, it's free to take normally
-            if not world.settings.complete_mask_quest and \
+            if (not world.settings.complete_mask_quest and
               ((location.vanilla_item == 'Mask of Truth' and 'Mask of Truth' in world.settings.shuffle_child_trade) or
                ('mask_shop' in world.settings.misc_hints and location.vanilla_item == 'Goron Mask' and 'Goron Mask' in world.settings.shuffle_child_trade) or
                ('mask_shop' in world.settings.misc_hints and location.vanilla_item == 'Zora Mask' and 'Zora Mask' in world.settings.shuffle_child_trade) or
-               ('mask_shop' in world.settings.misc_hints and location.vanilla_item == 'Gerudo Mask' and 'Gerudo Mask' in world.settings.shuffle_child_trade)):
+               ('mask_shop' in world.settings.misc_hints and location.vanilla_item == 'Gerudo Mask' and 'Gerudo Mask' in world.settings.shuffle_child_trade))):
                 shop_item.func2 = 0x80863714  # override to custom CanBuy function to prevent purchase before trade quest complete
 
             message_id = (shop_id - 0x32) * 2

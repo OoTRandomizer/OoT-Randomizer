@@ -6,7 +6,7 @@ void manage_uninvert_yaxis() {
 
     if (CFG_UNINVERT_YAXIS_IN_FIRST_PERSON_CAMERA) {
         // Never if a choice textbox is on screen.
-        if (z64_MessageGetState(((uint8_t *)(&z64_game)) + 0x20D8) == 4) {
+        if (z64_MessageGetState(((uint8_t*)(&z64_game)) + 0x20D8) == 4) {
             return;
         }
         if (z64_game.camera_mode == CAM_MODE_FIRST_PERSON ||

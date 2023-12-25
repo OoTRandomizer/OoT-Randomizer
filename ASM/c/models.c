@@ -18,21 +18,21 @@ typedef struct {
 
 typedef struct {
     uint16_t object_id;
-    uint8_t *buf;
+    uint8_t* buf;
 } loaded_object_t;
 
-extern uint32_t SHUFFLE_CHEST_GAME;
+extern uint8_t SHUFFLE_CHEST_GAME;
 extern uint32_t EXTENDED_OBJECT_TABLE;
-extern EnItem00 *collectible_mutex;
+extern EnItem00* collectible_mutex;
 
 loaded_object_t object_slots[slot_count] = { 0 };
 
-void load_object_file(uint32_t object_id, uint8_t *buf) {
-    z64_object_table_t *entry;
+void load_object_file(uint32_t object_id, uint8_t* buf) {
+    z64_object_table_t* entry;
     if (object_id <= num_vanilla_objects) {
         entry = &(z64_object_table[object_id]);
     } else {
-        z64_object_table_t *extended_table = (z64_object_table_t *) (&EXTENDED_OBJECT_TABLE);
+        z64_object_table_t* extended_table = (z64_object_table_t*) (&EXTENDED_OBJECT_TABLE);
         entry = &extended_table[object_id - num_vanilla_objects - 1];
     }
     uint32_t vrom_start = entry->vrom_start;
@@ -40,14 +40,14 @@ void load_object_file(uint32_t object_id, uint8_t *buf) {
     read_file(buf, vrom_start, size);
 }
 
-void load_object(loaded_object_t *object, uint32_t object_id) {
+void load_object(loaded_object_t* object, uint32_t object_id) {
     object->object_id = object_id;
     load_object_file(object_id, object->buf);
 }
 
-loaded_object_t *get_object(uint32_t object_id) {
+loaded_object_t* get_object(uint32_t object_id) {
     for (int i = 0; i < slot_count; i++) {
-        loaded_object_t *object = &(object_slots[i]);
+        loaded_object_t* object = &(object_slots[i]);
         if (object->object_id == object_id) {
             return object;
         }
@@ -60,16 +60,16 @@ loaded_object_t *get_object(uint32_t object_id) {
     return NULL;
 }
 
-void set_object_segment(loaded_object_t *object) {
-    z64_disp_buf_t *xlu = &(z64_ctxt.gfx->poly_xlu);
+void set_object_segment(loaded_object_t* object) {
+    z64_disp_buf_t* xlu = &(z64_ctxt.gfx->poly_xlu);
     gSPSegment(xlu->p++, 6, (uint32_t)(object->buf));
 
-    z64_disp_buf_t *opa = &(z64_ctxt.gfx->poly_opa);
+    z64_disp_buf_t* opa = &(z64_ctxt.gfx->poly_opa);
     gSPSegment(opa->p++, 6, (uint32_t)(object->buf));
 }
 
 void scale_top_matrix(float scale_factor) {
-    float *matrix = z64_GetMatrixStackTop();
+    float* matrix = z64_GetMatrixStackTop();
     for (int i = 0; i < 3; i++) {
         for (int j = 0; j < 3; j++) {
             matrix[4*i + j] *= scale_factor;
@@ -77,19 +77,19 @@ void scale_top_matrix(float scale_factor) {
     }
 }
 
-typedef void (*pre_draw_fn)(z64_actor_t *actor, z64_game_t *game, uint32_t unknown);
-typedef void (*actor_draw_fn)(z64_actor_t *actor, z64_game_t *game);
+typedef void (*pre_draw_fn)(z64_actor_t* actor, z64_game_t* game, uint32_t unknown);
+typedef void (*actor_draw_fn)(z64_actor_t* actor, z64_game_t* game);
 #define pre_draw_1 ((pre_draw_fn)0x80022438)
 #define pre_draw_2 ((pre_draw_fn)0x80022554)
 #define base_collectable_draw ((actor_draw_fn)0x80013268)
 
-void draw_model_low_level(uint8_t graphic_id_minus_1, z64_actor_t *actor, z64_game_t *game) {
+void draw_model_low_level(uint8_t graphic_id_minus_1, z64_actor_t* actor, z64_game_t* game) {
     pre_draw_1(actor, game, 0);
     pre_draw_2(actor, game, 0);
     base_draw_gi_model(game, graphic_id_minus_1);
 }
 
-float scale_factor(uint8_t graphic_id, z64_actor_t *actor, float base_scale) {
+float scale_factor(uint8_t graphic_id, z64_actor_t* actor, float base_scale) {
     if (graphic_id == 0x63) {
         // Draw skull tokens at their vanilla size
         return base_scale * 0.5;
@@ -101,8 +101,8 @@ float scale_factor(uint8_t graphic_id, z64_actor_t *actor, float base_scale) {
     return base_scale;
 }
 
-void draw_model(model_t model, z64_actor_t *actor, z64_game_t *game, float base_scale) {
-    loaded_object_t *object = get_object(model.object_id);
+void draw_model(model_t model, z64_actor_t* actor, z64_game_t* game, float base_scale) {
+    loaded_object_t* object = get_object(model.object_id);
     if (object != NULL) {
         set_object_segment(object);
         if (base_scale != 0.0) {
@@ -125,27 +125,27 @@ void models_reset() {
     }
 }
 
-void lookup_model_by_override(model_t *model, override_t override) {
+void lookup_model_by_override(model_t* model, override_t override) {
     if (override.key.all != 0) {
         override_t model_override = override;
         model_override.value.base.item_id = override.value.looks_like_item_id ?
             override.value.looks_like_item_id :
             override.value.base.item_id;
         uint16_t resolved_item_id = resolve_upgrades(model_override);
-        item_row_t *item_row = get_item_row(resolved_item_id);
+        item_row_t* item_row = get_item_row(resolved_item_id);
         model->object_id = item_row->object_id;
         model->graphic_id = item_row->graphic_id;
     }
 }
 
-void lookup_model(model_t *model, z64_actor_t *actor, z64_game_t *game, uint16_t base_item_id) {
+void lookup_model(model_t* model, z64_actor_t* actor, z64_game_t* game, uint16_t base_item_id) {
     override_t override = lookup_override(actor, game->scene_index, base_item_id);
     lookup_model_by_override(model, override);
 }
 
 // Shop draw function for each shelf slot, replaces GetItem_Draw inside of EnGirlA_Draw
-void shop_draw(z64_actor_t *actor, z64_game_t *game) {
-    EnGirlA *this = (EnGirlA *)actor;
+void shop_draw(z64_actor_t* actor, z64_game_t* game) {
+    EnGirlA* this = (EnGirlA*)actor;
     model_t model = {
         .object_id = 0x0000,
         .graphic_id = 0x00,
@@ -173,8 +173,8 @@ void shop_draw(z64_actor_t *actor, z64_game_t *game) {
 }
 
 // Collectible draw function for rupees/recovery hearts
-bool collectible_draw(z64_actor_t *actor, z64_game_t *game) {
-    EnItem00 *this = (EnItem00 *)actor;
+bool collectible_draw(z64_actor_t* actor, z64_game_t* game) {
+    EnItem00* this = (EnItem00*)actor;
     model_t model = {
         .object_id = 0x0000,
         .graphic_id = 0x00,
@@ -193,7 +193,7 @@ bool collectible_draw(z64_actor_t *actor, z64_game_t *game) {
 }
 
 
-void heart_piece_draw(z64_actor_t *actor, z64_game_t *game) {
+void heart_piece_draw(z64_actor_t* actor, z64_game_t* game) {
     model_t model = {
         .object_id = 0x00BD,
         .graphic_id = 0x14,
@@ -203,8 +203,8 @@ void heart_piece_draw(z64_actor_t *actor, z64_game_t *game) {
 }
 
 // collectible draw function for common items (sticks, nuts, arrows/seeds/etc. and keys)
-void collectible_draw_other(z64_actor_t *actor, z64_game_t *game) {
-    EnItem00 *this = (EnItem00 *)actor;
+void collectible_draw_other(z64_actor_t* actor, z64_game_t* game) {
+    EnItem00* this = (EnItem00*)actor;
 
     model_t model = {
         .object_id = 0x0000,
@@ -233,7 +233,7 @@ void collectible_draw_other(z64_actor_t *actor, z64_game_t *game) {
     }
 }
 
-void heart_container_draw(z64_actor_t *actor, z64_game_t *game) {
+void heart_container_draw(z64_actor_t* actor, z64_game_t* game) {
     model_t model = {
         .object_id = 0x00BD,
         .graphic_id = 0x13,
@@ -242,7 +242,7 @@ void heart_container_draw(z64_actor_t *actor, z64_game_t *game) {
     draw_model(model, actor, game, 1.25);
 }
 
-void skull_token_draw(z64_actor_t *actor, z64_game_t *game) {
+void skull_token_draw(z64_actor_t* actor, z64_game_t* game) {
     model_t model = {
         .object_id = 0x015C,
         .graphic_id = 0x63,
@@ -251,7 +251,7 @@ void skull_token_draw(z64_actor_t *actor, z64_game_t *game) {
     draw_model(model, actor, game, 2.0);
 }
 
-void ocarina_of_time_draw(z64_actor_t *actor, z64_game_t *game) {
+void ocarina_of_time_draw(z64_actor_t* actor, z64_game_t* game) {
     model_t model = {
         .object_id = 0x00DE,
         .graphic_id = 0x2F,
@@ -260,7 +260,7 @@ void ocarina_of_time_draw(z64_actor_t *actor, z64_game_t *game) {
     draw_model(model, actor, game, 2.5);
 }
 
-void item_etcetera_draw(z64_actor_t *actor, z64_game_t *game) {
+void item_etcetera_draw(z64_actor_t* actor, z64_game_t* game) {
     override_t override = { 0 };
     if (actor->variable == 0x01) {
         // Ruto's Letter
@@ -363,12 +363,12 @@ void item_etcetera_draw(z64_actor_t *actor, z64_game_t *game) {
     if (model.object_id != 0) {
         draw_model(model, actor, game, 1.0);
     } else {
-        uint8_t default_graphic_id = *(((uint8_t *)actor) + 0x141);
+        uint8_t default_graphic_id = *(((uint8_t*)actor) + 0x141);
         draw_model_low_level(default_graphic_id, actor, game);
     }
 }
 
-void bowling_bomb_bag_draw(z64_actor_t *actor, z64_game_t *game) {
+void bowling_bomb_bag_draw(z64_actor_t* actor, z64_game_t* game) {
     override_t override = { 0 };
     switch (actor->variable) {
         case 0x00:
@@ -398,12 +398,12 @@ void bowling_bomb_bag_draw(z64_actor_t *actor, z64_game_t *game) {
     if (model.object_id != 0) {
         draw_model(model, actor, game, 1.0);
     } else {
-        uint8_t default_graphic_id = *(((uint8_t *)actor) + 0x147);
+        uint8_t default_graphic_id = *(((uint8_t*)actor) + 0x147);
         draw_model_low_level(default_graphic_id, actor, game);
     }
 }
 
-void bowling_heart_piece_draw(z64_actor_t *actor, z64_game_t *game) {
+void bowling_heart_piece_draw(z64_actor_t* actor, z64_game_t* game) {
     model_t model = {
         .object_id = 0x00BD,
         .graphic_id = 0x14,

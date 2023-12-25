@@ -103,4 +103,4 @@ Additional flags stored in `inf_table` (an array of 16-bit integers at save cont
 
 # Misc data
 
-Current mask: 1 byte at save context + 0x3B. Written on `Player_Destroy` Read on `Player_Init` except when moving through time.
+Current mask: 1 byte at save context + 0x3B. Written on `Player_Destroy`. Read on `Player_Init` except when moving through time.

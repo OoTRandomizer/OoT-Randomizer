@@ -104,7 +104,4 @@ class Dungeon:
             yield from self.silver_rupees
 
     def __str__(self) -> str:
-        return str(self.__unicode__())
-
-    def __unicode__(self) -> str:
-        return '%s' % self.name
+        return self.name

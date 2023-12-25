@@ -26,7 +26,7 @@ extern uint8_t PLAYER_NAMES[256][8];
 extern uint8_t PLAYER_NAME_ID;
 
 // Helper function for adding characters to the decoded message buffer
-void Message_AddCharacter(MessageContext *msgCtx, void *pFont, uint32_t *pDecodedBufPos, uint32_t *pCharTexIdx, uint8_t charToAdd) {
+void Message_AddCharacter(MessageContext* msgCtx, void* pFont, uint32_t* pDecodedBufPos, uint32_t* pCharTexIdx, uint8_t charToAdd) {
     uint32_t decodedBufPosVal = *pDecodedBufPos;
     uint32_t charTexIdx = *pCharTexIdx;
     msgCtx->msgBufDecoded[decodedBufPosVal++] = charToAdd; // Add the character to the output buffer, increment the output position
@@ -41,7 +41,7 @@ void Message_AddCharacter(MessageContext *msgCtx, void *pFont, uint32_t *pDecode
 }
 
 // Helper function for adding integer numbers to the decoded message buffer
-void Message_AddInteger(MessageContext *msgCtx, void *pFont, uint32_t *pDecodedBufPos, uint32_t *pCharTexIdx, uint32_t numToAdd) {
+void Message_AddInteger(MessageContext* msgCtx, void* pFont, uint32_t* pDecodedBufPos, uint32_t* pCharTexIdx, uint32_t numToAdd) {
     uint8_t digits[10];
     uint8_t i = 0;
     // Extract each digit. They are added, in reverse order, to digits[]
@@ -59,7 +59,7 @@ void Message_AddInteger(MessageContext *msgCtx, void *pFont, uint32_t *pDecodedB
 }
 
 // Helper function for adding simple strings to the decoded message buffer. Does not support additional control codes.
-void Message_AddString(MessageContext *msgCtx, void *pFont, uint32_t *pDecodedBufPos, uint32_t *pCharTexIdx, char *stringToAdd) {
+void Message_AddString(MessageContext* msgCtx, void* pFont, uint32_t* pDecodedBufPos, uint32_t* pCharTexIdx, char* stringToAdd) {
     while (*stringToAdd != 0) {
         Message_AddCharacter(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, *stringToAdd);
         stringToAdd++;
@@ -67,7 +67,7 @@ void Message_AddString(MessageContext *msgCtx, void *pFont, uint32_t *pDecodedBu
 }
 
 // Helper function for adding a filename to the decoded message buffer. Filenames use a different character set from other text.
-void Message_AddFileName(MessageContext *msgCtx, void *pFont, uint32_t *pDecodedBufPos, uint32_t *pCharTexIdx, uint8_t *filenameToAdd) {
+void Message_AddFileName(MessageContext* msgCtx, void* pFont, uint32_t* pDecodedBufPos, uint32_t* pCharTexIdx, uint8_t* filenameToAdd) {
     int end = 8;
     while (filenameToAdd[end - 1] == 0xDF) {
         // trim trailing space
@@ -84,12 +84,12 @@ void Message_AddFileName(MessageContext *msgCtx, void *pFont, uint32_t *pDecoded
 //      Compare currChar to the control code.
 //          Add text to the output buffer by performing the following:
 //          Call one of the above functions to add the text.
-//          Subtract 1 from *pDecodedBufPos
+//          Subtract 1 from* pDecodedBufPos
 //          Return true
-bool Message_Decode_Additional_Control_Codes(uint8_t currChar, uint32_t *pDecodedBufPos, uint32_t *pCharTexIdx) {
-    MessageContext *msgCtx = &(z64_game.msgContext);
-    Font *pFont = &(msgCtx->font); // Get a reference to the font.
-    char *msgRaw = (char *) &(pFont->msgBuf); // Get a reference to the start of the raw message. Index using msgCtx->msgBufPos.
+bool Message_Decode_Additional_Control_Codes(uint8_t currChar, uint32_t* pDecodedBufPos, uint32_t* pCharTexIdx) {
+    MessageContext* msgCtx = &(z64_game.msgContext);
+    Font* pFont = &(msgCtx->font); // Get a reference to the font.
+    char* msgRaw = (char*) &(pFont->msgBuf); // Get a reference to the start of the raw message. Index using msgCtx->msgBufPos.
 
     switch (currChar) {
         case 0xF0: {

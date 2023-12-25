@@ -173,7 +173,9 @@
         "locations": {
             "Spirit Temple MQ Chest Switch Chest": "True",
             "Spirit Temple MQ Boss Key Chest": "Mirror_Shield",
-            "Spirit Temple Mirror Shield Chest": "logic_lens_spirit_mq or can_use(Lens_of_Truth)"
+            "Spirit Temple Mirror Shield Chest": "logic_lens_spirit_mq or can_use(Lens_of_Truth)",
+            "Spirit Temple MQ Chest Switch Sword Wonderitem": "True",
+            "Spirit Temple MQ Chest Switch Hammer Wonderitem": "Megaton_Hammer"
         }
     },
     {

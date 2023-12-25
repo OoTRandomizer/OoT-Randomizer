@@ -12,7 +12,7 @@ from ntype import BigStream
 from crc import calculate_crc
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--pj64sym', help="Output path for PJ64 debugging symbols")
+parser.add_argument('--pj64sym', help="Output path for Project64 debugging symbols")
 parser.add_argument('--compile-c', action='store_true', help="Recompile C modules")
 parser.add_argument('--dump-obj', action='store_true', help="Dumps extra object info for debugging purposes. Does nothing without --compile-c")
 parser.add_argument('--diff-only', action='store_true', help="Creates diff output without running armips")
@@ -25,7 +25,11 @@ diff_only = args.diff_only
 
 root_dir = os.path.dirname(os.path.realpath(__file__))
 tools_dir = os.path.join(root_dir, 'tools')
-os.environ['PATH'] = tools_dir + os.pathsep + os.environ['PATH']
+# Makes it possible to use the "tools" directory as the prefix for the toolchain
+tools_bin_dir = os.path.join(tools_dir, 'bin')
+# Makes it possible to copy the full toolchain prefix into the "tools" directory
+n64_bin_dir = os.path.join(tools_dir, "n64", "bin")
+os.environ['PATH'] = os.pathsep.join([tools_dir, tools_bin_dir, n64_bin_dir, os.environ['PATH']])
 
 run_dir = root_dir
 

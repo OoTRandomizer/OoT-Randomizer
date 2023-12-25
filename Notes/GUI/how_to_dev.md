@@ -6,7 +6,7 @@
 
 2. Run python3 SettingsToJson.py
 
-3. Change current directory to the GUI folder 
+3. Change current directory to the GUI folder
 
 4. Execute `npm ci` to delete your node_modules folder and install all dependencies as specified in package-lock.json
 
@@ -22,4 +22,4 @@ That's it! Happy coding!
 
 ### Web view testing
 
-For web view testing, follow the guide under [web-gui-testing.md](https://github.com/TestRunnerSRL/OoT-Randomizer/blob/Dev/Notes/web-gui-testing.md). 
+For web view testing, follow the guide under [web-gui-testing.md](https://github.com/TestRunnerSRL/OoT-Randomizer/blob/Dev/Notes/web-gui-testing.md).

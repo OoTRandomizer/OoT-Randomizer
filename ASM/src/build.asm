@@ -1,7 +1,7 @@
 .n64
 .relativeinclude on
 
-// version guard, prevent people from building with older armips versions
+; version guard, prevent people from building with older armips versions
 .if (version() < 110)
 .notice version()
 .error   "Detected armips build is too old. Please install https://github.com/Kingcom/armips version 0.11 or later."
@@ -41,7 +41,7 @@
 .headersize (0x80400000 - 0x03480000)
 
 .org    0x80400000
-.area   0x00200000 //payload max memory
+.area   0x00200000 ; payload max memory
 PAYLOAD_START:
 
 .area 0x20, 0
@@ -117,6 +117,7 @@ RANDO_CONTEXT:
 .include "drop_overrides/bg_spot18_basket.asm"
 .include "drop_overrides/obj_comb.asm"
 .include "drop_overrides/actor.asm"
+.include "drop_overrides/en_wonderitem.asm"
 .include "rand_seed.asm"
 .include "messages.asm"
 .include "player_save_mask.asm"
@@ -145,6 +146,6 @@ TRIFORCE_ICON_TEXTURE:
 AUDIO_THREAD_MEM_START:
 .skip AUDIO_THREAD_MEM_SIZE
 PAYLOAD_END:
-.endarea //payload max memory
+.endarea ; payload max memory
 
 .close

@@ -7,6 +7,8 @@
             "Jabu Jabus Belly MQ First Room Side Chest": "can_use(Slingshot)",
             "Jabu Jabus Belly MQ First Room Pot 1": "True",
             "Jabu Jabus Belly MQ First Room Pot 2": "True",
+            "Jabu Jabus Belly MQ Entryway Left Cow Wonderitem": "can_use(Slingshot)",
+            "Jabu Jabus Belly MQ Entryway Right Cow Wonderitem": "can_use(Slingshot)",
             "Nut Pot": "True"
         },
         "exits": {
@@ -32,7 +34,8 @@
                 can_use(Boomerang) or can_dive or can_use(Iron_Boots)",
             "Jabu Jabus Belly MQ Underwater Green Rupee 3": "True",
             "Jabu Jabus Belly MQ Elevator Room Pot 1": "True",
-            "Jabu Jabus Belly MQ Elevator Room Pot 2": "True"
+            "Jabu Jabus Belly MQ Elevator Room Pot 2": "True",
+            "Jabu Jabus Belly MQ Elevator Room Cow Wonderitem": "can_use(Slingshot)"
         },
         "exits": {
             "Jabu Jabus Belly Main": "
@@ -62,7 +65,13 @@
                     (here((logic_lens_jabu_mq or can_use(Lens_of_Truth)) and
                             (can_use(Slingshot) or can_use(Bow) or can_use(Longshot) or
                             (can_use(Hookshot) and can_use(Iron_Boots) and logic_lens_jabu_mq))) and
-                        (can_use(Boomerang) or (can_use(Hookshot) and can_use(Iron_Boots)))))"
+                        (can_use(Boomerang) or (can_use(Hookshot) and can_use(Iron_Boots)))))",
+            "Jabu Jabus Belly MQ Basement Right Cow Wonderitem 1": "can_use(Slingshot)",
+            "Jabu Jabus Belly MQ Basement Right Cow Wonderitem 2": "can_use(Slingshot)",
+            "Jabu Jabus Belly MQ Basement Right Cow Wonderitem 3": "can_use(Slingshot)",
+            "Jabu Jabus Belly MQ Basement Left Cow Wonderitem 1": "can_use(Slingshot)",
+            "Jabu Jabus Belly MQ Basement Left Cow Wonderitem 2": "can_use(Slingshot)",
+            "Jabu Jabus Belly MQ Basement Left Cow Wonderitem 3": "can_use(Slingshot)"
             # Lens of Truth cannot be used underwater.
             # Adult's legs are too long to swim directly onto the Hookshot pillar.
         },
@@ -80,7 +89,13 @@
             "Jabu Jabus Belly MQ Falling Like Like Room Chest": "True",
             "Jabu Jabus Belly MQ Falling Like Like Room Pot 1": "True",
             "Jabu Jabus Belly MQ Falling Like Like Room Pot 2": "True",
-            "Jabu Jabus Belly MQ GS Tailpasaran Room": "Sticks or can_use(Dins_Fire)"
+            "Jabu Jabus Belly MQ GS Tailpasaran Room": "Sticks or can_use(Dins_Fire)",
+            "Jabu Jabus Belly MQ Falling Like-Like Room Right Cow Wonderitem 1": "True",
+            "Jabu Jabus Belly MQ Falling Like-Like Room Right Cow Wonderitem 2": "True",
+            "Jabu Jabus Belly MQ Falling Like-Like Room Right Cow Wonderitem 3": "True",
+            "Jabu Jabus Belly MQ Falling Like-Like Room Left Cow Wonderitem 1": "True",
+            "Jabu Jabus Belly MQ Falling Like-Like Room Left Cow Wonderitem 2": "True",
+            "Jabu Jabus Belly MQ Falling Like-Like Room Left Cow Wonderitem 3": "True"
         },
         "exits": {
             "Jabu Jabus Belly Past Big Octo": "Sticks or (can_use(Dins_Fire) and Kokiri_Sword)"
@@ -93,7 +108,9 @@
             "Jabu Jabus Belly Floor Lowered": "True"
         },
         "locations": {
-            "Jabu Jabus Belly MQ Cow": "can_play(Eponas_Song)"
+            "Jabu Jabus Belly MQ Cow": "can_play(Eponas_Song)",
+            "Jabu Jabus Belly MQ After Big Octo Cow Wonderitem": "True",
+            "Jabu Jabus Belly MQ Wiggler Platforms Cow Wonderitem": "True"
         }
     },
     {
@@ -115,6 +132,9 @@
             "Jabu Jabus Belly MQ Near Boss Chest": "can_use(Slingshot)",
             "Jabu Jabus Belly MQ GS Near Boss": "
                 can_use(Boomerang) or (logic_jabu_near_boss_ranged and can_use(Hookshot))",
+            "Jabu Jabus Belly MQ Before Boss Right Cow Wonderitem 1": "can_use(Slingshot)",
+            "Jabu Jabus Belly MQ Before Boss Right Cow Wonderitem 2": "can_use(Slingshot)",
+            "Jabu Jabus Belly MQ Before Boss Left Cow Wonderitem": "can_use(Slingshot)",
             "Fairy Pot": "has_bottle"
         },
         "exits": {

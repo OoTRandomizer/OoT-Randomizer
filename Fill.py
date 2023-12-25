@@ -377,7 +377,7 @@ def fill_ownworld_restrictive(worlds: list[World], search: Search, locations: li
                 continue
             break
         else:
-            raise FillError('Unable to place %s items in world %d' % (description, (world.id+1)))
+            raise FillError(f'Unable to place {description} items in world {world.id + 1}')
 
 
 # Places items in the itempool into locations.
@@ -490,7 +490,7 @@ def fill_restrictive(worlds: list[World], base_search: Search, locations: list[L
                 continue
             else:
                 # we expect all items to be placed
-                raise FillError('Game unbeatable: No more spots to place %s [World %d] from %d locations (%d total); %d other items left to place, plus %d skipped' % (item_to_place, item_to_place.world.id + 1, len(l2cations), len(locations), len(itempool), len(unplaced_items)))
+                raise FillError(f'Game unbeatable: No more spots to place {item_to_place} [World {item_to_place.world.id + 1}] from {len(l2cations)} locations ({len(locations)} total); {len(itempool)} other items left to place, plus {len(unplaced_items)} skipped')
 
         # Place the item in the world and continue
         spot_to_fill.world.push_item(spot_to_fill, item_to_place)
@@ -501,9 +501,9 @@ def fill_restrictive(worlds: list[World], base_search: Search, locations: list[L
 
     # assert that the specified number of items were placed
     if count > 0:
-        raise FillError('Could not place the specified number of item. %d remaining to be placed.' % count)
+        raise FillError(f'Could not place the specified number of item. {count} remaining to be placed.')
     if count < 0 < len(itempool):
-        raise FillError('Could not place all the items. %d remaining to be placed.' % len(itempool))
+        raise FillError(f'Could not place all the items. {len(itempool)} remaining to be placed.')
     # re-add unplaced items that were skipped
     itempool.extend(unplaced_items)
 

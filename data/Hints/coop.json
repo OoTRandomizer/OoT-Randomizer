@@ -1,0 +1,81 @@
+{
+    "name":                  "coop",
+    "gui_name":              "Co-op",
+    "description":           "Tournament hints used for Season 3 Co-op Tournament Races.",
+    "add_locations": [
+        { "location": "Deku Theater Skull Mask", "types": ["always"] },
+        { "location": "Sheik in Kakariko", "types": ["always"] },
+        { "location": "Kak 30 Gold Skulltula Reward", "types": ["always"] },
+        { "location": "DMC Deku Scrub", "types": ["always"] }
+    ],
+    "remove_locations": [
+        { "location": "Deku Theater Rewards", "types": ["dual", "dual_always"] },
+        { "location": "ZR Frogs Rewards", "types": ["dual", "dual_always"] },
+        { "location": "LH Adult Bean Destination Checks", "types": ["dual"] },
+        { "location": "GV Pieces of Heart Ledges", "types": ["dual"] },
+        { "location": "Graveyard Dampe Race Rewards", "types": ["dual"] },
+        { "location": "Fire Temple Lower Loop", "types": ["dual"] },
+        { "location": "Water Temple River Loop Checks", "types": ["dual"] },
+        { "location": "Spirit Temple Child Top", "types": ["dual"] },
+        { "location": "Spirit Temple Adult Lower", "types": ["dual"] },
+        { "location": "Water Temple North Basement Checks", "types": ["dual"] },
+        { "location": "Shadow Temple Invisible Blades Chests", "types": ["dual"] },
+        { "location": "Shadow Temple Spike Walls Room", "types": ["dual"] },
+        { "location": "Shadow Temple Single Pot Room", "types": ["dual"] },
+        { "location": "Bottom of the Well Inner Rooms GS", "types": ["dual"] },
+        { "location": "Ganons Castle Spirit Trial Chests", "types": ["dual"] },
+        { "location": "Graveyard Royal Family Tomb Contents", "types": ["dual"] },
+        { "location": "Dodongos Cavern Upper Business Scrubs", "types": ["dual"] },
+        { "location": "Kak Anju as Child", "types": ["sometimes"] },
+        { "location": "Graveyard Royal Familys Tomb Chest", "types": ["sometimes"] },
+        { "location": "Song from Royal Familys Tomb", "types": ["sometimes"] },
+        { "location": "Sheik in Forest", "types": ["sometimes"] },
+        { "location": "Sheik in Crater", "types": ["sometimes"] },
+        { "location": "Ice Cavern Iron Boots Chest", "types": ["sometimes"] },
+        { "location": "GF HBA 1500 Points", "types": ["sometimes"] }
+    ],
+    "add_items": [
+        { "item": "Light Arrows", "types": ["named-item"] }
+    ],
+    "remove_items": [
+        { "item": "Zeldas Lullaby", "types": ["goal"] }
+    ],
+    "disabled": [
+        "HF (Cow Grotto)",
+        "HC (Storms Grotto)",
+        "HF (Near Market Grotto)",
+        "HF (Southeast Grotto)",
+        "HF (Open Grotto)",
+        "Kak (Open Grotto)",
+        "ZR (Open Grotto)",
+        "KF (Storms Grotto)",
+        "LW (Near Shortcuts Grotto)",
+        "DMT (Storms Grotto)",
+        "DMC (Upper Grotto)"
+    ],
+    "dungeons_woth_limit":   2,
+    "dungeons_barren_limit": 1,
+    "named_items_required":  true,
+    "vague_named_items":     false,
+    "use_default_goals":     true,
+    "distribution":          {
+        "trial":            {"order": 1, "weight": 0.0, "fixed":   0, "copies": 2},
+        "entrance_always":  {"order": 2, "weight": 0.0, "fixed":   0, "copies": 2},
+        "dual_always":      {"order": 3, "weight": 0.0, "fixed":   0, "copies": 2},
+        "always":           {"order": 4, "weight": 0.0, "fixed":   0, "copies": 2},
+        "named-item":       {"order": 5, "weight": 0.0, "fixed":   1, "copies": 1},
+        "sometimes":        {"order": 6, "weight": 0.0, "fixed":   6, "copies": 2},
+        "dual":             {"order": 7, "weight": 0.0, "fixed":   1, "copies": 2},
+        "junk":             {"order": 8, "weight": 0.0, "fixed":   0, "copies": 1},
+        "goal":             {"order": 0, "weight": 0.0, "fixed":   0, "copies": 2},
+        "barren":           {"order": 0, "weight": 0.0, "fixed":   0, "copies": 2},
+        "entrance":         {"order": 0, "weight": 0.0, "fixed":   0, "copies": 2},
+        "random":           {"order": 0, "weight": 9.0, "fixed":   0, "copies": 2},
+        "item":             {"order": 0, "weight": 0.0, "fixed":   0, "copies": 2},
+        "song":             {"order": 0, "weight": 0.0, "fixed":   0, "copies": 2},
+        "overworld":        {"order": 0, "weight": 0.0, "fixed":   0, "copies": 2},
+        "dungeon":          {"order": 0, "weight": 0.0, "fixed":   0, "copies": 2},
+        "woth":             {"order": 0, "weight": 0.0, "fixed":   0, "copies": 2},
+        "important_check":  {"order": 0, "weight": 0.0, "fixed":   0, "copies": 0}
+    }
+}

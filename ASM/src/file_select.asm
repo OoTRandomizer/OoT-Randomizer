@@ -133,4 +133,3 @@ move_file_3:
     sh      t1, 0x00(t0)
     jr      ra
     lh      t3, 0x4A2E(a2)
-

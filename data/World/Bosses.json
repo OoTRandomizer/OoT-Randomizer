@@ -5,7 +5,7 @@
     {
         "region_name": "Queen Gohma Boss Room",
         "scene": "Deku Tree Boss",
-        "is_boss_room": "True",
+        "is_boss_room": true,
         "events": {
             "Defeat Queen Gohma": "(Nuts or can_use(Slingshot)) and can_jumpslash"
         },
@@ -21,7 +21,7 @@
     {
         "region_name": "King Dodongo Boss Room",
         "scene": "Dodongos Cavern Boss",
-        "is_boss_room": "True",
+        "is_boss_room": true,
         "events": {
             "Defeat King Dodongo": "
                 ((can_use(Megaton_Hammer) and logic_dc_hammer_floor) or
@@ -41,7 +41,7 @@
     {
         "region_name": "Barinade Boss Room",
         "scene": "Jabu Jabus Belly Boss",
-        "is_boss_room": "True",
+        "is_boss_room": true,
         "events": {
             "Defeat Barinade": "can_use(Boomerang) and (Sticks or Kokiri_Sword)"
         },
@@ -63,7 +63,7 @@
     {
         "region_name": "Phantom Ganon Boss Room",
         "scene": "Forest Temple Boss",
-        "is_boss_room": "True",
+        "is_boss_room": true,
         "events": {
             "Defeat Phantom Ganon": "
                 can_use(Hookshot) or can_use(Bow) or (can_use(Slingshot) and Kokiri_Sword)"
@@ -80,7 +80,7 @@
     {
         "region_name": "Volvagia Boss Room",
         "scene": "Fire Temple Boss",
-        "is_boss_room": "True",
+        "is_boss_room": true,
         "events": {
             "Defeat Volvagia": "can_use(Goron_Tunic) and can_use(Megaton_Hammer)"
         },
@@ -96,7 +96,7 @@
     {
         "region_name": "Morpha Boss Room",
         "scene": "Water Temple Boss",
-        "is_boss_room": "True",
+        "is_boss_room": true,
         "events": {
             "Defeat Morpha": "
                 can_use(Hookshot) or (logic_water_morpha and (is_adult or Kokiri_Sword))",
@@ -114,7 +114,7 @@
     {
         "region_name": "Bongo Bongo Boss Room",
         "scene": "Shadow Temple Boss",
-        "is_boss_room": "True",
+        "is_boss_room": true,
         "events": {
             "Defeat Bongo Bongo": "
                 (Kokiri_Sword or is_adult) and
@@ -133,7 +133,7 @@
     {
         "region_name": "Twinrova Boss Room",
         "scene": "Spirit Temple Boss",
-        "is_boss_room": "True",
+        "is_boss_room": true,
         "events": {
             "Defeat Twinrova": "can_use(Mirror_Shield)"
         },

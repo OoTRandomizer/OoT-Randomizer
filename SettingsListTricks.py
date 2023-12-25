@@ -1658,6 +1658,14 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     "Gerudo Training Ground Left Side Ceiling Silver Rupee
                     without Hookshot" is also enabled.
                     '''},
+    'Gerudo Training Ground Eye Statue Room Wonderitem with Jump Slash': {
+        'name'    : 'logic_gtg_eye_statue_wonderitem',
+        'tags'    : ("Gerudo Training Ground", "Gerudo Training Ground MQ", "Wonderitems", "Master Quest", "Vanilla Dungeons", "Adult",),
+        'tooltip' : '''\
+                    The wonderitem on top of the eye statue can be reached
+                    with a precise jump slash.
+                    '''
+    },
     'Gerudo Training Ground MQ Central Maze Right to Dinolfos Room with Hookshot': {
         'name'    : 'logic_gtg_mq_maze_right',
         'tags'    : ("Gerudo Training Ground MQ", "Silver Rupees", "Master Quest", "Adult",),

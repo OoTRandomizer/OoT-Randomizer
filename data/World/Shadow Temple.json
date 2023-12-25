@@ -165,7 +165,8 @@
             "Shadow Temple Invisible Floormaster Pot 1": "True",
             "Shadow Temple Invisible Floormaster Pot 2": "True",
             "Shadow Temple Spike Walls Pot": "True",
-            "Shadow Temple GS Triple Giant Pot": "True"
+            "Shadow Temple GS Triple Giant Pot": "True",
+            "Shadow Temple 3 Spinning Pots Wonderitem": "can_use(Bow)"
         },
         "exits": {
             "Shadow Temple 3 Spinning Pots Rupees": "

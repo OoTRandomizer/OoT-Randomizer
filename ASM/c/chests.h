@@ -12,7 +12,7 @@ extern uint32_t CHEST_LENS_ONLY;
 
 struct EnBox;
 
-typedef void (*EnBoxActionFunc)(struct EnBox *, z64_game_t *);
+typedef void (*EnBoxActionFunc)(struct EnBox*, z64_game_t*);
 
 typedef struct EnBox
 {
@@ -41,9 +41,9 @@ typedef struct Chest
     /* 0x01ED */ uint8_t color; // added for rando
 } Chest;                        // size = 0x01EE
 
-void get_chest_override(z64_actor_t *actor);
-void draw_chest(z64_game_t *game, int32_t part, void *unk, void *unk2, z64_actor_t *actor, Gfx **opa_ptr);
-_Bool should_draw_forest_hallway_chest(z64_actor_t *actor, z64_game_t *game);
+void get_chest_override(z64_actor_t* actor);
+void draw_chest(z64_game_t* game, int32_t part, void* unk, void* unk2, z64_actor_t* actor, Gfx** opa_ptr);
+_Bool should_draw_forest_hallway_chest(z64_actor_t* actor, z64_game_t* game);
 void draw_forest_hallway_chest_base();
 void draw_forest_hallway_chest_lid();
 

@@ -317,7 +317,7 @@ KEYSANITY_MESSAGES: list[tuple[int, str]] = [
     (0x00A5, "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09"),
     (0x00A6, "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Spirit Temple\x05\x40!\x09"),
     (0x00A9, "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09"),
-    (0x913E, "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x44Treasure Box Shop\x05\x40!\x09"),
+    (0x00F3, "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x44Treasure Box Shop\x05\x40!\x09"),
     # 0x9019 and 0x901A used above
     # Silver Rupee Messages with count.
     (0x901B, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01staircase room in \x05\x41Dodongo's Cavern\x05\x40!\x01You have found \x05\x41\xF0\x00\x05\x40 so far!\x09"),
@@ -458,7 +458,6 @@ i = 0x9101
 #       0x9101 - Small key messages for the first one collected
 #       0x9112 - Small key messages containing the count
 #       0x9123 - Small key messages for collecting more than enough
-#       0x91
 
 for dungeon_name in dungeon_names:
     if dungeon_name is not None:
@@ -1172,7 +1171,7 @@ def read_messages(rom: Rom) -> list[Message]:
         if id == 0xFFFF:
             break # this marks the end of the table
 
-        messages.append( Message.from_rom(rom, index) )
+        messages.append(Message.from_rom(rom, index))
 
         index += 1
         table_offset += 8

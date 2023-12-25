@@ -65,9 +65,9 @@ function displayPythonErrorAndExit(notPython3: boolean = false) {
   setTimeout(() => {
 
     if (notPython3)
-      alert("The Python version used to run the GUI is not supported! Please ensure you have Python 3.6 or higher installed. You can specify the path to python using the 'python <path>' command line switch!");
+      alert("The Python version used to run the GUI is not supported! Please ensure you have Python 3.8 or higher installed. You can specify the path to python using the 'python <path>' command line switch!");
     else
-      alert("Please ensure you have Python 3.6 or higher installed before running the GUI. You can specify the path to python using the 'python <path>' command line switch!");
+      alert("Please ensure you have Python 3.8 or higher installed before running the GUI. You can specify the path to python using the 'python <path>' command line switch!");
 
     remote.app.quit();
   }, 500);

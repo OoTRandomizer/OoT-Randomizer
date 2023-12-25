@@ -4,12 +4,12 @@
 #include "textures.h"
 #include "obj_comb.h"
 
-#define GAMEPLAY_FIELD_KEEP_BEEHIVE_TEXTURE (uint8_t *)0x05008900
+#define GAMEPLAY_FIELD_KEEP_BEEHIVE_TEXTURE (uint8_t*)0x05008900
 
 extern uint16_t drop_collectible_override_flag;
 
 // Hack beehives to drop a collectible w / an extended flag, based on the grotto param
-void obj_comb_drop_collectible(z64_actor_t *actor, int16_t params) {
+void obj_comb_drop_collectible(z64_actor_t* actor, int16_t params) {
     // Check if we're in a grotto
     uint16_t flag = actor->rot_init.z;
     if (z64_game.scene_index == 0x3E) {
@@ -34,7 +34,7 @@ void obj_comb_drop_collectible(z64_actor_t *actor, int16_t params) {
     }
 }
 
-override_t get_beehive_override(z64_actor_t *actor, z64_game_t *game) {
+override_t get_beehive_override(z64_actor_t* actor, z64_game_t* game) {
     uint16_t flag = actor->rot_init.z;
     if (z64_game.scene_index == 0x3E) {
         // We're in a grotto so offset by 2x grotto id. The Rz flags for the grottos need to be set to 0/1 beforehand.
@@ -58,8 +58,8 @@ override_t get_beehive_override(z64_actor_t *actor, z64_game_t *game) {
     return (override_t) { 0 };
 }
 
-void ObjComb_Update(z64_actor_t *thisx, z64_game_t *game) {
-    ObjComb *this = (ObjComb *)thisx;
+void ObjComb_Update(z64_actor_t* thisx, z64_game_t* game) {
+    ObjComb* this = (ObjComb*)thisx;
     if (this->actor.dropFlag > 0) {
         this->actor.dropFlag --;
     }
@@ -77,14 +77,14 @@ void ObjComb_Update(z64_actor_t *thisx, z64_game_t *game) {
 
 /*
 // Left here if we ever want to do beehive textures.
-void ObjComb_Draw_Hack(z64_actor_t *this, z64_game_t *game) {
-    uint8_t *texture = GAMEPLAY_FIELD_KEEP_BEEHIVE_TEXTURE;
+void ObjComb_Draw_Hack(z64_actor_t* this, z64_game_t* game) {
+    uint8_t* texture = GAMEPLAY_FIELD_KEEP_BEEHIVE_TEXTURE;
 
     override_t override = get_beehive_override(this, game);
 
     if(override.key.all != 0) {
         uint16_t item_id = resolve_upgrades(override);
-        item_row_t *row = get_item_row(override.value.looks_like_item_id);
+        item_row_t* row = get_item_row(override.value.looks_like_item_id);
         if (row == NULL) {
             row = get_item_row(override.value.item_id);
         }
@@ -106,7 +106,7 @@ void ObjComb_Draw_Hack(z64_actor_t *this, z64_game_t *game) {
         }
     }
 
-    z64_gfx_t *gfx = game->common.gfx;
+    z64_gfx_t* gfx = game->common.gfx;
     gfx->poly_opa.d -= 2;
     gDPSetTextureImage(gfx->poly_opa.d, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, texture);
     gSPEndDisplayList(gfx->poly_opa.d + 1);

@@ -13,7 +13,7 @@ extern uint8_t CFG_RAINBOW_SWORD_OUTER_ENABLED;
 
 void update_sword_trail_colors()
 {
-    colorRGBA8_t *sword_trail_colors = (colorRGBA8_t*)0x80115DCE;
+    colorRGBA8_t* sword_trail_colors = (colorRGBA8_t*)0x80115DCE;
 
     if (CFG_RAINBOW_SWORD_INNER_ENABLED)
     {
@@ -41,14 +41,14 @@ extern uint8_t CFG_RAINBOW_BOOM_TRAIL_OUTER_ENABLED;
 
 void update_boomerang_trail_colors()
 {
-    z64_actor_t *boomerang = z64_link.boomerang_actor;
+    z64_actor_t* boomerang = z64_link.boomerang_actor;
     if (boomerang != NULL && boomerang->main_proc != NULL)
     {
         uint32_t effect_index = *((uint32_t*)(((uint32_t)boomerang) + 0x1C8));
 
         if (effect_index < 31)
         {
-            z64_trail_t *trail = ((z64_trail_t*)0x80115C3C) + effect_index - 3;
+            z64_trail_t* trail = ((z64_trail_t*)0x80115C3C) + effect_index - 3;
 
             if (CFG_RAINBOW_BOOM_TRAIL_INNER_ENABLED)
             {
@@ -98,7 +98,7 @@ void update_bombchu_trail_colors()
     colorRGB8_t rainbow_color_outer_start = get_rainbow_color(frames, BOMBCHU_CYCLE_FRAMES_OUTER);
     colorRGB8_t rainbow_color_outer_end = get_rainbow_color(frames + 2 * BOMBCHU_CYCLE_FRAMES_OUTER, BOMBCHU_CYCLE_FRAMES_OUTER);
 
-    z64_actor_t *explosive = z64_game.actor_list[ACTORTYPE_EXPLOSIVES].first;
+    z64_actor_t* explosive = z64_game.actor_list[ACTORTYPE_EXPLOSIVES].first;
     while (explosive != NULL)
     {
         if (explosive->main_proc != NULL && explosive->actor_id == 0xDA) // En_Bom_Chu
@@ -106,8 +106,8 @@ void update_bombchu_trail_colors()
             uint32_t effect_index_1 = *((uint32_t*)(((uint32_t)explosive) + 0x16C));
             uint32_t effect_index_2 = *((uint32_t*)(((uint32_t)explosive) + 0x170));
 
-            z64_trail_t *trail_1 = ((z64_trail_t*)0x80115C3C) + effect_index_1 - 3;
-            z64_trail_t *trail_2 = ((z64_trail_t*)0x80115C3C) + effect_index_2 - 3;
+            z64_trail_t* trail_1 = ((z64_trail_t*)0x80115C3C) + effect_index_1 - 3;
+            z64_trail_t* trail_2 = ((z64_trail_t*)0x80115C3C) + effect_index_2 - 3;
 
             if (CFG_RAINBOW_BOMBCHU_TRAIL_INNER_ENABLED)
             {
@@ -219,7 +219,7 @@ void update_navi_colors()
     colorRGB8_t color_inner = get_rainbow_color(frames, NAVI_CYCLE_FRAMES_INNER);
     colorRGB8_t color_outer = get_rainbow_color(frames, NAVI_CYCLE_FRAMES_OUTER);
 
-    navi_color_t *navi_ref_colors = (navi_color_t*)0x800E8214;
+    navi_color_t* navi_ref_colors = (navi_color_t*)0x800E8214;
     if (rainbow_inner_enabled)
         navi_ref_colors[z64_game.target_actor_type].inner.color = color_inner;
     if (rainbow_outer_enabled)
@@ -231,10 +231,10 @@ void update_navi_colors()
             z64_game.target_arr[i].color = color_inner;
     }
 
-    z64_actor_t *navi = z64_link.navi_actor;
+    z64_actor_t* navi = z64_link.navi_actor;
     if (navi != NULL && navi->main_proc != NULL)
     {
-        colorRGBAf_t *navi_colors = (colorRGBAf_t*)(((uint32_t)navi) + 0x234);
+        colorRGBAf_t* navi_colors = (colorRGBAf_t*)(((uint32_t)navi) + 0x234);
         if (rainbow_inner_enabled)
         {
             navi_colors[0].r = color_inner.r;

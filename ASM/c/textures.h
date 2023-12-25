@@ -50,7 +50,7 @@ typedef enum TextureId {
 #define PTMC_CONTENTS  1
 #define PTMC_UNCHECKED 2
 
-uint8_t *get_texture(TextureId textureID);
+uint8_t* get_texture(TextureId textureID);
 void init_textures();
 
 #endif

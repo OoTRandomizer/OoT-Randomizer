@@ -144,7 +144,7 @@ class ItemPoolRecord(Record):
         super().update(src_dict, update_all)
         if self.count < 0:
             raise ValueError("Count cannot be negative in a ItemPoolRecord.")
-        if self.type not in ['add', 'remove', 'set']:
+        if self.type not in ('add', 'remove', 'set'):
             raise ValueError("Type must be 'add', 'remove', or 'set' in a ItemPoolRecord.")
 
 
@@ -368,8 +368,8 @@ class WorldDistribution:
                     if major_hearts:
                         self.major_group += ['Heart Container', 'Piece of Heart', 'Piece of Heart (Treasure Chest Game)']
                     if self.distribution.settings.shuffle_smallkeys == 'keysanity':
-                        for dungeon in ['Bottom of the Well', 'Forest Temple', 'Fire Temple', 'Water Temple',
-                                        'Shadow Temple', 'Spirit Temple', 'Gerudo Training Ground', 'Ganons Castle']:
+                        for dungeon in ('Bottom of the Well', 'Forest Temple', 'Fire Temple', 'Water Temple',
+                                        'Shadow Temple', 'Spirit Temple', 'Gerudo Training Ground', 'Ganons Castle'):
                             if dungeon in self.distribution.settings.key_rings:
                                 self.major_group.append(f"Small Key Ring ({dungeon})")
                             else:
@@ -540,7 +540,7 @@ class WorldDistribution:
                 elif child_trade_matcher(item_name) and item_name not in world.settings.shuffle_child_trade:
                     remove_trade.append(item_name)
                     continue
-                elif child_trade_matcher(item_name) and world.settings.item_pool_value not in ['plentiful', 'ludicrous']:
+                elif child_trade_matcher(item_name) and world.settings.item_pool_value not in ('plentiful', 'ludicrous'):
                     self.item_pool[item_name].count = 1
                     continue
                 predicate = self.pattern_matcher(item_name)
@@ -554,14 +554,14 @@ class WorldDistribution:
                     for item in added_items:
                         if bottle_matcher(item):
                             bottles += 1
-                        elif adult_trade_matcher(item) and not (world.settings.item_pool_value in ['plentiful', 'ludicrous'] or world.settings.adult_trade_shuffle):
+                        elif adult_trade_matcher(item) and not (world.settings.item_pool_value in ('plentiful', 'ludicrous') or world.settings.adult_trade_shuffle):
                             self.pool_remove_item([pool], "#AdultTrade", 1)
                 else:
                     removed_items = self.pool_remove_item([pool], item_name, -add_count)
                     for item in removed_items:
                         if bottle_matcher(item):
                             bottles -= 1
-                        elif adult_trade_matcher(item) and not (world.settings.item_pool_value in ['plentiful', 'ludicrous'] or world.settings.adult_trade_shuffle):
+                        elif adult_trade_matcher(item) and not (world.settings.item_pool_value in ('plentiful', 'ludicrous') or world.settings.adult_trade_shuffle):
                             self.pool_add_item(pool, "#AdultTrade", 1)
 
         for item in remove_trade:
@@ -575,7 +575,7 @@ class WorldDistribution:
         for item_name, record in self.starting_items.items():
             if bottle_matcher(item_name):
                 self.pool_remove_item([pool], "#Bottle", record.count)
-            elif item_name in ['Pocket Egg', 'Pocket Cucco'] and world.settings.adult_trade_shuffle:
+            elif item_name in ('Pocket Egg', 'Pocket Cucco') and world.settings.adult_trade_shuffle:
                 try:
                     if 'Pocket Egg' in world.settings.adult_trade_start:
                         try:
@@ -592,7 +592,7 @@ class WorldDistribution:
                 self.pool_remove_item([pool], "#AdultTrade", record.count)
             elif item_name == 'Ice Arrows' and world.settings.blue_fire_arrows:
                 self.pool_remove_item([pool], "Blue Fire Arrows", record.count)
-            elif item_name in ['Weird Egg', 'Chicken'] and world.settings.shuffle_child_trade:
+            elif item_name in ('Weird Egg', 'Chicken') and world.settings.shuffle_child_trade:
                 try:
                     if 'Weird Egg' in world.settings.shuffle_child_trade:
                         self.pool_remove_item([pool], "Weird Egg", record.count)
@@ -892,11 +892,6 @@ class WorldDistribution:
             if record.item == '#Junk' and location.type == 'Song' and world.settings.shuffle_song_items == 'song' and not any(name in song_list and r.count for name, r in world.settings.starting_items.items()):
                 record.item = '#JunkSong'
 
-            adult_trade_matcher  = self.pattern_matcher("#AdultTrade")
-            if adult_trade_matcher(record.item) and not world.settings.adult_trade_shuffle and world.settings.adult_trade_start:
-                # Override the adult trade item used to control trade quest flags during patching
-                world.selected_adult_trade_item = record.item
-
             ignore_pools = None
             is_invert = self.pattern_matcher(record.item)('!')
             if is_invert and location.type != 'Song' and world.settings.shuffle_song_items == 'song':
@@ -955,30 +950,22 @@ class WorldDistribution:
                             self.item_pool[removed_item.name].count -= 1
                     item = ItemFactory([record.item], world=world)[0]
                 except KeyError:
-                    raise RuntimeError(
-                        'Too many shop buy items were added to world %d, and not enough shop buy items are available in the item pool to be removed.' % (
-                                    self.id + 1))
+                    raise RuntimeError(f'Too many shop buy items were added to world {self.id + 1}, and not enough shop buy items are available in the item pool to be removed.')
             elif record.item in item_groups['Bottle']:
                 try:
                     item = self.pool_replace_item(pool, "#Bottle", player_id, record.item, worlds)
                 except KeyError:
-                    raise RuntimeError(
-                        'Too many bottles were added to world %d, and not enough bottles are available in the item pool to be removed.' % (
-                                    self.id + 1))
+                    raise RuntimeError(f'Too many bottles were added to world {self.id + 1}, and not enough bottles are available in the item pool to be removed.')
             elif record.item in item_groups['AdultTrade'] and not world.settings.adult_trade_shuffle:
                 try:
                     item = self.pool_replace_item(pool, "#AdultTrade", player_id, record.item, worlds)
                 except KeyError:
-                    raise RuntimeError(
-                        'Too many adult trade items were added to world %d, and not enough adult trade items are available in the item pool to be removed.' % (
-                                    self.id + 1))
+                    raise RuntimeError(f'Too many adult trade items were added to world {self.id + 1}, and not enough adult trade items are available in the item pool to be removed.')
             elif record.item in item_groups['ChildTrade'] and record.item not in world.settings.shuffle_child_trade:
                 try:
                     item = self.pool_replace_item(pool, "#ChildTrade", player_id, record.item, worlds)
                 except KeyError:
-                    raise RuntimeError(
-                        'Too many child trade items were added to world %d, and not enough child trade items are available in the item pool to be removed.' % (
-                                    self.id + 1))
+                    raise RuntimeError(f'Too many child trade items were added to world {self.id + 1}, and not enough child trade items are available in the item pool to be removed.')
             elif record.item == "Ice Arrows" and worlds[0].settings.blue_fire_arrows:
                 raise ValueError('Cannot add Ice Arrows to item pool with Blue Fire Arrows enabled')
             elif record.item == "Blue Fire Arrows" and not worlds[0].settings.blue_fire_arrows:
@@ -987,19 +974,16 @@ class WorldDistribution:
                 try:
                     item = self.pool_replace_item(item_pools, "#Junk", player_id, record.item, worlds)
                 except KeyError:
-                    raise RuntimeError(
-                        'Too many items were added to world %d, and not enough junk is available to be removed.' % (self.id + 1))
+                    raise RuntimeError(f'Too many items were added to world {self.id + 1}, and not enough junk is available to be removed.')
                 except IndexError:
-                    raise RuntimeError(
-                        'Unknown item %r being placed on location %s in world %d. %s' % (record.item, location, self.id + 1, build_close_match(record.item, 'item')))
+                    raise RuntimeError(f'Unknown item {record.item!r} being placed on location {location} in world {self.id + 1}. {build_close_match(record.item, "item")}')
             # Update item_pool after item is replaced
             if item.name not in self.item_pool:
                 self.item_pool[item.name] = ItemPoolRecord()
             else:
                 self.item_pool[item.name].count += 1
         except IndexError:
-            raise RuntimeError(
-                'Unknown item %r being placed on location %s in world %d. %s' % (record.item, location, self.id + 1, build_close_match(record.item, 'item')))
+            raise RuntimeError(f'Unknown item {record.item!r} being placed on location {location} in world {self.id + 1}. {build_close_match(record.item, "item")}')
         # Ensure pool copy is persisted to real pool
         for i, new_pool in enumerate(pool):
             if new_pool:
@@ -1191,7 +1175,7 @@ class Distribution:
                     or update_dict['_settings'].get('starting_songs', None)):
                 update_dict['_settings']['starting_items'] = {}
 
-        self.settings.settings_dict.update(update_dict['_settings'])
+        self.settings.update(update_dict['_settings'])
         if 'settings' in self.src_dict:
             validate_settings(self.src_dict['settings'])
             self.src_dict['_settings'] = self.src_dict['settings']
@@ -1288,7 +1272,7 @@ class Distribution:
                 else:
                     if item.item_name == 'Rutos Letter' and self.settings.zora_fountain != 'open':
                         data['Rutos Letter'].count += 1
-                    elif item.item_name in ['Bottle', 'Rutos Letter']:
+                    elif item.item_name in ('Bottle', 'Rutos Letter'):
                         data['Bottle'].count += 1
                     else:
                         raise KeyError("invalid special item: {}".format(item.item_name))

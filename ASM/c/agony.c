@@ -70,7 +70,7 @@ void draw_agony_graphic(int hoffset, int voffset, unsigned char alpha) {
         alpha = maxalpha;
     }
 
-    z64_disp_buf_t *db = &(z64_ctxt.gfx->overlay);
+    z64_disp_buf_t* db = &(z64_ctxt.gfx->overlay);
     gSPDisplayList(db->p++, &setup_db);
     gDPPipeSync(db->p++);
     gDPSetCombineMode(db->p++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
@@ -97,7 +97,7 @@ void draw_agony() {
                 if (scene_index != dungeons[i].index) continue;
 
                 dungeon_entry_t dungeon = dungeons[i];
-                uint8_t *silver_rupee_puzzles = CFG_DUNGEON_IS_MQ[dungeon.index] ? dungeon.silver_rupee_puzzles_mq : dungeon.silver_rupee_puzzles_vanilla;
+                uint8_t* silver_rupee_puzzles = CFG_DUNGEON_IS_MQ[dungeon.index] ? dungeon.silver_rupee_puzzles_mq : dungeon.silver_rupee_puzzles_vanilla;
                 for (int puzzle_idx = 0; puzzle_idx < 4; puzzle_idx++) {
                     if (silver_rupee_puzzles[puzzle_idx] == (uint8_t) -1) break;
                     silver_rupee_data_t silver_rupee_info = silver_rupee_vars[silver_rupee_puzzles[puzzle_idx]][CFG_DUNGEON_IS_MQ[dungeon.index]];
@@ -112,4 +112,3 @@ void draw_agony() {
         draw_agony_graphic(hoffset, voffset, alpha);
     }
 }
-

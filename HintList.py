@@ -224,7 +224,7 @@ conditional_always: dict[str, Callable[[World], bool]] = {
     'Kak 40 Gold Skulltula Reward': lambda world: tokens_required_by_settings(world) < 40 and '40_skulltulas' not in world.settings.misc_hints,
     'Kak 50 Gold Skulltula Reward': lambda world: tokens_required_by_settings(world) < 50 and '50_skulltulas' not in world.settings.misc_hints,
     'ZR Frogs Ocarina Game':        lambda world: 'frogs2' not in world.settings.misc_hints,
-    'LH Loach Fishing':             lambda world: world.settings.shuffle_loach_reward=='vanilla',
+    'LH Loach Fishing':             lambda world: world.settings.shuffle_loach_reward == 'vanilla',
 }
 
 # Entrance hints required under certain settings
@@ -253,17 +253,17 @@ conditional_sometimes: dict[str, Callable[[World], bool]] = {
     'ZD King Zora Thawed':                      lambda world: not world.settings.adult_trade_shuffle or 'Eyeball Frog' not in world.settings.adult_trade_start,
 
     # Conditional dual hints
-    'GV Pieces of Heart Ledges':                lambda world: not world.settings.shuffle_cows and world.settings.tokensanity not in ['overworld', 'all'],
+    'GV Pieces of Heart Ledges':                lambda world: not world.settings.shuffle_cows and world.settings.tokensanity not in ('overworld', 'all'),
     'LH Adult Bean Destination Checks':         lambda world: world.settings.shuffle_interior_entrances == 'off',
     'Castle Fairy Checks':                      lambda world: world.settings.shuffle_interior_entrances == 'off',
     'King Zora Items':                          lambda world: world.settings.adult_trade_shuffle and 'Eyeball Frog' in world.settings.adult_trade_start,
 
-    'Fire Temple Lower Loop':                   lambda world: world.settings.tokensanity not in ['dungeons', 'all'],
-    'Water Temple River Loop Chests':           lambda world: world.settings.tokensanity not in ['dungeons', 'all'],
-    'Water Temple MQ Lower Checks':             lambda world: world.settings.tokensanity not in ['dungeons', 'all'],
-    'Spirit Temple Child Lower':                lambda world: world.settings.tokensanity not in ['dungeons', 'all'],
-    'Spirit Temple Adult Lower':                lambda world: world.settings.tokensanity not in ['dungeons', 'all'],
-    'Shadow Temple Invisible Blades Chests':    lambda world: world.settings.tokensanity not in ['dungeons', 'all'],
+    'Fire Temple Lower Loop':                   lambda world: world.settings.tokensanity not in ('dungeons', 'all'),
+    'Water Temple River Loop Chests':           lambda world: world.settings.tokensanity not in ('dungeons', 'all'),
+    'Water Temple MQ Lower Checks':             lambda world: world.settings.tokensanity not in ('dungeons', 'all'),
+    'Spirit Temple Child Lower':                lambda world: world.settings.tokensanity not in ('dungeons', 'all'),
+    'Spirit Temple Adult Lower':                lambda world: world.settings.tokensanity not in ('dungeons', 'all'),
+    'Shadow Temple Invisible Blades Chests':    lambda world: world.settings.tokensanity not in ('dungeons', 'all'),
 
     # Conditional entrance hints
     'Ganons Castle Grounds -> Ganons Castle Lobby': lambda world: (world.settings.bridge != 'open'

@@ -4,11 +4,11 @@
 #include "item_draw_table.h"
 #include "sys_matrix.h"
 
-typedef Gfx *(*append_setup_dl_fn)(Gfx *gfx, uint32_t dl_index);
-typedef void (*append_setup_dl_26_to_opa_fn)(z64_gfx_t *gfx);
-typedef void (*append_setup_dl_25_to_opa_fn)(z64_gfx_t *gfx);
-typedef void (*append_setup_dl_25_to_xlu_fn)(z64_gfx_t *gfx);
-typedef Gfx *(*gen_double_tile_fn)(z64_gfx_t *gfx, int32_t tile1, uint32_t x1, uint32_t y1, int32_t width1, int32_t height1,
+typedef Gfx* (*append_setup_dl_fn)(Gfx* gfx, uint32_t dl_index);
+typedef void (*append_setup_dl_26_to_opa_fn)(z64_gfx_t* gfx);
+typedef void (*append_setup_dl_25_to_opa_fn)(z64_gfx_t* gfx);
+typedef void (*append_setup_dl_25_to_xlu_fn)(z64_gfx_t* gfx);
+typedef Gfx* (*gen_double_tile_fn)(z64_gfx_t* gfx, int32_t tile1, uint32_t x1, uint32_t y1, int32_t width1, int32_t height1,
                                 int32_t tile2, uint32_t x2, uint32_t y2, int32_t width2, int32_t height2);
 
 #define append_setup_dl ((append_setup_dl_fn)0x8007DFBC)
@@ -17,16 +17,16 @@ typedef Gfx *(*gen_double_tile_fn)(z64_gfx_t *gfx, int32_t tile1, uint32_t x1, u
 #define append_setup_dl_25_to_xlu ((append_setup_dl_25_to_xlu_fn)0x8007E2C0)
 #define gen_double_tile ((gen_double_tile_fn)0x8007EB84)
 
-void draw_gi_bombchu_and_masks(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_bombchu_and_masks(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_26_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
     gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[0].dlist);
 }
 
-void draw_gi_eggs_and_medallions(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_eggs_and_medallions(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_26_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -34,16 +34,16 @@ void draw_gi_eggs_and_medallions(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[1].dlist);
 }
 
-void draw_gi_sold_out(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_sold_out(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     gfx->poly_xlu.p = append_setup_dl(gfx->poly_xlu.p, 5);
     gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[0].dlist);
 }
 
-void draw_gi_compass(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_compass(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -54,16 +54,16 @@ void draw_gi_compass(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[1].dlist);
 }
 
-void draw_gi_various_opa0(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_various_opa0(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
     gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[0].dlist);
 }
 
-void draw_gi_various_opa1023(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_various_opa1023(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -73,8 +73,8 @@ void draw_gi_various_opa1023(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[3].dlist);
 }
 
-void draw_gi_wallets(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_wallets(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -88,9 +88,8 @@ void draw_gi_wallets(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[7].dlist);
 }
 
-
-void draw_gi_silver_rupee_pouch(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_silver_rupee_pouch(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -114,8 +113,8 @@ void draw_gi_silver_rupee_pouch(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[7].dlist);  // gGiWalletRupeeInnerDL
 }
 
-void draw_gi_various_xlu01(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_various_xlu01(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_xlu(gfx);
     gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -123,8 +122,8 @@ void draw_gi_various_xlu01(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[1].dlist);
 }
 
-void draw_gi_various_opa0_xlu1(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_various_opa0_xlu1(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -135,8 +134,8 @@ void draw_gi_various_opa0_xlu1(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[1].dlist);
 }
 
-void draw_rutos_letter(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_rutos_letter(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     // Turn the model sideways
     rotate_Z_sys_matrix(1.57f, 1);
@@ -150,9 +149,8 @@ void draw_rutos_letter(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[1].dlist);
 }
 
-
-void draw_gi_coins_and_cuccos(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_coins_and_cuccos(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -164,8 +162,8 @@ void draw_gi_coins_and_cuccos(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[2].dlist);
 }
 
-void draw_gi_magic_arrows(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_magic_arrows(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -177,8 +175,8 @@ void draw_gi_magic_arrows(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[2].dlist);
 }
 
-void draw_gi_various_opa10_xlu32(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_various_opa10_xlu32(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -191,9 +189,8 @@ void draw_gi_various_opa10_xlu32(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[2].dlist);
 }
 
-
-void draw_gi_bullet_bags(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_bullet_bags(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -207,8 +204,8 @@ void draw_gi_bullet_bags(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[4].dlist);
 }
 
-void draw_gi_small_rupees(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_small_rupees(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     scale_sys_matrix(0.7f, 0.7f, 0.7f, 1);
 
@@ -223,8 +220,8 @@ void draw_gi_small_rupees(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[2].dlist);
 }
 
-void draw_gi_goron_swords(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_goron_swords(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPSegment(gfx->poly_opa.p++, 0x08,
@@ -235,8 +232,8 @@ void draw_gi_goron_swords(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[0].dlist);
 }
 
-void draw_gi_deku_nut(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_deku_nut(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPSegment(gfx->poly_opa.p++, 0x08,
@@ -247,8 +244,8 @@ void draw_gi_deku_nut(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[0].dlist);
 }
 
-void draw_gi_recovery_heart(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_recovery_heart(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_xlu(gfx);
     gSPSegment(gfx->poly_xlu.p++, 0x08,
@@ -259,8 +256,8 @@ void draw_gi_recovery_heart(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[0].dlist);
 }
 
-void draw_gi_fish_bottle(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_fish_bottle(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_xlu(gfx);
     gSPSegment(gfx->poly_xlu.p++, 0x08,
@@ -271,8 +268,8 @@ void draw_gi_fish_bottle(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[0].dlist);
 }
 
-void draw_gi_magic_spells(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_magic_spells(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_xlu(gfx);
     gSPSegment(gfx->poly_xlu.p++, 0x08,
@@ -285,8 +282,8 @@ void draw_gi_magic_spells(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[2].dlist);
 }
 
-void draw_gi_scales(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_scales(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_xlu(gfx);
     gSPSegment(gfx->poly_xlu.p++, 0x08,
@@ -300,8 +297,8 @@ void draw_gi_scales(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[0].dlist);
 }
 
-void draw_gi_potions(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_potions(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPSegment(gfx->poly_opa.p++, 0x08,
@@ -320,8 +317,8 @@ void draw_gi_potions(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[5].dlist);
 }
 
-void draw_gi_mirror_shield(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_mirror_shield(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPSegment(gfx->poly_opa.p++, 0x08,
@@ -336,8 +333,8 @@ void draw_gi_mirror_shield(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[1].dlist);
 }
 
-void draw_gi_gs_token(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_gs_token(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -352,8 +349,8 @@ void draw_gi_gs_token(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[1].dlist);
 }
 
-void draw_gi_blue_fire_candle(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_blue_fire_candle(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -372,8 +369,8 @@ void draw_gi_blue_fire_candle(z64_game_t *game, uint32_t draw_id) {
     pop_sys_matrix();
 }
 
-void draw_gi_fairy_lantern(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_fairy_lantern(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -393,8 +390,8 @@ void draw_gi_fairy_lantern(z64_game_t *game, uint32_t draw_id) {
     pop_sys_matrix();
 }
 
-void draw_gi_poe_bottles(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_poe_bottles(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -415,8 +412,8 @@ void draw_gi_poe_bottles(z64_game_t *game, uint32_t draw_id) {
     pop_sys_matrix();
 }
 
-void draw_gi_song_notes(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_song_notes(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
     colorRGBA8_t env_color = item_draw_table[draw_id].args[1].color;
 
     if (item_draw_table[draw_id].args[2].dlist) {
@@ -429,8 +426,8 @@ void draw_gi_song_notes(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[0].dlist);
 }
 
-void draw_gi_small_keys(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_small_keys(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
     colorRGBA8_t prim_color = item_draw_table[draw_id].args[1].color;
     colorRGBA8_t env_color = item_draw_table[draw_id].args[2].color;
 
@@ -442,8 +439,8 @@ void draw_gi_small_keys(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[0].dlist);
 }
 
-void draw_gi_shrink_keys(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_shrink_keys(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
     colorRGBA8_t prim_color = item_draw_table[draw_id].args[1].color;
     colorRGBA8_t env_color = item_draw_table[draw_id].args[2].color;
 
@@ -458,8 +455,8 @@ void draw_gi_shrink_keys(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[0].dlist);
 }
 
-void draw_gi_boss_keys(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_boss_keys(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
 
     colorRGBA8_t prim_color = item_draw_table[draw_id].args[2].color;
     colorRGBA8_t env_color = item_draw_table[draw_id].args[3].color;
@@ -483,9 +480,10 @@ void draw_gi_boss_keys(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[1].dlist);
 
 }
+
 // Gem DL First
-void draw_gi_boss_altered(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_boss_altered(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
     // extract gem colors
     colorRGBA8_t prim_color = item_draw_table[draw_id].args[2].color;
     colorRGBA8_t env_color = item_draw_table[draw_id].args[3].color;
@@ -508,9 +506,10 @@ void draw_gi_boss_altered(z64_game_t *game, uint32_t draw_id) {
     gDPSetEnvColor(gfx->poly_xlu.p++, env_color.r, env_color.g, env_color.b, env_color.a);
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[0].dlist);
 }
+
 // Key DL First
-void draw_gi_boss_altflip(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_boss_altflip(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
     // extract gem colors
     colorRGBA8_t prim_color = item_draw_table[draw_id].args[2].color;
     colorRGBA8_t env_color = item_draw_table[draw_id].args[3].color;
@@ -534,8 +533,8 @@ void draw_gi_boss_altflip(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[1].dlist);
 }
 
-void draw_gi_chubag(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_chubag(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
     // Band
     colorRGBA8_t prim_color_band = item_draw_table[draw_id].args[5].color;
     colorRGBA8_t env_color_band = item_draw_table[draw_id].args[6].color;
@@ -560,8 +559,8 @@ void draw_gi_chubag(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[2].dlist);
 }
 
-void draw_gi_a_button(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_a_button(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
     colorRGBA8_t prim_color = item_draw_table[draw_id].args[1].color;
     if (CFG_CORRECT_MODEL_COLORS) {
         prim_color.r = CFG_A_BUTTON_COLOR.r;
@@ -575,8 +574,8 @@ void draw_gi_a_button(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[0].dlist);
 }
 
-void draw_gi_c_button_vertical(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_c_button_vertical(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
     colorRGBA8_t prim_color = item_draw_table[draw_id].args[1].color;
     if (CFG_CORRECT_MODEL_COLORS) {
         prim_color.r = CFG_C_BUTTON_COLOR.r;
@@ -592,8 +591,8 @@ void draw_gi_c_button_vertical(z64_game_t *game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[0].dlist);
 }
 
-void draw_gi_c_button_horizontal(z64_game_t *game, uint32_t draw_id) {
-    z64_gfx_t *gfx = game->common.gfx;
+void draw_gi_c_button_horizontal(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t* gfx = game->common.gfx;
     colorRGBA8_t prim_color = item_draw_table[draw_id].args[1].color;
     if (CFG_CORRECT_MODEL_COLORS) {
         prim_color.r = CFG_C_BUTTON_COLOR.r;

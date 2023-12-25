@@ -7,8 +7,7 @@ extern uint8_t FONT_TEXTURE[];
 extern uint8_t DPAD_TEXTURE[];
 extern uint8_t TRIFORCE_ICON_TEXTURE[];
 
-Gfx setup_db[] =
-{
+Gfx setup_db[] = {
     gsDPPipeSync(),
 
     gsSPLoadGeometryMode(0),
@@ -93,25 +92,35 @@ sprite_t heart_sprite = {
     G_IM_FMT_IA, G_IM_SIZ_8b, 1
 };
 
-sprite_t button_sprite = {
-    NULL, 16, 16, 1,
-    G_IM_FMT_IA, G_IM_SIZ_8b, 5
+sprite_t ocarina_button_sprite = {
+    NULL, 16, 16, 5,
+    G_IM_FMT_IA, G_IM_SIZ_8b, 1
 };
 
-int sprite_bytes_per_tile(sprite_t *sprite) {
+sprite_t buttons_sprite = {
+    NULL, 16, 16, 10,
+    G_IM_FMT_I, G_IM_SIZ_4b, 1
+};
+
+
+int sprite_bytes_per_tile(sprite_t* sprite) {
+    if (sprite->im_siz == G_IM_SIZ_4b) {
+        // No idea why
+        return sprite->tile_w * sprite->tile_h * sprite->bytes_per_texel / 2;
+    }
     return sprite->tile_w * sprite->tile_h * sprite->bytes_per_texel;
 }
 
-int sprite_bytes(sprite_t *sprite) {
+int sprite_bytes(sprite_t* sprite) {
     return sprite->tile_count * sprite_bytes_per_tile(sprite);
 }
 
-void sprite_load(z64_disp_buf_t *db, sprite_t *sprite,
+void sprite_load(z64_disp_buf_t* db, sprite_t* sprite,
         int start_tile, int tile_count) {
     int width = sprite->tile_w;
     int height = sprite->tile_h * tile_count;
     gDPLoadTextureTile(db->p++,
-            sprite->buf + (start_tile * sprite_bytes_per_tile(sprite)),
+            sprite->buf + start_tile * sprite_bytes_per_tile(sprite),
             sprite->im_fmt, sprite->im_siz,
             width, height,
             0, 0,
@@ -122,14 +131,14 @@ void sprite_load(z64_disp_buf_t *db, sprite_t *sprite,
             G_TX_NOLOD, G_TX_NOLOD);
 }
 
-void sprite_texture(z64_disp_buf_t *db, sprite_t * sprite, int tile_index, int16_t left, int16_t top,
+void sprite_texture(z64_disp_buf_t* db, sprite_t* sprite, int tile_index, int16_t left, int16_t top,
         int16_t width, int16_t height) {
     int width_factor = (1<<10) * sprite->tile_w / width;
     int height_factor = (1<<10) * sprite->tile_h / height;
-    gDPLoadTextureBlock(db->p++,
+    if (sprite->im_siz == G_IM_SIZ_4b) {
+        gDPLoadTextureBlock_4b(db->p++,
         ((uint8_t*)(sprite->buf)) + (tile_index * sprite_bytes_per_tile(sprite)),
         sprite->im_fmt,
-        sprite->im_siz,
         sprite->tile_w,
         sprite->tile_h,
         0,
@@ -139,12 +148,29 @@ void sprite_texture(z64_disp_buf_t *db, sprite_t * sprite, int tile_index, int16
         G_TX_NOMASK,
         G_TX_NOLOD,
         G_TX_NOLOD
-    );
+        );
+    }
+    else {
+        gDPLoadTextureBlock(db->p++,
+            ((uint8_t*)(sprite->buf)) + (tile_index * sprite_bytes_per_tile(sprite)),
+            sprite->im_fmt,
+            sprite->im_siz,
+            sprite->tile_w,
+            sprite->tile_h,
+            0,
+            G_TX_NOMIRROR | G_TX_WRAP,
+            G_TX_NOMIRROR | G_TX_WRAP,
+            G_TX_NOMASK,
+            G_TX_NOMASK,
+            G_TX_NOLOD,
+            G_TX_NOLOD
+        );
+    }
 
-    gSPTextureRectangle(db->p++, left * 4, top * 4, (left + width) * 4, (top * height) * 4, G_TX_RENDERTILE, 0,0,width_factor, height_factor);
+    gSPTextureRectangle(db->p++, left * 4, top * 4, (left + width) * 4, (top * height) * 4, G_TX_RENDERTILE, 0, 0, width_factor, height_factor);
 }
 
-void sprite_draw(z64_disp_buf_t *db, sprite_t *sprite, int tile_index,
+void sprite_draw(z64_disp_buf_t* db, sprite_t* sprite, int tile_index,
         int left, int top, int width, int height) {
     int width_factor = (1<<10) * sprite->tile_w / width;
     int height_factor = (1<<10) * sprite->tile_h / height;
@@ -183,6 +209,11 @@ void gfx_init() {
     };
     file_init(&icon_item_dungeon_static);
 
+    file_t nes_font_static = {
+        NULL, z64_nes_font_static_vaddr, z64_nes_font_static_vsize
+    };
+    file_init(&nes_font_static);
+
     stones_sprite.buf = title_static.buf + 0x2A300;
     medals_sprite.buf = title_static.buf + 0x2980;
     items_sprite.buf = icon_item_static.buf;
@@ -195,7 +226,8 @@ void gfx_init() {
     item_digit_sprite.buf = parameter_static.buf + 0x000035C0;
     linkhead_skull_sprite.buf = icon_item_dungeon_static.buf + 0x00001980;
     heart_sprite.buf = parameter_static.buf;
-    button_sprite.buf = parameter_static.buf + 0x2940;
+    ocarina_button_sprite.buf = parameter_static.buf + 0x2940;
+    buttons_sprite.buf = nes_font_static.buf + 0x3F80;
 
     int font_bytes = sprite_bytes(&font_sprite);
     font_sprite.buf = heap_alloc(font_bytes);

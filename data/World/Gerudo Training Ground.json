@@ -16,7 +16,8 @@
             "Gerudo Training Ground Beamos Recovery Heart 1": "True",
             "Gerudo Training Ground Beamos Recovery Heart 2": "True",
             # In the Beamos room, shoot the Gerudo symbol above the door to the lava room.
-            "Wall Fairy": "has_bottle and can_use(Bow)"
+            "Wall Fairy": "has_bottle and can_use(Bow)",
+            "Gerudo Training Ground Beamos Wonderitem": "can_use(Bow)"
         },
         "exits": {
             "Gerudo Fortress": "True",
@@ -128,7 +129,8 @@
         "region_name": "Gerudo Training Ground Eye Statue Upper",
         "dungeon": "Gerudo Training Ground",
         "locations": {
-            "Gerudo Training Ground Near Scarecrow Chest": "Bow"
+            "Gerudo Training Ground Near Scarecrow Chest": "Bow",
+            "Gerudo Training Ground Eye Statue Wonderitem": "can_use(Hover_Boots) or logic_gtg_eye_statue_wonderitem"
         },
         "exits": {
             "Gerudo Training Ground Like Like Room": "Silver_Gauntlets",
@@ -161,7 +163,8 @@
         "locations": {
             "Gerudo Training Ground Hammer Room Clear Chest": "True",
             "Gerudo Training Ground Hammer Room Switch Chest": "Megaton_Hammer",
-            "Gerudo Training Ground Lava Room Silver Rupee Hookshot Target": "Hookshot"
+            "Gerudo Training Ground Lava Room Silver Rupee Hookshot Target": "Hookshot",
+            "Gerudo Training Ground Hammer Room Wonderitem": "can_use(Bow)"
         },
         "exits": {
             "Gerudo Training Ground Lava Room Back": "True",

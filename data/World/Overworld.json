@@ -160,6 +160,14 @@
             "KF End of Bridge Blue Rupee": "is_child",
             "KF Boulder Maze Blue Rupee 1": "is_child",
             "KF Boulder Maze Blue Rupee 2": "is_child",
+            "KF Child Stepping Stones Wonderitem": "is_child",
+            "KF Child Water Wonderitem": "is_child",
+            "KF Child Sign Wonderitem": "is_child and (Kokiri_Sword or Sticks)",
+            "KF Child Training Wonderitem 1": "is_child",
+            "KF Child Training Wonderitem 2": "is_child",
+            "KF Child Training Wonderitem 3": "is_child",
+            "KF Child Maze Grass Wonderitem 1": "is_child",
+            "KF Child Maze Grass Wonderitem 2": "is_child",
             "KF Bean Platform Green Rupee 1": "is_adult and (here(can_plant_bean) or Hover_Boots)",
             "KF Bean Platform Green Rupee 2": "is_adult and (here(can_plant_bean) or Hover_Boots)",
             "KF Bean Platform Green Rupee 3": "is_adult and (here(can_plant_bean) or Hover_Boots)",
@@ -279,7 +287,7 @@
         "region_name": "KF Kokiri Shop",
         "scene": "KF Kokiri Shop",
         "locations": {
-            "KF Shop Blue Rupee": "True",
+            "KF Shop Wonderitem": "True",
             "KF Shop Item 1": "True",
             "KF Shop Item 2": "True",
             "KF Shop Item 3": "True",
@@ -305,7 +313,9 @@
             "LW Skull Kid": "is_child and can_play(Sarias_Song)",
             "LW Trade Cojiro": "'Odd Mushroom Access'",
             "LW Trade Odd Potion": "'Poachers Saw Access'",
-            "LW Ocarina Memory Game": "is_child and Ocarina and Ocarina_A_Button and Ocarina_C_down_Button and Ocarina_C_right_Button and Ocarina_C_left_Button and Ocarina_C_up_Button",
+            "LW Ocarina Memory Game": "
+                is_child and Ocarina and Ocarina_A_Button and Ocarina_C_down_Button and
+                Ocarina_C_right_Button and Ocarina_C_left_Button and Ocarina_C_up_Button",
             "LW Target in Woods": "can_use(Slingshot)",
             "LW Deku Scrub Near Bridge": "is_child and can_stun_deku",
             "LW Underwater Green Rupee 1": "is_child and (can_dive or Boomerang)",
@@ -315,6 +325,9 @@
             "LW Underwater Green Rupee 5": "is_child and (can_dive or Boomerang)",
             "LW Underwater Green Rupee 6": "is_child and (can_dive or Boomerang)",
             "LW Underwater Green Rupee 7": "is_child and (can_dive or Boomerang)",
+            "LW Near Ocarina Game Wonderitem 1": "is_child",
+            "LW Near Ocarina Game Wonderitem 2": "is_child",
+            "LW Near Ocarina Game Wonderitem 3": "is_child",
             "LW GS Bean Patch Near Bridge": "can_plant_bugs and can_child_attack",
             "LW Gossip Stone": "True",
             "Gossip Stone Fairy": "can_summon_gossip_fairy_without_suns and has_bottle",
@@ -324,9 +337,10 @@
         "exits": {
             "LW Forest Exit": "True",
             "GC Woods Warp": "True",
+            # The seemingly redundant `plant_beans` check is to allow supplementary searches, which can't collect events, to use this path.
             "LW Bridge": "
                 is_adult and
-                (Hover_Boots or Longshot or here(can_plant_bean) or logic_lost_woods_bridge)",
+                (Hover_Boots or Longshot or here(can_plant_bean) or plant_beans or logic_lost_woods_bridge)",
             "LW Underwater Entrance": "is_child and (can_dive or Boomerang)",
             "Zora River": "can_leave_forest and (can_dive or can_use(Iron_Boots))",
             "LW Beyond Mido": "is_child or logic_mido_backflip or can_play(Sarias_Song)",
@@ -393,6 +407,9 @@
         "region_name": "SFM Entryway",
         "scene": "Sacred Forest Meadow",
         "hint": "SACRED_FOREST_MEADOW",
+        "locations": {
+            "SFM Near Lost Woods Wonderitem": "True"
+        },
         "exits": {
             "LW Beyond Mido": "True",
             "Sacred Forest Meadow": "
@@ -407,6 +424,11 @@
         "locations": {
             "Song from Saria": "is_child and at('HC Garden Locations', is_child)",
             "Sheik in Forest": "is_adult",
+            "SFM Maze Wonderitem 1": "True",
+            "SFM Maze Wonderitem 2": "True",
+            "SFM Maze Wonderitem 3": "True",
+            "SFM Maze Wonderitem 4": "True",
+            "SFM Maze Wonderitem 5": "True",
             "SFM GS": "can_use(Hookshot) and at_night",
             "SFM Maze Gossip Stone (Lower)": "True",
             "SFM Maze Gossip Stone (Upper)": "True",
@@ -458,7 +480,10 @@
         "locations": {
             "HF Ocarina of Time Item": "is_child and has_all_stones",
             "Song from Ocarina of Time": "is_child and has_all_stones",
-            "Big Poe Kill": "can_ride_epona and Bow and has_bottle"
+            "Big Poe Kill": "can_ride_epona and Bow and has_bottle",
+            "HF Child Above Drawbridge Wonderitem 1": "is_child",
+            "HF Child Above Drawbridge Wonderitem 2": "is_child",
+            "HF Child Above Drawbridge Wonderitem 3": "is_child"
         },
         "exits": {
             "LW Bridge": "True",
@@ -515,9 +540,10 @@
             "Zoras Domain": "is_child and can_dive",
             "LH Owl Flight": "is_child",
             "LH Lab": "True",
+            # The seemingly redundant `plant_beans` check is to allow supplementary searches, which can't collect events, to use this path.
             "LH Fishing Island": "
                 is_child or can_use(Scarecrow) or
-                here(can_plant_bean) or 'Water Temple Clear'",
+                here(can_plant_bean) or plant_beans or 'Water Temple Clear'",
             "Water Temple Lobby": "
                 is_adult and Hookshot and
                 (Iron_Boots or ((Longshot or logic_water_hookshot_entry) and (Progressive_Scale, 2)))",
@@ -583,6 +609,8 @@
         "hint": "GERUDO_VALLEY",
         "time_passes": true,
         "locations": {
+            "GV Adult Upper Waterfall Wonderitem": "is_adult",
+            "GV Adult Lower Waterfall Wonderitem": "is_adult",
             "GV GS Small Bridge": "can_use(Boomerang) and at_night",
             "Bug Rock": "is_child and has_bottle"
         },
@@ -694,6 +722,8 @@
                 Gerudo_Membership_Card and can_ride_epona and Bow and at_day",
             "GF HBA 1500 Points": "
                 Gerudo_Membership_Card and can_ride_epona and Bow and at_day",
+            "GF Sign Wonderitem Near Entrance": "can_use(Hookshot)",
+            "GF Sign Wonderitem Near HBA": "Gerudo_Membership_Card and can_use(Hookshot)",
             "GF GS Archery Range": "
                 can_use(Hookshot) and Gerudo_Membership_Card and at_night"
         },
@@ -709,7 +739,7 @@
             # Can ask the Gerudo on the path to HBA to throw you in jail.
             "GF Break Room Entrance": "can_use(Hookshot)",
             "GF Outside Gate": "'GF Gate Open'",
-            "Gerudo Training Ground Lobby": "Gerudo_Membership_Card and is_adult"
+            "Gerudo Training Ground Lobby": "is_adult and Gerudo_Membership_Card"
         }
     },
     {
@@ -828,7 +858,9 @@
             "Hideout 1 Torch Jail Pot 1": "True",
             "Hideout 1 Torch Jail Pot 2": "True",
             "Hideout 1 Torch Jail Pot 3": "True",
-            "Hideout 1 Torch Jail Crate": "can_break_crate"
+            "Hideout 1 Torch Jail Crate": "can_break_crate",
+            "Hideout 1 Torch Jail Wonderitem 1": "can_use(Bow)",
+            "Hideout 1 Torch Jail Wonderitem 2": "can_use(Bow)"
         },
         "exits": {
             "Gerudo Fortress": "True",
@@ -856,7 +888,9 @@
             "Hideout 2 Torch Jail In Cell Pot 3": "True",
             "Hideout 2 Torch Jail In Cell Pot 4": "True",
             "Hideout 2 Torch Jail Crate 1": "can_break_crate",
-            "Hideout 2 Torch Jail Crate 2": "can_break_crate"
+            "Hideout 2 Torch Jail Crate 2": "can_break_crate",
+            "Hideout 2 Torch Jail Wonderitem 1": "can_use(Bow)",
+            "Hideout 2 Torch Jail Wonderitem 2": "can_use(Bow)"
         },
         "exits": {
             "Gerudo Fortress": "True",
@@ -876,7 +910,9 @@
         },
         "locations": {
             "Hideout 3 Torches Jail Gerudo Key": "'Hideout 3 Torches Jail Gerudo'",
-            "Hideout 3 Torch Jail Crate": "can_break_crate"
+            "Hideout 3 Torch Jail Crate": "can_break_crate",
+            "Hideout 3 Torch Jail Wonderitem 1": "can_use(Bow)",
+            "Hideout 3 Torch Jail Wonderitem 2": "can_use(Bow)"
         },
         "exits": {
             "GF 3 Torches Jail Exterior": "True"
@@ -896,7 +932,9 @@
         "locations": {
             "Hideout 4 Torches Jail Gerudo Key": "'Hideout 4 Torches Jail Gerudo'",
             "Hideout 4 Torch Jail Pot 1": "True",
-            "Hideout 4 Torch Jail Pot 2": "True"
+            "Hideout 4 Torch Jail Pot 2": "True",
+            "Hideout 4 Torch Jail Wonderitem 1": "can_use(Bow)",
+            "Hideout 4 Torch Jail Wonderitem 2": "can_use(Bow)"
         },
         "exits": {
             "Gerudo Fortress": "True",
@@ -915,7 +953,11 @@
             "Hideout Near Kitchen Crate 2": "can_break_crate",
             "Hideout Near Kitchen Crate 3": "can_break_crate",
             "Hideout Near Kitchen Crate 4": "can_break_crate",
-            "Hideout Near Kitchen Crate 5": "can_break_crate"
+            "Hideout Near Kitchen Crate 5": "can_break_crate",
+            "Hideout Kitchen Wonderitem": "can_use(Bow)",
+            "Hideout Kitchen Stove Wonderitem": "
+                (Gerudo_Membership_Card or can_use(Bow) or can_use(Hookshot) or logic_gerudo_kitchen) and
+                (damage_multiplier != 'ohko' or can_use(Nayrus_Love) or can_use(Goron_Tunic))"
         },
         "exits": {
             "GF Entrances Behind Crates": "True",
@@ -994,7 +1036,8 @@
             "Hideout Break Room Crate 2": "
                 can_break_crate and
                 (Gerudo_Membership_Card or can_use(Bow) or can_use(Hookshot) or
-                    can_use(Sticks) or can_use(Kokiri_Sword))"
+                    can_use(Sticks) or can_use(Kokiri_Sword))",
+            "Hideout Break Room Wonderitem": "can_use(Bow)"
         }
     },
     {
@@ -1002,6 +1045,9 @@
         "scene": "Hideout Break Room",
         "hint": "THIEVES_HIDEOUT",
         "savewarp": "Gerudo Fortress -> Hideout 1 Torch Jail",
+        "locations": {
+            "Hideout Break Room Hall to Balcony Wonderitem": "can_use(Bow)"
+        },
         "exits": {
             "Hideout Break Room": "can_use(Hookshot)",
             "GF Balcony": "True"
@@ -1073,6 +1119,11 @@
         "time_passes": true,
         "locations": {
             "Colossus Freestanding PoH": "is_adult and here(can_plant_bean)",
+            "Colossus Tree Wonderitem 1": "can_use(Slingshot) or can_use(Bow)",
+            "Colossus Tree Wonderitem 2": "can_use(Slingshot) or can_use(Bow)",
+            "Colossus Tree Wonderitem 3 Child": "can_use(Slingshot)",
+            "Colossus Tree Wonderitem 4": "can_use(Slingshot) or can_use(Bow)",
+            "Colossus Tree Wonderitem 5": "can_use(Slingshot) or can_use(Bow)",
             "Colossus GS Bean Patch": "can_plant_bugs and can_child_attack",
             "Colossus GS Tree": "can_use(Hookshot) and at_night",
             "Colossus GS Hill": "
@@ -1146,7 +1197,14 @@
                 (deadly_bonks != 'ohko' or Fairy or (can_use(Nayrus_Love) and shuffle_overworld_entrances == 'off'))",
             "Market Night Green Rupee Crate 3": "
                 is_child and at_night and
-                (deadly_bonks != 'ohko' or Fairy or (can_use(Nayrus_Love) and shuffle_overworld_entrances == 'off'))"
+                (deadly_bonks != 'ohko' or Fairy or (can_use(Nayrus_Love) and shuffle_overworld_entrances == 'off'))",
+            "Market Daytime Balcony Wonderitem 1": "is_child and at_day",
+            "Market Daytime Balcony Wonderitem 2": "is_child and at_day",
+            "Market Daytime Balcony Wonderitem 3": "is_child and at_day",
+            "Market Daytime Balcony Wonderitem 4": "is_child and at_day",
+            "Market Daytime Balcony Wonderitem 5": "is_child and at_day",
+            "Market Night Balcony Wonderitem 1": "is_child and at_night",
+            "Market Night Balcony Wonderitem 2": "is_child and at_night"
         },
         "exits": {
             "Market Entrance": "True",
@@ -1195,7 +1253,7 @@
         "scene": "Temple of Time",
         "hint": "TEMPLE_OF_TIME",
         "events": {
-            # used for the "path of time" goal
+            # Used for the "path of time" goal
             "Temple of Time Access": "True"
         },
         "locations": {
@@ -1237,6 +1295,18 @@
         "time_passes": true,
         "locations": {
             "HC Malon Egg": "True",
+            "HC Castle Torch Wonderitem 1": "can_use(Slingshot)",
+            "HC Castle Torch Wonderitem 2": "can_use(Slingshot)",
+            "HC Castle Moat Wonderitem 1": "True",
+            "HC Castle Moat Wonderitem 2": "True",
+            "HC Castle Moat Wonderitem 3": "True",
+            "HC Castle Moat Wonderitem 4": "True",
+            "HC Castle Moat Wonderitem 5": "True",
+            "HC Castle Moat Wonderitem 6": "True",
+            "HC Castle Moat Wonderitem 7": "True",
+            "HC Castle Moat Wonderitem 8": "True",
+            "HC Castle Moat Wonderitem 9": "True",
+            "HC Castle Moat Wonderitem 10": "True",
             "HC GS Tree": "can_child_attack and can_bonk",
             "HC Malon Gossip Stone": "True",
             "HC Rock Wall Gossip Stone": "True",
@@ -1255,6 +1325,9 @@
         "region_name": "HC Garden",
         "scene": "Castle Grounds",
         "hint": "HYRULE_CASTLE",
+        "locations": {
+            "HC Zeldas Courtyard Mario Wonderitem": "can_use(Slingshot)"
+        },
         "exits": {
             "HC Garden Locations": "True",
             "Hyrule Castle Grounds": "True"
@@ -1572,6 +1645,7 @@
             "Kak Near Impas House Pot 2": "is_child",
             "Kak Near Impas House Pot 3": "is_child",
             "Kak Adult Arrows Crate": "is_adult and can_break_crate",
+            "Kak Child Construction Wonderitem": "is_child",
             "Kak GS House Under Construction": "is_child and at_night",
             "Kak GS Skulltula House": "is_child and at_night",
             "Kak GS Near Gate Guard": "is_child and at_night",
@@ -1602,7 +1676,8 @@
                         (logic_kakariko_tower_gs and (Sticks or Kokiri_Sword))))",
             "Kak Backyard": "is_adult or at_day",
             "Graveyard": "True",
-            "Kak Behind Gate": "is_adult or 'Kakariko Village Gate Open'"
+            # The seemingly redundant `open_kakariko == 'open'` check is to allow supplementary searches, which can't collect events, to use this path.
+            "Kak Behind Gate": "is_adult or 'Kakariko Village Gate Open' or open_kakariko == 'open'"
         }
     },
     {
@@ -1686,6 +1761,9 @@
     {
         "region_name": "Kak Impas House",
         "scene": "Kak Impas House",
+        "locations": {
+            "Kak Impas House Wonderitem": "True"
+        },
         "exits": {
             "Kakariko Village": "True",
             "Kak Impas House Near Cow": "True"
@@ -1789,12 +1867,11 @@
         "locations": {
             "Kak Granny Trade Odd Mushroom": "'Odd Potion Access'",
             # Granny will not sell her item without turning in odd mushroom
-            # If the adult trade item(s) in the world are all after odd mushroom,
-            # allow any of the later sequence items to satisfy logic. The patcher
-            # sets the flag needed for her to sell stuff if odd mushroom can't be obtained.
-            "Kak Granny Buy Blue Potion": "Progressive_Wallet and is_adult and
-                (Odd_Mushroom or ((Odd_Potion or Poachers_Saw or Broken_Sword or
-                Prescription or Eyeball_Frog or Eyedrops or Claim_Check) and not adult_trade_shuffle))"
+            "Kak Granny Buy Blue Potion": "Progressive_Wallet and ('Odd Potion Access' or
+                ((selected_adult_trade_item == 'Odd Potion' or selected_adult_trade_item == 'Poachers Saw' or
+                selected_adult_trade_item == 'Broken Sword' or selected_adult_trade_item == 'Prescription' or
+                selected_adult_trade_item == 'Eyeball Frog' or selected_adult_trade_item == 'Eyedrops' or
+                selected_adult_trade_item == 'Claim Check') and not adult_trade_shuffle))"
         },
         "exits": {
             "Kak Backyard": "True"
@@ -1880,7 +1957,22 @@
             "Graveyard Dampe Pot 4": "True",
             "Graveyard Dampe Pot 5": "True",
             "Graveyard Dampe Pot 6": "True",
-            "Nut Pot": "True"
+            "Nut Pot": "True",
+            "Graveyard Dampe Race Wonderitem 1": "True",
+            "Graveyard Dampe Race Wonderitem 2": "True",
+            "Graveyard Dampe Race Wonderitem 3": "True",
+            "Graveyard Dampe Race Wonderitem 4": "True",
+            "Graveyard Dampe Race Wonderitem 5": "True",
+            "Graveyard Dampe Race Wonderitem 6": "True",
+            "Graveyard Dampe Race Wonderitem 7": "True",
+            "Graveyard Dampe Race Wonderitem 8": "True",
+            "Graveyard Dampe Race Wonderitem 9": "True",
+            "Graveyard Dampe Race Wonderitem 10": "True",
+            "Graveyard Dampe Race Wonderitem 11": "True",
+            "Graveyard Dampe Race Wonderitem 12": "True",
+            "Graveyard Dampe Race Wonderitem 13": "True",
+            "Graveyard Dampe Race Wonderitem 14": "True",
+            "Graveyard Dampe Race Wonderitem 15": "True"
         },
         "exits": {
             "Graveyard": "True",
@@ -1916,8 +2008,9 @@
         "scene": "Kakariko Village",
         "hint": "KAKARIKO_VILLAGE",
         "exits": {
+            # The seemingly redundant `open_kakariko == 'open'` check is to allow supplementary searches, which can't collect events, to use this path.
             "Kakariko Village": "
-                is_adult or logic_visible_collisions or 'Kakariko Village Gate Open'",
+                is_adult or logic_visible_collisions or 'Kakariko Village Gate Open' or open_kakariko == 'open'",
             "Death Mountain": "True"
         }
     },
@@ -1951,7 +2044,7 @@
             "Goron City": "True",
             "Death Mountain Summit": "
                 here(can_blast_or_smash) or
-                (is_adult and here(can_plant_bean and (plant_beans or Progressive_Strength_Upgrade))) or
+                (is_adult and (here(can_plant_bean and Progressive_Strength_Upgrade) or plant_beans)) or
                 (logic_dmt_climb_hovers and can_use(Hover_Boots))",
             "Dodongos Cavern Beginning": "
                 has_explosives or Progressive_Strength_Upgrade or is_adult",
@@ -2168,7 +2261,6 @@
     },
     {
         "region_name": "DMC Pierre Platform",
-        "font_color": "Red",
         "scene": "Death Mountain Crater",
         "hint": "DEATH_MOUNTAIN_CRATER",
         "locations": {
@@ -2262,9 +2354,10 @@
         },
         "exits": {
             "DMC Central Nearby": "True",
+            # The seemingly redundant `plant_beans` checks are to allow supplementary searches, which can't collect events, to use these paths.
             "DMC Lower Nearby": "
-                is_adult and (Hover_Boots or Hookshot or here(can_plant_bean))",
-            "DMC Upper Nearby": "is_adult and here(can_plant_bean)",
+                is_adult and (Hover_Boots or Hookshot or here(can_plant_bean) or plant_beans)",
+            "DMC Upper Nearby": "is_adult and (here(can_plant_bean) or plant_beans)",
             "DMC Fire Temple Entrance": "
                 (is_child and shuffle_dungeon_entrances) or
                 (is_adult and (logic_fewer_tunic_requirements or Goron_Tunic))",
@@ -2306,7 +2399,12 @@
         "hint": "ZORA_RIVER",
         "time_passes": true,
         "locations": {
+            "ZR Child Front River Wonderitem 1": "is_child",
+            "ZR Child Front River Wonderitem 2": "is_child",
+            "ZR Child Front River Wonderitem 3": "is_child",
+            "ZR Child Front River Wonderitem 4": "is_child",
             "ZR GS Tree": "is_child and can_child_attack and can_bonk"
+
         },
         "exits": {
             "Zora River": "is_adult or has_explosives",
@@ -2337,6 +2435,33 @@
             "ZR Waterfall Red Rupee 2": "is_adult and (Iron_Boots or logic_zora_river_rupees)",
             "ZR Waterfall Red Rupee 3": "is_adult and (Iron_Boots or logic_zora_river_rupees)",
             "ZR Waterfall Red Rupee 4": "is_adult and (Iron_Boots or logic_zora_river_rupees)",
+            "ZR Child River Wonderitem 1": "is_child",
+            "ZR Child River Wonderitem 2": "is_child",
+            "ZR Child River Wonderitem 3": "is_child",
+            "ZR Child River Wonderitem 4": "is_child",
+            "ZR Child River Wonderitem 5": "is_child",
+            "ZR Child River Wonderitem 6": "is_child",
+            "ZR Child River Wonderitem 7": "is_child",
+            "ZR Child River Wonderitem 8": "is_child",
+            "ZR Child River Wonderitem 9": "is_child",
+            "ZR Child River Wonderitem 10": "is_child",
+            "ZR Child River Wonderitem 11": "is_child",
+            "ZR Child River Wonderitem 12": "is_child",
+            "ZR Child River Wonderitem 13": "is_child",
+            "ZR Child River Wonderitem 14": "is_child",
+            "ZR Child River Wonderitem 15": "is_child",
+            "ZR Child River Wonderitem 16": "is_child",
+            "ZR Child River Wonderitem 17": "is_child",
+            "ZR Child River Wonderitem 18": "is_child",
+            "ZR Child River Wonderitem 19": "is_child",
+            "ZR Child River Wonderitem 20": "is_child",
+            "ZR Child River Wonderitem 21": "is_child",
+            "ZR Child River Wonderitem 22": "is_child",
+            "ZR Child River Wonderitem 23": "is_child",
+            "ZR Child River Wonderitem 24": "is_child",
+            "ZR Child River Wonderitem 25": "is_child",
+            "ZR Child River Wonderitem 26": "is_child",
+            "ZR Child River Wonderitem 27": "is_child",
             "ZR GS Ladder": "is_child and at_night and can_child_attack",
             "ZR GS Near Raised Grottos": "can_use(Hookshot) and at_night",
             "ZR GS Above Bridge": "can_use(Hookshot) and at_night",
@@ -2565,6 +2690,8 @@
             "Song from Malon": "
                 is_child and Ocarina and at_day and
                 (skip_child_zelda or at('Hyrule Castle Grounds', is_child and (Weird_Egg or Chicken)))",
+            "LLR Epona Hurdle Wonderitem 1": "can_ride_epona",
+            "LLR Epona Hurdle Wonderitem 2": "can_ride_epona",
             "LLR GS Tree": "is_child and can_bonk",
             "LLR GS Rain Shed": "is_child and at_night",
             "LLR GS House Window": "can_use(Boomerang) and at_night",

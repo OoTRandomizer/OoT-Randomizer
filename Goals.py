@@ -31,7 +31,7 @@ validColors: list[str] = [
     'Light Blue',
     'Pink',
     'Yellow',
-    'Black'
+    'Black',
 ]
 
 
@@ -78,6 +78,9 @@ class Goal:
         if item_table[item][3] is not None and 'alias' in item_table[item][3]:
             names.append(item_table[item][3]['alias'][0])
         return any(i['name'] in names and not i['hintable'] for i in self.items)
+
+    def __repr__(self) -> str:
+        return f"{self.world.__repr__()} {self.name}: {self.hint_text}"
 
 
 class GoalCategory:

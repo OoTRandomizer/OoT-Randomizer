@@ -110,7 +110,7 @@ def compare_version(a: str, b: str) -> int:
     sa = get_version_bytes(a)
     sb = get_version_bytes(b)
 
-    for i in range(0,3):
+    for i in range(0, 3):
         if sa[i] > sb[i]:
             return 1
         if sa[i] < sb[i]:

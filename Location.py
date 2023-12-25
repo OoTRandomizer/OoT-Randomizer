@@ -147,10 +147,11 @@ class Location:
                 logging.getLogger('').debug(f'{the_location} [{self.world.id}] set to [{self.item.name}]')
 
     def __str__(self) -> str:
-        return str(self.__unicode__())
+        return self.name
 
-    def __unicode__(self) -> str:
-        return '%s' % self.name
+    def __repr__(self) -> str:
+        item_repr = self.item.__repr__() if self.item else "<empty>"
+        return f"{self.world.__repr__()} {self.name} with {item_repr}"
 
 
 @overload

@@ -47,5 +47,3 @@ save_scarecrow_song:
     lw      a1, 0x0(sp)
     j       0x57030
     addiu   sp,sp,0x18
-
-

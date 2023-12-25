@@ -106,4 +106,3 @@ make_loach_follow_lure:
     lw      ra, 0x0010 (sp)
     jr      ra
     addiu   sp, sp, 0x0014
-

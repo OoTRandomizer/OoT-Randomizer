@@ -141,7 +141,7 @@ item_draw_table_entry_t item_draw_table[] = {
     [0x7B] = { draw_gi_song_notes,          { 0x06000F70, 0xC832FFFF, 1 } }, // Music Note inverted (Purple)
     [0x7C] = { draw_gi_song_notes,          { 0x06000F70, 0xC8FF00FF, 1 } }, // Music Note inverted (Yellow)
     [0x7D] = { draw_gi_chubag,              { 0x060006A0, 0x060008E0, 0x06001280, 0xBA3F3AFF, 0xA5231EFF, 0x1695D2FF, 0x054C7FFF } }, // Bombchu Bag
-    [0x7E] = { draw_gi_silver_rupee_pouch,  { 0x06001850, 0x06001750, 0x06001790, 0x060019A0, 0x060017B0, 0x06001A28, 0x060017D0, 0x06001AD8 } }, // Adult's Wallet}
+    [0x7E] = { draw_gi_silver_rupee_pouch,  { 0x06001850, 0x06001750, 0x06001790, 0x060019A0, 0x060017B0, 0x06001A28, 0x060017D0, 0x06001AD8 } }, // Silver Rupee Pouch
     [0x7F] = { draw_gi_shrink_keys,         { 0x06001060, 0x94E97BFF, 0x2CCF1AFF } }, // Small Key (Forest)
     [0x80] = { draw_gi_shrink_keys,         { 0x06000F00, 0xFD9884FF, 0xED1612FF } }, // Small Key (Fire)
     [0x81] = { draw_gi_shrink_keys,         { 0x06000F40, 0x4C9DEEFF, 0x077AEEFF } }, // Small Key (Water)
@@ -165,6 +165,6 @@ item_draw_table_entry_t item_draw_table[] = {
     [0x93] = { draw_gi_c_button_horizontal, { 0x06000E10, 0xFFA000FF, 0 } }, // Cright button
 };
 
-void base_draw_gi_model(z64_game_t *game, uint32_t draw_id) {
+void base_draw_gi_model(z64_game_t* game, uint32_t draw_id) {
     item_draw_table[draw_id].draw_func(game, draw_id);
 }

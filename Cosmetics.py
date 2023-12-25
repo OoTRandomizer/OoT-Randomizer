@@ -1266,7 +1266,7 @@ class CosmeticsLog:
             for setting in self.settings.setting_infos.values():
                 if setting.name not in self.src_dict['settings'] or not setting.cosmetic:
                     continue
-                self.settings.settings_dict[setting.name] = self.src_dict['settings'][setting.name]
+                setattr(self.settings, setting.name, self.src_dict['settings'][setting.name])
                 valid_settings.append(setting.name)
             for setting in list(self.src_dict['settings'].keys()):
                 if setting not in valid_settings:

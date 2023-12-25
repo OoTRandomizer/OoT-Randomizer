@@ -84,10 +84,7 @@ class Settings(SettingInfos):
             del settings_dict['compress_rom']
         if strict:
             validate_settings(settings_dict)
-        self.settings_dict.update(settings_dict)
-        for info in self.setting_infos.values():
-            if info.name not in self.settings_dict:
-                self.settings_dict[info.name] = info.default
+        self.update(settings_dict, initialize=True)
 
         if self.world_count < 1:
             self.world_count = 1
@@ -105,6 +102,14 @@ class Settings(SettingInfos):
         settings.settings_dict = copy.deepcopy(settings.settings_dict)
         return settings
 
+    def update(self, settings_dict: dict[str, Any], *, initialize: bool = False) -> None:
+        for info in self.setting_infos.values():
+            if info.type is type(None):
+                continue
+            if not initialize and info.name not in settings_dict:
+                continue
+            setattr(self, info.name, settings_dict[info.name] if info.name in settings_dict else info.default)
+
     def get_settings_display(self) -> str:
         padding = 0
         for setting in filter(lambda s: s.shared, self.setting_infos.values()):
@@ -114,16 +119,16 @@ class Settings(SettingInfos):
         for setting in filter(lambda s: s.shared, self.setting_infos.values()):
             name = setting.name + ': ' + ' ' * (padding - len(setting.name))
             if setting.type == list:
-                val = ('\n' + (' ' * (padding + 2))).join(self.settings_dict[setting.name])
+                val = ('\n' + (' ' * (padding + 2))).join(getattr(self, setting.name))
             else:
-                val = str(self.settings_dict[setting.name])
+                val = str(getattr(self, setting.name))
             output += name + val + '\n'
         return output
 
     def get_settings_string(self) -> str:
         bits = []
         for setting in filter(lambda s: s.shared and s.bitwidth > 0, self.setting_infos.values()):
-            value = self.settings_dict[setting.name]
+            value = getattr(self, setting.name)
             i_bits = []
             if setting.name in LEGACY_STARTING_ITEM_SETTINGS:
                 items = LEGACY_STARTING_ITEM_SETTINGS[setting.name]
@@ -223,9 +228,9 @@ class Settings(SettingInfos):
             else:
                 raise TypeError(f'Cannot decode type {setting.type} from settings string')
 
-            self.settings_dict[setting.name] = value
+            setattr(self, setting.name, value)
 
-        self.settings_dict['starting_items'] = {}  # Settings string contains the GUI format, so clear the current value of the dict format.
+        setattr(self, 'starting_items', {})  # Settings string contains the GUI format, so clear the current value of the dict format.
         self.distribution.reset()  # convert starting_items
         self.settings_string = self.get_settings_string()
         self.numeric_seed = self.get_numeric_seed()
@@ -247,10 +252,6 @@ class Settings(SettingInfos):
         else:
             self.seed = seed
         self.sanitize_seed()
-        self.numeric_seed = self.get_numeric_seed()
-
-    def update(self) -> None:
-        self.settings_string = self.get_settings_string()
         self.numeric_seed = self.get_numeric_seed()
 
     def load_distribution(self) -> None:
@@ -286,7 +287,7 @@ class Settings(SettingInfos):
     def get_dependency(self, setting_name: str, check_random: bool = True) -> Any:
         info = SettingInfos.setting_infos[setting_name]
         not_in_dist = '_settings' not in self.distribution.src_dict or info.name not in self.distribution.src_dict['_settings'].keys()
-        if check_random and 'randomize_key' in info.gui_params and self.settings_dict[info.gui_params['randomize_key']] and not_in_dist:
+        if check_random and 'randomize_key' in info.gui_params and getattr(self, info.gui_params['randomize_key']) and not_in_dist:
             return info.disabled_default
         elif info.dependency is not None:
             return info.disabled_default if info.dependency(self) and not_in_dist else None
@@ -298,7 +299,7 @@ class Settings(SettingInfos):
             if info.dependency is not None:
                 new_value = self.get_dependency(info.name)
                 if new_value is not None:
-                    self.settings_dict[info.name] = new_value
+                    setattr(self, info.name, new_value)
                     self._disabled.add(info.name)
 
         self.settings_string = self.get_settings_string()
@@ -327,46 +328,47 @@ class Settings(SettingInfos):
             # Make sure the setting is meant to be randomized and not specified in distribution
             # We that check it's not specified in the distribution so that plando can override randomized settings
             not_in_dist = '_settings' not in self.distribution.src_dict or info.name not in self.distribution.src_dict['_settings'].keys()
-            if self.settings_dict[info.gui_params['randomize_key']] and not_in_dist:
+            if getattr(self, info.gui_params['randomize_key']) and not_in_dist:
                 randomize_keys_enabled.add(info.gui_params['randomize_key'])
                 choices, weights = zip(*info.gui_params['distribution'])
-                self.settings_dict[info.name] = random.choices(choices, weights=weights)[0]
+                setattr(self, info.name, random.choices(choices, weights=weights)[0])
 
         # Second pass to make sure disabled settings are set properly.
         # Stupid hack: disable randomize keys, then re-enable.
         for randomize_keys in randomize_keys_enabled:
-            self.settings_dict[randomize_keys] = False
+            setattr(self, randomize_keys, False)
         for info in sorted_infos:
             if cosmetic == info.shared:
                 continue
             dependency = self.get_dependency(info.name, check_random=False)
             if dependency is None:
                 continue
-            self.settings_dict[info.name] = dependency
+            setattr(self, info.name, dependency)
         for randomize_keys in randomize_keys_enabled:
-            self.settings_dict[randomize_keys] = True
+            setattr(self, randomize_keys, True)
 
     def to_json(self, *, legacy_starting_items: bool = False) -> dict[str, Any]:
         if legacy_starting_items:
             settings = self.copy()
             for setting_name, items in LEGACY_STARTING_ITEM_SETTINGS.items():
-                settings.settings_dict[setting_name] = []
+                starting_items = []
+                setattr(settings, setting_name, starting_items)
                 for entry in items.values():
                     if entry.item_name in self.starting_items:
                         count = self.starting_items[entry.item_name]
                         if not isinstance(count, int):
                             count = count.count
                         if count > entry.i:
-                            settings.settings_dict[setting_name].append(entry.setting_name)
+                            starting_items.append(entry.setting_name)
         else:
             settings = self
         return {  # TODO: This should be done in a way that is less insane than a double-digit line dictionary comprehension.
             setting.name: (
                 {name: (
                     {name: record.to_json() for name, record in record.items()} if isinstance(record, dict) else record.to_json()
-                ) for name, record in settings.settings_dict[setting.name].items()}
+                ) for name, record in getattr(settings, setting.name).items()}
                 if setting.name == 'starting_items' and not legacy_starting_items else
-                settings.settings_dict[setting.name]
+                getattr(settings, setting.name)
             )
             for setting in self.setting_infos.values()
             if setting.shared and (
@@ -380,7 +382,7 @@ class Settings(SettingInfos):
         }
 
     def to_json_cosmetics(self) -> dict[str, Any]:
-        return {setting.name: self.settings_dict[setting.name] for setting in self.setting_infos.values() if setting.cosmetic}
+        return {setting.name: getattr(self, setting.name) for setting in self.setting_infos.values() if setting.cosmetic}
 
 
 # gets the randomizer settings, whether to open the gui, and the logger level from command line arguments

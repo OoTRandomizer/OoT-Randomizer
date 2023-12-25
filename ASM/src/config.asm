@@ -97,7 +97,6 @@ CFG_CUSTOM_MESSAGE_1:
 CFG_CUSTOM_MESSAGE_2:
 .endarea
 
-
 .align 4
 
 ; Version string
@@ -197,7 +196,7 @@ CUSTOM_KEY_MODELS:
 SHUFFLE_OCARINA_BUTTONS:
 .byte 0x00
 EPONAS_SONG_NOTES:
-.halfword 0x0000
+.byte 0x00
 .align 4
 
 ; These configuration values are given fixed addresses to aid auto-trackers.

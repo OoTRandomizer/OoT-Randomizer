@@ -30,6 +30,7 @@
         "locations": {
             "Gerudo Training Ground MQ Dinolfos Chest": "True",
             # Shoot the Gerudo symbol above the door to the lava room.
+            "Gerudo Training Ground MQ Dinolfos Arrow Wonderitem": "can_use(Bow)",
             "Wall Fairy": "has_bottle and can_use(Bow)"
         },
         "exits": {
@@ -149,7 +150,8 @@
                 (Hookshot or Bow or Bombs or logic_gtg_mq_eye_statue_jumpslash)",
             "Gerudo Training Ground MQ Eye Statue Chest": "Bow",
             "Gerudo Training Ground MQ Second Iron Knuckle Chest": "True",
-            "Gerudo Training Ground MQ Flame Circle Chest": "Hookshot or Bow or has_explosives"
+            "Gerudo Training Ground MQ Flame Circle Chest": "Hookshot or Bow or has_explosives",
+            "Gerudo Training Ground MQ Eye Statue Proximity Wonderitem": "can_use(Hover_Boots) or can_use(Longshot) or logic_gtg_eye_statue_wonderitem"
         },
         "exits": {
             "Gerudo Training Ground Central Maze Right": "Megaton_Hammer",

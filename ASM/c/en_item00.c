@@ -15,7 +15,7 @@ void EnItem00_OutgoingAction(EnItem00* this, z64_game_t* globalCtx) {
 
     this->actor.rot_2.y += 960;
 
-    this->actor.pos_world.y += 40.0f + (15 - this->timeToLive)*5.0; //+ z64_Math_SinS(this->timeToLive * 15000) * (this->timeToLive * 0.3f);
+    this->actor.pos_world.y += 40.0f + (15 - this->timeToLive) * 5.0;
 
     if (LINK_IS_ADULT) {
         this->actor.pos_world.y += 20.0f;
@@ -32,9 +32,8 @@ bool EnItem00_ProximityCheck_Hack(EnItem00* this, z64_game_t* GlobalCtx) {
         if (this->actor.distsq_from_link <= 900.0) {
             return true;
         }
-    }
-    else {
-        if (((this->actor.xzdist_from_link <= 30.0f) && (this->actor.ydist_from_link >= -50.0f) && (this->actor.ydist_from_link <= 50.0f))) {
+    } else {
+        if (this->actor.xzdist_from_link <= 30.0f && this->actor.ydist_from_link >= -50.0f && this->actor.ydist_from_link <= 50.0f) {
             return true;
         }
     }

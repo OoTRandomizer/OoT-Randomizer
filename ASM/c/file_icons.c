@@ -559,7 +559,7 @@ static void draw_songs(z64_disp_buf_t* db, const music_tile_info_t* songs, uint8
 static void draw_buttons(z64_disp_buf_t* db, const button_tile_info_t* buttons, uint8_t alpha) {
     uint16_t bits = buttons->bits;
     const button_tile_data_t* data = button_note_data;
-    sprite_load(db, &button_sprite, 0, 5);
+    sprite_load(db, &ocarina_button_sprite, 0, 5);
 
     uint8_t bright_alpha = color_product(WHITE.a, alpha);
     uint8_t dim_alpha = color_product(DIM.a, alpha);
@@ -581,7 +581,7 @@ static void draw_buttons(z64_disp_buf_t* db, const button_tile_info_t* buttons, 
         if (last_color.r != color.r || last_color.g != color.g || last_color.b != color.b || last_color.a != color.a) {
             gDPSetPrimColor(db->p++, 0, 0, color.r, color.g, color.b, color.a);
         }
-        sprite_draw(db, &button_sprite, button_index, get_left(data->pos), get_top(data->pos), BUTTON_WIDTH, BUTTON_HEIGHT);
+        sprite_draw(db, &ocarina_button_sprite, button_index, get_left(data->pos), get_top(data->pos), BUTTON_WIDTH, BUTTON_HEIGHT);
 
         bits >>= 1;
         ++data;
