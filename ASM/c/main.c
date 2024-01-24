@@ -21,6 +21,7 @@
 #include "scene.h"
 #include "music.h"
 #include "uninvertYaxis.h"
+#include "ocarina_buttons.h"
 #include "debug.h"
 #include "inputviewer.h"
 #include "message.h"
@@ -62,6 +63,7 @@ void after_game_state_update() {
 #if DEBUG_MODE
         debug_utilities(&debug_db);
 #endif
+        draw_ocarina_melodies(&(z64_ctxt.gfx->overlay));
     }
     close_rando_display_buffer();
     give_sage_gifts();
