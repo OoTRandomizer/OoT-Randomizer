@@ -31,8 +31,8 @@ extern uint8_t CFG_DPAD_ON_THE_LEFT;
                      0x00200000 | \
                      0x08000000)
 
-extern uint16_t CFG_ADULT_TRADE_SHUFFLE;
-extern uint16_t CFG_CHILD_TRADE_SHUFFLE;
+extern uint8_t CFG_ADULT_TRADE_SHUFFLE;
+extern uint8_t CFG_CHILD_TRADE_SHUFFLE;
 
 #define CAN_DRAW_TRADE_DPAD (z64_game.pause_ctxt.state == 6 && \
                             z64_game.pause_ctxt.screen_idx == 0 && \

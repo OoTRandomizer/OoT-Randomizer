@@ -1,7 +1,3 @@
-CFG_ADULT_TRADE_SHUFFLE:
-    .halfword 0x0000
-CFG_CHILD_TRADE_SHUFFLE:
-    .halfword 0x0000
 ADULT_ANJU_ITEM_DIALOG:
     .word 0x00000000
 
@@ -89,7 +85,7 @@ check_skull_kid_spawn_flags:
 check_if_biggoron_should_cry_eye_hook:
     addiu   sp, sp, -0x18
     sw      ra, 0x14(sp)
-    lh      v0, CFG_ADULT_TRADE_SHUFFLE
+    lbu     v0, CFG_ADULT_TRADE_SHUFFLE
     beqz    v0, @@vanilla_eye_hook
     nop
     jal     check_if_biggoron_should_cry
@@ -108,7 +104,7 @@ check_if_biggoron_should_cry_eye_hook:
 check_if_biggoron_should_cry_anim_hook:
     addiu   sp, sp, -0x18
     sw      ra, 0x14(sp)
-    lh      v0, CFG_ADULT_TRADE_SHUFFLE
+    lbu     v0, CFG_ADULT_TRADE_SHUFFLE
     beqz    v0, @@vanilla_anim_hook
     nop
     jal     check_if_biggoron_should_cry
@@ -130,7 +126,7 @@ check_if_biggoron_should_cry_sfx_hook:
     addiu   sp, sp, -0x18
     sw      a3, 0x10(sp)
     sw      ra, 0x14(sp)
-    lh      v0, CFG_ADULT_TRADE_SHUFFLE
+    lbu     v0, CFG_ADULT_TRADE_SHUFFLE
     beqz    v0, @@vanilla_sfx_hook
     nop
     jal     check_if_biggoron_should_cry
@@ -159,7 +155,7 @@ check_if_biggoron_should_cry:
     sw      ra, 0x1C(sp)
 
     ; Don't change behavior if trade shuffle is off
-    lh      at, CFG_ADULT_TRADE_SHUFFLE
+    lbu     at, CFG_ADULT_TRADE_SHUFFLE
     beqz    at, @@return_crybaby
     nop
 
@@ -234,9 +230,9 @@ check_trade_item_traded:
 
     ; Default behavior if Adult and Child
     ; Trade Quest Shuffles Off
-    lh      t3, CFG_ADULT_TRADE_SHUFFLE
+    lbu     t3, CFG_ADULT_TRADE_SHUFFLE
     bnez    t3, @@check_trade_flags
-    lh      t3, CFG_CHILD_TRADE_SHUFFLE
+    lbu     t3, CFG_CHILD_TRADE_SHUFFLE
     beqz    t3, @@return_traded
     nop
 
@@ -290,7 +286,7 @@ check_if_mask_sells_out:
     or      v1, $zero, $zero
 
     ; Skip giving item if partial/full mask shuffle enabled
-    lh      v1, CFG_CHILD_TRADE_SHUFFLE
+    lbu     v1, CFG_CHILD_TRADE_SHUFFLE
 
 @@return_sold_out:
     jr      ra
@@ -449,7 +445,7 @@ set_bunny_hood_traded_flag:
 ;==================================================================================================
 
 handle_child_zelda_savewarp:
-    lh      v0, CFG_CHILD_TRADE_SHUFFLE
+    lbu     v0, CFG_CHILD_TRADE_SHUFFLE
     bnez    v0, @@return
     nop
 

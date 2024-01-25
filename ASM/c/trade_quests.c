@@ -1,6 +1,6 @@
 #include "trade_quests.h"
 
-extern uint16_t CFG_ADULT_TRADE_SHUFFLE;
+extern uint8_t CFG_ADULT_TRADE_SHUFFLE;
 
 const exchange_item_t trade_quest_items[] = {
     {  0, Z64_ITEM_WEIRD_EGG,           Z64_EXCH_ITEM_WEIRD_EGG,    PLAYER_AP_WEIRD_EGG    , 0 }, // "Weird Egg"
