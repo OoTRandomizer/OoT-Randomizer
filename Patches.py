@@ -12,7 +12,8 @@ from typing import Optional, Any
 from Entrance import Entrance
 from HintList import get_hint
 from Hints import GossipText, HintArea, write_gossip_stone_hints, build_altar_hints, \
-        build_ganon_text, build_misc_item_hints, build_misc_location_hints, get_simple_hint_no_prefix, get_item_generic_name
+    build_ganon_text, build_misc_item_hints, build_misc_location_hints, get_simple_hint_no_prefix, \
+    get_item_generic_name, build_misc_unique_merchants_hints
 from Item import Item
 from ItemPool import song_list, trade_items, child_trade_items
 from Location import Location, DisableType
@@ -1819,6 +1820,9 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     # build misc. location hints
     build_misc_location_hints(world, messages)
 
+    # build misc. unique merchants hints
+    build_misc_unique_merchants_hints(world, messages)
+
     if 'mask_shop' in world.settings.misc_hints:
         rom.write_int32(rom.sym('CFG_MASK_SHOP_HINT'), 1)
 
@@ -2145,16 +2149,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     if world.settings.shuffle_beans:
         rom.write_byte(rom.sym('SHUFFLE_BEANS'), 0x01)
         # Update bean salesman messages to better fit the fact that he sells a randomized item
-        if 'unique_merchants' not in world.settings.misc_hints:
-            update_message_by_id(messages, 0x405E, "\x1AChomp chomp chomp...\x01We have... \x05\x41a mysterious item\x05\x40! \x01Do you want it...huh? Huh?\x04\x05\x41\x0860 Rupees\x05\x40 and it's yours!\x01Keyahahah!\x01\x1B\x05\x42Yes\x01No\x05\x40\x02")
-        else:
-            location = world.get_location("ZR Magic Bean Salesman")
-            item_text = get_hint(get_item_generic_name(location.item), True).text
-            wrapped_item_text = line_wrap(item_text, False, False, False)
-            if wrapped_item_text != item_text:
-                update_message_by_id(messages, 0x405E, "\x1AChomp chomp chomp...We have...\x01\x05\x41" + wrapped_item_text + "\x05\x40!\x04\x05\x41\x0860 Rupees\x05\x40 and it's yours!\x01Keyahahah!\x01\x1B\x05\x42Yes\x01No\x05\x40\x02")
-            else:
-                update_message_by_id(messages, 0x405E, "\x1AChomp chomp chomp...We have...\x01\x05\x41" + item_text + "\x05\x40! \x01Do you want it...huh? Huh?\x04\x05\x41\x0860 Rupees\x05\x40 and it's yours!\x01Keyahahah!\x01\x1B\x05\x42Yes\x01No\x05\x40\x02")
         update_message_by_id(messages, 0x4069, "You don't have enough money.\x01I can't sell it to you.\x01Chomp chomp...\x02")
         update_message_by_id(messages, 0x406C, "We hope you like it!\x01Chomp chomp chomp.\x02")
         # Change first magic bean to cost 60 (is used as the price for the one time item when beans are shuffled)
@@ -2163,44 +2157,14 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     if world.settings.shuffle_expensive_merchants:
         rom.write_byte(rom.sym('SHUFFLE_CARPET_SALESMAN'), 0x01)
         # Update carpet salesman messages to better fit the fact that he sells a randomized item
-        if 'unique_merchants' not in world.settings.misc_hints:
-            update_message_by_id(messages, 0x6077, "\x06\x41Well Come!\x04I am selling stuff, strange and \x01rare, from all over the world to \x01everybody.\x01Today's special is...\x04A mysterious item! \x01Intriguing! \x01I won't tell you what it is until \x01I see the money....\x04How about \x05\x41200 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
-        else:
-            location = world.get_location("Wasteland Bombchu Salesman")
-            item_text = get_hint(get_item_generic_name(location.item), True).text
-            wrapped_item_text = line_wrap(item_text, False, False, False)
-            if wrapped_item_text != item_text:
-                update_message_by_id(messages, 0x6077, "\x06\x41Well Come!\x04I am selling stuff, strange and \x01rare. Today's special is...\x01\x05\x41"+ wrapped_item_text + "\x05\x40!\x04How about \x05\x41200 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
-            else:
-                update_message_by_id(messages, 0x6077, "\x06\x41Well Come!\x04I am selling stuff, strange and \x01rare, from all over the world to \x01everybody. Today's special is...\x01\x05\x41"+ wrapped_item_text + "\x05\x40! \x01\x04How about \x05\x41200 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
         update_message_by_id(messages, 0x6078, "Thank you very much!\x04The mark that will lead you to\x01the Spirit Temple is the \x05\x41flag on\x01the left \x05\x40outside the shop.\x01Be seeing you!\x02")
 
         rom.write_byte(rom.sym('SHUFFLE_MEDIGORON'), 0x01)
         # Update medigoron messages to better fit the fact that he sells a randomized item
         update_message_by_id(messages, 0x304C, "I have something cool right here.\x01How about it...\x07\x30\x4F\x02")
         update_message_by_id(messages, 0x304D, "How do you like it?\x02")
-        if 'unique_merchants' not in world.settings.misc_hints:
-            update_message_by_id(messages, 0x304F, "How about buying this cool item for \x01200 Rupees?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
-        else:
-            location = world.get_location("GC Medigoron")
-            item_text = get_hint(get_item_generic_name(location.item), True).text
-            wrapped_item_text = line_wrap(item_text, False, False, False)
-            if wrapped_item_text != item_text:
-                update_message_by_id(messages, 0x304F, "For 200 Rupees, how about buying...\x04\x05\x41" + wrapped_item_text + "\x05\x40?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
-            else:
-                update_message_by_id(messages, 0x304F, "For 200 Rupees, how about buying \x01\x05\x41" + item_text + "\x05\x40?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
 
         rom.write_byte(rom.sym('SHUFFLE_GRANNYS_POTION_SHOP'), 0x01)
-        if 'unique_merchants' not in world.settings.misc_hints:
-            update_message_by_id(messages, 0x500C, "Mysterious item! How about\x01\x05\x41100 Rupees\x05\x40?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
-        else:
-            location = world.get_location("Kak Granny Buy Blue Potion")
-            item_text = get_hint(get_item_generic_name(location.item), True).text
-            wrapped_item_text = line_wrap(item_text, False, False, False)
-            if wrapped_item_text != item_text:
-                update_message_by_id(messages, 0x500C, "How about \x05\x41100 Rupees\x05\x40 for...\x04\x05\x41"+ wrapped_item_text +"\x05\x40?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
-            else:
-                update_message_by_id(messages, 0x500C, "How about \x05\x41100 Rupees\x05\x40 for\x01\x05\x41"+ item_text +"\x05\x40?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
 
     new_message = "All right. You don't have to play\x01if you don't want to.\x0B\x02"
     update_message_by_id(messages, 0x908B, new_message, 0x00)
@@ -2210,16 +2174,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         else:
             rom.write_byte(rom.sym('SHUFFLE_CHEST_GAME'), 0x01)
         # Update Chest Game Salesman to better fit the fact he sells a randomized item
-        if 'unique_merchants' not in world.settings.misc_hints:
-            update_message_by_id(messages, 0x6D, "I seem to have misplaced my\x01keys, but I have a fun item to\x01sell instead.\x04How about \x05\x4110 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don't Buy\x05\x40\x02")
-        else:
-            location = world.get_location("Market Treasure Chest Game Salesman")
-            item_text = get_hint(get_item_generic_name(location.item), True).text
-            wrapped_item_text = line_wrap(item_text, False, False, False)
-            if wrapped_item_text != item_text:
-                update_message_by_id(messages, 0x6D, "I seem to have misplaced my\x01keys, but I have a fun item to\x01sell instead.\x01How about \x05\x4110 Rupees\x05\x40 for...\x04\x05\x41" + wrapped_item_text + "\x05\x40?\x01\x1B\x05\x42Buy\x01Don't Buy\x05\x40\x02")
-            else:
-                update_message_by_id(messages, 0x6D, "I seem to have misplaced my\x01keys, but I have a fun item to\x01sell instead.\x04How about \x05\x4110 Rupees\x05\x40 for\x01\x05\x41" + item_text + "\x05\x40?\x01\x1B\x05\x42Buy\x01Don't Buy\x05\x40\x02")
         update_message_by_id(messages, 0x908B, "That's OK!\x01More fun for me.\x0B\x02", 0x00)
         update_message_by_id(messages, 0x6E, "Wait, that room was off limits!\x02")
         update_message_by_id(messages, 0x704C, "I hope you like it!\x02")

@@ -1083,7 +1083,8 @@
             "Wasteland Crate After Quicksand 3": "can_break_crate",
             "Wasteland GS": "can_use(Hookshot) or can_use(Boomerang)",
             "Fairy Pot": "has_bottle",
-            "Nut Pot": "True"
+            "Nut Pot": "True",
+            "Wasteland Bombchu Salesman Hint": "can_jumpslash"
         },
         "exits": {
             "Wasteland Near Crate": "logic_lens_wasteland or can_use(Lens_of_Truth)",
@@ -1574,7 +1575,8 @@
                 (Small_Key_Treasure_Chest_Game, 5) and (shuffle_tcgkeys != 'vanilla' or can_use(Lens_of_Truth))",
             "Market Treasure Chest Game Room 5 Top": "
                 (Small_Key_Treasure_Chest_Game, 5) and (shuffle_tcgkeys != 'vanilla' or can_use(Lens_of_Truth))",
-            "Market Treasure Chest Game Reward": "(Small_Key_Treasure_Chest_Game, 6)"
+            "Market Treasure Chest Game Reward": "(Small_Key_Treasure_Chest_Game, 6)",
+            "Treasure Chest Game Salesman Hint": "True"
         },
         "exits": {
             "Market": "True"
@@ -1871,7 +1873,8 @@
                 ((selected_adult_trade_item == 'Odd Potion' or selected_adult_trade_item == 'Poachers Saw' or
                 selected_adult_trade_item == 'Broken Sword' or selected_adult_trade_item == 'Prescription' or
                 selected_adult_trade_item == 'Eyeball Frog' or selected_adult_trade_item == 'Eyedrops' or
-                selected_adult_trade_item == 'Claim Check') and not adult_trade_shuffle))"
+                selected_adult_trade_item == 'Claim Check') and not adult_trade_shuffle))",
+            "Potion Selling Granny Hint": "'Odd Potion Access'"
         },
         "exits": {
             "Kak Backyard": "True"
@@ -2128,7 +2131,8 @@
                 can_summon_gossip_fairy_without_suns and has_bottle and
                 (can_blast_or_smash or Progressive_Strength_Upgrade)",
             "Bug Rock": "(can_blast_or_smash or can_use(Silver_Gauntlets)) and has_bottle",
-            "Stick Pot": "is_child"
+            "Stick Pot": "is_child",
+            "Medigoron Hint": "is_adult and (can_blast_or_smash or Progressive_Strength_Upgrade)"
         },
         "exits": {
             "Death Mountain": "True",
@@ -2473,7 +2477,8 @@
             "Bug Shrub": "
                 (is_child or here(can_plant_bean) or Hover_Boots or logic_zora_river_lower) and
                 can_cut_shrubs and has_bottle",
-            "ZR Frogs Ocarina Minigame Hint": "True"
+            "ZR Frogs Ocarina Minigame Hint": "True",
+            "Bean Salesman Hint": "is_child"
         },
         "exits": {
             "ZR Front": "True",

@@ -4,7 +4,7 @@ from collections.abc import Callable, Iterable
 from enum import Enum
 from typing import TYPE_CHECKING, Optional, Any, overload
 
-from HintList import misc_item_hint_table, misc_location_hint_table
+from HintList import misc_item_hint_table, misc_location_hint_table, misc_unique_merchants_hint_table
 from LocationList import location_table, location_is_viewable, LocationAddress, LocationDefault, LocationFilterTags
 
 if TYPE_CHECKING:
@@ -135,6 +135,11 @@ class Location:
             if self.item.name not in self.item.world.hinted_dungeon_reward_locations:
                 self.item.world.hinted_dungeon_reward_locations[self.item.name] = self
                 logging.getLogger('').debug(f'{self.item.name} [{self.item.world.id}] set to [{self.name}]')
+        for merchant_hint in misc_unique_merchants_hint_table:
+            the_location = self.world.misc_hint_unique_merchants[merchant_hint]
+            if merchant_hint not in self.world.misc_hint_unique_merchant_locations and self.name == the_location:
+                self.world.misc_hint_unique_merchant_locations[merchant_hint] = self
+                logging.getLogger('').debug(f'{the_location} [{self.world.id}] set to [{self.item.name}]')
         for hint_type in misc_item_hint_table:
             item = self.item.world.misc_hint_items[hint_type]
             if hint_type not in self.item.world.misc_hint_item_locations and self.item.name == item:

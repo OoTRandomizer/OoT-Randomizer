@@ -182,7 +182,7 @@ def make_spoiler(settings: Settings, worlds: list[World]) -> Spoiler:
         logger.info('Calculating hint data.')
         update_goal_items(spoiler)
         build_gossip_hints(spoiler, worlds)
-    elif any(world.dungeon_rewards_hinted for world in worlds) or any(hint_type in settings.misc_hints for hint_type in misc_item_hint_table) or any(hint_type in settings.misc_hints for hint_type in misc_location_hint_table):
+    elif any(world.dungeon_rewards_hinted for world in worlds) or any(hint_type in settings.misc_hints for hint_type in misc_item_hint_table) or any(hint_type in settings.misc_hints for hint_type in misc_location_hint_table) or 'unique_merchants' in settings.misc_hints:
         spoiler.find_misc_hint_items()
     spoiler.build_file_hash()
     return spoiler
