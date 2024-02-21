@@ -2850,8 +2850,8 @@ class SettingInfos:
             count as major items if the bridge or Ganon
             Boss Key requirements are set to "Hearts".
 
-            Bombchus only count as major items if they
-            are considered in logic.
+            Bombchus only count as major items if the
+            "Add Bombchu Bag and Drops" setting is enabled.
 
             Pre-completed dungeons (if any) won't have
             a major item.
@@ -2860,7 +2860,6 @@ class SettingInfos:
             other randomizer settings. Should seeds continuously
             fail to generate, consider turning this option off.
         ''',
-        default        = False,
         shared         = True,
     )
 
