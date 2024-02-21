@@ -2524,6 +2524,40 @@ class SettingInfos:
         shared         = True,
     )
 
+    adult_trade_shuffle = Checkbutton(
+        gui_text       = 'Shuffle All Adult Trade Items',
+        gui_tooltip    = '''\
+            Shuffle all adult trade sequence items. If disabled,
+            a random item will be selected, and Anju will always
+            give an item even if Pocket Egg is not shuffled.
+        ''',
+        shared         = True,
+        default        = False,
+    )
+
+    adult_trade_start = MultipleSelect(
+        gui_text       = 'Adult Trade Sequence Items',
+        default        = ['Pocket Egg', 'Pocket Cucco', 'Cojiro', 'Odd Mushroom', 'Odd Potion', 'Poachers Saw',
+                          'Broken Sword', 'Prescription', 'Eyeball Frog', 'Eyedrops', 'Claim Check'],
+        choices        = {
+            'Pocket Egg':   'Pocket Egg',
+            'Pocket Cucco': 'Pocket Cucco',
+            'Cojiro':       'Cojiro',
+            'Odd Mushroom': 'Odd Mushroom',
+            'Odd Potion':   'Odd Potion',
+            'Poachers Saw': "Poacher's Saw",
+            'Broken Sword': 'Broken Sword',
+            'Prescription': 'Prescription',
+            'Eyeball Frog': 'Eyeball Frog',
+            'Eyedrops':     'Eyedrops',
+            'Claim Check':  'Claim Check',
+        },
+        gui_tooltip    = '''\
+            Select the items to shuffle in the adult trade sequence.
+        ''',
+        shared         = True,
+    )
+
     shuffle_freestanding_items = Combobox(
         gui_text       = 'Shuffle Rupees & Hearts',
         default        = 'off',
@@ -2823,46 +2857,6 @@ class SettingInfos:
         shared         = True,
     )
 
-    one_item_per_dungeon = Checkbutton(
-        gui_text       = 'Dungeons Have One Major Item',
-        gui_tooltip    = '''\
-            Dungeons have exactly one major item.
-            This naturally makes each dungeon similar in value
-            rather than vary based on shuffled locations.
-
-            Spirit Temple Colossus hands count as part
-            of the dungeon. Spirit Temple has TWO items
-            to match vanilla distribution.
-
-            Boss Keys and Fortress Keys only count as
-            major items if they are shuffled Anywhere
-            (Keysanity) or in Any Dungeon, and Small
-            Keys only count as major items if they are
-            shuffled Anywhere (Keysanity). This setting
-            is disabled if Small Keys are shuffled in
-            Any Dungeon.
-
-            GS Tokens only count as major items if the
-            bridge or Ganon Boss Key requirements are
-            set to "GS Tokens".
-
-            Heart Containers and Pieces of Heart only
-            count as major items if the bridge or Ganon
-            Boss Key requirements are set to "Hearts".
-
-            Bombchus only count as major items if the
-            "Add Bombchu Bag and Drops" setting is enabled.
-
-            Pre-completed dungeons (if any) won't have
-            a major item.
-
-            This setting has potential to conflict with
-            other randomizer settings. Should seeds continuously
-            fail to generate, consider turning this option off.
-        ''',
-        shared         = True,
-    )
-
     disabled_locations = SearchBox(
         gui_text       = "Exclude Locations",
         shared         = True,
@@ -3105,6 +3099,54 @@ class SettingInfos:
         shared         = True,
     )
 
+    easier_fire_arrow_entry = Checkbutton(
+        gui_text       = 'Easier Fire Arrow Entry',
+        gui_tooltip    = '''\
+            It is possible to open the Shadow Temple entrance
+            by lighting the torches with Fire Arrows, but
+            can be difficult to light all 24 torches in time.
+            Enabling this setting allows you to reduce the
+            number of torches that need to be lit to open
+            the entrance, making it easier to perform
+            Fire Arrow Entry.
+
+            Note that this setting does not affect logic.
+            Whether it's used or not, the trick "Shadow Temple
+            Entry with Fire Arrows" must be enabled for it to be
+            in logic.
+        ''',
+        disable        = {
+            False: {'settings': ['fae_torch_count']},
+        },
+        shared         = True,
+    )
+
+    fae_torch_count = Scale(
+        gui_text       = 'Fire Arrow Entry Torch Count',
+        default        = 3,
+        minimum        = 1,
+        maximum        = 23,
+        gui_tooltip    = '''\
+            The entrance to Shadow Temple will open
+            after the chosen number of torches are lit.
+        ''',
+        shared         = True,
+        gui_params     = {
+            "hide_when_disabled": True,
+        },
+    )
+
+    ruto_already_f1_jabu = Checkbutton(
+        gui_text       = 'Ruto Already at F1',
+        gui_tooltip    = '''\
+            Ruto in Jabu Jabu's Belly will already be at the top floor.
+            Only applied in the original version of the dungeon, since
+            in Master Quest you don't need to bring Ruto up.
+        ''',
+        default        = False,
+        shared         = True,
+    )
+
     chicken_count_random = Checkbutton(
         gui_text       = 'Random Cucco Count',
         gui_tooltip    = '''\
@@ -3157,173 +3199,91 @@ class SettingInfos:
         shared           = True,
     )
 
-    easier_fire_arrow_entry = Checkbutton(
-        gui_text       = 'Easier Fire Arrow Entry',
-        gui_tooltip    = '''\
-            It is possible to open the Shadow Temple entrance
-            by lighting the torches with Fire Arrows, but
-            can be difficult to light all 24 torches in time.
-            Enabling this setting allows you to reduce the
-            number of torches that need to be lit to open
-            the entrance, making it easier to perform
-            Fire Arrow Entry.
-
-            Note that this setting does not affect logic.
-            Whether it's used or not, the trick "Shadow Temple
-            Entry with Fire Arrows" must be enabled for it to be
-            in logic.
-        ''',
-        disable        = {
-            False: {'settings': ['fae_torch_count']},
-        },
-        shared         = True,
-    )
-
-    fae_torch_count = Scale(
-        gui_text       = 'Fire Arrow Entry Torch Count',
-        default        = 3,
-        minimum        = 1,
-        maximum        = 23,
-        gui_tooltip    = '''\
-            The entrance to Shadow Temple will open
-            after the chosen number of torches are lit.
-        ''',
-        shared         = True,
-        gui_params     = {
-            "hide_when_disabled": True,
-        },
-    )
-
-    ruto_already_f1_jabu = Checkbutton(
-        gui_text       = 'Ruto Already at F1',
-        gui_tooltip    = '''\
-            Ruto in Jabu Jabu's Belly will already be at the top floor.
-            Only applied in the original version of the dungeon, since
-            in Master Quest you don't need to bring Ruto up.
-        ''',
-        default        = False,
-        shared         = True,
-    )
-
-    ocarina_songs = Combobox(
-        gui_text       = 'Randomize Ocarina Melodies',
-        default        = 'off',
+    item_pool_value = Combobox(
+        gui_text       = 'Item Pool',
+        default        = 'balanced',
         choices        = {
-            'off': 'Off',
-            'frog': 'Frog Songs Only',
-            'warp': 'Warp Songs Only',
-            'all':  'All Songs',
+            'ludicrous': 'Ludicrous',
+            'plentiful': 'Plentiful',
+            'balanced':  'Balanced',
+            'scarce':    'Scarce',
+            'minimal':   'Minimal'
         },
         gui_tooltip    = '''\
-            Will need to memorize a new set of songs.
-            Can be silly, but difficult. All songs are
-            generally sensible, but warp songs are
-            typically more difficult than frog songs.
-            ''',
-        shared         = True,
-    )
+            'Ludicrous': Every item in the game is a major
+            item. Incompatible with one major item per dungeon.
 
-    correct_chest_appearances = Combobox(
-        gui_text       = 'Chest Appearance Matches Contents',
-        default        = 'off',
-        choices        = {
-            'off': 'Off',
-            'textures': 'Texture',
-            'both':  'Both Size and Texture',
-            'classic': 'Classic'
-        },
-        gui_tooltip    = '''\
-            If "Texture" is enabled, chest texture will reflect its contents
-            regardless of size.  Fancy chests will contain keys,
-            Gilded chests will contain major items, shuffled
-            tokens will be in Webbed chests, and Wooden chests
-            will contain the rest.
-            This allows skipping chests if they are wooden.
-            However, skipping wooden chests will mean having
-            low health, ammo, and rupees, so doing so is a risk.
+            'Plentiful': One additional copy of each major
+            item is added.
 
-            "Size and Texture" will change chests with major
-            items and boss keys into big chests, and everything
-            else into small chests.
+            'Balanced': Original item pool.
 
-            "Classic" is the behavior of CSMC in previous versions of the randomizer.
-            This will change chests with major items and boss keys into big chests.
-            Boss keys will remain in their fancy chest, while small key will be in a
-            smaller version of the fancy chest.
+            'Scarce': An extra copy of major item upgrades
+            that are not required to open location checks
+            is removed (e.g. Bow upgrade, Magic upgrade).
+            Heart Containers are removed as well. Number
+            of Bombchu items is reduced.
+
+            'Minimal': All major item upgrades not used to
+            open location checks are removed. All health
+            upgrades are removed. Only one Bombchu item is
+            available.
         ''',
         shared         = True,
         disable        = {
-            'off': {'settings': ['minor_items_as_major_chest']},
-        },
+            'ludicrous':  {'settings': ['one_item_per_dungeon']}
+        }
     )
 
-    minor_items_as_major_chest = MultipleSelect(
-        gui_text       = 'Minor Items in Big/Gold chests',
+    junk_ice_traps = Combobox(
+        gui_text       = 'Ice Traps',
+        default        = 'normal',
         choices        = {
-            'bombchus': 'Bombchus',
-            'shields':  'Deku & Hylian Shields',
-            'capacity': 'Deku Stick & Nut Capacity',
+            'off':       'No Ice Traps',
+            'normal':    'Normal Ice Traps',
+            'on':        'Extra Ice Traps',
+            'mayhem':    'Ice Trap Mayhem',
+            'onslaught': 'Ice Trap Onslaught',
         },
         gui_tooltip    = '''\
-            Chests with Hylian or Deku Shields, Deku Stick
-            or Nut Capacity, or Bombchus will appear in Big
-            and/or Gold chests, depending on the Chest
-            Appearance Matches Contents setting. Bombchus
-            are always in big chests if Add Bombchu Bag and
-            Drops is on.
-        ''',
-        shared         = True,
-        default        = [],
-        gui_params     = {
-            "hide_when_disabled" : True,
-        },
-    )
+            'Off': All Ice Traps are removed.
 
-    invisible_chests = Checkbutton(
-        gui_text       = 'Invisible Chests',
-        gui_tooltip    = '''\
-            Chests will be only be visible with
-            the Lens of Truth. Lens is not logically
-            required for normally visible chests.
+            'Normal': Only Ice Traps from the base item pool
+            are placed.
+
+            'Extra Ice Traps': Chance to add extra Ice Traps
+            when junk items are added to the itempool.
+
+            'Ice Trap Mayhem': All added junk items will
+            be Ice Traps.
+
+            'Ice Trap Onslaught': All junk items will be
+            replaced by Ice Traps, even those in the
+            base pool.
         ''',
         shared         = True,
     )
 
-    correct_potcrate_appearances = Combobox(
-        gui_text       = 'Pot, Crate, & Beehive Appearance Matches Contents',
-        default        = 'textures_unchecked',
+    ice_trap_appearance = Combobox(
+        gui_text       = 'Ice Trap Appearance',
+        default        = 'major_only',
         choices        = {
-            'off':                'Off',
-            'textures_content':   'Texture (Match Content)',
-            'textures_unchecked': 'Texture (Unchecked)',
+            'major_only': 'Major Items Only',
+            'junk_only':  'Junk Items Only',
+            'anything':   'Anything',
         },
         gui_tooltip    = '''\
-            If enabled, pot/crate textures, and beehive wiggling will reflect its contents.
+            Changes the categories of items Ice Traps may
+            appear as, both when freestanding and when in
+            chests with Chest Size Matches Contents enabled.
 
-            Off - Pots, crates, and beehives will appear as vanilla.
+            'Major Items Only': Ice Traps appear as Major
+            Items (and in large chests if CSMC enabled).
 
-            Texture (Match Content) - Pot and crate textures will reflect the contents.
-            Golden Pots/crates will contain major items.
-            Pots/crates with keys on them will contain small keys.
-            Pots/crates containing boss keys will use a variation of the boss key chest texture.
-            Pots/crates with a spider web on them contain Gold Skulltula tokens.
-            All other items will use the original texture.
-            The texture will revert to the original texture once the item is collected.
-            Beehives containing non-junk items will wiggle until collected.
+            'Junk Items Only': Ice Traps appear as Junk
+            Items (and in small chests if CSMC enabled).
 
-            Texture (Unchecked) - All pots/crates containing shuffled items
-            will appear with a golden texture. The texture will revert to the
-            original texture once the item is collected.
-            Beehives will wiggle until their item is collected.
-        ''',
-        shared         = True,
-    )
-
-    key_appearance_match_dungeon = Checkbutton(
-        gui_text       = 'Key Appearance Matches Dungeon',
-        gui_tooltip    = '''\
-            Small keys and boss keys (not key rings)
-            will use custom models to match their dungeon.
+            'Anything': Ice Traps may appear as anything.
         ''',
         shared         = True,
     )
@@ -3487,6 +3447,129 @@ class SettingInfos:
         default        = ['altar', 'ganondorf', 'warp_songs_and_owls'],
     )
 
+    ocarina_songs = Combobox(
+        gui_text       = 'Randomize Ocarina Melodies',
+        default        = 'off',
+        choices        = {
+            'off': 'Off',
+            'frog': 'Frog Songs Only',
+            'warp': 'Warp Songs Only',
+            'all':  'All Songs',
+        },
+        gui_tooltip    = '''\
+            Will need to memorize a new set of songs.
+            Can be silly, but difficult. All songs are
+            generally sensible, but warp songs are
+            typically more difficult than frog songs.
+            ''',
+        shared         = True,
+    )
+
+    correct_chest_appearances = Combobox(
+        gui_text       = 'Chest Appearance Matches Contents',
+        default        = 'off',
+        choices        = {
+            'off': 'Off',
+            'textures': 'Texture',
+            'both':  'Both Size and Texture',
+            'classic': 'Classic'
+        },
+        gui_tooltip    = '''\
+            If "Texture" is enabled, chest texture will reflect its contents
+            regardless of size.  Fancy chests will contain keys,
+            Gilded chests will contain major items, shuffled
+            tokens will be in Webbed chests, and Wooden chests
+            will contain the rest.
+            This allows skipping chests if they are wooden.
+            However, skipping wooden chests will mean having
+            low health, ammo, and rupees, so doing so is a risk.
+
+            "Size and Texture" will change chests with major
+            items and boss keys into big chests, and everything
+            else into small chests.
+
+            "Classic" is the behavior of CSMC in previous versions of the randomizer.
+            This will change chests with major items and boss keys into big chests.
+            Boss keys will remain in their fancy chest, while small key will be in a
+            smaller version of the fancy chest.
+        ''',
+        shared         = True,
+        disable        = {
+            'off': {'settings': ['minor_items_as_major_chest']},
+        },
+    )
+
+    minor_items_as_major_chest = MultipleSelect(
+        gui_text       = 'Minor Items in Big/Gold chests',
+        choices        = {
+            'bombchus': 'Bombchus',
+            'shields':  'Deku & Hylian Shields',
+            'capacity': 'Deku Stick & Nut Capacity',
+        },
+        gui_tooltip    = '''\
+            Chests with Hylian or Deku Shields, Deku Stick
+            or Nut Capacity, or Bombchus will appear in Big
+            and/or Gold chests, depending on the Chest
+            Appearance Matches Contents setting. Bombchus
+            are always in big chests if Add Bombchu Bag and
+            Drops is on.
+        ''',
+        shared         = True,
+        default        = [],
+        gui_params     = {
+            "hide_when_disabled" : True,
+        },
+    )
+
+    invisible_chests = Checkbutton(
+        gui_text       = 'Invisible Chests',
+        gui_tooltip    = '''\
+            Chests will be only be visible with
+            the Lens of Truth. Lens is not logically
+            required for normally visible chests.
+        ''',
+        shared         = True,
+    )
+
+    correct_potcrate_appearances = Combobox(
+        gui_text       = 'Pot, Crate, & Beehive Appearance Matches Contents',
+        default        = 'textures_unchecked',
+        choices        = {
+            'off':                'Off',
+            'textures_content':   'Texture (Match Content)',
+            'textures_unchecked': 'Texture (Unchecked)',
+        },
+        gui_tooltip    = '''\
+            If enabled, pot/crate textures, and beehive wiggling will reflect its contents.
+
+            Off - Pots, crates, and beehives will appear as vanilla.
+
+            Texture (Match Content) - Pot and crate textures will reflect the contents.
+            Golden Pots/crates will contain major items.
+            Pots/crates with keys on them will contain small keys.
+            Pots/crates containing boss keys will use a variation of the boss key chest texture.
+            Pots/crates with a spider web on them contain Gold Skulltula tokens.
+            All other items will use the original texture.
+            The texture will revert to the original texture once the item is collected.
+            Beehives containing non-junk items will wiggle until collected.
+
+            Texture (Unchecked) - All pots/crates containing shuffled items
+            will appear with a golden texture. The texture will revert to the
+            original texture once the item is collected.
+            Beehives will wiggle until their item is collected.
+        ''',
+        shared         = True,
+    )
+
+    key_appearance_match_dungeon = Checkbutton(
+        gui_text       = 'Key Appearance Matches Dungeon',
+        gui_tooltip    = '''\
+            Small keys and boss keys (not key rings)
+            will use custom models to match their dungeon.
+        ''',
+        shared         = True,
+    )
+
     text_shuffle = Combobox(
         gui_text       = 'Text Shuffle',
         default        = 'none',
@@ -3545,18 +3628,6 @@ class SettingInfos:
         shared         = True,
     )
 
-    no_collectible_hearts = Checkbutton(
-        gui_text       = 'Hero Mode',
-        gui_tooltip    = '''\
-            No recovery hearts will drop from
-            enemies or objects.
-            (You might still find some freestanding
-            or in chests depending on other settings.)
-        ''',
-        default        = False,
-        shared         = True,
-    )
-
     starting_tod = Combobox(
         gui_text       = 'Starting Time of Day',
         default        = 'default',
@@ -3577,6 +3648,58 @@ class SettingInfos:
 
             Daytime officially starts at 6:30,
             nighttime at 18:00 (6:00 PM).
+        ''',
+        shared         = True,
+    )
+
+    no_collectible_hearts = Checkbutton(
+        gui_text       = 'Hero Mode',
+        gui_tooltip    = '''\
+            No recovery hearts will drop from
+            enemies or objects.
+            (You might still find some freestanding
+            or in chests depending on other settings.)
+        ''',
+        default        = False,
+        shared         = True,
+    )
+
+    one_item_per_dungeon = Checkbutton(
+        gui_text       = 'Dungeons Have One Major Item',
+        gui_tooltip    = '''\
+            Dungeons have exactly one major item.
+            This naturally makes each dungeon similar in value
+            rather than vary based on shuffled locations.
+
+            Spirit Temple Colossus hands count as part
+            of the dungeon. Spirit Temple has TWO items
+            to match vanilla distribution.
+
+            Boss Keys and Fortress Keys only count as
+            major items if they are shuffled Anywhere
+            (Keysanity) or in Any Dungeon, and Small
+            Keys only count as major items if they are
+            shuffled Anywhere (Keysanity). This setting
+            is disabled if Small Keys are shuffled in
+            Any Dungeon.
+
+            GS Tokens only count as major items if the
+            bridge or Ganon Boss Key requirements are
+            set to "GS Tokens".
+
+            Heart Containers and Pieces of Heart only
+            count as major items if the bridge or Ganon
+            Boss Key requirements are set to "Hearts".
+
+            Bombchus only count as major items if the
+            "Add Bombchu Bag and Drops" setting is enabled.
+
+            Pre-completed dungeons (if any) won't have
+            a major item.
+
+            This setting has potential to conflict with
+            other randomizer settings. Should seeds continuously
+            fail to generate, consider turning this option off.
         ''',
         shared         = True,
     )
@@ -3602,129 +3725,6 @@ class SettingInfos:
             logic might require you to get a deku shield this way. There is a
             magic jar on top of the Gerudo Training Ground eye statue that does
             not always refill your magic in the vanilla game.
-        ''',
-        shared         = True,
-    )
-
-    item_pool_value = Combobox(
-        gui_text       = 'Item Pool',
-        default        = 'balanced',
-        choices        = {
-            'ludicrous': 'Ludicrous',
-            'plentiful': 'Plentiful',
-            'balanced':  'Balanced',
-            'scarce':    'Scarce',
-            'minimal':   'Minimal'
-        },
-        gui_tooltip    = '''\
-            'Ludicrous': Every item in the game is a major
-            item. Incompatible with one major item per dungeon.
-
-            'Plentiful': One additional copy of each major
-            item is added.
-
-            'Balanced': Original item pool.
-
-            'Scarce': An extra copy of major item upgrades
-            that are not required to open location checks
-            is removed (e.g. Bow upgrade, Magic upgrade).
-            Heart Containers are removed as well. Number
-            of Bombchu items is reduced.
-
-            'Minimal': All major item upgrades not used to
-            open location checks are removed. All health
-            upgrades are removed. Only one Bombchu item is
-            available.
-        ''',
-        shared         = True,
-        disable        = {
-            'ludicrous':  {'settings': ['one_item_per_dungeon']}
-        }
-    )
-
-    junk_ice_traps = Combobox(
-        gui_text       = 'Ice Traps',
-        default        = 'normal',
-        choices        = {
-            'off':       'No Ice Traps',
-            'normal':    'Normal Ice Traps',
-            'on':        'Extra Ice Traps',
-            'mayhem':    'Ice Trap Mayhem',
-            'onslaught': 'Ice Trap Onslaught',
-        },
-        gui_tooltip    = '''\
-            'Off': All Ice Traps are removed.
-
-            'Normal': Only Ice Traps from the base item pool
-            are placed.
-
-            'Extra Ice Traps': Chance to add extra Ice Traps
-            when junk items are added to the itempool.
-
-            'Ice Trap Mayhem': All added junk items will
-            be Ice Traps.
-
-            'Ice Trap Onslaught': All junk items will be
-            replaced by Ice Traps, even those in the
-            base pool.
-        ''',
-        shared         = True,
-    )
-
-    ice_trap_appearance = Combobox(
-        gui_text       = 'Ice Trap Appearance',
-        default        = 'major_only',
-        choices        = {
-            'major_only': 'Major Items Only',
-            'junk_only':  'Junk Items Only',
-            'anything':   'Anything',
-        },
-        gui_tooltip    = '''\
-            Changes the categories of items Ice Traps may
-            appear as, both when freestanding and when in
-            chests with Chest Size Matches Contents enabled.
-
-            'Major Items Only': Ice Traps appear as Major
-            Items (and in large chests if CSMC enabled).
-
-            'Junk Items Only': Ice Traps appear as Junk
-            Items (and in small chests if CSMC enabled).
-
-            'Anything': Ice Traps may appear as anything.
-        ''',
-        shared         = True,
-    )
-
-    adult_trade_shuffle = Checkbutton(
-        gui_text       = 'Shuffle All Adult Trade Items',
-        gui_tooltip    = '''\
-            Shuffle all adult trade sequence items. If disabled,
-            a random item will be selected, and Anju will always
-            give an item even if Pocket Egg is not shuffled.
-        ''',
-        shared         = True,
-        default        = False,
-    )
-
-    adult_trade_start = MultipleSelect(
-        gui_text       = 'Adult Trade Sequence Items',
-        default        = ['Pocket Egg', 'Pocket Cucco', 'Cojiro', 'Odd Mushroom', 'Odd Potion', 'Poachers Saw',
-                          'Broken Sword', 'Prescription', 'Eyeball Frog', 'Eyedrops', 'Claim Check'],
-        choices        = {
-            'Pocket Egg':   'Pocket Egg',
-            'Pocket Cucco': 'Pocket Cucco',
-            'Cojiro':       'Cojiro',
-            'Odd Mushroom': 'Odd Mushroom',
-            'Odd Potion':   'Odd Potion',
-            'Poachers Saw': "Poacher's Saw",
-            'Broken Sword': 'Broken Sword',
-            'Prescription': 'Prescription',
-            'Eyeball Frog': 'Eyeball Frog',
-            'Eyedrops':     'Eyedrops',
-            'Claim Check':  'Claim Check',
-        },
-        gui_tooltip    = '''\
-            Select the items to shuffle in the adult trade sequence.
         ''',
         shared         = True,
     )

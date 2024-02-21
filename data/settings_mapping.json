@@ -248,8 +248,7 @@
           "row_span": [2,2,2],
           "settings": [
             "reachable_locations",
-            "logic_no_night_tokens_without_suns_song",
-            "one_item_per_dungeon"
+            "logic_no_night_tokens_without_suns_song"
           ]
         },
         {
@@ -321,10 +320,11 @@
       "text": "Other",
       "app_type": ["generator"],
       "sections": [
-        {
+          {
           "name": "speedup_section",
           "text": "Timesavers",
-          "row_span": [1,1,1],
+          "col_span": 2,
+          "row_span": [5,1,1],
           "settings": [
             "no_escape_sequence",
             "no_guard_stealth",
@@ -337,38 +337,13 @@
             "fast_bunny_hood",
             "auto_equip_masks",
             "plant_beans",
+            "easier_fire_arrow_entry",
+            "fae_torch_count",
+            "ruto_already_f1_jabu",
             "chicken_count_random",
             "chicken_count",
             "big_poe_count_random",
-            "big_poe_count",
-            "easier_fire_arrow_entry",
-            "fae_torch_count",
-            "ruto_already_f1_jabu"
-          ]
-        },
-        {
-          "name": "misc_section",
-          "text": "Misc",
-          "row_span": [1,1,1],
-          "settings": [
-            "ocarina_songs",
-            "correct_chest_appearances",
-            "minor_items_as_major_chest",
-            "invisible_chests",
-            "correct_potcrate_appearances",
-            "key_appearance_match_dungeon",
-            "clearer_hints",
-            "hints",
-            "hint_dist",
-            "bingosync_url",
-            "misc_hints",
-            "text_shuffle",
-            "damage_multiplier",
-            "deadly_bonks",
-            "no_collectible_hearts",
-            "starting_tod",
-            "blue_fire_arrows",
-            "fix_broken_drops"
+            "big_poe_count"
           ]
         },
         {
@@ -379,6 +354,48 @@
             "item_pool_value",
             "junk_ice_traps",
             "ice_trap_appearance"
+          ]
+        },
+        {
+          "name": "hints_section",
+            "text": "Hints",
+            "row_span": [1,1,1],
+            "settings": [
+              "clearer_hints",
+              "hints",
+              "hint_dist",
+              "bingosync_url",
+              "misc_hints"
+          ]
+        },
+        {
+          "name": "non_logic_gameplay_changes_section",
+          "text": "Non-Logical Gameplay Changes",
+          "col_span": 2,
+          "row_span": [5,1,1],
+          "settings": [
+            "ocarina_songs",
+            "correct_chest_appearances",
+            "minor_items_as_major_chest",
+            "invisible_chests",
+            "correct_potcrate_appearances",
+            "key_appearance_match_dungeon",
+            "text_shuffle"
+          ]
+        },
+        {
+          "name": "other_logic_adjustments_section",
+            "text": "Other Logic Adjustments",
+            "col_span": 2,
+            "row_span": [1,1,1],
+            "settings": [
+              "damage_multiplier",
+              "deadly_bonks",
+              "starting_tod",
+              "no_collectible_hearts",
+              "one_item_per_dungeon",
+              "blue_fire_arrows",
+              "fix_broken_drops"
           ]
         }
       ]
