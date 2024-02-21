@@ -324,7 +324,7 @@
           "name": "speedup_section",
           "text": "Timesavers",
           "col_span": 2,
-          "row_span": [5,1,1],
+          "row_span": [1,1,1],
           "settings": [
             "no_escape_sequence",
             "no_guard_stealth",
@@ -372,7 +372,7 @@
           "name": "non_logic_gameplay_changes_section",
           "text": "Non-Logical Gameplay Changes",
           "col_span": 2,
-          "row_span": [5,1,1],
+          "row_span": [1,1,1],
           "settings": [
             "ocarina_songs",
             "correct_chest_appearances",
