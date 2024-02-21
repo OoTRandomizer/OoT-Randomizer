@@ -177,8 +177,7 @@
             "triforce_hunt",
             "triforce_count_per_world",
             "triforce_goal_per_world",
-            "free_bombchu_drops",
-            "one_item_per_dungeon"
+            "free_bombchu_drops"
           ]
         },
         {
@@ -249,7 +248,8 @@
           "row_span": [2,2,2],
           "settings": [
             "reachable_locations",
-            "logic_no_night_tokens_without_suns_song"
+            "logic_no_night_tokens_without_suns_song",
+            "one_item_per_dungeon"
           ]
         },
         {

@@ -2301,49 +2301,6 @@ class SettingInfos:
         },
     )
 
-    one_item_per_dungeon = Checkbutton(
-        gui_text       = 'Dungeons Have One Major Item',
-        gui_tooltip    = '''\
-            Dungeons have exactly one major item.
-            This naturally makes each dungeon similar in value
-            rather than vary based on shuffled locations.
-
-            Spirit Temple Colossus hands count as part
-            of the dungeon. Spirit Temple has TWO items
-            to match vanilla distribution.
-
-            Boss Keys and Fortress Keys only count as
-            major items if they are shuffled Anywhere
-            (Keysanity) or in Any Dungeon, and Small
-            Keys only count as major items if they are
-            shuffled Anywhere (Keysanity). This setting
-            is disabled if Small Keys are shuffled in
-            Any Dungeon.
-
-            GS Tokens only count as major items if the
-            bridge or Ganon Boss Key requirements are
-            set to "GS Tokens".
-
-            Heart Containers and Pieces of Heart only
-            count as major items if the bridge or Ganon
-            Boss Key requirements are set to "Hearts".
-
-            Bombchus only count as major items if they
-            are considered in logic.
-
-            Pre-completed dungeons (if any) won't have
-            a major item.
-
-            This setting has potential to conflict with
-            other randomizer settings. Should seeds continuously
-            fail to generate, consider turning this option off.
-        ''',
-        shared         = True,
-        gui_params     = {
-            'randomize_key': 'randomize_settings',
-        },
-    )
-
     shuffle_song_items = Combobox(
         gui_text       = 'Shuffle Songs',
         default        = 'song',
@@ -2863,6 +2820,47 @@ class SettingInfos:
         gui_params={
             "hide_when_disabled": True,
         },
+        shared         = True,
+    )
+
+    one_item_per_dungeon = Checkbutton(
+        gui_text       = 'Dungeons Have One Major Item',
+        gui_tooltip    = '''\
+            Dungeons have exactly one major item.
+            This naturally makes each dungeon similar in value
+            rather than vary based on shuffled locations.
+
+            Spirit Temple Colossus hands count as part
+            of the dungeon. Spirit Temple has TWO items
+            to match vanilla distribution.
+
+            Boss Keys and Fortress Keys only count as
+            major items if they are shuffled Anywhere
+            (Keysanity) or in Any Dungeon, and Small
+            Keys only count as major items if they are
+            shuffled Anywhere (Keysanity). This setting
+            is disabled if Small Keys are shuffled in
+            Any Dungeon.
+
+            GS Tokens only count as major items if the
+            bridge or Ganon Boss Key requirements are
+            set to "GS Tokens".
+
+            Heart Containers and Pieces of Heart only
+            count as major items if the bridge or Ganon
+            Boss Key requirements are set to "Hearts".
+
+            Bombchus only count as major items if they
+            are considered in logic.
+
+            Pre-completed dungeons (if any) won't have
+            a major item.
+
+            This setting has potential to conflict with
+            other randomizer settings. Should seeds continuously
+            fail to generate, consider turning this option off.
+        ''',
+        default        = False,
         shared         = True,
     )
 
