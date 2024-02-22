@@ -1813,6 +1813,44 @@ misc_item_hint_table: dict[str, dict[str, Any]] = {
     },
 }
 
+misc_unique_merchants_hint_table: dict[str, dict[str, Any]] = {
+    'bean_salesman': {
+        'id': 0x405E,
+        'hint_location': 'Bean Salesman Hint',
+        'item_location': 'ZR Magic Bean Salesman',
+        'location_text': '\x1AChomp chomp chomp...We have...\x01\x05\x41{item}\x05\x40!\x04\x05\x41\x0860 Rupees\x05\x40 and it\'s yours!\x01Keyahahah!\x01\x1B\x05\x42Yes\x01No\x05\x40\x02',
+        'location_fallback': '\x1AChomp chomp chomp...\x01We have... \x05\x41a mysterious item\x05\x40! \x01Do you want it...huh? Huh?\x04\x05\x41\x0860 Rupees\x05\x40 and it\'s yours!\x01Keyahahah!\x01\x1B\x05\x42Yes\x01No\x05\x40\x02',
+    },
+    'carpet_salesman': {
+        'id': 0x6077,
+        'hint_location': 'Wasteland Bombchu Salesman Hint',
+        'item_location': 'Wasteland Bombchu Salesman',
+        'location_text': '\x06\x41Well Come!\x04I am selling stuff, strange and \x01rare, from all over the world to \x01everybody.\x01Today\'s special is...\x04A mysterious item! \x01Intriguing! \x01I won\'t tell you what it is until \x01I see the money....\x04How about \x05\x41200 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02',
+        'location_fallback': '\x06\x41Well Come!\x04I am selling stuff, strange and \x01rare. Today\'s special is...\x01\x05\x41{item}\x05\x40!\x04How about \x05\x41200 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02',
+    },
+    'medigoron': {
+        'id': 0x304F,
+        'hint_location': 'Medigoron Hint',
+        'item_location': 'GC Medigoron',
+        'location_text': 'For 200 Rupees, how about buying...\x04\x05\x41{item}\x05\x40?\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02',
+        'location_fallback': 'How about buying this cool item for \x01200 Rupees?\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02',
+    },
+    'granny': {
+        'id': 0x500C,
+        'hint_location': 'Potion Selling Granny Hint',
+        'item_location': 'Kak Granny Buy Blue Potion',
+        'location_text': 'How about \x05\x41100 Rupees\x05\x40 for...\x04\x05\x41{item}\x05\x40?\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02',
+        'location_fallback': 'Mysterious item! How about\x01\x05\x41100 Rupees\x05\x40?\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02',
+    },
+    'chest_game': {
+        'id': 0x6D,
+        'hint_location': 'Treasure Chest Game Salesman Hint',
+        'item_location': 'Market Treasure Chest Game Salesman',
+        'location_text': 'I seem to have misplaced my\x01keys, but I have a fun item to\x01sell instead.\x01How about \x05\x4110 Rupees\x05\x40 for...\x04\x05\x41{item}\x05\x40?\x01\x1B\x05\x42Buy\x01Don\'t Buy\x05\x40\x02',
+        'location_fallback': 'I seem to have misplaced my\x01keys, but I have a fun item to\x01sell instead.\x04How about \x05\x4110 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don\'t Buy\x05\x40\x02',
+    }
+}
+
 misc_location_hint_table: dict[str, dict[str, Any]] = {
     '10_skulltulas': {
         'id': 0x9004,
