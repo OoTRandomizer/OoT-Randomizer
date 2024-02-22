@@ -323,7 +323,6 @@
           {
           "name": "speedup_section",
           "text": "Timesavers",
-          "col_span": 2,
           "row_span": [1,1,1],
           "settings": [
             "no_escape_sequence",
@@ -347,55 +346,47 @@
           ]
         },
         {
-          "name": "item_pool_section",
-          "text": "Item Pool",
+          "name": "gameplay_changes_section",
+          "text": "Gameplay Changes",
           "row_span": [1,1,1],
           "settings": [
             "item_pool_value",
             "junk_ice_traps",
-            "ice_trap_appearance"
+            "ice_trap_appearance",
+            "ocarina_songs",
+            "text_shuffle",
+            "damage_multiplier",
+            "deadly_bonks",
+            "starting_tod",
+            "key_appearance_match_dungeon",
+            "blue_fire_arrows",
+            "fix_broken_drops",
+            "no_collectible_hearts",
+            "one_item_per_dungeon"
           ]
         },
         {
-          "name": "hints_section",
-            "text": "Hints",
+          "name": "hints_information_section",
+            "text": "Hints and Information",
             "row_span": [1,1,1],
             "settings": [
               "clearer_hints",
               "hints",
               "hint_dist",
               "bingosync_url",
-              "misc_hints"
+              "misc_hints",
+              "correct_chest_appearances",
+              "minor_items_as_major_chest",
+              "invisible_chests",
+              "correct_potcrate_appearances"
           ]
         },
         {
-          "name": "non_logic_gameplay_changes_section",
-          "text": "Non-Logical Gameplay Changes",
-          "col_span": 2,
+          "name": "item_pool_section",
+          "text": "Item Pool",
           "row_span": [1,1,1],
           "settings": [
-            "ocarina_songs",
-            "correct_chest_appearances",
-            "minor_items_as_major_chest",
-            "invisible_chests",
-            "correct_potcrate_appearances",
-            "key_appearance_match_dungeon",
-            "text_shuffle"
-          ]
-        },
-        {
-          "name": "other_logic_adjustments_section",
-            "text": "Other Logic Adjustments",
-            "col_span": 2,
-            "row_span": [1,1,1],
-            "settings": [
-              "damage_multiplier",
-              "deadly_bonks",
-              "starting_tod",
-              "no_collectible_hearts",
-              "one_item_per_dungeon",
-              "blue_fire_arrows",
-              "fix_broken_drops"
+
           ]
         }
       ]
