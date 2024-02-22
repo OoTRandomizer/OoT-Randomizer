@@ -358,7 +358,6 @@
             "damage_multiplier",
             "deadly_bonks",
             "starting_tod",
-            "key_appearance_match_dungeon",
             "blue_fire_arrows",
             "fix_broken_drops",
             "no_collectible_hearts",
@@ -378,7 +377,8 @@
               "correct_chest_appearances",
               "minor_items_as_major_chest",
               "invisible_chests",
-              "correct_potcrate_appearances"
+              "correct_potcrate_appearances",
+              "key_appearance_match_dungeon"
           ]
         },
         {
