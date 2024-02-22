@@ -320,10 +320,11 @@
       "text": "Other",
       "app_type": ["generator"],
       "sections": [
-          {
+        {
           "name": "speedup_section",
           "text": "Timesavers",
-          "row_span": [1,1,1],
+          "col_span": 2,
+          "row_span": [3,3,3],
           "settings": [
             "no_escape_sequence",
             "no_guard_stealth",
@@ -346,28 +347,10 @@
           ]
         },
         {
-          "name": "gameplay_changes_section",
-          "text": "Gameplay Changes",
-          "row_span": [1,1,1],
-          "settings": [
-            "item_pool_value",
-            "junk_ice_traps",
-            "ice_trap_appearance",
-            "ocarina_songs",
-            "text_shuffle",
-            "damage_multiplier",
-            "deadly_bonks",
-            "starting_tod",
-            "blue_fire_arrows",
-            "fix_broken_drops",
-            "no_collectible_hearts",
-            "one_item_per_dungeon"
-          ]
-        },
-        {
           "name": "hints_information_section",
             "text": "Hints and Information",
-            "row_span": [1,1,1],
+            "col_span": 1,
+            "row_span": [2,2,2],
             "settings": [
               "clearer_hints",
               "hints",
@@ -382,13 +365,33 @@
           ]
         },
         {
+          "name": "gameplay_changes_section",
+          "text": "Gameplay Changes",
+          "col_span": 1,
+          "row_span": [3,3,3],
+          "settings": [
+            "ocarina_songs",
+            "text_shuffle",
+            "damage_multiplier",
+            "deadly_bonks",
+            "starting_tod",
+            "blue_fire_arrows",
+            "fix_broken_drops",
+            "no_collectible_hearts",
+            "one_item_per_dungeon"
+          ]
+        },
+        {
           "name": "item_pool_section",
           "text": "Item Pool",
+          "col_span": 1,
           "row_span": [1,1,1],
           "settings": [
-
+            "item_pool_value",
+            "junk_ice_traps",
+            "ice_trap_appearance"
           ]
-        }
+        }        
       ]
     },
     {
