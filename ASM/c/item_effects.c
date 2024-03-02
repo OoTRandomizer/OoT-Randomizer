@@ -216,7 +216,7 @@ void fill_wallet_upgrade(z64_file_t* save, int16_t arg1, int16_t arg2) {
 }
 
 void clear_excess_hearts(z64_file_t* save, int16_t arg1, int16_t arg2) {
-    if (save->energy_capacity >= 19 * 0x10)  // Giving a Heart Container at 19 hearts.
+    if (save->energy_capacity >= 20 * 0x10)  // Giving a Heart Container at 19 hearts.
         save->heart_pieces = 0;
     save->refill_hearts = 20 * 0x10;
 }
