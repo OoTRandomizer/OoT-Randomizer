@@ -4066,6 +4066,33 @@ courtyard_guards_kill:
 ;   sw      t7, 0x1F24(at)
     jal     ocarina_buttons
     nop
+;===================================================================================================
+; Remove the minimap L button press functions to make our custom one for triforce counter
+;===================================================================================================
+
+.orga 0xAE2D0C
+; Replaces jal     func_800C806C
+    nop
+
+.orga 0xAE2D28
+; Replaces jal     func_800C806C
+    nop
+
+.orga 0xAE2D48
+; Replaces sh      t7, 0x0DD2(v1)
+    nop
+
+.orga 0xAE34A0
+; Replaces jal     func_800C806C
+    nop
+
+.orga 0xAE34C0
+; Replaces jal     func_800C806C
+    nop
+
+.orga 0xAE34D8
+; Replaces sh      t7, 0x0DD2(v1)
+    nop
 
 ;===================================================================================================
 ; Overrides the function that gives Fairy Ocarina on the Lost Woods Bridge
