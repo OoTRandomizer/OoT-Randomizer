@@ -127,7 +127,7 @@ TEMPLE_HINTS_MESSAGES: list[int] = [0x7057, 0x707A]  # dungeon reward hints from
 GS_TOKEN_MESSAGES: list[int] = [0x00B4, 0x00B5]  # Get Gold Skulltula Token messages
 ERROR_MESSAGE: int = 0x0001
 
-new_messages = [] # Used to keep track of new/updated messages to prevent duplicates. Clear it at the start of patches
+new_messages: list[int] = [] # Used to keep track of new/updated messages to prevent duplicates. Clear it at the start of patches
 
 # messages for shorter item messages
 # ids are in the space freed up by move_shop_item_messages()
@@ -559,7 +559,7 @@ MISC_MESSAGES: list[tuple[int, tuple[str | bytearray, int]]] = [
 
 
 # convert byte array to an integer
-def bytes_to_int(data: bytes, signed: bool = False) -> int:
+def bytes_to_int(data: bytes | list[int], signed: bool = False) -> int:
     return int.from_bytes(data, byteorder='big', signed=signed)
 
 
@@ -697,7 +697,7 @@ class TextCode:
 class Message:
     def __init__(self, raw_text: list[int] | bytearray | str, index: int, id: int, opts: int, offset: int, length: int) -> None:
         if isinstance(raw_text, str):
-            raw_text = encode_text_string(raw_text)
+            raw_text = bytearray(encode_text_string(raw_text))
         elif not isinstance(raw_text, bytearray):
             raw_text = bytearray(raw_text)
 
@@ -924,7 +924,7 @@ def update_message_by_id(messages: list[Message], id: int, text: bytearray | str
     if index >= 0:
         update_message_by_index(messages, index, text, opts)
     else:
-        add_message(messages, text, id, opts)
+        add_message(messages, text, id, opts or 0x00)
 
 
 # Gets the message by its ID. Returns None if the index does not exist
@@ -1002,7 +1002,7 @@ class ShopItem:
     def write(self, rom: Rom, shop_table_address: int, index: int) -> None:
         entry_offset = shop_table_address + 0x20 * index
 
-        data = []
+        data: list[int] = []
         data += int_to_bytes(self.object, 2)
         data += int_to_bytes(self.model, 2)
         data += int_to_bytes(self.func1, 4)
@@ -1138,14 +1138,14 @@ def make_player_message(text: str) -> str:
 # make sure to call this AFTER move_shop_item_messages()
 def update_item_messages(messages: list[Message], world: World) -> None:
     new_item_messages = ITEM_MESSAGES + KEYSANITY_MESSAGES
-    for id, text in new_item_messages:
+    for id, new_item_text in new_item_messages:
         if world.settings.world_count > 1:
-            update_message_by_id(messages, id, make_player_message(text), 0x23)
+            update_message_by_id(messages, id, make_player_message(new_item_text), 0x23)
         else:
-            update_message_by_id(messages, id, text, 0x23)
+            update_message_by_id(messages, id, new_item_text, 0x23)
 
-    for id, (text, opt) in MISC_MESSAGES:
-        update_message_by_id(messages, id, text, opt)
+    for id, (misc_text, opt) in MISC_MESSAGES:
+        update_message_by_id(messages, id, misc_text, opt)
 
 # run all keysanity related patching to add messages for dungeon specific items
 def add_item_messages(messages: list[Message], shop_items: Iterable[ShopItem], world: World) -> None:
@@ -1200,7 +1200,7 @@ def read_fffc_message(rom: Rom) -> Message:
 
 
 # write the messages back
-def repack_messages(rom: Rom, messages: list[Message], permutation: Optional[list[int]] = None,
+def repack_messages(rom: Rom, messages: list[Message], permutation: Optional[Iterable[int]] = None,
                     always_allow_skip: bool = True, speed_up_text: bool = True) -> None:
     rom.update_dmadata_record_by_key(ENG_TEXT_START, ENG_TEXT_START, ENG_TEXT_START + ENG_TEXT_SIZE_LIMIT)
     rom.update_dmadata_record_by_key(JPN_TEXT_START, JPN_TEXT_START, JPN_TEXT_START + JPN_TEXT_SIZE_LIMIT)
@@ -1288,21 +1288,9 @@ def repack_messages(rom: Rom, messages: list[Message], permutation: Optional[lis
 
 
 # shuffles the messages in the game, making sure to keep various message types in their own group
+SHOP_ITEM_MESSAGES: list[int] = []
+SCRUBS_MESSAGE_IDS: list[int] = []
 def shuffle_messages(messages: list[Message], except_hints: bool = True) -> list[int]:
-    if not hasattr(shuffle_messages, "shop_item_messages"):
-        shuffle_messages.shop_item_messages = []
-    if not hasattr(shuffle_messages, "scrubs_message_ids"):
-        shuffle_messages.scrubs_message_ids = []
-
-    hint_ids = (
-        GOSSIP_STONE_MESSAGES + TEMPLE_HINTS_MESSAGES +
-        [data['id'] for data in misc_item_hint_table.values()] +
-        [data['id'] for data in misc_location_hint_table.values()] +
-        [message_id for (message_id, message) in KEYSANITY_MESSAGES] + shuffle_messages.shop_item_messages +
-        shuffle_messages.scrubs_message_ids +
-        [0x5036, 0x70F5] # Chicken count and poe count respectively
-    )
-
     permutation = [i for i, _ in enumerate(messages)]
 
     def is_exempt(m: Message) -> bool:
@@ -1310,9 +1298,8 @@ def shuffle_messages(messages: list[Message], except_hints: bool = True) -> list
             GOSSIP_STONE_MESSAGES + TEMPLE_HINTS_MESSAGES +
             [data['id'] for data in misc_item_hint_table.values()] +
             [data['id'] for data in misc_location_hint_table.values()] +
-            [message_id for (message_id, message) in KEYSANITY_MESSAGES] +
-            shuffle_messages.shop_item_messages +
-            shuffle_messages.scrubs_message_ids +
+            [message_id for message_id, _ in KEYSANITY_MESSAGES] +
+            SHOP_ITEM_MESSAGES + SCRUBS_MESSAGE_IDS +
             [0x5036, 0x70F5] # Chicken count and poe count respectively
         )
         shuffle_exempt = [
@@ -1320,9 +1307,9 @@ def shuffle_messages(messages: list[Message], except_hints: bool = True) -> list
             0x208D,         # "One more lap!" for Cow in House race.
             0xFFFC,         # Character data from JP table used on title and file select screens
         ]
-        is_hint = (except_hints and m.id in hint_ids)
-        is_error_message = (m.id == ERROR_MESSAGE)
-        is_shuffle_exempt = (m.id in shuffle_exempt)
+        is_hint = except_hints and m.id in hint_ids
+        is_error_message = m.id == ERROR_MESSAGE
+        is_shuffle_exempt = m.id in shuffle_exempt
         return is_hint or is_error_message or m.is_id_message() or is_shuffle_exempt
 
     have_goto         = list(filter(lambda m: not is_exempt(m) and m.has_goto,         messages))
@@ -1373,7 +1360,8 @@ def update_warp_song_text(messages: list[Message], world: World) -> None:
         for id, entr in msg_list.items():
             if 'warp_songs_and_owls' in world.settings.misc_hints or not world.settings.warp_songs:
                 destination = world.get_entrance(entr).connected_region
-                destination_name = HintArea.at(destination)
+                assert destination is not None
+                destination_name: Any = HintArea.at(destination)
                 color = COLOR_MAP[destination_name.color]
                 if destination_name.preposition(True) is not None:
                     destination_name = f'to {destination_name}'
@@ -1388,6 +1376,7 @@ def update_warp_song_text(messages: list[Message], world: World) -> None:
         for id, entr in owl_messages.items():
             if 'warp_songs_and_owls' in world.settings.misc_hints:
                 destination = world.get_entrance(entr).connected_region
+                assert destination is not None
                 destination_name = HintArea.at(destination)
                 color = COLOR_MAP[destination_name.color]
                 if destination_name.preposition(True) is not None:

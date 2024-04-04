@@ -75,7 +75,7 @@ def get_keys(obj: AlignedDict, depth: int):
             yield from get_keys(value, depth - 1)
 
 
-def dump_dict(obj: dict, current_indent: str = '', sub_width: Optional[Sequence[int, int]] = None, ensure_ascii: bool = False) -> str:
+def dump_dict(obj: dict, current_indent: str = '', sub_width: Optional[tuple[int, int]] = None, ensure_ascii: bool = False) -> str:
     entries = []
 
     key_width = None
@@ -122,7 +122,7 @@ def dump_dict(obj: dict, current_indent: str = '', sub_width: Optional[Sequence[
     return output
 
 
-def dump_obj(obj, current_indent: str = '', sub_width: Optional[Sequence[int, int]] = None, ensure_ascii: bool = False) -> str:
+def dump_obj(obj, current_indent: str = '', sub_width: Optional[tuple[int, int]] = None, ensure_ascii: bool = False) -> str:
     if is_list(obj):
         return dump_list(obj, current_indent, ensure_ascii)
     elif is_dict(obj):

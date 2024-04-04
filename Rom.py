@@ -129,7 +129,7 @@ class Rom(BigStream):
         subprocess.call(subcall, **subprocess_args())
         self.read_rom(output_file, verify_crc=verify_crc)
 
-    def write_byte(self, address: int, value: int) -> None:
+    def write_byte(self, address: int | None, value: int) -> None:
         super().write_byte(address, value)
         self.changed_address[self.last_address-1] = value
 

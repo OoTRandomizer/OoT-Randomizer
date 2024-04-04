@@ -67,7 +67,7 @@ class Record:
             if update_all or k in src_dict:
                 setattr(self, k, src_dict.get(k, p))
 
-    def to_json(self) -> dict[str, Any]:
+    def to_json(self) -> json:
         return {k: getattr(self, k) for (k, d) in self.properties.items() if getattr(self, k) != d}
 
     def __str__(self) -> str:
@@ -1092,7 +1092,7 @@ class WorldDistribution:
             for location_name in skipped_locations_from_dungeons:
                 location = world.get_location(location_name)
                 hint_area = HintArea.at(location)
-                if hint_area.is_dungeon and world.empty_dungeons[hint_area.dungeon_name].empty:
+                if hint_area.dungeon_name is not None and world.empty_dungeons[hint_area.dungeon_name].empty:
                     skipped_locations.append(location.name)
                     world.item_added_hint_types['barren'].append(location.item.name)
         for iter_world in worlds:

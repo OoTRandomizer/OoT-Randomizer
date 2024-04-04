@@ -25,6 +25,7 @@ def set_rules(world: World) -> None:
     is_child = world.parser.parse_rule('is_child')
 
     for location in world.get_locations():
+        assert location.world is not None
         if world.settings.shuffle_song_items == 'song':
             if location.type == 'Song':
                 # allow junk items, but songs must still have matching world

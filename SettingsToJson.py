@@ -69,7 +69,7 @@ def get_setting_json(setting: str, web_version: bool, as_array: bool = False) ->
         'options':       [],
         'default':       setting_info.default,
         'text':          setting_info.gui_text,
-        'tooltip': remove_trailing_lines('<br>'.join(line.strip() for line in setting_info.gui_tooltip.split('\n'))),
+        'tooltip': remove_trailing_lines('<br>'.join(line.strip() for line in (setting_info.gui_tooltip or '').split('\n'))),
         'type':          setting_info.gui_type,
         'shared':        setting_info.shared,
     }

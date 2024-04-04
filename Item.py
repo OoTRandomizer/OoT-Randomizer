@@ -28,17 +28,17 @@ class ItemInfo:
     def __init__(self, name: str = '', event: bool = False) -> None:
         if event:
             item_type = 'Event'
-            progressive = True
+            progressive: Optional[bool] = True
             item_id = None
-            special = None
+            special: dict[str, Any] = {}
         else:
-            (item_type, progressive, item_id, special) = item_table[name]
+            item_type, progressive, item_id, special = item_table[name]
 
         self.name: str = name
         self.advancement: bool = (progressive is True)
         self.priority: bool = (progressive is False)
         self.type: str = item_type
-        self.special: dict[str, Any] = special or {}
+        self.special: dict[str, Any] = special
         self.index: Optional[int] = item_id
         self.price: Optional[int] = self.special.get('price', None)
         self.bottle: bool = self.special.get('bottle', False)
@@ -198,11 +198,11 @@ def ItemFactory(items: str, world: Optional[World] = None, event: bool = False) 
 
 
 @overload
-def ItemFactory(items: Iterable[str], world: Optional[World] = None, event: bool = False) -> list[Item]:
+def ItemFactory(items: list[str] | tuple[str], world: Optional[World] = None, event: bool = False) -> list[Item]:
     pass
 
 
-def ItemFactory(items: str | Iterable[str], world: Optional[World] = None, event: bool = False) -> Item | list[Item]:
+def ItemFactory(items: str | list[str] | tuple[str], world: Optional[World] = None, event: bool = False) -> Item | list[Item]:
     if isinstance(items, str):
         if not event and items not in ItemInfo.items:
             raise KeyError('Unknown Item: %s' % items)

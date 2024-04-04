@@ -3,7 +3,7 @@ import random
 import sys
 from collections.abc import Callable, Sequence
 from itertools import chain
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING, Optional, TypeVar
 
 from Fill import ShuffleError
 
@@ -18,7 +18,8 @@ if TYPE_CHECKING:
 
 ActivationTransform: TypeAlias = "Callable[[list[int]], list[int]]"
 PlaybackTransform: TypeAlias = "Callable[[list[dict[str, int]]], list[dict[str, int]]]"
-Transform: TypeAlias = "ActivationTransform | PlaybackTransform"
+P = TypeVar('P', "list[int]", "list[dict[str, int]]")
+T = TypeVar('T', ActivationTransform, PlaybackTransform)
 
 PLAYBACK_START: int = 0xB781DC
 PLAYBACK_LENGTH: int = 0xA0
@@ -137,7 +138,7 @@ def copy_playback_info(playback: list[dict[str, int]], piece: list[int]):
     return [{'note': n, 'volume': p['volume'], 'duration': p['duration']} for (p, n) in zip(playback, piece)]
 
 
-def identity(x: list[int | dict[str, int]]) -> list[int | dict[str, int]]:
+def identity(x: P) -> P:
     return x
 
 
@@ -149,7 +150,7 @@ def invert_piece(piece: list[int]) -> list[int]:
     return [4 - note for note in piece]
 
 
-def reverse_piece(piece: list[int | dict[str, int]]) -> list[int | dict[str, int]]:
+def reverse_piece(piece: P) -> P:
     return piece[::-1]
 
 
@@ -163,7 +164,7 @@ def transpose_piece(amount: int) -> ActivationTransform:
     return transpose
 
 
-def compose(f: Transform, g: Transform) -> Transform:
+def compose(f: T, g: T) -> T:
     return lambda x: f(g(x))
 
 
@@ -188,6 +189,7 @@ class Song:
         self.activation_data: list[int] = []
         self.playback_data: list[int] = []
         self.total_duration: int = 0
+        self.difficulty: int = -1
 
         if activation:
             self.length = len(activation)
@@ -341,8 +343,8 @@ def get_random_song() -> Song:
     rand_song = random.choices([True, False], [1, 9])[0]
     piece_size = random.choices([3, 4], [5, 2])[0]
     extra_position = random.choices(['none', 'start', 'middle', 'end'], [12, 1, 1, 1])[0]
-    activation_transform = identity
-    playback_transform = identity
+    activation_transform: ActivationTransform = identity
+    playback_transform: PlaybackTransform = identity
     weight_damage = 0
     should_transpose = random.choices([True, False], [1, 4])[0]
     starting_range = range(0, 5)
@@ -403,7 +405,7 @@ def generate_song_list(world: World, frog: bool, warp: bool) -> dict[str, Song]:
         for name2, song2 in fixed_songs.items():
             if name1 != name2 and subsong(song1, song2):
                 raise ValueError(f'{name2} is unplayable because it contains {name1}')
-    random_songs = []
+    random_songs: list[Song] = []
 
     for _ in range(12 - len(fixed_songs)):
         for _ in range(1000):

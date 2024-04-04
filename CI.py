@@ -10,7 +10,7 @@ import pathlib
 import sys
 import unittest
 from io import StringIO
-from typing import NoReturn
+from typing import Any, NoReturn
 
 from Messages import ITEM_MESSAGES, KEYSANITY_MESSAGES, MISC_MESSAGES
 from SettingsList import SettingInfos, logic_tricks, validate_settings
@@ -18,17 +18,26 @@ import Unittest as Tests
 from Utils import data_path
 
 
+ERROR_COUNT: int = 0
+ANY_FIXABLE_ERRORS: bool = False
+ANY_FIXABLE_ERRORS_FOR_RELEASE_CHECKS: bool = False
+ANY_UNFIXABLE_ERRORS: bool = False
+
+
 def error(msg: str, can_fix: bool | str) -> None:
-    if not hasattr(error, "count"):
-        error.count = 0
+    global ERROR_COUNT
+    global ANY_FIXABLE_ERRORS
+    global ANY_FIXABLE_ERRORS_FOR_RELEASE_CHECKS
+    global ANY_UNFIXABLE_ERRORS
+
     print(msg, file=sys.stderr)
-    error.count += 1
+    ERROR_COUNT += 1
     if can_fix:
-        error.can_fix = True
+        ANY_FIXABLE_ERRORS = True
         if can_fix == 'release':
-            error.can_fix_release = True
+            ANY_FIXABLE_ERRORS_FOR_RELEASE_CHECKS = True
     else:
-        error.cannot_fix = True
+        ANY_UNFIXABLE_ERRORS = True
 
 
 def run_unit_tests() -> None:
@@ -132,7 +141,7 @@ def check_release_presets(fix_errors: bool = False) -> None:
 # This is not a perfect check because it doesn't account for everything that gets manually done in Patches.py
 # For that, we perform additional checking at patch time
 def check_message_duplicates() -> None:
-    def check_for_duplicates(new_item_messages: list[tuple[int, str]]) -> None:
+    def check_for_duplicates(new_item_messages: list[tuple[int, Any]]) -> None:
         for i in range(0, len(new_item_messages)):
             for j in range(i, len(new_item_messages)):
                 if i != j:
@@ -231,22 +240,22 @@ def run_ci_checks() -> NoReturn:
 
 
 def exit_ci(fix_errors: bool = False) -> NoReturn:
-    if hasattr(error, "count") and error.count:
-        print(f'CI failed with {error.count} errors.', file=sys.stderr)
+    if ERROR_COUNT > 0:
+        print(f'CI failed with {ERROR_COUNT} errors.', file=sys.stderr)
         if fix_errors:
-            if getattr(error, 'cannot_fix', False):
+            if ANY_UNFIXABLE_ERRORS:
                 print('Some errors could not be fixed automatically.', file=sys.stderr)
                 sys.exit(1)
             else:
                 print('All errors fixed.', file=sys.stderr)
                 sys.exit(0)
         else:
-            if getattr(error, 'can_fix', False):
-                if getattr(error, 'can_fix_release', False):
+            if ANY_FIXABLE_ERRORS:
+                if ANY_FIXABLE_ERRORS_FOR_RELEASE_CHECKS:
                     release_arg = ' --release'
                 else:
                     release_arg = ''
-                if getattr(error, 'cannot_fix', False):
+                if ANY_UNFIXABLE_ERRORS:
                     which_errors = 'some of these errors'
                 else:
                     which_errors = 'these errors'

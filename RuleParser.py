@@ -138,12 +138,12 @@ class Rule_AST_Transformer(ast.NodeTransformer):
         item, count = node.elts
 
         if not isinstance(item, ast.Name) and not (isinstance(item, ast.Constant) and isinstance(item.value, str)):
-            raise Exception('Parse Error: first value must be an item. Got %s' % item.__class__.__name__, self.current_spot.name, ast.dump(node, False))
+            raise Exception('Parse Error: first value must be an item. Got %s' % item.__class__.__name__, None if self.current_spot is None else self.current_spot.name, ast.dump(node, False))
         if isinstance(item, ast.Constant) and isinstance(item.value, str):
             item = ast.Name(id=escape_name(item.value), ctx=ast.Load())
 
         if not (isinstance(count, ast.Name) or (isinstance(count, ast.Constant) and isinstance(count.value, int))):
-            raise Exception('Parse Error: second value must be a number. Got %s' % item.__class__.__name__, self.current_spot.name, ast.dump(node, False))
+            raise Exception('Parse Error: second value must be a number. Got %s' % item.__class__.__name__, None if self.current_spot is None else self.current_spot.name, ast.dump(node, False))
 
         if isinstance(count, ast.Name):
             # Must be a settings constant

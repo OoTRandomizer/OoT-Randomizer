@@ -27,7 +27,7 @@ class FillError(ShuffleError):
 
 
 # Places all items into the world
-def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[list[Location]] = None) -> None:
+def distribute_items_restrictive(worlds: list[World]) -> None:
     if worlds[0].settings.shuffle_song_items == 'song':
         song_location_names = location_groups['Song']
     elif worlds[0].settings.shuffle_song_items == 'dungeon':
@@ -54,13 +54,15 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
 
     shop_locations = [location for world in worlds for location in world.get_unfilled_locations() if location.type == 'Shop' and location.price is None]
 
-    # If not passed in, then get a shuffled list of locations to fill in
-    if not fill_locations:
-        fill_locations = [
-            location for world in worlds for location in world.get_unfilled_locations()
-            if location not in song_locations
-                and location not in shop_locations
-                and not location.type.startswith('Hint')]
+    # get a shuffled list of locations to fill in
+    fill_locations = [
+        location
+        for world in worlds
+        for location in world.get_unfilled_locations()
+        if location not in song_locations
+            and location not in shop_locations
+            and not location.type.startswith('Hint')
+    ]
     world_states = [world.state for world in worlds]
 
     # Generate the itempools
@@ -97,7 +99,7 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
     junk_items = remove_junk_items.copy()
     junk_items.remove('Ice Trap')
     major_items = [name for name, item in ItemInfo.items.items() if item.type == 'Item' and item.advancement and item.index is not None]
-    fake_items = []
+    fake_items: list[Item] = []
     if worlds[0].settings.ice_trap_appearance == 'major_only':
         model_items = [item for item in itempool if item.majoritem]
         if len(model_items) == 0:  # All major items were somehow removed from the pool (can happen in plando)
@@ -145,9 +147,14 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
 
     # If some dungeons are supposed to be empty, fill them with useless items.
     if worlds[0].settings.empty_dungeons_mode != 'none':
-        empty_locations = [location for location in fill_locations
-                           if location.world.empty_dungeons[HintArea.at(location).dungeon_name].empty]
+        empty_locations = []
+        for location in fill_locations:
+            assert location.world is not None
+            dungeon_name = HintArea.at(location).dungeon_name
+            if dungeon_name is not None and location.world.empty_dungeons[dungeon_name].empty:
+                empty_locations.append(location)
         for location in empty_locations:
+            assert location.world is not None
             fill_locations.remove(location)
             location.world.hint_type_overrides['sometimes'].append(location.name)
             location.world.hint_type_overrides['random'].append(location.name)
@@ -209,9 +216,9 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
 
     # Log unplaced item/location warnings
     for item in progitempool + prioitempool + restitempool:
-        logger.error('Unplaced Items: %s [World %d]' % (item.name, item.world.id))
+        logger.error(f'Unplaced Items: {item.name} [{item.world}]')
     for location in fill_locations:
-        logger.error('Unfilled Locations: %s [World %d]' % (location.name, location.world.id))
+        logger.error(f'Unfilled Locations: {location.name} [{location.world}]')
 
     if progitempool + prioitempool + restitempool:
         raise FillError('Not all items are placed.')
@@ -225,9 +232,9 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
     worlds[0].settings.distribution.cloak(worlds, [cloakable_locations], [all_models])
 
     for world in worlds:
-        for location in world.get_filled_locations():
+        for location in world.get_filled_locations(lambda item: item.advancement):
             # Get the maximum amount of wallets required to purchase an advancement item.
-            if world.maximum_wallets < 3 and location.price and location.item.advancement:
+            if world.maximum_wallets < 3 and location.price:
                 if location.price > 500:
                     world.maximum_wallets = 3
                 elif world.maximum_wallets < 2 and location.price > 200:
@@ -306,6 +313,7 @@ def fill_dungeon_unique_item(worlds: list[World], search: Search, fill_locations
         # Sort major items in such a way that they are placed first if dungeon restricted.
         # There still won't be enough locations for small keys in one item per dungeon mode, though.
         for item in list(major_items):
+            assert item.world is not None
             if not item.world.get_region('Root').can_fill(item):
                 major_items.remove(item)
                 major_items.append(item)
@@ -330,6 +338,7 @@ def fill_dungeon_unique_item(worlds: list[World], search: Search, fill_locations
 
     # Error out if we have any items that won't be placeable in the overworld left.
     for item in major_items:
+        assert item.world is not None
         if not item.world.get_region('Root').can_fill(item):
             raise FillError(f"No more dungeon locations available for {item.name} to be placed with 'Dungeons Have One Major Item' enabled. To fix this, either disable 'Dungeons Have One Major Item' or enable some settings that add more locations for shuffled items in the overworld.")
 
@@ -344,8 +353,8 @@ def fill_ownworld_restrictive(worlds: list[World], search: Search, locations: li
     unplaced_prizes = [item for item in ownpool if item.name not in placed_prizes]
     empty_locations = [loc for loc in locations if loc.item is None]
 
-    prizepool_dict = {world.id: [item for item in unplaced_prizes if item.world.id == world.id] for world in worlds}
-    prize_locs_dict = {world.id: [loc for loc in empty_locations if loc.world.id == world.id] for world in worlds}
+    prizepool_dict = {world.id: [item for item in unplaced_prizes if item.world is not None and item.world.id == world.id] for world in worlds}
+    prize_locs_dict = {world.id: [loc for loc in empty_locations if loc.world is not None and loc.world.id == world.id] for world in worlds}
 
     # Shop item being sent in to this method are tied to their own world.
     # Therefore, let's do this one world at a time. We do this to help
@@ -413,6 +422,7 @@ def fill_restrictive(worlds: list[World], base_search: Search, locations: list[L
 
         # get an item and remove it from the itempool
         item_to_place = itempool.pop()
+        assert item_to_place.world is not None
         if item_to_place.priority:
             l2cations = [l for l in locations if l.can_fill_fast(item_to_place)]
         elif item_to_place.majoritem:
@@ -445,6 +455,7 @@ def fill_restrictive(worlds: list[World], base_search: Search, locations: list[L
         # in the world we are placing it (possibly checking for reachability)
         spot_to_fill = None
         for location in l2cations:
+            assert location.world is not None
             if location.can_fill(max_search.state_list[location.world.id], item_to_place, perform_access_check):
                 # for multiworld, make it so that the location is also reachable
                 # in the world the item is for. This is to prevent early restrictions
@@ -493,6 +504,7 @@ def fill_restrictive(worlds: list[World], base_search: Search, locations: list[L
                 raise FillError(f'Game unbeatable: No more spots to place {item_to_place} [World {item_to_place.world.id + 1}] from {len(l2cations)} locations ({len(locations)} total); {len(itempool)} other items left to place, plus {len(unplaced_items)} skipped')
 
         # Place the item in the world and continue
+        assert spot_to_fill.world is not None
         spot_to_fill.world.push_item(spot_to_fill, item_to_place)
         locations.remove(spot_to_fill)
 
@@ -532,6 +544,7 @@ def fill_restrictive_fast(worlds: list[World], locations: list[Location], itempo
             break
 
         # Place the item in the world and continue
+        assert spot_to_fill.world is not None
         spot_to_fill.world.push_item(spot_to_fill, item_to_place)
         locations.remove(spot_to_fill)
 
@@ -543,5 +556,6 @@ def fast_fill(locations: list[Location], itempool: list[Item]) -> None:
     random.shuffle(locations)
     while itempool and locations:
         spot_to_fill = locations.pop()
+        assert spot_to_fill.world is not None
         item_to_place = itempool.pop()
         spot_to_fill.world.push_item(spot_to_fill, item_to_place)

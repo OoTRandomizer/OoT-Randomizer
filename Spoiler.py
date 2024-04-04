@@ -72,7 +72,7 @@ class Spoiler:
         self.file_hash: list[int] = []
 
     def build_file_hash(self) -> None:
-        dist_file_hash = self.settings.distribution.file_hash
+        dist_file_hash = self.settings.distribution.file_hash or [None, None, None, None, None]
         for i in range(5):
             self.file_hash.append(random.randint(0, 31) if dist_file_hash[i] is None else HASH_ICONS.index(dist_file_hash[i]))
 

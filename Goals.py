@@ -2,7 +2,7 @@ from __future__ import annotations
 import sys
 from collections import defaultdict
 from collections.abc import Iterable, Collection
-from typing import TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Optional, Any, TypedDict
 
 from HintList import goalTable, get_hint_group, hint_exclusions
 from ItemList import item_table
@@ -21,7 +21,6 @@ if TYPE_CHECKING:
     from World import World
 
 RequiredLocations: TypeAlias = "dict[str, dict[str, dict[int, list[tuple[Location, int, int]]]] | list[Location]]"
-GoalItem: TypeAlias = "dict[str, str | int | bool]"
 
 validColors: list[str] = [
     'White',
@@ -35,8 +34,15 @@ validColors: list[str] = [
 ]
 
 
+class GoalItem(TypedDict):
+    name: str
+    quantity: int
+    minimum: int
+    hintable: bool
+
+
 class Goal:
-    def __init__(self, world: World, name: str, hint_text: str | dict[str, str], color: str, items: Optional[list[dict[str, Any]]] = None,
+    def __init__(self, world: World, name: str, hint_text: str | dict[str, str], color: str, items: Optional[list[GoalItem]] = None,
                  locations=None, lock_locations=None, lock_entrances: Optional[list[str]] = None, required_locations=None, create_empty: bool = False) -> None:
         # early exit if goal initialized incorrectly
         if not items and not locations and not create_empty:
@@ -75,7 +81,7 @@ class Goal:
     def requires(self, item: str) -> bool:
         # Prevent direct hints for certain items that can have many duplicates, such as tokens and Triforce Pieces
         names = [item]
-        if item_table[item][3] is not None and 'alias' in item_table[item][3]:
+        if 'alias' in item_table[item][3]:
             names.append(item_table[item][3]['alias'][0])
         return any(i['name'] in names and not i['hintable'] for i in self.items)
 
@@ -85,11 +91,11 @@ class Goal:
 
 class GoalCategory:
     def __init__(self, name: str, priority: int, goal_count: int = 0, minimum_goals: int = 0,
-                 lock_locations=None, lock_entrances: list[str] = None) -> None:
+                 lock_locations=None, lock_entrances: Optional[list[str]] = None) -> None:
         self.name: str = name
         self.priority: int = priority
         self.lock_locations = lock_locations  # Unused?
-        self.lock_entrances: list[str] = lock_entrances
+        self.lock_entrances: Optional[list[str]] = lock_entrances
         self.goals: list[Goal] = []
         self.goal_count: int = goal_count
         self.minimum_goals: int = minimum_goals
@@ -148,11 +154,12 @@ class GoalCategory:
 
 def replace_goal_names(worlds: list[World]) -> None:
     for world in worlds:
-        bosses = [location for location in world.get_filled_locations() if location.item.type == 'DungeonReward']
+        bosses = [location for location in world.get_filled_locations(lambda item: item.type == 'DungeonReward')]
         for cat_name, category in world.goal_categories.items():
             for goal in category.goals:
                 if isinstance(goal.hint_text, dict):
                     for boss in bosses:
+                        assert boss.item is not None
                         if boss.item.name == goal.hint_text['replace']:
                             flavorText, clearText, color = goalTable[boss.name]
                             if world.settings.clearer_hints:
@@ -171,11 +178,15 @@ def update_goal_items(spoiler: Spoiler) -> None:
     # item_locations: only the ones that should appear as "required"/WotH
     all_locations = [location for world in worlds for location in world.get_filled_locations()]
     # Set to test inclusion against
-    item_locations = {location for location in all_locations if location.item.majoritem and not location.locked}
+    item_locations = set()
+    for location in all_locations:
+        assert location.item is not None
+        if location.item.majoritem and not location.locked:
+            item_locations.add(location)
 
     # required_locations[category.name][goal.name][world_id] = [...]
     required_locations: RequiredLocations = defaultdict(lambda: defaultdict(lambda: defaultdict(list)))
-    priority_locations = {world.id: {} for world in worlds}
+    priority_locations: dict[int, dict[str, str]] = {world.id: {} for world in worlds}
 
     # rebuild hint exclusion list
     for world in worlds:

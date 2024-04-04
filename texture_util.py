@@ -58,9 +58,9 @@ def get_colors_from_rgba16(rgba16_texture: list[int]) -> list[int]:
 # rgba16_texture - Original texture
 # rgba16_patch - Patch texture. If this parameter is not supplied, this function will simply return the original texture.
 # returns - new texture = texture xor patch
-def apply_rgba16_patch(rgba16_texture: list[int], rgba16_patch: list[int]) -> list[int]:
-    if rgba16_patch is not None and (len(rgba16_texture) != len(rgba16_patch)):
-        raise(Exception("OG Texture and Patch not the same length!"))
+def apply_rgba16_patch(rgba16_texture: list[int], rgba16_patch: Optional[list[int]]) -> list[int]:
+    if rgba16_patch is not None and len(rgba16_texture) != len(rgba16_patch):
+        raise Exception("OG Texture and Patch not the same length!")
 
     new_texture = []
     if not rgba16_patch:
@@ -139,7 +139,7 @@ def rgba16_from_file(rom: Rom, base_texture_address: int, base_palette_address: 
 # size - Size of the texture in PIXELS
 # patchfile - file path of a rgba16 binary texture to patch
 # returns - bytearray of the new texture
-def rgba16_patch(rom: Rom, base_texture_address: int, base_palette_address: int, size: int, patchfile: str) -> bytearray:
+def rgba16_patch(rom: Rom, base_texture_address: int, base_palette_address: Optional[int], size: int, patchfile: str) -> bytearray:
     base_texture_rgba16 = load_rgba16_texture_from_rom(rom, base_texture_address, size)
     patch_rgba16 = None
     if patchfile:
@@ -158,11 +158,12 @@ def rgba16_patch(rom: Rom, base_texture_address: int, base_palette_address: int,
 # size - Size of the texture in PIXELS
 # patchfile - file path of a rgba16 binary texture to patch
 # returns - bytearray of the new texture
-def ci4_rgba16patch_to_ci8(rom: Rom, base_texture_address: int, base_palette_address: int, size: int, patchfile: str) -> bytearray:
+def ci4_rgba16patch_to_ci8(rom: Rom, base_texture_address: int, base_palette_address: Optional[int], size: int, patchfile: Optional[str]) -> bytearray:
+    assert base_palette_address is not None
     palette = load_palette(rom, base_palette_address, 16) # load the original palette from rom
     base_texture_rgba16 = ci4_to_rgba16(rom, base_texture_address, size, palette) # load the original texture from rom and convert to ci8
     patch_rgba16 = None
-    if patchfile:
+    if patchfile is not None:
         patch_rgba16 = load_rgba16_texture(patchfile, size)
     new_texture_rgba16 = apply_rgba16_patch(base_texture_rgba16, patch_rgba16)
     ci8_texture, ci8_palette = rgba16_to_ci8(new_texture_rgba16)

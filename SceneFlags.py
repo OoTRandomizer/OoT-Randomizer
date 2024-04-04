@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 # where room_setup_number defines the room + scene setup as ((setup << 6) + room) for scene n
 # and max_flags is the highest used enemy flag for that setup/room
 def get_collectible_flag_table(world: World) -> tuple[dict[int, dict[int, int]], list[tuple[Location, tuple[int, int, int], tuple[int, int, int]]]]:
-    scene_flags = {}
+    scene_flags: dict[int, dict[int, int]] = {}
     alt_list = []
     for i in range(0, 101):
         scene_flags[i] = {}

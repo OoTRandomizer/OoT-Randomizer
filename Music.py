@@ -362,7 +362,7 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
 
     replacement_dict = {seq.replaces: seq for seq in sequences}
     # List of sequences (actual sequence data objects) containing the vanilla sequence data
-    old_sequences = []
+    old_sequences: list[SequenceData] = []
     bgmlist = [sequence_id for title, sequence_id in bgm_sequence_ids]
     fanfarelist = [sequence_id for title, sequence_id in fanfare_sequence_ids]
     ocarinalist = [sequence_id for title, sequence_id in ocarina_sequence_ids]

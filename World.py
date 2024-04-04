@@ -12,12 +12,12 @@ from Dungeon import Dungeon
 from Entrance import Entrance
 from Goals import Goal, GoalCategory
 from HintList import get_required_hints, misc_item_hint_table, misc_location_hint_table
-from Hints import HintArea, hint_dist_keys, hint_dist_files
+from Hints import HintArea, RegionRestriction, hint_dist_files, hint_dist_keys
 from Item import Item, ItemFactory, ItemInfo, make_event_item
 from Location import Location, LocationFactory
 from LocationList import business_scrubs, location_groups
-from OcarinaSongs import generate_song_list, Song
-from Plandomizer import WorldDistribution, InvalidFileException
+from OcarinaSongs import Song, generate_song_list
+from Plandomizer import InvalidFileException, WorldDistribution
 from Region import Region, TimeOfDay
 from RuleParser import Rule_AST_Transformer
 from Settings import Settings
@@ -48,6 +48,7 @@ class World:
         self.empty_areas: dict[HintArea, dict[str, Any]] = {}
         self.barren_dungeon: int = 0
         self.woth_dungeon: int = 0
+        self.get_barren_hint_prev: RegionRestriction = RegionRestriction.NONE
         self.randomized_list: list[str] = []
 
         self.parser: Rule_AST_Transformer = Rule_AST_Transformer(self)
@@ -133,7 +134,7 @@ class World:
                 self['Shadow Temple'] = self.EmptyDungeonInfo('Bongo Bongo')
 
                 for area in HintArea:
-                    if area.is_dungeon and area.dungeon_name in self:
+                    if area.dungeon_name is not None and area.dungeon_name in self:
                         self[area.dungeon_name].hint_name = area
 
             def __missing__(self, dungeon_name: str) -> EmptyDungeonInfo:
@@ -309,7 +310,7 @@ class World:
                 else:
                     cat = GoalCategory(category['category'], category['priority'], minimum_goals=category['minimum_goals'])
                 for goal in category['goals']:
-                    cat.add_goal(Goal(self, goal['name'], goal['hint_text'], goal['color'], items=list({'name': i['name'], 'quantity': i['quantity'], 'minimum': i['minimum'], 'hintable': i['hintable']} for i in goal['items'])))
+                    cat.add_goal(Goal(self, goal['name'], goal['hint_text'], goal['color'], items=[{'name': i['name'], 'quantity': i['quantity'], 'minimum': i['minimum'], 'hintable': i['hintable']} for i in goal['items']]))
                 if 'count_override' in category:
                     cat.goal_count = category['count_override']
                 else:
@@ -1137,13 +1138,13 @@ class World:
                 self._cached_locations.extend(region.locations)
         return self._cached_locations
 
-    def get_unfilled_locations(self) -> Iterable[Location]:
+    def get_unfilled_locations(self) -> Iterator[Location]:
         return filter(Location.has_no_item, self.get_locations())
 
-    def get_filled_locations(self) -> Iterable[Location]:
-        return filter(Location.has_item, self.get_locations())
+    def get_filled_locations(self, item_filter: Callable[[Item], bool] = lambda item: True) -> Iterator[Location]:
+        return filter(lambda loc: loc.item is not None and item_filter(loc.item), self.get_locations())
 
-    def get_progression_locations(self) -> Iterable[Location]:
+    def get_progression_locations(self) -> Iterator[Location]:
         return filter(Location.has_progression_item, self.get_locations())
 
     def get_entrances(self) -> list[Entrance]:

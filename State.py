@@ -106,10 +106,10 @@ class State:
         return (self.count_of(ItemInfo.ocarina_buttons_ids)) >= count
 
     # TODO: Store the item's solver id in the goal
-    def has_item_goal(self, item_goal: dict[str, Any]) -> bool:
+    def has_item_goal(self, item_goal: GoalItem) -> bool:
         return self.solv_items[ItemInfo.solver_ids[escape_name(item_goal['name'])]] >= item_goal['minimum']
 
-    def has_full_item_goal(self, category: GoalCategory, goal: Goal, item_goal: dict[str, Any]) -> bool:
+    def has_full_item_goal(self, category: GoalCategory, goal: Goal, item_goal: GoalItem) -> bool:
         local_goal = self.world.goal_categories[category.name].get_goal(goal.name)
         per_world_max_quantity = local_goal.get_item(item_goal['name'])['quantity']
         return self.solv_items[ItemInfo.solver_ids[escape_name(item_goal['name'])]] >= per_world_max_quantity

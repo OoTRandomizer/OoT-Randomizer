@@ -81,6 +81,7 @@ class Region:
             return HintArea[self.hint_name]
         if self.dungeon:
             return self.dungeon.hint
+        return None
 
     @property
     def alt_hint(self) -> Optional[HintArea]:
@@ -88,6 +89,7 @@ class Region:
 
         if self.alt_hint_name is not None:
             return HintArea[self.alt_hint_name]
+        return None
 
     def can_fill(self, item: Item, manual: bool = False) -> bool:
         from Hints import HintArea

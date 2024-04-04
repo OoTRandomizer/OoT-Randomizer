@@ -1,7 +1,13 @@
 from __future__ import annotations
+import sys
 import random
 import re
 from collections import namedtuple
+
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    TypeAlias = str
 
 Color = namedtuple('Color', '  R     G     B')
 
@@ -152,7 +158,8 @@ magic_colors: dict[str, Color] = {
 
 #                        A Button                 Text Cursor              Shop Cursor              Save/Death Cursor
 #                        Pause Menu A Cursor      Pause Menu A Icon        A Note
-a_button_colors: dict[str, tuple[Color, Color, Color, Color, Color, Color, Color]] = {
+AButtonColors: TypeAlias = "dict[str, tuple[Color, Color, Color, Color, Color, Color, Color]]"
+a_button_colors: AButtonColors = {
     "N64 Blue":         (Color(0x5A, 0x5A, 0xFF), Color(0x00, 0x50, 0xC8), Color(0x00, 0x50, 0xFF), Color(0x64, 0x64, 0xFF),
                          Color(0x00, 0x32, 0xFF), Color(0x00, 0x64, 0xFF), Color(0x50, 0x96, 0xFF)),
     "N64 Green":        (Color(0x00, 0x96, 0x00), Color(0x00, 0x96, 0x00), Color(0x00, 0x96, 0x00), Color(0x64, 0x96, 0x64),
@@ -208,7 +215,8 @@ b_button_colors: dict[str, Color] = {
 }
 
 #                        C Button                 Pause Menu C Cursor      Pause Menu C Icon        C Note
-c_button_colors: dict[str, tuple[Color, Color, Color, Color]] = {
+CButtonColors: TypeAlias = "dict[str, tuple[Color, Color, Color, Color]]"
+c_button_colors: CButtonColors = {
     "N64 Blue":         (Color(0x5A, 0x5A, 0xFF), Color(0x00, 0x32, 0xFF), Color(0x00, 0x64, 0xFF), Color(0x50, 0x96, 0xFF)),
     "N64 Green":        (Color(0x00, 0x96, 0x00), Color(0x00, 0x96, 0x00), Color(0x00, 0x96, 0x00), Color(0x00, 0x96, 0x00)),
     "N64 Red":          (Color(0xC8, 0x00, 0x00), Color(0xC8, 0x00, 0x00), Color(0xC8, 0x00, 0x00), Color(0xC8, 0x00, 0x00)),
@@ -366,14 +374,14 @@ def get_start_button_color_options() -> list[str]:
     return meta_color_choices + get_start_button_colors()
 
 
-def contrast_ratio(color1: list[int], color2: list[int]) -> float:
+def contrast_ratio(color1: Color, color2: Color) -> float:
     # Based on accessibility standards (WCAG 2.0)
     lum1 = relative_luminance(color1)
     lum2 = relative_luminance(color2)
     return (max(lum1, lum2) + 0.05) / (min(lum1, lum2) + 0.05)
 
 
-def relative_luminance(color: list[int]) -> float:
+def relative_luminance(color: Color) -> float:
     color_ratios = list(map(lum_color_ratio, color))
     return color_ratios[0] * 0.299 + color_ratios[1] * 0.587 + color_ratios[2] * 0.114
 
@@ -386,23 +394,21 @@ def lum_color_ratio(val: float) -> float:
         return pow((val + 0.055) / 1.055, 2.4)
 
 
-def generate_random_color() -> list[int]:
-    return [random.getrandbits(8), random.getrandbits(8), random.getrandbits(8)]
+def generate_random_color() -> Color:
+    return Color(random.getrandbits(8), random.getrandbits(8), random.getrandbits(8))
 
 
-def hex_to_color(option: str) -> list[int]:
-    if not hasattr(hex_to_color, "regex"):
-        hex_to_color.regex = re.compile(r'^(?:[0-9a-fA-F]{3}){1,2}$')
-
+HEX_TO_COLOR_REGEX: re.Pattern[str] = re.compile(r'^(?:[0-9a-fA-F]{3}){1,2}$')
+def hex_to_color(option: str) -> Color:
     # build color from hex code
     option = option[1:] if option[0] == "#" else option
-    if not hex_to_color.regex.search(option):
+    if not HEX_TO_COLOR_REGEX.search(option):
         raise Exception(f"Invalid color value provided: {option}")
     if len(option) > 3:
-        return list(int(option[i:i + 2], 16) for i in (0, 2, 4))
+        return Color(*(int(option[i:i + 2], 16) for i in (0, 2, 4)))
     else:
-        return list(int(f'{option[i]}{option[i]}', 16) for i in (0, 1, 2))
+        return Color(*(int(f'{option[i]}{option[i]}', 16) for i in (0, 1, 2)))
 
 
-def color_to_hex(color: list[int]) -> str:
-    return '#' + ''.join(['{:02X}'.format(c) for c in color])
+def color_to_hex(color: Color) -> str:
+    return '#' + ''.join('{:02X}'.format(c) for c in color)

@@ -56,12 +56,12 @@ class Address:
     prev_address: int = 0
     EXTENDED_CONTEXT_START = 0x1450
 
-    def __init__(self, address: Optional[int] = None, extended: bool = False, size: int = 4, mask: int = 0xFFFFFFFF, max: Optional[int] = None,
-                 choices: Optional[dict[str, int]] = None, value: Optional[str] = None) -> None:
+    def __init__(self, address: Optional[int] = None, *, extended: bool = False, size: int = 4, mask: int = 0xFFFFFFFF, max: Optional[int] = None,
+                 choices: Optional[dict[str, int]] = None) -> None:
         self.address: int = Address.prev_address if address is None else address
         if extended and address is not None:
             self.address += Address.EXTENDED_CONTEXT_START
-        self.value: Optional[str | int] = value
+        self.value: Optional[int] = None
         self.size: int = size
         self.choices: Optional[dict[str, int]] = choices
         self.mask: int = mask

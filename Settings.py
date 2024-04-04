@@ -29,8 +29,9 @@ LEGACY_STARTING_ITEM_SETTINGS: dict[str, dict[str, StartingItems.Entry]] = {
 class ArgumentDefaultsHelpFormatter(argparse.RawTextHelpFormatter):
 
     def _get_help_string(self, action) -> Optional[str]:
-        if  action.help is not None:
+        if action.help is not None:
             return textwrap.dedent(action.help)
+        return None
 
 
 # 32 characters

@@ -412,7 +412,7 @@ def generate_itempool(world: World) -> None:
 
     # set up item pool
     (pool, placed_items) = get_pool_core(world)
-    placed_items_count = {}
+    placed_items_count: dict[str, int] = {}
     world.itempool = ItemFactory(pool, world)
     world.initialize_items(world.itempool + list(placed_items.values()))
     placed_locations = list(filter(lambda loc: loc.name in placed_items, world.get_locations()))
@@ -489,16 +489,16 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         if world.settings.shuffle_gerudo_card:
             pending_junk_pool.append('Gerudo Membership Card')
         if world.settings.shuffle_smallkeys in ('any_dungeon', 'overworld', 'keysanity', 'regional'):
-            for dungeon in ('Forest Temple', 'Fire Temple', 'Water Temple', 'Shadow Temple', 'Spirit Temple',
+            for dungeon_name in ('Forest Temple', 'Fire Temple', 'Water Temple', 'Shadow Temple', 'Spirit Temple',
                             'Bottom of the Well', 'Gerudo Training Ground', 'Ganons Castle'):
-                if world.keyring(dungeon):
-                    pending_junk_pool.append(f"Small Key Ring ({dungeon})")
+                if world.keyring(dungeon_name):
+                    pending_junk_pool.append(f"Small Key Ring ({dungeon_name})")
                 else:
-                    pending_junk_pool.append(f"Small Key ({dungeon})")
+                    pending_junk_pool.append(f"Small Key ({dungeon_name})")
         if world.settings.shuffle_bosskeys in ('any_dungeon', 'overworld', 'keysanity', 'regional'):
-            for dungeon in ('Forest Temple', 'Fire Temple', 'Water Temple', 'Shadow Temple', 'Spirit Temple'):
-                if not world.keyring_give_bk(dungeon):
-                    pending_junk_pool.append(f"Boss Key ({dungeon})")
+            for dungeon_name in ('Forest Temple', 'Fire Temple', 'Water Temple', 'Shadow Temple', 'Spirit Temple'):
+                if not world.keyring_give_bk(dungeon_name):
+                    pending_junk_pool.append(f"Boss Key ({dungeon_name})")
         if world.settings.shuffle_ganon_bosskey in ('any_dungeon', 'overworld', 'keysanity', 'regional'):
             pending_junk_pool.append('Boss Key (Ganons Castle)')
         if world.settings.shuffle_silver_rupees in ('any_dungeon', 'overworld', 'anywhere', 'regional'):
@@ -525,7 +525,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         pending_junk_pool.append('Ocarina C right Button')
 
     # Use the vanilla items in the world's locations when appropriate.
-    vanilla_items_processed = Counter()
+    vanilla_items_processed: Counter[str] = Counter()
     for location in world.get_locations():
         if location.vanilla_item is None:
             continue
@@ -541,9 +541,11 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
 
         # Gold Skulltula Tokens
         elif location.vanilla_item == 'Gold Skulltula Token':
-            shuffle_item = (world.settings.tokensanity == 'all'
-                            or (world.settings.tokensanity == 'dungeons' and location.dungeon)
-                            or (world.settings.tokensanity == 'overworld' and not location.dungeon))
+            shuffle_item = (
+                world.settings.tokensanity == 'all'
+                or (world.settings.tokensanity == 'dungeons' and location.dungeon is not None)
+                or (world.settings.tokensanity == 'overworld' and location.dungeon is None)
+            )
 
         # Shops
         elif location.type == "Shop":
@@ -559,9 +561,11 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
             elif world.settings.shuffle_scrubs == 'off':
                 shuffle_item = False
             else:
-                item = deku_scrubs_items[location.vanilla_item]
-                if isinstance(item, list):
-                    item = random.choices([i[0] for i in item], weights=[i[1] for i in item], k=1)[0]
+                scrub_item = deku_scrubs_items[location.vanilla_item]
+                if isinstance(scrub_item, list):
+                    item = random.choices([i[0] for i in scrub_item], weights=[i[1] for i in scrub_item], k=1)[0]
+                else:
+                    item = scrub_item
                 shuffle_item = True
 
         # Kokiri Sword
@@ -707,7 +711,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                 location.disabled = DisableType.DISABLED
 
         # Freestanding Rupees and Hearts
-        elif location.type in ('ActorOverride', 'Freestanding', 'RupeeTower'):
+        elif location.type in ('Freestanding', 'RupeeTower'):
             if world.settings.shuffle_freestanding_items == 'all':
                 shuffle_item = True
             elif world.settings.shuffle_freestanding_items == 'dungeons' and location.dungeon is not None:
@@ -911,7 +915,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
 
         remove_junk_pool, _ = zip(*junk_pool_base)
         # Omits Rupees (200) and Deku Nuts (10)
-        remove_junk_pool = list(remove_junk_pool) + ['Recovery Heart', 'Bombs (20)', 'Arrows (30)', 'Ice Trap']
+        remove_junk_pool = *remove_junk_pool, 'Recovery Heart', 'Bombs (20)', 'Arrows (30)', 'Ice Trap'
 
         junk_candidates = [item for item in pool if item in remove_junk_pool]
         while pending_junk_pool:

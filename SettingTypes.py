@@ -22,12 +22,14 @@ class SettingInfo:
 
         # dictionary of options to their text names
         choices = {} if choices is None else choices
+        self.choices: dict
+        self.choice_list: list
         if isinstance(choices, list):
-            self.choices: dict = {k: k for k in choices}
-            self.choice_list: list = list(choices)
+            self.choices = {k: k for k in choices}
+            self.choice_list = list(choices)
         else:
-            self.choices: dict = dict(choices)
-            self.choice_list: list = list(choices.keys())
+            self.choices = dict(choices)
+            self.choice_list = list(choices.keys())
         self.reverse_choices: dict = {v: k for k, v in self.choices.items()}
 
         # number of bits needed to store the setting, used in converting settings to a string

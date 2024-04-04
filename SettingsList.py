@@ -5093,7 +5093,7 @@ def is_mapped(setting_name: str) -> bool:
 # When a string isn't found in the source list, attempt to get the closest match from the list
 # ex. Given "Recovery Hart" returns "Did you mean 'Recovery Heart'?"
 def build_close_match(name: str, value_type: str, source_list: Optional[list[str] | dict[str, list[Entrance]]] = None) -> str:
-    source = []
+    source: Iterable[str] = []
     if value_type == 'item':
         source = ItemInfo.items.keys()
     elif value_type == 'location':

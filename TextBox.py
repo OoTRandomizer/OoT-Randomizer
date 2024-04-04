@@ -112,7 +112,7 @@ def line_wrap(text: str, strip_existing_lines: bool = False, strip_existing_boxe
                 box_codes = []
 
         # Arrange our words into lines.
-        lines = []
+        lines: list[list[list[TextCode]]] = []
         start_index = 0
         end_index = 0
         box_count = 1

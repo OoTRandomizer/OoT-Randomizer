@@ -5,9 +5,10 @@ import os
 import random
 from collections.abc import Iterable, Callable
 from itertools import chain
-from typing import TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Optional, Any, TypedDict
 
 import Colors
+from Colors import Color
 import IconManip
 import Music
 import Sounds
@@ -57,7 +58,7 @@ def patch_music(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[s
         rom.write_byte(0xBE447F, 0x00)
 
 
-def patch_model_colors(rom: Rom, color: Optional[list[int]], model_addresses: tuple[list[int], list[int], list[int]]) -> None:
+def patch_model_colors(rom: Rom, color: Optional[Color], model_addresses: tuple[list[int], list[int], list[int]]) -> None:
     main_addresses, dark_addresses, light_addresses = model_addresses
 
     if color is None:
@@ -78,7 +79,7 @@ def patch_model_colors(rom: Rom, color: Optional[list[int]], model_addresses: tu
         rom.write_bytes(address, lightened_color)
 
 
-def patch_tunic_icon(rom: Rom, tunic: str, color: Optional[list[int]], rainbow: bool = False) -> None:
+def patch_tunic_icon(rom: Rom, tunic: str, color: Optional[Color], rainbow: bool = False) -> None:
     # patch tunic icon colors
     icon_locations = {
         'Kokiri Tunic': 0x007FE000,
@@ -139,9 +140,9 @@ def patch_tunic_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols:
             color = Colors.generate_random_color()
         # grab the color from the list
         elif tunic_option in Colors.tunic_colors:
-            color = list(Colors.tunic_colors[tunic_option])
+            color = Colors.tunic_colors[tunic_option]
         elif tunic_option == 'Rainbow':
-            color = list(Colors.Color(0x00, 0x00, 0x00))
+            color = Color(0x00, 0x00, 0x00)
         # build color from hex code
         else:
             color = Colors.hex_to_color(tunic_option)
@@ -203,7 +204,7 @@ def patch_navi_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: 
         colors = []
         option_dict = {}
         for address_index, address in enumerate(navi_addresses):
-            address_colors = {}
+            address_colors: dict[str, Color] = {}
             colors.append(address_colors)
             for index, (navi_part, option, rainbow_symbol) in enumerate([
                 ('inner', navi_option_inner, rainbow_inner_symbol),
@@ -218,7 +219,7 @@ def patch_navi_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: 
                 # set rainbow option
                 if rainbow_symbol is not None and option == 'Rainbow':
                     rom.write_byte(rainbow_symbol, 0x01)
-                    color = [0x00, 0x00, 0x00]
+                    color = Color(0x00, 0x00, 0x00)
                 elif rainbow_symbol is not None:
                     rom.write_byte(rainbow_symbol, 0x00)
                 elif option == 'Rainbow':
@@ -231,7 +232,7 @@ def patch_navi_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: 
 
                 # grab the color from the list
                 if color is None and option in Colors.NaviColors:
-                    color = list(Colors.NaviColors[option][index])
+                    color = Colors.NaviColors[option][index]
 
                 # build color from hex code
                 if color is None:
@@ -246,8 +247,7 @@ def patch_navi_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: 
                 option_dict[navi_part] = option
 
             # write color
-            color = address_colors['inner'] + [0xFF] + address_colors['outer'] + [0xFF]
-            rom.write_bytes(address, color)
+            rom.write_bytes(address, [*address_colors['inner'], 0xFF, *address_colors['outer'], 0xFF])
 
         # Get the colors into the log.
         log.misc_colors[navi_action] = CollapseDict({
@@ -300,7 +300,7 @@ def patch_sword_trails(rom: Rom, settings: Settings, log: CosmeticsLog, symbols:
         colors = []
         option_dict = {}
         for address_index, (address, inner_transparency, inner_white_transparency, outer_transparency, outer_white_transparency) in enumerate(trail_addresses):
-            address_colors = {}
+            address_colors: dict[str, Color] = {}
             colors.append(address_colors)
             transparency_dict = {}
             for index, (trail_part, option, rainbow_symbol, white_transparency, transparency) in enumerate([
@@ -316,7 +316,7 @@ def patch_sword_trails(rom: Rom, settings: Settings, log: CosmeticsLog, symbols:
                 # set rainbow option
                 if rainbow_symbol is not None and option == 'Rainbow':
                     rom.write_byte(rainbow_symbol, 0x01)
-                    color = [0x00, 0x00, 0x00]
+                    color = Color(0x00, 0x00, 0x00)
                 elif rainbow_symbol is not None:
                     rom.write_byte(rainbow_symbol, 0x00)
                 elif option == 'Rainbow':
@@ -329,7 +329,7 @@ def patch_sword_trails(rom: Rom, settings: Settings, log: CosmeticsLog, symbols:
 
                 # grab the color from the list
                 if color is None and option in Colors.sword_trail_colors:
-                    color = list(Colors.sword_trail_colors[option])
+                    color = Colors.sword_trail_colors[option]
 
                 # build color from hex code
                 if color is None:
@@ -350,8 +350,7 @@ def patch_sword_trails(rom: Rom, settings: Settings, log: CosmeticsLog, symbols:
                 option_dict[trail_part] = option
 
             # write color
-            color = address_colors['outer'] + [transparency_dict['outer']] + address_colors['inner'] + [transparency_dict['inner']]
-            rom.write_bytes(address, color)
+            rom.write_bytes(address, [*address_colors['outer'], transparency_dict['outer'], *address_colors['inner'], transparency_dict['inner']])
 
         # Get the colors into the log.
         log.misc_colors[trail_name] = CollapseDict({
@@ -395,7 +394,7 @@ def patch_boomerang_trails(rom: Rom, settings: Settings, log: CosmeticsLog, symb
     patch_trails(rom, settings, log, boomerang_trails)
 
 
-def patch_trails(rom: Rom, settings: Settings, log: CosmeticsLog, trails) -> None:
+def patch_trails(rom: Rom, settings: Settings, log: CosmeticsLog, trails: list[tuple[str, str, list[str], dict[str, Color], tuple[int, int, int, int]]]) -> None:
     for trail_name, trail_setting, trail_color_list, trail_color_dict, trail_symbols in trails:
         color_inner_symbol, color_outer_symbol, rainbow_inner_symbol, rainbow_outer_symbol = trail_symbols
         option_inner = getattr(settings, f'{trail_setting}_inner')
@@ -427,7 +426,7 @@ def patch_trails(rom: Rom, settings: Settings, log: CosmeticsLog, trails) -> Non
             # set rainbow option
             if option == 'Rainbow':
                 rom.write_byte(rainbow_symbol, 0x01)
-                color = [0x00, 0x00, 0x00]
+                color = Color(0x00, 0x00, 0x00)
             else:
                 rom.write_byte(rainbow_symbol, 0x00)
 
@@ -435,8 +434,8 @@ def patch_trails(rom: Rom, settings: Settings, log: CosmeticsLog, trails) -> Non
             if color is None and option == 'Completely Random':
                 # Specific handling for inner bombchu trails for contrast purposes.
                 if trail_name == 'Bombchu Trail' and trail_part == 'inner':
-                    fixed_dark_color = [0, 0, 0]
-                    color = [0, 0, 0]
+                    fixed_dark_color = Color(0, 0, 0)
+                    color = Color(0, 0, 0)
                     # Avoid colors which have a low contrast so the bombchu ticking is still visible
                     while Colors.contrast_ratio(color, fixed_dark_color) <= 4:
                         color = Colors.generate_random_color()
@@ -445,7 +444,7 @@ def patch_trails(rom: Rom, settings: Settings, log: CosmeticsLog, trails) -> Non
 
             # grab the color from the list
             if color is None and option in trail_color_dict:
-                color = list(trail_color_dict[option])
+                color = trail_color_dict[option]
 
             # build color from hex code
             if color is None:
@@ -476,7 +475,7 @@ def patch_trails(rom: Rom, settings: Settings, log: CosmeticsLog, trails) -> Non
 
 def patch_gauntlet_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]) -> None:
     # patch gauntlet colors
-    gauntlets = [
+    gauntlets: list[tuple[str, str, int, tuple[list[int], list[int], list[int]]]] = [
         ('Silver Gauntlets', 'silver_gauntlets_color', 0x00B6DA44,
             ([0x173B4CC], [0x173B4D4, 0x173B50C, 0x173B514], [])), # GI Model DList colors
         ('Gold Gauntlets', 'golden_gauntlets_color',  0x00B6DA47,
@@ -499,7 +498,7 @@ def patch_gauntlet_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbo
             color = Colors.generate_random_color()
         # grab the color from the list
         elif gauntlet_option in Colors.gauntlet_colors:
-            color = list(Colors.gauntlet_colors[gauntlet_option])
+            color = Colors.gauntlet_colors[gauntlet_option]
         # build color from hex code
         else:
             color = Colors.hex_to_color(gauntlet_option)
@@ -517,7 +516,7 @@ def patch_gauntlet_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbo
 
 def patch_shield_frame_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]) -> None:
     # patch shield frame colors
-    shield_frames = [
+    shield_frames: list[tuple[str, str, list[int], tuple[list[int], list[int], list[int]]]] = [
         ('Mirror Shield Frame', 'mirror_shield_frame_color',
             [0xFA7274, 0xFA776C, 0xFAA27C, 0xFAC564, 0xFAC984, 0xFAEDD4],
             ([0x1616FCC], [0x1616FD4], [])),
@@ -536,10 +535,10 @@ def patch_shield_frame_colors(rom: Rom, settings: Settings, log: CosmeticsLog, s
             shield_frame_option = random.choice(shield_frame_color_list)
         # handle completely random
         if shield_frame_option == 'Completely Random':
-            color = [random.getrandbits(8), random.getrandbits(8), random.getrandbits(8)]
+            color = Colors.generate_random_color()
         # grab the color from the list
         elif shield_frame_option in Colors.shield_frame_colors:
-            color = list(Colors.shield_frame_colors[shield_frame_option])
+            color = Colors.shield_frame_colors[shield_frame_option]
         # build color from hex code
         else:
             color = Colors.hex_to_color(shield_frame_option)
@@ -583,7 +582,7 @@ def patch_heart_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols:
             color = Colors.generate_random_color()
         # grab the color from the list
         elif heart_option in Colors.heart_colors:
-            color = list(Colors.heart_colors[heart_option])
+            color = Colors.heart_colors[heart_option]
         # build color from hex code
         else:
             color = Colors.hex_to_color(heart_option)
@@ -630,7 +629,7 @@ def patch_magic_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols:
         if magic_option == 'Completely Random':
             color = Colors.generate_random_color()
         elif magic_option in Colors.magic_colors:
-            color = list(Colors.magic_colors[magic_option])
+            color = Colors.magic_colors[magic_option]
         else:
             color = Colors.hex_to_color(magic_option)
             magic_option = 'Custom'
@@ -650,7 +649,7 @@ def patch_magic_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols:
 
 
 def patch_button_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]) -> None:
-    buttons = [
+    buttons: list[tuple[str, str, Colors.AButtonColors | Colors.CButtonColors | dict[str, Color], list[tuple[str, Optional[int], Optional[list[tuple[int, int, int]]]]]]] = [
         ('A Button Color', 'a_button_color', Colors.a_button_colors,
             [('A Button Color', symbols['CFG_A_BUTTON_COLOR'],
                 None),
@@ -702,14 +701,18 @@ def patch_button_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols
             button_option = random.choice(list(button_colors.keys()))
         # handle completely random
         if button_option == 'Completely Random':
-            fixed_font_color = [10, 10, 10]
-            color = [0, 0, 0]
+            fixed_font_color = Color(10, 10, 10)
+            color = Color(0, 0, 0)
             # Avoid colors which have a low contrast with the font inside buttons (eg. the A letter)
             while Colors.contrast_ratio(color, fixed_font_color) <= 3:
                 color = Colors.generate_random_color()
         # grab the color from the list
         elif button_option in button_colors:
-            color_set = [button_colors[button_option]] if isinstance(button_colors[button_option][0], int) else list(button_colors[button_option])
+            button_color = button_colors[button_option]
+            if isinstance(button_color, Color):
+                color_set = [button_color]
+            else:
+                color_set = list(button_color)
             color = color_set[0]
         # build color from hex code
         else:
@@ -1237,6 +1240,12 @@ def patch_cosmetics(settings: Settings, rom: Rom) -> CosmeticsLog:
     return log
 
 
+class BgmGroups(TypedDict):
+    favorites: list
+    exclude: list
+    groups: dict
+
+
 class CosmeticsLog:
     def __init__(self, settings: Settings) -> None:
         self.settings: Settings = settings
@@ -1246,7 +1255,6 @@ class CosmeticsLog:
         self.misc_colors: dict[str, dict] = {}
         self.sfx: dict[str, str] = {}
         self.bgm: dict[str, str] = {}
-        self.bgm_groups: dict[str, list | dict] = {}
 
         self.src_dict: dict = {}
         self.errors: list[str] = []
@@ -1273,9 +1281,11 @@ class CosmeticsLog:
                 logging.getLogger('').warning("Cosmetic Plandomizer enabled, but no file provided.")
                 self.settings.enable_cosmetic_file = False
 
-        self.bgm_groups['favorites'] = CollapseList(self.src_dict.get('bgm_groups', {}).get('favorites', []).copy())
-        self.bgm_groups['exclude'] = CollapseList(self.src_dict.get('bgm_groups', {}).get('exclude', []).copy())
-        self.bgm_groups['groups'] = AlignedDict(self.src_dict.get('bgm_groups', {}).get('groups', {}).copy(), 1)
+        self.bgm_groups: BgmGroups = {
+            'favorites': CollapseList(self.src_dict.get('bgm_groups', {}).get('favorites', []).copy()),
+            'exclude': CollapseList(self.src_dict.get('bgm_groups', {}).get('exclude', []).copy()),
+            'groups': AlignedDict(self.src_dict.get('bgm_groups', {}).get('groups', {}).copy(), 1),
+        }
         for key, value in self.bgm_groups['groups'].items():
             self.bgm_groups['groups'][key] = CollapseList(value.copy())
 

@@ -133,7 +133,7 @@ def get_actual_pool(spoiler: dict[str, Any]) -> dict[str, int]:
                 key: Item name
                 value: count in spoiler
     """
-    actual_pool = {}
+    actual_pool: dict[str, int] = {}
     for location, item in spoiler['locations'].items():
         if isinstance(item, dict):
             test_item = item['item']
