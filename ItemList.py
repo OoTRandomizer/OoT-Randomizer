@@ -101,7 +101,7 @@ item_table: dict[str, tuple[str, Optional[bool], Optional[int], Optional[dict[st
     'Bow':                                             ('Item',     True,  0x0083, None),
     'Slingshot':                                       ('Item',     True,  0x0084, None),
     'Progressive Wallet':                              ('Item',     True,  0x0085, {'progressive': 3}),
-    'Progressive Scale':                               ('Item',     True,  0x0086, {'progressive': 2}),
+    'Progressive Scale':                               ('Item',     True,  0x0086, {'progressive': 3}),
     'Deku Nut Capacity':                               ('Item',     None,  0x0087, None),
     'Deku Stick Capacity':                             ('Item',     None,  0x0088, None),
     'Bombchus':                                        ('Item',     True,  0x0089, None),

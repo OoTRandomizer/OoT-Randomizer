@@ -176,7 +176,7 @@ void draw_debug_menu(z64_disp_buf_t *db) {
 
                     // Shoutouts to OoTMM
                     z64_Play_SetupRespawnPoint(&z64_game, 1, 0xDFF);
-                    z64_file.void_flag = 2;
+                    z64_file.respawn_flag = 2;
 
                     z64_game.scene_load_flag = 0x14;
                     z64_game.fadeout_transition = 0x02;

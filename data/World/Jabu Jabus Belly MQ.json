@@ -23,13 +23,13 @@
         "locations": {
             "Jabu Jabus Belly MQ Second Room Lower Chest": "True",
             "Jabu Jabus Belly MQ Compass Chest": "
-                (is_child or can_dive or Iron_Boots or logic_jabu_alcove_jump_dive) and
+                can_swim and (is_child or can_dive or Iron_Boots or logic_jabu_alcove_jump_dive) and
                 (can_use(Slingshot) or has_bombchus or can_use(Bow) or can_use(Hookshot) or
                    (logic_jabu_mq_rang_jump and can_use(Boomerang)))",
             "Jabu Jabus Belly MQ Recovery Heart 1": "True",
             "Jabu Jabus Belly MQ Recovery Heart 2": "True",
             "Jabu Jabus Belly MQ Underwater Green Rupee 1": "
-                can_use(Boomerang) or (Progressive_Scale, 2) or can_use(Iron_Boots)",
+                can_use(Boomerang) or (Progressive_Scale, 3) or can_use(Iron_Boots)",
             "Jabu Jabus Belly MQ Underwater Green Rupee 2": "
                 can_use(Boomerang) or can_dive or can_use(Iron_Boots)",
             "Jabu Jabus Belly MQ Underwater Green Rupee 3": "True",
@@ -39,7 +39,7 @@
         },
         "exits": {
             "Jabu Jabus Belly Main": "
-                here(is_child or can_dive or Iron_Boots or logic_jabu_alcove_jump_dive)",
+                here(can_swim and (is_child or can_dive or Iron_Boots or logic_jabu_alcove_jump_dive))",
             "Jabu Jabus Belly Before Slimy Thing": "
                 can_use(Hover_Boots) or can_use(Hookshot) or
                 'Jabu Jabus Belly Floor Lowered' or jabu_shortcuts"

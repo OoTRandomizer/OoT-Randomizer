@@ -14,19 +14,19 @@
         "locations": {
             "Water Temple Main Room L2 Pot 1": "
                 at('Water Temple Lowered Water Levels', True) or can_use(Boomerang) or
-                ((can_use(Iron_Boots) or (Progressive_Scale, 2)) and
+                ((can_use(Iron_Boots) or (Progressive_Scale, 3)) and
                     (can_use(Bow) or can_use(Hookshot) or can_use(Slingshot)) and
                     (can_use(Zora_Tunic) or logic_fewer_tunic_requirements))",
             "Water Temple Main Room L2 Pot 2": "
                 at('Water Temple Lowered Water Levels', True) or can_use(Boomerang) or
-                ((can_use(Iron_Boots) or (Progressive_Scale, 2)) and
+                ((can_use(Iron_Boots) or (Progressive_Scale, 3)) and
                     (can_use(Bow) or can_use(Hookshot) or can_use(Slingshot)) and
                     (can_use(Zora_Tunic) or logic_fewer_tunic_requirements))"
         },
         "exits": {
             "Lake Hylia": "True",
             "Water Temple Dive": "
-                is_adult and (Zora_Tunic or logic_fewer_tunic_requirements) and
+                is_adult and can_swim and (Zora_Tunic or logic_fewer_tunic_requirements) and
                 ((logic_water_temple_torch_longshot and Longshot) or Iron_Boots)",
             "Water Temple Falling Platform Room": "Raise_Water_Level and (Small_Key_Water_Temple, 4)",
             "Water Temple Before Boss": "can_use(Longshot)",
@@ -81,7 +81,7 @@
         },
         "exits": {
             "Water Temple South Basement": "
-                has_explosives and (Iron_Boots or can_dive) and (Hookshot or Hover_Boots)",
+                has_explosives and can_swim and (Iron_Boots or can_dive) and (Hookshot or Hover_Boots)",
             "Water Temple Middle Water Level": "
                 Bow or can_use(Dins_Fire) or (Child_Water_Temple and Sticks) or
                 ((Small_Key_Water_Temple, 5) and Hookshot)",
@@ -92,7 +92,7 @@
                 Progressive_Strength_Upgrade and Bow and
                 (logic_water_central_bow or Hover_Boots or Longshot)",
             "Water Temple Dragon Statue": "
-                Progressive_Strength_Upgrade and
+                Progressive_Strength_Upgrade and can_swim and
                 ((Iron_Boots and Hookshot) or
                     (logic_water_dragon_adult and
                         (has_bombchus or Bow or Hookshot) and (can_dive or Iron_Boots)) or
@@ -210,7 +210,7 @@
         },
         "exits": {
             "Water Temple Dragon Statue": "
-                Bow and (Zora_Tunic or logic_fewer_tunic_requirements) and
+                Bow and can_swim and (Zora_Tunic or logic_fewer_tunic_requirements) and
                 (Iron_Boots or logic_water_dragon_jump_dive or logic_water_dragon_adult)"
         }
     },

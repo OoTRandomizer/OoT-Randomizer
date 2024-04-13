@@ -1,6 +1,7 @@
 #include "item_upgrades.h"
 
 #include "get_items.h"
+#include "save.h"
 #include "z64.h"
 
 extern uint32_t FREE_BOMBCHU_DROPS;
@@ -15,7 +16,7 @@ typedef struct {
     uint8_t magic : 2;  // 0 = no magic, 1 = single magic, 2 = double magic
     uint8_t sticks : 2;  // 0 = no sticks, 1 = 10, 2 = 20, 3 = 30
     uint8_t nuts : 2;  // 0 = no nuts, 1 = 20, 2 = 30, 3 = 40
-    uint8_t scale : 2;  // 0 = no scale, 1 = silver scale, 2 = gold scale
+    uint8_t scale : 3;  // 0 = no scale, 1 = bronze_scale, 2 = silver scale, 3 = gold scale
     uint8_t wallet : 2;  // 0 = 99, 1 = 200, 2 = 500, 3 = 999
     uint8_t slingshot : 2;  // 0 = no slingshot, 1 = 30, 2 = 40, 3 = 50
     uint8_t bow : 2;  // 0 = no bow, 1 = 30, 2 = 40, 3 = 50
@@ -82,8 +83,9 @@ uint16_t wallet_upgrade(z64_file_t* save, override_t override) {
 }
 
 uint16_t scale_upgrade(z64_file_t* save, override_t override) {
-    switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->diving_upgrade : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].scale) {
-        case 0: return 0x37; // Silver Scale
+    switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? extended_savectx.extended_scale[0] : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].scale) {
+        case 0: return 0x119; // Bronze Scale
+        case 1: return 0x37; // Silver Scale
         default: return 0x38; // Gold Scale
     }
 }

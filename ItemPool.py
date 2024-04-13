@@ -524,6 +524,9 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         pending_junk_pool.append('Ocarina C down Button')
         pending_junk_pool.append('Ocarina C right Button')
 
+    if world.settings.add_bronze_scale:
+        pending_junk_pool.append('Progressive Scale')
+
     # Use the vanilla items in the world's locations when appropriate.
     vanilla_items_processed = Counter()
     for location in world.get_locations():
@@ -980,5 +983,8 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         world.state.collect(ItemFactory('Ocarina C down Button', world))
         world.state.collect(ItemFactory('Ocarina C left Button', world))
         world.state.collect(ItemFactory('Ocarina C right Button', world))
+
+    if not world.settings.add_bronze_scale:
+        world.state.collect(ItemFactory('Progressive Scale', world))
 
     return pool, placed_items

@@ -91,6 +91,7 @@
         "shuffle_frog_song_rupees": false,
         "shuffle_individual_ocarina_notes": false,
         "shuffle_loach_reward": "off",
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": true,
         "disabled_locations": [
             "Deku Theater Mask of Truth",
@@ -275,6 +276,7 @@
         "shuffle_frog_song_rupees": false,
         "shuffle_individual_ocarina_notes": false,
         "shuffle_loach_reward": "off",
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth"
@@ -475,6 +477,7 @@
         "shuffle_frog_song_rupees": false,
         "shuffle_individual_ocarina_notes": false,
         "shuffle_loach_reward": "off",
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth"
@@ -671,6 +674,7 @@
         "shuffle_frog_song_rupees": false,
         "shuffle_individual_ocarina_notes": false,
         "shuffle_loach_reward": "off",
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth"
@@ -877,6 +881,7 @@
         "shuffle_frog_song_rupees": false,
         "shuffle_individual_ocarina_notes": false,
         "shuffle_loach_reward": "off",
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Sheik in Ice Cavern",
@@ -1074,6 +1079,7 @@
         "shuffle_frog_song_rupees": false,
         "shuffle_individual_ocarina_notes": false,
         "shuffle_loach_reward": "off",
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth",
@@ -1288,6 +1294,7 @@
         "shuffle_frog_song_rupees": true,
         "shuffle_individual_ocarina_notes": true,
         "shuffle_loach_reward": "vanilla",
+        "add_bronze_scale": true,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [],
         "allowed_tricks": [
@@ -1646,6 +1653,7 @@
         "shuffle_frog_song_rupees": false,
         "shuffle_individual_ocarina_notes": false,
         "shuffle_loach_reward": "off",
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth",
@@ -1832,6 +1840,7 @@
         "shuffle_frog_song_rupees": false,
         "shuffle_individual_ocarina_notes": false,
         "shuffle_loach_reward": "off",
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth"
@@ -2038,6 +2047,7 @@
         "shuffle_frog_song_rupees": false,
         "shuffle_individual_ocarina_notes": false,
         "shuffle_loach_reward": "off",
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth",

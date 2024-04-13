@@ -13,7 +13,7 @@
         "dungeon": "Bottom of the Well",
         "locations": {
             "Bottom of the Well Front Center Bombable Chest": "has_explosives",
-            "Bottom of the Well Freestanding Key": "Sticks or can_use(Dins_Fire)",
+            "Bottom of the Well Freestanding Key": "can_swim and (Sticks or can_use(Dins_Fire))",
             "Bottom of the Well Underwater Left Chest": "can_play(Zeldas_Lullaby)",
             "Bottom of the Well Underwater Front Chest": "can_play(Zeldas_Lullaby)",
             "Bottom of the Well Map Chest": "
@@ -26,8 +26,8 @@
             # Sword not strictly necessary but being forced to do this with sticks isn't fair
             "Bottom of the Well Lens of Truth Chest": "
                 can_play(Zeldas_Lullaby) and (Kokiri_Sword or (Sticks and logic_child_deadhand))",
-            "Bottom of the Well Coffin Recovery Heart 1": "Sticks or can_use(Dins_Fire)",
-            "Bottom of the Well Coffin Recovery Heart 2": "True",
+            "Bottom of the Well Coffin Recovery Heart 1": "can_swim and (Sticks or can_use(Dins_Fire))",
+            "Bottom of the Well Coffin Recovery Heart 2": "can_swim",
             "Bottom of the Well Near Entrance Pot 1": "True",
             "Bottom of the Well Near Entrance Pot 2": "True",
             "Bottom of the Well Underwater Pot": "

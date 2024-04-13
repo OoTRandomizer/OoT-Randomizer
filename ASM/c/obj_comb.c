@@ -14,7 +14,7 @@ void obj_comb_drop_collectible(z64_actor_t* actor, int16_t params) {
     uint16_t flag = actor->rot_init.z;
     if (z64_game.scene_index == 0x3E) {
         // We're in a grotto so offset by 2x grotto id. The Rz flags for the grottos need to be set to 0/1 beforehand.
-        flag = (2 * (z64_file.grotto_id & 0x1F)) + flag;
+        flag = (2 * (z64_file.respawn[RESPAWN_MODE_RETURN].data & 0x1F)) + flag;
         // and add 0x40
         flag += 0x40;
     }
@@ -38,7 +38,7 @@ override_t get_beehive_override(z64_actor_t* actor, z64_game_t* game) {
     uint16_t flag = actor->rot_init.z;
     if (z64_game.scene_index == 0x3E) {
         // We're in a grotto so offset by 2x grotto id. The Rz flags for the grottos need to be set to 0/1 beforehand.
-        flag = (2 * (z64_file.grotto_id & 0x1F)) + flag;
+        flag = (2 * (z64_file.respawn[RESPAWN_MODE_RETURN].data & 0x1F)) + flag;
         // and add 0x40
         flag += 0x40;
     }

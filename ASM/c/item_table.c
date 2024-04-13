@@ -81,8 +81,8 @@ item_row_t item_table[] = {
     [0x0034] = ITEM_ROW(0x53,      GILDED_CHEST, 0x4F, -1, 0x005A, 0x00BF, 0x1A, no_upgrade, no_effect, -1, -1, NULL), // Biggest Bomb Bag
     [0x0035] = ITEM_ROW(0x53,      GILDED_CHEST, 0x51, -1, 0x005B, 0x012D, 0x49, no_upgrade, no_effect, -1, -1, NULL), // Silver Gauntlets
     [0x0036] = ITEM_ROW(0x53,      GILDED_CHEST, 0x52, -1, 0x005C, 0x012D, 0x4A, no_upgrade, no_effect, -1, -1, NULL), // Golden Gauntlets
-    [0x0037] = ITEM_ROW(0x53,      GILDED_CHEST, 0x53, -1, 0x00CD, 0x00DB, 0x2A, no_upgrade, no_effect, -1, -1, NULL), // Silver Scale
-    [0x0038] = ITEM_ROW(0x53,      GILDED_CHEST, 0x54, -1, 0x00CE, 0x00DB, 0x2B, no_upgrade, no_effect, -1, -1, NULL), // Golden Scale
+    [0x0037] = ITEM_ROW(0x53,      GILDED_CHEST, 0x53, -1, 0x00CD, 0x00DB, 0x2A, no_upgrade, give_progressive_scale, 1, -1, NULL), // Silver Scale
+    [0x0038] = ITEM_ROW(0x53,      GILDED_CHEST, 0x54, -1, 0x00CE, 0x00DB, 0x2B, no_upgrade, give_progressive_scale, 2, -1, NULL), // Golden Scale
     [0x0039] = ITEM_ROW(0x53,      GILDED_CHEST, 0x6F, -1, 0x0068, 0x00C8, 0x21, no_upgrade, no_effect, -1, -1, NULL), // Stone of Agony
     [0x003A] = ITEM_ROW(0x53,      GILDED_CHEST, 0x70, -1, 0x007B, 0x00D7, 0x24, no_upgrade, no_effect, -1, -1, NULL), // Gerudo Membership Card
     [0x003B] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x004A, 0x010E, 0x46, no_upgrade, give_fairy_ocarina, -1, -1, NULL), // Fairy Ocarina
@@ -327,6 +327,8 @@ item_row_t item_table[] = {
     [0x0116] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00A0, 0x01A0, 0x87, no_upgrade, give_small_key, FORT_ID,   -1, resolve_text_small_keys), // Thieves' Hideout Small Key
     [0x0117] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00A1, 0x01A1, 0x88, no_upgrade, give_small_key, CASTLE_ID, -1, resolve_text_small_keys), // Ganon's Castle Small Key
     [0x0118] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00F3, 0x01A2, 0x89, no_upgrade, give_small_key, TCG_ID,    -1, resolve_text_small_keys_cmg), // Small Key (Chest Game)
+
+    [0x0119] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x90B4, 0x00DB, 0x95, no_upgrade, give_progressive_scale, 0, -1, NULL), // Bronze Scale
 };
 
 /*  Determine which message to display based on the number of silver rupees collected.

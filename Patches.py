@@ -1148,6 +1148,10 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     if world.settings.start_with_rupees:
         rom.write_byte(rom.sym('MAX_RUPEES'), 0x01)
 
+    # No bronze scale
+    if not world.settings.add_bronze_scale:
+        save_context.give_item(world, "Progressive Scale", 1)
+
     # Set starting time of day
     if world.settings.starting_tod != 'default':
         tod = {
