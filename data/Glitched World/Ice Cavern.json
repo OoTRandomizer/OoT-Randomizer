@@ -14,7 +14,7 @@
                 has_soul(Freezard) and here(is_adult or has_explosives or can_use(Dins_Fire)
                     or can_use(Megaton_Hammer))",
             "Farores Wind Warp": "can_use(Farores_Wind)",
-            "Ice Cavern End Room": "can_use(Iron_Boots) and glitch_reverse_ice"
+            "Ice Cavern End Room": "can_use(Iron_Boots) and glitch_reverse_ice and can_swim"
         }
     },
     {

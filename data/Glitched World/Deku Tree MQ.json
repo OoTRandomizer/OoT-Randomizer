@@ -134,8 +134,8 @@
         },
         "exits": {
             "Deku Tree Basement Back Room": "is_child",
-            "Deku Tree Before Boss": "deku_tree_shortcuts or here(has_fire_source_with_torch or can_gdv)
-                or can_weirdshot"
+            "Deku Tree Before Boss": "can_jumpslash and (deku_tree_shortcuts or here(has_fire_source_with_torch or can_gdv))
+                or (can_weirdshot and can_swim)"
         }
     },
     {
@@ -143,12 +143,12 @@
         "dungeon": "Deku Tree",
         "savewarp": "KF Outside Deku Tree -> Deku Tree Lobby",
         "locations": {
-            "Deku Tree MQ Basement Recovery Heart 1": "True",
-            "Deku Tree MQ Basement Recovery Heart 2": "True",
-            "Deku Tree MQ Basement Recovery Heart 3": "True"
+            "Deku Tree MQ Basement Recovery Heart 1": "can_swim or can_use(Iron_Boots)",
+            "Deku Tree MQ Basement Recovery Heart 2": "can_swim or can_use(Iron_Boots)",
+            "Deku Tree MQ Basement Recovery Heart 3": "can_swim or can_use(Iron_Boots)"
         },
         "exits": {
-            "Deku Tree Basement Ledge": "deku_tree_shortcuts",
+            "Deku Tree Basement Ledge": "deku_tree_shortcuts and (can_swim or can_use(Iron_Boots))",
             "Queen Gohma Boss Room": "deku_tree_shortcuts or (here(has_shield) and has_soul(Deku_Scrub))
                 or at('Deku Tree Lobby', is_adult and glitch_deku_boss_door_skip)"
         }

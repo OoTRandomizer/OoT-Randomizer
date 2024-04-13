@@ -58,8 +58,7 @@
         },
         "exits": {
             "Forest Temple NE Outdoors": "
-                can_use(Iron_Boots) or can_use(Longshot) or (Progressive_Scale, 2) or
-                (logic_forest_well_swim and can_use(Hookshot))",
+                (can_use(Iron_Boots) and can_use(Hookshot)) or (Progressive_Scale, 3)",
             "Forest Temple Outdoors High Balconies": "can_kill_blue_bubble",
             "Forest Temple NW Outdoors Freestandings": "logic_forest_courtyard_hearts and can_use(Boomerang)",
             # Low grav ?
@@ -104,7 +103,7 @@
             "Forest Temple Outdoors High Balconies": "
                 can_use(Longshot) or (logic_forest_vines and can_use(Hookshot))",
                 # Longshot can grab some very high up vines to drain the well.
-            "Forest Temple NW Outdoors": "can_use(Iron_Boots) or (Progressive_Scale, 2)"
+            "Forest Temple NW Outdoors": "can_use(Iron_Boots) or (Progressive_Scale, 3)"
         }
     },
     {

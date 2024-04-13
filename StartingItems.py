@@ -101,7 +101,7 @@ equipment: dict[str, Entry] = dict(chain(
     _entry("hover_boots", "Hover Boots"),
     _entry("magic", "Magic Meter", available=2),
     _entry("strength", "Progressive Strength Upgrade", available=3, gui_text="Progressive Strength"),
-    _entry("scale", "Progressive Scale", available=2),
+    _entry("scale", "Progressive Scale", available=3),
     _entry("wallet", "Progressive Wallet", available=3),
     _entry("stone_of_agony", "Stone of Agony"),
     _entry("defense", "Double Defense"),

@@ -119,7 +119,7 @@
         },
         "exits": {
             "Gerudo Training Ground Underwater": "
-                (has_fire_source or can_gdv or can_weirdshot) and Iron_Boots and can_take_damage and
+                (has_fire_source or can_gdv or can_weirdshot) and (Iron_Boots and can_swim) and can_take_damage and
                 (logic_fewer_tunic_requirements or Zora_Tunic)"
         }
     },
@@ -127,9 +127,9 @@
         "region_name": "Gerudo Training Ground Underwater",
         "dungeon": "Gerudo Training Ground",
         "locations": {
-            "Gerudo Training Ground MQ Underwater Silver Rupee Middle": "True",
-            "Gerudo Training Ground MQ Underwater Silver Rupee Front Right": "True",
-            "Gerudo Training Ground MQ Underwater Silver Rupee Back Left": "True"
+            "Gerudo Training Ground MQ Underwater Silver Rupee Middle": "can_swim or can_use(Longshot)",
+            "Gerudo Training Ground MQ Underwater Silver Rupee Front Right": "can_swim or can_use(Longshot)",
+            "Gerudo Training Ground MQ Underwater Silver Rupee Back Left": "can_swim or can_use(Longshot)"
         }
     },
     {

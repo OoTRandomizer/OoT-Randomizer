@@ -17,7 +17,7 @@
         "exits": {
             "KF Outside Deku Tree": "True",
             "Deku Tree Slingshot Room": "here(has_shield)",
-            "Deku Tree Basement": "deku_tree_shortcuts or here(is_adult or can_child_attack or Nuts)",
+            "Deku Tree Basement": "deku_tree_shortcuts or here(is_adult or (can_child_attack or Nuts and can_jumpslash))",
             "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
@@ -40,23 +40,53 @@
                 (logic_deku_basement_gs and (is_adult or Sticks or Kokiri_Sword))"
         },
         "exits": {
-            "Deku Tree Basement Back Room": "
+            "Deku Tree Basement Eye Switch Room": "
                 here(has_fire_source_with_torch or can_use(Bow)) and
                 here(can_use(Slingshot) or can_use(Bow))",
             "Deku Tree Basement Ledge": "deku_tree_shortcuts or here(is_adult) or logic_deku_b1_skip"
         }
     },
     {
-        "region_name": "Deku Tree Basement Back Room",
+        "region_name": "Deku Tree Basement Eye Switch Room",
         "dungeon": "Deku Tree",
         "locations": {
-            "Deku Tree GS Basement Back Room": "
-                here(has_fire_source_with_torch or can_use(Bow)) and
-                here(can_blast_or_smash) and
-                (can_use(Boomerang) or can_use(Hookshot))"
         },
         "exits": {
-            "Deku Tree Basement Ledge": "is_child"
+            "Deku Tree Basement Spinning Log Room": "here(can_use(Bow) or can_use(Slingshot))"
+        }
+    },
+    {
+        "region_name": "Deku Tree Basement Spinning Log Room",
+        "dungeon": "Deku Tree",
+        "exits":
+        {
+            "Deku Tree Basement Torch Room": "can_swim or can_use(Iron_boots)"
+        }
+    },
+    {
+        "region_name": "Deku Tree Basement Torch Room",
+        "dungeon": "Deku Tree",
+        "exits":
+        {
+            "Deku Tree Basement Back Room": "has_fire_source_with_torch",
+            "Deku Tree Basement Spinning Log Room": "has_fire_source_with_torch"
+        }
+    },
+    {
+        "region_name": "Deku Tree Basement Back Room",
+        "dungeon": "Deku Tree",
+        "exits": {
+            "Deku Tree Basement Back Side Room": "
+                here(has_fire_source_with_torch or can_use(Bow))",
+            "Deku Tree Basement Ledge": "is_child",
+            "Deku Tree Basement Torch Room": "True"
+        }
+    },
+    {
+        "region_name": "Deku Tree Basement Back Side Room",
+        "dungeon": "Deku Tree",
+        "locations": {
+            "Deku Tree GS Basement Back Room": "can_use(Boomerang) or can_use(Hookshot)"
         }
     },
     {
@@ -66,8 +96,8 @@
             "Deku Tree Basement": "True",
             "Deku Tree Basement Back Room": "is_child",
             "Deku Tree Before Boss": "
-                deku_tree_shortcuts or
-                here(has_fire_source_with_torch or (logic_deku_b1_webs_with_bow and can_use(Bow)))"
+               can_jumpslash and (deku_tree_shortcuts or
+                here(has_fire_source_with_torch or (logic_deku_b1_webs_with_bow and can_use(Bow))))"
         }
     },
     {
@@ -75,13 +105,13 @@
         "dungeon": "Deku Tree",
         "savewarp": "KF Outside Deku Tree -> Deku Tree Lobby",
         "locations": {
-            "Deku Tree Basement Recovery Heart 1": "True",
-            "Deku Tree Basement Recovery Heart 2": "True",
-            "Deku Tree Basement Recovery Heart 3": "True"
+            "Deku Tree Basement Recovery Heart 1": "can_swim or can_use(Iron_Boots)",
+            "Deku Tree Basement Recovery Heart 2": "can_swim or can_use(Iron_Boots)",
+            "Deku Tree Basement Recovery Heart 3": "can_swim or can_use(Iron_Boots)"
         },
         "exits": {
-            "Deku Tree Basement Ledge": "deku_tree_shortcuts or logic_visible_collisions",
-            "Queen Gohma Boss Room": "deku_tree_shortcuts or here(has_shield)"
+            "Deku Tree Basement Ledge": "(deku_tree_shortcuts or logic_visible_collisions) and (can_swim or can_use(Iron_Boots))",
+            "Queen Gohma Boss Room": "deku_tree_shortcuts or (here(has_shield) and has_soul(Deku_Scrub))"
         }
     }
 ]

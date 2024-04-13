@@ -108,6 +108,7 @@
         "silver_rupee_pouches_choice": "off",
         "silver_rupee_pouches": [],
         "enhance_map_compass": [],
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": true,
         "disabled_locations": [
             "Deku Theater Mask of Truth",
@@ -318,6 +319,7 @@
             "map_dungeon_location",
             "compass_reward"
         ],
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth"
@@ -548,6 +550,7 @@
             "map_mq",
             "compass_reward"
         ],
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth"
@@ -762,6 +765,7 @@
         "silver_rupee_pouches_choice": "off",
         "silver_rupee_pouches": [],
         "enhance_map_compass": [],
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth"
@@ -989,6 +993,7 @@
             "map_mq",
             "compass_reward"
         ],
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Sheik at Temple",
@@ -1222,6 +1227,7 @@
             "map_mq",
             "compass_reward"
         ],
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth",
@@ -1450,6 +1456,7 @@
             "map_mq",
             "compass_reward"
         ],
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth",
@@ -1704,6 +1711,7 @@
             "map_mq",
             "compass_reward"
         ],
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [],
         "allowed_tricks": [
@@ -2081,6 +2089,7 @@
         "silver_rupee_pouches_choice": "off",
         "silver_rupee_pouches": [],
         "enhance_map_compass": [],
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth",
@@ -2289,6 +2298,7 @@
         "silver_rupee_pouches_choice": "off",
         "silver_rupee_pouches": [],
         "enhance_map_compass": [],
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth",
@@ -2521,6 +2531,7 @@
         "silver_rupee_pouches_choice": "off",
         "silver_rupee_pouches": [],
         "enhance_map_compass": [],
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth",
@@ -2739,6 +2750,7 @@
         "silver_rupee_pouches_choice": "off",
         "silver_rupee_pouches": [],
         "enhance_map_compass": [],
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [],
         "allowed_tricks": [],
@@ -2945,6 +2957,7 @@
         "silver_rupee_pouches_choice": "off",
         "silver_rupee_pouches": [],
         "enhance_map_compass": [],
+        "add_bronze_scale": false,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [],
         "allowed_tricks": [

@@ -320,7 +320,9 @@ class GetItemId(IntEnum):
     GI_SHADOW_MEDALLION = 0x012E
     GI_SPIRIT_MEDALLION = 0x012F
 
-    GI_RANDO_MAX = 0x0130
+    GI_SCALE_BRONZE = 0x0130
+
+    GI_RANDO_MAX = 0x0131
 
 # Progressive: True  -> Advancement
 #              False -> Priority
@@ -423,7 +425,7 @@ item_table: dict[str, tuple[str, Optional[bool], Optional[int], Optional[dict[st
     'Bow':                                             ('Item',     True,  GetItemId.GI_PROGRESSIVE_BOW, None),
     'Slingshot':                                       ('Item',     True,  GetItemId.GI_PROGRESSIVE_SLINGSHOT, None),
     'Progressive Wallet':                              ('Item',     True,  GetItemId.GI_PROGRESSIVE_WALLET, {'progressive': 3}),
-    'Progressive Scale':                               ('Item',     True,  GetItemId.GI_PROGRESSIVE_SCALE, {'progressive': 2}),
+    'Progressive Scale':                               ('Item',     True,  GetItemId.GI_PROGRESSIVE_SCALE, {'progressive': 3}),
     'Deku Nut Capacity':                               ('Item',     None,  GetItemId.GI_PROGRESSIVE_NUT_CAPACITY, None),
     'Deku Stick Capacity':                             ('Item',     None,  GetItemId.GI_PROGRESSIVE_STICK_CAPACITY, None),
     'Bombchus':                                        ('Item',     True,  GetItemId.GI_PROGRESSIVE_BOMBCHUS, None),

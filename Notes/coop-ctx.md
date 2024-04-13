@@ -31,7 +31,7 @@ The starting address of the co-op context is listed at address `0x8040_0000` (at
 |`0x0814`|`CFG_FILE_SELECT_HASH`|4|`0x0005`|The 5 icons displayed at the top of the file select screen, represented as indices into the `HASH_ICONS` list in Spoiler.py.|
 |`0x081C`|`MW_PROGRESSIVE_ITEMS_STATE`|5|`0x0400`|The multiworld plugin can store data representing the state of progressive items of all players here. If `MW_PROGRESSIVE_ITEMS_ENABLE` is set to `1`, the game will use this to render outgoing progressive items instead of basing them on the sender's inventory. The data is an array of 256 bitfields, each 4 bytes long, with the entry at index 0 unused. For documentation of the bitflags, see `mw_progressive_items_state_t` in `item_upgrades.c`. Note that the `chu_bag` flag only has any effect in versions 6+ of the co-op context.|
 
-# Version 7
+# Version 7-8
 
 |Offset|Name|Min version|Size|Description|
 |--:|---|--:|--:|---|
