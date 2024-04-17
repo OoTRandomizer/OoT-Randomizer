@@ -52,7 +52,7 @@ void set_new_respawn() {
 void manage_swim() {
 
     // We found the first scale.
-    if (extended_savectx.extended_scale[0] > 0) {
+    if (extended_savectx.extended_scale > 0) {
         return;
     }
 
@@ -62,11 +62,14 @@ void manage_swim() {
     }
 
     // Always allow to swim out of water temple to avoid softlocks.
-    if (z64_game.scene_index == 5 && z64_link.common.pos_world.z > 700.0) {
+    if (z64_game.scene_index == 5 &&
+        z64_game.room_index == 0 &&
+        z64_link.common.pos_world.z > 700.0) {
         return;
     }
 
     if (z64_link.state_flags_1 & 0x08000000) { // Swimming state flag.
+        PlaySFX(0x28CD); // NA_SE_EV_WATER_CONVECTION
         set_new_respawn();
     }
 }

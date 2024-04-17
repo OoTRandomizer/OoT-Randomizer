@@ -83,7 +83,7 @@ uint16_t wallet_upgrade(z64_file_t* save, override_t override) {
 }
 
 uint16_t scale_upgrade(z64_file_t* save, override_t override) {
-    switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? extended_savectx.extended_scale[0] : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].scale) {
+    switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? extended_savectx.extended_scale : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].scale) {
         case 0: return 0x119; // Bronze Scale
         case 1: return 0x37; // Silver Scale
         default: return 0x38; // Gold Scale

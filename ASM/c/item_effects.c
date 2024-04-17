@@ -271,14 +271,14 @@ void unlock_ocarina_note(z64_file_t* save, int16_t arg1, int16_t arg2) {
 void give_progressive_scale(z64_file_t* save, int16_t arg1, int16_t arg2) {
     switch(arg1) {
         case 0: // Bronze scale
-            extended_savectx.extended_scale[0] = 1;
+            extended_savectx.extended_scale = 1;
             break;
         case 1:
-            extended_savectx.extended_scale[0] = 2;
+            extended_savectx.extended_scale = 2;
             save->diving_upgrade = 1;
             break;
         case 2:
-            extended_savectx.extended_scale[0] = 3;
+            extended_savectx.extended_scale = 3;
             save->diving_upgrade = 2;
             break;
     }

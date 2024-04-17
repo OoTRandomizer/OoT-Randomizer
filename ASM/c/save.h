@@ -6,7 +6,8 @@
 // Struct for storing additional data in SRAM. This has to always be a multiple of 2 bytes long supposedly.
 typedef struct {
     uint8_t silver_rupee_counts[0x16];
-    uint8_t extended_scale[0x2];
+    uint8_t extended_scale;
+    uint8_t pad;
 } extended_savecontext_static_t __attribute__ ((aligned (8)));
 
 
