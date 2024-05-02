@@ -47,7 +47,7 @@
     "big_poe_count_random": false,
     "big_poe_count": 1,
     "correct_chest_appearances": "off",
-    "clearer_hints": true,
+    "clearer_hints": "explicit",
     "hints": "always",
     "hint_dist": "very_strong",
     "text_shuffle": "none",

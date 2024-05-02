@@ -471,8 +471,8 @@ class HintArea(Enum):
                 return hint_area
         return None
 
-    def preposition(self, clearer_hints: bool) -> str:
-        return self.value[1 if clearer_hints else 0]
+    def preposition(self, clearer_hints: str) -> str:
+        return self.value[1 if clearer_hints in ('explicit', 'concise') else 0]
 
     def __str__(self) -> str:
         return self.value[2]
@@ -504,7 +504,7 @@ class HintArea(Enum):
 
     # Formats the hint text for this area with proper grammar.
     # Dungeons are hinted differently depending on the clearer_hints setting.
-    def text(self, clearer_hints: bool, preposition: bool = False, world: Optional[int] = None) -> str:
+    def text(self, clearer_hints: str, preposition: bool = False, world: Optional[int] = None) -> str:
         if self.is_dungeon and self.dungeon_name:
             text = get_hint(self.dungeon_name, clearer_hints).text
         else:
@@ -1639,7 +1639,7 @@ def build_altar_hints(world: World, messages: list[Message], include_rewards: bo
 def build_boss_string(reward: str, color: str, world: World) -> str:
     item_icon = chr(Item(reward).special['item_id'])
     if reward in world.distribution.effective_starting_items and world.distribution.effective_starting_items[reward].count > 0:
-        if world.settings.clearer_hints:
+        if world.settings.clearer_hints in ('explicit', 'concise'):
             text = GossipText(f"\x08\x13{item_icon}One #@ already has#...", [color], prefix='')
         else:
             text = GossipText(f"\x08\x13{item_icon}One in #@'s pocket#...", [color], prefix='')
@@ -1666,7 +1666,7 @@ def build_bridge_reqs_string(world: World) -> str:
                 'hearts':     (world.settings.bridge_hearts,     "#heart#",                        "#hearts#"),
             }[world.settings.bridge]
             item_req_string = f'{count} {singular if count == 1 else plural}'
-        if world.settings.clearer_hints:
+        if world.settings.clearer_hints in ('explicit', 'concise'):
             string += f"The rainbow bridge will be built once the Hero collects {item_req_string}."
         else:
             string += f"The awakened ones will await for the Hero to collect {item_req_string}."

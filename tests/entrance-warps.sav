@@ -43,7 +43,7 @@
 "enhance_map_compass": false,
 "shuffle_ganon_bosskey": "remove",
 "mq_dungeons_mode": "vanilla",
-"clearer_hints": true,
+"clearer_hints": "explicit",
 "hints": "mask",
 "hint_dist": "tournament"
 }

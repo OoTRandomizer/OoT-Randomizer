@@ -155,7 +155,7 @@ def replace_goal_names(worlds: list[World]) -> None:
                     for boss in bosses:
                         if boss.item.name == goal.hint_text['replace']:
                             flavorText, clearText, color = goalTable[boss.name]
-                            if world.settings.clearer_hints:
+                            if world.settings.clearer_hints in ('explicit', 'concise'):
                                 goal.hint_text = clearText
                             else:
                                 goal.hint_text = flavorText

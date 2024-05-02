@@ -48,9 +48,9 @@ class Multi:
         self.locations: list[str] = locations
 
 
-def get_hint(name: str, clearer_hint: bool = False) -> Hint:
+def get_hint(name: str, clearer_hint: str = 'off') -> Hint:
     text_options, clear_text, hint_type = hintTable[name]
-    if clearer_hint:
+    if clearer_hint in ('explicit', 'concise'):
         if clear_text is None:
             return Hint(name, text_options, hint_type, 0)
         return Hint(name, clear_text, hint_type)

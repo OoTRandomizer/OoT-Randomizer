@@ -81,7 +81,7 @@
 "start_with_consumables": true,
 "adult_trade_start": ["Prescription", "Eyeball Frog", "Eyedrops", "Claim Check"],
 "correct_chest_appearances": "off",
-"clearer_hints": true,
+"clearer_hints": "explicit",
 "hints": "always",
 "hint_dist": "tournament",
 "text_shuffle": "none",

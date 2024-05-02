@@ -3403,14 +3403,24 @@ class SettingInfos:
         shared         = True,
     )
 
-    clearer_hints = Checkbutton(
+    clearer_hints = Combobox(
         gui_text       = 'Clearer Hints',
+        default        = 'explicit',
+        choices        = {
+            'off':      'Off',
+            'explicit': 'Explicit',
+            'concise':  'Concise',
+        },
         gui_tooltip    = '''\
             The hints provided by Gossip Stones will
             be very direct if this option is enabled.
+
+            'Explicit' - Hints will be more descriptive of a location and how to obtain
+            the item. Recommended for newer/casual players.
+
+            'Concise' - Hints will only supply a location and the item to be found.
         ''',
         shared         = True,
-        default        = True,
     )
 
     hints = Combobox(
@@ -3439,6 +3449,7 @@ class SettingInfos:
         ''',
         shared         = True,
     )
+
 
     hint_dist = Combobox(
         gui_text       = 'Hint Distribution',
