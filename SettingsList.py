@@ -3450,7 +3450,6 @@ class SettingInfos:
         shared         = True,
     )
 
-
     hint_dist = Combobox(
         gui_text       = 'Hint Distribution',
         default        = 'balanced',
