@@ -3,9 +3,9 @@
 #include "util.h"
 #include "z64.h"
 
-extern uint8_t FONT_TEXTURE[];
-extern uint8_t DPAD_TEXTURE[];
-extern uint8_t TRIFORCE_ICON_TEXTURE[];
+extern uint8_t FONT_RESOURCE[];
+extern uint8_t DPAD_RESOURCE[];
+extern uint8_t TRIFORCE_SPRITE_RESOURCE[];
 
 Gfx setup_db[] = {
     gsDPPipeSync(),
@@ -105,7 +105,7 @@ sprite_t buttons_sprite = {
 
 int sprite_bytes_per_tile(sprite_t* sprite) {
     if (sprite->im_siz == G_IM_SIZ_4b) {
-        // No idea why
+        // this format is nibble based, so 4bits = half a byte
         return sprite->tile_w * sprite->tile_h * sprite->bytes_per_texel / 2;
     }
     return sprite->tile_w * sprite->tile_h * sprite->bytes_per_texel;
@@ -119,7 +119,20 @@ void sprite_load(z64_disp_buf_t* db, sprite_t* sprite,
         int start_tile, int tile_count) {
     int width = sprite->tile_w;
     int height = sprite->tile_h * tile_count;
-    gDPLoadTextureTile(db->p++,
+    if (sprite->im_siz == G_IM_SIZ_4b) {
+        gDPLoadTextureTile_4b(db->p++,
+            sprite->buf + start_tile * sprite_bytes_per_tile(sprite),
+            sprite->im_fmt,
+            width, height,
+            0, 0,
+            width - 1, height - 1,
+            0,
+            G_TX_WRAP, G_TX_WRAP,
+            G_TX_NOMASK, G_TX_NOMASK,
+            G_TX_NOLOD, G_TX_NOLOD);
+    }
+    else {
+        gDPLoadTextureTile(db->p++,
             sprite->buf + start_tile * sprite_bytes_per_tile(sprite),
             sprite->im_fmt, sprite->im_siz,
             width, height,
@@ -129,16 +142,17 @@ void sprite_load(z64_disp_buf_t* db, sprite_t* sprite,
             G_TX_WRAP, G_TX_WRAP,
             G_TX_NOMASK, G_TX_NOMASK,
             G_TX_NOLOD, G_TX_NOLOD);
+    }
 }
 
 void sprite_texture(z64_disp_buf_t* db, sprite_t* sprite, int tile_index, int16_t left, int16_t top,
         int16_t width, int16_t height) {
     int width_factor = (1<<10) * sprite->tile_w / width;
     int height_factor = (1<<10) * sprite->tile_h / height;
-    if (sprite->im_siz == G_IM_SIZ_4b) {
-        gDPLoadTextureBlock_4b(db->p++,
+    gDPLoadTextureBlock(db->p++,
         ((uint8_t*)(sprite->buf)) + (tile_index * sprite_bytes_per_tile(sprite)),
         sprite->im_fmt,
+        sprite->im_siz,
         sprite->tile_w,
         sprite->tile_h,
         0,
@@ -148,26 +162,43 @@ void sprite_texture(z64_disp_buf_t* db, sprite_t* sprite, int tile_index, int16_
         G_TX_NOMASK,
         G_TX_NOLOD,
         G_TX_NOLOD
-        );
-    }
-    else {
-        gDPLoadTextureBlock(db->p++,
-            ((uint8_t*)(sprite->buf)) + (tile_index * sprite_bytes_per_tile(sprite)),
-            sprite->im_fmt,
-            sprite->im_siz,
-            sprite->tile_w,
-            sprite->tile_h,
-            0,
-            G_TX_NOMIRROR | G_TX_WRAP,
-            G_TX_NOMIRROR | G_TX_WRAP,
-            G_TX_NOMASK,
-            G_TX_NOMASK,
-            G_TX_NOLOD,
-            G_TX_NOLOD
-        );
+    );
+
+    gSPTextureRectangle(db->p++, left * 4, top * 4, (left + width) * 4, (top * height) * 4, G_TX_RENDERTILE, 0,0,width_factor, height_factor);
+}
+
+void sprite_texture_4b(z64_disp_buf_t *db, sprite_t *sprite, int tile_index, int16_t left, int16_t top,
+                        int16_t width, int16_t height) {
+
+    if (sprite->im_siz != G_IM_SIZ_4b) {
+        return;
     }
 
-    gSPTextureRectangle(db->p++, left * 4, top * 4, (left + width) * 4, (top * height) * 4, G_TX_RENDERTILE, 0, 0, width_factor, height_factor);
+    int width_factor = (1<<10) * sprite->tile_w / width;
+    int height_factor = (1<<10) * sprite->tile_h / height;
+
+    gDPPipeSync(db->p++);
+    gDPSetCombineLERP(db->p++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0, PRIMITIVE,
+        ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
+
+    gDPSetEnvColor(db->p++, 0, 0, 0, 255);
+
+    gDPLoadTextureBlock_4b(db->p++,
+        ((uint8_t*)(sprite->buf)) + tile_index * sprite_bytes_per_tile(sprite),
+        sprite->im_fmt,
+        sprite->tile_w,
+        sprite->tile_h,
+        0,
+        G_TX_NOMIRROR | G_TX_CLAMP,
+        G_TX_NOMIRROR | G_TX_CLAMP,
+        G_TX_NOMASK,
+        G_TX_NOMASK,
+        G_TX_NOLOD,
+        G_TX_NOLOD
+    );
+
+    gSPTextureRectangle(db->p++, left * 4, top * 4, (left + width) * 4,
+        (top * height) * 4, G_TX_RENDERTILE, 0, 0, width_factor, height_factor);
 }
 
 void sprite_draw(z64_disp_buf_t* db, sprite_t* sprite, int tile_index,
@@ -218,8 +249,8 @@ void gfx_init() {
     medals_sprite.buf = title_static.buf + 0x2980;
     items_sprite.buf = icon_item_static.buf;
     quest_items_sprite.buf = icon_item_24_static.buf;
-    dpad_sprite.buf = DPAD_TEXTURE;
-    triforce_sprite.buf = TRIFORCE_ICON_TEXTURE;
+    dpad_sprite.buf = DPAD_RESOURCE;
+    triforce_sprite.buf = TRIFORCE_SPRITE_RESOURCE;
     song_note_sprite.buf = icon_item_static.buf + 0x00088040;
     key_rupee_clock_sprite.buf = parameter_static.buf + 0x00001E00;
     rupee_digit_sprite.buf = parameter_static.buf + 0x3040;
@@ -232,7 +263,7 @@ void gfx_init() {
     int font_bytes = sprite_bytes(&font_sprite);
     font_sprite.buf = heap_alloc(font_bytes);
     for (int i = 0; i < font_bytes / 2; i++) {
-        font_sprite.buf[2*i] = (FONT_TEXTURE[i] >> 4) | 0xF0;
-        font_sprite.buf[2*i + 1] = FONT_TEXTURE[i] | 0xF0;
+        font_sprite.buf[2*i] = (FONT_RESOURCE[i] >> 4) | 0xF0;
+        font_sprite.buf[2*i + 1] = FONT_RESOURCE[i] | 0xF0;
     }
 }

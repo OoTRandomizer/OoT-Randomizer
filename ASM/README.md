@@ -11,7 +11,7 @@ Advanced modifications to the Randomzier source require a bit more software than
   - On other platforms you'll need either `clang` or `gcc`, `cmake`, and either `ninja` or `make` installed. All of these should be available in the package repositories of every major Linux distribution and Homebrew on macOS. After, follow the [building from source instructions](https://github.com/Kingcom/armips#22-building-from-source).
 - Put the armips executable in the `tools` directory, or somewhere in your PATH.
 - Put the ROM you want to patch at `roms/base.z64`. This needs to be an uncompressed ROM; OoTRandomizer will produce one at ZOOTDEC.z64 when you run it with a compressed ROM.
-- Run `python build.py`, which will:
+- Run `python build.py --no-compile-c`, which will:
   - create `roms/patched.z64`
   - update some `txt` files in `build/` and in `../data/generated/`. Check `git status` to see which ones have changed. Make sure you submit them all together!
 
@@ -45,7 +45,7 @@ Recompiling the C code for randomizer requires the N64 development tools to be i
 
 You can substitute using the `tools` folder with adding the `n64/bin` folder to your environment PATH if you need an advanced setup.
 ### Running
-To recompile the C modules, use `python build.py --compile-c` in this directory, or adjust the path to `build.py` relative to your terminal's working directory.
+To recompile the C modules, use `python build.py` in this directory, or adjust the path to `build.py` relative to your terminal's working directory.
 
 ## Debugging Symbols for Project64
 To generate symbols for the Project64 debugger, use the `--pj64sym` option:

@@ -36,7 +36,7 @@
                 "trial":      {"order":  1, "weight": 0.0, "fixed":   0, "copies": 2},
                 "always":     {"order":  2, "weight": 0.0, "fixed":   0, "copies": 2},
                 "woth":       {"order":  3, "weight": 0.0, "fixed":   0, "copies": 2},
-                "goal":       {"order":  4, "weight": 0.0, "fixed":   3, "copies": 2},
+                "goal":       {"order":  4, "weight": 0.0, "fixed":   4, "copies": 2},
                 "barren":     {"order":  5, "weight": 0.0, "fixed":   0, "copies": 2},
                 "entrance":   {"order":  6, "weight": 0.0, "fixed":   0, "copies": 2},
                 "sometimes":  {"order":  7, "weight": 0.0, "fixed":  99, "copies": 2},

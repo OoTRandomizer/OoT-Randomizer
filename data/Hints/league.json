@@ -1,7 +1,7 @@
 {
     "name":                  "league",
     "gui_name":              "League",
-    "description":           "Hint Distribution for the S5 of League. 5 Always, 5 Path, 3 Barren, 7 Sometimes & Dual Hints weighted towards sometimes, 30/40/50 skull hints in house of skulltula",
+    "description":           "Hint Distribution for the S6 of League. 5 Always, 5 Path, 4 Barren at ToT, 5 Sometimes, 2 Dual Hints, HC Storms & HF Cow Hints Junked, 30/40/50 skull hints in house of skulltula",
     "add_locations":         [
         { "location": "Deku Theater Skull Mask", "types": ["always"] },
         { "location": "Sheik in Kakariko", "types": ["always"] }
@@ -57,18 +57,46 @@
     "distribution":          {
         "trial":           {"order": 1, "weight": 0.0, "fixed": 0, "copies": 2},
         "entrance_always": {"order": 2, "weight": 0.0, "fixed": 0, "copies": 2},
-        "always":          {"order": 3, "weight": 0.0, "fixed": 0, "copies": 2},
-        "goal":            {"order": 4, "weight": 0.0, "fixed": 5, "copies": 2},
-        "barren":          {"order": 5, "weight": 0.0, "fixed": 3, "copies": 2},
-        "entrance":        {"order": 6, "weight": 0.0, "fixed": 4, "copies": 2},
-        "dual":            {"order": 7, "weight": 1.5, "fixed": 0, "copies": 2},
-        "sometimes":       {"order": 8, "weight": 5.5, "fixed": 0, "copies": 2},
+        "always":          {"order": 3, "weight": 0.0, "fixed": 0, "copies": 2, "remove_stones": [
+            "ToT (Left)",
+            "ToT (Left-Center)",
+            "ToT (Right-Center)",
+            "ToT (Right)",
+            "HF (Cow Grotto)",
+            "HC (Storms Grotto)"
+        ]},
+        "goal":            {"order": 4, "weight": 0.0, "fixed": 5, "copies": 2, "remove_stones": [
+            "ToT (Left)",
+            "ToT (Left-Center)",
+            "ToT (Right-Center)",
+            "ToT (Right)",
+            "HF (Cow Grotto)",
+            "HC (Storms Grotto)"
+        ]},
+        "barren":          {"order": 5, "weight": 0.0, "fixed": 4, "copies": 1, "priority_stones": [
+            "ToT (Left)",
+            "ToT (Left-Center)",
+            "ToT (Right-Center)",
+            "ToT (Right)"
+        ]},
+        "entrance":        {"order": 6, "weight": 0.0, "fixed": 0, "copies": 2},
+        "dual":            {"order": 7, "weight": 0.0, "fixed": 2, "copies": 2, "remove_stones": [
+            "HF (Cow Grotto)",
+            "HC (Storms Grotto)"
+        ]},
+        "sometimes":       {"order": 8, "weight": 1.0, "fixed": 5, "copies": 2, "remove_stones": [
+            "HF (Cow Grotto)",
+            "HC (Storms Grotto)"
+        ]},
+        "junk":            {"order": 9, "weight": 0.0, "fixed": 2, "copies": 1, "priority_stones": [
+            "HF (Cow Grotto)",
+            "HC (Storms Grotto)"
+        ]},
         "random":          {"order": 0, "weight": 0.0, "fixed": 0, "copies": 2},
         "item":            {"order": 0, "weight": 0.0, "fixed": 0, "copies": 2},
         "song":            {"order": 0, "weight": 0.0, "fixed": 0, "copies": 2},
         "overworld":       {"order": 0, "weight": 0.0, "fixed": 0, "copies": 2},
         "dungeon":         {"order": 0, "weight": 0.0, "fixed": 0, "copies": 2},
-        "junk":            {"order": 0, "weight": 0.0, "fixed": 0, "copies": 2},
         "named-item":      {"order": 0, "weight": 0.0, "fixed": 0, "copies": 2},
         "woth":            {"order": 0, "weight": 0.0, "fixed": 0, "copies": 2},
         "dual_always":     {"order": 0, "weight": 0.0, "fixed": 0, "copies": 0},

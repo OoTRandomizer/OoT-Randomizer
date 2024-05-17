@@ -28,6 +28,7 @@
 #define NA_BGM_SMALL_ITEM_GET 0x39
 #define NA_SE_SY_GET_RUPY     0x4803
 #define NA_SE_SY_GET_ITEM     0x4824
+#define NA_SE_SY_ERROR 0x4806
 #define NA_SE_SY_DECIDE 0x4808
 #define NA_SE_SY_CURSOR 0x4809
 #define NA_SE_SY_CANCEL 0x480A
@@ -35,6 +36,7 @@
 #define NA_SE_SY_FSEL_DECIDE_S 0x483A
 #define NA_SE_SY_FSEL_DECIDE_L 0x483B
 #define NA_SE_SY_FSEL_CLOSE 0x483C
+#define NA_SE_SY_SET_FIRE_ARROW 0x483E
 
 #define FONT_CHAR_TEX_SIZE ((16 * 16) / 2) // 16x16 I4 texture
 
@@ -48,6 +50,10 @@
 #define REG(r) BASE_REG(0, (r))
 #define SREG(r) BASE_REG(1, (r))
 #define R_PAUSE_BG_PRERENDER_STATE SREG(94)
+
+#define ITEM_ICON_WIDTH 32
+#define ITEM_ICON_HEIGHT 32
+#define ITEM_ICON_SIZE (ITEM_ICON_WIDTH * ITEM_ICON_HEIGHT * 4) // The size in bytes of an item icon
 
 typedef struct {
   /* index of z64_col_type in scene file */
@@ -591,8 +597,8 @@ typedef struct {
   };
   char            unk_06_[0x0012];          /* 0x0054 */
   int16_t         scene_index;              /* 0x0066 */
-  int8_t          button_items[4];          /* 0x0068 */
-  int8_t          c_button_slots[3];        /* 0x006C */
+  uint8_t          button_items[4];          /* 0x0068 */
+  uint8_t          c_button_slots[3];        /* 0x006C */
   union {
     uint16_t      equips;                   /* 0x0070 */
     struct {
@@ -603,7 +609,7 @@ typedef struct {
     };
   };
   char            unk_07_[0x0002];          /* 0x0072 */
-  int8_t          items[24];                /* 0x0074 */
+  uint8_t         items[24];                /* 0x0074 */
   int8_t          ammo[15];                 /* 0x008C */
   uint8_t         magic_beans_sold;         /* 0x009B */
   union {
@@ -1076,39 +1082,55 @@ typedef struct {
     void             *icon_item_s;              /* 0x0130 */
     void             *icon_item_lang;           /* 0x0134 */
     void             *name_texture;             /* 0x0138 */
-    void             *p13C;                     /* 0x013C */
-    char              unk_01_[0x0094];          /* 0x0140 */
+    void             *player_segment;           /* 0x013C */
+    char              unk_01_[0x0004];          /* 0x0140 */
+    Vtx              *item_page_vtx;            /* 0x0144 */
+    Vtx              *equip_page_vtx;           /* 0x0148 */
+    Vtx              *map_page_vtx;             /* 0x014C */
+    Vtx              *quest_page_vtx;           /* 0x0150 */
+    Vtx              *info_panel_vtx;           /* 0x0154 */
+    Vtx              *item_vtx;                 /* 0x0158 */
+    Vtx              *equip_vtx;                /* 0x015C */
+    char              unk_01_2[0x04];           /* 0x0160 */
+    Vtx              *quest_vtx;                /* 0x0164 */
+    Vtx              *cursor_vtx;               /* 0x0168 */
+    Vtx              *save_vtx;                 /* 0x016C */
+    char              unk_01_3[0x64];           /* 0x0170 */
     uint16_t          state;                    /* 0x01D4 */
-    char              unk_02_[0x000E];          /* 0x01D6 */
+    uint16_t          debugState;               /* 0x01D6 */
+    char              unk_02_[0x000C];          /* 0x01D8 */
     uint16_t          changing;                 /* 0x01E4 */
     uint16_t          screen_prev_idx;          /* 0x01E6 */
     uint16_t          screen_idx;               /* 0x01E8 */
-    char              unk_03_[0x002E];          /* 0x01EA */
-    int16_t           item_cursor;              /* 0x0218 */
-    char              unk_04_[0x0002];          /* 0x021A */
-    int16_t           quest_cursor;             /* 0x021C */
-    int16_t           equip_cursor;             /* 0x021E */
-    int16_t           map_cursor;               /* 0x0220 */
-    int16_t           item_x;                   /* 0x0222 */
-    char              unk_05_[0x0004];          /* 0x0224 */
-    int16_t           equipment_x;              /* 0x0228 */
-    char              unk_06_[0x0002];          /* 0x022A */
-    int16_t           item_y;                   /* 0x022C */
-    char              unk_07_[0x0004];          /* 0x022E */
-    int16_t           equipment_y;              /* 0x0232 */
-    char              unk_08_[0x0004];          /* 0x0234 */
-    int16_t           cursor_pos;               /* 0x0238 */
-    char              unk_09_[0x0002];          /* 0x023A */
-    int16_t           item_id;                  /* 0x023C */
-    int16_t           item_item;                /* 0x023E */
-    int16_t           map_item;                 /* 0x0240 */
-    int16_t           quest_item;               /* 0x0242 */
-    int16_t           equip_item;               /* 0x0244 */
-    char              unk_0A_[0x0004];          /* 0x0246 */
-    int16_t           quest_hilite;             /* 0x024A */
-    char              unk_0B_[0x0018];          /* 0x024C */
+    char              unk_03_[0x001E];          /* 0x01EA */
+    uint16_t          alpha;                    /* 0x0208 */
+    int16_t           offset_y;                 /* 0x020A */
+    char              unk_04_[0x0008];          /* 0x020C */
+    int16_t           stick_movement_x;         /* 0x0214 */
+    int16_t           stick_movement_y;         /* 0x0216 */
+    int16_t           cursor_point[5];          /* 0x0218 */
+    int16_t           cursor_x[5];              /* 0x0222 */
+    int16_t           cursor_y[5];              /* 0x022C */
+    int16_t           dungeon_map_slot;         /* 0x0236 */
+    int16_t           cursor_special_pos;       /* 0x0238 */
+    int16_t           page_switch_input_timer;  /* 0x023A */
+    uint16_t          item_id;                  /* 0x023C */
+    uint16_t          cursor_item[4];           /* 0x023E */
+    uint16_t          cursor_slot[4];           /* 0x0246 */
+    uint16_t          equip_target_item;        /* 0x024E */
+    uint16_t          equip_target_slot;        /* 0x0250 */
+    uint16_t          equip_target_c_btn;       /* 0x0252 */
+    int16_t           equip_anim_x;             /* 0x0254 */
+    int16_t           equip_anim_y;             /* 0x0256 */
+    int16_t           equip_anim_alpha;         /* 0x0258 */
+    int16_t           info_panel_offset_y;      /* 0x025A */
+    uint16_t          name_display_timer;       /* 0x025C */
+    uint16_t          name_color_set;           /* 0x025E */
+    int16_t           cursor_color_set;         /* 0x0260 */
+    int16_t           prompt_choice;            /* 0x0262 */
     int16_t           quest_song;               /* 0x0264 */
-    char              unk_0C_[0x0016];          /* 0x0266 */
+    uint8_t           world_map_points[20];     /* 0x0266 */
+    uint8_t           trade_quest_location;     /* 0x027A */
                                                 /* unknown structure */
     char              s27C[0x0038];             /* 0x027C */
                                                 /* 0x02B4 */
@@ -1802,6 +1824,7 @@ typedef enum UpgradeType {
 #define INV_CONTENT(item) z64_file.items[SLOT(item)]
 #define AMMO(item) z64_file.ammo[SLOT(item)]
 #define CAPACITY(upg, value) gUpgradeCapacities[upg][value]
+#define ABS(x) ((x) >= 0 ? (x) : -(x))
 
 /* dram addresses */
 #define z64_EnItem00Action_addr                 0x800127E0

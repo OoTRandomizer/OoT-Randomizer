@@ -1,10 +1,13 @@
-MIT License
+All files are MIT licensed unless stated otherwise.
+Folders licensed under a different license (GPLv2+) include the respective license file.
 
-Copyright (c) 2017 Amazing Ampharos
+MIT LICENSE
 
-Credit for contributions to Junglechief87 on this and to LLCoolDave and
-KevinCathcart for their work on the Zelda Lttp Entrance Randomizer which
-was the code base for this project.
+Copyright (c) 2024 OoTRandomizer
+
+Credit for contributions to this project to AmazingAmpharos, Testrunner, Zannick, Junglechief87, and others.
+Additional credit to LLCoolDave and KevinCathcart for their work on the Zelda Lttp Entrance Randomizer which
+was the original code base for this project.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -813,6 +813,10 @@ def randomize_music(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: di
     if fanfare_sequences and target_fanfare_sequences:
         shuffled_fanfare_sequences = shuffle_music(log, fanfare_sequences, target_fanfare_sequences, music_mapping, "fanfares")
 
+    # Ensure disabled sequences are flagged in cosmetics log
+    for name in disabled_target_sequences:
+        log.bgm[name] = "None"
+
     # If "sequences_available" is in the cosmetic plando, just skip the actual patching portion and leave that to the web patcher
     if available_sequences:
         return
@@ -830,7 +834,6 @@ def disable_music(rom: Rom, log: CosmeticsLog, ids: Iterable[tuple[str, int]]) -
     blank_track = rom.read_bytes(0xB89AE0 + (0 * 0x10), 0x10)
     for bgm in ids:
         rom.write_bytes(0xB89AE0 + (bgm[1] * 0x10), blank_track)
-        log.bgm[bgm[0]] = "None"
 
 
 def restore_music(rom: Rom) -> None:

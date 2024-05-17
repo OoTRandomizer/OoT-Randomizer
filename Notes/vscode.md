@@ -88,8 +88,7 @@ Instead of manually running the build script in a terminal, you can add a build 
             "type": "shell",
             "command": "python3",
             "args": [
-                "${workspaceFolder}/ASM/build.py",
-                "--compile-c",
+                "${workspaceFolder}/ASM/build.py"
             ],
             "group": {
                 "kind": "build",

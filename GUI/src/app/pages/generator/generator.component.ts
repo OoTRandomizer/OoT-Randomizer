@@ -823,16 +823,38 @@ export class GeneratorComponent implements OnInit {
 
   onDirectorySelectedWeb(event, setting: any) { //Web only
 
+    let dirPickerMode: boolean = this.global.getGlobalVar("webSupportDirectoryPicker");
+    
     let fileList = event.currentTarget.files;
 
     if (!fileList || fileList.length < 1)
       return;
 
-    //Grab dropped folder name from first file path
-    let folderName = fileList[0].webkitRelativePath.substr(0, fileList[0].webkitRelativePath.indexOf("/"));
+    let displayName: string;
+
+    if (dirPickerMode) {
+      displayName = fileList[0].webkitRelativePath.substr(0, fileList[0].webkitRelativePath.indexOf("/")); //Grab dropped folder name from first file path
+    }
+    else {
+      //Create a sensible display name for any file combination
+      let nameParts = [];
+
+      nameParts.push(fileList[0].name);
+
+      if (fileList.length > 1) {
+        nameParts.push(`${fileList.length - 1} other file${fileList.length > 2 ? "s" : ""}`);
+      }
+
+      let lastNamePart = nameParts.pop();
+
+      if (nameParts.length > 0)
+        displayName = `${nameParts.join(", ")} and ${lastNamePart}`;
+      else
+        displayName = `${lastNamePart}`;   
+    }
 
     //Set setting
-    this.global.generator_settingsMap[setting.name] = { name: folderName, fileList: fileList };
+    this.global.generator_settingsMap[setting.name] = { name: displayName, fileList: fileList };
     this.cd.markForCheck();
     this.afterSettingChange(true);
   }

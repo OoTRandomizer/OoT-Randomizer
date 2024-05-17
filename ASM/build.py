@@ -13,13 +13,14 @@ from crc import calculate_crc
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--pj64sym', help="Output path for Project64 debugging symbols")
-parser.add_argument('--compile-c', action='store_true', help="Recompile C modules")
-parser.add_argument('--dump-obj', action='store_true', help="Dumps extra object info for debugging purposes. Does nothing without --compile-c")
+parser.add_argument('--compile-c', action='store_true', help="Recompile C modules. This is the default")
+parser.add_argument('--no-compile-c', action='store_true', help="Do not recompile C modules")
+parser.add_argument('--dump-obj', action='store_true', help="Dumps extra object info for debugging purposes. Does nothing with --no-compile-c")
 parser.add_argument('--diff-only', action='store_true', help="Creates diff output without running armips")
 
 args = parser.parse_args()
 pj64_sym_path = args.pj64sym
-compile_c = args.compile_c
+compile_c = not args.no_compile_c
 dump_obj = args.dump_obj
 diff_only = args.diff_only
 
@@ -66,7 +67,7 @@ c_sym_types = {}
 
 with open('build/c_symbols.txt', 'r') as f:
     for line in f:
-        m = re.match('''
+        m = re.match(r'''
                 ^
                 [0-9a-fA-F]+
                 .*

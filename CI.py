@@ -1,6 +1,8 @@
 # This script is called by GitHub Actions, see .github/workflows/python.yml
 # To fix code style errors, run: python3 ./CI.py --fix --no_unit_tests
 
+from __future__ import annotations
+
 import argparse
 import json
 import os.path
@@ -10,19 +12,21 @@ import unittest
 from io import StringIO
 from typing import NoReturn
 
-
-import Unittest as Tests
+from Messages import ITEM_MESSAGES, KEYSANITY_MESSAGES, MISC_MESSAGES
 from SettingsList import SettingInfos, logic_tricks, validate_settings
+import Unittest as Tests
 from Utils import data_path
 
 
-def error(msg: str, can_fix: bool) -> None:
+def error(msg: str, can_fix: bool | str) -> None:
     if not hasattr(error, "count"):
         error.count = 0
     print(msg, file=sys.stderr)
     error.count += 1
     if can_fix:
         error.can_fix = True
+        if can_fix == 'release':
+            error.can_fix_release = True
     else:
         error.cannot_fix = True
 
@@ -75,7 +79,7 @@ def check_presets_formatting(fix_errors: bool = False) -> None:
             # sort the settings within each preset
             setting_name: preset[setting_name]
             for setting_name, setting in SettingInfos.setting_infos.items()
-            if setting_name != 'starting_items' and setting.shared and setting_name in preset
+            if setting_name != 'starting_items' and (setting.shared or setting_name == 'aliases') and setting_name in preset
         }
         for preset_name, preset in presets.items()
     }
@@ -106,6 +110,39 @@ def check_hell_mode_tricks(fix_errors: bool = False) -> None:
         with open(data_path('presets_default.json'), 'w', encoding='utf-8', newline='') as file:
             json.dump(presets, file, indent=4)
             print(file=file)
+
+
+def check_release_presets(fix_errors: bool = False) -> None:
+    # Check to make sure spoiler logs are enabled for all presets.
+    with open(data_path('presets_default.json'), encoding='utf-8') as f:
+        presets = json.load(f)
+
+    for preset_name, preset in presets.items():
+        if not preset['create_spoiler']:
+            error(f'{preset_name} preset does not create spoiler logs', 'release')
+            preset['create_spoiler'] = True
+
+    if fix_errors:
+        with open(data_path('presets_default.json'), 'w', encoding='utf-8', newline='') as file:
+            json.dump(presets, file, indent=4)
+            print(file=file)
+
+
+# Check the message tables to ensure no duplicate entries exist.
+# This is not a perfect check because it doesn't account for everything that gets manually done in Patches.py
+# For that, we perform additional checking at patch time
+def check_message_duplicates() -> None:
+    def check_for_duplicates(new_item_messages: list[tuple[int, str]]) -> None:
+        for i in range(0, len(new_item_messages)):
+            for j in range(i, len(new_item_messages)):
+                if i != j:
+                    message_id1, message1 = new_item_messages[i]
+                    message_id2, message2 = new_item_messages[j]
+                    if message_id1 == message_id2:
+                        error(f'Duplicate MessageID found: {hex(message_id1)}, {message1}, {message2}', False)
+
+    messages = ITEM_MESSAGES + KEYSANITY_MESSAGES + MISC_MESSAGES
+    check_for_duplicates(messages)
 
 
 def check_code_style(fix_errors: bool = False) -> None:
@@ -175,6 +212,7 @@ def run_ci_checks() -> NoReturn:
     parser = argparse.ArgumentParser()
     parser.add_argument('--no_unit_tests', help="Skip unit tests", action='store_true')
     parser.add_argument('--only_unit_tests', help="Only run unit tests", action='store_true')
+    parser.add_argument('--release', help="Include checks for release branch", action='store_true')
     parser.add_argument('--fix', help='Automatically apply fixes where possible', action='store_true')
     args = parser.parse_args()
 
@@ -185,6 +223,9 @@ def run_ci_checks() -> NoReturn:
         check_hell_mode_tricks(args.fix)
         check_code_style(args.fix)
         check_presets_formatting(args.fix)
+        if args.release:
+            check_release_presets(args.fix)
+        check_message_duplicates()
 
     exit_ci(args.fix)
 
@@ -201,10 +242,15 @@ def exit_ci(fix_errors: bool = False) -> NoReturn:
                 sys.exit(0)
         else:
             if getattr(error, 'can_fix', False):
-                if getattr(error, 'cannot_fix', False):
-                    print('Run `CI.py --fix --no_unit_tests` to automatically fix some of these errors.', file=sys.stderr)
+                if getattr(error, 'can_fix_release', False):
+                    release_arg = ' --release'
                 else:
-                    print('Run `CI.py --fix --no_unit_tests` to automatically fix these errors.', file=sys.stderr)
+                    release_arg = ''
+                if getattr(error, 'cannot_fix', False):
+                    which_errors = 'some of these errors'
+                else:
+                    which_errors = 'these errors'
+                print(f'Run `CI.py --fix --no_unit_tests{release_arg}` to automatically fix {which_errors}.', file=sys.stderr)
             sys.exit(1)
     else:
         print(f'CI checks successful.')

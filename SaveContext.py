@@ -404,7 +404,7 @@ class SaveContext:
                         'total_keys.tcg': 6,
                     },
                 }[dungeon]
-                if world.settings.keyring_give_bk:
+                if world.keyring_give_bk(dungeon):
                     bk_names = {
                         "Forest Temple": 'dungeon_items.forest.boss_key',
                         "Fire Temple": 'dungeon_items.fire.boss_key',

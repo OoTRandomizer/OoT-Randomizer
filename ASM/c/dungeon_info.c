@@ -46,6 +46,7 @@ medal_t medals[] = {
 };
 
 uint8_t reward_rows[] = { 0, 1, 2, 8, 3, 4, 5, 7, 6 };
+uint8_t bk_display = 0;
 
 extern uint32_t CFG_DUNGEON_INFO_MQ_ENABLE;
 extern uint32_t CFG_DUNGEON_INFO_MQ_NEED_MAP;
@@ -87,30 +88,6 @@ int d_right_dungeon_idx(int i) {
     return dungeon_idx;
 }
 
-// Helper function for drawing numbers to the HUD.
-void draw_int(z64_disp_buf_t* db, uint16_t number, int16_t left, int16_t top, colorRGBA8_t color) {
-    uint8_t digits[10];
-    uint8_t j = 0;
-    // Extract each digit. They are added, in reverse order, to digits[]
-    do {
-        digits[j] = number % 10;
-        number = number / 10;
-        j++;
-    }
-    while (number > 0);
-    // This combiner mode makes it look like the rupee count
-    gDPSetCombineLERP(db->p++, 0, 0, 0, PRIMITIVE, TEXEL0, 0, PRIMITIVE, 0, 0, 0, 0, PRIMITIVE,
-        TEXEL0, 0, PRIMITIVE, 0);
-
-    // Set the color
-    gDPSetPrimColor(db->p++, 0, 0, color.r, color.g, color.b, color.a);
-    // Draw each digit
-    for (uint8_t c = j; c > 0; c--) {
-        sprite_texture(db, &rupee_digit_sprite, digits[c-1], left, top, 8, 16);
-        left += 8;
-    }
-}
-
 // When in a silver rupee room, draw the silver rupee count for that room.
 void draw_silver_rupee_count(z64_game_t* globalCtx, z64_disp_buf_t* db) {
     if (!CFG_DUNGEON_INFO_SILVER_RUPEES) return;
@@ -130,7 +107,7 @@ void draw_silver_rupee_count(z64_game_t* globalCtx, z64_disp_buf_t* db) {
                 // Draw silver rupee icon
                 int scene_index = z64_game.scene_index;
                 int voffset = 0;
-                if (scene_index < 0x11 && z64_file.dungeon_keys[scene_index] >= 0) {
+                if (scene_index < 0x11 && (z64_file.dungeon_keys[scene_index] >= 0 || bk_display)) {
                     voffset -= 17;
                 }
                 gDPPipeSync(db->p++);
@@ -159,8 +136,37 @@ void draw_silver_rupee_count(z64_game_t* globalCtx, z64_disp_buf_t* db) {
         }
     }
 }
+void is_bk_displayed() {
+    uint8_t scene = z64_game.scene_index;
+    if ((scene > 2 && scene < 8) || // Adult temples
+        scene == 10 || // Ganon's Tower
+        scene == 13) { // Ganon's Castle
+
+        int index = scene == 13 ? 10 : scene;
+        if (z64_file.dungeon_items[index].boss_key) {
+            bk_display++;
+            bk_display = bk_display > 1 ? 2 : bk_display;
+            return;
+        }
+    }
+    bk_display = 0;
+}
+
+// Draw a boss key icon in dungeons.
+void draw_boss_key(z64_game_t* globalCtx, z64_disp_buf_t* db) {
+    is_bk_displayed();
+    if (bk_display > 1) { // Delay by one frame to let other counters move first.
+        gDPPipeSync(db->p++);
+        gDPSetCombineMode(db->p++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
+        gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, globalCtx->hud_alpha_channels.rupees_keys_magic);
+        gDPPipeSync(db->p++);
+        sprite_load(db, &quest_items_sprite, 14, 1);
+        sprite_draw(db, &quest_items_sprite, 0, 26, 190, 16, 16);
+    }
+}
 
 void draw_dungeon_info(z64_disp_buf_t* db) {
+    show_dungeon_info = 0;
     pad_t pad_held = z64_ctxt.input[0].raw.pad;
     int draw = CAN_DRAW_DUNGEON_INFO && !CAN_DRAW_TRADE_DPAD && (
         ((pad_held.dl || pad_held.dr || pad_held.dd) && CFG_DPAD_DUNGEON_INFO_ENABLE) ||
@@ -176,6 +182,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
     gSPDisplayList(db->p++, &setup_db);
 
     if (pad_held.a && !((pad_held.dl || pad_held.dr || pad_held.dd) && !CFG_DPAD_DUNGEON_INFO_ENABLE)) {
+        show_dungeon_info = 1;
         uint16_t altar_flags = z64_file.inf_table[27];
         int show_medals = CFG_DUNGEON_INFO_REWARD_ENABLE && (!CFG_DUNGEON_INFO_REWARD_NEED_ALTAR || (altar_flags & 1)) && CFG_DUNGEON_INFO_REWARD_SUMMARY_ENABLE;
         int show_stones = CFG_DUNGEON_INFO_REWARD_ENABLE && (!CFG_DUNGEON_INFO_REWARD_NEED_ALTAR || (altar_flags & 2)) && CFG_DUNGEON_INFO_REWARD_SUMMARY_ENABLE;
@@ -495,6 +502,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
         // Finish
 
     } else if (pad_held.dd) {
+        show_dungeon_info = 1;
         uint16_t altar_flags = z64_file.inf_table[27];
         int show_medals = CFG_DUNGEON_INFO_REWARD_ENABLE && (!CFG_DUNGEON_INFO_REWARD_NEED_ALTAR || (altar_flags & 1));
         int show_stones = CFG_DUNGEON_INFO_REWARD_ENABLE && (!CFG_DUNGEON_INFO_REWARD_NEED_ALTAR || (altar_flags & 2));
@@ -579,6 +587,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
 
         left += (0x16 * font_sprite.tile_w) + padding;
     } else if (pad_held.dr) {
+        show_dungeon_info = 1;
         // Set up dimensions
 
         int icon_size = 16;
@@ -739,6 +748,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
             gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
         }
     } else { // pad_held.dl
+        show_dungeon_info = 1;
         int show_map_compass = 1;
         int show_skulls = 1;
         int show_mq = CFG_DUNGEON_INFO_MQ_ENABLE;
@@ -847,4 +857,8 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
 
     // Finish
     text_flush(db);
+}
+
+int dungeon_info_is_drawn() {
+    return show_dungeon_info;
 }

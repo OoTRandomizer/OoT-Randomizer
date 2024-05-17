@@ -752,11 +752,11 @@ int16_t get_override_drop_id(int16_t dropId) {
 
     // Chu bag drops, convert bomb drop to bombchu drop under certain circumstances
     if (FREE_BOMBCHU_DROPS && (dropId == ITEM00_BOMBS_A || dropId == ITEM00_BOMBS_SPECIAL || dropId == ITEM00_BOMBS_B)) {
-        if (z64_file.items[Z64_SLOT_BOMB] != -1 && z64_file.items[Z64_SLOT_BOMBCHU] != -1) { // we have bombs and chus
+        if (z64_file.items[Z64_SLOT_BOMB] != ITEM_NONE && z64_file.items[Z64_SLOT_BOMBCHU] != ITEM_NONE) { // we have bombs and chus
             return drop_bombs_or_chus(dropId);
-        } else if (z64_file.items[Z64_SLOT_BOMB] != -1) { // only have bombs
+        } else if (z64_file.items[Z64_SLOT_BOMB] != ITEM_NONE) { // only have bombs
             return dropId; // don't do anything because this is already the right drop ID
-        } else if (z64_file.items[Z64_SLOT_BOMBCHU] != -1) { // only have chus
+        } else if (z64_file.items[Z64_SLOT_BOMBCHU] != ITEM_NONE) { // only have chus
             return ITEM00_ARROWS_SINGLE; // override drop ID to use the one for chus
         } else {
             return -1;
@@ -764,16 +764,16 @@ int16_t get_override_drop_id(int16_t dropId) {
     }
 
     // This is convoluted but it seems like it must be a single condition to match
-    if ((dropId == ITEM00_BOMBS_A || dropId == ITEM00_BOMBS_SPECIAL || dropId == ITEM00_BOMBS_B) && z64_file.items[ITEM_BOMB] == -1) {
+    if ((dropId == ITEM00_BOMBS_A || dropId == ITEM00_BOMBS_SPECIAL || dropId == ITEM00_BOMBS_B) && z64_file.items[ITEM_BOMB] == ITEM_NONE) {
         return -1;
     }
-    if ((dropId == ITEM00_ARROWS_SMALL || dropId == ITEM00_ARROWS_MEDIUM || dropId == ITEM00_ARROWS_LARGE) && z64_file.items[ITEM_BOW] == -1) {
+    if ((dropId == ITEM00_ARROWS_SMALL || dropId == ITEM00_ARROWS_MEDIUM || dropId == ITEM00_ARROWS_LARGE) && z64_file.items[ITEM_BOW] == ITEM_NONE) {
         return -1;
     }
     if ((dropId == ITEM00_MAGIC_LARGE || dropId == ITEM00_MAGIC_SMALL) && z64_file.magic_capacity_set == 0) {
         return -1;
     }
-    if ((dropId == ITEM00_SEEDS) && z64_file.items[ITEM_SLINGSHOT] == -1) {
+    if ((dropId == ITEM00_SEEDS) && z64_file.items[ITEM_SLINGSHOT] == ITEM_NONE) {
         return -1;
     }
 
@@ -789,8 +789,8 @@ void dispatch_item(uint16_t resolved_item_id, uint8_t player, override_t* overri
     if (resolved_item_id == 0xCA) {
         // Send triforce to everyone
         push_outgoing_override(override);
-        z64_GiveItem(&z64_game, item_row->action_id);
         call_effect_function(item_row);
+        z64_GiveItem(&z64_game, item_row->action_id);
     } else if (player != PLAYER_ID) {
         // Item is for another world. Set outgoing item.
         push_outgoing_override(override);
@@ -800,8 +800,8 @@ void dispatch_item(uint16_t resolved_item_id, uint8_t player, override_t* overri
             // Also send to multiworld plugin for informational purposes if requested
             push_outgoing_override(override);
         }
-        z64_GiveItem(&z64_game, item_row->action_id);
         call_effect_function(item_row);
+        z64_GiveItem(&z64_game, item_row->action_id);
     }
 }
 

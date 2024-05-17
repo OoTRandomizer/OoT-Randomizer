@@ -9,6 +9,12 @@ import * as post from 'post-robot';
 const generator = remote.require(path.join(__dirname, '../src/modules/generator.js'));
 const commander = remote.getGlobal("commandLineArgs");
 
+if ("criticalBootError" in commander)
+{
+   alert(commander.criticalBootError);
+   remote.app.quit();
+}
+
 var testMode = commander.release || remote.app.isPackaged ? false : true;
 console.log("Test Mode:", testMode);
 
@@ -266,6 +272,10 @@ post.on('updateDynamicSetting', function (event) {
       post.send(window, 'updateDynamicSettingSuccess', res);
       
   }).catch((err) => {
+
+      if (os.platform() == "win32")
+        alert("The Python version used to run the GUI is not supported! If you have python 3.8+ installed, make sure app execution aliases for python are disabled.");
+
       post.send(window, 'updateDynamicSettingError', err);
   })
 })

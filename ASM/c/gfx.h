@@ -5,6 +5,25 @@
 
 extern Gfx setup_db[];
 extern Gfx empty_dlist[];
+extern void* z64_ItemIcons[130];
+
+#define WORK_DISP __gfxCtx->work.p
+#define POLY_OPA_DISP __gfxCtx->poly_opa.p
+#define POLY_XLU_DISP __gfxCtx->poly_xlu.p
+#define OVERLAY_DISP __gfxCtx->overlay.p
+#define DEBUG_DISP __gfxCtx->debug.p
+
+// __gfxCtx shouldn't be used directly.
+// Use the DISP macros defined above when writing to display buffers.
+#define OPEN_DISPS(gfxCtx)                  \
+    {                                       \
+        z64_gfx_t* __gfxCtx = gfxCtx; \
+        int32_t __dispPad
+
+#define CLOSE_DISPS(gfxCtx) \
+    (void)0;                \
+    }                       \
+    (void)0
 
 typedef struct {
     uint8_t* buf;
@@ -41,5 +60,9 @@ void sprite_draw(z64_disp_buf_t* db, sprite_t* sprite, int tile_index,
 
 void sprite_texture(z64_disp_buf_t* db, sprite_t* sprite, int tile_index,
         int16_t left, int16_t top, int16_t width, int16_t height);
+void sprite_texture_4b(z64_disp_buf_t* db, sprite_t* sprite, int tile_index,
+        int16_t left, int16_t top, int16_t width, int16_t height);
+
+void z64_Gfx_SetupDL_42Opa(z64_gfx_t* gfx_ctxt);
 
 #endif

@@ -3,6 +3,21 @@ CFG_MASK_AUTOEQUIP:
 .align 4
 
 player_save_mask:
+;s1 = PlayState play*
+    lb      t1, CFG_MASK_AUTOEQUIP
+    beqz    t1, @@return
+    lw      t1, 0x1C44(s1) ;player*
+    lbu     t7, 0x014F(t1) ;player->currentMask
+    la      t8, SAVE_CONTEXT
+    sb      t7, 0x3B(t8) ;saveContext->savedMask (custom field)
+
+    ; displaced code
+@@return:
+    lh      t8, 0xA4(s1)
+    jr      ra
+    lui     t1, 0x8012
+
+player_restore_mask:
     lb      t0, CFG_MASK_AUTOEQUIP
     beqz    t0, @@return
     lhu     t0, 0x1C(a1) ;player->params

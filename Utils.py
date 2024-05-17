@@ -8,6 +8,7 @@ import subprocess
 import sys
 import urllib.request
 from collections.abc import Sequence
+from itertools import chain, combinations
 from typing import AnyStr, Optional, Any
 from urllib.error import URLError, HTTPError
 
@@ -230,3 +231,10 @@ def find_last(source_list: Sequence[Any], sought_element: Any) -> int:
     if last is None:
         raise Exception(f"Element {sought_element} not found in sequence {source_list}.")
     return last
+
+
+# https://docs.python.org/3.8/library/itertools.html#itertools-recipes
+def powerset(iterable):
+    "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+    s = list(iterable)
+    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))

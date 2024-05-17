@@ -478,7 +478,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
             # Make the duplicate item consistent with that.
             if 'Pocket Egg' in world.settings.adult_trade_start and 'Pocket Cucco' in world.settings.adult_trade_start:
                 pending_junk_pool.remove('Pocket Cucco')
-        else:
+        elif world.settings.adult_trade_start:
             # With adult trade shuffle off, add a random extra adult trade item
             item = random.choice(world.settings.adult_trade_start)
             pending_junk_pool.append(item)
@@ -492,12 +492,12 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
             pending_junk_pool.append('Magic Bean Pack')
         if (world.settings.gerudo_fortress != "open"
                 and world.settings.shuffle_hideoutkeys in ('any_dungeon', 'overworld', 'keysanity', 'regional')):
-            if 'Thieves Hideout' in world.settings.key_rings and world.settings.gerudo_fortress != "fast":
+            if world.keyring('Thieves Hideout'):
                 pending_junk_pool.append('Small Key Ring (Thieves Hideout)')
             else:
                 pending_junk_pool.append('Small Key (Thieves Hideout)')
         if world.settings.shuffle_tcgkeys in ('any_dungeon', 'overworld', 'keysanity', 'regional'):
-            if 'Treasure Chest Game' in world.settings.key_rings:
+            if world.keyring('Treasure Chest Game'):
                 pending_junk_pool.append('Small Key Ring (Treasure Chest Game)')
             else:
                 pending_junk_pool.append('Small Key (Treasure Chest Game)')
@@ -506,13 +506,13 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         if world.settings.shuffle_smallkeys in ('any_dungeon', 'overworld', 'keysanity', 'regional'):
             for dungeon in ('Forest Temple', 'Fire Temple', 'Water Temple', 'Shadow Temple', 'Spirit Temple',
                             'Bottom of the Well', 'Gerudo Training Ground', 'Ganons Castle'):
-                if dungeon in world.settings.key_rings:
+                if world.keyring(dungeon):
                     pending_junk_pool.append(f"Small Key Ring ({dungeon})")
                 else:
                     pending_junk_pool.append(f"Small Key ({dungeon})")
         if world.settings.shuffle_bosskeys in ('any_dungeon', 'overworld', 'keysanity', 'regional'):
             for dungeon in ('Forest Temple', 'Fire Temple', 'Water Temple', 'Shadow Temple', 'Spirit Temple'):
-                if not world.settings.keyring_give_bk or dungeon not in world.settings.key_rings or world.settings.shuffle_smallkeys == 'vanilla':
+                if not world.keyring_give_bk(dungeon):
                     pending_junk_pool.append(f"Boss Key ({dungeon})")
         if world.settings.shuffle_ganon_bosskey in ('any_dungeon', 'overworld', 'keysanity', 'regional'):
             pending_junk_pool.append('Boss Key (Ganons Castle)')
@@ -703,13 +703,13 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                     or world.settings.gerudo_fortress == 'fast' and location.name != 'Hideout 1 Torch Jail Gerudo Key'):
                 item = IGNORE_LOCATION
                 shuffle_item = False
-            if shuffle_item and world.settings.gerudo_fortress == 'normal' and 'Thieves Hideout' in world.settings.key_rings:
+            if shuffle_item and world.keyring('Thieves Hideout'):
                 item = get_junk_item()[0] if vanilla_items_processed[location.vanilla_item] else 'Small Key Ring (Thieves Hideout)'
 
         # Treasure Chest Game Key Shuffle
         elif location.vanilla_item != 'Piece of Heart (Treasure Chest Game)' and location.scene == 0x10:
             if world.settings.shuffle_tcgkeys in ('regional', 'overworld', 'any_dungeon', 'keysanity'):
-                if 'Treasure Chest Game' in world.settings.key_rings and location.vanilla_item == 'Small Key (Treasure Chest Game)':
+                if world.keyring('Treasure Chest Game') and location.vanilla_item == 'Small Key (Treasure Chest Game)':
                     item = get_junk_item()[0] if location.name != 'Market Treasure Chest Game Salesman' else 'Small Key Ring (Treasure Chest Game)'
                 shuffle_item = True
             elif world.settings.shuffle_tcgkeys == 'remove':
@@ -781,9 +781,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
 
             # Boss Key
             if location.vanilla_item == dungeon.item_name("Boss Key"):
-                if (world.settings.shuffle_smallkeys != 'vanilla'
-                        and dungeon.name in world.settings.key_rings and world.settings.keyring_give_bk
-                        and dungeon.name in ('Forest Temple', 'Fire Temple', 'Water Temple', 'Shadow Temple', 'Spirit Temple')):
+                if world.keyring_give_bk(dungeon.name):
                     item = get_junk_item()[0]
                     shuffle_item = True
                 else:
@@ -803,9 +801,9 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                 dungeon_collection = dungeon.small_keys
                 if shuffle_setting == 'vanilla':
                     shuffle_item = False
-                elif dungeon.name in world.settings.key_rings and not vanilla_items_processed[location.vanilla_item]:
+                elif world.keyring(dungeon.name) and not vanilla_items_processed[location.vanilla_item]:
                     item = dungeon.item_name("Small Key Ring")
-                elif dungeon.name in world.settings.key_rings:
+                elif world.keyring(dungeon.name):
                     item = get_junk_item()[0]
                     shuffle_item = True
             # Silver Rupee

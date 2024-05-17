@@ -149,8 +149,6 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
                            if location.world.empty_dungeons[HintArea.at(location).dungeon_name].empty]
         for location in empty_locations:
             fill_locations.remove(location)
-            location.world.hint_type_overrides['sometimes'].append(location.name)
-            location.world.hint_type_overrides['random'].append(location.name)
 
         if worlds[0].settings.shuffle_mapcompass in ['any_dungeon', 'overworld', 'keysanity', 'regional']:
             # Non-empty dungeon items are present in restitempool but yet we

@@ -14,6 +14,12 @@
 
 extern uint8_t POTCRATE_TEXTURES_MATCH_CONTENTS;
 extern uint16_t drop_collectible_override_flag;
+extern uint8_t POTCRATE_GOLD_TEXTURE;
+extern uint8_t POTCRATE_GILDED_TEXTURE;
+extern uint8_t POTCRATE_SILVER_TEXTURE;
+extern uint8_t POTCRATE_SKULL_TEXTURE;
+extern uint8_t POTCRATE_HEART_TEXTURE;
+extern uint8_t SOA_UNLOCKS_POTCRATE_TEXTURE;
 
 override_t get_pot_override(z64_actor_t* actor, z64_game_t* game) {
     EnItem00 dummy;
@@ -70,32 +76,44 @@ void draw_pot(z64_actor_t* actor, z64_game_t* game) {
     }
 
     // get override texture
-    switch (chest_type) {
-        case GILDED_CHEST:
-            side_texture = get_texture(TEXTURE_ID_POT_GOLD);
-            break;
+    if (!SOA_UNLOCKS_POTCRATE_TEXTURE || z64_file.stone_of_agony != 0) {
+        switch (chest_type) {
+            case GILDED_CHEST:
+                if (POTCRATE_GILDED_TEXTURE) {
+                    side_texture = get_texture(TEXTURE_ID_POT_GOLD);
+                }
+                break;
 
-        case SILVER_CHEST:
-            side_texture = get_texture(TEXTURE_ID_POT_KEY);
-            break;
+            case SILVER_CHEST:
+                if (POTCRATE_SILVER_TEXTURE) {
+                    side_texture = get_texture(TEXTURE_ID_POT_KEY);
+                }
+                break;
 
-        case GOLD_CHEST:
-            side_texture = get_texture(TEXTURE_ID_POT_BOSSKEY);
-            break;
+            case GOLD_CHEST:
+                if (POTCRATE_GOLD_TEXTURE) {
+                    side_texture = get_texture(TEXTURE_ID_POT_BOSSKEY);
+                }
+                break;
 
-        case SKULL_CHEST_SMALL:
-        case SKULL_CHEST_BIG:
-            side_texture = get_texture(TEXTURE_ID_POT_SKULL);
-            break;
+            case SKULL_CHEST_SMALL:
+            case SKULL_CHEST_BIG:
+                if (POTCRATE_SKULL_TEXTURE) {
+                    side_texture = get_texture(TEXTURE_ID_POT_SKULL);
+                }
+                break;
 
-        case HEART_CHEST_SMALL:
-        case HEART_CHEST_BIG:
-            side_texture = get_texture(TEXTURE_ID_POT_SIDE_HEART);
-            top_texture = get_texture(TEXTURE_ID_POT_TOP_HEART);
-            break;
+            case HEART_CHEST_SMALL:
+            case HEART_CHEST_BIG:
+                if (POTCRATE_HEART_TEXTURE) {
+                    side_texture = get_texture(TEXTURE_ID_POT_SIDE_HEART);
+                    top_texture = get_texture(TEXTURE_ID_POT_TOP_HEART);
+                }
+                break;
 
-        default:
-            break;
+            default:
+                break;
+        }
     }
 
     // push custom dlist (that sets the texture) to segment 09

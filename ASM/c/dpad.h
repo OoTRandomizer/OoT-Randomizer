@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "ocarina_buttons.h"
 #include "item_draw_functions.h"
+#include "kaleido.h"
 extern uint8_t CFG_DPAD_ON_THE_LEFT;
 #include "debug.h"
 
@@ -37,13 +38,13 @@ extern uint16_t CFG_CHILD_TRADE_SHUFFLE;
 #define CAN_DRAW_TRADE_DPAD (z64_game.pause_ctxt.state == 6 && \
                             z64_game.pause_ctxt.screen_idx == 0 && \
                             (!z64_game.pause_ctxt.changing || z64_game.pause_ctxt.changing == 3) && \
-                            ((z64_game.pause_ctxt.item_cursor == Z64_SLOT_ADULT_TRADE && CFG_ADULT_TRADE_SHUFFLE) || \
-                            (z64_game.pause_ctxt.item_cursor == Z64_SLOT_CHILD_TRADE && CFG_CHILD_TRADE_SHUFFLE)))
+                            ((z64_game.pause_ctxt.cursor_point[PAUSE_ITEM] == Z64_SLOT_ADULT_TRADE && CFG_ADULT_TRADE_SHUFFLE) || \
+                            (z64_game.pause_ctxt.cursor_point[PAUSE_ITEM] == Z64_SLOT_CHILD_TRADE && CFG_CHILD_TRADE_SHUFFLE)))
 
 #define CAN_DRAW_OCARINA_BUTTONS (z64_game.pause_ctxt.state == 6 && \
                             z64_game.pause_ctxt.screen_idx == 0 && \
                             (!z64_game.pause_ctxt.changing || z64_game.pause_ctxt.changing == 3) && \
-                            (z64_game.pause_ctxt.item_cursor == Z64_SLOT_OCARINA && SHUFFLE_OCARINA_BUTTONS))
+                            (z64_game.pause_ctxt.cursor_point[PAUSE_ITEM] == Z64_SLOT_OCARINA && SHUFFLE_OCARINA_BUTTONS))
 
 #define CAN_USE_TRADE_DPAD  (CAN_DRAW_TRADE_DPAD && z64_game.pause_ctxt.changing != 3)
 

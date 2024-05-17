@@ -20,7 +20,7 @@ from LocationList import business_scrubs
 from Messages import read_messages, update_message_by_id, read_shop_items, update_warp_song_text, \
         write_shop_items, remove_unused_messages, make_player_message, \
         add_item_messages, repack_messages, shuffle_messages, \
-        get_message_by_id, TextCode
+        get_message_by_id, TextCode, new_messages
 from OcarinaSongs import patch_songs
 from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
 from Rom import Rom
@@ -753,7 +753,10 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     #rom.write_bytes(0x21B20AA, [0x00, 0x01, 0x00, 0x02])
 
     # Speed up Epona escape
-    rom.write_bytes(0x1FC8B36, [0x00, 0x2A])
+    rom.write_bytes(0x1FC79E6, [0x00, 0x54]) # South
+    rom.write_bytes(0x1FC7F06, [0x00, 0x54]) # East
+    rom.write_bytes(0x1FC8556, [0x00, 0x54]) # West
+    rom.write_bytes(0x1FC8B36, [0x00, 0x2A]) # Front gate
 
     # Speed up draining the well
     rom.write_bytes(0xE0A010, [0x00, 0x2A, 0x00, 0x01, 0x00, 0x02, 0x00, 0x02])
@@ -966,6 +969,9 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
         scene_table = 0x00B71440
         for scene in range(0x00, 0x65):
+            if scene in (0x45, 0x46):
+                # skip castle hedge maze scenes to avoid Ganon's Castle ER messing with the exit
+                continue
             scene_start = rom.read_int32(scene_table + (scene * 0x14))
             add_scene_exits(scene_start)
 
@@ -1662,6 +1668,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     # Load Message and Shop Data
     messages = read_messages(rom)
+    new_messages.clear()
     remove_unused_messages(messages)
     shop_items = read_shop_items(rom, shop_item_file.start + 0x1DEC)
 
@@ -2223,7 +2230,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
                 update_message_by_id(messages, 0x6D, "I seem to have misplaced my\x01keys, but I have a fun item to\x01sell instead.\x01How about \x05\x4110 Rupees\x05\x40 for...\x04\x05\x41" + wrapped_item_text + "\x05\x40?\x01\x1B\x05\x42Buy\x01Don't Buy\x05\x40\x02")
             else:
                 update_message_by_id(messages, 0x6D, "I seem to have misplaced my\x01keys, but I have a fun item to\x01sell instead.\x04How about \x05\x4110 Rupees\x05\x40 for\x01\x05\x41" + item_text + "\x05\x40?\x01\x1B\x05\x42Buy\x01Don't Buy\x05\x40\x02")
-        update_message_by_id(messages, 0x908B, "That's OK!\x01More fun for me.\x0B\x02", 0x00)
+        update_message_by_id(messages, 0x908B, "That's OK!\x01More fun for me.\x0B\x02", 0x00, allow_duplicates=True)
         update_message_by_id(messages, 0x6E, "Wait, that room was off limits!\x02")
         update_message_by_id(messages, 0x704C, "I hope you like it!\x02")
 
@@ -2292,7 +2299,17 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     if world.settings.correct_chest_appearances == 'both':
         symbol = rom.sym('CHEST_SIZE_TEXTURE')
         rom.write_int32(symbol, 0x00000001)
-        # Move Ganon's Castle's Zelda's Lullaby Chest back so is reachable if large
+
+    # Specify which textures we want
+    rom.write_byte(rom.sym('CHEST_GILDED_TEXTURE'), 'major' in world.settings.chest_textures_specific)
+    rom.write_byte(rom.sym('CHEST_GOLD_TEXTURE'), 'bosskeys' in world.settings.chest_textures_specific)
+    rom.write_byte(rom.sym('CHEST_SILVER_TEXTURE'), 'keys' in world.settings.chest_textures_specific)
+    rom.write_byte(rom.sym('CHEST_SKULL_TEXTURE'), 'tokens' in world.settings.chest_textures_specific)
+    rom.write_byte(rom.sym('CHEST_HEART_TEXTURE'), 'hearts' in world.settings.chest_textures_specific)
+
+    rom.write_byte(rom.sym('SOA_UNLOCKS_CHEST_TEXTURE'), world.settings.soa_unlocks_chest_texture)
+
+    # Move Ganon's Castle's Zelda's Lullaby Chest back so is reachable if large
     if world.settings.correct_chest_appearances == 'classic' or world.settings.correct_chest_appearances == 'both':
         if not world.dungeon_mq['Ganons Castle']:
             chest_name = 'Ganons Castle Light Trial Lullaby Chest'
@@ -2336,6 +2353,15 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     symbol = rom.sym('POTCRATE_TEXTURES_MATCH_CONTENTS')
     rom.write_byte(symbol, ptmc_options[world.settings.correct_potcrate_appearances])
 
+    # Specify which textures we want
+    rom.write_byte(rom.sym('POTCRATE_GILDED_TEXTURE'), 'major' in world.settings.potcrate_textures_specific)
+    rom.write_byte(rom.sym('POTCRATE_GOLD_TEXTURE'), 'bosskeys' in world.settings.potcrate_textures_specific)
+    rom.write_byte(rom.sym('POTCRATE_SILVER_TEXTURE'), 'keys' in world.settings.potcrate_textures_specific)
+    rom.write_byte(rom.sym('POTCRATE_SKULL_TEXTURE'), 'tokens' in world.settings.potcrate_textures_specific)
+    rom.write_byte(rom.sym('POTCRATE_HEART_TEXTURE'), 'hearts' in world.settings.potcrate_textures_specific)
+
+    rom.write_byte(rom.sym('SOA_UNLOCKS_POTCRATE_TEXTURE'), world.settings.soa_unlocks_potcrate_texture)
+
     # give dungeon items the correct messages
     add_item_messages(messages, shop_items, world)
     if world.settings.enhance_map_compass:
@@ -2374,7 +2400,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
                     map_message = "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for %s\x05\x40!\x01It\'s %s!\x09" % (dungeon_name, "masterful" if world.dungeon_mq[dungeon] else "ordinary")
 
                 if world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12:
-                    update_message_by_id(messages, map_id, map_message)
+                    update_message_by_id(messages, map_id, map_message, allow_duplicates=True)
             else:
                 dungeon_name, boss_name, compass_id, map_id = dungeon_list[dungeon]
                 if world.settings.world_count > 1:
@@ -2386,16 +2412,19 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
                     area = GossipText(area.text(world.settings.clearer_hints, preposition=True), [area.color], prefix='')
                     compass_message = "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for %s\x05\x40!\x01The %s can be found\x01%s!\x09" % (dungeon_name, vanilla_reward, area) #TODO figure out why the player name isn't being displayed
                 else:
-                    boss_location = next(filter(lambda loc: loc.type == 'Boss', world.get_entrance(f'{dungeon} Before Boss -> {boss_name} Boss Room').connected_region.locations))
+                    if world.settings.logic_rules == 'glitched':
+                        boss_location = world.get_location(boss_name)
+                    else:
+                        boss_location = next(filter(lambda loc: loc.type == 'Boss', world.get_entrance(f'{dungeon} Before Boss -> {boss_name} Boss Room').connected_region.locations))
                     dungeon_reward = reward_list[boss_location.item.name]
                     compass_message = "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for %s\x05\x40!\x01It holds the %s!\x09" % (dungeon_name, dungeon_reward)
-                update_message_by_id(messages, compass_id, compass_message)
+                update_message_by_id(messages, compass_id, compass_message, allow_duplicates=True)
                 if world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12:
                     if world.settings.world_count > 1:
                         map_message = "\x13\x76\x08\x05\x42\x0F\x05\x40 found the \x05\x41Dungeon Map\x05\x40\x01for %s\x05\x40!\x09" % dungeon_name
                     else:
                         map_message = "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for %s\x05\x40!\x01It\'s %s!\x09" % (dungeon_name, "masterful" if world.dungeon_mq[dungeon] else "ordinary")
-                    update_message_by_id(messages, map_id, map_message)
+                    update_message_by_id(messages, map_id, map_message, allow_duplicates=True)
 
     # Set hints on the altar inside ToT
     rom.write_int16(0xE2ADB2, 0x707A)
@@ -2465,7 +2494,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         bfa_message = "\x08\x13\x0CYou got the \x05\x43Blue Fire Arrow\x05\x40!\x01This is a cool arrow you can\x01use on red ice."
         if world.settings.world_count > 1:
             bfa_message = make_player_message(bfa_message)
-        update_message_by_id(messages, 0x0071, bfa_message, 0x23)
+        update_message_by_id(messages, 0x0071, bfa_message, 0x23, allow_duplicates=True)
 
         with open(data_path('blue_fire_arrow_item_name_eng.ia4'), 'rb') as stream:
             bfa_name_bytes = stream.read()
@@ -2587,6 +2616,9 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         else: # Patch for redeads in MQ. ROM positions are calculated dyanmically by MQ.py but should remain static.
             rom.write_byte(0x280CDDE, 0)
             rom.write_byte(0x280CDEE, 0)
+
+    # Meg respawns after 30 frames instead of 100 frames after getting hit
+    rom.write_byte(0xCDA723, 0x1E)
 
     # actually write the save table to rom
     world.distribution.give_items(world, save_context)
@@ -2972,8 +3004,25 @@ def get_doors_to_unlock(rom: Rom, world: World) -> dict[int, list[int]]:
                 return [0x00D4 + scene * 0x1C + 0x04 + flag_byte, flag_bits]
 
         # Return Boss Doors that should be unlocked
-        if (world.settings.shuffle_bosskeys == 'remove' and scene != 0x0A) or (world.settings.shuffle_ganon_bosskey == 'remove' and scene == 0x0A) or (world.settings.shuffle_pots and scene == 0x0A and switch_flag == 0x15):
-            if actor_id == 0x002E and door_type == 0x05:
+        if actor_id == 0x002E and door_type == 0x05:
+            dungeons = {
+                0x00: 'Deku Tree',
+                0x01: 'Dodongos Cavern',
+                0x02: 'Jabu Jabus Belly',
+                0x03: 'Forest Temple',
+                0x04: 'Fire Temple',
+                0x05: 'Water Temple',
+                0x06: 'Spirit Temple',
+                0x07: 'Shadow Temple',
+                0x0A: 'Ganons Castle',
+            }
+            if scene in dungeons and world.keyring_give_bk(dungeons[scene]):
+                setting = world.settings.shuffle_smallkeys
+            elif scene == 0x0A:
+                setting = world.settings.shuffle_ganon_bosskey
+            else:
+                setting = world.settings.shuffle_bosskeys
+            if setting == 'remove' or (world.settings.shuffle_pots and scene == 0x0A and switch_flag == 0x15):
                 return [0x00D4 + scene * 0x1C + 0x04 + flag_byte, flag_bits]
 
     return get_actor_list(rom, get_door_to_unlock)

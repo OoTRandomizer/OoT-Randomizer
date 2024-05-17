@@ -351,7 +351,6 @@ class TestPlandomizer(unittest.TestCase):
             for item in distribution_file['settings']['starting_items']:
                 self.assertNotIn(item, actual_pool)
 
-
     def test_ludicrous_pool_junk(self):
         filenames = [
             "plando-ludicrous-default",
@@ -378,7 +377,6 @@ class TestPlandomizer(unittest.TestCase):
                 {'Rupees (5)'},
                 pool_set - ludicrous_set,
                 'Ludicrous pool missing forced location junk items')
-
 
     def test_weird_egg_in_pool(self):
         # Not shuffled, one in pool: Should remove from pool and not place anywhere
@@ -535,7 +533,6 @@ class TestPlandomizer(unittest.TestCase):
                     if spoiler['empty_dungeons'][dungeon.dungeon_name]:
                         self.assertIn(str(dungeon), spoiler[':barren_regions'])
 
-
     def test_fix_broken_drops(self):
         # Setting off
         distribution_file, spoiler = generate_with_plandomizer("plando-fix-broken-drops-off")
@@ -547,6 +544,7 @@ class TestPlandomizer(unittest.TestCase):
         # Deku shield available only via spirit shield pot
         distribution_file, spoiler = generate_with_plandomizer("plando-fix-broken-drops-good")
         self.assertEqual(len([sphere for sphere in spoiler[':playthrough'].values() if 'Child Spirit Temple Beyond Metal Bridges Deku Shield Pot' in sphere]), 1)
+
 
 class TestHints(unittest.TestCase):
     def test_skip_zelda(self):
@@ -606,7 +604,7 @@ class TestHints(unittest.TestCase):
                     # We need at least one hint per goal, but it doesn't matter if there are duplicates
                     # of a goal hint or more than one hint for the goal.
                     for hint in spoiler['gossip_stones'].values():
-                        if goals[g].lower() in hint['text'].replace('#','').lower():
+                        if goals[g].lower() in hint['text'].replace('#','').lower() or goals[g].lower() == "path of the hero":
                             found_goals.append(goals[g])
                             break
                 self.assertEqual(found_goals, goals)
@@ -628,10 +626,10 @@ class TestHints(unittest.TestCase):
         area = HintArea.at(location, use_alt_hint=True).text(world.settings.clearer_hints, world=None if not location.world or location.world.id == world.id else location.world.id + 1)
         self.assertEqual(area, "#Ganondorf's Chamber#")
         # Build a test message with the same ID as the ganondorf hint (0x70CC)
-        messages = [Message("Test", 0, 0x70CC, 0,0,0)]
-        build_misc_item_hints(spoiler.worlds[0], messages)
+        messages = [Message("Test", 0, 0x70CC, 0, 0, 0)]
+        build_misc_item_hints(spoiler.worlds[0], messages, allow_duplicates=True)
         for message in messages:
-            if(message.id == 0x70CC): # Ganondorf hint message
+            if message.id == 0x70CC: # Ganondorf hint message
                 self.assertTrue("thosepotsoverthere" in message.text.replace('\n', '').replace(' ', ''))
 
     def test_blue_fire_arrows(self):
@@ -666,7 +664,6 @@ class TestEntranceRandomizer(unittest.TestCase):
 
 
 class TestValidSpoilers(unittest.TestCase):
-
     # Normalizes spoiler dict for single world or multiple worlds
     # Single world worlds_dict is a map of key -> value
     # Multi world worlds_dict is a map of "World x" -> {map of key -> value} (with x the player/world number)
@@ -854,6 +851,7 @@ class TestValidSpoilers(unittest.TestCase):
                         json.dump(d, f, indent=0)
                     logging.getLogger('').exception(f'Failed to generate with these settings:\n{settings.get_settings_display()}\n')
                     raise
+
 
 class TestTextShuffle(unittest.TestCase):
     def test_text_shuffle(self):

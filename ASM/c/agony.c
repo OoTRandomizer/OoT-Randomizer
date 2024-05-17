@@ -88,8 +88,8 @@ void draw_agony() {
         int scene_index = z64_game.scene_index;
         int room_index = z64_game.room_index;
         int voffset = 0;
-        if (scene_index < 0x11 && z64_file.dungeon_keys[scene_index] >= 0) {
-            // small keys displayed
+        if (scene_index < 0x11 && (z64_file.dungeon_keys[scene_index] >= 0 || bk_display)) {
+            // small keys or boss key displayed
             voffset -= 17;
         }
         if (CFG_DUNGEON_INFO_SILVER_RUPEES) {

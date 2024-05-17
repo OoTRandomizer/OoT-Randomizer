@@ -9,6 +9,12 @@
 
 extern uint8_t POTCRATE_TEXTURES_MATCH_CONTENTS;
 extern uint16_t drop_collectible_override_flag;
+extern uint8_t POTCRATE_GOLD_TEXTURE;
+extern uint8_t POTCRATE_GILDED_TEXTURE;
+extern uint8_t POTCRATE_SILVER_TEXTURE;
+extern uint8_t POTCRATE_SKULL_TEXTURE;
+extern uint8_t POTCRATE_HEART_TEXTURE;
+extern uint8_t SOA_UNLOCKS_POTCRATE_TEXTURE;
 
 // Hacks the regular crate spawn collectible function to spawn overridden collectibles
 void ObjKibako2_SpawnCollectible_Hack(ObjKibako2* this, z64_game_t* globalCtx) {
@@ -48,31 +54,43 @@ void ObjKibako2_Draw(z64_actor_t* actor, z64_game_t* game) {
 
     ObjKibako2* this = (ObjKibako2*)actor;
 
-    switch (this->chest_type) {
-        case GILDED_CHEST:
-            texture = get_texture(TEXTURE_ID_CRATE_GOLD);
-            break;
+    if (!SOA_UNLOCKS_POTCRATE_TEXTURE || z64_file.stone_of_agony != 0) {
+        switch (this->chest_type) {
+            case GILDED_CHEST:
+                if (POTCRATE_GILDED_TEXTURE) {
+                    texture = get_texture(TEXTURE_ID_CRATE_GOLD);
+                }
+                break;
 
-        case SILVER_CHEST:
-            texture = get_texture(TEXTURE_ID_CRATE_KEY);
-            break;
+            case SILVER_CHEST:
+                if (POTCRATE_SILVER_TEXTURE) {
+                    texture = get_texture(TEXTURE_ID_CRATE_KEY);
+                }
+                break;
 
-        case GOLD_CHEST:
-            texture = get_texture(TEXTURE_ID_CRATE_BOSSKEY);
-            break;
+            case GOLD_CHEST:
+                if (POTCRATE_GOLD_TEXTURE) {
+                    texture = get_texture(TEXTURE_ID_CRATE_BOSSKEY);
+                }
+                break;
 
-        case SKULL_CHEST_SMALL:
-        case SKULL_CHEST_BIG:
-            texture = get_texture(TEXTURE_ID_CRATE_SKULL);
-            break;
+            case SKULL_CHEST_SMALL:
+            case SKULL_CHEST_BIG:
+                if (POTCRATE_SKULL_TEXTURE) {
+                    texture = get_texture(TEXTURE_ID_CRATE_SKULL);
+                }
+                break;
 
-        case HEART_CHEST_SMALL:
-        case HEART_CHEST_BIG:
-            texture = get_texture(TEXTURE_ID_CRATE_HEART);
-            break;
+            case HEART_CHEST_SMALL:
+            case HEART_CHEST_BIG:
+                if (POTCRATE_HEART_TEXTURE) {
+                    texture = get_texture(TEXTURE_ID_CRATE_HEART);
+                }
+                break;
 
-        default:
-            break;
+            default:
+                break;
+        }
     }
 
     // push custom dlists (that set the palette and textures) to segment 09

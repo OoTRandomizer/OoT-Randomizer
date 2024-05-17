@@ -151,9 +151,9 @@ class State:
     def collect(self, item: Item) -> None:
         if item.solver_id is None:
             raise Exception(f"Item '{item.name}' lacks a `solver_id` and can not be used in `State.collect()`.")
-        if 'Small Key Ring' in item.name and self.world.settings.keyring_give_bk:
+        if 'Small Key Ring' in item.name:
             dungeon_name = item.name[:-1].split(' (', 1)[1]
-            if dungeon_name in ('Forest Temple', 'Fire Temple', 'Water Temple', 'Shadow Temple', 'Spirit Temple'):
+            if self.world.keyring_give_bk(dungeon_name):
                 bk = f'Boss Key ({dungeon_name})'
                 self.solv_items[ItemInfo.solver_ids[escape_name(bk)]] = 1
         if item.alias and item.alias_id is not None:
@@ -165,9 +165,9 @@ class State:
     def remove(self, item: Item) -> None:
         if item.solver_id is None:
             raise Exception(f"Item '{item.name}' lacks a `solver_id` and can not be used in `State.remove()`.")
-        if 'Small Key Ring' in item.name and self.world.settings.keyring_give_bk:
+        if 'Small Key Ring' in item.name:
             dungeon_name = item.name[:-1].split(' (', 1)[1]
-            if dungeon_name in ('Forest Temple', 'Fire Temple', 'Water Temple', 'Shadow Temple', 'Spirit Temple'):
+            if self.world.keyring_give_bk(dungeon_name):
                 bk = f'Boss Key ({dungeon_name})'
                 self.solv_items[ItemInfo.solver_ids[escape_name(bk)]] = 0
         if item.alias and item.alias_id is not None and self.solv_items[item.alias_id] > 0:

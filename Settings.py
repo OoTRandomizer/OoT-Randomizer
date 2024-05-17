@@ -407,6 +407,17 @@ def get_settings_from_command_line_args() -> tuple[Settings, bool, str, bool, st
         for fn in presetsFiles:
             with open(fn, encoding='utf-8') as f:
                 presets = json.load(f)
+
+                # Deal with preset aliases.
+                for name, preset in copy.copy(presets).items():
+                    if 'aliases' not in preset:
+                        continue
+                    for alias in preset['aliases']:
+                        if alias in presets:
+                            logging.getLogger('').warning(f"Preset {name}, alias {alias} collides with existing preset or alias. Ignoring.")
+                            continue
+                        presets[alias] = preset
+
                 if args.settings_preset in presets:
                     settings_base.update(presets[args.settings_preset])
                     break

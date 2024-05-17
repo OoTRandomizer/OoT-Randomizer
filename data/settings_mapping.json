@@ -353,9 +353,13 @@
           "settings": [
             "ocarina_songs",
             "correct_chest_appearances",
+            "chest_textures_specific",
+            "soa_unlocks_chest_texture",
             "minor_items_as_major_chest",
             "invisible_chests",
             "correct_potcrate_appearances",
+            "potcrate_textures_specific",
+            "soa_unlocks_potcrate_texture",
             "key_appearance_match_dungeon",
             "clearer_hints",
             "hints",
@@ -401,7 +405,8 @@
             "dpad_dungeon_menu",
             "correct_model_colors",
             "randomize_all_cosmetics",
-            "uninvert_y_axis_in_first_person_camera"
+            "uninvert_y_axis_in_first_person_camera",
+            "input_viewer"
           ]
         },
         {
@@ -516,6 +521,7 @@
             "custom_music_directorypicker",
             "custom_music_unavailable_msg",
             "background_music",
+            "display_custom_song_names",
             "fanfares",
             "ocarina_fanfares",
             "credits_music"

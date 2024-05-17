@@ -1,3 +1,4 @@
+#include "message.h"
 #include "z64.h"
 #include "stdbool.h"
 #include "save.h"
@@ -119,5 +120,34 @@ bool Message_Decode_Additional_Control_Codes(uint8_t currChar, uint32_t* pDecode
         default: {
             return false;
         }
+    }
+}
+
+uint8_t shooting_gallery_show_message = 0;
+// Displays a warning message if player did adult shooting gallery without bow.
+void shooting_gallery_message() {
+    // Child/Adult shooting galleries actor is the same, so the asm hook will work for both.
+    // We only want the message for Adult.
+    if (!LINK_IS_ADULT) {
+        return;
+    }
+    // Check if we have a bow.
+    if (z64_file.items[ITEM_BOW] != ITEM_NONE) {
+        return;
+    }
+    // Check if the message was already displayed once.
+    if (shooting_gallery_show_message != 0) {
+        return;
+    }
+    shooting_gallery_show_message = 1;
+}
+
+// Function to display custom textboxes ingame.
+void display_misc_messages() {
+    if (shooting_gallery_show_message == 1 &&
+        z64_MessageGetState(((uint8_t *)(&z64_game)) + 0x20D8) == 0) {
+        z64_DisplayTextbox(&z64_game, 0x045C, 0);
+        // To avoid displaying the message several times if the player just wants to farm the 50 rupees.
+        shooting_gallery_show_message = -1;
     }
 }

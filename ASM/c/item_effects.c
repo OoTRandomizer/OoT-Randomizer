@@ -53,7 +53,7 @@ void give_biggoron_sword(z64_file_t* save, int16_t arg1, int16_t arg2) {
 
 void give_bottle(z64_file_t* save, int16_t bottle_item_id, int16_t arg2) {
     for (int i = Z64_SLOT_BOTTLE_1; i <= Z64_SLOT_BOTTLE_4; i++) {
-        if (save->items[i] == -1) {
+        if (save->items[i] == ITEM_NONE) {
             save->items[i] = bottle_item_id;
             return;
         }
