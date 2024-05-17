@@ -3700,7 +3700,7 @@ class SettingInfos:
         },
         gui_tooltip    = '''\
             Select the items that, when obtained, will also give all
-            of its upgrades.
+            of their upgrades.
 
             For example, picking up a Bow will grant the Fairy Bow
             and the Biggest Quiver.
