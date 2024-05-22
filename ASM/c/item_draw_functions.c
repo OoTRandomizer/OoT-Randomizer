@@ -281,6 +281,38 @@ void draw_gi_magic_spells(z64_game_t* game, uint32_t draw_id) {
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[1].dlist);
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[2].dlist);
 }
+static Gfx gGiBronzeScaleWaterColorDL[] = {
+    gsDPPipeSync(),
+    gsDPSetPrimColor(0, 0x60, 255, 255, 255, 255),
+    gsDPSetEnvColor(255, 123, 0, 255),
+    gsSPEndDisplayList(),
+};
+
+static Gfx gGiBronzeScaleColorDL[] = {
+    gsDPPipeSync(),
+    gsDPSetPrimColor(0, 0x80, 255, 255, 255, 255),
+    gsDPSetEnvColor(91, 51, 18, 255),
+    gsSPEndDisplayList(),
+};
+
+void draw_bronze_scale(z64_game_t* game, uint32_t draw_id) {
+
+    z64_gfx_t* gfx = game->common.gfx;
+
+    append_setup_dl_25_to_xlu(gfx);
+    gSPSegment(gfx->poly_xlu.p++, 0x08,
+               gen_double_tile(gfx,
+                               0, game->common.state_frames * 2, -(game->common.state_frames * 2), 64, 64,
+                               1, game->common.state_frames * 4, -(game->common.state_frames * 4), 32, 32));
+
+
+    gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+
+    gSPDisplayList(gfx->poly_xlu.p++, (Gfx*)gGiBronzeScaleColorDL);
+    gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[3].dlist);
+    gSPDisplayList(gfx->poly_xlu.p++, (Gfx*)gGiBronzeScaleWaterColorDL);
+    gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[0].dlist);
+}
 
 void draw_gi_scales(z64_game_t* game, uint32_t draw_id) {
     z64_gfx_t* gfx = game->common.gfx;

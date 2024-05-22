@@ -4,7 +4,7 @@
         "dungeon": "Water Temple",
         "exits": {
             "Lake Hylia": "True",
-            "Water Temple Dive": "is_adult and (Zora_Tunic or logic_fewer_tunic_requirements) and Iron_Boots",
+            "Water Temple Dive": "is_adult and can_swim and (Zora_Tunic or logic_fewer_tunic_requirements) and Iron_Boots",
             "Water Temple Dark Link Region": "
                 Small_Key_Water_Temple and is_adult and
                 (Longshot or (logic_water_mq_dark_link and Hover_Boots and Hookshot))",
@@ -187,17 +187,17 @@
             "Water Temple MQ Dragon Statue By Torches Crate 1": "can_break_crate",
             "Water Temple MQ Dragon Statue By Torches Crate 2": "can_break_crate",
             "Water Temple MQ Dragon Statue Submerged Crate 1": "
-                (Iron_Boots and can_bonk) or (has_bombchus and (can_dive or Iron_Boots))",
+                can_swim and (Iron_Boots and can_bonk) or (has_bombchus and (can_dive or Iron_Boots))",
             "Water Temple MQ Dragon Statue Submerged Crate 2": "
-                (Iron_Boots and can_bonk) or (has_bombchus and (can_dive or Iron_Boots))",
+               can_swim and  (Iron_Boots and can_bonk) or (has_bombchus and (can_dive or Iron_Boots))",
             "Water Temple MQ Dragon Statue Submerged Crate 3": "
-                (Iron_Boots and can_bonk) or (has_bombchus and (can_dive or Iron_Boots))",
+               can_swim and  (Iron_Boots and can_bonk) or (has_bombchus and (can_dive or Iron_Boots))",
             "Water Temple MQ Dragon Statue Submerged Crate 4": "
-                (Iron_Boots and can_bonk) or (has_bombchus and (can_dive or Iron_Boots))",
-            "Water Temple MQ Dragon Statue Crates Hookshot Wonderitem": "True"
+               can_swim and  (Iron_Boots and can_bonk) or (has_bombchus and (can_dive or Iron_Boots))",
+            "Water Temple MQ Dragon Statue Crates Hookshot Wonderitem": "can_swim"
         },
         "exits": {
-            "Water Temple Boss Key Chest Room": "has_fire_source"
+            "Water Temple Boss Key Chest Room": "can_swim and has_fire_source"
         }
     },
     {

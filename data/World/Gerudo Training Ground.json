@@ -63,8 +63,8 @@
             "Gerudo Training Ground Underwater Silver Rupee Chest": "
                 (Silver_Rupee_Gerudo_Training_Ground_Water, 5)",
             "Gerudo Training Ground Underwater Silver Rupee Top": "
-                can_play(Song_of_Time) and
-                (can_use(Iron_Boots) or (logic_gtg_underwater_highest and (Progressive_Scale, 2))) and
+                can_play(Song_of_Time) and can_swim and
+                (can_use(Iron_Boots) or (logic_gtg_underwater_highest and (Progressive_Scale, 3))) and
                 (logic_fewer_tunic_requirements or can_use(Zora_Tunic))"
         },
         "exits": {
@@ -78,9 +78,9 @@
         "dungeon": "Gerudo Training Ground",
         "locations": {
             "Gerudo Training Ground Underwater Silver Rupee Bottom Center": "True",
-            "Gerudo Training Ground Underwater Silver Rupee Bottom Back Left": "True",
-            "Gerudo Training Ground Underwater Silver Rupee Middle": "True",
-            "Gerudo Training Ground Underwater Silver Rupee Bottom Front Right": "True"
+            "Gerudo Training Ground Underwater Silver Rupee Bottom Back Left": "can_swim or can_use(Longshot)",
+            "Gerudo Training Ground Underwater Silver Rupee Middle": "can_swim or can_use(Longshot)",
+            "Gerudo Training Ground Underwater Silver Rupee Bottom Front Right": "can_swim or can_use(Longshot)"
         }
     },
     {

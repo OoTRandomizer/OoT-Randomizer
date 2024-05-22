@@ -42,7 +42,7 @@
         "exits": {
             "Deku Tree Basement Back Room": "
                 here(has_fire_source_with_torch or can_use(Bow)) and
-                here(can_use(Slingshot) or can_use(Bow))",
+                here(can_use(Slingshot) or can_use(Bow) and can_swim)",
             "Deku Tree Basement Ledge": "deku_tree_shortcuts or here(is_adult) or logic_deku_b1_skip"
         }
     },
@@ -66,7 +66,7 @@
             "Deku Tree Basement": "True",
             "Deku Tree Basement Back Room": "is_child",
             "Deku Tree Before Boss": "
-                deku_tree_shortcuts or
+               (is_adult or can_swim) and deku_tree_shortcuts or
                 here(has_fire_source_with_torch or (logic_deku_b1_webs_with_bow and can_use(Bow)))"
         }
     },

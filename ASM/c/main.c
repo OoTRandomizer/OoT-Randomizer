@@ -24,6 +24,7 @@
 #include "debug.h"
 #include "inputviewer.h"
 #include "message.h"
+#include "swim.h"
 
 void Gameplay_InitSkybox(z64_game_t* globalCtx, int16_t skyboxId);
 
@@ -62,6 +63,7 @@ void after_game_state_update() {
         debug_utilities(&(z64_ctxt.gfx->overlay));
     }
     give_ganon_boss_key();
+    manage_swim();
 }
 
 void before_skybox_init(z64_game_t* game, int16_t skyboxId) {

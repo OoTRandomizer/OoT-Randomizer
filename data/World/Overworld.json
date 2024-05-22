@@ -478,8 +478,8 @@
         "hint": "HYRULE_FIELD",
         "time_passes": true,
         "locations": {
-            "HF Ocarina of Time Item": "is_child and has_all_stones",
-            "Song from Ocarina of Time": "is_child and has_all_stones",
+            "HF Ocarina of Time Item": "is_child and has_all_stones and can_swim",
+            "Song from Ocarina of Time": "is_child and has_all_stones and can_swim",
             "Big Poe Kill": "can_ride_epona and Bow and has_bottle",
             "HF Child Above Drawbridge Wonderitem 1": "is_child",
             "HF Child Above Drawbridge Wonderitem 2": "is_child",
@@ -518,14 +518,14 @@
             "LH Freestanding PoH": "
                 is_adult and (can_use(Scarecrow) or here(can_plant_bean))",
             "LH Underwater Item": "is_child and can_dive",
-            "LH Underwater Near Shore Green Rupee": "is_child",
+            "LH Underwater Near Shore Green Rupee": "is_child and can_swim",
             "LH Underwater Green Rupee 1": "is_child and can_dive",
             "LH Underwater Green Rupee 2": "is_child and can_dive",
             "LH GS Bean Patch": "can_plant_bugs and can_child_attack",
             "LH GS Lab Wall": "
                 is_child and at_night and
                 (Boomerang or (logic_lab_wall_gs and (Sticks or Kokiri_Sword)))",
-            "LH GS Small Island": "is_child and can_child_attack and at_night",
+            "LH GS Small Island": "is_child and can_swim and can_child_attack and at_night",
             "LH GS Tree": "can_use(Longshot) and at_night",
             "LH Lab Gossip Stone": "True",
             "LH Gossip Stone (Southeast)": "True",
@@ -542,11 +542,11 @@
             "LH Lab": "True",
             # The seemingly redundant `plant_beans` check is to allow supplementary searches, which can't collect events, to use this path.
             "LH Fishing Island": "
-                is_child or can_use(Scarecrow) or
+                (is_child and can_swim) or can_use(Scarecrow) or
                 here(can_plant_bean) or plant_beans or 'Water Temple Clear'",
             "Water Temple Lobby": "
                 is_adult and Hookshot and
-                (Iron_Boots or ((Longshot or logic_water_hookshot_entry) and (Progressive_Scale, 2)))",
+                (Iron_Boots or ((Longshot or logic_water_hookshot_entry) and (Progressive_Scale, 3)))",
             "LH Grotto": "True"
         }
     },
@@ -578,11 +578,11 @@
         "locations": {
             "LH Trade Eyeball Frog": "'Eyedrops Access'",
             "LH Lab Dive": "
-                (Progressive_Scale, 2) or
+                (Progressive_Scale, 3) or
                 (logic_lab_diving and is_adult and Iron_Boots and Hookshot)",
-            "LH Lab Dive Red Rupee 1": "(Progressive_Scale, 2) or can_use(Iron_Boots)",
-            "LH Lab Dive Red Rupee 2": "(Progressive_Scale, 2) or can_use(Iron_Boots)",
-            "LH Lab Dive Red Rupee 3": "(Progressive_Scale, 2) or can_use(Iron_Boots)",
+            "LH Lab Dive Red Rupee 1": "(Progressive_Scale, 3) or can_use(Iron_Boots)",
+            "LH Lab Dive Red Rupee 2": "(Progressive_Scale, 3) or can_use(Iron_Boots)",
+            "LH Lab Dive Red Rupee 3": "(Progressive_Scale, 3) or can_use(Iron_Boots)",
             "LH GS Lab Crate": "
                 Iron_Boots and can_use(Hookshot) and
                 (deadly_bonks != 'ohko' or Fairy or (can_use(Nayrus_Love) and not shuffle_interior_entrances))"
@@ -630,7 +630,7 @@
         "hint": "GERUDO_VALLEY",
         "time_passes": true,
         "locations": {
-            "GV Waterfall Freestanding PoH": "True",
+            "GV Waterfall Freestanding PoH": "is_child or can_swim",
             "GV GS Bean Patch": "can_plant_bugs and can_child_attack",
             "GV Cow": "is_child and can_play(Eponas_Song)",
             "GV Crate Near Cow": "is_child and can_break_crate",
@@ -648,7 +648,7 @@
         "hint": "GERUDO_VALLEY",
         "time_passes": true,
         "exits": {
-            "Lake Hylia": "True"
+            "Lake Hylia": "is_child or can_swim"
         }
     },
     {
@@ -1297,16 +1297,16 @@
             "HC Malon Egg": "True",
             "HC Castle Torch Wonderitem 1": "can_use(Slingshot)",
             "HC Castle Torch Wonderitem 2": "can_use(Slingshot)",
-            "HC Castle Moat Wonderitem 1": "True",
-            "HC Castle Moat Wonderitem 2": "True",
-            "HC Castle Moat Wonderitem 3": "True",
-            "HC Castle Moat Wonderitem 4": "True",
-            "HC Castle Moat Wonderitem 5": "True",
-            "HC Castle Moat Wonderitem 6": "True",
-            "HC Castle Moat Wonderitem 7": "True",
-            "HC Castle Moat Wonderitem 8": "True",
-            "HC Castle Moat Wonderitem 9": "True",
-            "HC Castle Moat Wonderitem 10": "True",
+            "HC Castle Moat Wonderitem 1": "can_swim",
+            "HC Castle Moat Wonderitem 2": "can_swim",
+            "HC Castle Moat Wonderitem 3": "can_swim",
+            "HC Castle Moat Wonderitem 4": "can_swim",
+            "HC Castle Moat Wonderitem 5": "can_swim",
+            "HC Castle Moat Wonderitem 6": "can_swim",
+            "HC Castle Moat Wonderitem 7": "can_swim",
+            "HC Castle Moat Wonderitem 8": "can_swim",
+            "HC Castle Moat Wonderitem 9": "can_swim",
+            "HC Castle Moat Wonderitem 10": "can_swim",
             "HC GS Tree": "can_child_attack and can_bonk",
             "HC Malon Gossip Stone": "True",
             "HC Rock Wall Gossip Stone": "True",
@@ -2399,10 +2399,10 @@
         "hint": "ZORA_RIVER",
         "time_passes": true,
         "locations": {
-            "ZR Child Front River Wonderitem 1": "is_child",
-            "ZR Child Front River Wonderitem 2": "is_child",
-            "ZR Child Front River Wonderitem 3": "is_child",
-            "ZR Child Front River Wonderitem 4": "is_child",
+            "ZR Child Front River Wonderitem 1": "is_child and can_swim",
+            "ZR Child Front River Wonderitem 2": "is_child and can_swim",
+            "ZR Child Front River Wonderitem 3": "is_child and can_swim",
+            "ZR Child Front River Wonderitem 4": "is_child and can_swim",
             "ZR GS Tree": "is_child and can_child_attack and can_bonk"
 
         },
@@ -2435,33 +2435,33 @@
             "ZR Waterfall Red Rupee 2": "is_adult and (Iron_Boots or logic_zora_river_rupees)",
             "ZR Waterfall Red Rupee 3": "is_adult and (Iron_Boots or logic_zora_river_rupees)",
             "ZR Waterfall Red Rupee 4": "is_adult and (Iron_Boots or logic_zora_river_rupees)",
-            "ZR Child River Wonderitem 1": "is_child",
-            "ZR Child River Wonderitem 2": "is_child",
-            "ZR Child River Wonderitem 3": "is_child",
-            "ZR Child River Wonderitem 4": "is_child",
-            "ZR Child River Wonderitem 5": "is_child",
-            "ZR Child River Wonderitem 6": "is_child",
-            "ZR Child River Wonderitem 7": "is_child",
-            "ZR Child River Wonderitem 8": "is_child",
-            "ZR Child River Wonderitem 9": "is_child",
-            "ZR Child River Wonderitem 10": "is_child",
-            "ZR Child River Wonderitem 11": "is_child",
-            "ZR Child River Wonderitem 12": "is_child",
-            "ZR Child River Wonderitem 13": "is_child",
-            "ZR Child River Wonderitem 14": "is_child",
-            "ZR Child River Wonderitem 15": "is_child",
-            "ZR Child River Wonderitem 16": "is_child",
-            "ZR Child River Wonderitem 17": "is_child",
-            "ZR Child River Wonderitem 18": "is_child",
-            "ZR Child River Wonderitem 19": "is_child",
-            "ZR Child River Wonderitem 20": "is_child",
-            "ZR Child River Wonderitem 21": "is_child",
-            "ZR Child River Wonderitem 22": "is_child",
-            "ZR Child River Wonderitem 23": "is_child",
-            "ZR Child River Wonderitem 24": "is_child",
-            "ZR Child River Wonderitem 25": "is_child",
-            "ZR Child River Wonderitem 26": "is_child",
-            "ZR Child River Wonderitem 27": "is_child",
+            "ZR Child River Wonderitem 1": "is_child and can_swim",
+            "ZR Child River Wonderitem 2": "is_child and can_swim",
+            "ZR Child River Wonderitem 3": "is_child and can_swim",
+            "ZR Child River Wonderitem 4": "is_child and can_swim",
+            "ZR Child River Wonderitem 5": "is_child and can_swim",
+            "ZR Child River Wonderitem 6": "is_child and can_swim",
+            "ZR Child River Wonderitem 7": "is_child and can_swim",
+            "ZR Child River Wonderitem 8": "is_child and can_swim",
+            "ZR Child River Wonderitem 9": "is_child and can_swim",
+            "ZR Child River Wonderitem 10": "is_child and can_swim",
+            "ZR Child River Wonderitem 11": "is_child and can_swim",
+            "ZR Child River Wonderitem 12": "is_child and can_swim",
+            "ZR Child River Wonderitem 13": "is_child and can_swim",
+            "ZR Child River Wonderitem 14": "is_child and can_swim",
+            "ZR Child River Wonderitem 15": "is_child and can_swim",
+            "ZR Child River Wonderitem 16": "is_child and can_swim",
+            "ZR Child River Wonderitem 17": "is_child and can_swim",
+            "ZR Child River Wonderitem 18": "is_child and can_swim",
+            "ZR Child River Wonderitem 19": "is_child and can_swim",
+            "ZR Child River Wonderitem 20": "is_child and can_swim",
+            "ZR Child River Wonderitem 21": "is_child and can_swim",
+            "ZR Child River Wonderitem 22": "is_child and can_swim",
+            "ZR Child River Wonderitem 23": "is_child and can_swim",
+            "ZR Child River Wonderitem 24": "is_child and can_swim",
+            "ZR Child River Wonderitem 25": "is_child and can_swim",
+            "ZR Child River Wonderitem 26": "is_child and can_swim",
+            "ZR Child River Wonderitem 27": "is_child and can_swim",
             "ZR GS Ladder": "is_child and at_night and can_child_attack",
             "ZR GS Near Raised Grottos": "can_use(Hookshot) and at_night",
             "ZR GS Above Bridge": "can_use(Hookshot) and at_night",
@@ -2969,7 +2969,7 @@
         "region_name": "HF Tektite Grotto",
         "scene": "HF Tektite Grotto",
         "locations": {
-            "HF Tektite Grotto Freestanding PoH": "(Progressive_Scale, 2) or can_use(Iron_Boots)"
+            "HF Tektite Grotto Freestanding PoH": "(Progressive_Scale, 3) or can_use(Iron_Boots)"
         },
         "exits": {
             "Hyrule Field": "True"
@@ -3172,14 +3172,14 @@
         "region_name": "GV Octorok Grotto",
         "scene": "GV Octorok Grotto",
         "locations": {
-            "GV Octorok Grotto Red Rupee": "True",
-            "GV Octorok Grotto Blue Rupee 1": "True",
-            "GV Octorok Grotto Blue Rupee 2": "True",
-            "GV Octorok Grotto Blue Rupee 3": "True",
-            "GV Octorok Grotto Green Rupee 1": "True",
-            "GV Octorok Grotto Green Rupee 2": "True",
-            "GV Octorok Grotto Green Rupee 3": "True",
-            "GV Octorok Grotto Green Rupee 4": "True"
+            "GV Octorok Grotto Red Rupee": "can_swim or can_use(Boomerang)",
+            "GV Octorok Grotto Blue Rupee 1": "can_swim or can_use(Boomerang)",
+            "GV Octorok Grotto Blue Rupee 2": "can_swim or can_use(Boomerang)",
+            "GV Octorok Grotto Blue Rupee 3": "can_swim or can_use(Boomerang)",
+            "GV Octorok Grotto Green Rupee 1": "can_swim or can_use(Boomerang)",
+            "GV Octorok Grotto Green Rupee 2": "can_swim or can_use(Boomerang)",
+            "GV Octorok Grotto Green Rupee 3": "can_swim or can_use(Boomerang)",
+            "GV Octorok Grotto Green Rupee 4": "can_swim or can_use(Boomerang)"
         },
         "exits": {
             "GV Grotto Ledge": "True"

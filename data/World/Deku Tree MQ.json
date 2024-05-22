@@ -108,7 +108,7 @@
         },
         "exits": {
             "Deku Tree Basement Back Room": "is_child",
-            "Deku Tree Before Boss": "deku_tree_shortcuts or here(has_fire_source_with_torch)"
+            "Deku Tree Before Boss": "can_swim and (deku_tree_shortcuts or here(has_fire_source_with_torch))"
         }
     },
     {

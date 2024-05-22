@@ -105,8 +105,8 @@
         },
         "exits": {
             "Forest Temple NE Outdoors": "
-                can_use(Iron_Boots) or can_use(Longshot) or
-                (Progressive_Scale, 2) or (logic_forest_well_swim and can_use(Hookshot))",
+                can_swim and (can_use(Iron_Boots) or can_use(Longshot) or
+                (Progressive_Scale, 3) or (logic_forest_well_swim and can_use(Hookshot)))",
             "Forest Temple Outdoors High Balconies": "can_use(Fire_Arrows)",
             "Forest Temple NW Outdoors Freestandings": "logic_forest_courtyard_hearts and can_use(Boomerang)"
         }

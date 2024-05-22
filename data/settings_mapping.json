@@ -207,7 +207,8 @@
             "shuffle_expensive_merchants",
             "shuffle_frog_song_rupees",
             "shuffle_loach_reward",
-            "shuffle_individual_ocarina_notes"
+            "shuffle_individual_ocarina_notes",
+            "add_bronze_scale"
           ]
         },
         {

@@ -4,6 +4,7 @@
 #include "hud_colors.h"
 #include "triforce.h"
 #include "ocarina_buttons.h"
+#include "save.h"
 
 #define ICON_SIZE    0x0C
 #define MUSIC_WIDTH  0x06
@@ -172,6 +173,7 @@ static const variable_tile_data_t variable_tile_positions[NUM_VARIABLE] = {
     {0, {0x4E, 0x2A}}, // Strength
     {0, {0x5A, 0x2A}}, // Scale
 };
+static uint8_t bronze_scale_marker = 0;
 
 typedef struct {
     colorRGB8_t color;
@@ -380,8 +382,9 @@ static void populate_child_trade(const z64_file_t* file, variable_tile_t* tile);
 static void populate_adult_trade(const z64_file_t* file, variable_tile_t* tile);
 static void populate_magic(const z64_file_t* file, variable_tile_t* tile);
 static void populate_upgrade_equip(const z64_file_t* file, variable_tile_t* tile, uint8_t value, uint8_t max, uint8_t base_tile);
+static void populate_upgrade_scale(const z64_file_t* file, variable_tile_t* tile, uint8_t value, uint8_t base_tile);
 
-static void populate_variable(const z64_file_t* file, variable_tile_info_t* info) {
+void populate_variable(const z64_file_t* file, variable_tile_info_t* info) {
     variable_tile_t* tile = info->tiles;
 
     populate_upgrade_item( file, tile++, Z64_SLOT_OCARINA, Z64_ITEM_FAIRY_OCARINA);
@@ -390,7 +393,8 @@ static void populate_variable(const z64_file_t* file, variable_tile_info_t* info
     populate_adult_trade(  file, tile++);
     populate_magic(        file, tile++);
     populate_upgrade_equip(file, tile++, file->strength_upgrade, 3, Z64_ITEM_GORONS_BRACELET);
-    populate_upgrade_equip(file, tile++, file->diving_upgrade,   2, Z64_ITEM_SILVER_SCALE);
+    extended_savecontext_static_t* extended = &(((extended_sram_file_t*)file)->additional_save_data.extended);
+    populate_upgrade_scale(file, tile++, extended->extended_scale, Z64_ITEM_SILVER_SCALE);
 }
 
 
@@ -518,6 +522,11 @@ static void draw_variable(z64_disp_buf_t* db, const variable_tile_info_t* info, 
 
         color = WHITE;
         color.a = color_product(color.a, alpha);
+    }
+    if (bronze_scale_marker) {
+        sprite_load(db, &item_digit_sprite, 0, 1);
+        sprite_draw(db, &item_digit_sprite, 0, get_left(variable_tile_positions[NUM_VARIABLE - 1].pos) + 4,
+            get_top(variable_tile_positions[NUM_VARIABLE - 1].pos) + 3, 6, 6);
     }
 }
 
@@ -933,5 +942,24 @@ static void populate_upgrade_equip(const z64_file_t* file, variable_tile_t* tile
     else {
         tile->enabled = 1;
         tile->tile_index = base_tile + (value - 1);
+    }
+}
+
+static void populate_upgrade_scale(const z64_file_t* file, variable_tile_t* tile, uint8_t value, uint8_t base_tile) {
+    tile->tile_index = base_tile;
+    bronze_scale_marker = 0;
+    if (value == 0) {
+        bronze_scale_marker = 1;
+        tile->enabled = 0;
+    }
+    if (value == 1) {
+        tile->enabled = 0;
+    }
+    if (value == 2) {
+        tile->enabled = 1;
+    }
+    if (value == 3) {
+        tile->enabled = 1;
+        tile->tile_index++;
     }
 }

@@ -891,7 +891,10 @@ class SaveContext:
                 'trials_shadow': Address(extended=True, size=1),
                 'trials_water': Address(extended=True, size=1),
                 'trials_forest': Address(extended=True, size=1),
-            }
+            },
+            'extented_scale' : {
+                'medal': Address(extended=True, size=1),
+            },
         }
 
     item_id_map: dict[str, int] = {
@@ -1191,7 +1194,7 @@ class SaveContext:
         "Spirit Medallion"       : {'quest.medallions.spirit'        : True},
         "Shadow Medallion"       : {'quest.medallions.shadow'        : True},
         "Progressive Strength Upgrade" : {'upgrades.strength_upgrade' : None},
-        "Progressive Scale"            : {'upgrades.diving_upgrade'   : None},
+        "Progressive Scale"            : {'extented_scale.medal'   : None},
         "Progressive Wallet"           : {'upgrades.wallet'           : None},
         "Gold Skulltula Token" : {
             'quest.gold_skulltula'  : True,

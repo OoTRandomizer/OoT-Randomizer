@@ -5,6 +5,7 @@
 #include "z64_math.h"
 #include "color.h"
 #include "z64collision_check.h"
+#include "save.h"
 
 #define Z64_OOT10             0x00
 #define Z64_OOT11             0x01
@@ -546,6 +547,30 @@ typedef struct {
   int16_t   copyDestFileIndex;    /* 0x1CA50 */
 } z64_FileChooseContext_t;
 
+/**
+ * The respawn mode names refer to the perceived player movement when respawning
+ * "down": being on ground
+ * "return": coming from the ground
+ * "top": coming from the air
+ */
+typedef enum {
+    /* 0x00 */ RESPAWN_MODE_DOWN,   /* Normal Void Outs */
+    /* 0x01 */ RESPAWN_MODE_RETURN, /* Grotto Returnpoints */
+    /* 0x02 */ RESPAWN_MODE_TOP,    /* Farore's Wind */
+    /* 0x03 */ RESPAWN_MODE_MAX
+} RespawnMode;
+
+typedef struct {
+    /* 0x00 */ z64_xyzf_t pos;
+    /* 0x0C */ int16_t yaw;
+    /* 0x0E */ int16_t playerParams;
+    /* 0x10 */ int16_t entranceIndex;
+    /* 0x12 */ uint8_t roomIndex;
+    /* 0x13 */ int8_t data;
+    /* 0x14 */ uint32_t tempSwchFlags;
+    /* 0x18 */ uint32_t tempCollectFlags;
+} RespawnData; // size = 0x1C
+
 typedef struct {
   int32_t         entrance_index;           /* 0x0000 */
   int32_t         link_age;                 /* 0x0004 */
@@ -719,47 +744,51 @@ typedef struct {
   char            unk_0F_[0x0004];          /* 0x1358 */
   int32_t         game_mode;                /* 0x135C */
   uint32_t        scene_setup_index;        /* 0x1360 */
-  int32_t         void_flag;                /* 0x1364 */
-  z64_xyzf_t      void_pos;                 /* 0x1368 */
-  z64_angle_t     void_yaw;                 /* 0x1374 */
-  int16_t         void_var;                 /* 0x1376 */
-  int16_t         void_entrance;            /* 0x1378 */
-  int8_t          void_room_index;          /* 0x137A */
-  int8_t          unk_10_;                  /* 0x137B */
-  uint32_t        temp_swch_flags;          /* 0x137C */
-  uint32_t        temp_collect_flags;       /* 0x1380 */
-  char            unk_11_[0x0013];          /* 0x1384 */
-  uint8_t         grotto_id;                /* 0x1397 */
-  char            unk_12_[0x0030];          /* 0x1398 */
+  int32_t         respawn_flag;             /* 0x1364 */
+  RespawnData     respawn[RESPAWN_MODE_MAX];/* 0x1368 */
+  float           entranceSpeed;            /* 0x13BC */
+  uint16_t        entranceSound;            /* 0x13C0 */
+  char            unk_10_[0x0001];          /* 0x13C2 */
+  uint8_t         retainWeatherMode;        /* 0x13C3 */
+  int16_t         dogParams;                /* 0x13C4 */
+  uint8_t         envHazardTextTriggerFlags;/* 0x13C6 */
+  uint8_t         showTitleCard;            /* 0x13C7 */
   uint16_t        nayrus_love_timer;        /* 0x13C8 */
-  char            unk_13_[0x0004];          /* 0x13CA */
+  char            unk_11_[0x0004];          /* 0x13CA */
   int16_t         timer_1_state;            /* 0x13CE */
   int16_t         timer_1_value;            /* 0x13D0 */
   int16_t         timer_2_state;            /* 0x13D2 */
   int16_t         timer_2_value;            /* 0x13D4 */
-  char            unk_14_[0x000A];          /* 0x13D6 */
+  char            unk_12_[0x000A];          /* 0x13D6 */
   int8_t          seq_index;                /* 0x13E0 */
   int8_t          night_sfx;                /* 0x13E1 */
-  char            unk_15_[0x0012];          /* 0x13E2 */
+  int8_t          buttonStatus[0x0005];     /* 0x13E2 */
+  int8_t          forceRisingButtonAlphas;  /* 0x13E7 */
+  int16_t         nextHudVisibilityMode;    /* 0x13E8 */
+  int16_t         hudVisibilityMode;        /* 0x13EA */
+  int16_t         hudVisibilityModeTimer;   /* 0x13EC */
+  int16_t         prevHudVisibilityMode;    /* 0x13EE */
+  uint16_t        magicState;               /* 0x13F0 */
+  uint16_t        prevMagicState;           /* 0x13F2 */
   uint16_t        magic_meter_size;         /* 0x13F4 */
-  char            unk_16_[0x0004];          /* 0x13F6 */
+  char            unk_13_[0x0004];          /* 0x13F6 */
   uint16_t        event_inf[4];             /* 0x13FA */
-  char            unk_17_[0x0001];          /* 0x1402 */
+  char            unk_14_[0x0001];          /* 0x1402 */
   uint8_t         minimap_index;            /* 0x1403 */
   int16_t         minigame_state;           /* 0x1404 */
-  char            unk_18_[0x0003];          /* 0x1406 */
+  char            unk_15_[0x0003];          /* 0x1406 */
   uint8_t         language;                 /* 0x1409 */
-  char            unk_19_[0x0002];          /* 0x140A */
+  char            unk_16_[0x0002];          /* 0x140A */
   uint8_t         z_targeting;              /* 0x140C */
-  char            unk_1A_[0x0001];          /* 0x140D */
+  char            unk_17_[0x0001];          /* 0x140D */
   uint16_t        disable_music_flag;       /* 0x140E */
-  char            unk_1B_[0x0002];          /* 0x1410 */
+  char            unk_18_[0x0002];          /* 0x1410 */
   uint16_t        cutscene_next;            /* 0x1412 */
-  char            unk_1C_[0x0010];          /* 0x1414 */
+  char            unk_19_[0x0010];          /* 0x1414 */
   uint16_t        refill_hearts;            /* 0x1424 */
-  char            unk_1D_[0x000A];          /* 0x1426 */
+  char            unk_1A_[0x000A];          /* 0x1426 */
   z64_gameinfo_t* gameinfo;                 /* 0x1430 */
-  char            unk_1E_[0x001C];          /* 0x1434 */
+  char            unk_1B_[0x001C];          /* 0x1434 */
                                             /* 0x1450 */
 } z64_file_t;
 
@@ -768,7 +797,10 @@ typedef struct {
 } SramContext; // size = 0x4
 
 typedef struct {
-  uint8_t data[0xBA8];
+  union {
+    uint8_t data[0xBA8];
+    extended_savecontext_static_t extended;
+  };
 } extended_save_data_t;
 
 typedef struct {

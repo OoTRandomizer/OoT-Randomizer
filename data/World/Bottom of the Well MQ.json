@@ -27,7 +27,7 @@
                 (Small_Key_Bottom_of_the_Well, 2) and (Sticks or can_use(Dins_Fire))",
             "Bottom of the Well MQ GS Basement": "can_child_attack",
             "Bottom of the Well MQ GS Coffin Room": "
-                (Small_Key_Bottom_of_the_Well, 2) and can_child_attack",
+                can_swim and (Small_Key_Bottom_of_the_Well, 2) and can_child_attack",
             "Bottom of the Well MQ Main Area Left Slingshot Wonderitem 1": "Slingshot",
             "Bottom of the Well MQ Main Area Left Slingshot Wonderitem 2": "Slingshot",
             "Bottom of the Well MQ Main Area Left Slingshot Wonderitem 3": "Slingshot",

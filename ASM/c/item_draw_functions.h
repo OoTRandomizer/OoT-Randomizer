@@ -46,6 +46,7 @@ void draw_gi_silver_rupee_pouch(z64_game_t* game, uint32_t draw_id);
 void draw_gi_a_button(z64_game_t* game, uint32_t draw_id);
 void draw_gi_c_button_vertical(z64_game_t* game, uint32_t draw_id);
 void draw_gi_c_button_horizontal(z64_game_t* game, uint32_t draw_id);
+void draw_bronze_scale(z64_game_t* game, uint32_t draw_id);
 
 
 #endif
