@@ -1367,7 +1367,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     # Update "Princess Ruto got the Spiritual Stone!" text before the midboss in Jabu
     if reward_text is None or location is None or location.item is None:
-        new_message = f"\x08Princess Ruto got \x01\x05\x43nothing\x05\x40!\x01Well, that's disappointing...\x02"
+        new_message = "\x08Princess Ruto got \x01\x05\x43nothing\x05\x40!\x01Well, that's disappointing...\x02"
     else:
         reward_texts = {
             'Kokiri Emerald':   "the \x05\x42Kokiri Emerald\x05\x40",

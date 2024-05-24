@@ -377,7 +377,7 @@ class Settings(SettingInfos):
                 ('_settings' in self.distribution.src_dict and setting.name in self.distribution.src_dict['_settings'].keys())
             )
             # Don't want to include list starting equipment and songs, these are consolidated into starting_items
-            and (legacy_starting_items or not (setting.name in LEGACY_STARTING_ITEM_SETTINGS))
+            and (legacy_starting_items or setting.name not in LEGACY_STARTING_ITEM_SETTINGS)
             and (setting.name != 'starting_items' or not legacy_starting_items)
         }
 

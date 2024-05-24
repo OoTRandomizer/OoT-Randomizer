@@ -103,7 +103,7 @@ def check_hell_mode_tricks(fix_errors: bool = False) -> None:
 
     if set(presets['Hell Mode']['allowed_tricks']) == {trick['name'] for trick in logic_tricks.values()}:
         if presets['Hell Mode']['allowed_tricks'] != [trick['name'] for trick in logic_tricks.values()]:
-            error(f'Order of logic tricks in Hell Mode preset does not match definition order in SettingsList.py', True)
+            error('Order of logic tricks in Hell Mode preset does not match definition order in SettingsList.py', True)
 
     if fix_errors:
         presets['Hell Mode']['allowed_tricks'] = [trick['name'] for trick in logic_tricks.values()]
@@ -253,7 +253,7 @@ def exit_ci(fix_errors: bool = False) -> NoReturn:
                 print(f'Run `CI.py --fix --no_unit_tests{release_arg}` to automatically fix {which_errors}.', file=sys.stderr)
             sys.exit(1)
     else:
-        print(f'CI checks successful.')
+        print('CI checks successful.')
         sys.exit(0)
 
 

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from collections.abc import Iterator
-from typing import TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from Hints import HintArea

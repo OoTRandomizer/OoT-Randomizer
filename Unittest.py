@@ -844,7 +844,7 @@ class TestValidSpoilers(unittest.TestCase):
                     self.verify_woth(spoiler)
                     self.verify_playthrough(spoiler)
                     self.verify_disables(spoiler)
-                except Exception as e:
+                except Exception:
                     # output the settings file in case of any failure
                     with open(settings_file, 'w') as f:
                         d = {k: settings.settings_dict[k] for k in out_keys}

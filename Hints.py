@@ -7,7 +7,7 @@ import random
 import sys
 import urllib.request
 from collections import OrderedDict, defaultdict
-from collections.abc import Callable, Iterable
+from collections.abc import Iterable
 from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from urllib.error import URLError, HTTPError
@@ -27,7 +27,6 @@ else:
     TypeAlias = str
 
 if TYPE_CHECKING:
-    from Entrance import Entrance
     from Goals import GoalCategory
     from Location import Location
     from Spoiler import Spoiler

@@ -1,6 +1,6 @@
 from __future__ import annotations
 from enum import Enum, unique
-from typing import TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Optional
 
 if TYPE_CHECKING:
     from Dungeon import Dungeon

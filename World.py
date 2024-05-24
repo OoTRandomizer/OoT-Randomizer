@@ -862,7 +862,7 @@ class World:
                     # one copy if the other is unreachable.
                     #
                     # Similar criteria is used for Ganon's Boss Key in plentiful keysanity.
-                    if not 'Light Arrows' in self.item_added_hint_types['always']:
+                    if 'Light Arrows' not in self.item_added_hint_types['always']:
                         if self.settings.item_pool_value == 'plentiful':
                             arrows = 2
                         else:
@@ -1301,7 +1301,7 @@ class World:
                 exclude_item_list.remove(i)
 
         for i in self.item_added_hint_types['barren']:
-            if not (i in exclude_item_list):
+            if i not in exclude_item_list:
                 exclude_item_list.append(i)
 
         # The idea here is that if an item shows up in woth, then the only way

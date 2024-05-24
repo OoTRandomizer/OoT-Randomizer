@@ -189,7 +189,7 @@ def apply_patch_file(rom: Rom, settings: Settings, sub_file: Optional[str] = Non
             try:
                 with patch_archive.open(sub_file, 'r') as stream:
                     patch_data = stream.read()
-            except KeyError as ex:
+            except KeyError:
                 raise FileNotFoundError('Patch file missing from archive. Invalid Player ID.')
     else:
         with open(file, 'rb') as stream:

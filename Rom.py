@@ -70,7 +70,7 @@ class Rom(BigStream):
         try:
             with open(input_file, 'rb') as stream:
                 self.buffer = bytearray(stream.read())
-        except FileNotFoundError as ex:
+        except FileNotFoundError:
             raise FileNotFoundError(f'Invalid path to Base ROM: "{input_file}"')
 
         # Validate ROM file

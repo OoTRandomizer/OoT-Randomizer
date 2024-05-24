@@ -1,7 +1,7 @@
 from __future__ import annotations
 import random
 import sys
-from collections.abc import Callable, Sequence
+from collections.abc import Sequence
 from itertools import chain
 from typing import TYPE_CHECKING, Optional
 

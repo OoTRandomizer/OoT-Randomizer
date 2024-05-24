@@ -277,7 +277,7 @@ def process_sequences(rom: Rom, ids: Iterable[tuple[str, int]], seq_type: str = 
                             lines = io.TextIOWrapper(stream).readlines() # Use TextIOWrapper in order to get text instead of binary from the seq.
                         # Strip newline(s)
                         lines = [line.rstrip() for line in lines]
-                    except Exception as ex:
+                    except Exception:
                         raise FileNotFoundError(f'Error reading meta file for: "{fname}". This should never happen')
 
                     # Create new sequence, checking third line for correct type
@@ -424,7 +424,7 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                     if new_entry.size <= 0x10:
                         raise Exception(f'Invalid sequence file "{seq.name}.seq"')
                     new_entry.data[1] = 0x20
-                except FileNotFoundError as ex:
+                except FileNotFoundError:
                     raise FileNotFoundError(f'No sequence file for: "{seq.name}"')
         else:
             new_entry.size = old_sequences[i].size

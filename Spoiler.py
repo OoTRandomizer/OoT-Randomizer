@@ -3,7 +3,7 @@ import logging
 import random
 from collections import OrderedDict
 from itertools import chain
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
 from Item import Item
 from LocationList import location_sort_order

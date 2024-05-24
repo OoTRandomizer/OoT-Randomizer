@@ -41,7 +41,7 @@ def gui_main() -> None:
 def version_check(name: str, version: str, url: str) -> None:
     try:
         process = subprocess.Popen([shutil.which(name.lower()), "--version"], stdout=subprocess.PIPE)
-    except Exception as ex:
+    except Exception:
         raise VersionError('{name} is not installed. Please install {name} {version} or later'.format(name=name, version=version), url)
 
     while True:
