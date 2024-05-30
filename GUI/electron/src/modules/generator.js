@@ -155,7 +155,7 @@ function romBuilding(pythonPath, randoPath, settings) {
         error = true;
 
         errorMsg = data.toString().replace("Please run with -h to see help for further information.", "").replace("Press Enter to exit.", "").trim();
-        errorMsgFull = errorMsg; 
+        errorMsgFull = errorMsg;
 
         if (romBuildingGenerator)
           treeKill(romBuildingGenerator.pid);
@@ -164,12 +164,12 @@ function romBuilding(pythonPath, randoPath, settings) {
 
     romBuildingGenerator.stderr.on('data', data => {
       //console.log("stderr data", data.toString());
-      handleMessage(data);    
+      handleMessage(data);
     });
 
     romBuildingGenerator.stdout.on('data', data => {
       //console.log("stdout data", data.toString());
-      handleMessage(data); 
+      handleMessage(data);
     });
 
     module.exports.emit('patchJobProgress', { generationIndex: currentGeneration, progressCurrent: 0, progressTotal: 0, message: "Starting." });
@@ -205,7 +205,7 @@ function romBuilding(pythonPath, randoPath, settings) {
       }
 
       resolve();
-      
+
     }).catch((err) => { //Promise RomGeneration
       console.error('[romBuilding] Rom promise rejected: ' + err);
       reject({ short: err, long: err });
@@ -337,7 +337,7 @@ function parseSettings(pythonPath, randoPath) {
         reject(output);
       }
       else {
-        resolve(output.match(/([a-zA-Z0-9])\w+/g)[0]);
+        resolve(output);
       }
 
     }).catch(err => {

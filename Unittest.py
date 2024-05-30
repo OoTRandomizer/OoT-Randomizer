@@ -20,7 +20,7 @@ from ItemPool import remove_junk_items, remove_junk_ludicrous_items, ludicrous_i
 from LocationList import location_is_viewable
 from Main import main, resolve_settings, build_world_graphs
 from Messages import Message, read_messages, shuffle_messages
-from Settings import Settings, get_preset_files
+from Settings import Settings, get_preset_files, to_bytes, to_bits, pad_list
 from Spoiler import Spoiler
 from Rom import Rom
 
@@ -861,3 +861,70 @@ class TestTextShuffle(unittest.TestCase):
         messages = read_messages(rom)
         shuffle_messages(messages)
         shuffle_messages(messages, False)
+
+
+class TestSettingsString(unittest.TestCase):
+    def test_bit_list_to_bytes_0(self):
+        li = [0] * 8
+        result = to_bytes(li)
+        self.assertEqual(bytes(1), result)
+
+    def test_bit_list_to_bytes_1(self):
+        li = [1, 0, 1, 0, 0, 0, 0, 1]
+        result = to_bytes(li)
+        self.assertEqual(bytes([161]), result)
+
+    def test_bit_list_to_bytes_2(self):
+        li = [0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0]
+        result = to_bytes(li)
+        self.assertEqual(bytes([68, 48]), result)
+
+    def test_bit_list_to_bytes_3(self):
+        li = [1]
+        try:
+            list(to_bytes(li))
+        except:
+            return
+        self.assertTrue(False)
+
+    def test_bytes_to_bits_0(self):
+        b = bytes(1)
+        result = to_bits(b)
+        self.assertEqual([0] * 8, result)
+
+    def test_bytes_to_bits_1(self):
+        b = bytes([161])
+        result = to_bits(b)
+        self.assertEqual([1, 0, 1, 0, 0, 0, 0, 1], result)
+
+    def test_bytes_to_bits_2(self):
+        b = bytes([68, 48])
+        result = to_bits(b)
+        self.assertEqual([0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0], result)
+
+    def test_bytes_to_bits_3(self):
+        b = bytes(0)
+        result = to_bits(b)
+        self.assertEqual([], result)
+
+    def test_bit_byte_conversion(self):
+        li = [0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0]
+        b = to_bytes(li)
+        result = to_bits(b)
+        self.assertEqual(li, result)
+
+    def test_byte_bit_conversion(self):
+        b = bytes([68, 48])
+        li = to_bits(b)
+        result = to_bytes(li)
+        self.assertEqual(b, result)
+
+    def test_pad_0(self):
+        li = [0]
+        result = pad_list(li, 8, 0)
+        self.assertEqual(li * 8, result)
+
+    def test_pad_1(self):
+        li = [0, 1] * 4
+        result = pad_list(li, 8, 0)
+        self.assertEqual(li, result)
