@@ -69,31 +69,32 @@ DIFFICULTY_ORDER: list[str] = [
     'Nocturne of Shadow',
 ]
 
-#    Song name:    (rom index, warp,   vanilla activation),
-SONG_TABLE: dict[str, tuple[int, bool, str]] = {
-    'Zeldas Lullaby':     ( 8, False, '<^><^>'),
-    'Eponas Song':        ( 7, False, '^<>^<>'),
-    'Sarias Song':        ( 6, False, 'v><v><'),
-    'Suns Song':          ( 9, False, '>v^>v^'),
-    'Song of Time':       (10, False, '>Av>Av'),
-    'Song of Storms':     (11, False, 'Av^Av^'),
-    'Minuet of Forest':   ( 0, True,  'A^<><>'),
-    'Bolero of Fire':     ( 1, True,  'vAvA>v>v'),
-    'Serenade of Water':  ( 2, True,  'Av>><'),
-    'Requiem of Spirit':  ( 3, True,  'AvA>vA'),
-    'Nocturne of Shadow': ( 4, True,  '<>>A<>v'),
-    'Prelude of Light':   ( 5, True,  '^>^><^'),
+#    Song name:           (rom index, kind,   vanilla activation),
+SONG_TABLE: dict[str, tuple[Optional[int], str, str]] = {
+    'Zeldas Lullaby':        (   8, 'frog',   '<^><^>'),
+    'Eponas Song':           (   7, 'frog',   '^<>^<>'),
+    'Sarias Song':           (   6, 'frog',   'v><v><'),
+    'Suns Song':             (   9, 'frog',   '>v^>v^'),
+    'Song of Time':          (  10, 'frog',   '>Av>Av'),
+    'Song of Storms':        (  11, 'frog',   'Av^Av^'),
+    'Minuet of Forest':      (   0, 'warp',   'A^<><>'),
+    'Bolero of Fire':        (   1, 'warp',   'vAvA>v>v'),
+    'Serenade of Water':     (   2, 'warp',   'Av>><'),
+    'Requiem of Spirit':     (   3, 'warp',   'AvA>vA'),
+    'Nocturne of Shadow':    (   4, 'warp',   '<>>A<>v'),
+    'Prelude of Light':      (   5, 'warp',   '^>^><^'),
+    'ZR Frogs Ocarina Game': (None, 'frogs2', 'A<>v<>vAvAv><A'),
 }
 
 
-# checks if one list is a sublist of the other (in either direction)
+# checks if the first list is a sublist of the second
 # python is magic.....
 def subsong(song1: Song, song2: Song) -> bool:
     # convert both lists to strings
-    s1 = ''.join( map(chr, song1.activation))
-    s2 = ''.join( map(chr, song2.activation))
-    # check if either is a substring of the other
-    return (s1 in s2) or (s2 in s1)
+    s1 = ''.join(map(chr, song1.activation))
+    s2 = ''.join(map(chr, song2.activation))
+    # check if the first is a substring of the second
+    return s1 in s2
 
 
 # give random durations and volumes to the notes
@@ -386,34 +387,40 @@ def get_random_song() -> Song:
 
 
 # create a list of 12 songs, none of which are sub-strings of any other song
-def generate_song_list(world: World, frog: bool, warp: bool) -> dict[str, Song]:
+def generate_song_list(world: World, frog: bool, warp: bool, frogs2: bool) -> dict[str, Song]:
     fixed_songs = {}
     if not frog:
-        fixed_songs.update({name: Song.from_str(notes) for name, (_, is_warp, notes) in SONG_TABLE.items() if not is_warp})
+        fixed_songs.update({name: Song.from_str(notes) for name, (_, kind, notes) in SONG_TABLE.items() if kind == 'frog'})
     if not warp:
-        fixed_songs.update({name: Song.from_str(notes) for name, (_, is_warp, notes) in SONG_TABLE.items() if is_warp})
+        fixed_songs.update({name: Song.from_str(notes) for name, (_, kind, notes) in SONG_TABLE.items() if kind == 'warp'})
+    if not frogs2:
+        fixed_songs.update({name: Song.from_str(notes) for name, (_, kind, notes) in SONG_TABLE.items() if kind == 'frogs2'})
     fixed_songs.update({name: Song.from_str(notes) for name, notes in world.distribution.configure_songs().items()})
     for name1, song1 in fixed_songs.items():
         if name1 not in SONG_TABLE:
             raise ValueError(f'Unknown song: {name1!r}. Please use one of these: {", ".join(SONG_TABLE)}')
         if not song1.activation:
             raise ValueError(f'{name1} is empty')
-        if len(song1.activation) > 8:
-            raise ValueError(f'{name1} is too long (maximum is 8 notes)')
+        if name1 == 'ZR Frogs Ocarina Game':
+            if len(song1.activation) != 14:
+                raise ValueError(f'{name1} song must be exactly 14 notes')
+        else:
+            if len(song1.activation) > 8:
+                raise ValueError(f'{name1} is too long (maximum is 8 notes)')
         for name2, song2 in fixed_songs.items():
-            if name1 != name2 and subsong(song1, song2):
+            if name2 != 'ZR Frogs Ocarina Game' and name1 != name2 and subsong(song1, song2):
                 raise ValueError(f'{name2} is unplayable because it contains {name1}')
     random_songs = []
 
-    for _ in range(12 - len(fixed_songs)):
+    for _ in range(12 - sum(name != 'ZR Frogs Ocarina Game' for name in fixed_songs)):
         for _ in range(1000):
             # generate a completely random song
             song = get_random_song()
             # test the song against all existing songs
             is_good = True
 
-            for other_song in chain(fixed_songs.values(), random_songs):
-                if subsong(song, other_song):
+            for other_song in chain((song for name, song in fixed_songs.items() if name != 'ZR Frogs Ocarina Game'), random_songs):
+                if subsong(song, other_song) or subsong(other_song, song):
                     is_good = False
             if is_good:
                 random_songs.append(song)
@@ -428,6 +435,10 @@ def generate_song_list(world: World, frog: bool, warp: bool) -> dict[str, Song]:
     for name in DIFFICULTY_ORDER:
         if name not in fixed_songs:
             fixed_songs[name] = random_songs.pop(0)
+
+    if 'ZR Frogs Ocarina Game' not in fixed_songs:
+        fixed_songs['ZR Frogs Ocarina Game'] = Song(activation=[random.randint(0, 4) for _ in range(14)])
+
     return fixed_songs
 
 
@@ -436,6 +447,10 @@ def patch_songs(world: World, rom: Rom) -> None:
     for name, song in world.song_notes.items():
         if str(song) == SONG_TABLE[name][2]:
             continue  # song activation is vanilla (possibly because this row wasn't randomized), don't randomize playback
+
+        if name == 'ZR Frogs Ocarina Game':
+            rom.write_bytes(0xB78AA0, [note['note'] for note in song.playback])
+            continue
 
         # fix the song of time
         if name == 'Song of Time':
