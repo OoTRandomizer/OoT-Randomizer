@@ -1244,8 +1244,36 @@ class Distribution:
                     for world in self.world_dists:
                         world.update({k: self.src_dict[k]})
 
+        # Build starting items iterable
+        if self.settings.randomize_starting_items:
+            pool = [item for item in StartingItems.everything]
+            item_count = self.settings.randomize_starting_items_amount
+            selected_items = []
+
+            if len(self.settings.starting_items) < self.settings.randomize_starting_items_amount:
+                while len(selected_items) < item_count:
+                    rand_item = random.choice(pool)
+                    # Logic to ensure 0 duplicate items and eliminate generation errors
+                    if rand_item in selected_items:
+                        continue
+                    if (
+                        (rand_item == 'giants_knife' and 'biggoron_sword' in selected_items)
+                        or (rand_item == 'biggoron_sword' and 'giants_knife' in selected_items)
+                    ):
+                        continue
+                    rand_item = StartingItems.everything[rand_item] # Reassigned so we can check against trade shuffles tuples and not create our own
+                    if ((rand_item.item_name in child_trade_items and rand_item.item_name not in self.settings.shuffle_child_trade)
+                        or (rand_item.item_name in trade_items and (rand_item.item_name not in self.settings.adult_trade_start or not self.settings.adult_trade_shuffle))
+                        or (rand_item.setting_name in ('ocarina_a_button', 'ocarina_c_up_button', 'ocarina_c_down_button', 'ocarina_c_left_button', 'ocarina_c_right_button')
+                            and not self.settings.shuffle_individual_ocarina_notes and rand_item.setting_name != 'ocarina')
+                    ):
+                        continue
+                    selected_items.append(rand_item.setting_name)
+            starting_items = itertools.chain(selected_items)
+        else:
+            starting_items = itertools.chain(self.settings.starting_equipment, self.settings.starting_songs, self.settings.starting_inventory)
+
         # normalize starting items to use the dictionary format
-        starting_items = itertools.chain(self.settings.starting_equipment, self.settings.starting_songs, self.settings.starting_inventory)
         data: dict[str, StarterRecord | dict[str, StarterRecord]] = defaultdict(lambda: StarterRecord(0))
         if isinstance(self.settings.starting_items, dict) and self.settings.starting_items:
             world_names = ['World %d' % (i + 1) for i in range(len(self.world_dists))]

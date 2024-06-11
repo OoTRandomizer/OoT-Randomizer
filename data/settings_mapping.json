@@ -278,6 +278,16 @@
       "app_type": "generator",
       "sections": [
         {
+          "name": "main_section",
+          "text": "",
+          "col_span": 4,
+          "row_span": [2,2,1],
+          "settings": [
+            "randomize_starting_items",
+            "randomize_starting_items_amount"
+          ]
+        },
+        {
           "name": "starting_equipment_section",
           "text": "Starting Equipment",
           "col_span": 2,

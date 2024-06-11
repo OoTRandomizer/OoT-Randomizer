@@ -2972,40 +2972,66 @@ class SettingInfos:
 
     # Starting Inventory
 
+    randomize_starting_items = Checkbutton(
+        gui_text       = 'Randomize Starting Items',
+        gui_tooltip    = '''\
+            Begin the game with a configurable amount of random starting items.
+
+            'Amount of Items': Sets the amount of random items to start with.
+        ''',
+        disable        = {
+            True: {'sections': ['starting_items_section', 'starting_songs_section', 'starting_equipment_section']},
+            False: {'settings': ['randomize_starting_items_amount']}
+        },
+        shared         = True,
+    )
+
+    randomize_starting_items_amount = Scale(
+        gui_text         = 'Amount of Items',
+        default          = 1,
+        disabled_default = 0,
+        minimum          = 1,
+        maximum          = 10,
+        shared           = True,
+    )
+
     starting_items = SettingInfoDict(None, None, True, {})
 
     starting_equipment = SearchBox(
-        gui_text       = "Starting Equipment",
-        shared         = True,
-        choices        = {
+        gui_text         = "Starting Equipment",
+        shared           = True,
+        choices          = {
             key: value.gui_text for key, value in StartingItems.equipment.items()
         },
-        default        = [],
-        gui_tooltip    = '''\
+        default          = [],
+        disabled_default = [],
+        gui_tooltip      = '''\
             Begin the game with the selected equipment.
         ''',
     )
 
     starting_songs = SearchBox(
-        gui_text       = "Starting Songs",
-        shared         = True,
-        choices        = {
+        gui_text         = "Starting Songs",
+        shared           = True,
+        choices          = {
             key: value.gui_text for key, value in StartingItems.songs.items()
         },
-        default        = [],
-        gui_tooltip    = '''\
+        default          = [],
+        disabled_default = [],
+        gui_tooltip      = '''\
             Begin the game with the selected songs already learnt.
         ''',
     )
 
     starting_inventory = SearchBox(
-        gui_text       = "Starting Items",
-        shared         = True,
-        choices        = {
+        gui_text         = "Starting Items",
+        shared           = True,
+        choices          = {
             key: value.gui_text for key, value in StartingItems.inventory.items()
         },
-        default        = [],
-        gui_tooltip    = '''\
+        default          = [],
+        disabled_default = [],
+        gui_tooltip      = '''\
             Begin the game with the selected inventory items.
             Selecting multiple progressive items will give
             the appropriate number of upgrades.
