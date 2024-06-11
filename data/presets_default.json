@@ -101,7 +101,7 @@
         ],
         "allowed_tricks": [],
         "randomize_starting_items": false,
-        "randomize_starting_items_amount": 0,
+        "randomize_starting_items_amount": 1,
         "starting_equipment": [],
         "starting_songs": [],
         "starting_inventory": [
@@ -304,7 +304,7 @@
             "logic_visible_collisions"
         ],
         "randomize_starting_items": false,
-        "randomize_starting_items_amount": 0,
+        "randomize_starting_items_amount": 1,
         "starting_equipment": [
             "deku_shield"
         ],
@@ -506,7 +506,7 @@
             "logic_visible_collisions"
         ],
         "randomize_starting_items": false,
-        "randomize_starting_items_amount": 0,
+        "randomize_starting_items_amount": 1,
         "starting_equipment": [
             "deku_shield"
         ],
@@ -713,7 +713,7 @@
             "logic_lens_bongo"
         ],
         "randomize_starting_items": false,
-        "randomize_starting_items_amount": 0,
+        "randomize_starting_items_amount": 1,
         "starting_equipment": [],
         "starting_songs": [],
         "starting_inventory": [
@@ -918,7 +918,7 @@
             "logic_lens_spirit"
         ],
         "randomize_starting_items": false,
-        "randomize_starting_items_amount": 0,
+        "randomize_starting_items_amount": 1,
         "starting_equipment": [
             "deku_shield"
         ],
@@ -1122,7 +1122,7 @@
             "logic_deku_b1_webs_with_bow"
         ],
         "randomize_starting_items": false,
-        "randomize_starting_items_amount": 0,
+        "randomize_starting_items_amount": 1,
         "starting_equipment": [],
         "starting_songs": [],
         "starting_inventory": [
@@ -1502,7 +1502,7 @@
             "logic_light_trial_mq"
         ],
         "randomize_starting_items": false,
-        "randomize_starting_items_amount": 0,
+        "randomize_starting_items_amount": 1,
         "starting_equipment": [],
         "starting_songs": [],
         "starting_inventory": [],
@@ -1692,7 +1692,7 @@
             "logic_lens_spirit"
         ],
         "randomize_starting_items": false,
-        "randomize_starting_items_amount": 0,
+        "randomize_starting_items_amount": 1,
         "starting_equipment": [],
         "starting_songs": [],
         "starting_inventory": [],
@@ -1887,7 +1887,7 @@
             "logic_dc_jump"
         ],
         "randomize_starting_items": false,
-        "randomize_starting_items_amount": 0,
+        "randomize_starting_items_amount": 1,
         "starting_equipment": [
             "deku_shield"
         ],
@@ -2100,7 +2100,7 @@
             "logic_lens_spirit"
         ],
         "randomize_starting_items": false,
-        "randomize_starting_items_amount": 0,
+        "randomize_starting_items_amount": 1,
         "starting_equipment": [],
         "starting_songs": [],
         "starting_inventory": [
