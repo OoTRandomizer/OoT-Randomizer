@@ -2972,21 +2972,22 @@ class SettingInfos:
 
     # Starting Inventory
 
-    randomize_starting_items = Checkbutton(
-        gui_text       = 'Randomize Starting Items',
+    add_random_starting_items = Checkbutton(
+        gui_text       = 'Additional Random Starting Items',
         gui_tooltip    = '''\
-            Begin the game with a configurable amount of random starting items.
+            Begin the game with randomly selected items in addition to your
+            selections from the tables below.
 
-            'Amount of Items': Sets the amount of random items to start with.
+            'Amount of Items': Sets the amount of random items to add to
+            the current selections.
         ''',
         disable        = {
-            True: {'sections': ['starting_items_section', 'starting_songs_section', 'starting_equipment_section']},
-            False: {'settings': ['randomize_starting_items_amount']}
+            False: {'settings': ['add_random_starting_items_amount']}
         },
         shared         = True,
     )
 
-    randomize_starting_items_amount = Scale(
+    add_random_starting_items_amount = Scale(
         gui_text         = 'Amount of Items',
         default          = 1,
         disabled_default = 0,

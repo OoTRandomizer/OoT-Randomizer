@@ -1245,16 +1245,16 @@ class Distribution:
                         world.update({k: self.src_dict[k]})
 
         # Build starting items iterable
-        if self.settings.randomize_starting_items:
+        if self.settings.add_random_starting_items:
             pool = [item for item in StartingItems.everything]
-            item_count = self.settings.randomize_starting_items_amount
+            item_count = self.settings.add_random_starting_items_amount
             selected_items = []
 
-            if len(self.settings.starting_items) < self.settings.randomize_starting_items_amount:
+            if len(self.settings.starting_items) < item_count:
                 while len(selected_items) < item_count:
                     rand_item = random.choice(pool)
                     # Logic to ensure 0 duplicate items and eliminate generation errors
-                    if rand_item in selected_items:
+                    if rand_item in (selected_items, self.settings.starting_equipment, self.settings.starting_songs, self.settings.starting_inventory):
                         continue
                     if (
                         (rand_item == 'giants_knife' and 'biggoron_sword' in selected_items)
@@ -1269,7 +1269,7 @@ class Distribution:
                     ):
                         continue
                     selected_items.append(rand_item.setting_name)
-            starting_items = itertools.chain(selected_items)
+            starting_items = itertools.chain(selected_items, self.settings.starting_equipment, self.settings.starting_songs, self.settings.starting_inventory)
         else:
             starting_items = itertools.chain(self.settings.starting_equipment, self.settings.starting_songs, self.settings.starting_inventory)
 

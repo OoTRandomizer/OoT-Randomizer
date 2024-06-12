@@ -60,7 +60,7 @@
   "logic_lens_spirit_mq",
   "logic_lens_spirit"
 ],
-"randomize_starting_items": false,
+"add_random_starting_items": false,
 "starting_equipment": ["deku_shield"],
 "starting_songs": [],
 "start_with_consumables": true,

@@ -283,8 +283,8 @@
           "col_span": 4,
           "row_span": [2,2,1],
           "settings": [
-            "randomize_starting_items",
-            "randomize_starting_items_amount"
+            "add_random_starting_items",
+            "add_random_starting_items_amount"
           ]
         },
         {
