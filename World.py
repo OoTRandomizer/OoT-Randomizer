@@ -763,6 +763,14 @@ class World:
                 item = prizepool.pop()
             self.push_item(loc, item)
 
+    def set_empty_dungeon_rewards(self, empty_rewards: list[str] = []) -> None:
+        empty_dungeon_bosses = list(map(lambda reward: self.find_items(reward)[0].name, empty_rewards))
+        for boss in empty_dungeon_bosses:
+            for dungeon_item in self.empty_dungeons.items():
+                if dungeon_item[1].boss_name == boss:
+                    dungeon_item[1].empty = True
+                    self.hint_type_overrides['barren'].append(dungeon_item[1].hint_name)
+
     def set_goals(self) -> None:
         # Default goals are divided into 3 primary categories:
         # Bridge, Ganon's Boss Key, and Trials

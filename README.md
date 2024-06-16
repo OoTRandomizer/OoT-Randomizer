@@ -121,6 +121,7 @@ issue. You should always Hard Reset to avoid this issue entirely.
 * The name of the currently playing custom music will now be displayed.
 * New setting to control how dungeon rewards are shuffled.
 * The `Links Pocket` location is renamed to `ToT Reward from Rauru`, and a new setting has been added that controls whether it is skipped.
+* New option `Specific Rewards` for the `Pre-completed Dungeons Mode` setting, allowing the user to set dungeons to be precompleted depending on which medallion or stone they have. Not compatible with shuffled dungeon rewards.
 
 #### Bug Fixes
 * Goal hints can now hint items required to defeat Ganon even if they're not required for the rainbow bridge, Ganon's boss key, or the trials. These items will be hinted as being on the "path of the hero".
@@ -134,6 +135,7 @@ issue. You should always Hard Reset to avoid this issue entirely.
 * Business scrubs now take their payment before giving the item.
 * The softlock which occurs when collecting a shuffled silver rupee on the ladder in the Bottom of the Well is now fixed by moving the item location so it can't be collected from the ladder instead of disallowing silver rupees on this location.
 * Fix inverted cursor in the pause menu when pausing while in first person with the `Uninvert Y-Axis in First Person Camera` cosmetic setting enabled.
+* Fix some inconsistent tags for wonderitem locations in the `Exclude Locations` list.
 
 #### New Speedups
 * Meg will now take less time before respawning after getting hurt.

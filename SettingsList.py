@@ -2034,6 +2034,7 @@ class SettingInfos:
         choices        = {
             'none':       'Off',
             'specific':   'Specific Dungeons',
+            'rewards':    'Specific Rewards',
             'count':      'Count',
         },
         gui_tooltip    = '''\
@@ -2046,6 +2047,7 @@ class SettingInfos:
             randomly rolled with no major items, but their dungeon rewards won't
             be given for free.
             - 'Specific Dungeons': Choose which specific dungeons will be pre-completed.
+            - 'Specific Rewards': Choose which specific dungeon rewards will be in pre-completed dungeons. Not compatible with shuffled dungeon rewards.
             - 'Count': Choose how many pre-completed dungeons will be randomly chosen.
 
             A same dungeon won't be both MQ and pre-completed unless it has been
@@ -2067,7 +2069,9 @@ class SettingInfos:
         shared         = True,
         disable        = {
             '!specific': {'settings': ['empty_dungeons_specific']},
-            '!count':    {'settings': ['empty_dungeons_count']}
+            '!rewards':  {'settings': ['empty_dungeons_rewards']},
+            '!count':    {'settings': ['empty_dungeons_count']},
+            'rewards':   {'settings': ['shuffle_dungeon_rewards']},
         },
         gui_params     = {
             'distribution':  [
@@ -2095,6 +2099,30 @@ class SettingInfos:
         ''',
         shared          = True,
         gui_params     = {
+            "hide_when_disabled": True,
+        },
+    )
+
+    empty_dungeons_rewards = MultipleSelect(
+        gui_text        = 'Pre-completed Dungeon Rewards',
+        choices         = {
+            'Kokiri Emerald':   "Kokiri Emerald",
+            'Goron Ruby':       "Goron Ruby",
+            'Zora Sapphire':    "Zora Sapphire",
+            'Light Medallion':  "Light Medallion",
+            'Forest Medallion': "Forest Medallion",
+            'Fire Medallion':   "Fire Medallion",
+            'Water Medallion':  "Water Medallion",
+            'Shadow Medallion': "Shadow Medallion",
+            'Spirit Medallion': "Spirit Medallion",
+        },
+        default         = [],
+        gui_tooltip     = '''\
+            Select the specific dungeons rewards whose
+            dungeons you would like to be pre-completed.
+        ''',
+        shared          = True,
+        gui_params      = {
             "hide_when_disabled": True,
         },
     )

@@ -1322,6 +1322,12 @@ def build_gossip_hints(spoiler: Spoiler, worlds: list[World]) -> None:
                 if item_world.id not in checked_locations:
                     checked_locations[item_world.id] = set()
                 checked_locations[item_world.id].add(location.name)
+        for dungeon_name, info in world.empty_dungeons.items():
+            if info.empty:
+                for region in world.regions:
+                    if region.dungeon != None and region.dungeon.name == dungeon_name:
+                        precompleted_locations = list(map(lambda location: location.name, region.locations))
+                        checked_locations[world.id].update(precompleted_locations)
 
     # Build all the hints.
     for world in worlds:
