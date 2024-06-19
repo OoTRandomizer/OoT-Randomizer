@@ -724,6 +724,25 @@
                 Gerudo_Membership_Card and can_ride_epona and Bow and at_day",
             "GF Sign Wonderitem Near Entrance": "can_use(Hookshot)",
             "GF Sign Wonderitem Near HBA": "Gerudo_Membership_Card and can_use(Hookshot)",
+            "GF Crate 1": "can_break_crate",
+            "GF Crate 2": "can_break_crate",
+            "GF Crate 3": "can_break_crate",
+            "GF Crate 4": "can_break_crate",
+            "GF Crate 5": "can_break_crate",
+            "GF Crate 6": "can_break_crate",
+            "GF HBA Crate 1":  "((is_adult and Gerudo_Membership_Card) or is_child) and can_break_crate",
+            "GF HBA Crate 2":  "((is_adult and Gerudo_Membership_Card) or is_child) and can_break_crate",
+            "GF HBA Crate 3":  "((is_adult and Gerudo_Membership_Card) or is_child) and can_break_crate",
+            "GF HBA Crate 4":  "((is_adult and Gerudo_Membership_Card) or is_child) and can_break_crate",
+            "GF HBA Crate 5":  "((is_adult and Gerudo_Membership_Card) or is_child) and can_break_crate",
+            "GF HBA Crate 6":  "((is_adult and Gerudo_Membership_Card) or is_child) and can_break_crate",
+            "GF HBA Crate 7":  "((is_adult and Gerudo_Membership_Card) or is_child) and can_break_crate",
+            "GF HBA Crate 8":  "((is_adult and Gerudo_Membership_Card) or is_child) and can_break_crate",
+            "GF HBA Crate 9":  "((is_adult and Gerudo_Membership_Card) or is_child) and can_break_crate",
+            "GF HBA Crate 10": "((is_adult and Gerudo_Membership_Card) or is_child) and can_break_crate",
+            "GF HBA Crate 11": "((is_adult and Gerudo_Membership_Card) or is_child) and can_break_crate",
+            "GF HBA Crate 12": "((is_adult and Gerudo_Membership_Card) or is_child) and can_break_crate",
+            "GF HBA Crate 13": "((is_adult and Gerudo_Membership_Card) or is_child) and can_break_crate",
             "GF GS Archery Range": "
                 can_use(Hookshot) and Gerudo_Membership_Card and at_night"
         },
@@ -1078,6 +1097,7 @@
             "Wasteland Near GS Pot 1": "True",
             "Wasteland Near GS Pot 2": "True",
             "Wasteland Near GS Pot 3": "True",
+            "Wasteland Near GS Pot 4": "True",
             "Wasteland Crate After Quicksand 1": "can_break_crate",
             "Wasteland Crate After Quicksand 2": "can_break_crate",
             "Wasteland Crate After Quicksand 3": "can_break_crate",
@@ -1197,6 +1217,18 @@
                 (deadly_bonks != 'ohko' or Fairy or (can_use(Nayrus_Love) and shuffle_overworld_entrances == 'off'))",
             "Market Night Green Rupee Crate 3": "
                 is_child and at_night and
+                (deadly_bonks != 'ohko' or Fairy or (can_use(Nayrus_Love) and shuffle_overworld_entrances == 'off'))",
+            "Market Day Crate 1": "
+                is_child and at_day and
+                (deadly_bonks != 'ohko' or Fairy or (can_use(Nayrus_Love) and shuffle_overworld_entrances == 'off'))",
+            "Market Day Crate 2": "
+                is_child and at_day and
+                (deadly_bonks != 'ohko' or Fairy or (can_use(Nayrus_Love) and shuffle_overworld_entrances == 'off'))",
+            "Market Day Crate 3": "
+                is_child and at_day and
+                (deadly_bonks != 'ohko' or Fairy or (can_use(Nayrus_Love) and shuffle_overworld_entrances == 'off'))",
+            "Market Day Crate 4": "
+                is_child and at_day and
                 (deadly_bonks != 'ohko' or Fairy or (can_use(Nayrus_Love) and shuffle_overworld_entrances == 'off'))",
             "Market Daytime Balcony Wonderitem 1": "is_child and at_day",
             "Market Daytime Balcony Wonderitem 2": "is_child and at_day",
@@ -1404,7 +1436,10 @@
         "locations": {
             "Market 10 Big Poes": "
                 is_adult and (Big_Poe or (Bottle_with_Big_Poe, big_poe_count))",
-            "Market Guard House Child Crate": "is_child and can_break_crate",
+            "Market Guard House Child Crate 1": "is_child and can_break_crate",
+            "Market Guard House Child Crate 2": "is_child and can_break_crate",
+            "Market Guard House Child Crate 3": "is_child and can_break_crate",
+            "Market Guard House Child Crate 4": "is_child and can_break_crate",
             "Market Guard House Child Pot 1": "is_child",
             "Market Guard House Child Pot 2": "is_child",
             "Market Guard House Child Pot 3": "is_child",
@@ -1456,6 +1491,10 @@
             "Market Guard House Adult Pot 5": "is_adult",
             "Market Guard House Adult Pot 6": "is_adult",
             "Market Guard House Adult Pot 7": "is_adult",
+            "Market Guard House Adult Pot 8": "is_adult",
+            "Market Guard House Adult Pot 9": "is_adult",
+            "Market Guard House Adult Pot 10": "is_adult",
+            "Market Guard House Adult Pot 11": "is_adult",
             "Market GS Guard House": "is_child and can_break_crate"
         },
         "exits": {
@@ -1654,6 +1693,19 @@
             "Kak Near Impas House Pot 2": "is_child",
             "Kak Near Impas House Pot 3": "is_child",
             "Kak Adult Arrows Crate": "is_adult and can_break_crate",
+            "Kak Adult Crate 1": "is_adult and can_break_crate",
+            "Kak Adult Crate 2": "is_adult and can_break_crate",
+            "Kak Adult Crate 3": "is_adult and can_break_crate",
+            "Kak Adult Crate 4": "is_adult and can_break_crate",
+            "Kak Adult Crate 5": "is_adult and can_break_crate",
+            "Kak Adult Crate 6": "is_adult and can_break_crate",
+            "Kak Adult Crate 7": "is_adult and can_break_crate",
+            "Kak Adult Crate 8": "is_adult and can_break_crate",
+            "Kak Child Crate 1": "is_child and can_break_crate",
+            "Kak Child Crate 2": "is_child and can_break_crate",
+            "Kak Child Crate 3": "is_child and can_break_crate",
+            "Kak Child Crate 4": "is_child and can_break_crate",
+            "Kak Child Crate 5": "is_child and can_break_crate",
             "Kak Child Construction Wonderitem": "is_child",
             "Kak GS House Under Construction": "is_child and at_night",
             "Kak GS Skulltula House": "is_child and at_night",
@@ -1729,7 +1781,10 @@
         "locations": {
             "Kak Near Odd Medicine Building Pot 1": "is_child",
             "Kak Near Odd Medicine Building Pot 2": "is_child",
-            "Kak Adult Red Rupee Crate": "is_adult and can_break_crate"
+            "Kak Adult Red Rupee Crate": "is_adult and can_break_crate",
+            "Kak Adult Backyard Crate 1": "is_adult and can_break_crate",
+            "Kak Adult Backyard Crate 2": "is_adult and can_break_crate",
+            "Kak Adult Backyard Crate 3": "is_adult and can_break_crate"
         },
         "exits": {
             "Kakariko Village": "True",
@@ -1894,6 +1949,7 @@
             "Graveyard Freestanding PoH": "
                 (is_adult and can_break_crate and (here(can_plant_bean) or Longshot)) or
                 (logic_graveyard_poh and can_use(Boomerang))",
+            "Graveyard Freestanding PoH Crate": "(is_adult and can_break_crate and (here(can_plant_bean) or Longshot))",
             "Graveyard Dampe Gravedigging Tour": "is_child and at_dampe_time",
             "Graveyard GS Wall": "can_use(Boomerang) and at_night",
             "Graveyard GS Bean Patch": "can_plant_bugs and can_child_attack",
@@ -2303,10 +2359,10 @@
         "scene": "Death Mountain Crater",
         "hint": "DEATH_MOUNTAIN_CRATER",
         "locations": {
-            "DMC Near GC Pot 1": "is_adult",
-            "DMC Near GC Pot 2": "is_adult",
-            "DMC Near GC Pot 3": "is_adult",
-            "DMC Near GC Pot 4": "is_adult"
+            "DMC Near GC Pot 1": "is_adult or shuffle_empty_pots",
+            "DMC Near GC Pot 2": "is_adult or shuffle_empty_pots",
+            "DMC Near GC Pot 3": "is_adult or shuffle_empty_pots",
+            "DMC Near GC Pot 4": "is_adult or shuffle_empty_pots"
         },
         "exits": {
             "DMC Lower Local": "can_use(Goron_Tunic)",

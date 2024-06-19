@@ -177,7 +177,11 @@
             "Ganons Tower Pot 11": "True",
             "Ganons Tower Pot 12": "True",
             "Ganons Tower Pot 13": "True",
-            "Ganons Tower Pot 14": "True"
+            "Ganons Tower Pot 14": "True",
+            "Ganons Tower Pot 15": "True",
+            "Ganons Tower Pot 16": "True",
+            "Ganons Tower Pot 17": "True",
+            "Ganons Tower Pot 18": "True"
         },
         "exits": {
             "Ganondorf Boss Room": "Boss_Key_Ganons_Castle"

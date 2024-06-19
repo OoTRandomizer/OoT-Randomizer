@@ -20,6 +20,8 @@
             "Fire Temple Near Boss Chest": "True",
             "Fire Temple Near Boss Pot 1": "is_adult and (Hover_Boots or Hookshot)",
             "Fire Temple Near Boss Pot 2": "is_adult and (Hover_Boots or Hookshot)",
+            "Fire Temple Near Boss Pot 3": "is_adult and (Hover_Boots or Hookshot)",
+            "Fire Temple Near Boss Pot 4": "is_adult and (Hover_Boots or Hookshot)",
             "Fairy Pot": "is_adult and has_bottle and (Hover_Boots or Hookshot)"
         },
         "exits": {
@@ -148,7 +150,10 @@
             "Fire Temple Flame Maze Right Side Pot 1": "True",
             "Fire Temple Flame Maze Right Side Pot 2": "True",
             "Fire Temple Flame Maze Right Side Pot 3": "True",
-            "Fire Temple Flame Maze Right Side Pot 4": "True"
+            "Fire Temple Flame Maze Right Side Pot 4": "True",
+            "Fire Temple Hammer Staircase Small Wooden Crate 1": "Megaton_Hammer",
+            "Fire Temple Hammer Staircase Small Wooden Crate 2": "Megaton_Hammer"
+
         },
         "exits": {
             "Fire Temple Before Boss": "

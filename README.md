@@ -111,17 +111,21 @@ issue. You should always Hard Reset to avoid this issue entirely.
 
 ### Dev
 
-#### New Features
+#### New Settings and Options
 * New cosmetic option `Input Viewer` for showing control stick values and pressed buttons at the bottom of the screen.
-* A text box has been added when completing the adult shooting gallery without a bow to warn the player that they haven't received the real reward.
-* Settings presets can have aliases. Command-line users may use an alias instead of the name to specify the preset.
-* The plando-only `item_hints` setting can now include special items such as songs or keys.
 * Add new options for chest/pot/etc. textures, including `Stone of Agony Unlocks Chest Textures` which gives new functionality to the Stone of Agony.
-* A boss key icon will now be displayed near the small key icon in dungeons where it has been obtained.
-* The name of the currently playing custom music will now be displayed.
+* The name of the currently playing custom music will now be displayed. Can be disabled using a new cosmetic setting.
 * New setting to control how dungeon rewards are shuffled.
 * The `Links Pocket` location is renamed to `ToT Reward from Rauru`, and a new setting has been added that controls whether it is skipped.
 * New option `Specific Rewards` for the `Pre-completed Dungeons Mode` setting, allowing the user to set dungeons to be precompleted depending on which medallion or stone they have. Not compatible with shuffled dungeon rewards.
+* New settings to `Include Empty Pots` and `Include Empty Crates` when pots and crates are shuffled respectively.
+
+#### Other New Features
+* A text box has been added when completing the adult shooting gallery without a bow to warn the player that they haven't received the real reward.
+* Settings presets can have aliases. Command-line users may use an alias instead of the name to specify the preset.
+* The plando-only `item_hints` setting can now include special items such as songs or keys.
+* A boss key icon will now be displayed near the small key icon in dungeons where it has been obtained.
+* Fairy pots are now included in `Shuffle Pots`.
 
 #### Bug Fixes
 * Goal hints can now hint items required to defeat Ganon even if they're not required for the rainbow bridge, Ganon's boss key, or the trials. These items will be hinted as being on the "path of the hero".
@@ -149,6 +153,8 @@ issue. You should always Hard Reset to avoid this issue entirely.
 * Locations in pre-completed dungeons will no longer be hinted.
 * Treasure Chest Game key and silver rupee options are now included in `Randomize Main Rule Settings`.
 * Pause menu has been modified so that equip swap will work again.
+* Major items from pots, crates, etc now display above Link's head while the text box is open.
+* Gameplay is no longer interrupted if you receive a junk item from another player in multiworld.
 
 ### 8.1
 

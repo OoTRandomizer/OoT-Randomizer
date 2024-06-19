@@ -3,7 +3,7 @@
 #include "demo_effect.h"
 #include "models.h"
 
-extern void DemoEffect_DrawJewel(z64_actor_t* this, z64_game_t* globalCtx, void* func);
+extern void DemoEffect_DrawJewel(DemoEffect* this, z64_game_t* globalCtx, void* func);
 extern void* DemoEffect_DrawJewel_AfterHook;
 
 extern override_key_t CFG_BIGOCTO_OVERRIDE_KEY;

@@ -150,9 +150,9 @@ Gameplay_InitSkybox:
 ;   skip
 ;   sb      a1, 0x3468(v0)
     li      t6, FONTLOADSTATUS_EXTENDED
-    .skip   4
+.skip 4
     lbu     t7, 0x00(v0)
-    .skip   12
+.skip 12
     sb      a1, 0x00(v0)
 
 ; Hacks in AudioLoad_SyncLoadFont
@@ -390,6 +390,16 @@ Gameplay_InitSkybox:
 .orga 0xEC9CE7 :: .byte 0x7A ; Deku Theater Mask of Truth
 
 ; en_item00_update() hacks - 0x80012938
+
+; Hook the entire en_item00_update function
+; Replaced code:
+;   addiu   sp, sp, -0x48
+;   sw      s1, 0x0020(sp)
+.headersize(0x800110A0 - 0xA87000)
+.org 0x80012938
+    j       en_item00_update_hook
+    nop
+en_item00_update_continue:
 
 ; Runs when player collides w/ Collectible (inside en_item00_update()) start of switch case at 0x80012CA4
 
@@ -671,18 +681,6 @@ SRAM_SLOTS:
 ;.orga 0xA89D4C
 ;    jal     get_override_drop_id
 
-; Hack Item_DropCollectible call to Actor_Spawn to set override
-; replaces
-;   jal     0x80025110
-.orga 0xA8972C ; in memory 0x800137B8
-    jal     Item_DropCollectible_Actor_Spawn_Override
-
-; Hack Item_DropCollectible2 call to Actor_Spawn to set override
-; replaces
-;   jal     0x80025110
-.orga 0xA89958 ; in memory 0x800139E0
-    jal     Item_DropCollectible_Actor_Spawn_Override
-
 ; Hack ObjTsubo_SpawnCollectible (Pot) to call our overridden spawn function
 .orga 0xDE7C60
     j       ObjTsubo_SpawnCollectible_Hack
@@ -707,92 +705,6 @@ SRAM_SLOTS:
 ; Hack ObjKibako2_Init (Large Crates) to not delete our extended flag
 .orga 0xEC832C
     or      T8, T7, R0
-
-; Hack ObjMure3 Function that spawns the rupee circle (6 green + 1 red in the center)
-; replaces
-;   or      a1, s6, r0
-;   addiu   a2, r0, 0x4000
-.orga 0xED0AEC
-    jal     obj_mure3_hack
-    nop
-; Hack the red rupee part
-; replaces
-;   lwc1    f8, 0x002c(s2)
-;   addiu   a2, r0, 0x4002
-.orga 0xED0B48
-    jal     obj_mure3_redrupee_hack
-    lwc1    f8, 0x002c(s2)
-
-; Hack bg_haka_tubo (shadow spinning pots) to drop flagged collectibles
-; replaces
-;   or      a0, s6, r0
-;   addiu   a1, sp, 0x005c
-.orga 0xD30FDC
-    jal     bg_haka_tubo_hack
-    or      a0, s6, r0
-
-; Hack bg_spot18_basket (goron city spinning pot), bomb drops
-; the actor pointer starts in s0, gets deleted so s0 can be used for the loop variable.
-; Need to use a different loop variable and need to move the branch point up to make a little room for the hack
-; replaces
-;   or      s0, r0, r0 ;outside the loop
-;   or      a0, s4, r0 ;outside the loop
-;   or      a1, s3, r0 ;inside the loop
-.orga 0xE47C08
-    or      s7, r0, r0 ;use s7 as our loop variable
-bg_spot18_basket_bombs_loopstart:
-    jal     bg_spot18_basket_bombs_hack
-    or      a0, s4, r0
-.skip 4
-    ori     a2, r0, 0x0004
-.skip 4
-    sll     t6, s7, 1
-.skip 16
-    addiu   s7, s7, 0x0001
-    bnel    s7, s1, bg_spot18_basket_bombs_loopstart ; move the branch point up a little bit
-
-; Hack bg_spot18_basket (Goron city spinning pot), 3 green rupee drops
-; the actor pointer starts in s0, gets deleted so s0 can be used for the loop variable.
-; Need to use a different loop variable and need to move the branch point up to make a little room for the hack
-; replaces
-;   or      so, r0, r0
-;   addiu   s3, sp, 0x0044
-;   addiu   s1, r0, 0x0003
-.orga 0xE47C5C
-    or      s7, r0, r0 ; use s7 as our loop variable
-bg_spot18_basket_rupees_loopstart: ; our new loop branch target
-    jal     bg_spot18_basket_rupees_hack
-.skip 16
-    nop ; replaces or a2, r0, r0 because our hack will set a2 correctly.
-.skip 4
-    sll     t9, s7, 1
-.skip 16
-    addiu   s7, s7, 0x0001
-    bnel    s7, s1, bg_spot18_basket_rupees_loopstart
-
-; Hack bg_spot18_basket (Goron city spinning pot), rupee drops with heart piece
-; Replaces
-;   or      a0, s4, r0
-;   or      a1, s3, r0
-.orga 0xE47D6C
-    jal     bg_spot18_basket_drop_heartpiece_rupees
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    lw      ra, 0x0034(sp)
-.skip 4
-    nop
 
 ; Hack obj_comb (beehives) to drop flagged collectibles. Get rid of the random 50% drop
 ; replaces
@@ -819,11 +731,40 @@ bg_spot18_basket_rupees_loopstart: ; our new loop branch target
     nop
     nop
 
-; Hook at the end of Actor_SetWorldToHome to zeroize anything we use to store additional flag data
-.orga 0xA96E5C ; In memory: 0x80020EFC
+; Hack in Actor_Spawn when allocating space for the actor to increase the size of every actor by a fixed amount
+.headersize (0x800110A0 - 0xA87000)
+.org 0x800252A8
 ; Replaces:
-;   jr      ra
-    j       Actor_SetWorldToHome_Hook
+;   jal     0x80066C10 (ZeldaArena_Malloc)
+;   sw      v1, 0x004C(sp)
+    jal     Actor_Spawn_Malloc_Hack
+    sw      v1, 0x004C(sp)
+
+
+; Hack in Actor_Spawn after the null check to offset the pointer by the amount that we added to the actor, so the new data is at the start
+.org 0x800252CC
+; Replaces:
+;   lb      t2, 0x001E(s0)
+;   lui     at, 0x0001
+    jal     Actor_Spawn_Shift
+    nop
+
+; Hack Actor_Spawn function so we can override actor spawns
+.orga 0xA9B070 ; in memory 0x80025110
+; Replaced code:
+;   addiu   sp, sp, -0x58
+;   sw      a2, 0x0060(sp)
+    j       Actor_Spawn_Hook
+    nop
+Actor_Spawn_Continue_Jump_Point:
+
+; Hack in Actor_Delete to shift the pointer back to the start of the actor that was malloc'd to include the new data.
+.org 0x8002570C
+; Replaces:
+;   jal     0x80066C90
+;   or      a0, s0, r0
+.skip 4
+    addiu   a0, s0, -0x10
 
 ; Hook Actor_UpdateAll when each actor is being initialized. At the call to Actor_SpawnEntry
 ; Used to set the flag (z-rotation) of the actor to its position in the actor table.
@@ -1065,25 +1006,15 @@ bg_spot18_basket_rupees_loopstart: ; our new loop branch target
 ; Freestanding models
 ;==================================================================================================
 
-;Replaces:
-;   who knows ; Draw Rupee Function
-.headersize(0x80013004 - 0xA88F64)
-.orga 0xA88F64 ; In memory: 0x80013004
-    jal     rupee_draw_hook
-.headersize(0)
-
-;Replaces:
-;   LH      V0, 0x014a(A2)
-;   ADDIU   AT, R0, 0xFFFF
-.headersize(0x8001303C - 0xA88F9C)
-.orga 0xA88F9C ; In memory: 0x8001303C
-;   or      A0, A2, R0
-    jal     recovery_heart_draw_hook
+; Hook EnItem00_Draw
+.headersize(0x800110A0 - 0xA87000)
+.org 0x80012fb8
+; Replaces:
+;   addiu   sp, sp, -0x28
+;   sw      ra, 0x14(sp)
+    j   EnItem00_Draw_Hook
     nop
-after_recovery_heart_hook:
-.skip 0x6C
-end_of_recovery_draw:
-.headersize(0)
+EnItem00_Draw_Continue:
 
 ; Replaces:
 ;   jal     0x80013498 ; Piece of Heart draw function
@@ -1539,9 +1470,9 @@ nop
 ; lhu t9, 0xef0(v1)
 .orga 0xEBB85C
     jal     Deku_Check_Sold_Out
-    .skip 4
+.skip 4
     bnez    v0, @Deku_Check_True
-    .skip 4
+.skip 4
     b       @Deku_Check_False
 .orga 0xEBB8B0
 @Deku_Check_True:
@@ -4204,6 +4135,7 @@ DemoEffect_DrawJewel_AfterHook:
 ; Replaces Item_Give(play, ITEM_OCARINA_FAIRY)
     jal      fairy_ocarina_getitem_override
     nop
+
 ;===================================================================================================
 ; Move the small key counter horizontally if we have boss key, to make room for the BK icon.
 ;===================================================================================================
@@ -4241,3 +4173,7 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/z_parameter.asm"
 .include "hacks/ovl_en_kz.asm"
 .include "hacks/ovl_en_dns.asm"
+.include "hacks/ovl_bg_spot18_basket.asm"
+.include "hacks/ovl_obj_mure3.asm"
+.include "hacks/ovl_bg_haka_tubo.asm"
+.include "hacks/en_item00.asm"

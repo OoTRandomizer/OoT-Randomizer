@@ -71,6 +71,8 @@ typedef struct {
     /* 0x00 */ uint8_t timer;
 } DemoEffectDust;
 
+struct DemoEffect;
+
 typedef void (*DemoEffectFunc)(struct DemoEffect*, z64_game_t*);
 
 typedef struct DemoEffect {

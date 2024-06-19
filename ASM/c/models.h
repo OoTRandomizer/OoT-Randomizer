@@ -2,9 +2,10 @@
 #define MODELS_H
 
 #include "z64.h"
-#include "get_items.h"
+#include "override.h"
+#include <stdint.h>
 
-typedef struct {
+typedef struct model_t {
     uint16_t object_id;
     uint8_t graphic_id;
 } model_t;
