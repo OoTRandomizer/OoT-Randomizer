@@ -1,6 +1,7 @@
 #include "item_effects.h"
 #include "dungeon_info.h"
 #include "trade_quests.h"
+#include "bg_gate_shutter.h"
 #include "save.h"
 
 #define rupee_cap ((uint16_t*)0x800F8CEC)
@@ -223,11 +224,26 @@ void clear_excess_hearts(z64_file_t* save, int16_t arg1, int16_t arg2) {
 
 uint8_t OPEN_KAKARIKO = 0;
 uint8_t COMPLETE_MASK_QUEST = 0;
-void open_mask_shop(z64_file_t* save, int16_t arg1, int16_t arg2) {
+void open_gate_and_mask_shop(z64_file_t* save, int16_t arg1, int16_t arg2) {
+    // Check OPEN_KAKARIKO setting and open the gate
     if (OPEN_KAKARIKO) {
         save->inf_table[7] = save->inf_table[7] | 0x40; // "Spoke to Gate Guard About Mask Shop"
         if (!COMPLETE_MASK_QUEST) {
             save->item_get_inf[2] = save->item_get_inf[2] & 0xFB87; // Unset "Obtained Mask" flags just in case of savewarp before Impa.
+        }
+        // Check if we're in kak and actually open the gate
+        if (z64_game.scene_index == 82) {
+            // Loop through the actors looking for the gate
+            z64_actor_t* curr = z64_game.actor_list[7].first;
+            while (curr != NULL) {
+                if (curr->actor_id == 0x100) { // Check for BG_GATE_SHUTTER
+                    // Set the openingState so it starts to open
+                    BgGateShutter* gate = (BgGateShutter*)curr;
+                    gate->openingState = 2;
+                    return;
+                }
+                curr = curr->next;
+            }
         }
     }
     if (COMPLETE_MASK_QUEST) {

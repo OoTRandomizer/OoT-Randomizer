@@ -1006,10 +1006,9 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.write_int16(0x00E1F3CA, 0x5036)
     rom.write_int16(0x00E1F3CC, 0x5036)
 
-    # Make the Kakariko Gate not open with the MS
-    if world.settings.open_kakariko != 'open':
-        rom.write_int32(0xDD3538, 0x34190000)  # li t9, 0
-    if world.settings.open_kakariko != 'closed':
+    if world.settings.open_kakariko == 'open':
+        rom.write_byte(rom.sym('OPEN_KAKARIKO'), 2)
+    elif world.settings.open_kakariko != 'closed':
         rom.write_byte(rom.sym('OPEN_KAKARIKO'), 1)
 
     # Mark starting trade items as owned

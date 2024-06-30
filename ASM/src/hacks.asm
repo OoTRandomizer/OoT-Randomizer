@@ -3281,45 +3281,6 @@ courtyard_guards_kill:
     or      a0, s0, r0
 
 ;==================================================================================================
-; Speed Up Gate in Kakariko
-;==================================================================================================
-; gate opening x
-; Replaces: lui     at, 0x4000 ;2.0f
-.orga 0xDD366C
-    lui     at, 0x40D0 ;6.5f
-
-; gate opening z
-; Replaces: lui     a2, 0x3F4C
-;           sub.s   f8, f4, f6
-;           lui     a3, 0x3E99
-;           ori     a3, a3, 0x999A
-;           ori     a2, a2, 0xCCCD
-.orga 0xDD367C
-    lui     a2, 0x4000
-    sub.s   f8, f4, f6
-    lui     a3, 0x4000
-    nop
-    nop
-
-; gate closing x
-; Replaces: lui     at, 0x4000 ;2.0f
-.orga 0xDD3744
-    lui     at, 0x40D0 ;6.5f
-
-; gate closing z
-; Replaces: lui     a2, 0x3F4C
-;           add.s   f8, f4, f6
-;           lui     a3, 0x3E99
-;           ori     a3, a3, 0x999A
-;           ori     a2, a2, 0xCCCD
-.orga 0xDD3754
-    lui     a2, 0x4000
-    add.s   f8, f4, f6
-    lui     a3, 0x4000
-    nop
-    nop
-
-;==================================================================================================
 ; Prevent Carpenter Boss Softlock
 ;==================================================================================================
 ; Replaces: or      a1, s1, r0
@@ -4170,10 +4131,11 @@ DemoEffect_DrawJewel_AfterHook:
     jal     volvagia_flying_hitbox
     nop
 
-.include "hacks/z_parameter.asm"
-.include "hacks/ovl_en_kz.asm"
-.include "hacks/ovl_en_dns.asm"
-.include "hacks/ovl_bg_spot18_basket.asm"
-.include "hacks/ovl_obj_mure3.asm"
-.include "hacks/ovl_bg_haka_tubo.asm"
 .include "hacks/en_item00.asm"
+.include "hacks/ovl_bg_gate_shutter.asm"
+.include "hacks/ovl_bg_haka_tubo.asm"
+.include "hacks/ovl_bg_spot18_basket.asm"
+.include "hacks/ovl_en_dns.asm"
+.include "hacks/ovl_en_kz.asm"
+.include "hacks/ovl_obj_mure3.asm"
+.include "hacks/z_parameter.asm"
