@@ -1,8 +1,9 @@
 {
     "name":                  "weekly",
     "gui_name":              "Weekly",
-    "description":           "Hint distribution for the weekly races. 6 Goal hints, 3 Barren hints, 6 Sometimes hints, 1 Dual hint, 4 Always hints.",
+    "description":           "Hint distribution for the weekly races: 5 Always, 6 Goal, 4 Barren at ToT, 5 Sometimes, 2 Dual, 30/40/50 hinted at Skull House.",
     "add_locations":         [
+        { "location": "Sheik in Kakariko", "types": ["always"] },
         { "location": "Deku Theater Skull Mask", "types": ["always"] }
     ],
     "remove_locations":      [
@@ -19,7 +20,6 @@
         { "location": "OGC Great Fairy Reward", "types": ["sometimes"] },
         { "location": "Gerudo Training Ground Maze Path Final Chest", "types": ["sometimes"] },
         { "location": "Ice Cavern Iron Boots Chest", "types": ["sometimes"] },
-        { "location": "Ganons Castle Shadow Trial Golden Gauntlets Chest", "types": ["sometimes"] },
         { "location": "Graveyard Dampe Race Rewards", "types": ["dual"] },
         { "location": "Graveyard Royal Family Tomb Contents", "types": ["dual"] },
         { "location": "Fire Temple Lower Loop", "types": ["dual"] },
@@ -28,8 +28,7 @@
         { "location": "Spirit Temple Child Lower", "types": ["dual"] },
         { "location": "Spirit Temple Adult Lower", "types": ["dual"] },
         { "location": "Shadow Temple Invisible Blades Chests", "types": ["dual"] },
-        { "location": "Shadow Temple Spike Walls Room", "types": ["dual"] },
-        { "location": "Ganons Castle Spirit Trial Chests", "types": ["dual"] }
+        { "location": "Shadow Temple Spike Walls Room", "types": ["dual"] }
     ],
     "add_items":             [],
     "remove_items":          [
@@ -42,11 +41,26 @@
     "distribution":          {
         "trial":           {"order": 1, "weight": 0.0, "fixed": 0, "copies": 2},
         "entrance_always": {"order": 2, "weight": 0.0, "fixed": 0, "copies": 2},
-        "always":          {"order": 3, "weight": 0.0, "fixed": 0, "copies": 2},
-        "goal":            {"order": 4, "weight": 0.0, "fixed": 6, "copies": 2},
-        "barren":          {"order": 5, "weight": 0.0, "fixed": 3, "copies": 2},
+        "always":          {"order": 3, "weight": 0.0, "fixed": 0, "copies": 2, "remove_stones": [
+            "ToT (Left)",
+            "ToT (Left-Center)",
+            "ToT (Right-Center)",
+            "ToT (Right)"
+        ]},
+        "goal":            {"order": 4, "weight": 0.0, "fixed": 6, "copies": 2, "remove_stones": [
+            "ToT (Left)",
+            "ToT (Left-Center)",
+            "ToT (Right-Center)",
+            "ToT (Right)"
+        ]},
+        "barren":          {"order": 5, "weight": 0.0, "fixed": 4, "copies": 1, "priority_stones": [
+            "ToT (Left)",
+            "ToT (Left-Center)",
+            "ToT (Right-Center)",
+            "ToT (Right)"
+        ]},
         "entrance":        {"order": 6, "weight": 0.0, "fixed": 0, "copies": 2},
-        "dual":            {"order": 7, "weight": 0.0, "fixed": 1, "copies": 2},
+        "dual":            {"order": 7, "weight": 0.0, "fixed": 2, "copies": 2},
         "sometimes":       {"order": 8, "weight": 1.0, "fixed": 0, "copies": 2},
         "random":          {"order": 0, "weight": 0.0, "fixed": 0, "copies": 2},
         "item":            {"order": 0, "weight": 0.0, "fixed": 0, "copies": 2},
