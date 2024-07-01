@@ -455,7 +455,9 @@
         "mq_dungeons_count": 0,
         "empty_dungeons_mode": "rewards",
         "empty_dungeons_specific": [],
-        "empty_dungeons_rewards": ["Kokiri Emerald"],
+        "empty_dungeons_rewards": [
+            "Kokiri Emerald"
+        ],
         "empty_dungeons_count": 1,
         "shuffle_interior_entrances": "off",
         "shuffle_hideout_entrances": false,
