@@ -3416,22 +3416,16 @@ class SettingInfos:
             required to beat the game.
         ''',
         shared         = True,
-        disable        = {
-            'off': {'settings': ['show_ocarina_melodies']}
-        },
     )
 
     show_ocarina_melodies = Checkbutton(
         gui_text       = 'Display Ocarina Melodies',
         gui_tooltip    = '''\
-            Display a window that shows the random melodies inputs
+            Display a window that shows the melodies inputs
             when you pull out the Ocarina.
         ''',
         default        = False,
         shared         = True,
-        gui_params     = {
-            "hide_when_disabled": True,
-        },
     )
 
     hint_dist = Combobox(
