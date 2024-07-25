@@ -14,7 +14,6 @@ from typing import NoReturn
 from Main import resolve_settings
 from Patches import get_override_table, get_override_table_bytes
 from Rom import Rom
-import Unittest as Tests
 from Messages import ITEM_MESSAGES, KEYSANITY_MESSAGES, MISC_MESSAGES
 from SettingsList import SettingInfos, logic_tricks, validate_settings
 import Unittest as Tests
@@ -39,6 +38,7 @@ def run_unit_tests() -> None:
     stream = StringIO()
     runner = unittest.TextTestRunner(stream=stream)
     suite = unittest.defaultTestLoader.loadTestsFromModule(Tests)
+    suite.addTests(unittest.defaultTestLoader.discover('tests/unit'))
     result = runner.run(suite)
     print(f'Tests run: {result.testsRun}.')
     stream.seek(0)
