@@ -1,8 +1,8 @@
+import os
 import unittest
 
 import Main
 import Settings
-from Plandomizer import Distribution
 
 
 class TestResolveSettings(unittest.TestCase):
@@ -58,7 +58,14 @@ class TestResolveSettings(unittest.TestCase):
                                    'Broken Sword', 'Prescription', 'Eyeball Frog', 'Eyedrops', 'Claim Check']})
 
     def test_default_settings(self):
-        test_settings = Settings.Settings({})
+        can_use_rom = os.path.isfile('./ZOOTDEC.z64')
+        if not can_use_rom:
+            test_settings = Settings.Settings({
+                # Don't require a ROM
+                'create_compressed_rom': False,
+            })
+        else:
+            test_settings = Settings.Settings({})
 
         # TODO: The actual changing of settings is a side effect. Should be explicit.
         Main.resolve_settings(test_settings)
@@ -67,6 +74,9 @@ class TestResolveSettings(unittest.TestCase):
             self.assertTrue(setting in test_settings.settings_dict, f"Setting {setting} was removed.")
             if setting == 'seed':
                 continue
+            elif setting == 'create_compressed_rom' and not can_use_rom:
+                self.assertTrue(self.default_settings.create_compressed_rom,
+                                f"Default for {setting} changed. Should be {True}")
             elif setting in ['lacs_medallions', 'lacs_stones', 'lacs_rewards', 'lacs_tokens', 'lacs_hearts',
                              'bridge_stones', 'bridge_rewards', 'bridge_tokens', 'bridge_hearts',
                              'ganon_bosskey_medallions', 'ganon_bosskey_stones', 'ganon_bosskey_rewards',
@@ -76,12 +86,14 @@ class TestResolveSettings(unittest.TestCase):
                                  + f"is now {test_settings.settings_dict[setting]}")
                 self.assertEqual(test_settings.settings_dict[setting], 0,
                                  f"{setting} is no longer disabled after resolving settings.")
-                continue
-            self.assertEqual(test_settings.settings_dict[setting], self.default_settings.settings_dict[setting],
-                             f"Default for {setting} changed. Was {self.default_settings.settings_dict[setting]} "
-                             + f"is now {test_settings.settings_dict[setting]}")
+            else:
+                self.assertEqual(test_settings.settings_dict[setting], self.default_settings.settings_dict[setting],
+                                 f"Default for {setting} changed. Was {self.default_settings.settings_dict[setting]} "
+                                 + f"is now {test_settings.settings_dict[setting]}")
 
         for setting in test_settings.settings_dict:
+            if setting == 'create_compressed_rom' and not can_use_rom:
+                continue
             self.assertTrue(setting in test_settings.settings_dict,
                             f"Setting {setting} was added. Add it to this test.")
 
