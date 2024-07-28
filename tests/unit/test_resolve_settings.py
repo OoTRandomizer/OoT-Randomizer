@@ -90,6 +90,7 @@ class TestResolveSettings(unittest.TestCase):
                 self.assertEqual(test_settings.settings_dict[setting], self.default_settings.settings_dict[setting],
                                  f"Default for {setting} changed. Was {self.default_settings.settings_dict[setting]} "
                                  + f"is now {test_settings.settings_dict[setting]}")
+                self.assertEqual(test_settings.__getattribute__(setting), self.default_settings.__getattribute__(setting))
 
         for setting in test_settings.settings_dict:
             if setting == 'create_compressed_rom' and not can_use_rom:
