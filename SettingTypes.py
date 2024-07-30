@@ -3,6 +3,8 @@ import math
 import operator
 from typing import Optional, Any
 
+from Utils import powerset
+
 
 # holds the info for a single setting
 class SettingInfo:
@@ -57,8 +59,11 @@ class SettingInfo:
         self.disabled_default = self.default if disabled_default is None else disabled_default
 
         # used to when random options are set for this setting
-        if 'distribution' not in self.gui_params:
-            self.gui_params['distribution'] = [(choice, 1) for choice in self.choice_list]
+        if 'distribution' not in self.gui_params and 'randomize_key' in self.gui_params:
+            if self.gui_type == 'MultipleSelect':
+                self.gui_params['distribution'] = [(list(choice), 1) for choice in powerset(self.choice_list)]
+            else:
+                self.gui_params['distribution'] = [(choice, 1) for choice in self.choice_list]
 
     def __set_name__(self, owner, name: str) -> None:
         self.name = name

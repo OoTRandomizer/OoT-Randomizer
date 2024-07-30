@@ -21,7 +21,7 @@ void handle_dpad() {
     pad_t pad_held = z64_ctxt.input[0].raw.pad;
 
     if (CAN_USE_TRADE_DPAD) {
-        uint8_t current_trade_item = z64_file.items[z64_game.pause_ctxt.item_cursor];
+        uint8_t current_trade_item = z64_file.items[z64_game.pause_ctxt.cursor_point[PAUSE_ITEM]];
         if (IsTradeItem(current_trade_item)) {
             uint8_t potential_trade_item = current_trade_item;
 
@@ -34,7 +34,7 @@ void handle_dpad() {
             }
 
             if (current_trade_item != potential_trade_item) {
-                UpdateTradeEquips(potential_trade_item, z64_game.pause_ctxt.item_cursor);
+                UpdateTradeEquips(potential_trade_item, z64_game.pause_ctxt.cursor_point[PAUSE_ITEM]);
                 PlaySFX(0x4809); // cursor move sound effect NA_SE_SY_CURSOR
             }
         }
@@ -81,9 +81,9 @@ void draw_dpad_and_menu_utilities() {
         // Trade items switch in the menu. Shows a dpad and trade items if you hover on the trade item slot.
         if (CAN_DRAW_TRADE_DPAD) {
 
-            uint8_t current_trade_item = z64_file.items[z64_game.pause_ctxt.item_cursor];
+            uint8_t current_trade_item = z64_file.items[z64_game.pause_ctxt.cursor_point[PAUSE_ITEM]];
             // D-pad under selected trade item slot, if more than one trade item
-            int left_trade_dpad = (z64_game.pause_ctxt.item_cursor == Z64_SLOT_ADULT_TRADE) ? 197 : 230;
+            int left_trade_dpad = (z64_game.pause_ctxt.cursor_point[PAUSE_ITEM] == Z64_SLOT_ADULT_TRADE) ? 197 : 230;
             int top_trade_dpad = 190;
 
             if (IsTradeItem(current_trade_item)) {

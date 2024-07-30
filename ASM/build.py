@@ -13,13 +13,14 @@ from crc import calculate_crc
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--pj64sym', help="Output path for Project64 debugging symbols")
-parser.add_argument('--compile-c', action='store_true', help="Recompile C modules")
-parser.add_argument('--dump-obj', action='store_true', help="Dumps extra object info for debugging purposes. Does nothing without --compile-c")
+parser.add_argument('--compile-c', action='store_true', help="Recompile C modules. This is the default")
+parser.add_argument('--no-compile-c', action='store_true', help="Do not recompile C modules")
+parser.add_argument('--dump-obj', action='store_true', help="Dumps extra object info for debugging purposes. Does nothing with --no-compile-c")
 parser.add_argument('--diff-only', action='store_true', help="Creates diff output without running armips")
 
 args = parser.parse_args()
 pj64_sym_path = args.pj64sym
-compile_c = args.compile_c
+compile_c = not args.no_compile_c
 dump_obj = args.dump_obj
 diff_only = args.diff_only
 
@@ -66,7 +67,7 @@ c_sym_types = {}
 
 with open('build/c_symbols.txt', 'r') as f:
     for line in f:
-        m = re.match('''
+        m = re.match(r'''
                 ^
                 [0-9a-fA-F]+
                 .*
@@ -101,6 +102,21 @@ with open('build/asm_symbols.txt', 'r') as f:
             'address': address,
         }
 
+# Loop through a second time, add lengths to each data symbol
+# This could probably be optimized to run in a single pass :)
+with open('build/asm_symbols.txt', 'r') as f:
+    for line in f:
+        parts = line.strip().split(' ')
+        if len(parts) < 2:
+            continue
+        address, sym_name = parts
+        if sym_name.startswith('.'):
+            # split on the ':' to get the length, in hex
+            type, hex_length = sym_name.split(':')
+            for symbol, sym_data in symbols.items():
+                if sym_data['address'] == address and sym_data['type'] == 'data':
+                    sym_data['length'] = int(hex_length, 16)
+
 # Output symbols
 
 os.chdir(run_dir)
@@ -115,7 +131,10 @@ for (name, sym) in symbols.items():
             addr = addr - 0x80400000 + 0x03480000
         else:
             continue
-        data_symbols[name] = '{0:08X}'.format(addr)
+        data_symbols[name] = {
+            'address': f'{addr:08X}',
+            'length': sym.get('length', 0),
+        }
 with open('../data/generated/symbols.json', 'w') as f:
     json.dump(data_symbols, f, indent=4, sort_keys=True)
 

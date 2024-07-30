@@ -53,6 +53,8 @@
                 (Sticks or Kokiri_Sword) and has_bombchus and Slingshot",
             "Spirit Temple MQ Child Stalfos Fight Pot 3": "
                 (Sticks or Kokiri_Sword) and has_bombchus and Slingshot",
+            "Spirit Temple MQ Child Stalfos Fight Pot 4": "
+                (Sticks or Kokiri_Sword) and has_bombchus and Slingshot",
             "Fairy Pot": "
                 has_bottle and (Sticks or Kokiri_Sword) and has_bombchus and Slingshot"
         },
@@ -104,6 +106,11 @@
             "Spirit Temple MQ Central Chamber Floor Pot 1": "True",
             "Spirit Temple MQ Central Chamber Floor Pot 2": "True",
             "Spirit Temple MQ Central Chamber Floor Pot 3": "True",
+            "Spirit Temple MQ Central Chamber Flying Pot Floor": "True",
+            "Spirit Temple MQ Central Chamber Flying Pot Stairs": "True",
+            "Spirit Temple MQ Central Chamber Flying Pot Top Left": "
+                (is_adult and (Hover_Boots or logic_spirit_lobby_jump)) or
+                can_play(Song_of_Time)",
             "Spirit Temple MQ Central Chamber Top Left Pot (Left)": "
                 (is_adult and (Hover_Boots or logic_spirit_lobby_jump)) or
                 can_play(Song_of_Time)",
@@ -120,6 +127,7 @@
                 is_adult",
             "Spirit Temple MQ Central Chamber Crate 1": "can_break_crate",
             "Spirit Temple MQ Central Chamber Crate 2": "can_break_crate",
+            "Spirit Temple MQ Central Chamber Small Wooden Crate": "True",
             "Spirit Temple MQ GS Sun Block Room": "
                 (logic_spirit_mq_sun_block_gs and Boomerang and
                     (can_play(Song_of_Time) or logic_spirit_mq_sun_block_sot)) or
@@ -160,7 +168,8 @@
         "region_name": "Spirit Temple Beamos Room",
         "dungeon": "Spirit Temple",
         "locations": {
-            "Spirit Temple MQ Beamos Room Chest": "has_explosives"
+            "Spirit Temple MQ Beamos Room Chest": "has_explosives",
+            "Spirit Temple MQ Beamos Room Small Wooden Crate": "can_play(Song_of_Time) and (has_explosives or Nuts)"
         },
         "exits": {
             "Spirit Temple Beyond Beamos Room": "can_play(Song_of_Time) and (has_explosives or Nuts)",

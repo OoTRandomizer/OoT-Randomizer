@@ -103,13 +103,13 @@ EnWonderItem_Update_Hook:
     sw      a2, 0x1C(sp)
     jal     EnWonderItem_Update_Hack
     or      a0, s0, r0 ; copy actor pointer to a0
-    
+
     lw      ra, 0x10(sp)
     lw      a0, 0x14(sp)
     lw      s0, 0x18(sp)
     lw      a2, 0x1C(sp)
     addiu   sp, sp, 0x30
-    
+
     ; Replaced code
     lw      t9, 0x013c(s0)
     or      a0, s0, r0

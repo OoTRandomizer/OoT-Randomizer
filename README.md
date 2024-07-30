@@ -8,6 +8,7 @@ This is a randomizer for _The Legend of Zelda: Ocarina of Time_ for the Nintendo
   * [Settings](#settings)
   * [Known Issues](#known-issues)
 * [Changelog](#changelog)
+  * [8.1](#81)
   * [8.0](#80)
   * [7.1](#71)
   * [7.0](#70)
@@ -27,7 +28,7 @@ https://ootrandomizer.com
 
 If you wish to run the script raw, clone this repository and either run ```Gui.py``` for a
 graphical interface or ```OoTRandomizer.py``` for the command line version. They both require Python 3.8+.
-To use the GUI, [NodeJS](https://nodejs.org/download/release/v18.12.1/) (v18 LTS, with npm) will additionally need to be installed. NodeJS v14.14.0 and earlier are no longer supported.
+To use the GUI, [NodeJS](https://nodejs.org/download/release/v20.11.1/) (v20 LTS, with npm) will additionally need to be installed. NodeJS v14.14.0 and earlier are no longer supported.
 The first time ```Gui.py``` is run it will need to install necessary components, which could take a few minutes. Subsequent instances will run much quicker.
 Supported output formats are .z64 (N64/Emulator), .wad (Wii VC, channel IDs NICE/NRKE recommended), Uncompressed ROM (for developmental purposes, offline build only)
 and .zpf/.zpfz (patch files, for sharing seeds with others).
@@ -110,6 +111,57 @@ issue. You should always Hard Reset to avoid this issue entirely.
 
 ### Dev
 
+#### New Settings and Options
+* New cosmetic option `Input Viewer` for showing control stick values and pressed buttons at the bottom of the screen.
+* Add new options for chest/pot/etc. textures, including `Stone of Agony Unlocks Chest Textures` which gives new functionality to the Stone of Agony.
+* The name of the currently playing custom music will now be displayed. Can be disabled using a new cosmetic setting.
+* New setting to control how dungeon rewards are shuffled.
+* The `Links Pocket` location is renamed to `ToT Reward from Rauru`, and a new setting has been added that controls whether it is skipped.
+* New option `Specific Rewards` for the `Pre-completed Dungeons Mode` setting, allowing the user to set dungeons to be precompleted depending on which medallion or stone they have. Not compatible with shuffled dungeon rewards.
+* New settings to `Include Empty Pots` and `Include Empty Crates` when pots and crates are shuffled respectively.
+* New settings preset for the No Logic Weekly.
+* New plando-only `password_lock` setting to require a password to start the seed. The password is a sequence of 6 button presses (A and C) shown near the top of the spoiler log.
+
+#### Other New Features
+* A text box has been added when completing the adult shooting gallery without a bow to warn the player that they haven't received the real reward.
+* Settings presets can have aliases. Command-line users may use an alias instead of the name to specify the preset.
+* The plando-only `item_hints` setting can now include special items such as songs or keys.
+* A boss key icon will now be displayed near the small key icon in dungeons where it has been obtained.
+* Fairy pots are now included in `Shuffle Pots`.
+* A message is shown the first time a seed with No Logic is generated, to warn the user that the seed may be unbeatable.
+
+#### Bug Fixes
+* Goal hints can now hint items required to defeat Ganon even if they're not required for the rainbow bridge, Ganon's boss key, or the trials. These items will be hinted as being on the "path of the hero".
+* Fix a softlock present in the original game when damaging Volvagia's second hitbox during the death cutscene.
+* Don't start the trade sequence timer if getting the `ZD King Zora Thawed` item while the Eyeball Frog is in the inventory.
+* Fix the items on the right side of the mask shop being available without paying for all borrowed masks first.
+* The Stone of Agony can now be foolish in Glitched Logic and No Logic, as it already was with the `Hidden Grottos without Stone of Agony` trick enabled.
+* Fix seeds with Plentiful item pool and no adult trade items selected failing to generate.
+* Fix castle courtyard exiting to incorrect area in Ganon's Castle Dungeon ER.
+* Fix heart piece count getting zeroed out incorrectly in certain circumstances.
+* Business scrubs now take their payment before giving the item.
+* The softlock which occurs when collecting a shuffled silver rupee on the ladder in the Bottom of the Well is now fixed by moving the item location so it can't be collected from the ladder instead of disallowing silver rupees on this location.
+* Fix inverted cursor in the pause menu when pausing while in first person with the `Uninvert Y-Axis in First Person Camera` cosmetic setting enabled.
+* Fix some inconsistent tags for wonderitem locations in the `Exclude Locations` list.
+* Fix swapped `Hideout Kitchen Wonderitem` and `Hideout Kitchen Stove Wonderitem` locations.
+
+#### New Speedups
+* Meg will now take less time before respawning after getting hurt.
+* The cutscenes for stealing Epona by jumping over a fence are now sped up. Previously, only the cutscene for jumping over the front gate was shortened.
+* The cutscenes for pulling and dropping the Master Sword are now sped up.
+* The cutscene changing the water level of the Kakariko well is now even faster.
+* The cutscenes playing when a blue warp is taken for the first time have been removed.
+
+#### Other Changes
+* Clarified the error message shown when an unshuffled trade quest item is used as a starting item.
+* Locations in pre-completed dungeons will no longer be hinted.
+* Treasure Chest Game key and silver rupee options are now included in `Randomize Main Rule Settings`.
+* Pause menu has been modified so that equip swap will work again.
+* Major items from pots, crates, etc now display above Link's head while the text box is open.
+* Gameplay is no longer interrupted if you receive a junk item from another player in multiworld.
+
+### 8.1
+
 #### New Features
 * **Settings**
   * `Minor Items in Big/Gold chests` has been converted into a multiselect so you may granularly make bombchus, shields, or stick/nut capacity appear in big chests.
@@ -125,6 +177,7 @@ issue. You should always Hard Reset to avoid this issue entirely.
 * Put a band-aid on a softlock which occurs when collecting a shuffled silver rupee on the ladder in the Bottom of the Well by disallowing silver rupees on this location.
 * You can no longer wear bunny hood while turning adult, then save and reset before leaving the temple of time to keep bunny hood as adult.
 * If the GUI fails to load Python, it will now display an error message instead of appearing to load forever.
+* Fix bug where specifying custom music sequences via cosmetics plando was incompatible with actively disabling sequences.
 
 #### Other Changes
 * Removing small keys for a dungeon with key rings and `Key Rings give Boss Keys` enabled will now open the boss door instead of giving the player the boss key.

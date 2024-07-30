@@ -1,11 +1,30 @@
 #include "gfx.h"
 
+#include "debug.h"
 #include "util.h"
 #include "z64.h"
 
-extern uint8_t FONT_TEXTURE[];
-extern uint8_t DPAD_TEXTURE[];
-extern uint8_t TRIFORCE_ICON_TEXTURE[];
+extern uint8_t FONT_RESOURCE[];
+extern uint8_t DPAD_RESOURCE[];
+extern uint8_t TRIFORCE_SPRITE_RESOURCE[];
+
+#define RANDO_OVERLAY_DB_SIZE 0xA00 // Size of overlay display buffer, in GFX commands which are 8 bytes
+
+z64_disp_buf_t rando_overlay_db __attribute__ ((aligned (16)));
+#if DEBUG_MODE
+z64_disp_buf_t debug_db __attribute__ ((aligned (16)));
+#define DEBUG_DB_SIZE 0x400
+#endif
+
+typedef struct {
+    Gfx rando_overlay[RANDO_OVERLAY_DB_SIZE];
+    #if DEBUG_MODE
+    Gfx debug[DEBUG_DB_SIZE];
+    #endif
+} RandoGFXPool;
+
+RandoGFXPool randoGfxPools[2]; // Rando GFX Pools. Need 2 because Display Lists need to be double buffered
+uint8_t randoGfxPoolIndex; // Index which is incremented every frame to determine which gfx pool to use
 
 Gfx setup_db[] = {
     gsDPPipeSync(),
@@ -105,7 +124,7 @@ sprite_t buttons_sprite = {
 
 int sprite_bytes_per_tile(sprite_t* sprite) {
     if (sprite->im_siz == G_IM_SIZ_4b) {
-        // No idea why
+        // this format is nibble based, so 4bits = half a byte
         return sprite->tile_w * sprite->tile_h * sprite->bytes_per_texel / 2;
     }
     return sprite->tile_w * sprite->tile_h * sprite->bytes_per_texel;
@@ -119,7 +138,20 @@ void sprite_load(z64_disp_buf_t* db, sprite_t* sprite,
         int start_tile, int tile_count) {
     int width = sprite->tile_w;
     int height = sprite->tile_h * tile_count;
-    gDPLoadTextureTile(db->p++,
+    if (sprite->im_siz == G_IM_SIZ_4b) {
+        gDPLoadTextureTile_4b(db->p++,
+            sprite->buf + start_tile * sprite_bytes_per_tile(sprite),
+            sprite->im_fmt,
+            width, height,
+            0, 0,
+            width - 1, height - 1,
+            0,
+            G_TX_WRAP, G_TX_WRAP,
+            G_TX_NOMASK, G_TX_NOMASK,
+            G_TX_NOLOD, G_TX_NOLOD);
+    }
+    else {
+        gDPLoadTextureTile(db->p++,
             sprite->buf + start_tile * sprite_bytes_per_tile(sprite),
             sprite->im_fmt, sprite->im_siz,
             width, height,
@@ -129,16 +161,17 @@ void sprite_load(z64_disp_buf_t* db, sprite_t* sprite,
             G_TX_WRAP, G_TX_WRAP,
             G_TX_NOMASK, G_TX_NOMASK,
             G_TX_NOLOD, G_TX_NOLOD);
+    }
 }
 
 void sprite_texture(z64_disp_buf_t* db, sprite_t* sprite, int tile_index, int16_t left, int16_t top,
         int16_t width, int16_t height) {
     int width_factor = (1<<10) * sprite->tile_w / width;
     int height_factor = (1<<10) * sprite->tile_h / height;
-    if (sprite->im_siz == G_IM_SIZ_4b) {
-        gDPLoadTextureBlock_4b(db->p++,
+    gDPLoadTextureBlock(db->p++,
         ((uint8_t*)(sprite->buf)) + (tile_index * sprite_bytes_per_tile(sprite)),
         sprite->im_fmt,
+        sprite->im_siz,
         sprite->tile_w,
         sprite->tile_h,
         0,
@@ -148,26 +181,43 @@ void sprite_texture(z64_disp_buf_t* db, sprite_t* sprite, int tile_index, int16_
         G_TX_NOMASK,
         G_TX_NOLOD,
         G_TX_NOLOD
-        );
-    }
-    else {
-        gDPLoadTextureBlock(db->p++,
-            ((uint8_t*)(sprite->buf)) + (tile_index * sprite_bytes_per_tile(sprite)),
-            sprite->im_fmt,
-            sprite->im_siz,
-            sprite->tile_w,
-            sprite->tile_h,
-            0,
-            G_TX_NOMIRROR | G_TX_WRAP,
-            G_TX_NOMIRROR | G_TX_WRAP,
-            G_TX_NOMASK,
-            G_TX_NOMASK,
-            G_TX_NOLOD,
-            G_TX_NOLOD
-        );
+    );
+
+    gSPTextureRectangle(db->p++, left * 4, top * 4, (left + width) * 4, (top + height) * 4, G_TX_RENDERTILE, 0,0,width_factor, height_factor);
+}
+
+void sprite_texture_4b(z64_disp_buf_t *db, sprite_t *sprite, int tile_index, int16_t left, int16_t top,
+                        int16_t width, int16_t height) {
+
+    if (sprite->im_siz != G_IM_SIZ_4b) {
+        return;
     }
 
-    gSPTextureRectangle(db->p++, left * 4, top * 4, (left + width) * 4, (top * height) * 4, G_TX_RENDERTILE, 0, 0, width_factor, height_factor);
+    int width_factor = (1<<10) * sprite->tile_w / width;
+    int height_factor = (1<<10) * sprite->tile_h / height;
+
+    gDPPipeSync(db->p++);
+    gDPSetCombineLERP(db->p++, PRIMITIVE, ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0, PRIMITIVE,
+        ENVIRONMENT, TEXEL0, ENVIRONMENT, TEXEL0, 0, PRIMITIVE, 0);
+
+    gDPSetEnvColor(db->p++, 0, 0, 0, 255);
+
+    gDPLoadTextureBlock_4b(db->p++,
+        ((uint8_t*)(sprite->buf)) + tile_index * sprite_bytes_per_tile(sprite),
+        sprite->im_fmt,
+        sprite->tile_w,
+        sprite->tile_h,
+        0,
+        G_TX_NOMIRROR | G_TX_CLAMP,
+        G_TX_NOMIRROR | G_TX_CLAMP,
+        G_TX_NOMASK,
+        G_TX_NOMASK,
+        G_TX_NOLOD,
+        G_TX_NOLOD
+    );
+
+    gSPTextureRectangle(db->p++, left * 4, top * 4, (left + width) * 4,
+        (top + height) * 4, G_TX_RENDERTILE, 0, 0, width_factor, height_factor);
 }
 
 void sprite_draw(z64_disp_buf_t* db, sprite_t* sprite, int tile_index,
@@ -183,7 +233,53 @@ void sprite_draw(z64_disp_buf_t* db, sprite_t* sprite, int tile_index,
             width_factor, height_factor);
 }
 
+void rando_display_buffer_init() {
+    randoGfxPoolIndex = 0;
+}
+
+void rando_display_buffer_reset() {
+    RandoGFXPool* pool = &randoGfxPools[randoGfxPoolIndex & 1];
+#if DEBUG_MODE
+    debug_db.size = sizeof(pool->debug);
+    debug_db.buf = &pool->debug[0];
+    debug_db.p = &debug_db.buf[0];
+#endif
+    rando_overlay_db.size = sizeof(pool->rando_overlay);
+    rando_overlay_db.buf = &pool->rando_overlay[0];
+    rando_overlay_db.p = &rando_overlay_db.buf[0];
+}
+
+void close_rando_display_buffer() {
+    char error_msg[256];
+
+    OPEN_DISPS(z64_ctxt.gfx);
+
+#if DEBUG_MODE
+    if (((int) debug_db.p - (int) debug_db.buf) > debug_db.size) {
+        sprintf(error_msg, "size = %x\nmax = %x\np = %p\nbuf = %p\nd = %p", ((int) debug_db.p - (int) debug_db.buf),
+                debug_db.size, debug_db.p, debug_db.buf, debug_db.d);
+        Fault_AddHungupAndCrashImpl("Debug display buffer exceeded!", error_msg);
+    }
+
+    gSPEndDisplayList(debug_db.p++);
+    gSPDisplayList(OVERLAY_DISP++, debug_db.buf);
+#endif
+
+    if (((int) rando_overlay_db.p - (int) rando_overlay_db.buf) > rando_overlay_db.size) {
+        sprintf(error_msg, "size = %x\nmax = %x\np = %p\nbuf = %p\nd = %p", ((int) rando_overlay_db.p - (int) rando_overlay_db.buf),
+                rando_overlay_db.size, rando_overlay_db.p, rando_overlay_db.buf, rando_overlay_db.d);
+        Fault_AddHungupAndCrashImpl("Randomizer display buffer exceeded!", error_msg);
+    }
+
+    gSPEndDisplayList(rando_overlay_db.p++);
+    gSPDisplayList(OVERLAY_DISP++, rando_overlay_db.buf);
+
+    CLOSE_DISPS();
+    randoGfxPoolIndex++;
+}
+
 void gfx_init() {
+    rando_display_buffer_init();
     file_t title_static = {
         NULL, z64_file_select_static_vaddr, z64_file_select_static_vsize
     };
@@ -218,8 +314,8 @@ void gfx_init() {
     medals_sprite.buf = title_static.buf + 0x2980;
     items_sprite.buf = icon_item_static.buf;
     quest_items_sprite.buf = icon_item_24_static.buf;
-    dpad_sprite.buf = DPAD_TEXTURE;
-    triforce_sprite.buf = TRIFORCE_ICON_TEXTURE;
+    dpad_sprite.buf = DPAD_RESOURCE;
+    triforce_sprite.buf = TRIFORCE_SPRITE_RESOURCE;
     song_note_sprite.buf = icon_item_static.buf + 0x00088040;
     key_rupee_clock_sprite.buf = parameter_static.buf + 0x00001E00;
     rupee_digit_sprite.buf = parameter_static.buf + 0x3040;
@@ -232,7 +328,7 @@ void gfx_init() {
     int font_bytes = sprite_bytes(&font_sprite);
     font_sprite.buf = heap_alloc(font_bytes);
     for (int i = 0; i < font_bytes / 2; i++) {
-        font_sprite.buf[2*i] = (FONT_TEXTURE[i] >> 4) | 0xF0;
-        font_sprite.buf[2*i + 1] = FONT_TEXTURE[i] | 0xF0;
+        font_sprite.buf[2*i] = (FONT_RESOURCE[i] >> 4) | 0xF0;
+        font_sprite.buf[2*i + 1] = FONT_RESOURCE[i] | 0xF0;
     }
 }

@@ -8,6 +8,7 @@ import subprocess
 import sys
 import urllib.request
 from collections.abc import Sequence
+from itertools import chain, combinations
 from typing import AnyStr, Optional, Any
 from urllib.error import URLError, HTTPError
 
@@ -124,10 +125,10 @@ class VersionError(Exception):
 
 def check_version(checked_version: str) -> None:
     if not hasattr(check_version, "base_regex"):
-        check_version.base_regex = re.compile("""^[ \t]*__version__ = ['"](.+)['"]""", re.MULTILINE)
-        check_version.supplementary_regex = re.compile(r"^[ \t]*supplementary_version = (\d+)$", re.MULTILINE)
-        check_version.full_regex = re.compile("""^[ \t]*__version__ = f['"]*(.+)['"]""", re.MULTILINE)
-        check_version.url_regex = re.compile("""^[ \t]*branch_url = ['"](.+)['"]""", re.MULTILINE)
+        check_version.base_regex = re.compile("""^[ \t]*__version__ = ['"](.+)['"]""", flags=re.MULTILINE)
+        check_version.supplementary_regex = re.compile(r"^[ \t]*supplementary_version = (\d+)$", flags=re.MULTILINE)
+        check_version.full_regex = re.compile("""^[ \t]*__version__ = f['"]*(.+)['"]""", flags=re.MULTILINE)
+        check_version.url_regex = re.compile("""^[ \t]*branch_url = ['"](.+)['"]""", flags=re.MULTILINE)
 
     if compare_version(checked_version, __version__) < 0:
         try:
@@ -230,3 +231,10 @@ def find_last(source_list: Sequence[Any], sought_element: Any) -> int:
     if last is None:
         raise Exception(f"Element {sought_element} not found in sequence {source_list}.")
     return last
+
+
+# https://docs.python.org/3.8/library/itertools.html#itertools-recipes
+def powerset(iterable):
+    "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
+    s = list(iterable)
+    return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))

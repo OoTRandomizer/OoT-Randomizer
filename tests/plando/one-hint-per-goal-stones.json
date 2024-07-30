@@ -19,6 +19,7 @@
         "tokensanity":                             "all",
         "mq_dungeons_mode":                        "vanilla",
         "disabled_locations":                      [],
+        "skip_reward_from_rauru":                  true,
         "hint_dist_user": {
             "name":                  "goal_coverage_unit_test",
             "gui_name":              "Goal Coverage Unit Test",
@@ -36,7 +37,7 @@
                 "trial":      {"order":  1, "weight": 0.0, "fixed":   0, "copies": 2},
                 "always":     {"order":  2, "weight": 0.0, "fixed":   0, "copies": 2},
                 "woth":       {"order":  3, "weight": 0.0, "fixed":   0, "copies": 2},
-                "goal":       {"order":  4, "weight": 0.0, "fixed":   3, "copies": 2},
+                "goal":       {"order":  4, "weight": 0.0, "fixed":   4, "copies": 2},
                 "barren":     {"order":  5, "weight": 0.0, "fixed":   0, "copies": 2},
                 "entrance":   {"order":  6, "weight": 0.0, "fixed":   0, "copies": 2},
                 "sometimes":  {"order":  7, "weight": 0.0, "fixed":  99, "copies": 2},
@@ -53,7 +54,7 @@
         }
     },
     "locations":                 {
-        "Links Pocket":                                         "Forest Medallion",
+        "ToT Reward from Rauru":                                "Forest Medallion",
         "Queen Gohma":                                          "Fire Medallion",
         "King Dodongo":                                         "Light Medallion",
         "Barinade":                                             "Spirit Medallion",

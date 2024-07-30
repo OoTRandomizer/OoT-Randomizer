@@ -7,7 +7,7 @@
 COSMETIC_CONTEXT:
 
 COSMETIC_FORMAT_VERSION:
-.word 0x1F073FE0
+.word 0x1F073FE2
 CFG_MAGIC_COLOR:
 .halfword 0x0000, 0x00C8, 0x0000
 CFG_HEART_COLOR:
@@ -87,6 +87,15 @@ CFG_UNINVERT_YAXIS_IN_FIRST_PERSON_CAMERA:
 CFG_DPAD_ON_THE_LEFT:
 .byte 0x00
 
+CFG_INPUT_VIEWER:
+.byte 0x00
+
+CFG_SONG_NAME_STATE:
+.byte 0x00
+
+.area 0xA5A, 0
+CFG_SONG_NAMES:
+.endarea
 CFG_SHOW_SETTING_INFO:
 .byte 0x00
 
@@ -133,7 +142,7 @@ INITIAL_SAVE_DATA:
 EXTENDED_INITIAL_SAVE_DATA:
 .endarea
 
-.area 0xC0, 0 ; size must be at least 8 * ((max object_id parameter Patches.add_to_extended_object_table is called with) - 0x192)
+.area 0x108, 0 ; size must be at least 8 * ((max object_id parameter Patches.add_to_extended_object_table is called with) - 0x192)
 EXTENDED_OBJECT_TABLE:
 .endarea
 
@@ -197,6 +206,42 @@ SHUFFLE_OCARINA_BUTTONS:
 .byte 0x00
 EPONAS_SONG_NOTES:
 .byte 0x00
+CHEST_GOLD_TEXTURE:
+.byte 0x01
+CHEST_GILDED_TEXTURE:
+.byte 0x01
+CHEST_SILVER_TEXTURE:
+.byte 0x01
+CHEST_SKULL_TEXTURE:
+.byte 0x01
+CHEST_HEART_TEXTURE:
+.byte 0x01
+POTCRATE_GOLD_TEXTURE:
+.byte 0x01
+POTCRATE_GILDED_TEXTURE:
+.byte 0x01
+POTCRATE_SILVER_TEXTURE:
+.byte 0x01
+POTCRATE_SKULL_TEXTURE:
+.byte 0x01
+POTCRATE_HEART_TEXTURE:
+.byte 0x01
+SOA_UNLOCKS_CHEST_TEXTURE:
+.byte 0x00
+SOA_UNLOCKS_POTCRATE_TEXTURE:
+.byte 0x00
+CFG_DUNGEON_INFO_REWARD_WORLDS_ENABLE:
+.byte 0x00
+.area 9, 0
+CFG_DUNGEON_REWARD_WORLDS:
+.endarea
+.align 8
+CFG_BIGOCTO_OVERRIDE_KEY:
+.word 0
+.word 0
+.area 6, 0x00
+PASSWORD:
+.endarea
 .align 4
 
 ; These configuration values are given fixed addresses to aid auto-trackers.

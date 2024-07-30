@@ -9,6 +9,8 @@
             # The crystal switch in the tektite room can be hit with the pot in the first hall.
             "Ice Cavern MQ Center Room Pot 1": "True",
             "Ice Cavern MQ Center Room Pot 2": "True",
+            "Ice Cavern MQ Center Room Pot 3": "True",
+            "Ice Cavern MQ Center Room Pot 4": "True",
             "Fairy Pot": "has_bottle"
         },
         "exits": {
@@ -48,7 +50,8 @@
         "locations": {
             "Ice Cavern MQ Iron Boots Chest": "is_adult",
             "Sheik in Ice Cavern": "is_adult",
-            "Ice Cavern MQ Near End Pot": "is_adult",
+            "Ice Cavern MQ Near End Pot 1": "is_adult",
+            "Ice Cavern MQ Near End Pot 2": "is_adult",
             "Ice Cavern MQ GS Ice Block": "is_adult or can_child_attack",
             "Ice Cavern MQ GS Scarecrow": "
                 can_use(Scarecrow) or (Hover_Boots and can_use(Longshot)) or

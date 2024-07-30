@@ -34,7 +34,7 @@ int16_t select_bombchu_bowling_prize(int16_t prizeSelect) {
                 // Bombchu Bag has not been found, override to the 1
                 // Bomb prize if bomb bag is found, else the purple
                 // rupee prize.
-                if (!EXTRA_BOWLING_SHUFFLE && z64_file.items[Z64_SLOT_BOMBCHU] == -1 && FREE_BOMBCHU_DROPS) {
+                if (!EXTRA_BOWLING_SHUFFLE && z64_file.items[Z64_SLOT_BOMBCHU] == ITEM_NONE && FREE_BOMBCHU_DROPS) {
                     prizeTemp = z64_file.bomb_bag ? EXITEM_BOMBS_BOWLING : EXITEM_PURPLE_RUPEE_BOWLING;
                 } else {
                     prizeTemp = EXITEM_BOMBCHUS_BOWLING;
@@ -60,7 +60,7 @@ int16_t select_bombchu_bowling_prize(int16_t prizeSelect) {
         if (!EXTRA_BOWLING_SHUFFLE) {
             switch(prizeSelect) {
                 case 2:
-                    if (z64_file.items[Z64_SLOT_BOMBCHU] == -1 && FREE_BOMBCHU_DROPS) {
+                    if (z64_file.items[Z64_SLOT_BOMBCHU] == ITEM_NONE && FREE_BOMBCHU_DROPS) {
                         prizeTemp = z64_file.bomb_bag ? EXITEM_BOMBS_BOWLING : EXITEM_PURPLE_RUPEE_BOWLING;
                     } else {
                         prizeTemp = EXITEM_BOMBCHUS_BOWLING;

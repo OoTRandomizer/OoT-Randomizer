@@ -19,6 +19,7 @@
         "tokensanity":                             "all",
         "mq_dungeons_mode":                        "vanilla",
         "disabled_locations":                      [],
+        "skip_reward_from_rauru":                  true,
         "hint_dist_user": {
             "name":                  "goal_coverage_unit_test",
             "gui_name":              "Goal Coverage Unit Test",
@@ -53,7 +54,7 @@
         }
     },
     "locations":                 {
-        "Links Pocket":                                         "Forest Medallion",
+        "ToT Reward from Rauru":                                "Forest Medallion",
         "Queen Gohma":                                          "Fire Medallion",
         "King Dodongo":                                         "Light Medallion",
         "Barinade":                                             "Spirit Medallion",

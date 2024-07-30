@@ -144,10 +144,10 @@ KING_DODONGO_BONKS:
     nop
 
     ; Set King Dodongo health to zero
-    lh      t1, 0x0198(s0)          ; this->numWallCollisions
+    lh      t1, 0x0198(s1)          ; this->numWallCollisions
     beqz    t1, @@return_bonk_kd
     nop
-    sh      $zero, 0x0184(s0)       ; this->health
+    sh      $zero, 0x0184(s1)       ; this->health
 
 @@return_bonk_kd:
     ; displaced code

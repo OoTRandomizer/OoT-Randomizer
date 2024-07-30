@@ -5,6 +5,7 @@
 #include "z64_math.h"
 #include "color.h"
 #include "z64collision_check.h"
+#include "save.h"
 
 #define Z64_OOT10             0x00
 #define Z64_OOT11             0x01
@@ -26,8 +27,10 @@
 #define Z64_ETAB_LENGTH       0x0614
 
 #define NA_BGM_SMALL_ITEM_GET 0x39
+#define NA_SE_SY_CORRECT_CHIME 0x4802
 #define NA_SE_SY_GET_RUPY     0x4803
 #define NA_SE_SY_GET_ITEM     0x4824
+#define NA_SE_SY_ERROR 0x4806
 #define NA_SE_SY_DECIDE 0x4808
 #define NA_SE_SY_CURSOR 0x4809
 #define NA_SE_SY_CANCEL 0x480A
@@ -35,6 +38,7 @@
 #define NA_SE_SY_FSEL_DECIDE_S 0x483A
 #define NA_SE_SY_FSEL_DECIDE_L 0x483B
 #define NA_SE_SY_FSEL_CLOSE 0x483C
+#define NA_SE_SY_SET_FIRE_ARROW 0x483E
 
 #define FONT_CHAR_TEX_SIZE ((16 * 16) / 2) // 16x16 I4 texture
 
@@ -48,6 +52,10 @@
 #define REG(r) BASE_REG(0, (r))
 #define SREG(r) BASE_REG(1, (r))
 #define R_PAUSE_BG_PRERENDER_STATE SREG(94)
+
+#define ITEM_ICON_WIDTH 32
+#define ITEM_ICON_HEIGHT 32
+#define ITEM_ICON_SIZE (ITEM_ICON_WIDTH * ITEM_ICON_HEIGHT * 4) // The size in bytes of an item icon
 
 typedef struct {
   /* index of z64_col_type in scene file */
@@ -359,7 +367,7 @@ typedef enum {
   PLAYER_AP_MASK_GERUDO,
   PLAYER_AP_MASK_TRUTH,
   PLAYER_AP_LENS,
-  PLAYER_AP_MAX
+  PLAYER_AP_MAX,
 } z64_action_parameter_t;
 
 typedef enum {
@@ -413,7 +421,7 @@ typedef enum {
   SI_BOMBS_5_R35,
   SI_RED_POTION_R40,
   SI_RED_POTION_R50,
-  SI_MAX
+  SI_MAX,
 } z64_shop_item_t;
 
 typedef enum {
@@ -449,6 +457,22 @@ typedef enum {
   Z64_ITEMBTN_CD,
   Z64_ITEMBTN_CR,
 } z64_itembtn_t;
+
+typedef enum {
+    /* 0x00 */ ACTORCAT_SWITCH,
+    /* 0x01 */ ACTORCAT_BG,
+    /* 0x02 */ ACTORCAT_PLAYER,
+    /* 0x03 */ ACTORCAT_EXPLOSIVE,
+    /* 0x04 */ ACTORCAT_NPC,
+    /* 0x05 */ ACTORCAT_ENEMY,
+    /* 0x06 */ ACTORCAT_PROP,
+    /* 0x07 */ ACTORCAT_ITEMACTION,
+    /* 0x08 */ ACTORCAT_MISC,
+    /* 0x09 */ ACTORCAT_BOSS,
+    /* 0x0A */ ACTORCAT_DOOR,
+    /* 0x0B */ ACTORCAT_CHEST,
+    /* 0x0C */ ACTORCAT_MAX,
+} ActorCategory;
 
 typedef struct {
   char      unk_00_[0x006E];        /* 0x0000 */
@@ -591,8 +615,8 @@ typedef struct {
   };
   char            unk_06_[0x0012];          /* 0x0054 */
   int16_t         scene_index;              /* 0x0066 */
-  int8_t          button_items[4];          /* 0x0068 */
-  int8_t          c_button_slots[3];        /* 0x006C */
+  uint8_t          button_items[4];          /* 0x0068 */
+  uint8_t          c_button_slots[3];        /* 0x006C */
   union {
     uint16_t      equips;                   /* 0x0070 */
     struct {
@@ -603,7 +627,7 @@ typedef struct {
     };
   };
   char            unk_07_[0x0002];          /* 0x0072 */
-  int8_t          items[24];                /* 0x0074 */
+  uint8_t         items[24];                /* 0x0074 */
   int8_t          ammo[15];                 /* 0x008C */
   uint8_t         magic_beans_sold;         /* 0x009B */
   union {
@@ -749,11 +773,13 @@ typedef struct {
   uint16_t        disable_music_flag;       /* 0x140E */
   char            unk_1B_[0x0002];          /* 0x1410 */
   uint16_t        cutscene_next;            /* 0x1412 */
-  char            unk_1C_[0x0010];          /* 0x1414 */
+  char            unk_1C_[0x0006];          /* 0x1414 */
+  uint16_t        skybox_time;              /* 0x141A */
+  char            unk_1D_[0x0008];          /* 0x141C */
   uint16_t        refill_hearts;            /* 0x1424 */
-  char            unk_1D_[0x000A];          /* 0x1426 */
+  char            unk_1E_[0x000A];          /* 0x1426 */
   z64_gameinfo_t* gameinfo;                 /* 0x1430 */
-  char            unk_1E_[0x001C];          /* 0x1434 */
+  char            unk_1F_[0x001C];          /* 0x1434 */
                                             /* 0x1450 */
 } z64_file_t;
 
@@ -762,13 +788,18 @@ typedef struct {
 } SramContext; // size = 0x4
 
 typedef struct {
-  uint8_t data[0xBA8];
+  union {
+    uint8_t data[0xBA8];
+    extended_savecontext_static_t extended;
+  };
 } extended_save_data_t;
 
 typedef struct {
   z64_file_t      original_save;
   extended_save_data_t additional_save_data;
 } extended_sram_file_t;
+
+void Sram_WriteSave(SramContext* sramCtx, extended_sram_file_t* sramFile);
 
 typedef struct {
     uint8_t               sound_options;           /* 0x0000 */
@@ -882,6 +913,33 @@ typedef enum {
 } actor_type_t;
 
 typedef struct z64_actor_s z64_actor_t;
+struct z64_game_t;
+typedef void (*ActorFunc)(z64_actor_t*, struct z64_game_t*);
+
+typedef struct {
+    /* 0x00 */ int16_t id;
+    /* 0x02 */ uint8_t category; // Classifies actor and determines when it will update or draw
+    /* 0x04 */ uint32_t flags;
+    /* 0x08 */ int16_t objectId;
+    /* 0x0C */ uint32_t instanceSize;
+    /* 0x10 */ ActorFunc init; // Constructor
+    /* 0x14 */ ActorFunc destroy; // Destructor
+    /* 0x18 */ ActorFunc update; // Update Function
+    /* 0x1C */ ActorFunc draw; // Draw function
+} ActorInit; // size = 0x20
+
+typedef struct {
+    /* 0x00 */ uintptr_t vromStart;
+    /* 0x04 */ uintptr_t vromEnd;
+    /* 0x08 */ void* vramStart;
+    /* 0x0C */ void* vramEnd;
+    /* 0x10 */ void* loadedRamAddr; // original name: "allocp"
+    /* 0x14 */ ActorInit* initInfo;
+    /* 0x18 */ char* name;
+    /* 0x1C */ uint16_t allocType; // See `ACTOROVL_ALLOC_` defines
+    /* 0x1E */ int8_t numLoaded; // original name: "clients"
+} ActorOverlay; // size = 0x20
+
 struct z64_actor_s
 {
   int16_t         actor_id;         /* 0x0000 */
@@ -924,7 +982,9 @@ struct z64_actor_s
   uint8_t         damage_effect;    /* 0x00B1 */
   char            unk_0E_[0x0002];  /* 0x00B2 */
   z64_rot_t       rot_2;            /* 0x00B4 */
-  char            unk_0F_[0x0046];  /* 0x00BA */
+  int16_t         face;             /* 0x00BA */
+  float           yOffset;          /* 0x00BC */
+  char            unk_0F_[0x0040];  /* 0x00C0 */
   z64_xyzf_t      pos_4;            /* 0x0100 */
   uint16_t        unk_10_;          /* 0x010C */
   uint16_t        text_id;          /* 0x010E */
@@ -1076,39 +1136,55 @@ typedef struct {
     void             *icon_item_s;              /* 0x0130 */
     void             *icon_item_lang;           /* 0x0134 */
     void             *name_texture;             /* 0x0138 */
-    void             *p13C;                     /* 0x013C */
-    char              unk_01_[0x0094];          /* 0x0140 */
+    void             *player_segment;           /* 0x013C */
+    char              unk_01_[0x0004];          /* 0x0140 */
+    Vtx              *item_page_vtx;            /* 0x0144 */
+    Vtx              *equip_page_vtx;           /* 0x0148 */
+    Vtx              *map_page_vtx;             /* 0x014C */
+    Vtx              *quest_page_vtx;           /* 0x0150 */
+    Vtx              *info_panel_vtx;           /* 0x0154 */
+    Vtx              *item_vtx;                 /* 0x0158 */
+    Vtx              *equip_vtx;                /* 0x015C */
+    char              unk_01_2[0x04];           /* 0x0160 */
+    Vtx              *quest_vtx;                /* 0x0164 */
+    Vtx              *cursor_vtx;               /* 0x0168 */
+    Vtx              *save_vtx;                 /* 0x016C */
+    char              unk_01_3[0x64];           /* 0x0170 */
     uint16_t          state;                    /* 0x01D4 */
-    char              unk_02_[0x000E];          /* 0x01D6 */
+    uint16_t          debugState;               /* 0x01D6 */
+    char              unk_02_[0x000C];          /* 0x01D8 */
     uint16_t          changing;                 /* 0x01E4 */
     uint16_t          screen_prev_idx;          /* 0x01E6 */
     uint16_t          screen_idx;               /* 0x01E8 */
-    char              unk_03_[0x002E];          /* 0x01EA */
-    int16_t           item_cursor;              /* 0x0218 */
-    char              unk_04_[0x0002];          /* 0x021A */
-    int16_t           quest_cursor;             /* 0x021C */
-    int16_t           equip_cursor;             /* 0x021E */
-    int16_t           map_cursor;               /* 0x0220 */
-    int16_t           item_x;                   /* 0x0222 */
-    char              unk_05_[0x0004];          /* 0x0224 */
-    int16_t           equipment_x;              /* 0x0228 */
-    char              unk_06_[0x0002];          /* 0x022A */
-    int16_t           item_y;                   /* 0x022C */
-    char              unk_07_[0x0004];          /* 0x022E */
-    int16_t           equipment_y;              /* 0x0232 */
-    char              unk_08_[0x0004];          /* 0x0234 */
-    int16_t           cursor_pos;               /* 0x0238 */
-    char              unk_09_[0x0002];          /* 0x023A */
-    int16_t           item_id;                  /* 0x023C */
-    int16_t           item_item;                /* 0x023E */
-    int16_t           map_item;                 /* 0x0240 */
-    int16_t           quest_item;               /* 0x0242 */
-    int16_t           equip_item;               /* 0x0244 */
-    char              unk_0A_[0x0004];          /* 0x0246 */
-    int16_t           quest_hilite;             /* 0x024A */
-    char              unk_0B_[0x0018];          /* 0x024C */
+    char              unk_03_[0x001E];          /* 0x01EA */
+    uint16_t          alpha;                    /* 0x0208 */
+    int16_t           offset_y;                 /* 0x020A */
+    char              unk_04_[0x0008];          /* 0x020C */
+    int16_t           stick_movement_x;         /* 0x0214 */
+    int16_t           stick_movement_y;         /* 0x0216 */
+    int16_t           cursor_point[5];          /* 0x0218 */
+    int16_t           cursor_x[5];              /* 0x0222 */
+    int16_t           cursor_y[5];              /* 0x022C */
+    int16_t           dungeon_map_slot;         /* 0x0236 */
+    int16_t           cursor_special_pos;       /* 0x0238 */
+    int16_t           page_switch_input_timer;  /* 0x023A */
+    uint16_t          item_id;                  /* 0x023C */
+    uint16_t          cursor_item[4];           /* 0x023E */
+    uint16_t          cursor_slot[4];           /* 0x0246 */
+    uint16_t          equip_target_item;        /* 0x024E */
+    uint16_t          equip_target_slot;        /* 0x0250 */
+    uint16_t          equip_target_c_btn;       /* 0x0252 */
+    int16_t           equip_anim_x;             /* 0x0254 */
+    int16_t           equip_anim_y;             /* 0x0256 */
+    int16_t           equip_anim_alpha;         /* 0x0258 */
+    int16_t           info_panel_offset_y;      /* 0x025A */
+    uint16_t          name_display_timer;       /* 0x025C */
+    uint16_t          name_color_set;           /* 0x025E */
+    int16_t           cursor_color_set;         /* 0x0260 */
+    int16_t           prompt_choice;            /* 0x0262 */
     int16_t           quest_song;               /* 0x0264 */
-    char              unk_0C_[0x0016];          /* 0x0266 */
+    uint8_t           world_map_points[20];     /* 0x0266 */
+    uint8_t           trade_quest_location;     /* 0x027A */
                                                 /* unknown structure */
     char              s27C[0x0038];             /* 0x027C */
                                                 /* 0x02B4 */
@@ -1264,7 +1340,7 @@ typedef enum {
     /* 0x12 */ CAM_MODE_STILL, // Attacks without Z pressed, falling in air from knockback
     /* 0x13 */ CAM_MODE_PUSH_PULL,
     /* 0x14 */ CAM_MODE_FOLLOW_BOOMERANG, // Boomerang has been thrown, force-target the boomerang as it flies
-    /* 0x15 */ CAM_MODE_MAX
+    /* 0x15 */ CAM_MODE_MAX,
 } CameraModeType;
 
 /* game context */
@@ -1776,6 +1852,43 @@ typedef struct EnGSwitch
 } EnGSwitch; // size = 0x12F8
 
 typedef enum {
+    /*  0 */ PAUSE_STATE_OFF,
+    /*  1 */ PAUSE_STATE_WAIT_LETTERBOX, // Request no letterboxing and wait for it.
+    /*  2 */ PAUSE_STATE_WAIT_BG_PRERENDER, // Wait for the pause background prerender to be done.
+    /*  3 */ PAUSE_STATE_INIT, // Load data and initialize/setup various things.
+    /*  4 */ PAUSE_STATE_OPENING_1, // Animate the pause menu coming together with rotations and other animations.
+    /*  5 */ PAUSE_STATE_OPENING_2, // Finish some animations for opening the menu.
+    /*  6 */ PAUSE_STATE_MAIN, // Pause menu ready for player inputs.
+    /*  7 */ PAUSE_STATE_SAVE_PROMPT,  // Save prompt in the pause menu
+    /*  8 */ PAUSE_STATE_8,
+    /*  9 */ PAUSE_STATE_9,
+    /* 10 */ PAUSE_STATE_10,
+    /* 11 */ PAUSE_STATE_11,
+    /* 12 */ PAUSE_STATE_12,
+    /* 13 */ PAUSE_STATE_13,
+    /* 14 */ PAUSE_STATE_14,
+    /* 15 */ PAUSE_STATE_15,
+    /* 16 */ PAUSE_STATE_16,
+    /* 17 */ PAUSE_STATE_17,
+    /* 18 */ PAUSE_STATE_CLOSING, // Animate the pause menu closing
+    /* 19 */ PAUSE_STATE_RESUME_GAMEPLAY // Handles returning to normal gameplay once the pause menu is visually closed
+} PauseState;
+
+// Sub-states of PAUSE_STATE_MAIN
+typedef enum {
+    /* 0 */ PAUSE_MAIN_STATE_IDLE,
+    /* 1 */ PAUSE_MAIN_STATE_1,
+    /* 2 */ PAUSE_MAIN_STATE_2,
+    /* 3 */ PAUSE_MAIN_STATE_3,
+    /* 4 */ PAUSE_MAIN_STATE_4,
+    /* 5 */ PAUSE_MAIN_STATE_5,
+    /* 6 */ PAUSE_MAIN_STATE_6,
+    /* 7 */ PAUSE_MAIN_STATE_7,
+    /* 8 */ PAUSE_MAIN_STATE_8,
+    /* 9 */ PAUSE_MAIN_STATE_9
+} PauseMainState;
+
+typedef enum {
     /* 0 */ PAUSE_BG_PRERENDER_OFF, // Inactive, do nothing.
     /* 1 */ PAUSE_BG_PRERENDER_SETUP, // The current frame is only drawn for the purpose of serving as the pause background.
     /* 2 */ PAUSE_BG_PRERENDER_PROCESS, // The previous frame was PAUSE_BG_PRERENDER_SETUP, now apply prerender filters.
@@ -1789,6 +1902,7 @@ typedef enum {
 #define LINK_IS_ADULT (z64_file.link_age == 0)
 #define SLOT(item) gItemSlots[item]
 #define INV_CONTENT(item) z64_file.items[SLOT(item)]
+#define ABS(x) ((x) >= 0 ? (x) : -(x))
 
 /* dram addresses */
 #define z64_EnItem00Action_addr                 0x800127E0
@@ -1855,7 +1969,8 @@ typedef enum {
 #define z64_ObjectSpawn_addr                    0x800812F0
 #define z64_ObjectIndex_addr                    0x80081628
 #define z64_ObjectIsLoaded_addr                 0x80081688
-#define z64_ActorSetLinkIncomingItemId_addr     0x80022CF4
+#define z64_ActorOfferGetItem_addr              0x80022BD4
+#define z64_ActorHasParent_addr                 0x80022BB0
 #define SsSram_ReadWrite_addr                   0x80091474
 #define z64_memcopy_addr                        0x80057030
 #define z64_bzero_addr                          0x80002E80
@@ -1947,8 +2062,8 @@ typedef int32_t(*z64_ObjectSpawn_proc)    (z64_obj_ctxt_t* object_ctx, int16_t o
 typedef int32_t(*z64_ObjectIndex_proc)    (z64_obj_ctxt_t* object_ctx, int16_t object_id);
 typedef int32_t(*z64_ObjectIsLoaded_proc) (z64_obj_ctxt_t* object_ctx, int32_t bank_index);
 
-typedef int32_t(*z64_ActorSetLinkIncomingItemId_proc) (z64_actor_t* actor, z64_game_t* game,
-                                                       int32_t get_item_id, float xz_range, float y_range);
+typedef int32_t (*z64_ActorHasParent_proc)(z64_actor_t* actor, z64_game_t* game);
+typedef int32_t (*z64_ActorOfferGetItem_proc)(z64_actor_t* actor, z64_game_t* game, int32_t get_item_id, float xz_range, float y_range);
 typedef void(*z64_RandSeed_proc) (uint32_t seed);
 typedef float(*z64_Rand_ZeroOne_proc)();
 typedef void(*Font_LoadChar_proc)(void* font, uint8_t character, uint16_t codePointIndex);
@@ -2037,7 +2152,8 @@ typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawn
 #define z64_ObjectIndex         ((z64_ObjectIndex_proc)z64_ObjectIndex_addr)
 #define z64_ObjectIsLoaded      ((z64_ObjectIsLoaded_proc)z64_ObjectIsLoaded_addr)
 
-#define z64_ActorSetLinkIncomingItemId ((z64_ActorSetLinkIncomingItemId_proc)z64_ActorSetLinkIncomingItemId_addr)
+#define z64_ActorHasParent ((z64_ActorHasParent_proc)z64_ActorHasParent_addr)
+#define z64_ActorOfferGetItem ((z64_ActorOfferGetItem_proc)z64_ActorOfferGetItem_addr)
 #define SsSram_ReadWrite ((SsSram_ReadWrite_proc)SsSram_ReadWrite_addr)
 #define z64_memcopy ((z64_memcopy_proc)z64_memcopy_addr)
 #define z64_bzero ((z64_bzero_proc)z64_bzero_addr)
@@ -2324,5 +2440,8 @@ typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawn
 #define ITEMGETINF_3A 0x3A
 #define ITEMGETINF_3B 0x3B
 #define ITEMGETINF_3F 0x3F
+
+extern void Fault_AddHungupAndCrashImpl(const char* msg1, const char* msg2);
+extern int32_t sprintf(char* dst, char* fmt, ...);
 
 #endif

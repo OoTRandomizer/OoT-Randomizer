@@ -1,16 +1,3 @@
-item_menu_prevent_empty_equip:
-    ; t1 = item under cursor
-    bne     t1, 0xFF, @@return
-    lbu     v0, 0x00 (s1) ; Load from usability table
-
-    li      v0, 0xFF ; Prevent equip
-
-@@return:
-    jr      ra
-    li      at, 9 ; Restore value expected by caller
-
-;==================================================================================================
-
 equipment_menu_prevent_empty_equip:
     addiu   sp, sp, -0x18
     sw      v0, 0x10 (sp)

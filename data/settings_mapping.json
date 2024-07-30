@@ -163,6 +163,7 @@
             "mq_dungeons_count",
             "empty_dungeons_mode",
             "empty_dungeons_specific",
+            "empty_dungeons_rewards",
             "empty_dungeons_count",
             "shuffle_interior_entrances",
             "shuffle_hideout_entrances",
@@ -195,7 +196,9 @@
             "adult_trade_start",
             "shuffle_freestanding_items",
             "shuffle_pots",
+            "shuffle_empty_pots",
             "shuffle_crates",
+            "shuffle_empty_crates",
             "shuffle_cows",
             "shuffle_beehives",
             "shuffle_wonderitems",
@@ -214,6 +217,7 @@
           "text": "Shuffle Dungeon Items",
           "row_span": [6,6,9],
           "settings": [
+            "shuffle_dungeon_rewards",
             "shuffle_mapcompass",
             "shuffle_smallkeys",
             "shuffle_hideoutkeys",
@@ -326,6 +330,7 @@
           "col_span": 2,
           "row_span": [3,3,3],
           "settings": [
+            "skip_reward_from_rauru",
             "no_escape_sequence",
             "no_guard_stealth",
             "no_epona_race",
@@ -358,10 +363,14 @@
               "bingosync_url",
               "misc_hints",
               "correct_chest_appearances",
+              "chest_textures_specific",
+              "soa_unlocks_chest_texture",
               "minor_items_as_major_chest",
               "invisible_chests",
               "correct_potcrate_appearances",
-              "key_appearance_match_dungeon"
+              "key_appearance_match_dungeon",
+              "potcrate_textures_specific",
+              "soa_unlocks_potcrate_texture"
           ]
         },
         {
@@ -411,7 +420,8 @@
             "dpad_dungeon_menu",
             "correct_model_colors",
             "randomize_all_cosmetics",
-            "uninvert_y_axis_in_first_person_camera"
+            "uninvert_y_axis_in_first_person_camera",
+            "input_viewer"
           ]
         },
         {
@@ -526,6 +536,7 @@
             "custom_music_directorypicker",
             "custom_music_unavailable_msg",
             "background_music",
+            "display_custom_song_names",
             "fanfares",
             "ocarina_fanfares",
             "credits_music"
@@ -542,6 +553,7 @@
           "settings": [
             "custom_music_directorypicker",
             "background_music",
+            "display_custom_song_names",
             "fanfares",
             "ocarina_fanfares",
             "credits_music"

@@ -26,16 +26,16 @@ class Rom(BigStream):
         self.force_patch: list[int] = []
         self.dma: DMAIterator = DMAIterator(self, DMADATA_START)
 
+        with open(data_path('generated/symbols.json'), 'r') as stream:
+            symbols = json.load(stream)
+            self.symbols: dict[str, int] = {name: {'address': int(sym['address'], 16), 'length': sym['length']} for name, sym in symbols.items()}
+
         if file is None:
             return
 
         decompressed_file: str = local_path('ZOOTDEC.z64')
 
         os.chdir(local_path())
-
-        with open(data_path('generated/symbols.json'), 'r') as stream:
-            symbols = json.load(stream)
-            self.symbols: dict[str, int] = {name: int(addr, 16) for name, addr in symbols.items()}
 
         if os.path.isfile(decompressed_file):
             # Try to read from previously decompressed rom if one exists.
@@ -158,7 +158,10 @@ class Rom(BigStream):
         self.write_version_bytes()
 
     def sym(self, symbol_name: str) -> int:
-        return self.symbols[symbol_name]
+        return self.symbols[symbol_name]['address']
+
+    def sym_length(self, symbol_name: str) -> int:
+        return self.symbols[symbol_name]['length']
 
     def write_to_file(self, file: str) -> None:
         self.verify_dmadata()

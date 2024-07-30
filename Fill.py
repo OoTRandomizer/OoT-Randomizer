@@ -89,11 +89,12 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
     ice_traps = [item for item in itempool if item.name == 'Ice Trap']
     # Extend with ice traps manually placed in plandomizer
     ice_traps.extend(
-        location.item for location in cloakable_locations
-        if (location.has_preview()
-            and location.item is not None
-            and location.item.name == 'Ice Trap'
-            and location.item.looks_like_item is None))
+        location.item
+        for location in cloakable_locations
+        if location.item is not None
+        and location.item.name == 'Ice Trap'
+        and location.item.looks_like_item is None
+    )
     junk_items = remove_junk_items.copy()
     junk_items.remove('Ice Trap')
     major_items = [name for name, item in ItemInfo.items.items() if item.type == 'Item' and item.advancement and item.index is not None]
@@ -149,8 +150,6 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
                            if location.world.empty_dungeons[HintArea.at(location).dungeon_name].empty]
         for location in empty_locations:
             fill_locations.remove(location)
-            location.world.hint_type_overrides['sometimes'].append(location.name)
-            location.world.hint_type_overrides['random'].append(location.name)
 
         if worlds[0].settings.shuffle_mapcompass in ['any_dungeon', 'overworld', 'keysanity', 'regional']:
             # Non-empty dungeon items are present in restitempool but yet we

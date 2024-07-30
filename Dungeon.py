@@ -19,6 +19,7 @@ class Dungeon:
         self.small_keys: list[Item] = []
         self.dungeon_items: list[Item] = []
         self.silver_rupees: list[Item] = []
+        self.reward: list[Item] = []
 
         if regions is None:
             for region in world.regions:
@@ -35,8 +36,15 @@ class Dungeon:
         new_dungeon.small_keys = [item for item in self.small_keys]
         new_dungeon.dungeon_items = [item for item in self.dungeon_items]
         new_dungeon.silver_rupees = [item for item in self.silver_rupees]
+        new_dungeon.reward = [item for item in self.reward]
 
         return new_dungeon
+
+    @staticmethod
+    def from_vanilla_reward(item: Item) -> Dungeon:
+        dungeons = [dungeon for dungeon in item.world.dungeons if dungeon.vanilla_reward == item.name]
+        if dungeons:
+            return dungeons[0]
 
     @property
     def shuffle_mapcompass(self) -> str:
@@ -55,6 +63,10 @@ class Dungeon:
         return self.world.settings.shuffle_silver_rupees
 
     @property
+    def shuffle_dungeon_rewards(self) -> str:
+        return self.world.settings.shuffle_dungeon_rewards
+
+    @property
     def empty(self) -> bool:
         return self.world.empty_dungeons[self.name].empty
 
@@ -64,7 +76,26 @@ class Dungeon:
 
     @property
     def all_items(self) -> list[Item]:
-        return self.dungeon_items + self.keys + self.silver_rupees
+        return self.dungeon_items + self.keys + self.silver_rupees + self.reward
+
+    @property
+    def vanilla_boss_name(self) -> Optional[str]:
+        return {
+            'Deku Tree': 'Queen Gohma',
+            'Dodongos Cavern': 'King Dodongo',
+            'Jabu Jabus Belly': 'Barinade',
+            'Forest Temple': 'Phantom Ganon',
+            'Fire Temple': 'Volvagia',
+            'Water Temple': 'Morpha',
+            'Shadow Temple': 'Bongo Bongo',
+            'Spirit Temple': 'Twinrova',
+        }.get(self.name)
+
+
+    @property
+    def vanilla_reward(self) -> Optional[str]:
+        if self.vanilla_boss_name is not None:
+            return self.world.get_location(self.vanilla_boss_name).vanilla_item
 
     def item_name(self, text: str) -> str:
         return f"{text} ({self.name})"
@@ -89,6 +120,8 @@ class Dungeon:
             yield from self.boss_key
         if self.shuffle_silver_rupees == 'dungeon' or (self.empty and self.shuffle_silver_rupees in ['any_dungeon', 'overworld', 'anywhere', 'regional']):
             yield from self.silver_rupees
+        if self.shuffle_dungeon_rewards in ('vanilla', 'dungeon'): # we don't lock rewards inside pre-completed dungeons since they're still useful outside
+            yield from self.reward
 
     # get a list of items that don't have to be in their proper dungeon
     def get_unrestricted_dungeon_items(self) -> Iterator[Item]:
@@ -102,6 +135,8 @@ class Dungeon:
             yield from self.boss_key
         if self.shuffle_silver_rupees in ['any_dungeon', 'overworld', 'anywhere', 'regional']:
             yield from self.silver_rupees
+        if self.shuffle_dungeon_rewards in ('any_dungeon', 'overworld', 'anywhere', 'regional'):
+            yield from self.reward
 
     def __str__(self) -> str:
         return self.name

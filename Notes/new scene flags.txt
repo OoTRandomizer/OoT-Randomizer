@@ -1,0 +1,34 @@
+scene ID: index into scene table which will contain an offset into the setup table
+
+setup ID: index into a list contained at the offset calculated ^. The list contains offsets into the room table for that setup.
+
+room ID: index into a list contained at the offset calculated ^. The list contains offsets into the flag_offset table for that room
+
+actor_id = bit to check in the bitmap.
+
+sub_id: For actors that need to have a sub-ID such rupee towers, this is the additional bit offset added to the bit index for the actor_id.
+
+Data for each room as follows:
+
+uint8_t room_flags[255]
+
+each index in the array corresponds to an actor index. each value contains the starting bit position for that actor. Actors can have multiple bits assigned based on sub_id.
+
+Ex. Goron city child room 3 (main room w/ spinning pot)
+
+actors 0 - 40 are not shuffled, so store as 0
+actor 41 is the goron pot. Has 9 sub_ids.
+actor 42 - 46 are the regular breakable pots, each with only a single sub_id (0)
+
+so the array will look like:
+{0, 0, 0, .... 40x ...., 0, 9, 10, 11, 12, 13, 
+
+differential coding
+{ 0, 0, ... 41x, 9, 1,1,1,1,1 }
+
+RLC
+{ 0, 41, 9, 1, 1, 5 }
+
+bitmap for this room:
+ Goron Pot  Pots
+|000000000|00000|

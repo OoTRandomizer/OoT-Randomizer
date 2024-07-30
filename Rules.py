@@ -58,13 +58,6 @@ def set_rules(world: World) -> None:
         else:
             add_item_rule(location, lambda location, item: item.type != 'Shop')
 
-        if world.shuffle_silver_rupees and location.name == 'Bottom of the Well Basement Silver Rupee Ladders Middle':
-            # Collecting the final BotW basement silver rupee and activating the cutscene of the door unlocking while on the ladder causes a softlock.
-            # This is a vanilla bug tracked at https://github.com/OoTRandomizer/OoT-Randomizer/issues/2004
-            # If and when that bug is fixed in rando, this item restriction can be removed.
-            forbid_item(location, 'Silver Rupee (Bottom of the Well Basement)')
-            forbid_item(location, 'Silver Rupee Pouch (Bottom of the Well Basement)')
-
         if world.skip_child_zelda and location.name == 'Song from Impa':
             if world.settings.triforce_hunt and world.total_starting_triforce_count >= world.triforce_goal - world.settings.world_count:
                 # We have enough starting Triforce pieces that putting a piece on every world's Song from Impa would hit the goal count

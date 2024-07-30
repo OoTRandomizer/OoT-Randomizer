@@ -29,8 +29,12 @@
         "locations": {
             "Spirit Temple Child Bridge Chest": "True",
             "Spirit Temple Child Early Torches Chest": "Sticks or can_use(Dins_Fire)",
-            "Spirit Temple Child Bridge Flying Pot": "True",
-            "Spirit Temple Child Anubis Pot": "True",
+            "Spirit Temple Child Bridge Flying Pot 1": "True",
+            "Spirit Temple Child Bridge Flying Pot 2": "True",
+            "Spirit Temple Child Anubis Pot 1": "True",
+            "Spirit Temple Child Anubis Pot 2": "True",
+            "Spirit Temple Child Anubis Pot 3": "True",
+            "Spirit Temple Child Anubis Pot 4": "True",
             "Spirit Temple Child Early Torches Silver Rupee Top Right": "True",
             "Spirit Temple Child Early Torches Silver Rupee Bottom Right": "True",
             "Spirit Temple Child Early Torches Silver Rupee Bottom Left": "True",
@@ -152,6 +156,24 @@
             "Spirit Temple Silver Gauntlets Chest": "
                 (Small_Key_Spirit_Temple, 5) or
                 (has_explosives and Longshot and (Small_Key_Spirit_Temple, 3))",
+            "Spirit Temple Central Chamber Pot 1": "
+                (Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
+                has_explosives or ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops)",
+            "Spirit Temple Central Chamber Pot 2": "
+                (Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
+                has_explosives or ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops)",
+            "Spirit Temple Central Chamber Pot 3": "
+                (Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
+                has_explosives or ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops)",
+            "Spirit Temple Central Chamber Pot 4": "
+                (Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
+                has_explosives or ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops)",
+            "Spirit Temple Central Chamber Pot 5": "
+                (Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
+                has_explosives or ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops)",
+            "Spirit Temple Central Chamber Pot 6": "
+                (Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
+                has_explosives or ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops)",
             "Spirit Temple Central Chamber Flying Pot 1": "
                 (Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
                 has_explosives or ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops)",

@@ -150,9 +150,9 @@ Gameplay_InitSkybox:
 ;   skip
 ;   sb      a1, 0x3468(v0)
     li      t6, FONTLOADSTATUS_EXTENDED
-    .skip   4
+.skip 4
     lbu     t7, 0x00(v0)
-    .skip   12
+.skip 12
     sb      a1, 0x00(v0)
 
 ; Hacks in AudioLoad_SyncLoadFont
@@ -391,6 +391,16 @@ Gameplay_InitSkybox:
 
 ; en_item00_update() hacks - 0x80012938
 
+; Hook the entire en_item00_update function
+; Replaced code:
+;   addiu   sp, sp, -0x48
+;   sw      s1, 0x0020(sp)
+.headersize(0x800110A0 - 0xA87000)
+.org 0x80012938
+    j       en_item00_update_hook
+    nop
+en_item00_update_continue:
+
 ; Runs when player collides w/ Collectible (inside en_item00_update()) start of switch case at 0x80012CA4
 
 ; Override Item_Give(RUPEE_GREEN)
@@ -509,6 +519,7 @@ SRAM_SLOTS:
 ;   jal     Save_Write_Hook
 .org 0x800905D4
     j       Sram_WriteSave
+    or      a1, r0, r0
 
 ; Hack Open_Save function to retrieve additional collectible flags
 ; At the start of the Sram_OpenSave function, SramContext address is stored in A0 and also on the stack at 0x20(SP)
@@ -536,6 +547,11 @@ SRAM_SLOTS:
 ; Hack Sram_CopySave to use our new version of the function
 .org 0x80090FD0
     j       Sram_CopySave
+    nop
+
+; Hack Sram_EraseSave to actually just erase the entire slot
+.org 0x80090eb8
+    j       Sram_EraseSave
     nop
 
 ; Increase the size of EnItem00 instances to store the override
@@ -671,18 +687,6 @@ SRAM_SLOTS:
 ;.orga 0xA89D4C
 ;    jal     get_override_drop_id
 
-; Hack Item_DropCollectible call to Actor_Spawn to set override
-; replaces
-;   jal     0x80025110
-.orga 0xA8972C ; in memory 0x800137B8
-    jal     Item_DropCollectible_Actor_Spawn_Override
-
-; Hack Item_DropCollectible2 call to Actor_Spawn to set override
-; replaces
-;   jal     0x80025110
-.orga 0xA89958 ; in memory 0x800139E0
-    jal     Item_DropCollectible_Actor_Spawn_Override
-
 ; Hack ObjTsubo_SpawnCollectible (Pot) to call our overridden spawn function
 .orga 0xDE7C60
     j       ObjTsubo_SpawnCollectible_Hack
@@ -707,92 +711,6 @@ SRAM_SLOTS:
 ; Hack ObjKibako2_Init (Large Crates) to not delete our extended flag
 .orga 0xEC832C
     or      T8, T7, R0
-
-; Hack ObjMure3 Function that spawns the rupee circle (6 green + 1 red in the center)
-; replaces
-;   or      a1, s6, r0
-;   addiu   a2, r0, 0x4000
-.orga 0xED0AEC
-    jal     obj_mure3_hack
-    nop
-; Hack the red rupee part
-; replaces
-;   lwc1    f8, 0x002c(s2)
-;   addiu   a2, r0, 0x4002
-.orga 0xED0B48
-    jal     obj_mure3_redrupee_hack
-    lwc1    f8, 0x002c(s2)
-
-; Hack bg_haka_tubo (shadow spinning pots) to drop flagged collectibles
-; replaces
-;   or      a0, s6, r0
-;   addiu   a1, sp, 0x005c
-.orga 0xD30FDC
-    jal     bg_haka_tubo_hack
-    or      a0, s6, r0
-
-; Hack bg_spot18_basket (goron city spinning pot), bomb drops
-; the actor pointer starts in s0, gets deleted so s0 can be used for the loop variable.
-; Need to use a different loop variable and need to move the branch point up to make a little room for the hack
-; replaces
-;   or      s0, r0, r0 ;outside the loop
-;   or      a0, s4, r0 ;outside the loop
-;   or      a1, s3, r0 ;inside the loop
-.orga 0xE47C08
-    or      s7, r0, r0 ;use s7 as our loop variable
-bg_spot18_basket_bombs_loopstart:
-    jal     bg_spot18_basket_bombs_hack
-    or      a0, s4, r0
-.skip 4
-    ori     a2, r0, 0x0004
-.skip 4
-    sll     t6, s7, 1
-.skip 16
-    addiu   s7, s7, 0x0001
-    bnel    s7, s1, bg_spot18_basket_bombs_loopstart ; move the branch point up a little bit
-
-; Hack bg_spot18_basket (Goron city spinning pot), 3 green rupee drops
-; the actor pointer starts in s0, gets deleted so s0 can be used for the loop variable.
-; Need to use a different loop variable and need to move the branch point up to make a little room for the hack
-; replaces
-;   or      so, r0, r0
-;   addiu   s3, sp, 0x0044
-;   addiu   s1, r0, 0x0003
-.orga 0xE47C5C
-    or      s7, r0, r0 ; use s7 as our loop variable
-bg_spot18_basket_rupees_loopstart: ; our new loop branch target
-    jal     bg_spot18_basket_rupees_hack
-.skip 16
-    nop ; replaces or a2, r0, r0 because our hack will set a2 correctly.
-.skip 4
-    sll     t9, s7, 1
-.skip 16
-    addiu   s7, s7, 0x0001
-    bnel    s7, s1, bg_spot18_basket_rupees_loopstart
-
-; Hack bg_spot18_basket (Goron city spinning pot), rupee drops with heart piece
-; Replaces
-;   or      a0, s4, r0
-;   or      a1, s3, r0
-.orga 0xE47D6C
-    jal     bg_spot18_basket_drop_heartpiece_rupees
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    nop
-    lw      ra, 0x0034(sp)
-.skip 4
-    nop
 
 ; Hack obj_comb (beehives) to drop flagged collectibles. Get rid of the random 50% drop
 ; replaces
@@ -819,11 +737,40 @@ bg_spot18_basket_rupees_loopstart: ; our new loop branch target
     nop
     nop
 
-; Hook at the end of Actor_SetWorldToHome to zeroize anything we use to store additional flag data
-.orga 0xA96E5C ; In memory: 0x80020EFC
+; Hack in Actor_Spawn when allocating space for the actor to increase the size of every actor by a fixed amount
+.headersize (0x800110A0 - 0xA87000)
+.org 0x800252A8
 ; Replaces:
-;   jr      ra
-    j       Actor_SetWorldToHome_Hook
+;   jal     0x80066C10 (ZeldaArena_Malloc)
+;   sw      v1, 0x004C(sp)
+    jal     Actor_Spawn_Malloc_Hack
+    sw      v1, 0x004C(sp)
+
+
+; Hack in Actor_Spawn after the null check to offset the pointer by the amount that we added to the actor, so the new data is at the start
+.org 0x800252CC
+; Replaces:
+;   lb      t2, 0x001E(s0)
+;   lui     at, 0x0001
+    jal     Actor_Spawn_Shift
+    nop
+
+; Hack Actor_Spawn function so we can override actor spawns
+.orga 0xA9B070 ; in memory 0x80025110
+; Replaced code:
+;   addiu   sp, sp, -0x58
+;   sw      a2, 0x0060(sp)
+    j       Actor_Spawn_Hook
+    nop
+Actor_Spawn_Continue_Jump_Point:
+
+; Hack in Actor_Delete to shift the pointer back to the start of the actor that was malloc'd to include the new data.
+.org 0x8002570C
+; Replaces:
+;   jal     0x80066C90
+;   or      a0, s0, r0
+.skip 4
+    addiu   a0, s0, -0x10
 
 ; Hook Actor_UpdateAll when each actor is being initialized. At the call to Actor_SpawnEntry
 ; Used to set the flag (z-rotation) of the actor to its position in the actor table.
@@ -1065,25 +1012,15 @@ bg_spot18_basket_rupees_loopstart: ; our new loop branch target
 ; Freestanding models
 ;==================================================================================================
 
-;Replaces:
-;   who knows ; Draw Rupee Function
-.headersize(0x80013004 - 0xA88F64)
-.orga 0xA88F64 ; In memory: 0x80013004
-    jal     rupee_draw_hook
-.headersize(0)
-
-;Replaces:
-;   LH      V0, 0x014a(A2)
-;   ADDIU   AT, R0, 0xFFFF
-.headersize(0x8001303C - 0xA88F9C)
-.orga 0xA88F9C ; In memory: 0x8001303C
-;   or      A0, A2, R0
-    jal     recovery_heart_draw_hook
+; Hook EnItem00_Draw
+.headersize(0x800110A0 - 0xA87000)
+.org 0x80012fb8
+; Replaces:
+;   addiu   sp, sp, -0x28
+;   sw      ra, 0x14(sp)
+    j   EnItem00_Draw_Hook
     nop
-after_recovery_heart_hook:
-.skip 0x6C
-end_of_recovery_draw:
-.headersize(0)
+EnItem00_Draw_Continue:
 
 ; Replaces:
 ;   jal     0x80013498 ; Piece of Heart draw function
@@ -1358,52 +1295,12 @@ nop
 ; Item menu
 ;==================================================================================================
 
-; Left movement check
+; Reimplement KaleidoScope_DrawItemSelect
 ; Replaces:
-;   beq     s4, t5, 0x8038F2B4
-;   nop
-.orga 0xBB77B4 ; In memory: 0x8038F134
-    nop
-    nop
-
-; Right movement check
-; Replaces:
-;   beq     s4, t4, 0x8038F2B4
-;   nop
-.orga 0xBB7894 ; In memory: 0x8038F214
-    nop
-    nop
-
-; Upward movement check
-; Replaces:
-;   beq     s4, t4, 0x8038F598
-;   nop
-.orga 0xBB7BA0 ; In memory: 0x8038F520
-    nop
-    nop
-
-; Downward movement check
-; Replaces:
-;   beq     s4, t4, 0x8038F598
-;   nop
-.orga 0xBB7BFC ; In memory: 0x8038F57C
-    nop
-    nop
-
-; Remove "to Equip" text if the cursor is on an empty slot
-; Replaces:
-;   addu    s1, t6, t7
-;   lbu     v0, 0x0000 (s1)
-.orga 0xBB7C88 ; In memory: 0x8038F608
-    jal     item_menu_prevent_empty_equip
-    addu    s1, t6, t7
-
-; Prevent empty slots from being equipped
-; Replaces:
-;   lbu     v0, 0x0000 (s1)
-;   addiu   at, r0, 0x0009
-.orga 0xBB7D10 ; In memory: 0x8038F690
-    jal     item_menu_prevent_empty_equip
+;   addiu       sp, sp, -0xA8
+;   sw          s5, 0x0030 (sp)
+.orga 0xBB7670 ; In memory: 0x8038EFF0
+    j     KaleidoScope_DrawItemSelect
     nop
 
 ;==================================================================================================
@@ -1579,9 +1476,9 @@ nop
 ; lhu t9, 0xef0(v1)
 .orga 0xEBB85C
     jal     Deku_Check_Sold_Out
-    .skip 4
+.skip 4
     bnez    v0, @Deku_Check_True
-    .skip 4
+.skip 4
     b       @Deku_Check_False
 .orga 0xEBB8B0
 @Deku_Check_True:
@@ -2068,6 +1965,176 @@ skip_bombchu_bowling_prize_switch:
 .orga 0xBE4A60
     j       agony_post_hook
     nop
+
+;==================================================================================================
+; Blue Warps
+;==================================================================================================
+
+; Child blue warps
+; Replaces:
+;   jal     func_809056E8 ; DoorWarp1_PlayerInRange
+.orga 0xCA2F38 ; In Memory: 0x80905778
+    jal     DoorWarp1_PlayerInRange_Overwrite
+
+; Ruto blue warp
+; Replaces:
+;   jal     func_809056E8 ; DoorWarp1_PlayerInRange
+.orga 0xCA3404 ; In Memory: 0x80905C44
+    jal     DoorWarp1_PlayerInRange_Overwrite
+
+; Adult blue warps
+; Replaces:
+;   jal     func_809056E8 ; DoorWarp1_PlayerInRange
+.orga 0xCA3A10 ; In Memory: 0x80906250
+    jal     DoorWarp1_PlayerInRange_Overwrite
+
+; As the above replaces overlay functions with a global function,
+; Need to null out the reloc entries
+
+; Child blue warps
+; Replaces:
+;   .word   0x44001258
+.orga 0xCA5D4C
+.word   0x00000000
+
+; Ruto blue warp
+; Replaces:
+;   .word   0x44001724
+.orga 0xCA5D7C
+.word   0x00000000
+
+; Adult blue warps
+; Replaces:
+;   .word   0x44001D30
+.orga 0xCA5E08
+.word   0x00000000
+
+
+; Overwrite warp conditions for Shadow and Spirit medallions
+
+; Replaces:
+;   lui     t3, 0x8010
+;   lw      t3, -0x7404(t3)
+;   lw      t4, 0x00A4(v1)
+;   or      a0, s0, $zero
+;   addiu   a1, $zero, 0x0069
+;   and     t5, t3, t4
+.orga 0xCA3EA0 ; In Memory: 0x809066E0
+    nop
+    jal     DoorWarp1_IsSpiritRewardObtained
+    nop
+    or      t5, v0, $zero
+    or      a0, s0, $zero
+    addiu   a1, $zero, 0x0069
+
+; Replaces:
+;   lui     t2, 0x8010
+;   lw      t2, -0x7400(t2)
+;   lw      t3, 0x00A4(v1)
+;   or      a0, s0, $zero
+;   addiu   a1, $zero, 0x006A
+;   and     t4, t2, t3
+.orga 0xCA3F30 ; In Memory: 0x80906770
+    nop
+    jal     DoorWarp1_IsShadowRewardObtained
+    nop
+    or      t4, v0, $zero
+    or      a0, s0, $zero
+    addiu   a1, $zero, 0x006A
+
+
+; Overwrite Item_Give to set data and flags from skipped cutscenes
+
+
+; Kokiri Emerald
+
+; Replaces:
+;   jal     Item_Give
+.orga 0xCA3158 ; In Memory: 0x80905998
+    jal     DoorWarp1_KokiriEmerald_Overwrite
+.orga 0xCA3168
+    addiu   t5, $zero, 0x0457 ; nextEntranceIndex
+.orga 0xCA3174
+    ori     t6, $zero, 0 ; nextCutsceneIndex
+
+
+; Goron Ruby
+
+; Replaces:
+;   jal     Item_Give
+.orga 0xCA30D8 ; In Memory: 0x80905918
+    jal     DoorWarp1_GoronRuby_Overwrite
+.orga 0xCA30E8
+    addiu   t2, $zero, 0x047A ; nextEntranceIndex
+.orga 0xCA30F4
+    ori     t3, $zero, 0 ; nextCutsceneIndex
+
+
+; Zora Sapphire
+
+; Replaces:
+;   jal     Item_Give
+.orga 0xCA36F0 ; In Memory: 0x80905F30
+    jal     DoorWarp1_ZoraSapphire_Overwrite
+.orga 0xCA3710
+    ori     t5, $zero, 0 ; nextCutsceneIndex
+
+
+; Forest medallion
+
+; Replaces:
+;   jal     Item_Give
+.orga 0xCA3D18 ; In Memory: 0x80906558
+    jal     DoorWarp1_ForestMedallion_Overwrite
+; Set destination
+.orga 0xCA3D30
+    addiu   t3, $zero, 0x05E8 ; nextEntranceIndex
+
+
+; Fire medallion
+
+; Replaces:
+;   jal     Item_Give
+.orga 0xCA3DA4 ; In Memory: 0x809065E4
+    jal     DoorWarp1_FireMedallion_Overwrite
+; Set destination
+.orga 0xCA3DBC
+    addiu   t9, $zero, 0x0564 ; nextEntranceIndex
+.orga 0xCA3DC8
+    ori     t1, $zero, 0
+
+
+; Water medallion
+
+; Replaces:
+;   jal     Item_Give
+.orga 0xCA3E30 ; In Memory: 0x80906670
+    jal     DoorWarp1_WaterMedallion_Overwrite
+; Set destination
+.orga 0xCA3E48
+    addiu   t7, $zero, 0x04E6 ; nextEntranceIndex
+
+
+; Spirit medallion
+
+; Replaces:
+;   jal     Item_Give
+.orga 0xCA3EC0 ; In Memory: 0x80906700
+    jal     DoorWarp1_SpiritMedallion_Overwrite
+; Set destination
+.orga 0xCA3ED8
+    addiu   t6, $zero, 0x0610 ; nextEntranceIndex
+
+
+; Shadow medallion
+
+; Replaces:
+;   jal     Item_Give
+.orga 0xCA3F50 ; In Memory: 0x80906790
+    jal     DoorWarp1_ShadowMedallion_Overwrite
+; Set destination
+.orga 0xCA3F68
+    addiu   t5, $zero, 0x0580 ; nextEntranceIndex
 
 ;==================================================================================================
 ; Correct Chest Sizes
@@ -2754,7 +2821,7 @@ courtyard_guards_kill:
     jal     Static_ctxt_Init
 
 ;==================================================================================================
-; burning kak from any entrance to kak
+; burning kak from any entrance to kak (except the grottos)
 ;==================================================================================================
 ; Replaces: lw      t9, 0x0000(s0)
 ;           addiu   at, 0x01E1
@@ -3220,45 +3287,6 @@ courtyard_guards_kill:
     or      a0, s0, r0
 
 ;==================================================================================================
-; Speed Up Gate in Kakariko
-;==================================================================================================
-; gate opening x
-; Replaces: lui     at, 0x4000 ;2.0f
-.orga 0xDD366C
-    lui     at, 0x40D0 ;6.5f
-
-; gate opening z
-; Replaces: lui     a2, 0x3F4C
-;           sub.s   f8, f4, f6
-;           lui     a3, 0x3E99
-;           ori     a3, a3, 0x999A
-;           ori     a2, a2, 0xCCCD
-.orga 0xDD367C
-    lui     a2, 0x4000
-    sub.s   f8, f4, f6
-    lui     a3, 0x4000
-    nop
-    nop
-
-; gate closing x
-; Replaces: lui     at, 0x4000 ;2.0f
-.orga 0xDD3744
-    lui     at, 0x40D0 ;6.5f
-
-; gate closing z
-; Replaces: lui     a2, 0x3F4C
-;           add.s   f8, f4, f6
-;           lui     a3, 0x3E99
-;           ori     a3, a3, 0x999A
-;           ori     a2, a2, 0xCCCD
-.orga 0xDD3754
-    lui     a2, 0x4000
-    add.s   f8, f4, f6
-    lui     a3, 0x4000
-    nop
-    nop
-
-;==================================================================================================
 ; Prevent Carpenter Boss Softlock
 ;==================================================================================================
 ; Replaces: or      a1, s1, r0
@@ -3486,13 +3514,22 @@ courtyard_guards_kill:
     sw     a1, 0x64(sp)
 
 ;==================================================================================================
-; Jabu Spiritual Stone Actor Override
+; Override appearance of Zoras Sapphire spiritual stone inside Jabu
 ;==================================================================================================
-; Replaces: addiu   t8, zero, 0x0006
-;           sh      t8, 0x017C(a0)
-.orga 0xCC8594
-    jal     demo_effect_medal_init
-    addiu   t8, zero, 0x0006
+.headersize(0x8092ACC0 - 0x00CC8430)
+; Increase the size of DemoEffect actor to store override
+.org 0x8093019c
+; Replaces: .d32 0x00000190
+.d32 0x000001C0
+
+; Hook the function DemoEffect_DrawJewel
+.org 0x8092e3f8
+; Replaces:
+;   addiu   sp, sp, -0x78
+;   sw      s3, 0x40(sp)
+    j   DemoEffect_DrawJewel_Hook
+    nop
+DemoEffect_DrawJewel_AfterHook:
 
 ;==================================================================================================
 ; Use Sticks and Masks as Adult
@@ -3841,15 +3878,6 @@ courtyard_guards_kill:
     addiu   t9, $zero, 0x0221
 
 ;===================================================================================================
-; Death Mountain cloud color checks for Volvagia flag
-;===================================================================================================
-; Replaces: lhu     t3, 0x0ED8(v0)
-;           andi    t4, t3, 0x8000
-.orga 0xD7C864
-    lhu     t3, 0x0EDC(v0)
-    andi    t4, t3, 0x0200
-
-;===================================================================================================
 ; Prevent Gohma from being stunned when climbing
 ;===================================================================================================
 ; Replaces lui     a1, 0x40A0
@@ -4074,3 +4102,47 @@ courtyard_guards_kill:
 ; Replaces Item_Give(play, ITEM_OCARINA_FAIRY)
     jal      fairy_ocarina_getitem_override
     nop
+
+;===================================================================================================
+; Move the small key counter horizontally if we have boss key, to make room for the BK icon.
+;===================================================================================================
+; Replaces addiu   t7, $zero, 0x001A
+;          addiu   t8, $zero, 0x00BE
+.orga 0xAEB8AC
+    jal     move_key_icon
+    addiu   t8, $zero, 0x00BE
+
+; Replaces
+;          addiu   s2, $zero, 0x002A
+;          addiu   t8, $zero, 0x00BE
+.orga 0xAEB998
+    jal     move_key_counter
+    addiu   t8, $zero, 0x00BE
+
+;===================================================================================================
+; Adds a textbox for adult shooting gallery if game was played without a bow
+;===================================================================================================
+.orga 0xD36164
+; Replaces sw      t4, 0x01EC(a2)
+;          sw      t1, 0x0118(a2)
+    jal     shooting_gallery_no_bow
+    nop
+
+;===================================================================================================
+; Cancel Volvagia flying form hitbox when her health is already at O
+;===================================================================================================
+; Replaces addiu   a2, $zero, 0x0004
+;          andi    t6, a1, 0x0002
+.orga 0xCEA41C
+    jal     volvagia_flying_hitbox
+    nop
+
+.include "hacks/en_item00.asm"
+.include "hacks/ovl_bg_gate_shutter.asm"
+.include "hacks/ovl_bg_haka_tubo.asm"
+.include "hacks/ovl_bg_spot18_basket.asm"
+.include "hacks/ovl_en_dns.asm"
+.include "hacks/ovl_en_kz.asm"
+.include "hacks/ovl_obj_mure3.asm"
+.include "hacks/z_parameter.asm"
+.include "hacks/z_file_choose.asm"

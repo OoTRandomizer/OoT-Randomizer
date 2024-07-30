@@ -176,6 +176,7 @@ export class GeneratorComponent implements OnInit {
     }
 
     let goalErrorText = "The selected hint distribution includes the Goal hint type. This can drastically increase generation time for large multiworld seeds. Continue?";
+    let noLogicErrorText = "You have selected No Logic. This can produce unbeatable seeds. Continue?";
     let goalDistros = this.global.getGlobalVar('generatorGoalDistros');
 
     if (!goalHintsConfirmed && goalDistros.indexOf(this.global.generator_settingsMap["hint_dist"]) > -1 && this.global.generator_settingsMap["world_count"] > 5) {
@@ -193,6 +194,29 @@ export class GeneratorComponent implements OnInit {
       this.cd.detectChanges();
 
       return;
+    }
+
+    try {
+      let noLogicConfirmed = localStorage.getItem("noLogicConfirmed");
+      if ((!noLogicConfirmed || noLogicConfirmed == "false") && this.global.generator_settingsMap["logic_rules"] === "none") {
+        this.dialogService.open(ConfirmationWindowComponent, {
+          autoFocus: true, closeOnBackdropClick: false, closeOnEsc: false, hasBackdrop: true, hasScroll: false, context: { dialogHeader: "No Logic Warning", dialogMessage: noLogicErrorText }
+        }).onClose.subscribe(confirmed => {
+          //User acknowledged possible unbeatability of no logic seeds
+          if (confirmed) {
+            localStorage.setItem("noLogicConfirmed", JSON.stringify(true));
+            this.generateSeed(fromPatchFile, webRaceSeed, goalHintsConfirmed);
+          }
+        });
+
+        this.generateSeedButtonEnabled = true;
+        this.cd.markForCheck();
+        this.cd.detectChanges();
+
+        return;
+      }
+    } catch (e) {
+      //Browser doesn't allow localStorage access
     }
 
     if (this.global.getGlobalVar('electronAvailable')) { //Electron
@@ -823,16 +847,38 @@ export class GeneratorComponent implements OnInit {
 
   onDirectorySelectedWeb(event, setting: any) { //Web only
 
+    let dirPickerMode: boolean = this.global.getGlobalVar("webSupportDirectoryPicker");
+
     let fileList = event.currentTarget.files;
 
     if (!fileList || fileList.length < 1)
       return;
 
-    //Grab dropped folder name from first file path
-    let folderName = fileList[0].webkitRelativePath.substr(0, fileList[0].webkitRelativePath.indexOf("/"));
+    let displayName: string;
+
+    if (dirPickerMode) {
+      displayName = fileList[0].webkitRelativePath.substr(0, fileList[0].webkitRelativePath.indexOf("/")); //Grab dropped folder name from first file path
+    }
+    else {
+      //Create a sensible display name for any file combination
+      let nameParts = [];
+
+      nameParts.push(fileList[0].name);
+
+      if (fileList.length > 1) {
+        nameParts.push(`${fileList.length - 1} other file${fileList.length > 2 ? "s" : ""}`);
+      }
+
+      let lastNamePart = nameParts.pop();
+
+      if (nameParts.length > 0)
+        displayName = `${nameParts.join(", ")} and ${lastNamePart}`;
+      else
+        displayName = `${lastNamePart}`;
+    }
 
     //Set setting
-    this.global.generator_settingsMap[setting.name] = { name: folderName, fileList: fileList };
+    this.global.generator_settingsMap[setting.name] = { name: displayName, fileList: fileList };
     this.cd.markForCheck();
     this.afterSettingChange(true);
   }

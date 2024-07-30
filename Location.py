@@ -117,7 +117,7 @@ class Location:
     def has_preview(self) -> bool:
         if self.world is None:
             return False
-        return location_is_viewable(self.name, self.world.settings.correct_chest_appearances, self.world.settings.fast_chests)
+        return location_is_viewable(self.name, self.world.settings.correct_chest_appearances, self.world.settings.fast_chests, world=self.world)
 
     def has_item(self) -> bool:
         return self.item is not None
@@ -131,7 +131,7 @@ class Location:
     def maybe_set_misc_hints(self) -> None:
         if self.item is None or self.item.world is None or self.world is None:
             return
-        if self.item.world.dungeon_rewards_hinted and self.item.name in self.item.world.rewardlist:
+        if self.item.world.dungeon_rewards_hinted and self.item.type == 'DungeonReward':
             if self.item.name not in self.item.world.hinted_dungeon_reward_locations:
                 self.item.world.hinted_dungeon_reward_locations[self.item.name] = self
                 logging.getLogger('').debug(f'{self.item.name} [{self.item.world.id}] set to [{self.name}]')

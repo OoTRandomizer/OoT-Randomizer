@@ -26,3 +26,18 @@ EnItem00_ProximityCheck_Hook:
     lw      ra, 0x2C(sp)
     jr      ra
     addiu   sp, sp, 0x30
+
+en_item00_update:
+    addiu   sp, sp, -0x48
+    j       en_item00_update_continue
+    sw      s1, 0x20(sp)
+
+EnItem00_Draw:
+    addiu   sp, sp, -0x28
+    j       EnItem00_Draw_Continue
+    sw      ra, 0x14(sp)
+
+EnItem00_Init:
+   addiu   sp, sp, -0x40
+   j        EnItem00_Init_Continue
+   sw      s0, 0x18(sp)

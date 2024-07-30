@@ -4,7 +4,7 @@ from collections import defaultdict
 from collections.abc import Iterable, Collection
 from typing import TYPE_CHECKING, Optional, Any
 
-from HintList import goalTable, get_hint_group, hint_exclusions
+from HintList import BOSS_GOAL_TABLE, REWARD_GOAL_TABLE, get_hint_group, hint_exclusions
 from ItemList import item_table
 from RulesCommon import AccessRule
 from Search import Search, ValidGoals
@@ -118,7 +118,7 @@ class GoalCategory:
         raise KeyError('No such goal %r' % goal)
 
     def is_beaten(self, search: Search) -> bool:
-        # if the category requirements are already satisfied by starting items (such as Links Pocket),
+        # if the category requirements are already satisfied by starting items (including skipped locations),
         # do not generate hints for other goals in the category
         starting_goals = search.beatable_goals_fast({ self.name: self })
         return all(map(lambda s: len(starting_goals[self.name]['stateReverse'][s.world.id]) >= self.minimum_goals, search.state_list))
@@ -148,19 +148,34 @@ class GoalCategory:
 
 def replace_goal_names(worlds: list[World]) -> None:
     for world in worlds:
-        bosses = [location for location in world.get_filled_locations() if location.item.type == 'DungeonReward']
-        for cat_name, category in world.goal_categories.items():
-            for goal in category.goals:
-                if isinstance(goal.hint_text, dict):
-                    for boss in bosses:
-                        if boss.item.name == goal.hint_text['replace']:
-                            flavorText, clearText, color = goalTable[boss.name]
-                            if world.settings.clearer_hints:
-                                goal.hint_text = clearText
-                            else:
-                                goal.hint_text = flavorText
-                            goal.color = color
-                            break
+        if world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward'):
+            bosses = [
+                location
+                for location in world.get_filled_locations()
+                if location.type == 'Boss'
+                or (location.name == 'ToT Reward from Rauru' and not world.settings.skip_reward_from_rauru)
+            ]
+            for category in world.goal_categories.values():
+                for goal in category.goals:
+                    if isinstance(goal.hint_text, dict):
+                        for boss in bosses:
+                            if boss.item.name == goal.hint_text['replace']:
+                                flavor_text, clear_text, color = BOSS_GOAL_TABLE[boss.name]
+                                if world.settings.clearer_hints:
+                                    goal.hint_text = clear_text
+                                else:
+                                    goal.hint_text = flavor_text
+                                goal.color = color
+                                break
+        else:
+            for category in world.goal_categories.values():
+                for goal in category.goals:
+                    if isinstance(goal.hint_text, dict):
+                        flavor_text, clear_text = REWARD_GOAL_TABLE[goal.hint_text['replace']]
+                        if world.settings.clearer_hints:
+                            goal.hint_text = clear_text
+                        else:
+                            goal.hint_text = flavor_text
 
 
 def update_goal_items(spoiler: Spoiler) -> None:

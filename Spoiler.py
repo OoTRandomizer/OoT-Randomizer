@@ -54,6 +54,13 @@ HASH_ICONS: list[str] = [
     'Big Magic',
 ]
 
+PASSWORD_NOTES: list[str] = [
+    'A',
+    'C down',
+    'C right',
+    'C left',
+    'C up',
+]
 
 class Spoiler:
     def __init__(self, worlds: list[World]) -> None:
@@ -70,11 +77,20 @@ class Spoiler:
         self.goal_categories: dict[int, dict[str, GoalCategory]] = {}
         self.hints: dict[int, dict[int, GossipText]] = {world.id: {} for world in worlds}
         self.file_hash: list[int] = []
+        self.password: list[int] = []
 
     def build_file_hash(self) -> None:
         dist_file_hash = self.settings.distribution.file_hash
         for i in range(5):
             self.file_hash.append(random.randint(0, 31) if dist_file_hash[i] is None else HASH_ICONS.index(dist_file_hash[i]))
+
+    def build_password(self, password: bool = False) -> None:
+        dist_password = self.settings.distribution.password
+        for i in range(6):
+            if password:
+                self.password.append(random.randint(1, 5) if dist_password[i] is None else PASSWORD_NOTES.index(dist_password[i]) + 1)
+            else:
+                self.password.append(0)
 
     def parse_data(self) -> None:
         for (sphere_nr, sphere) in self.playthrough.items():
@@ -309,7 +325,7 @@ class Copier:
             self.worlds[id(world)] = world.copy()
             for dungeon in world.dungeons:
                 self.dungeons[id(dungeon)] = dungeon.copy()
-                for item in chain(dungeon.boss_key, dungeon.small_keys, dungeon.dungeon_items, dungeon.silver_rupees):
+                for item in chain(dungeon.boss_key, dungeon.small_keys, dungeon.dungeon_items, dungeon.silver_rupees, dungeon.reward):
                     if id(item) in self.items:
                         continue
                     self.items[id(item)] = item.copy()
@@ -343,6 +359,7 @@ class Copier:
             dungeon.small_keys = [self.items.get(id(item), item) for item in dungeon.small_keys]
             dungeon.dungeon_items = [self.items.get(id(item), item) for item in dungeon.dungeon_items]
             dungeon.silver_rupees = [self.items.get(id(item), item) for item in dungeon.silver_rupees]
+            dungeon.reward = [self.items.get(id(item), item) for item in dungeon.reward]
 
         for region in self.regions.values():
             region.world = self.worlds.get(id(region.world), region.world)

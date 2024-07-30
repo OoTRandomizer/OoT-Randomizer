@@ -23,7 +23,21 @@ unsigned int countSetBitsRec(unsigned int num)
 
 uint8_t GANON_BOSS_KEY_CONDITION = 0;
 uint16_t GANON_BOSS_KEY_CONDITION_COUNT = 0;
-void give_ganon_boss_key() {
+void give_sage_gifts() {
+    // ToT Reward from Rauru
+
+    if (
+        z64_file.game_mode == 0 // normal gameplay
+        && z64_game.scene_index == 0x0043 // current scene: Temple of Time
+        && z64_game.room_index == 0x00 // current room: Master Sword chamber
+        && !(z64_file.event_chk_inf[4] & 0x0020) // flag not already set
+    ) {
+        push_delayed_item(0x04);
+        z64_file.event_chk_inf[4] |= 0x0020;
+    }
+
+    // Gift from Sages
+
     if (z64_file.game_mode == 0 && GANON_BOSS_KEY_CONDITION && !z64_file.dungeon_items[10].boss_key) {
         bool give_boss_key = false;
         switch (GANON_BOSS_KEY_CONDITION) {
