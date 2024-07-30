@@ -138,10 +138,6 @@
         "big_poe_count_random": false,
         "big_poe_count": 1,
         "item_pool_value": "balanced",
-        "junk_ice_traps": "normal",
-        "ice_trap_appearance": "junk_only",
-        "ocarina_songs": "off",
-        "correct_chest_appearances": "off",
         "chest_textures_specific": [
             "major",
             "bosskeys",
@@ -150,9 +146,9 @@
             "hearts"
         ],
         "soa_unlocks_chest_texture": false,
-        "minor_items_as_major_chest": [],
+        "junk_ice_traps": "normal",
         "invisible_chests": false,
-        "correct_potcrate_appearances": "textures_unchecked",
+        "ice_trap_appearance": "junk_only",
         "potcrate_textures_specific": [
             "major",
             "bosskeys",
@@ -179,6 +175,10 @@
             "50_skulltulas",
             "frogs2"
         ],
+        "ocarina_songs": "off",
+        "correct_chest_appearances": "off",
+        "minor_items_as_major_chest": [],
+        "correct_potcrate_appearances": "textures_unchecked",
         "text_shuffle": "none",
         "damage_multiplier": "normal",
         "deadly_bonks": "none",
@@ -346,10 +346,6 @@
         "big_poe_count_random": false,
         "big_poe_count": 1,
         "item_pool_value": "balanced",
-        "junk_ice_traps": "off",
-        "ice_trap_appearance": "junk_only",
-        "ocarina_songs": "off",
-        "correct_chest_appearances": "both",
         "chest_textures_specific": [
             "major",
             "bosskeys",
@@ -358,9 +354,9 @@
             "hearts"
         ],
         "soa_unlocks_chest_texture": false,
-        "minor_items_as_major_chest": [],
+        "junk_ice_traps": "off",
         "invisible_chests": false,
-        "correct_potcrate_appearances": "textures_content",
+        "ice_trap_appearance": "junk_only",
         "potcrate_textures_specific": [
             "major",
             "bosskeys",
@@ -383,6 +379,10 @@
             "50_skulltulas",
             "unique_merchants"
         ],
+        "ocarina_songs": "off",
+        "correct_chest_appearances": "both",
+        "minor_items_as_major_chest": [],
+        "correct_potcrate_appearances": "textures_content",
         "text_shuffle": "none",
         "damage_multiplier": "normal",
         "deadly_bonks": "none",
@@ -475,6 +475,13 @@
         "tokensanity": "off",
         "shuffle_scrubs": "off",
         "shuffle_child_trade": [],
+        "adult_trade_shuffle": false,
+        "adult_trade_start": [
+            "Prescription",
+            "Eyeball Frog",
+            "Eyedrops",
+            "Claim Check"
+        ],
         "shuffle_freestanding_items": "off",
         "shuffle_pots": "off",
         "shuffle_empty_pots": false,
@@ -545,8 +552,6 @@
         "big_poe_count_random": false,
         "big_poe_count": 1,
         "item_pool_value": "balanced",
-        "ocarina_songs": "off",
-        "correct_chest_appearances": "both",
         "chest_textures_specific": [
             "major",
             "bosskeys",
@@ -555,9 +560,9 @@
             "hearts"
         ],
         "soa_unlocks_chest_texture": false,
-        "minor_items_as_major_chest": [],
+        "junk_ice_traps": "off",
         "invisible_chests": false,
-        "correct_potcrate_appearances": "textures_content",
+        "ice_trap_appearance": "junk_only",
         "potcrate_textures_specific": [
             "major",
             "bosskeys",
@@ -580,6 +585,10 @@
             "40_skulltulas",
             "50_skulltulas"
         ],
+        "ocarina_songs": "off",
+        "correct_chest_appearances": "both",
+        "minor_items_as_major_chest": [],
+        "correct_potcrate_appearances": "textures_content",
         "text_shuffle": "none",
         "damage_multiplier": "normal",
         "deadly_bonks": "none",
@@ -587,16 +596,7 @@
         "no_collectible_hearts": false,
         "one_item_per_dungeon": false,
         "blue_fire_arrows": true,
-        "fix_broken_drops": false,
-        "junk_ice_traps": "off",
-        "ice_trap_appearance": "junk_only",
-        "adult_trade_shuffle": false,
-        "adult_trade_start": [
-            "Prescription",
-            "Eyeball Frog",
-            "Eyedrops",
-            "Claim Check"
-        ]
+        "fix_broken_drops": false
     },
     "DDR Weekly (2023-06-12)": {
         "aliases": [
@@ -759,10 +759,6 @@
         "big_poe_count_random": false,
         "big_poe_count": 1,
         "item_pool_value": "balanced",
-        "junk_ice_traps": "normal",
-        "ice_trap_appearance": "junk_only",
-        "ocarina_songs": "off",
-        "correct_chest_appearances": "off",
         "chest_textures_specific": [
             "major",
             "bosskeys",
@@ -771,9 +767,9 @@
             "hearts"
         ],
         "soa_unlocks_chest_texture": false,
-        "minor_items_as_major_chest": [],
+        "junk_ice_traps": "normal",
         "invisible_chests": false,
-        "correct_potcrate_appearances": "textures_unchecked",
+        "ice_trap_appearance": "junk_only",
         "potcrate_textures_specific": [
             "major",
             "bosskeys",
@@ -799,6 +795,10 @@
             "40_skulltulas",
             "50_skulltulas"
         ],
+        "ocarina_songs": "off",
+        "correct_chest_appearances": "off",
+        "minor_items_as_major_chest": [],
+        "correct_potcrate_appearances": "textures_unchecked",
         "text_shuffle": "none",
         "damage_multiplier": "normal",
         "deadly_bonks": "none",
@@ -969,10 +969,6 @@
         "big_poe_count_random": false,
         "big_poe_count": 1,
         "item_pool_value": "balanced",
-        "junk_ice_traps": "off",
-        "ice_trap_appearance": "junk_only",
-        "ocarina_songs": "off",
-        "correct_chest_appearances": "textures",
         "chest_textures_specific": [
             "major",
             "bosskeys",
@@ -981,9 +977,9 @@
             "hearts"
         ],
         "soa_unlocks_chest_texture": false,
-        "minor_items_as_major_chest": [],
+        "junk_ice_traps": "off",
         "invisible_chests": false,
-        "correct_potcrate_appearances": "textures_unchecked",
+        "ice_trap_appearance": "junk_only",
         "potcrate_textures_specific": [
             "major",
             "bosskeys",
@@ -1004,6 +1000,10 @@
             "30_skulltulas",
             "warp_songs_and_owls"
         ],
+        "ocarina_songs": "off",
+        "correct_chest_appearances": "textures",
+        "minor_items_as_major_chest": [],
+        "correct_potcrate_appearances": "textures_unchecked",
         "text_shuffle": "none",
         "damage_multiplier": "normal",
         "deadly_bonks": "none",
@@ -1172,10 +1172,6 @@
         "big_poe_count_random": false,
         "big_poe_count": 1,
         "item_pool_value": "balanced",
-        "junk_ice_traps": "off",
-        "ice_trap_appearance": "junk_only",
-        "ocarina_songs": "off",
-        "correct_chest_appearances": "textures",
         "chest_textures_specific": [
             "major",
             "bosskeys",
@@ -1184,9 +1180,9 @@
             "hearts"
         ],
         "soa_unlocks_chest_texture": false,
-        "minor_items_as_major_chest": [],
+        "junk_ice_traps": "off",
         "invisible_chests": false,
-        "correct_potcrate_appearances": "textures_content",
+        "ice_trap_appearance": "junk_only",
         "potcrate_textures_specific": [
             "major",
             "bosskeys",
@@ -1210,6 +1206,10 @@
             "unique_merchants",
             "frogs2"
         ],
+        "ocarina_songs": "off",
+        "correct_chest_appearances": "textures",
+        "minor_items_as_major_chest": [],
+        "correct_potcrate_appearances": "textures_content",
         "text_shuffle": "none",
         "damage_multiplier": "normal",
         "deadly_bonks": "none",
@@ -1559,10 +1559,6 @@
         "big_poe_count_random": false,
         "big_poe_count": 10,
         "item_pool_value": "minimal",
-        "junk_ice_traps": "onslaught",
-        "ice_trap_appearance": "anything",
-        "ocarina_songs": "all",
-        "correct_chest_appearances": "off",
         "chest_textures_specific": [
             "major",
             "bosskeys",
@@ -1571,9 +1567,9 @@
             "hearts"
         ],
         "soa_unlocks_chest_texture": false,
-        "minor_items_as_major_chest": [],
+        "junk_ice_traps": "onslaught",
         "invisible_chests": true,
-        "correct_potcrate_appearances": "off",
+        "ice_trap_appearance": "anything",
         "potcrate_textures_specific": [
             "major",
             "bosskeys",
@@ -1589,6 +1585,10 @@
         "item_hints": [],
         "hint_dist_user": {},
         "misc_hints": [],
+        "ocarina_songs": "all",
+        "correct_chest_appearances": "off",
+        "minor_items_as_major_chest": [],
+        "correct_potcrate_appearances": "off",
         "text_shuffle": "complete",
         "damage_multiplier": "ohko",
         "deadly_bonks": "ohko",
@@ -1744,10 +1744,6 @@
         "big_poe_count_random": false,
         "big_poe_count": 1,
         "item_pool_value": "balanced",
-        "junk_ice_traps": "normal",
-        "ice_trap_appearance": "junk_only",
-        "ocarina_songs": "off",
-        "correct_chest_appearances": "off",
         "chest_textures_specific": [
             "major",
             "bosskeys",
@@ -1756,9 +1752,9 @@
             "hearts"
         ],
         "soa_unlocks_chest_texture": false,
-        "minor_items_as_major_chest": [],
+        "junk_ice_traps": "normal",
         "invisible_chests": false,
-        "correct_potcrate_appearances": "textures_unchecked",
+        "ice_trap_appearance": "junk_only",
         "potcrate_textures_specific": [
             "major",
             "bosskeys",
@@ -1778,6 +1774,10 @@
             "ganondorf",
             "warp_songs_and_owls"
         ],
+        "ocarina_songs": "off",
+        "correct_chest_appearances": "off",
+        "minor_items_as_major_chest": [],
+        "correct_potcrate_appearances": "textures_unchecked",
         "text_shuffle": "none",
         "damage_multiplier": "normal",
         "deadly_bonks": "none",
@@ -1961,10 +1961,6 @@
         "big_poe_count_random": false,
         "big_poe_count": 1,
         "item_pool_value": "balanced",
-        "junk_ice_traps": "off",
-        "ice_trap_appearance": "junk_only",
-        "ocarina_songs": "off",
-        "correct_chest_appearances": "both",
         "chest_textures_specific": [
             "major",
             "bosskeys",
@@ -1973,9 +1969,9 @@
             "hearts"
         ],
         "soa_unlocks_chest_texture": false,
-        "minor_items_as_major_chest": [],
+        "junk_ice_traps": "off",
         "invisible_chests": false,
-        "correct_potcrate_appearances": "textures_content",
+        "ice_trap_appearance": "junk_only",
         "potcrate_textures_specific": [
             "major",
             "bosskeys",
@@ -1998,6 +1994,10 @@
             "40_skulltulas",
             "50_skulltulas"
         ],
+        "ocarina_songs": "off",
+        "correct_chest_appearances": "both",
+        "minor_items_as_major_chest": [],
+        "correct_potcrate_appearances": "textures_content",
         "text_shuffle": "none",
         "damage_multiplier": "normal",
         "deadly_bonks": "none",
@@ -2095,6 +2095,13 @@
         "tokensanity": "off",
         "shuffle_scrubs": "low",
         "shuffle_child_trade": [],
+        "adult_trade_shuffle": false,
+        "adult_trade_start": [
+            "Prescription",
+            "Eyeball Frog",
+            "Eyedrops",
+            "Claim Check"
+        ],
         "shuffle_freestanding_items": "off",
         "shuffle_pots": "off",
         "shuffle_empty_pots": false,
@@ -2166,8 +2173,7 @@
         "chicken_count": 3,
         "big_poe_count_random": false,
         "big_poe_count": 1,
-        "ocarina_songs": "off",
-        "correct_chest_appearances": "off",
+        "item_pool_value": "balanced",
         "chest_textures_specific": [
             "major",
             "bosskeys",
@@ -2176,9 +2182,9 @@
             "hearts"
         ],
         "soa_unlocks_chest_texture": false,
-        "minor_items_as_major_chest": [],
+        "junk_ice_traps": "off",
         "invisible_chests": false,
-        "correct_potcrate_appearances": "textures_unchecked",
+        "ice_trap_appearance": "junk_only",
         "potcrate_textures_specific": [
             "major",
             "bosskeys",
@@ -2198,6 +2204,10 @@
             "ganondorf",
             "warp_songs_and_owls"
         ],
+        "ocarina_songs": "off",
+        "correct_chest_appearances": "off",
+        "minor_items_as_major_chest": [],
+        "correct_potcrate_appearances": "textures_unchecked",
         "text_shuffle": "none",
         "damage_multiplier": "normal",
         "deadly_bonks": "none",
@@ -2205,17 +2215,7 @@
         "no_collectible_hearts": false,
         "one_item_per_dungeon": false,
         "blue_fire_arrows": true,
-        "fix_broken_drops": false,
-        "item_pool_value": "balanced",
-        "junk_ice_traps": "off",
-        "ice_trap_appearance": "junk_only",
-        "adult_trade_shuffle": false,
-        "adult_trade_start": [
-            "Prescription",
-            "Eyeball Frog",
-            "Eyedrops",
-            "Claim Check"
-        ]
+        "fix_broken_drops": false
     },
     "No Logic Weekly": {
         "aliases": [
@@ -2292,13 +2292,19 @@
         "warp_songs": false,
         "spawn_positions": [],
         "free_bombchu_drops": true,
-        "one_item_per_dungeon": false,
         "shuffle_song_items": "any",
         "shopsanity": "4",
         "shopsanity_prices": "random",
         "tokensanity": "off",
         "shuffle_scrubs": "low",
         "shuffle_child_trade": [],
+        "adult_trade_shuffle": false,
+        "adult_trade_start": [
+            "Prescription",
+            "Eyeball Frog",
+            "Eyedrops",
+            "Claim Check"
+        ],
         "shuffle_freestanding_items": "off",
         "shuffle_pots": "off",
         "shuffle_empty_pots": false,
@@ -2338,15 +2344,14 @@
         "fast_bunny_hood": false,
         "auto_equip_masks": false,
         "plant_beans": false,
+        "easier_fire_arrow_entry": false,
+        "fae_torch_count": 2,
+        "ruto_already_f1_jabu": false,
         "chicken_count_random": true,
         "chicken_count": 2,
         "big_poe_count_random": false,
         "big_poe_count": 1,
-        "easier_fire_arrow_entry": false,
-        "fae_torch_count": 2,
-        "ruto_already_f1_jabu": false,
-        "ocarina_songs": "off",
-        "correct_chest_appearances": "textures",
+        "item_pool_value": "balanced",
         "chest_textures_specific": [
             "major",
             "bosskeys",
@@ -2355,13 +2360,9 @@
             "hearts"
         ],
         "soa_unlocks_chest_texture": false,
-        "minor_items_as_major_chest": [
-            "bombchus",
-            "shields",
-            "capacity"
-        ],
+        "junk_ice_traps": "normal",
         "invisible_chests": false,
-        "correct_potcrate_appearances": "textures_unchecked",
+        "ice_trap_appearance": "junk_only",
         "potcrate_textures_specific": [
             "major",
             "bosskeys",
@@ -2390,22 +2391,21 @@
             "mask_shop",
             "unique_merchants"
         ],
+        "ocarina_songs": "off",
+        "correct_chest_appearances": "textures",
+        "minor_items_as_major_chest": [
+            "bombchus",
+            "shields",
+            "capacity"
+        ],
+        "correct_potcrate_appearances": "textures_unchecked",
         "text_shuffle": "none",
         "damage_multiplier": "normal",
         "deadly_bonks": "none",
-        "no_collectible_hearts": false,
         "starting_tod": "default",
+        "no_collectible_hearts": false,
+        "one_item_per_dungeon": false,
         "blue_fire_arrows": true,
-        "fix_broken_drops": false,
-        "item_pool_value": "balanced",
-        "junk_ice_traps": "normal",
-        "ice_trap_appearance": "junk_only",
-        "adult_trade_shuffle": false,
-        "adult_trade_start": [
-            "Prescription",
-            "Eyeball Frog",
-            "Eyedrops",
-            "Claim Check"
-        ]
+        "fix_broken_drops": false
     }
 }
