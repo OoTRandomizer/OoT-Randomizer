@@ -3442,7 +3442,6 @@ class SettingInfos:
             Drops is on.
         ''',
         shared         = True,
-        default        = [],
         gui_params     = {
             "hide_when_disabled": True,
         },
