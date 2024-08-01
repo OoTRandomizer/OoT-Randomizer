@@ -543,7 +543,7 @@
         "free_scarecrow": false,
         "fast_bunny_hood": true,
         "auto_equip_masks": false,
-        "plant_beans": true,
+        "plant_beans": false,
         "easier_fire_arrow_entry": false,
         "fae_torch_count": 3,
         "ruto_already_f1_jabu": true,
