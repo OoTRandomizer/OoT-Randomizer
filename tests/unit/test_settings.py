@@ -1,6 +1,6 @@
-import logging
 import unittest
 from pathlib import Path
+from typing import Any
 
 import Settings
 from Utils import local_path
@@ -67,38 +67,6 @@ class TestSettings(unittest.TestCase):
         world_count_settings = Settings.Settings({"world_count": 256})
         self.assertEqual(world_count_settings.world_count, 255)
 
-    def test_copy(self):
-        distribution_file = local_path(
-            Path("tests", "plando", "plando-beehives.json").__str__()
-        )
-        test_settings = Settings.Settings({})
-        test_settings.enable_distribution_file = True
-        test_settings.distribution_file = distribution_file
-        test_settings.load_distribution()
-
-        result_settings = test_settings.copy()
-
-        for setting in test_settings.settings_dict:
-            self.assertTrue(
-                setting in result_settings.settings_dict,
-                f"Setting {setting} was removed.",
-            )
-            self.assertEqual(
-                test_settings.settings_dict[setting],
-                result_settings.settings_dict[setting],
-                f"{setting} was not copied. Was {test_settings.settings_dict[setting]} "
-                + f"is now {result_settings.settings_dict[setting]}",
-            )
-            self.assertEqual(
-                test_settings.__getattribute__(setting),
-                result_settings.__getattribute__(setting),
-            )
-
-    # Settings.update() is already tested as part of init
-    # Settings.get_settings_display() unsure if worth testing. Would probably be done via regex
-    # Settings.get_settings_string() and Settings.update_with_settings_string()
-    #   may be outside of my knowledge for testing
-
     def test_get_numeric_seed_is_consistent(self):
         test_settings = Settings.Settings({"seed": "unittest"})
         duplicate_seed = Settings.Settings({})
@@ -110,6 +78,58 @@ class TestSettings(unittest.TestCase):
             f"Using the same seed value resulted in different numeric seeds.",
         )
 
+    def test_copy(self):
+        distribution_file = local_path(
+            Path("tests", "plando", "plando-beehives.json").__str__()
+        )
+        test_settings = Settings.Settings({})
+        test_settings.enable_distribution_file = True
+        test_settings.distribution_file = distribution_file
+        test_settings.load_distribution()
+
+        result_settings = test_settings.copy()
+
+        self.assert_settings_objects_are_equal(
+            result_settings, test_settings, False, {}
+        )
+
+    def test_update_with_default_settings_string(self):
+        default_settings_string = "BSAWDNCAX2TB2XCHGA3UL62ANEBBABADFAAAAAAEAASAAAAAJAAAAAAAAAAAE2FKA6A86AAJNJACAAF2D"
+        default_settings = Settings.Settings({})
+        test_settings = Settings.Settings({})
+
+        test_settings.update_with_settings_string(default_settings_string)
+
+        self.assert_settings_objects_are_equal(
+            default_settings, test_settings, True, {}
+        )
+
+    def test_update_with_modified_settings_string(self):
+        modified_settings_string = "BSAWDNCAX2TB2XCHGA3UL62ANEBBABADFAAAAAAEAASAAAAAJASFAAAAAAAAAASAZEBSD2VDAATBBJAAWAR"
+        default_settings = Settings.Settings({})
+        test_settings = Settings.Settings({})
+
+        test_settings.update_with_settings_string(modified_settings_string)
+
+        self.assert_settings_objects_are_equal(
+            default_settings,
+            test_settings,
+            True,
+            {"disabled_locations": ["KF Midos Top Left Chest"]},
+        )
+
+    def test_get_setting_string_hell_mode(self):
+        # Not sure that this test even does anything useful.
+        hell_mode_setting_string = "BSANNNNAX2TBJYCHGA35L62AWPZFAGA2EAAKSBAEQ79N29ZE99BAA9HAAAAAA2FK26S6APAAJYDSW9"
+        default_settings = Settings.Settings({})
+        test_settings = Settings.Settings({})
+        test_settings.update_with_settings_string(hell_mode_setting_string)
+
+        result = test_settings.get_settings_string()
+
+        self.assertNotEqual(default_settings.settings_string, result)
+        self.assertEqual(test_settings.settings_string, result)
+
     def test_sanitize_seed(self):
         test_settings = Settings.Settings({})
         test_settings.seed = "unit!test"
@@ -117,8 +137,6 @@ class TestSettings(unittest.TestCase):
         test_settings.sanitize_seed()
 
         self.assertEqual(test_settings.seed, "unittest")
-
-    # Settings.update_seed implicitly tested in test_get_numeric_seed_consistent
 
     def test_load_distribution(self):
         test_settings = Settings.Settings({})
@@ -133,6 +151,8 @@ class TestSettings(unittest.TestCase):
             test_settings.numeric_seed,
             "Seed was updated even though no distribution file was loaded",
         )
+
+    # Settings.update_seed implicitly tested in test_get_numeric_seed_consistent
 
     def test_load_distribution_file(self):
         distribution_file = local_path(
@@ -219,15 +239,100 @@ class TestSettings(unittest.TestCase):
             .item,
         )
 
-    # get_settings_display
-    # get_settings_string
-    # update_with_settings_string
-    # check_dependency
-    # get_dependency
-    # remove_disabled
+        test_settings.disabled_locations.clear()  # BUG: Using mutable data that is evaluated once at definition time and used over and over.
+
+    def test_check_dependency_randomized_setting(self):
+        test_settings = Settings.Settings({"randomize_settings": True})
+
+        result = test_settings.check_dependency('bridge', True)  # check_random is always True when used
+
+        self.assertFalse(result)
+
+    def test_check_dependency_non_randomized_setting(self):
+        test_settings = Settings.Settings({"randomize_settings": True})
+
+        result = test_settings.check_dependency('logic_rules', True)  # check_random is always True when used
+
+        self.assertTrue(result)
+
+    def test_check_dependency_randomizable_setting_not_randomized(self):
+        test_settings = Settings.Settings({})
+
+        result = test_settings.check_dependency('bridge', True)
+
+        self.assertTrue(result)
+
+    def test_get_dependency_randomized_setting(self):
+        test_settings = Settings.Settings({"randomize_settings": True})
+
+        result = test_settings.get_dependency("bridge", True)
+
+        self.assertEqual(result, test_settings.settings_dict['bridge'])
+
+    def test_get_dependency_setting_not_randomized(self):
+        test_settings = Settings.Settings({"randomize_settings": True})
+
+        result = test_settings.get_dependency("logic_rules", True)
+
+        self.assertIsNone(result)
+
+    def test_get_dependency_randomizable_setting_not_randomized(self):
+        test_settings = Settings.Settings({})
+
+        result = test_settings.get_dependency("logic_rules", True)
+
+        self.assertIsNone(result)
+
+    def test_get_dependency_no_dependency(self):
+        test_settings = Settings.Settings({})
+
+        result = test_settings.get_dependency("seed", True)
+
+        self.assertIsNone(result)
+
+    def test_remove_disabled(self):
+        # Should probably be private
+        test_settings = Settings.Settings({"starting_age": "adult"})
+
+        test_settings.remove_disabled()
+
+        self.assertEqual(test_settings.settings_dict['starting_age'], "child")
+
     # resolve_random_settings
-    # to_json
-    # to_json_cosmetics
+    # Should probably be private
+
+    def assert_settings_objects_are_equal(
+        self,
+        original_settings: Settings,
+        modified_settings: Settings,
+        skip_seed: bool,
+        except_for: dict[str, Any],
+    ):
+        for setting in modified_settings.settings_dict:
+            self.assertTrue(
+                setting in original_settings.settings_dict,
+                f"Setting {setting} was removed.",
+            )
+
+            if setting == "seed" and skip_seed:
+                continue
+            elif setting in except_for:
+                self.assertEqual(
+                    modified_settings.settings_dict[setting], except_for[setting]
+                )
+                continue
+
+            self.assertEqual(
+                modified_settings.settings_dict[setting],
+                original_settings.settings_dict[setting],
+                f"{setting} was not copied. Was"
+                f" {modified_settings.settings_dict[setting]} "
+                + f"is now {original_settings.settings_dict[setting]}",
+            )
+            self.assertEqual(
+                modified_settings.__getattribute__(setting),
+                original_settings.__getattribute__(setting),
+            )
 
 
 if __name__ == "__main__":
