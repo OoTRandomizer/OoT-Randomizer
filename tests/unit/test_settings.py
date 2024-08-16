@@ -244,21 +244,25 @@ class TestSettings(unittest.TestCase):
     def test_check_dependency_randomized_setting(self):
         test_settings = Settings.Settings({"randomize_settings": True})
 
-        result = test_settings.check_dependency('bridge', True)  # check_random is always True when used
+        result = test_settings.check_dependency(
+            "bridge", True
+        )  # check_random is always True when used
 
         self.assertFalse(result)
 
     def test_check_dependency_non_randomized_setting(self):
         test_settings = Settings.Settings({"randomize_settings": True})
 
-        result = test_settings.check_dependency('logic_rules', True)  # check_random is always True when used
+        result = test_settings.check_dependency(
+            "logic_rules", True
+        )  # check_random is always True when used
 
         self.assertTrue(result)
 
     def test_check_dependency_randomizable_setting_not_randomized(self):
         test_settings = Settings.Settings({})
 
-        result = test_settings.check_dependency('bridge', True)
+        result = test_settings.check_dependency("bridge", True)
 
         self.assertTrue(result)
 
@@ -267,7 +271,7 @@ class TestSettings(unittest.TestCase):
 
         result = test_settings.get_dependency("bridge", True)
 
-        self.assertEqual(result, test_settings.settings_dict['bridge'])
+        self.assertEqual(result, test_settings.settings_dict["bridge"])
 
     def test_get_dependency_setting_not_randomized(self):
         test_settings = Settings.Settings({"randomize_settings": True})
@@ -296,7 +300,7 @@ class TestSettings(unittest.TestCase):
 
         test_settings.remove_disabled()
 
-        self.assertEqual(test_settings.settings_dict['starting_age'], "child")
+        self.assertEqual(test_settings.settings_dict["starting_age"], "child")
 
     # resolve_random_settings
     # Should probably be private
