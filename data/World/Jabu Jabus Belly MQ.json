@@ -95,7 +95,9 @@
             "Jabu Jabus Belly MQ Falling Like-Like Room Right Cow Wonderitem 3": "True",
             "Jabu Jabus Belly MQ Falling Like-Like Room Left Cow Wonderitem 1": "True",
             "Jabu Jabus Belly MQ Falling Like-Like Room Left Cow Wonderitem 2": "True",
-            "Jabu Jabus Belly MQ Falling Like-Like Room Left Cow Wonderitem 3": "True"
+            "Jabu Jabus Belly MQ Falling Like-Like Room Left Cow Wonderitem 3": "True",
+            "Jabu Jabus Belly MQ Hallway Small Crate 1": "True",
+            "Jabu Jabus Belly MQ Hallway Small Crate 2": "True"
         },
         "exits": {
             "Jabu Jabus Belly Past Big Octo": "Sticks or (can_use(Dins_Fire) and Kokiri_Sword)"
@@ -110,7 +112,9 @@
         "locations": {
             "Jabu Jabus Belly MQ Cow": "can_play(Eponas_Song)",
             "Jabu Jabus Belly MQ After Big Octo Cow Wonderitem": "True",
-            "Jabu Jabus Belly MQ Wiggler Platforms Cow Wonderitem": "True"
+            "Jabu Jabus Belly MQ Wiggler Platforms Cow Wonderitem": "True",
+            "Jabu Jabus Belly MQ Small Crate Near Cow 1": "True",
+            "Jabu Jabus Belly MQ Small Crate Near Cow 2": "True"
         }
     },
     {
@@ -135,6 +139,7 @@
             "Jabu Jabus Belly MQ Before Boss Right Cow Wonderitem 1": "can_use(Slingshot)",
             "Jabu Jabus Belly MQ Before Boss Right Cow Wonderitem 2": "can_use(Slingshot)",
             "Jabu Jabus Belly MQ Before Boss Left Cow Wonderitem": "can_use(Slingshot)",
+            "Jabu Jabus Belly MQ Near Boss Pot": "True",
             "Fairy Pot": "has_bottle"
         },
         "exits": {

@@ -19,5 +19,6 @@ typedef void (*read_file_fn)(void* mem_addr, uint32_t vrom_addr,
 #define read_file ((read_file_fn)0x80000DF0)
 
 void file_init(file_t* file);
+void* resolve_overlay_addr(void* addr, uint16_t overlay_id);
 
 #endif

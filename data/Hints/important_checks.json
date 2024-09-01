@@ -29,7 +29,5 @@
         "dungeon":         {"order": 0, "weight": 0.0, "fixed":   0, "copies": 0},
         "junk":            {"order": 0, "weight": 0.0, "fixed":   0, "copies": 0},
         "woth":            {"order": 0, "weight": 0.0, "fixed":   0, "copies": 0}
-    },
-    "groups": [],
-    "disabled": []
+    }
 }

@@ -1,11 +1,30 @@
 #include "gfx.h"
 
+#include "debug.h"
 #include "util.h"
 #include "z64.h"
 
 extern uint8_t FONT_RESOURCE[];
 extern uint8_t DPAD_RESOURCE[];
 extern uint8_t TRIFORCE_SPRITE_RESOURCE[];
+
+#define RANDO_OVERLAY_DB_SIZE 0xA00 // Size of overlay display buffer, in GFX commands which are 8 bytes
+
+z64_disp_buf_t rando_overlay_db __attribute__ ((aligned (16)));
+#if DEBUG_MODE
+z64_disp_buf_t debug_db __attribute__ ((aligned (16)));
+#define DEBUG_DB_SIZE 0x400
+#endif
+
+typedef struct {
+    Gfx rando_overlay[RANDO_OVERLAY_DB_SIZE];
+    #if DEBUG_MODE
+    Gfx debug[DEBUG_DB_SIZE];
+    #endif
+} RandoGFXPool;
+
+RandoGFXPool randoGfxPools[2]; // Rando GFX Pools. Need 2 because Display Lists need to be double buffered
+uint8_t randoGfxPoolIndex; // Index which is incremented every frame to determine which gfx pool to use
 
 Gfx setup_db[] = {
     gsDPPipeSync(),
@@ -164,7 +183,7 @@ void sprite_texture(z64_disp_buf_t* db, sprite_t* sprite, int tile_index, int16_
         G_TX_NOLOD
     );
 
-    gSPTextureRectangle(db->p++, left * 4, top * 4, (left + width) * 4, (top * height) * 4, G_TX_RENDERTILE, 0,0,width_factor, height_factor);
+    gSPTextureRectangle(db->p++, left * 4, top * 4, (left + width) * 4, (top + height) * 4, G_TX_RENDERTILE, 0,0,width_factor, height_factor);
 }
 
 void sprite_texture_4b(z64_disp_buf_t *db, sprite_t *sprite, int tile_index, int16_t left, int16_t top,
@@ -198,7 +217,7 @@ void sprite_texture_4b(z64_disp_buf_t *db, sprite_t *sprite, int tile_index, int
     );
 
     gSPTextureRectangle(db->p++, left * 4, top * 4, (left + width) * 4,
-        (top * height) * 4, G_TX_RENDERTILE, 0, 0, width_factor, height_factor);
+        (top + height) * 4, G_TX_RENDERTILE, 0, 0, width_factor, height_factor);
 }
 
 void sprite_draw(z64_disp_buf_t* db, sprite_t* sprite, int tile_index,
@@ -214,7 +233,53 @@ void sprite_draw(z64_disp_buf_t* db, sprite_t* sprite, int tile_index,
             width_factor, height_factor);
 }
 
+void rando_display_buffer_init() {
+    randoGfxPoolIndex = 0;
+}
+
+void rando_display_buffer_reset() {
+    RandoGFXPool* pool = &randoGfxPools[randoGfxPoolIndex & 1];
+#if DEBUG_MODE
+    debug_db.size = sizeof(pool->debug);
+    debug_db.buf = &pool->debug[0];
+    debug_db.p = &debug_db.buf[0];
+#endif
+    rando_overlay_db.size = sizeof(pool->rando_overlay);
+    rando_overlay_db.buf = &pool->rando_overlay[0];
+    rando_overlay_db.p = &rando_overlay_db.buf[0];
+}
+
+void close_rando_display_buffer() {
+    char error_msg[256];
+
+    OPEN_DISPS(z64_ctxt.gfx);
+
+#if DEBUG_MODE
+    if (((int) debug_db.p - (int) debug_db.buf) > debug_db.size) {
+        sprintf(error_msg, "size = %x\nmax = %x\np = %p\nbuf = %p\nd = %p", ((int) debug_db.p - (int) debug_db.buf),
+                debug_db.size, debug_db.p, debug_db.buf, debug_db.d);
+        Fault_AddHungupAndCrashImpl("Debug display buffer exceeded!", error_msg);
+    }
+
+    gSPEndDisplayList(debug_db.p++);
+    gSPDisplayList(OVERLAY_DISP++, debug_db.buf);
+#endif
+
+    if (((int) rando_overlay_db.p - (int) rando_overlay_db.buf) > rando_overlay_db.size) {
+        sprintf(error_msg, "size = %x\nmax = %x\np = %p\nbuf = %p\nd = %p", ((int) rando_overlay_db.p - (int) rando_overlay_db.buf),
+                rando_overlay_db.size, rando_overlay_db.p, rando_overlay_db.buf, rando_overlay_db.d);
+        Fault_AddHungupAndCrashImpl("Randomizer display buffer exceeded!", error_msg);
+    }
+
+    gSPEndDisplayList(rando_overlay_db.p++);
+    gSPDisplayList(OVERLAY_DISP++, rando_overlay_db.buf);
+
+    CLOSE_DISPS();
+    randoGfxPoolIndex++;
+}
+
 void gfx_init() {
+    rando_display_buffer_init();
     file_t title_static = {
         NULL, z64_file_select_static_vaddr, z64_file_select_static_vsize
     };

@@ -125,10 +125,10 @@ class VersionError(Exception):
 
 def check_version(checked_version: str) -> None:
     if not hasattr(check_version, "base_regex"):
-        check_version.base_regex = re.compile("""^[ \t]*__version__ = ['"](.+)['"]""", re.MULTILINE)
-        check_version.supplementary_regex = re.compile(r"^[ \t]*supplementary_version = (\d+)$", re.MULTILINE)
-        check_version.full_regex = re.compile("""^[ \t]*__version__ = f['"]*(.+)['"]""", re.MULTILINE)
-        check_version.url_regex = re.compile("""^[ \t]*branch_url = ['"](.+)['"]""", re.MULTILINE)
+        check_version.base_regex = re.compile("""^[ \t]*__version__ = ['"](.+)['"]""", flags=re.MULTILINE)
+        check_version.supplementary_regex = re.compile(r"^[ \t]*supplementary_version = (\d+)$", flags=re.MULTILINE)
+        check_version.full_regex = re.compile("""^[ \t]*__version__ = f['"]*(.+)['"]""", flags=re.MULTILINE)
+        check_version.url_regex = re.compile("""^[ \t]*branch_url = ['"](.+)['"]""", flags=re.MULTILINE)
 
     if compare_version(checked_version, __version__) < 0:
         try:

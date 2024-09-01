@@ -29,7 +29,8 @@
             "Forest Temple MQ Center Room Left Pot 1": "True",
             "Forest Temple MQ Center Room Left Pot 2": "True",
             "Forest Temple MQ Center Room Left Pot 3": "True",
-            "Forest Temple MQ Wolfos Room Pot": "(can_play(Song_of_Time) or is_child)",
+            "Forest Temple MQ Wolfos Room Pot 1": "(can_play(Song_of_Time) or is_child)",
+            "Forest Temple MQ Wolfos Room Pot 2": "(can_play(Song_of_Time) or is_child)",
             "Fairy Pot": "has_bottle and (can_play(Song_of_Time) or is_child)"
         },
         "exits": {

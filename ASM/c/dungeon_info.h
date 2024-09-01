@@ -34,7 +34,7 @@ extern uint8_t CFG_DPAD_DUNGEON_INFO_ENABLE;
 static int show_dungeon_info = 0;
 
 #define CAN_DRAW_DUNGEON_INFO (CFG_DUNGEON_INFO_ENABLE != 0 && \
-        z64_game.pause_ctxt.state == 6 && \
+        z64_game.pause_ctxt.state == PAUSE_STATE_MAIN && \
         z64_game.pause_ctxt.screen_idx == 0 && \
         (!z64_game.pause_ctxt.changing || \
         z64_game.pause_ctxt.changing == 3))

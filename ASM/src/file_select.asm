@@ -133,3 +133,18 @@ move_file_3:
     sh      t1, 0x00(t0)
     jr      ra
     lh      t3, 0x4A2E(a2)
+
+display_controls_texture:
+    ; Vanilla value, will display the controls texture
+    slti    $at, v0, 0x0024
+    ; Check if a password has been asked
+    la      t0, PASSWORD
+    lbu     t0, 0x00(t0)
+    beqz    t0, @@return
+    nop
+    ; In that case, remove the texture.
+    slti    $at, v0, 0x0000
+
+@@return:
+    jr      ra
+    nop

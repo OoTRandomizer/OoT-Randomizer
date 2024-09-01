@@ -21,7 +21,7 @@ from Location import Location, LocationIterator, LocationFactory
 from LocationList import location_groups, location_table
 from Search import Search
 from SettingsList import build_close_match, validate_settings
-from Spoiler import Spoiler, HASH_ICONS
+from Spoiler import Spoiler, HASH_ICONS, PASSWORD_NOTES
 from version import __version__
 
 if TYPE_CHECKING:
@@ -278,7 +278,8 @@ class WorldDistribution:
         self.id: int = id
         self.base_pool: list[str] = []
         self.major_group: list[str] = []
-        self.song_as_items: bool = False
+        self.rewards_as_items: bool = False
+        self.songs_as_items: bool = False
         self.skipped_locations: list[Location] = []
         self.effective_starting_items: dict[str, StarterRecord] = {}
 
@@ -607,8 +608,10 @@ class WorldDistribution:
                     self.pool_remove_item([pool], item_name, record.count)
                 except KeyError:
                     pass
+                if item_name in item_groups["DungeonReward"]:
+                    self.rewards_as_items = True
                 if item_name in item_groups["Song"]:
-                    self.song_as_items = True
+                    self.songs_as_items = True
 
         junk_to_add = pool_size - len(pool)
         if junk_to_add > 0:
@@ -886,9 +889,6 @@ class WorldDistribution:
 
             player_id = self.id if record.player is None else record.player - 1
 
-            if record.item in item_groups['DungeonReward']:
-                raise RuntimeError('Cannot place dungeon reward %s in world %d in location %s.' % (record.item, self.id + 1, location_name))
-
             if record.item == '#Junk' and location.type == 'Song' and world.settings.shuffle_song_items == 'song' and not any(name in song_list and r.count for name, r in world.settings.starting_items.items()):
                 record.item = '#JunkSong'
 
@@ -910,8 +910,10 @@ class WorldDistribution:
 
             item = self.get_item(ignore_pools, item_pools, location, player_id, record, worlds)
 
+            if location.type == 'Boss' and location.name != 'ToT Reward from Rauru' and item.type != 'DungeonReward':
+                self.rewards_as_items = True
             if location.type == 'Song' and item.type != 'Song':
-                self.song_as_items = True
+                self.songs_as_items = True
             location.world.push_item(location, item, True)
 
             if item.advancement:
@@ -1076,32 +1078,34 @@ class WorldDistribution:
             add_starting_item_with_ammo(items, 'Deku Sticks', 99)
             add_starting_item_with_ammo(items, 'Deku Nuts', 99)
 
-        skipped_locations = ['Links Pocket']
-        if world.skip_child_zelda:
-            skipped_locations += ['HC Zeldas Letter', 'Song from Impa']
-        if world.settings.gerudo_fortress == 'open' and not world.settings.shuffle_gerudo_card:
-            skipped_locations.append('Hideout Gerudo Membership Card')
-        if world.settings.empty_dungeons_mode != 'none':
-            skipped_locations_from_dungeons = []
-            if True: #TODO dungeon rewards not shuffled
-                skipped_locations_from_dungeons += location_groups['Boss']
-            if world.settings.shuffle_song_items == 'song':
-                skipped_locations_from_dungeons += location_groups['Song']
-            elif world.settings.shuffle_song_items == 'dungeon':
-                skipped_locations_from_dungeons += location_groups['BossHeart']
-            for location_name in skipped_locations_from_dungeons:
-                location = world.get_location(location_name)
-                hint_area = HintArea.at(location)
-                if hint_area.is_dungeon and world.empty_dungeons[hint_area.dungeon_name].empty:
-                    skipped_locations.append(location.name)
-                    world.item_added_hint_types['barren'].append(location.item.name)
         for iter_world in worlds:
+            skipped_locations: list[Location] = []
+            if iter_world.settings.skip_reward_from_rauru:
+                skipped_locations.append(iter_world.get_location('ToT Reward from Rauru'))
+            if iter_world.skip_child_zelda:
+                skipped_locations += [iter_world.get_location('HC Zeldas Letter'), iter_world.get_location('Song from Impa')]
+            if iter_world.settings.gerudo_fortress == 'open' and not iter_world.settings.shuffle_gerudo_card:
+                skipped_locations.append(iter_world.get_location('Hideout Gerudo Membership Card'))
+            if iter_world.settings.empty_dungeons_mode != 'none':
+                skipped_locations_from_dungeons: list[Location] = []
+                if iter_world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward'):
+                    skipped_locations_from_dungeons += [world.get_location(loc_name) for loc_name in location_groups['Boss'] if loc_name != 'ToT Reward from Rauru']
+                elif world.settings.shuffle_dungeon_rewards == 'dungeon':
+                    skipped_locations_from_dungeons += [location for location in iter_world.get_filled_locations() if location.item.type == 'DungeonReward']
+                if world.settings.shuffle_song_items == 'song':
+                    skipped_locations_from_dungeons += [world.get_location(loc_name) for loc_name in location_groups['Song']]
+                elif world.settings.shuffle_song_items == 'dungeon':
+                    skipped_locations_from_dungeons += [world.get_location(loc_name) for loc_name in location_groups['BossHeart']]
+                for location in skipped_locations_from_dungeons:
+                    hint_area = HintArea.at(location)
+                    if hint_area.is_dungeon and iter_world.empty_dungeons[hint_area.dungeon_name].empty:
+                        skipped_locations.append(location)
+                        world.item_added_hint_types['barren'].append(location.item.name)
             for location in skipped_locations:
-                loc = iter_world.get_location(location)
                 if iter_world.id == world.id:
-                    self.skipped_locations.append(loc)
-                if loc.item is not None and world.id == loc.item.world.id:
-                    add_starting_item_with_ammo(items, loc.item.name)
+                    self.skipped_locations.append(location)
+                if location.item is not None and world.id == location.item.world.id:
+                    add_starting_item_with_ammo(items, location.item.name)
 
         effective_adult_trade_item_index = -1
         effective_child_trade_item_index = -1
@@ -1138,6 +1142,7 @@ class WorldDistribution:
 class Distribution:
     def __init__(self, settings: Settings, src_dict: Optional[dict[str, Any]] = None) -> None:
         self.file_hash: Optional[list[str]] = None
+        self.password: Optional[list[str]] = None
         self.playthrough: Optional[dict[str, dict[str, LocationRecord]]] = None
         self.entrance_playthrough: Optional[dict[str, dict[str, EntranceRecord]]] = None
 
@@ -1157,6 +1162,7 @@ class Distribution:
         # One-time init
         update_dict = {
             'file_hash': (self.src_dict.get('file_hash', []) + [None, None, None, None, None])[0:5],
+            'password': (self.src_dict.get('password', []) + [None, None, None, None, None, None])[0:6],
             'playthrough': None,
             'entrance_playthrough': None,
             '_settings': self.src_dict.get('settings', {}),
@@ -1293,11 +1299,15 @@ class Distribution:
         self_dict = {
             ':version': __version__,
             'file_hash': CollapseList(self.file_hash),
+            'password': CollapseList(self.password),
             ':seed': self.settings.seed,
             ':settings_string': self.settings.settings_string,
             ':enable_distribution_file': self.settings.enable_distribution_file,
             'settings': self.settings.to_json(),
         }
+
+        if not self.settings.password_lock:
+            self_dict.pop('password')
 
         if spoiler:
             world_dist_dicts = [world_dist.to_json() for world_dist in self.world_dists]
@@ -1338,6 +1348,7 @@ class Distribution:
 
     def update_spoiler(self, spoiler: Spoiler, output_spoiler: bool) -> None:
         self.file_hash = [HASH_ICONS[icon] for icon in spoiler.file_hash]
+        self.password = [PASSWORD_NOTES[note - 1] for note in spoiler.password]
 
         if not output_spoiler:
             return

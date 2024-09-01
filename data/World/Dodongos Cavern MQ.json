@@ -233,7 +233,8 @@
         "region_name": "Dodongos Cavern Before Boss",
         "dungeon": "Dodongos Cavern",
         "locations": {
-            "Dodongos Cavern MQ Armos Army Room Upper Pot": "True",
+            "Dodongos Cavern MQ Armos Army Room Upper Pot 1": "True",
+            "Dodongos Cavern MQ Armos Army Room Upper Pot 2": "True",
             "Fairy Pot": "has_bottle"
         },
         "exits": {

@@ -3,12 +3,12 @@
         "region_name": "Root",
         "hint": "ROOT",
         "locations": {
-            "Links Pocket": "True",
             "Gift from Sages": "can_receive_ganon_bosskey"
         },
         "exits": {
             "Root Exits": "is_starting_age or Time_Travel",
-            "HC Garden Locations": "skip_child_zelda"
+            "HC Garden Skippable Locations": "skip_child_zelda",
+            "Beyond Door of Time Skippable Locations": "skip_reward_from_rauru"
         }
     },
     {
@@ -171,7 +171,7 @@
         "region_name": "Sacred Forest Meadow",
         "hint": "SACRED_FOREST_MEADOW",
         "locations": {
-            "Song from Saria": "is_child and at('HC Garden Locations', is_child)",
+            "Song from Saria": "is_child and at('HC Garden Skippable Locations', is_child)",
             "Sheik in Forest": "is_adult",
             "SFM GS": "(can_use(Hookshot) or can_hover) and at_night and is_adult",
             "SFM Maze Gossip Stone (Lower)": "True",
@@ -447,7 +447,16 @@
             "Sheik at Temple": "Forest_Medallion and is_adult"
         },
         "exits": {
-            "Temple of Time": "True"
+            "Temple of Time": "True",
+            "Beyond Door of Time Skippable Locations": "True"
+        }
+    },
+    {
+        # Directly reachable from Root in "Skip Reward from Rauru"
+        "region_name": "Beyond Door of Time Skippable Locations",
+        "hint": "TEMPLE_OF_TIME",
+        "locations": {
+            "ToT Reward from Rauru": "True"
         }
     },
     {
@@ -472,13 +481,13 @@
         "region_name": "HC Garden",
         "hint": "HYRULE_CASTLE",
         "exits": {
-            "HC Garden Locations": "True",
+            "HC Garden Skippable Locations": "True",
             "Hyrule Castle Grounds": "True"
         }
     },
     {
-        # Directly reachable from Root in "Free Zelda"
-        "region_name": "HC Garden Locations",
+        # Directly reachable from Root in Skip Child Zelda
+        "region_name": "HC Garden Skippable Locations",
         "hint": "HYRULE_CASTLE",
         "locations": {
             "HC Zeldas Letter": "True",
@@ -537,7 +546,7 @@
     {
         "region_name": "Market Mask Shop Storefront",
         "events": {
-            "Mask Shop Open": "at('HC Garden Locations', is_child) and 'Kakariko Village Gate Open'",
+            "Mask Shop Open": "at('HC Garden Skippable Locations', is_child) and 'Kakariko Village Gate Open'",
             "Mask of Truth Access": "
                 'Mask Shop Open' and
                 (complete_mask_quest or

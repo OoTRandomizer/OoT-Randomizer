@@ -38,6 +38,8 @@
         "dungeon": "Water Temple",
         "savewarp": "Lake Hylia -> Water Temple Lobby",
         "locations": {
+            "Water Temple Near Boss Pot 1": "can_use(Longshot)",
+            "Water Temple Near Boss Pot 2": "can_use(Longshot)",
             "Fairy Pot": "has_bottle"
         },
         "exits": {
@@ -165,6 +167,8 @@
         "dungeon": "Water Temple",
         "locations": {
             "Water Temple Boss Key Chest": "True",
+            "Water Temple Boss Key Pot 1": "True",
+            "Water Temple Boss Key Pot 2": "True",
             "Fairy Pot": "has_bottle"
         }
     },
@@ -203,6 +207,7 @@
             "Water Temple River Recovery Heart 3": "True",
             "Water Temple River Recovery Heart 4": "True",
             "Water Temple River Pot 1": "True",
+            "Water Temple River Pot 2": "True",
             "Water Temple GS River": "
                 (Iron_Boots and (Zora_Tunic or logic_fewer_tunic_requirements)) or
                 (logic_water_river_gs and Longshot and (Bow or has_bombchus))",

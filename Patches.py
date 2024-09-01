@@ -9,28 +9,31 @@ import zlib
 from collections.abc import Callable, Iterable
 from typing import Optional, Any
 
+from Cutscenes import patch_cutscenes
 from Entrance import Entrance
 from HintList import get_hint
 from Hints import GossipText, HintArea, write_gossip_stone_hints, build_altar_hints, \
         build_ganon_text, build_misc_item_hints, build_misc_location_hints, get_simple_hint_no_prefix, get_item_generic_name
 from Item import Item
-from ItemPool import song_list, trade_items, child_trade_items
+from ItemList import REWARD_COLORS
+from ItemPool import reward_list, song_list, trade_items, child_trade_items
 from Location import Location, DisableType
 from LocationList import business_scrubs
 from Messages import read_messages, update_message_by_id, read_shop_items, update_warp_song_text, \
         write_shop_items, remove_unused_messages, make_player_message, \
         add_item_messages, repack_messages, shuffle_messages, \
-        get_message_by_id, TextCode, new_messages
+        get_message_by_id, TextCode, new_messages, COLOR_MAP
 from OcarinaSongs import patch_songs
 from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
 from Rom import Rom
 from SaveContext import SaveContext, Scenes, FlagType
-from SceneFlags import get_alt_list_bytes, get_collectible_flag_table, get_collectible_flag_table_bytes
+from SceneFlags import build_xflag_tables, build_xflags_from_world, get_alt_list_bytes
 from Sounds import move_audiobank_table
 from Spoiler import Spoiler
+from TextBox import line_wrap
 from Utils import data_path
 from World import World
-from TextBox import line_wrap
+from ntype import BigStream
 from texture_util import ci4_rgba16patch_to_ci8, rgba16_patch
 from version import __version__
 
@@ -127,6 +130,94 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         for offset, patch in patches:
             rom.write_bytes(start_address + offset, patch)
         # Add it to the extended object table
+        add_to_extended_object_table(rom, object_id, start_address, end_address)
+        start_address = end_address
+
+    # Make new model files by splitting existing ones to fit into the get item memory slot
+    zobj_splits = (
+        ('object_gi_jewel_emerald',  0x0145A000, 0x0145D680, (0x1240, 0x10E0), 0x1AB), # Kokiri Emerald
+        ('object_gi_jewel_ruby',     0x0145A000, 0x0145D680, (0x20A0, 0x1FB0), 0x1AC), # Goron Ruby
+        ('object_gi_jewel_sapphire', 0x0145A000, 0x0145D680, (0x3530, 0x3370), 0x1AD), # Zora Sapphire
+        ('object_gi_medal_light',    0x014BB000, 0x014C0370, (0x5220, 0x0E18), 0x1AE), # Light Medallion
+        ('object_gi_medal_forest',   0x014BB000, 0x014C0370, (0x0CB0, 0x0E18), 0x1AF), # Forest Medallion
+        ('object_gi_medal_fire',     0x014BB000, 0x014C0370, (0x1AF0, 0x0E18), 0x1B0), # Fire Medallion
+        ('object_gi_medal_water',    0x014BB000, 0x014C0370, (0x2830, 0x0E18), 0x1B1), # Water Medallion
+        ('object_gi_medal_shadow',   0x014BB000, 0x014C0370, (0x4330, 0x0E18), 0x1B2), # Shadow Medallion
+        ('object_gi_medal_spirit',   0x014BB000, 0x014C0370, (0x3610, 0x0E18), 0x1B3), # Spirit Medallion
+    )
+    for name, start, end, offsets, object_id in zobj_splits:
+        obj_file = File(name, start, end)
+        seen = {}
+        out = []
+        out_size = 0
+        for offset in offsets:
+            i = offset
+            while True:
+                data = rom.read_int32(obj_file.start + i)
+                op = data >> 24
+                i += 8
+                if op == 0xdf:
+                    size = i - offset
+                    break
+            segment = BigStream(rom.read_bytes(obj_file.start + offset, size))
+
+            def copy(addr, size):
+                nonlocal seen
+                nonlocal out_size
+
+                seg = addr >> 24
+                if seg != 0x06:
+                    return addr
+                addr &= 0xffffff
+                seenAddr = seen.get(addr)
+                if seenAddr is not None:
+                    return seenAddr
+                newAddr = out_size | 0x0600_0000
+                out_size += size
+                out.extend(rom.read_bytes(obj_file.start + addr, size))
+                seen[addr] = newAddr
+                return newAddr
+
+            for i in range(0, size, 8):
+                data = segment.read_int32(i)
+                op = data >> 24
+                if op == 0x01: # Vertices
+                    count = (data >> 12) & 0xff
+                    addr = segment.read_int32(i + 4)
+                    newAddr = copy(addr, count * 0x10)
+                    segment.write_int32(i + 4, newAddr)
+                elif op == 0xfd: # Texture or palette
+                    data2 = segment.read_int32(i + 8 * 1)
+                    op2 = data2 >> 24
+                    if op2 == 0xf5: # Texture
+                        fmt = (data >> 16) & 0xff
+                        if fmt in (0x50, 0x90):
+                            bpp = 4
+                        elif fmt == 0x10:
+                            bpp = 16
+                        else:
+                            raise ValueError(f'Unknown texture format 0x{fmt:02x}')
+                        data3 = segment.read_int32(i + 8 * 6 + 4)
+                        w = (((data3 >> 12) & 0xfff) / 4) + 1
+                        h = (((data3 >>  0) & 0xfff) / 4) + 1
+                        addr = segment.read_int32(i + 4)
+                        newAddr = copy(addr, int((w * h * bpp) / 8))
+                        segment.write_int32(i + 4, newAddr)
+                    elif op2 == 0xe8: # Palette
+                        addr = segment.read_int32(i + 4)
+                        newAddr = copy(addr, 32)
+                        segment.write_int32(i + 4, newAddr)
+            out_size += size
+            out.extend(segment.buffer)
+            if out_size % 16:
+                extra_size = 16 - (out_size % 16)
+                extra_buf = [0] * extra_size
+                out_size += extra_size
+                out.extend(extra_buf)
+
+        rom.write_bytes(start_address, out)
+        # Add it to the extended object table
+        end_address = ((start_address + len(out) + 0x0F) >> 4) << 4
         add_to_extended_object_table(rom, object_id, start_address, end_address)
         start_address = end_address
 
@@ -334,362 +425,27 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.write_bytes(0xCD5E76, [0x0E, 0xDC])
     rom.write_bytes(0xCD5E12, [0x0E, 0xDC])
 
-    # Cutscene for all medallions never triggers when leaving shadow or spirit temples (hopefully stops warp to colossus on shadow completion with boss reward shuffle)
-    rom.write_byte(0xACA409, 0xAD)
-    rom.write_byte(0xACA49D, 0xCE)
-
-    # Speed Zelda's Letter scene
-    rom.write_bytes(0x290E08E, [0x05, 0xF0])
-    rom.write_byte(0xEFCBA7, 0x08)
-    rom.write_byte(0xEFE7C7, 0x05)
-    #rom.write_byte(0xEFEAF7, 0x08)
-    rom.write_bytes(0xEFE938, [0x00, 0x00, 0x00, 0x00])
-    rom.write_bytes(0xEFE948, [0x00, 0x00, 0x00, 0x00])
-    rom.write_bytes(0xEFE950, [0x00, 0x00, 0x00, 0x00])
-
-    # Speed Zelda escaping from Hyrule Castle
-    block_code = [0x00, 0x00, 0x00, 0x01, 0x00, 0x21, 0x00, 0x01, 0x00, 0x02, 0x00, 0x02]
-    rom.write_bytes(0x1FC0CF8, block_code)
-
-    # songs as items flag
+    # Some types of locations (boss rewards, songs, and the fairy ocarina) have special behavior,
+    # but need to use the normal Get Item mechanism if shuffled into the main item pool.
+    rewards_as_items = (
+        world.settings.shuffle_dungeon_rewards not in ('vanilla', 'reward')
+        or world.distribution.rewards_as_items
+        or any(name in reward_list and record.count for name, record in world.settings.starting_items.items())
+    )
+    if rewards_as_items:
+        rom.write_byte(rom.sym('REWARDS_AS_ITEMS'), 1)
     songs_as_items = (
         world.settings.shuffle_song_items != 'song'
-        or world.distribution.song_as_items
+        or world.distribution.songs_as_items
         or any(name in song_list and record.count for name, record in world.settings.starting_items.items())
         or world.settings.shuffle_individual_ocarina_notes
     )
-
     if songs_as_items:
         rom.write_byte(rom.sym('SONGS_AS_ITEMS'), 1)
-
-    # Speed learning Zelda's Lullaby
-    rom.write_int32s(0x02E8E90C, [0x000003E8, 0x00000001])  # Terminator Execution
-    if songs_as_items:
-        rom.write_int16s(None, [0x0073, 0x001, 0x0002, 0x0002])  # ID, start, end, end
-    else:
-        rom.write_int16s(None, [0x0073, 0x003B, 0x003C, 0x003C])  # ID, start, end, end
-
-    rom.write_int32s(0x02E8E91C, [0x00000013, 0x0000000C])  # Textbox, Count
-    if songs_as_items:
-        rom.write_int16s(None, [0xFFFF, 0x0000, 0x0010, 0xFFFF, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-    else:
-        rom.write_int16s(None, [0x0017, 0x0000, 0x0010, 0x0002, 0x088B, 0xFFFF])  # ID, start, end, type, alt1, alt2
-    rom.write_int16s(None, [0x00D4, 0x0011, 0x0020, 0x0000, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-
-    # Speed learning Sun's Song
-    if songs_as_items:
-        rom.write_int32(0x0332A4A4, 0xFFFFFFFF)  # Header: frame_count
-    else:
-        rom.write_int32(0x0332A4A4, 0x0000003C)  # Header: frame_count
-
-    rom.write_int32s(0x0332A868, [0x00000013, 0x00000008])  # Textbox, Count
-    rom.write_int16s(None, [0x0018, 0x0000, 0x0010, 0x0002, 0x088B, 0xFFFF])  # ID, start, end, type, alt1, alt2
-    rom.write_int16s(None, [0x00D3, 0x0011, 0x0020, 0x0000, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-
-    # Speed learning Saria's Song
-    if songs_as_items:
-        rom.write_int32(0x020B1734, 0xFFFFFFFF)  # Header: frame_count
-    else:
-        rom.write_int32(0x020B1734, 0x0000003C)  # Header: frame_count
-
-    rom.write_int32s(0x20B1DA8, [0x00000013, 0x0000000C])  # Textbox, Count
-    rom.write_int16s(None, [0x0015, 0x0000, 0x0010, 0x0002, 0x088B, 0xFFFF])  # ID, start, end, type, alt1, alt2
-    rom.write_int16s(None, [0x00D1, 0x0011, 0x0020, 0x0000, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-
-    rom.write_int32s(0x020B19C0, [0x0000000A, 0x00000006])  # Link, Count
-    rom.write_int16s(0x020B19C8, [0x0011, 0x0000, 0x0010, 0x0000])  # action, start, end, ????
-    rom.write_int16s(0x020B19F8, [0x003E, 0x0011, 0x0020, 0x0000])  # action, start, end, ????
-    rom.write_int32s(None, [0x80000000,  # ???
-                            0x00000000, 0x000001D4, 0xFFFFF731,  # start_XYZ
-                            0x00000000, 0x000001D4, 0xFFFFF712])  # end_XYZ
-
-    # Speed learning Epona's Song
-    rom.write_int32s(0x029BEF60, [0x000003E8, 0x00000001])  # Terminator Execution
-    if songs_as_items:
-        rom.write_int16s(None, [0x005E, 0x0001, 0x0002, 0x0002])  # ID, start, end, end
-    else:
-        rom.write_int16s(None, [0x005E, 0x000A, 0x000B, 0x000B])  # ID, start, end, end
-
-    rom.write_int32s(0x029BECB0, [0x00000013, 0x00000002])  # Textbox, Count
-    if songs_as_items:
-        rom.write_int16s(None, [0xFFFF, 0x0000, 0x0009, 0xFFFF, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-    else:
-        rom.write_int16s(None, [0x00D2, 0x0000, 0x0009, 0x0000, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-    rom.write_int16s(None, [0xFFFF, 0x000A, 0x003C, 0xFFFF, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-
-    # Speed learning Song of Time
-    rom.write_int32s(0x0252FB98, [0x000003E8, 0x00000001])  # Terminator Execution
-    if songs_as_items:
-        rom.write_int16s(None, [0x0035, 0x0001, 0x0002, 0x0002])  # ID, start, end, end
-    else:
-        rom.write_int16s(None, [0x0035, 0x003B, 0x003C, 0x003C])  # ID, start, end, end
-
-    rom.write_int32s(0x0252FC80, [0x00000013, 0x0000000C])  # Textbox, Count
-    if songs_as_items:
-        rom.write_int16s(None, [0xFFFF, 0x0000, 0x0010, 0xFFFF, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-    else:
-        rom.write_int16s(None, [0x0019, 0x0000, 0x0010, 0x0002, 0x088B, 0xFFFF])  # ID, start, end, type, alt1, alt2
-    rom.write_int16s(None, [0x00D5, 0x0011, 0x0020, 0x0000, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-
-    rom.write_int32(0x01FC3B84, 0xFFFFFFFF)  # Other Header?: frame_count
-
-    # Speed learning Song of Storms
-    if songs_as_items:
-        rom.write_int32(0x03041084, 0xFFFFFFFF)  # Header: frame_count
-    else:
-        rom.write_int32(0x03041084, 0x0000000A)  # Header: frame_count
-
-    rom.write_int32s(0x03041088, [0x00000013, 0x00000002])  # Textbox, Count
-    rom.write_int16s(None, [0x00D6, 0x0000, 0x0009, 0x0000, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-    rom.write_int16s(None, [0xFFFF, 0x00BE, 0x00C8, 0xFFFF, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-
-    # Speed learning Minuet of Forest
-    if songs_as_items:
-        rom.write_int32(0x020AFF84, 0xFFFFFFFF)  # Header: frame_count
-    else:
-        rom.write_int32(0x020AFF84, 0x0000003C)  # Header: frame_count
-
-    rom.write_int32s(0x020B0800, [0x00000013, 0x0000000A])  # Textbox, Count
-    rom.write_int16s(None, [0x000F, 0x0000, 0x0010, 0x0002, 0x088B, 0xFFFF])  # ID, start, end, type, alt1, alt2
-    rom.write_int16s(None, [0x0073, 0x0011, 0x0020, 0x0000, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-
-    rom.write_int32s(0x020AFF88, [0x0000000A, 0x00000005])  # Link, Count
-    rom.write_int16s(0x020AFF90, [0x0011, 0x0000, 0x0010, 0x0000])  # action, start, end, ????
-    rom.write_int16s(0x020AFFC1, [0x003E, 0x0011, 0x0020, 0x0000])  # action, start, end, ????
-
-    rom.write_int32s(0x020B0488, [0x00000056, 0x00000001])  # Music Change, Count
-    rom.write_int16s(None, [0x003F, 0x0021, 0x0022, 0x0000])  # action, start, end, ????
-
-    rom.write_int32s(0x020B04C0, [0x0000007C, 0x00000001])  # Music Fade Out, Count
-    rom.write_int16s(None, [0x0004, 0x0000, 0x0000, 0x0000])  # action, start, end, ????
-
-    # Speed learning Bolero of Fire
-    if songs_as_items:
-        rom.write_int32(0x0224B5D4, 0xFFFFFFFF)  # Header: frame_count
-    else:
-        rom.write_int32(0x0224B5D4, 0x0000003C)  # Header: frame_count
-
-    rom.write_int32s(0x0224D7E8, [0x00000013, 0x0000000A])  # Textbox, Count
-    rom.write_int16s(None, [0x0010, 0x0000, 0x0010, 0x0002, 0x088B, 0xFFFF])  # ID, start, end, type, alt1, alt2
-    rom.write_int16s(None, [0x0074, 0x0011, 0x0020, 0x0000, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-
-    rom.write_int32s(0x0224B5D8, [0x0000000A, 0x0000000B])  # Link, Count
-    rom.write_int16s(0x0224B5E0, [0x0011, 0x0000, 0x0010, 0x0000])  # action, start, end, ????
-    rom.write_int16s(0x0224B610, [0x003E, 0x0011, 0x0020, 0x0000])  # action, start, end, ????
-
-    rom.write_int32s(0x0224B7F0, [0x0000002F, 0x0000000E])  # Sheik, Count
-    rom.write_int16s(0x0224B7F8, [0x0000])  # action
-    rom.write_int16s(0x0224B828, [0x0000])  # action
-    rom.write_int16s(0x0224B858, [0x0000])  # action
-    rom.write_int16s(0x0224B888, [0x0000])  # action
-
-    # Speed learning Serenade of Water
-    if songs_as_items:
-        rom.write_int32(0x02BEB254, 0xFFFFFFFF)  # Header: frame_count
-    else:
-        rom.write_int32(0x02BEB254, 0x0000003C)  # Header: frame_count
-
-    rom.write_int32s(0x02BEC880, [0x00000013, 0x00000010])  # Textbox, Count
-    rom.write_int16s(None, [0x0011, 0x0000, 0x0010, 0x0002, 0x088B, 0xFFFF])  # ID, start, end, type, alt1, alt2
-    rom.write_int16s(None, [0x0075, 0x0011, 0x0020, 0x0000, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-
-    rom.write_int32s(0x02BEB258, [0x0000000A, 0x0000000F])  # Link, Count
-    rom.write_int16s(0x02BEB260, [0x0011, 0x0000, 0x0010, 0x0000])  # action, start, end, ????
-    rom.write_int16s(0x02BEB290, [0x003E, 0x0011, 0x0020, 0x0000])  # action, start, end, ????
-
-    rom.write_int32s(0x02BEB530, [0x0000002F, 0x00000006])  # Sheik, Count
-    rom.write_int16s(0x02BEB538, [0x0000, 0x0000, 0x018A, 0x0000])  # action, start, end, ????
-    rom.write_int32s(None, [0x1BBB0000,  # ???
-                            0xFFFFFB10, 0x8000011A, 0x00000330,  # start_XYZ
-                            0xFFFFFB10, 0x8000011A, 0x00000330])  # end_XYZ
-
-    rom.write_int32s(0x02BEC848, [0x00000056, 0x00000001])  # Music Change, Count
-    rom.write_int16s(None, [0x0059, 0x0021, 0x0022, 0x0000])  # action, start, end, ????
-
-    # Speed learning Nocturne of Shadow
-    rom.write_int32s(0x01FFE458, [0x000003E8, 0x00000001])  # Other Scene? Terminator Execution
-    rom.write_int16s(None, [0x002F, 0x0001, 0x0002, 0x0002])  # ID, start, end, end
-
-    rom.write_int32(0x01FFFDF4, 0x0000003C)  # Header: frame_count
-
-    rom.write_int32s(0x02000FD8, [0x00000013, 0x0000000E])  # Textbox, Count
-    if songs_as_items:
-        rom.write_int16s(None, [0xFFFF, 0x0000, 0x0010, 0xFFFF, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-    else:
-        rom.write_int16s(None, [0x0013, 0x0000, 0x0010, 0x0002, 0x088B, 0xFFFF])  # ID, start, end, type, alt1, alt2
-    rom.write_int16s(None, [0x0077, 0x0011, 0x0020, 0x0000, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-
-    rom.write_int32s(0x02000128, [0x000003E8, 0x00000001])  # Terminator Execution
-    if songs_as_items:
-        rom.write_int16s(None, [0x0032, 0x0001, 0x0002, 0x0002])  # ID, start, end, end
-    else:
-        rom.write_int16s(None, [0x0032, 0x003A, 0x003B, 0x003B])  # ID, start, end, end
-
-    # Speed learning Requiem of Spirit
-    rom.write_int32(0x0218AF14, 0x0000003C)  # Header: frame_count
-
-    rom.write_int32s(0x0218C574, [0x00000013, 0x00000008])  # Textbox, Count
-    if songs_as_items:
-        rom.write_int16s(None, [0xFFFF, 0x0000, 0x0010, 0xFFFF, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-    else:
-        rom.write_int16s(None, [0x0012, 0x0000, 0x0010, 0x0002, 0x088B, 0xFFFF])  # ID, start, end, type, alt1, alt2
-    rom.write_int16s(None, [0x0076, 0x0011, 0x0020, 0x0000, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-
-    rom.write_int32s(0x0218B478, [0x000003E8, 0x00000001])  # Terminator Execution
-    if songs_as_items:
-        rom.write_int16s(None, [0x0030, 0x0001, 0x0002, 0x0002])  # ID, start, end, end
-    else:
-        rom.write_int16s(None, [0x0030, 0x003A, 0x003B, 0x003B])  # ID, start, end, end
-
-    rom.write_int32s(0x0218AF18, [0x0000000A, 0x0000000B])  # Link, Count
-    rom.write_int16s(0x0218AF20, [0x0011, 0x0000, 0x0010, 0x0000])  # action, start, end, ????
-    rom.write_int32s(None, [0x40000000,  # ???
-                            0xFFFFFAF9, 0x00000008, 0x00000001,  # start_XYZ
-                            0xFFFFFAF9, 0x00000008, 0x00000001,  # end_XYZ
-                            0x0F671408, 0x00000000, 0x00000001])  # normal_XYZ
-    rom.write_int16s(0x0218AF50, [0x003E, 0x0011, 0x0020, 0x0000])  # action, start, end, ????
-
-    # Speed learning Prelude of Light
-    if songs_as_items:
-        rom.write_int32(0x0252FD24, 0xFFFFFFFF)  # Header: frame_count
-    else:
-        rom.write_int32(0x0252FD24, 0x0000004A)  # Header: frame_count
-
-    rom.write_int32s(0x02531320, [0x00000013, 0x0000000E])  # Textbox, Count
-    rom.write_int16s(None, [0x0014, 0x0000, 0x0010, 0x0002, 0x088B, 0xFFFF])  # ID, start, end, type, alt1, alt2
-    rom.write_int16s(None, [0x0078, 0x0011, 0x0020, 0x0000, 0xFFFF, 0xFFFF])  # ID, start, end, type, alt1, alt2
-
-    rom.write_int32s(0x0252FF10, [0x0000002F, 0x00000009])  # Sheik, Count
-    rom.write_int16s(0x0252FF18, [0x0006, 0x0000, 0x0000, 0x0000])  # action, start, end, ????
-
-    rom.write_int32s(0x025313D0, [0x00000056, 0x00000001])  # Music Change, Count
-    rom.write_int16s(None, [0x003B, 0x0021, 0x0022, 0x0000])  # action, start, end, ????
-
-    # Speed scene after Deku Tree
-    rom.write_bytes(0x2077E20, [0x00, 0x07, 0x00, 0x01, 0x00, 0x02, 0x00, 0x02])
-    rom.write_bytes(0x2078A10, [0x00, 0x0E, 0x00, 0x1F, 0x00, 0x20, 0x00, 0x20])
-    block_code = [0x00, 0x80, 0x00, 0x00, 0x00, 0x1E, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF,
-                  0xFF, 0xFF, 0x00, 0x1E, 0x00, 0x28, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF]
-    rom.write_bytes(0x2079570, block_code)
-
-    # Speed scene after Dodongo's Cavern
-    rom.write_bytes(0x2221E88, [0x00, 0x0C, 0x00, 0x3B, 0x00, 0x3C, 0x00, 0x3C])
-    rom.write_bytes(0x2223308, [0x00, 0x81, 0x00, 0x00, 0x00, 0x3A, 0x00, 0x00])
-
-    # Speed scene after Jabu Jabu's Belly
-    rom.write_bytes(0xCA3530, [0x00, 0x00, 0x00, 0x00])
-    rom.write_bytes(0x2113340, [0x00, 0x0D, 0x00, 0x3B, 0x00, 0x3C, 0x00, 0x3C])
-    rom.write_bytes(0x2113C18, [0x00, 0x82, 0x00, 0x00, 0x00, 0x3A, 0x00, 0x00])
-    rom.write_bytes(0x21131D0, [0x00, 0x01, 0x00, 0x00, 0x00, 0x3C, 0x00, 0x3C])
-
-    # Speed scene after Forest Temple
-    rom.write_bytes(0xD4ED68, [0x00, 0x45, 0x00, 0x3B, 0x00, 0x3C, 0x00, 0x3C])
-    rom.write_bytes(0xD4ED78, [0x00, 0x3E, 0x00, 0x00, 0x00, 0x3A, 0x00, 0x00])
-    rom.write_bytes(0x207B9D4, [0xFF, 0xFF, 0xFF, 0xFF])
-
-    # Speed scene after Fire Temple
-    rom.write_bytes(0x2001848, [0x00, 0x1E, 0x00, 0x01, 0x00, 0x02, 0x00, 0x02])
-    rom.write_bytes(0xD100B4, [0x00, 0x62, 0x00, 0x3B, 0x00, 0x3C, 0x00, 0x3C])
-    rom.write_bytes(0xD10134, [0x00, 0x3C, 0x00, 0x00, 0x00, 0x3A, 0x00, 0x00])
-
-    # Speed scene after Water Temple
-    rom.write_bytes(0xD5A458, [0x00, 0x15, 0x00, 0x3B, 0x00, 0x3C, 0x00, 0x3C])
-    rom.write_bytes(0xD5A3A8, [0x00, 0x3D, 0x00, 0x00, 0x00, 0x3A, 0x00, 0x00])
-    rom.write_bytes(0x20D0D20, [0x00, 0x29, 0x00, 0xC7, 0x00, 0xC8, 0x00, 0xC8])
-
-    # Speed scene after Shadow Temple
-    rom.write_bytes(0xD13EC8, [0x00, 0x61, 0x00, 0x3B, 0x00, 0x3C, 0x00, 0x3C])
-    rom.write_bytes(0xD13E18, [0x00, 0x41, 0x00, 0x00, 0x00, 0x3A, 0x00, 0x00])
-
-    # Speed scene after Spirit Temple
-    rom.write_bytes(0xD3A0A8, [0x00, 0x60, 0x00, 0x3B, 0x00, 0x3C, 0x00, 0x3C])
-    rom.write_bytes(0xD39FF0, [0x00, 0x3F, 0x00, 0x00, 0x00, 0x3A, 0x00, 0x00])
-
-    # Speed Nabooru defeat scene
-    rom.write_bytes(0x2F5AF84, [0x00, 0x00, 0x00, 0x05])
-    rom.write_bytes(0x2F5C7DA, [0x00, 0x01, 0x00, 0x02])
-    rom.write_bytes(0x2F5C7A2, [0x00, 0x03, 0x00, 0x04])
-    rom.write_byte(0x2F5B369, 0x09)
-    rom.write_byte(0x2F5B491, 0x04)
-    rom.write_byte(0x2F5B559, 0x04)
-    rom.write_byte(0x2F5B621, 0x04)
-    rom.write_byte(0x2F5B761, 0x07)
-    rom.write_bytes(0x2F5B840, [0x00, 0x05, 0x00, 0x01, 0x00, 0x05, 0x00, 0x05])  # shorten white flash
-
-    # Speed scene with all medallions
-    rom.write_bytes(0x2512680, [0x00, 0x74, 0x00, 0x01, 0x00, 0x02, 0x00, 0x02])
-
-    # Speed collapse of Ganon's Tower
-    rom.write_bytes(0x33FB328, [0x00, 0x76, 0x00, 0x01, 0x00, 0x02, 0x00, 0x02])
-
-    # Speed Phantom Ganon defeat scene
-    rom.write_bytes(0xC944D8, [0x00, 0x00, 0x00, 0x00])
-    rom.write_bytes(0xC94548, [0x00, 0x00, 0x00, 0x00])
-    rom.write_bytes(0xC94730, [0x00, 0x00, 0x00, 0x00])
-    rom.write_bytes(0xC945A8, [0x00, 0x00, 0x00, 0x00])
-    rom.write_bytes(0xC94594, [0x00, 0x00, 0x00, 0x00])
-
-    # Speed Twinrova defeat scene
-    rom.write_bytes(0xD678CC, [0x24, 0x01, 0x03, 0xA2, 0xA6, 0x01, 0x01, 0x42])
-    rom.write_bytes(0xD67BA4, [0x10, 0x00])
-
-    # Speed scenes during final battle
-    # Ganondorf battle end
-    rom.write_byte(0xD82047, 0x09)
-    # Zelda descends
-    rom.write_byte(0xD82AB3, 0x66)
-    rom.write_byte(0xD82FAF, 0x65)
-    rom.write_int16s(0xD82D2E, [0x041F])
-    rom.write_int16s(0xD83142, [0x006B])
-    rom.write_bytes(0xD82DD8, [0x00, 0x00, 0x00, 0x00])
-    rom.write_bytes(0xD82ED4, [0x00, 0x00, 0x00, 0x00])
-    rom.write_byte(0xD82FDF, 0x33)
-    # After tower collapse
-    rom.write_byte(0xE82E0F, 0x04)
-    # Ganon intro
-    rom.write_bytes(0xE83D28, [0x00, 0x00, 0x00, 0x00])
-    rom.write_bytes(0xE83B5C, [0x00, 0x00, 0x00, 0x00])
-    rom.write_bytes(0xE84C80, [0x10, 0x00])
-
-    # Speed completion of the trials in Ganon's Castle
-    rom.write_int16s(0x31A8090, [0x006B, 0x0001, 0x0002, 0x0002])  # Forest
-    rom.write_int16s(0x31A9E00, [0x006E, 0x0001, 0x0002, 0x0002])  # Fire
-    rom.write_int16s(0x31A8B18, [0x006C, 0x0001, 0x0002, 0x0002])  # Water
-    rom.write_int16s(0x31A9430, [0x006D, 0x0001, 0x0002, 0x0002])  # Shadow
-    rom.write_int16s(0x31AB200, [0x0070, 0x0001, 0x0002, 0x0002])  # Spirit
-    rom.write_int16s(0x31AA830, [0x006F, 0x0001, 0x0002, 0x0002])  # Light
-
-    # Speed obtaining Fairy Ocarina
-    rom.write_bytes(0x2151230, [0x00, 0x72, 0x00, 0x3C, 0x00, 0x3D, 0x00, 0x3D])
-    rom.write_bytes(0x2150E20, [0xFF, 0xFF, 0xFA, 0x4C])
-
     if world.settings.shuffle_ocarinas:
-        symbol = rom.sym('OCARINAS_SHUFFLED')
-        rom.write_byte(symbol, 0x01)
+        rom.write_byte(rom.sym('OCARINAS_SHUFFLED'), 0x01)
 
-    # Speed Zelda Light Arrow cutscene
-    rom.write_bytes(0x2531B40, [0x00, 0x28, 0x00, 0x01, 0x00, 0x02, 0x00, 0x02])
-    rom.write_bytes(0x2532FBC, [0x00, 0x75])
-    rom.write_bytes(0x2532FEA, [0x00, 0x75, 0x00, 0x80])
-    rom.write_byte(0x2533115, 0x05)
-    rom.write_bytes(0x2533141, [0x06, 0x00, 0x06, 0x00, 0x10])
-    rom.write_bytes(0x2533171, [0x0F, 0x00, 0x11, 0x00, 0x40])
-    rom.write_bytes(0x25331A1, [0x07, 0x00, 0x41, 0x00, 0x65])
-    rom.write_bytes(0x2533642, [0x00, 0x50])
-    rom.write_byte(0x253389D, 0x74)
-    rom.write_bytes(0x25338A4, [0x00, 0x72, 0x00, 0x75, 0x00, 0x79])
-    rom.write_bytes(0x25338BC, [0xFF, 0xFF])
-    rom.write_bytes(0x25338C2, [0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF])
-    rom.write_bytes(0x25339C2, [0x00, 0x75, 0x00, 0x76])
-    rom.write_bytes(0x2533830, [0x00, 0x31, 0x00, 0x81, 0x00, 0x82, 0x00, 0x82])
-
-    # Speed Bridge of Light cutscene
-    rom.write_bytes(0x292D644, [0x00, 0x00, 0x00, 0xA0])
-    rom.write_bytes(0x292D680, [0x00, 0x02, 0x00, 0x0A, 0x00, 0x6C, 0x00, 0x00])
-    rom.write_bytes(0x292D6E8, [0x00, 0x27])
-    rom.write_bytes(0x292D718, [0x00, 0x32])
-    rom.write_bytes(0x292D810, [0x00, 0x02, 0x00, 0x3C])
-    rom.write_bytes(0x292D924, [0xFF, 0xFF, 0x00, 0x14, 0x00, 0x96, 0xFF, 0xFF])
+    patch_cutscenes(rom, songs_as_items)
 
     # Speed Pushing of All Pushable Objects (other than armos statues, which are handled in ASM)
     rom.write_bytes(0xDD2B86, [0x40, 0x80])  # block speed
@@ -706,13 +462,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.write_bytes(0xDBA230, [0x28, 0x41, 0x00, 0x19])  # truth spinner speed
     rom.write_bytes(0xDBA3A4, [0x24, 0x18, 0x00, 0x00])  # truth spinner delay
 
-    # Speed Deku Seed Upgrade Scrub Cutscene
-    rom.write_bytes(0xECA900, [0x24, 0x03, 0xC0, 0x00])  # scrub angle
-    rom.write_bytes(0xECAE90, [0x27, 0x18, 0xFD, 0x04])  # skip straight to giving item
-    rom.write_bytes(0xECB618, [0x25, 0x6B, 0x00, 0xD4])  # skip straight to digging back in
-    rom.write_bytes(0xECAE70, [0x00, 0x00, 0x00, 0x00])  # never initialize cs camera
-    rom.write_bytes(0xE5972C, [0x24, 0x08, 0x00, 0x01])  # timer set to 1 frame for giving item
-
     # Remove remaining owls
     rom.write_bytes(0x1FE30CE, [0x01, 0x4B])
     rom.write_bytes(0x1FE30DE, [0x01, 0x4B])
@@ -720,17 +469,8 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.write_bytes(0x205909E, [0x00, 0x3F])
     rom.write_byte(0x2059094, 0x80)
 
-    # Darunia won't dance
-    rom.write_bytes(0x22769E4, [0xFF, 0xFF, 0xFF, 0xFF])
-
     # Zora moves quickly
     rom.write_bytes(0xE56924, [0x00, 0x00, 0x00, 0x00])
-
-    # Speed Jabu Jabu swallowing Link
-    rom.write_bytes(0xCA0784, [0x00, 0x18, 0x00, 0x01, 0x00, 0x02, 0x00, 0x02])
-
-    # Ruto no longer points to Zora Sapphire
-    rom.write_bytes(0xD03BAC, [0xFF, 0xFF, 0xFF, 0xFF])
 
     # Ruto never disappears from Jabu Jabu's Belly
     rom.write_byte(0xD01EA3, 0x00)
@@ -743,40 +483,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.write_bytes(0x24860C8, [0xFC, 0xF4])  # forest basement 2
     rom.write_bytes(0x24860E8, [0xFC, 0xF4])  # forest basement 3
     rom.write_bytes(0x236C148, [0x11, 0x93])  # fire hammer room
-
-    # Speed up Epona race start
-    rom.write_bytes(0x29BE984, [0x00, 0x00, 0x00, 0x02])
-    rom.write_bytes(0x29BE9CA, [0x00, 0x01, 0x00, 0x02])
-
-    # Speed start of Horseback Archery
-    #rom.write_bytes(0x21B2064, [0x00, 0x00, 0x00, 0x02])
-    #rom.write_bytes(0x21B20AA, [0x00, 0x01, 0x00, 0x02])
-
-    # Speed up Epona escape
-    rom.write_bytes(0x1FC79E6, [0x00, 0x54]) # South
-    rom.write_bytes(0x1FC7F06, [0x00, 0x54]) # East
-    rom.write_bytes(0x1FC8556, [0x00, 0x54]) # West
-    rom.write_bytes(0x1FC8B36, [0x00, 0x2A]) # Front gate
-
-    # Speed up draining the well
-    rom.write_bytes(0xE0A010, [0x00, 0x2A, 0x00, 0x01, 0x00, 0x02, 0x00, 0x02])
-    rom.write_bytes(0x2001110, [0x00, 0x2B, 0x00, 0xB7, 0x00, 0xB8, 0x00, 0xB8])
-
-    # Speed up opening the royal tomb for both child and adult
-    rom.write_bytes(0x2025026, [0x00, 0x01])
-    rom.write_bytes(0x2023C86, [0x00, 0x01])
-    rom.write_byte(0x2025159, 0x02)
-    rom.write_byte(0x2023E19, 0x02)
-
-    # Speed opening of Door of Time
-    rom.write_bytes(0xE0A176, [0x00, 0x02])
-    rom.write_bytes(0xE0A35A, [0x00, 0x01, 0x00, 0x02])
-
-    # Speed up Lake Hylia Owl Flight
-    rom.write_bytes(0x20E60D2, [0x00, 0x01])
-
-    # Speed up Death Mountain Trail Owl Flight
-    rom.write_bytes(0x223B6B2, [0x00, 0x01])
 
     # Speed up magic arrow equips
     rom.write_int16(0xBB84CE, 0x0000)  # Skips the initial growing glowing orb phase
@@ -857,12 +563,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.write_bytes(0xE5400E, [0xB4, 0xA4])
     if world.settings.open_forest != 'closed':
         rom.write_bytes(0xE5401C, [0x14, 0x0B])
-
-    # Fix Shadow Temple to check for different rewards for scene
-    rom.write_bytes(0xCA3F32, [0x00, 0x00, 0x25, 0x4A, 0x00, 0x10])
-
-    # Fix Spirit Temple to check for different rewards for scene
-    rom.write_bytes(0xCA3EA2, [0x00, 0x00, 0x25, 0x4A, 0x00, 0x08])
 
     # Remove the check on the number of days that passed for claim check.
     rom.write_bytes(0xED4470, [0x00, 0x00, 0x00, 0x00])
@@ -989,19 +689,15 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         rom.write_int32(0xBC6160, 0x24180000)  # li t8, 0
         rom.write_int32(0xBC6168, 0xAD380000)  # sw t8, 0(t1)
 
-        # Credit to engineer124
-        # Update the Jabu-Jabu Boss Exit to actually useful coordinates (and to load the correct room)
-        rom.write_int16(0x273E08E, 0xF7F4)  # Z coordinate of Jabu Boss Door Spawn
-        rom.write_byte(0x273E27B, 0x05)  # Set Spawn Room to be correct
+    # Credit to engineer124
+    # Update the Jabu-Jabu Boss Exit to actually useful coordinates (and to load the correct room)
+    rom.write_int16(0x273E08E, 0xF7F4)  # Z coordinate of Jabu Boss Door Spawn
+    rom.write_byte(0x273E27B, 0x05)  # Set Spawn Room to be correct
 
     # Update the Water Temple Boss Exit to load the correct room
     rom.write_byte(0x25B82E3, 0x0B)
 
     def set_entrance_updates(entrances: Iterable[Entrance]) -> None:
-        if world.settings.shuffle_bosses != 'off':
-            # Connect lake hylia fill exit to revisit exit
-            rom.write_int16(0xAC995A, 0x060C)
-
         for entrance in entrances:
             if entrance.data is None or entrance.replaces is None or entrance.replaces.data is None:
                 continue
@@ -1102,9 +798,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     if world.shuffle_dungeon_entrances:
         rom.write_byte(rom.sym('DUNGEONS_SHUFFLED'), 1)
 
-        # Connect lake hylia fill exit to revisit exit
-        rom.write_int16(0xAC995A, 0x060C)
-
         # Make the Adult well blocking stone dissappear if the well has been drained by
         # checking the well drain event flag instead of links age. This actor doesn't need a
         # code check for links age as the stone is absent for child via the scene alternate
@@ -1146,6 +839,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     configure_dungeon_info(rom, world)
 
     rom.write_bytes(rom.sym('CFG_FILE_SELECT_HASH'), spoiler.file_hash)
+    rom.write_bytes(rom.sym('PASSWORD'), spoiler.password)
 
     save_context = SaveContext()
 
@@ -1247,7 +941,8 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     save_context.write_bits(0x0ED6, 0x10)  # "Spoke to Mido After Deku Tree's Death"
     save_context.write_bits(0x0EDA, 0x08)  # "Began Nabooru Battle"
     save_context.write_bits(0x0EDC, 0x80)  # "Entered the Master Sword Chamber"
-    save_context.write_bits(0x0EDD, 0x20)  # "Pulled Master Sword from Pedestal"
+    if world.settings.skip_reward_from_rauru:
+        save_context.write_bits(0x0EDD, 0x20)  # "Pulled Master Sword from Pedestal"
     save_context.write_bits(0x0EE0, 0x80)  # "Spoke to Kaepora Gaebora by Lost Woods"
     save_context.write_bits(0x0EE7, 0x20)  # "Nabooru Captured by Twinrova"
     save_context.write_bits(0x0EE7, 0x10)  # "Spoke to Nabooru in Spirit Temple"
@@ -1317,10 +1012,9 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.write_int16(0x00E1F3CA, 0x5036)
     rom.write_int16(0x00E1F3CC, 0x5036)
 
-    # Make the Kakariko Gate not open with the MS
-    if world.settings.open_kakariko != 'open':
-        rom.write_int32(0xDD3538, 0x34190000)  # li t9, 0
-    if world.settings.open_kakariko != 'closed':
+    if world.settings.open_kakariko == 'open':
+        rom.write_byte(rom.sym('OPEN_KAKARIKO'), 2)
+    elif world.settings.open_kakariko != 'closed':
         rom.write_byte(rom.sym('OPEN_KAKARIKO'), 1)
 
     # Mark starting trade items as owned
@@ -1688,102 +1382,25 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     new_message = "\x08What should I do!?\x01My \x05\x41Cuccos\x05\x40 have all flown away!\x04You, little boy, please!\x01Please gather at least \x05\x41%d Cuccos\x05\x40\x01for me.\x02" % world.settings.chicken_count
     update_message_by_id(messages, 0x5036, new_message)
 
-    # Find an item location behind the Jabu boss door by searching regions breadth-first without going back into Jabu proper
-    if world.settings.logic_rules == 'glitched':
-        location = world.get_location('Barinade')
-    else:
-        jabu_reward_regions = {world.get_entrance('Jabu Jabus Belly Before Boss -> Barinade Boss Room').connected_region}
-        already_checked = set()
-        location = None
-        while jabu_reward_regions:
-            locations = [
-                loc
-                for region in jabu_reward_regions
-                if region is not None and region.locations is not None
-                for loc in region.locations
-                if not loc.locked
-                and loc.has_item()
-                and not loc.item.event
-                and (loc.type != "Shop" or loc.name in world.shop_prices) # ignore regular shop items (but keep special deals)
-            ]
-            if locations:
-                # Location types later in the list will be preferred over earlier ones or ones not in the list.
-                # This ensures that if the region behind the boss door is a boss arena, the medallion or stone will be used.
-                priority_types = (
-                    "Freestanding",
-                    "ActorOverride",
-                    "RupeeTower",
-                    "Pot",
-                    "Crate",
-                    "FlyingPot",
-                    "SmallCrate",
-                    "Beehive",
-                    "SilverRupee",
-                    "GS Token",
-                    "GrottoScrub",
-                    "Scrub",
-                    "Shop",
-                    "MaskShop",
-                    "NPC",
-                    "Collectable",
-                    "Chest",
-                    "Cutscene",
-                    "Song",
-                    "BossHeart",
-                    "Boss",
-                )
-                best_type = max((location.type for location in locations), key=lambda type: priority_types.index(type) if type in priority_types else -1)
-                location = random.choice(list(filter(lambda loc: loc.type == best_type, locations)))
-                break
-            already_checked |= jabu_reward_regions
-            jabu_reward_regions = {
-                exit.connected_region
-                for region in jabu_reward_regions
-                if region is not None
-                for exit in region.exits
-                if exit.connected_region is not None and exit.connected_region.dungeon != 'Jabu Jabus Belly' and exit.connected_region.name not in already_checked
-            }
-
-    if location is None or location.item is None:
+    # Update "Princess Ruto got the Spiritual Stone!" text before the midboss in Jabu
+    location = world.bigocto_location()
+    if location is None or location.item is None or location.item.name == 'Nothing':
         jabu_item = None
-        reward_text = None
+        new_message = f"\x08Princess Ruto got \x01\x05\x43nothing\x05\x40!\x01Well, that's disappointing...\x02"
     elif location.item.looks_like_item is not None:
         jabu_item = location.item.looks_like_item
-        reward_text = create_fake_name(get_hint(get_item_generic_name(location.item.looks_like_item), True).text)
+        new_message = "\x08Princess Ruto is a \x05\x43FOOL\x05\x40!\x01But why Princess Ruto?\x02"
     else:
         jabu_item = location.item
         reward_text = get_hint(get_item_generic_name(location.item), True).text
-
-    # Update "Princess Ruto got the Spiritual Stone!" text before the midboss in Jabu
-    if reward_text is None or location is None or location.item is None:
-        new_message = f"\x08Princess Ruto got \x01\x05\x43nothing\x05\x40!\x01Well, that's disappointing...\x02"
-    else:
-        reward_texts = {
-            'Kokiri Emerald':   "the \x05\x42Kokiri Emerald\x05\x40",
-            'Goron Ruby':       "the \x05\x41Goron Ruby\x05\x40",
-            'Zora Sapphire':    "the \x05\x43Zora Sapphire\x05\x40",
-            'Forest Medallion': "the \x05\x42Forest Medallion\x05\x40",
-            'Fire Medallion':   "the \x05\x41Fire Medallion\x05\x40",
-            'Water Medallion':  "the \x05\x43Water Medallion\x05\x40",
-            'Spirit Medallion': "the \x05\x46Spirit Medallion\x05\x40",
-            'Shadow Medallion': "the \x05\x45Shadow Medallion\x05\x40",
-            'Light Medallion':  "the \x05\x44Light Medallion\x05\x40",
-        }
-        reward_text = reward_texts.get(location.item.name, f'\x05\x43{reward_text}\x05\x40')
-        new_message = f"\x08Princess Ruto got \x01{reward_text}!\x01But why Princess Ruto?\x02"
+        reward_color = REWARD_COLORS.get(location.item.name, 'Blue')
+        new_message = f"\x08Princess Ruto got \x01\x05{COLOR_MAP[reward_color]}{reward_text}\x05\x40!\x01But why Princess Ruto?\x02"
     update_message_by_id(messages, 0x4050, new_message)
 
     # Set Dungeon Reward Actor in Jabu Jabu to be accurate
     if location is not None and location.item is not None:  # TODO make actor invisible if no item?
-        jabu_item = location.item
-        jabu_actor_type = jabu_item.special.get('actor_type', 0x15) #TODO handle non-dungeon-reward items
-        set_jabu_stone_actors(rom, jabu_actor_type)
-        # Also set the right object for the actor, since medallions and stones require different objects
-        # MQ is handled separately, as we include both objects in the object list in mqu.json (Scene 2, Room 6)
-        if not world.dungeon_mq['Jabu Jabus Belly']:
-            jabu_stone_object = jabu_item.special.get('object_id', 0x00AD) #TODO handle non-dungeon-reward items
-            rom.write_int16(0x277D068, jabu_stone_object)
-            rom.write_int16(0x277D168, jabu_stone_object)
+        scene, type, default, _, _, _ = get_override_entry(location)
+        rom.write_bytes(rom.sym('CFG_BIGOCTO_OVERRIDE_KEY'), override_key_struct.pack(scene, type, default))
 
     # use faster jabu elevator
     if not world.dungeon_mq['Jabu Jabus Belly'] and world.settings.shuffle_scrubs == 'off':
@@ -1844,8 +1461,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
         for location in actor_override_locations:
             patch_actor_override(location, rom)
-        for location in rupeetower_locations:
-            patch_rupee_tower(location, rom)
 
     if world.shuffle_silver_rupees:
         rom.write_byte(rom.sym('SHUFFLE_SILVER_RUPEES'), 1)
@@ -1858,25 +1473,39 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         if world.dungeon_mq['Spirit Temple']: # Patch Spirit MQ Lobby front right chest to use permanent switch flag 0x1F
             rom.write_byte(0x2b08ce4 + 13, 0x1F)
 
+        if not world.dungeon_mq['Bottom of the Well']:
+            # Collecting the final BotW basement silver rupee and activating the cutscene of the door unlocking while on the ladder causes a softlock.
+            # Move slightly the X coordinate of this actor so that it cannot be collected while climbing.
+            # This is a vanilla bug tracked at https://github.com/OoTRandomizer/OoT-Randomizer/issues/2004
+            # If and when that bug is fixed in rando, this displacement can be removed.
+            rom.write_int16(0x32E92C6, 0xFD78)
+
     # Write flag table data
-    collectible_flag_table, alt_list = get_collectible_flag_table(world)
-    collectible_flag_table_bytes, num_collectible_flags = get_collectible_flag_table_bytes(collectible_flag_table)
+    xflags_tables, alt_list = build_xflags_from_world(world)
+    xflag_scene_table, xflag_room_table, xflag_room_blob, max_bit = build_xflag_tables(xflags_tables)
+    rom.write_bytes(rom.sym('xflag_scene_table'), xflag_scene_table)
+    if len(xflag_room_table) > rom.sym_length('xflag_room_table'):
+        raise RuntimeError(f'Exceeded xflag room table size: {len(xflag_room_table)}')
+    if len(xflag_room_blob) > rom.sym_length('xflag_room_blob'):
+        raise RuntimeError(f'Exceed xflag blob table size: {len(xflag_room_blob)}')
+    rom.write_bytes(rom.sym('xflag_room_table'), xflag_room_table)
+    rom.write_bytes(rom.sym('xflag_room_blob'), xflag_room_blob)
+    num_collectible_flag_bytes = int(max_bit / 8) + 1
+    num_collectible_flag_bytes += num_collectible_flag_bytes % 8
+    rom.write_bytes(rom.sym('num_override_flags'), num_collectible_flag_bytes.to_bytes(2, 'big'))
+
     alt_list_bytes = get_alt_list_bytes(alt_list)
-    if(len(collectible_flag_table_bytes) > 1000):
-        raise(RuntimeError(f'Exceeded collectible override table size: {len(collectible_flag_table_bytes)}'))
-    rom.write_bytes(rom.sym('collectible_scene_flags_table'), collectible_flag_table_bytes)
-    num_collectible_flags += num_collectible_flags % 8
-    rom.write_bytes(rom.sym('num_override_flags'), num_collectible_flags.to_bytes(2, 'big'))
-    if len(alt_list) >= 90:
+    if len(alt_list_bytes) > rom.sym_length('alt_overrides'):
         raise RuntimeError(f'Exceeded alt override table size: {len(alt_list)}')
     rom.write_bytes(rom.sym('alt_overrides'), alt_list_bytes)
 
     # Write item overrides
     check_location_dupes(world)
     override_table = get_override_table(world)
-    if len(override_table) >= 2200:
-        raise(RuntimeError("Exceeded override table size: " + str(len(override_table))))
-    rom.write_bytes(rom.sym('cfg_item_overrides'), get_override_table_bytes(override_table))
+    override_table_bytes = get_override_table_bytes(override_table)
+    if len(override_table_bytes) >= rom.sym_length('cfg_item_overrides'):
+        raise RuntimeError("Exceeded override table size: " + str(len(override_table)))
+    rom.write_bytes(rom.sym('cfg_item_overrides'), override_table_bytes)
     rom.write_byte(rom.sym('PLAYER_ID'), world.id + 1)  # Write player ID
 
     # Revert Song Get Override Injection
@@ -1918,14 +1547,14 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         if world.settings.deadly_bonks == 'ohko':
             rom.write_int16(rom.sym('CFG_BONK_DAMAGE'), 0xFFFE)
 
-    # Patch songs and boss rewards
+    # Patch songs
     for location in world.get_filled_locations():
-        item = location.item
-        special = item.special
-        locationaddress = location.address
-        secondaryaddress = location.address2
-
         if location.type == 'Song' and not songs_as_items:
+            item = location.item
+            special = item.special
+            locationaddress = location.address
+            secondaryaddress = location.address2
+
             bit_mask_pointer = 0x8C34 + ((special['item_id'] - 0x65) * 4)
             rom.write_byte(locationaddress, special['song_id'])
             next_song_id = special['song_id'] + 0x0D
@@ -1963,17 +1592,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
                 rom.write_byte(0x2000FED, special['text_id'])  # Fix text box
             elif location.name == 'Sheik at Colossus':
                 rom.write_byte(0x218C589, special['text_id'])  # Fix text box
-        elif location.type == 'Boss' and location.name != 'Links Pocket':
-            rom.write_byte(locationaddress, special['item_id'])
-            rom.write_byte(secondaryaddress, special['addr2_data'])
-            bit_mask_hi = special['bit_mask'] >> 16
-            bit_mask_lo = special['bit_mask'] & 0xFFFF
-            if location.name == 'Bongo Bongo':
-                rom.write_int16(0xCA3F32, bit_mask_hi)
-                rom.write_int16(0xCA3F36, bit_mask_lo)
-            elif location.name == 'Twinrova':
-                rom.write_int16(0xCA3EA2, bit_mask_hi)
-                rom.write_int16(0xCA3EA6, bit_mask_lo)
 
     # add a cheaper bombchu pack to the bombchu shop
     # describe
@@ -2363,66 +1981,48 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     # give dungeon items the correct messages
     add_item_messages(messages, shop_items, world)
-    if world.settings.enhance_map_compass:
-        reward_list = {
-            'Kokiri Emerald':   "\x05\x42Kokiri Emerald\x05\x40",
-            'Goron Ruby':       "\x05\x41Goron Ruby\x05\x40",
-            'Zora Sapphire':    "\x05\x43Zora Sapphire\x05\x40",
-            'Forest Medallion': "\x05\x42Forest Medallion\x05\x40",
-            'Fire Medallion':   "\x05\x41Fire Medallion\x05\x40",
-            'Water Medallion':  "\x05\x43Water Medallion\x05\x40",
-            'Spirit Medallion': "\x05\x46Spirit Medallion\x05\x40",
-            'Shadow Medallion': "\x05\x45Shadow Medallion\x05\x40",
-            'Light Medallion':  "\x05\x44Light Medallion\x05\x40",
-        }
+    if world.settings.enhance_map_compass and world.settings.shuffle_mapcompass != 'remove' and world.settings.world_count == 1:
         dungeon_list = {
-            #                      dungeon name                      boss name        compass map
-            'Deku Tree':          ("the \x05\x42Deku Tree",          'Queen Gohma',   0x62, 0x88),
-            'Dodongos Cavern':    ("\x05\x41Dodongo\'s Cavern",      'King Dodongo',  0x63, 0x89),
-            'Jabu Jabus Belly':   ("\x05\x43Jabu Jabu\'s Belly",     'Barinade',      0x64, 0x8a),
-            'Forest Temple':      ("the \x05\x42Forest Temple",      'Phantom Ganon', 0x65, 0x8b),
-            'Fire Temple':        ("the \x05\x41Fire Temple",        'Volvagia',      0x7c, 0x8c),
-            'Water Temple':       ("the \x05\x43Water Temple",       'Morpha',        0x7d, 0x8e),
-            'Spirit Temple':      ("the \x05\x46Spirit Temple",      'Twinrova',      0x7e, 0x8f),
-            'Ice Cavern':         ("the \x05\x44Ice Cavern",         None,            0x87, 0x92),
-            'Bottom of the Well': ("the \x05\x45Bottom of the Well", None,            0xa2, 0xa5),
-            'Shadow Temple':      ("the \x05\x45Shadow Temple",      'Bongo Bongo',   0x7f, 0xa3),
+            #                      dungeon name                      compass map
+            'Deku Tree':          ("the \x05\x42Deku Tree",          0x62, 0x88),
+            'Dodongos Cavern':    ("\x05\x41Dodongo\'s Cavern",      0x63, 0x89),
+            'Jabu Jabus Belly':   ("\x05\x43Jabu Jabu\'s Belly",     0x64, 0x8a),
+            'Forest Temple':      ("the \x05\x42Forest Temple",      0x65, 0x8b),
+            'Fire Temple':        ("the \x05\x41Fire Temple",        0x7c, 0x8c),
+            'Water Temple':       ("the \x05\x43Water Temple",       0x7d, 0x8e),
+            'Spirit Temple':      ("the \x05\x46Spirit Temple",      0x7e, 0x8f),
+            'Ice Cavern':         ("the \x05\x44Ice Cavern",         0x87, 0x92),
+            'Bottom of the Well': ("the \x05\x45Bottom of the Well", 0xa2, 0xa5),
+            'Shadow Temple':      ("the \x05\x45Shadow Temple",      0x7f, 0xa3),
         }
-        for dungeon in world.dungeon_mq:
-            if dungeon in ('Gerudo Training Ground', 'Ganons Castle'):
+        for dungeon in world.dungeons:
+            if dungeon.name in ('Gerudo Training Ground', 'Ganons Castle'):
                 pass
-            elif dungeon in ('Bottom of the Well', 'Ice Cavern'):
-                dungeon_name, boss_name, compass_id, map_id = dungeon_list[dungeon]
-                if world.settings.world_count > 1:
-                    map_message = "\x13\x76\x08\x05\x42\x0F\x05\x40 found the \x05\x41Dungeon Map\x05\x40\x01for %s\x05\x40!\x09" % dungeon_name
-                else:
-                    map_message = "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for %s\x05\x40!\x01It\'s %s!\x09" % (dungeon_name, "masterful" if world.dungeon_mq[dungeon] else "ordinary")
+            elif dungeon.name in ('Bottom of the Well', 'Ice Cavern'):
+                dungeon_name, compass_id, map_id = dungeon_list[dungeon.name]
+                map_message = f"\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for {dungeon_name}\x05\x40!\x01It\'s {'masterful' if world.dungeon_mq[dungeon.name] else 'ordinary'}!\x09"
 
                 if world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12:
                     update_message_by_id(messages, map_id, map_message, allow_duplicates=True)
             else:
-                dungeon_name, boss_name, compass_id, map_id = dungeon_list[dungeon]
-                if world.settings.world_count > 1:
-                    compass_message = "\x13\x75\x08\x05\x42\x0F\x05\x40 found the \x05\x41Compass\x05\x40\x01for %s\x05\x40!\x09" % (dungeon_name)
-                elif world.mixed_pools_bosses: #TODO also enable if boss reward shuffle is on
-                    vanilla_reward = world.get_location(boss_name).vanilla_item
+                dungeon_name, compass_id, map_id = dungeon_list[dungeon.name]
+                if world.mixed_pools_bosses or world.settings.shuffle_dungeon_rewards not in ('vanilla', 'reward'):
+                    vanilla_reward = world.get_location(dungeon.vanilla_boss_name).vanilla_item
                     vanilla_reward_location = world.hinted_dungeon_reward_locations[vanilla_reward]
                     area = HintArea.at(vanilla_reward_location)
-                    area = GossipText(area.text(world.settings.clearer_hints, preposition=True), [area.color], prefix='')
-                    compass_message = "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for %s\x05\x40!\x01The %s can be found\x01%s!\x09" % (dungeon_name, vanilla_reward, area) #TODO figure out why the player name isn't being displayed
+                    area = GossipText(area.text(world.settings.clearer_hints, preposition=True, use_2nd_person=True), [area.color], prefix='', capitalize=False)
+                    compass_message = f"\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for {dungeon_name}\x05\x40!\x01The {vanilla_reward} can be found\x01{area}!\x09"
                 else:
                     if world.settings.logic_rules == 'glitched':
-                        boss_location = world.get_location(boss_name)
+                        boss_location = world.get_location(dungeon.vanilla_boss_name)
                     else:
-                        boss_location = next(filter(lambda loc: loc.type == 'Boss', world.get_entrance(f'{dungeon} Before Boss -> {boss_name} Boss Room').connected_region.locations))
-                    dungeon_reward = reward_list[boss_location.item.name]
-                    compass_message = "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for %s\x05\x40!\x01It holds the %s!\x09" % (dungeon_name, dungeon_reward)
-                update_message_by_id(messages, compass_id, compass_message, allow_duplicates=True)
+                        boss_location = next(filter(lambda loc: loc.type == 'Boss', world.get_entrance(f'{dungeon} Before Boss -> {dungeon.vanilla_boss_name} Boss Room').connected_region.locations))
+                    dungeon_reward = boss_location.item.name
+                    compass_message = f"\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for {dungeon_name}\x05\x40!\x01It holds the \x05{COLOR_MAP[REWARD_COLORS[dungeon_reward]]}{dungeon_reward}\x05\x40!\x09"
+                if world.settings.shuffle_dungeon_rewards != 'dungeon':
+                    update_message_by_id(messages, compass_id, compass_message, allow_duplicates=True)
                 if world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12:
-                    if world.settings.world_count > 1:
-                        map_message = "\x13\x76\x08\x05\x42\x0F\x05\x40 found the \x05\x41Dungeon Map\x05\x40\x01for %s\x05\x40!\x09" % dungeon_name
-                    else:
-                        map_message = "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for %s\x05\x40!\x01It\'s %s!\x09" % (dungeon_name, "masterful" if world.dungeon_mq[dungeon] else "ordinary")
+                    map_message = f"\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for {dungeon_name}\x05\x40!\x01It\'s {'masterful' if world.dungeon_mq[dungeon.name] else 'ordinary'}!\x09"
                     update_message_by_id(messages, map_id, map_message, allow_duplicates=True)
 
     # Set hints on the altar inside ToT
@@ -2661,6 +2261,8 @@ NUM_VANILLA_OBJECTS: int = 0x192
 def add_to_extended_object_table(rom: Rom, object_id: int, start_address: int, end_address: int) -> None:
     extended_id = object_id - NUM_VANILLA_OBJECTS - 1
     extended_object_table = rom.sym('EXTENDED_OBJECT_TABLE')
+    if (extended_id + 1) * 8 > rom.sym_length('EXTENDED_OBJECT_TABLE'):
+        raise RuntimeError(f'Exceeded EXTENDED_OBJECT_TABLE size: {extended_id}')
     rom.write_int32s(extended_object_table + extended_id * 8, [start_address, end_address])
 
 
@@ -2706,9 +2308,8 @@ def write_rom_texture(rom: Rom, texture_id: int, texture: dict[str, Any]) -> Non
 def get_override_table(world: World):
     return list(filter(lambda val: val is not None, map(get_override_entry, world.get_filled_locations())))
 
-
-override_struct = struct.Struct('>BBHxxxxHBxHxx')  # match override_t in get_items.h
-
+override_key_struct = struct.Struct('>BBxxI')  # match override_key_t in get_items.h
+override_struct = struct.Struct('>BBxxIHBxHxx')  # match override_t in get_items.h
 
 def get_override_table_bytes(override_table):
     return b''.join(sorted(itertools.starmap(override_struct.pack, override_table)))
@@ -2722,7 +2323,7 @@ def get_override_entry(location: Location) -> Optional[OverrideEntry]:
         return None
 
     # Don't add freestanding items, pots/crates, beehives to the override table if they're disabled. We use this check to determine how to draw and interact with them
-    if location.type in ["ActorOverride", "Freestanding", "RupeeTower", "Pot", "Crate", "FlyingPot", "SmallCrate", "Beehive", "Wonderitem"] and location.disabled != DisableType.ENABLED:
+    if location.type in ('ActorOverride', 'Freestanding', 'RupeeTower', 'Pot', 'Crate', 'FlyingPot', 'SmallCrate', 'Beehive', 'Wonderitem') and location.disabled != DisableType.ENABLED:
         return None
 
     player_id = location.item.world.id + 1
@@ -2736,14 +2337,23 @@ def get_override_entry(location: Location) -> Optional[OverrideEntry]:
     elif location.type == 'Chest':
         type = 1
         default &= 0x1F
-    elif location.type in ['Freestanding', 'Pot', 'Crate', 'FlyingPot', 'SmallCrate', 'RupeeTower', 'Beehive', 'SilverRupee', 'Wonderitem']:
+    elif location.type in ('Freestanding', 'Pot', 'Crate', 'FlyingPot', 'SmallCrate', 'RupeeTower', 'Beehive', 'SilverRupee', 'Wonderitem'):
         type = 6
         if not (isinstance(location.default, list) or isinstance(location.default, tuple)):
             raise Exception("Not right")
         if isinstance(location.default, list):
             default = location.default[0]
-        room, scene_setup, flag = default
-        default = (room << 8) + (scene_setup << 14) + flag
+
+        if len(default) == 3:
+            room, scene_setup, flag = default
+            subflag = 0
+        elif len(default) == 4:
+            room, scene_setup, flag, subflag = default
+
+        if location.scene == 0x3E: # handle grottos separately...
+            default = ((scene_setup & 0x1F) << 19) + ((room & 0x0F) << 15) + ((flag & 0x7F) << 8) + ((subflag & 0xFF)) #scene_setup = grotto_id
+        else:
+            default = (scene_setup << 22) + (room << 16) + (flag << 8) + (subflag)
     elif location.type in ('Collectable', 'ActorOverride'):
         type = 2
     elif location.type == 'GS Token':
@@ -2754,7 +2364,7 @@ def get_override_entry(location: Location) -> Optional[OverrideEntry]:
         type = 0
     elif location.type == 'GrottoScrub' and location.item.type != 'Shop':
         type = 4
-    elif location.type in ('Song', 'Cutscene'):
+    elif location.type in ('Song', 'Cutscene', 'Boss'):
         type = 5
     else:
         return None
@@ -3038,7 +2648,7 @@ def create_fake_name(name: str) -> str:
     # keeping the game E...
     new_name = ''.join(list_name)
     censor = ['cum', 'cunt', 'dike', 'penis', 'puss', 'rape', 'shit']
-    new_name_az = re.sub(r'[^a-zA-Z]', '', new_name.lower(), re.UNICODE)
+    new_name_az = re.sub(r'[^a-zA-Z]', '', new_name.lower())
     for cuss in censor:
         if cuss in new_name_az:
             return create_fake_name(name)
@@ -3171,12 +2781,15 @@ def configure_dungeon_info(rom: Rom, world: World) -> None:
 
     dungeon_rewards = [0xff] * 14
     dungeon_reward_areas = bytearray()
-    for reward in ('Kokiri Emerald', 'Goron Ruby', 'Zora Sapphire', 'Light Medallion', 'Forest Medallion', 'Fire Medallion', 'Water Medallion', 'Shadow Medallion', 'Spirit Medallion'):
-        location = next(filter(lambda loc: loc.item.name == reward, world.get_filled_locations()))
-        area = HintArea.at(location)
-        dungeon_reward_areas += area.short_name.encode('ascii').ljust(0x16) + b'\0'
-        if area.is_dungeon:
-            dungeon_rewards[codes.index(area.dungeon_name)] = boss_reward_index(location.item)
+    dungeon_reward_worlds = []
+    if world.dungeon_rewards_hinted:
+        for reward in REWARD_COLORS:
+            location = world.hinted_dungeon_reward_locations[reward]
+            area = HintArea.at(location)
+            dungeon_reward_areas += area.short_name.encode('ascii').ljust(0x16) + b'\0'
+            dungeon_reward_worlds.append(location.world.id + 1)
+            if location.world.id == world.id and area.is_dungeon:
+                dungeon_rewards[codes.index(area.dungeon_name)] = boss_reward_index(location.item)
 
     dungeon_is_mq = [1 if world.dungeon_mq.get(c) else 0 for c in codes]
 
@@ -3184,12 +2797,14 @@ def configure_dungeon_info(rom: Rom, world: World) -> None:
     rom.write_int32(rom.sym('CFG_DUNGEON_INFO_MQ_ENABLE'), int(mq_enable))
     rom.write_int32(rom.sym('CFG_DUNGEON_INFO_MQ_NEED_MAP'), int(enhance_map_compass))
     rom.write_int32(rom.sym('CFG_DUNGEON_INFO_REWARD_ENABLE'), int('altar' in world.settings.misc_hints or enhance_map_compass))
-    rom.write_int32(rom.sym('CFG_DUNGEON_INFO_REWARD_NEED_COMPASS'), (2 if world.mixed_pools_bosses else 1) if enhance_map_compass else 0) #TODO also set to 2 if boss reward shuffle is on
-    rom.write_int32(rom.sym('CFG_DUNGEON_INFO_REWARD_NEED_ALTAR'), int(not enhance_map_compass))
-    rom.write_int32(rom.sym('CFG_DUNGEON_INFO_REWARD_SUMMARY_ENABLE'), int(not world.mixed_pools_bosses)) #TODO also set to 0 if boss reward shuffle is on
+    rom.write_int32(rom.sym('CFG_DUNGEON_INFO_REWARD_NEED_COMPASS'), (2 if world.mixed_pools_bosses or world.settings.shuffle_dungeon_rewards not in ('vanilla', 'reward') else 1) if enhance_map_compass and world.settings.shuffle_dungeon_rewards != 'dungeon' else 0)
+    rom.write_int32(rom.sym('CFG_DUNGEON_INFO_REWARD_NEED_ALTAR'), int(not enhance_map_compass and world.settings.shuffle_dungeon_rewards != 'dungeon'))
+    rom.write_int32(rom.sym('CFG_DUNGEON_INFO_REWARD_SUMMARY_ENABLE'), int(not world.mixed_pools_bosses and world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward')))
     rom.write_bytes(rom.sym('CFG_DUNGEON_REWARDS'), dungeon_rewards)
     rom.write_bytes(rom.sym('CFG_DUNGEON_IS_MQ'), dungeon_is_mq)
     rom.write_bytes(rom.sym('CFG_DUNGEON_REWARD_AREAS'), dungeon_reward_areas)
+    rom.write_byte(rom.sym('CFG_DUNGEON_INFO_REWARD_WORLDS_ENABLE'), int(world.settings.world_count > 1 and world.settings.shuffle_dungeon_rewards in ('regional', 'overworld', 'any_dungeon', 'anywhere')))
+    rom.write_bytes(rom.sym('CFG_DUNGEON_REWARD_WORLDS'), dungeon_reward_worlds)
 
 
 # Overwrite an actor in rom w/ the actor data from LocationList
@@ -3211,7 +2826,7 @@ def patch_rupee_tower(location: Location, rom: Rom) -> None:
     else:
         raise Exception(f"Location does not have compatible data for patch_rupee_tower: {location.name}")
 
-    flag = flag + (room << 8)
+    flag = flag | (room << 8) | (scene_setup << 14)
     if location.address:
         for address in location.address:
             rom.write_bytes(address + 12, flag.to_bytes(2, byteorder='big'))

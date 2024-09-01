@@ -2,36 +2,18 @@
 #include "get_items.h"
 #include "z64.h"
 #include "textures.h"
-#include "z64.h"
 #include "obj_kibako.h"
+#include "actor.h"
 
 #define SMALLCRATE_DLIST (z64_gfx_t*)0x05005290
 #define SMALLCRATE_TEXTURE (uint8_t*)0x05011CA0
 extern uint8_t POTCRATE_TEXTURES_MATCH_CONTENTS;
-extern uint16_t drop_collectible_override_flag;
 extern uint8_t POTCRATE_GOLD_TEXTURE;
 extern uint8_t POTCRATE_GILDED_TEXTURE;
 extern uint8_t POTCRATE_SILVER_TEXTURE;
 extern uint8_t POTCRATE_SKULL_TEXTURE;
 extern uint8_t POTCRATE_HEART_TEXTURE;
 extern uint8_t SOA_UNLOCKS_POTCRATE_TEXTURE;
-
-override_t get_smallcrate_override(z64_actor_t* actor, z64_game_t* game) {
-    // make a dummy EnItem00 with enough info to get the override
-    EnItem00 dummy;
-    dummy.actor.actor_id = 0x15;
-    dummy.actor.rot_init.y = actor->rot_init.z;
-    dummy.actor.variable = 0;
-
-    override_t override = lookup_override(&(dummy.actor), game->scene_index, 0);
-    if (override.key.all != 0) {
-        dummy.override = override;
-        if (!Get_CollectibleOverrideFlag(&dummy)) {
-            return override;
-        }
-    }
-    return (override_t) { 0 };
-}
 
 void ObjKibako_Draw(z64_actor_t* actor, z64_game_t* game) {
     uint8_t* texture = SMALLCRATE_TEXTURE; // get original texture
@@ -93,10 +75,17 @@ void ObjKibako_SpawnCollectible_Hack(z64_actor_t* this, z64_game_t* globalCtx) {
     int16_t collectible;
 
     collectible = this->variable & 0x1F;
+
+    xflag_t* flag = &Actor_GetAdditionalData(this)->flag;
+    if (flag->all && !Get_NewFlag(flag)) {
+        drop_collectible_override_flag = *flag;
+        EnItem00* spawned = z64_Item_DropCollectible(globalCtx, &this->pos_world, 0);
+        z64_bzero(&drop_collectible_override_flag, sizeof(drop_collectible_override_flag));
+        return;
+    }
+
     if ((collectible >= 0) && (collectible <= 0x19)) {
-        drop_collectible_override_flag = this->rot_init.z;
         EnItem00* spawned = z64_Item_DropCollectible(globalCtx, &this->pos_world,
                              collectible | (((this->variable >> 8) & 0x3F) << 8));
-        drop_collectible_override_flag = 0;
     }
 }

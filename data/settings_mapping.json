@@ -163,6 +163,7 @@
             "mq_dungeons_count",
             "empty_dungeons_mode",
             "empty_dungeons_specific",
+            "empty_dungeons_rewards",
             "empty_dungeons_count",
             "shuffle_interior_entrances",
             "shuffle_hideout_entrances",
@@ -196,7 +197,9 @@
             "adult_trade_start",
             "shuffle_freestanding_items",
             "shuffle_pots",
+            "shuffle_empty_pots",
             "shuffle_crates",
+            "shuffle_empty_crates",
             "shuffle_cows",
             "shuffle_beehives",
             "shuffle_wonderitems",
@@ -215,6 +218,7 @@
           "text": "Shuffle Dungeon Items",
           "row_span": [6,6,9],
           "settings": [
+            "shuffle_dungeon_rewards",
             "shuffle_mapcompass",
             "shuffle_smallkeys",
             "shuffle_hideoutkeys",
@@ -326,6 +330,7 @@
           "text": "Timesavers",
           "row_span": [1,1,1],
           "settings": [
+            "skip_reward_from_rauru",
             "no_escape_sequence",
             "no_guard_stealth",
             "no_epona_race",
@@ -538,6 +543,7 @@
           "settings": [
             "custom_music_directorypicker",
             "background_music",
+            "display_custom_song_names",
             "fanfares",
             "ocarina_fanfares",
             "credits_music"

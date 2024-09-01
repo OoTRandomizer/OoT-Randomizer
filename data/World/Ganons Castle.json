@@ -65,6 +65,7 @@
             "Ganons Castle Water Trial Left Chest": "True",
             "Ganons Castle Water Trial Right Chest": "True",
             "Blue Fire": "has_bottle and (is_adult or Sticks or Kokiri_Sword or has_explosives)",
+            "Ganons Castle Water Trial Fairy Pot Drop": " Blue_Fire and (is_adult or has_explosives or can_use(Dins_Fire))",
             "Fairy Pot": "Blue_Fire and (is_adult or has_explosives or can_use(Dins_Fire))"
         },
         "exits": {

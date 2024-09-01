@@ -111,14 +111,25 @@ issue. You should always Hard Reset to avoid this issue entirely.
 
 ### Dev
 
-#### New Features
+#### New Settings and Options
 * New cosmetic option `Input Viewer` for showing control stick values and pressed buttons at the bottom of the screen.
+* Add new options for chest/pot/etc. textures, including `Stone of Agony Unlocks Chest Textures` which gives new functionality to the Stone of Agony.
+* The name of the currently playing custom music will now be displayed. Can be disabled using a new cosmetic setting.
+* New setting to control how dungeon rewards are shuffled.
+* The `Links Pocket` location is renamed to `ToT Reward from Rauru`, and a new setting has been added that controls whether it is skipped.
+* New option `Specific Rewards` for the `Pre-completed Dungeons Mode` setting, allowing the user to set dungeons to be precompleted depending on which medallion or stone they have. Not compatible with shuffled dungeon rewards.
+* New settings to `Include Empty Pots` and `Include Empty Crates` when pots and crates are shuffled respectively.
+* New settings preset for the No Logic Weekly.
+* New plando-only `password_lock` setting to require a password to start the seed. The password is a sequence of 6 button presses (A and C) shown near the top of the spoiler log.
+
+#### Other New Features
 * A text box has been added when completing the adult shooting gallery without a bow to warn the player that they haven't received the real reward.
 * Settings presets can have aliases. Command-line users may use an alias instead of the name to specify the preset.
 * The plando-only `item_hints` setting can now include special items such as songs or keys.
-* Add new options for chest/pot/etc. textures, including `Stone of Agony Unlocks Chest Textures` which gives new functionality to the Stone of Agony.
 * A boss key icon will now be displayed near the small key icon in dungeons where it has been obtained.
-* The name of the currently playing custom music will now be displayed.
+* Fairy pots are now included in `Shuffle Pots`.
+* A message is shown the first time a seed with No Logic is generated, to warn the user that the seed may be unbeatable.
+* New hint distribution field `excluded_goal_categories` to disable specific goal categories.
 
 #### Bug Fixes
 * Goal hints can now hint items required to defeat Ganon even if they're not required for the rainbow bridge, Ganon's boss key, or the trials. These items will be hinted as being on the "path of the hero".
@@ -129,14 +140,30 @@ issue. You should always Hard Reset to avoid this issue entirely.
 * Fix seeds with Plentiful item pool and no adult trade items selected failing to generate.
 * Fix castle courtyard exiting to incorrect area in Ganon's Castle Dungeon ER.
 * Fix heart piece count getting zeroed out incorrectly in certain circumstances.
+* Business scrubs now take their payment before giving the item.
+* The softlock which occurs when collecting a shuffled silver rupee on the ladder in the Bottom of the Well is now fixed by moving the item location so it can't be collected from the ladder instead of disallowing silver rupees on this location.
+* Fix inverted cursor in the pause menu when pausing while in first person with the `Uninvert Y-Axis in First Person Camera` cosmetic setting enabled.
+* Fix some inconsistent tags for wonderitem locations in the `Exclude Locations` list.
+* Fix swapped `Hideout Kitchen Wonderitem` and `Hideout Kitchen Stove Wonderitem` locations.
+* Fix a bug where a foolish hint could be generated for an area despite not having any shuffled item locations.
+* Fix a bug where spoiler logs' `randomized_settings` fields could be incomplete.
+* Prevent setting names from overlapping with scrollbars in the GUI.
+
+#### New Speedups
+* Meg will now take less time before respawning after getting hurt.
+* The cutscenes for stealing Epona by jumping over a fence are now sped up. Previously, only the cutscene for jumping over the front gate was shortened.
+* The cutscenes for pulling and dropping the Master Sword are now sped up.
+* The cutscene changing the water level of the Kakariko well is now even faster.
+* The cutscenes playing when a blue warp is taken for the first time have been removed.
 
 #### Other Changes
 * Clarified the error message shown when an unshuffled trade quest item is used as a starting item.
 * Locations in pre-completed dungeons will no longer be hinted.
 * Treasure Chest Game key and silver rupee options are now included in `Randomize Main Rule Settings`.
-* Meg will now take less time before respawning after getting hurt.
 * Pause menu has been modified so that equip swap will work again.
-* The cutscenes for stealing Epona by jumping over a fence are now sped up. Previously, only the cutscene for jumping over the front gate was shortened.
+* Major items from pots, crates, etc now display above Link's head while the text box is open.
+* Gameplay is no longer interrupted if you receive a junk item from another player in multiworld.
+* Removed the potentially confusing Master Sword icon from the Rainbow Bridge page of the adult Temple of Time altar text.
 
 ### 8.1
 

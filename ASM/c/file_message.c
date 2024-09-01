@@ -34,9 +34,9 @@ static uint8_t get_alpha(const z64_menudata_t* menu_data) {
     return (uint8_t)(alpha <= 0xFF ? alpha : 0xFF);
 }
 
-static void print_msg(const char* s, int* top) {
+static void print_msg(z64_disp_buf_t* db, const char* s, int* top) {
     if (*s != '\0') {
-        text_print_size(s, 0x80, *top, TEXT_WIDTH);
+        text_print_size(db, s, 0x80, *top, TEXT_WIDTH, TEXT_HEIGHT);
         *top += TEXT_HEIGHT + 1;
     }
     else {
@@ -53,9 +53,8 @@ void draw_file_message(z64_disp_buf_t* db, const z64_menudata_t* menu_data) {
         int width = (icon_count * icon_size) + ((icon_count - 1) * padding);
         int left = (Z64_SCREEN_WIDTH + width) / 2 + padding;
 
-        text_print_size("World", left, 24 - TEXT_HEIGHT, TEXT_WIDTH);
-        text_print_size(WORLD_STRING_TXT, left, 24, TEXT_WIDTH);
-        text_flush_size(db, TEXT_WIDTH, TEXT_HEIGHT, 0, 0);
+        text_print_size(db, "World", left, 24 - TEXT_HEIGHT, TEXT_WIDTH, TEXT_HEIGHT);
+        text_print_size(db, WORLD_STRING_TXT, left, 24, TEXT_WIDTH, TEXT_HEIGHT);
     }
 
     if (CFG_SHOW_SETTING_INFO) {
@@ -65,29 +64,28 @@ void draw_file_message(z64_disp_buf_t* db, const z64_menudata_t* menu_data) {
             int top = 0x71;
             int doblank = 0;
             if (*CFG_CUSTOM_MESSAGE_1) {
-                print_msg(CFG_CUSTOM_MESSAGE_1, &top);
+                print_msg(db, CFG_CUSTOM_MESSAGE_1, &top);
                 doblank = 1;
             }
             if (*CFG_CUSTOM_MESSAGE_2) {
-                print_msg(CFG_CUSTOM_MESSAGE_2, &top);
+                print_msg(db, CFG_CUSTOM_MESSAGE_2, &top);
                 doblank = 1;
             }
             if (doblank) {
-                print_msg("",                   &top);
+                print_msg(db, "",                   &top);
             }
-            print_msg("Generated with OoTR",    &top);
-            print_msg(VERSION_STRING_TXT,       &top);
-            print_msg(TIME_STRING_TXT,          &top);
-            print_msg("",                       &top);
+            print_msg(db, "Generated with OoTR",    &top);
+            print_msg(db, VERSION_STRING_TXT,       &top);
+            print_msg(db, TIME_STRING_TXT,          &top);
+            print_msg(db, "",                       &top);
 
             if (SPOILER_AVAILABLE) {
-                print_msg("Spoiler available",  &top);
+                print_msg(db, "Spoiler available",  &top);
             }
             if (PLANDOMIZER_USED) {
-                print_msg("Plandomizer",        &top);
+                print_msg(db, "Plandomizer",        &top);
             }
 
-            text_flush_size(db, TEXT_WIDTH, TEXT_HEIGHT, 0, 0);
         }
     }
 }

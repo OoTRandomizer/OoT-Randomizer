@@ -9,18 +9,20 @@ bool child_safe = false;
 
 bool missing_dlist = false;
 
+extern uint8_t CFG_SONG_NAME_STATE;
+
 const int text_width = 5;
 const int text_height = 10;
 
 void draw_illegal_model_text(z64_disp_buf_t* db) {
 
     // Only draw when paused
-    if (!(illegal_model && z64_game.pause_ctxt.state == 6)) {
+    if (!(illegal_model && z64_game.pause_ctxt.state == PAUSE_STATE_MAIN)) {
         return;
     }
 
     // If custom music songs are displayed, only show the text in the inventory screen.
-    if (are_song_displayed() && z64_game.pause_ctxt.screen_idx != 0) {
+    if (CFG_SONG_NAME_STATE > SONG_NAME_NONE && z64_game.pause_ctxt.screen_idx != 0) {
         return;
     }
 
@@ -49,8 +51,7 @@ void draw_illegal_model_text(z64_disp_buf_t* db) {
     gDPSetPrimColor(db->p++, 0, 0, 0xD7, 0x16, 0x0D, 0xFF);
 
     //Set text to print and flush it
-    text_print_size(text, draw_x, draw_y_text, text_width);
-    text_flush_size(db, text_width, text_height, 0, 0);
+    text_print_size(db, text, draw_x, draw_y_text, text_width, text_height);
 }
 
 typedef struct Limb {

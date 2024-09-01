@@ -1,7 +1,7 @@
 COOP_CONTEXT:
 
 COOP_VERSION:
-.word 6 ; Increment this if layout of co-op state changes
+.word 7 ; Increment this if layout of co-op state changes
 
 PLAYER_ID:
 .byte 0x00 ; Written by frontend
@@ -21,8 +21,7 @@ MW_PROGRESSIVE_ITEMS_ENABLE:
 .byte 0x00
 .align 4
 
-OUTGOING_KEY:
-.word 0x00000000
+.word 0x00000000 ; Padding where OUTGOING_KEY used to be.
 OUTGOING_ITEM:
 .halfword 0x0000
 OUTGOING_PLAYER:
@@ -40,4 +39,10 @@ CFG_FILE_SELECT_HASH:
 .area 4*256, 0x00
 MW_PROGRESSIVE_ITEMS_STATE:
 .endarea
+
+.align 4
+OUTGOING_KEY:
+.word 0x00000000
+.word 0x00000000
+
 .align 4

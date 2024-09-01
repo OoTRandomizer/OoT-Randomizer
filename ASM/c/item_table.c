@@ -37,7 +37,7 @@ item_row_t item_table[] = {
     [0x0008] = ITEM_ROW(0x53,      GILDED_CHEST, 0x0A, -1, 0x0036, 0x00DD, 0x2D, no_upgrade, no_effect, -1, -1, NULL), // Hookshot
     [0x0009] = ITEM_ROW(0x53,      GILDED_CHEST, 0x0B, -1, 0x004F, 0x00DD, 0x2E, no_upgrade, no_effect, -1, -1, NULL), // Longshot
     [0x000A] = ITEM_ROW(0x53,      GILDED_CHEST, 0x0F, -1, 0x0039, 0x00EA, 0x36, no_upgrade, no_effect, -1, -1, NULL), // Lens of Truth
-    [0x000B] = ITEM_ROW(0x53,      GILDED_CHEST, 0x23, -1, 0x0069, 0x00EF, 0x3B, no_upgrade, open_mask_shop, 0x23, -1, NULL), // Zelda's Letter
+    [0x000B] = ITEM_ROW(0x53,      GILDED_CHEST, 0x23, -1, 0x0069, 0x00EF, 0x3B, no_upgrade, open_gate_and_mask_shop, 0x23, -1, NULL), // Zelda's Letter
     [0x000C] = ITEM_ROW(0x53,      GILDED_CHEST, 0x08, -1, 0x003A, 0x00DE, 0x2F, no_upgrade, no_effect, -1, -1, NULL), // Ocarina of Time
     [0x000D] = ITEM_ROW(0x53,      GILDED_CHEST, 0x11, -1, 0x0038, 0x00F6, 0x41, no_upgrade, no_effect, -1, -1, NULL), // Megaton Hammer
     [0x000E] = ITEM_ROW(0x53,      GILDED_CHEST, 0x2F, -1, 0x0002, 0x0109, 0x5E, no_upgrade, trade_quest_upgrade, 0x2F, -1, NULL), // Cojiro
@@ -111,8 +111,8 @@ item_row_t item_table[] = {
     [0x0052] = ITEM_ROW(0x53,      GILDED_CHEST, 0x29, -1, 0x0015, 0x0151, 0x5C, no_upgrade, trade_quest_upgrade, 0x29, -1, NULL), // Zora Mask
     [0x0053] = ITEM_ROW(0x53,      GILDED_CHEST, 0x2A, -1, 0x0016, 0x0152, 0x5D, no_upgrade, trade_quest_upgrade, 0x2A, -1, NULL), // Gerudo Mask
     [0x0054] = ITEM_ROW(0x53,      GILDED_CHEST, 0x50, -1, 0x0079, 0x0147, 0x58, no_upgrade, no_effect, -1, -1, NULL), // Goron's Bracelet
-    [0x0055] = ITEM_ROW(0x4D,       BROWN_CHEST, 0x87, 19, 0x00F1, 0x017F, 0x71, no_upgrade, no_effect, -1, -1, NULL), // Purple Rupee
-    [0x0056] = ITEM_ROW(0x4D,       BROWN_CHEST, 0x88, 20, 0x00F2, 0x017F, 0x72, no_upgrade, no_effect, -1, -1, NULL), // Huge Rupee
+    [0x0055] = ITEM_ROW(0x4D,       BROWN_CHEST, 0x87, 20, 0x00F1, 0x017F, 0x71, no_upgrade, no_effect, -1, -1, NULL), // Purple Rupee
+    [0x0056] = ITEM_ROW(0x4D,       BROWN_CHEST, 0x88, 19, 0x00F2, 0x017F, 0x72, no_upgrade, no_effect, -1, -1, NULL), // Huge Rupee
     [0x0057] = ITEM_ROW(0x53,      GILDED_CHEST, 0x3D, -1, 0x000C, 0x00F8, 0x43, no_upgrade, give_biggoron_sword, -1, -1, NULL), // Biggoron's Sword
     [0x0058] = ITEM_ROW(0x53,      GILDED_CHEST, 0x04, -1, 0x0070, 0x0158, 0x60, no_upgrade, no_effect, -1, -1, NULL), // Fire Arrow
     [0x0059] = ITEM_ROW(0x53,      GILDED_CHEST, 0x0C, -1, 0x0071, 0x0158, 0x61, no_upgrade, no_effect, -1, -1, NULL), // Ice Arrow
@@ -221,19 +221,19 @@ item_row_t item_table[] = {
     [0x00B9] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00E4, 0x00CD, 0x1E, no_upgrade, give_magic,        -1, -1, NULL), // Magic Meter
     [0x00BA] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00E8, 0x00CD, 0x1F, no_upgrade, give_double_magic, -1, -1, NULL), // Double Magic
 
-    [0x00BB] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9091, 0x0196, 0x78, no_upgrade, give_song,  6, -1, NULL), // Minuet of Forest
-    [0x00BC] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9092, 0x0196, 0x79, no_upgrade, give_song,  7, -1, NULL), // Bolero of Fire
-    [0x00BD] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9093, 0x0196, 0x7A, no_upgrade, give_song,  8, -1, NULL), // Serenade of Water
-    [0x00BE] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9094, 0x0196, 0x7B, no_upgrade, give_song,  9, -1, NULL), // Requiem of Spirit
-    [0x00BF] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9095, 0x0196, 0x7C, no_upgrade, give_song, 10, -1, NULL), // Nocturne of Shadow
-    [0x00C0] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9096, 0x0196, 0x7D, no_upgrade, give_song, 11, -1, NULL), // Prelude of Light
+    [0x00BB] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9091, 0x0196, 0x78, no_upgrade, give_quest_item,  6, -1, NULL), // Minuet of Forest
+    [0x00BC] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9092, 0x0196, 0x79, no_upgrade, give_quest_item,  7, -1, NULL), // Bolero of Fire
+    [0x00BD] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9093, 0x0196, 0x7A, no_upgrade, give_quest_item,  8, -1, NULL), // Serenade of Water
+    [0x00BE] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9094, 0x0196, 0x7B, no_upgrade, give_quest_item,  9, -1, NULL), // Requiem of Spirit
+    [0x00BF] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9095, 0x0196, 0x7C, no_upgrade, give_quest_item, 10, -1, NULL), // Nocturne of Shadow
+    [0x00C0] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9096, 0x0196, 0x7D, no_upgrade, give_quest_item, 11, -1, NULL), // Prelude of Light
 
-    [0x00C1] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x909A, 0x00B6, 0x04, no_upgrade, give_song, 12, -1, NULL), // Zelda's Lullaby
-    [0x00C2] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x909B, 0x00B6, 0x06, no_upgrade, give_song, 13, -1, NULL), // Epona's Song
-    [0x00C3] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x909C, 0x00B6, 0x03, no_upgrade, give_song, 14, -1, NULL), // Saria's Song
-    [0x00C4] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x909D, 0x00B6, 0x08, no_upgrade, give_song, 15, -1, NULL), // Sun's Song
-    [0x00C5] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x909E, 0x00B6, 0x05, no_upgrade, give_song, 16, -1, NULL), // Song of Time
-    [0x00C6] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x909F, 0x00B6, 0x07, no_upgrade, give_song, 17, -1, NULL), // Song of Storms
+    [0x00C1] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x909A, 0x00B6, 0x04, no_upgrade, give_quest_item, 12, -1, NULL), // Zelda's Lullaby
+    [0x00C2] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x909B, 0x00B6, 0x06, no_upgrade, give_quest_item, 13, -1, NULL), // Epona's Song
+    [0x00C3] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x909C, 0x00B6, 0x03, no_upgrade, give_quest_item, 14, -1, NULL), // Saria's Song
+    [0x00C4] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x909D, 0x00B6, 0x08, no_upgrade, give_quest_item, 15, -1, NULL), // Sun's Song
+    [0x00C5] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x909E, 0x00B6, 0x05, no_upgrade, give_quest_item, 16, -1, NULL), // Song of Time
+    [0x00C6] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x909F, 0x00B6, 0x07, no_upgrade, give_quest_item, 17, -1, NULL), // Song of Storms
 
     [0x00C7] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00F8, 0x00D1, 0x23, no_upgrade, give_tycoon_wallet,   3, -1, NULL), // Tycoon's Wallet
     [0x00C8] = ITEM_ROW(0x53,      GILDED_CHEST, 0x14, -1, 0x9099, 0x010B, 0x45, no_upgrade, no_effect,           -1, -1, NULL), // Redundant Letter Bottle
@@ -328,13 +328,14 @@ item_row_t item_table[] = {
     [0x0117] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00A1, 0x01A1, 0x88, no_upgrade, give_small_key, CASTLE_ID, -1, resolve_text_small_keys), // Ganon's Castle Small Key
     [0x0118] = ITEM_ROW(0x53,      SILVER_CHEST, 0x41, -1, 0x00F3, 0x01A2, 0x89, no_upgrade, give_small_key, TCG_ID,    -1, resolve_text_small_keys_cmg), // Small Key (Chest Game)
 
-    // 0x0119 and 0x011A used in other PR
+    [0x0119] = ITEM_ROW(0x53,       BROWN_CHEST, 0x41, -1, 0x90B4, 0x0177, 0x9E, no_upgrade, full_heal, -1, -1, NULL), // Fairy
+    [0x011A] = ITEM_ROW(0x53,       BROWN_CHEST, 0x41, -1, 0x90B5, 0x0177, 0x9F, no_upgrade, no_effect, -1, -1, NULL), // Nothing :)
 
     [0x011B] = ITEM_ROW(0x53,      GILDED_CHEST, 0x0B, -1, 0x004F, 0x00DD, 0x2E, no_upgrade, no_effect, -1, -1, NULL), // Max Upgrade Hookshot
     [0x011C] = ITEM_ROW(0x53,      GILDED_CHEST, 0x52, -1, 0x005C, 0x012D, 0x4A, no_upgrade, no_effect, -1, -1, NULL), // Max Upgrade Strength
-    [0x011D] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x90B4, 0x00BF, 0x18, no_upgrade, give_max_upgrade_bomb_bag, -1, -1, NULL), // Max Upgrade Bomb Bag
-    [0x011E] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x90B5, 0x00E9, 0x35, no_upgrade, give_max_upgrade_bow, -1, -1, NULL), // Max Upgrade Bow
-    [0x011F] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x90B6, 0x00E7, 0x33, no_upgrade, give_max_upgrade_slingshot, -1, -1, NULL), // Max Upgrade Slingshot
+    [0x011D] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x90B6, 0x00BF, 0x18, no_upgrade, give_max_upgrade_bomb_bag, -1, -1, NULL), // Max Upgrade Bomb Bag
+    [0x011E] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x90B7, 0x00E9, 0x35, no_upgrade, give_max_upgrade_bow, -1, -1, NULL), // Max Upgrade Bow
+    [0x011F] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x90B8, 0x00E7, 0x33, no_upgrade, give_max_upgrade_slingshot, -1, -1, NULL), // Max Upgrade Slingshot
     [0x0120] = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x00D1, 0x22, max_upgrade_wallet_upgrade, no_effect, 3, -1, NULL), // Max Upgrade Wallet
     [0x0121] = ITEM_ROW(0x53,      GILDED_CHEST, 0x54, -1, 0x00CE, 0x00DB, 0x2B, no_upgrade, no_effect, -1, -1, NULL), // Max Upgrade Scale
     [0x0122] = ITEM_ROW(0x53,       BROWN_CHEST, 0x9B, -1, 0x00A8, 0x00BB, 0x12, no_upgrade, no_effect, -1, -1, NULL), // Max Upgrade Nut
@@ -342,6 +343,16 @@ item_row_t item_table[] = {
     [0x0124] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9019, 0x0197, 0x7E, no_upgrade, give_bombchus, 20, -1, NULL), // Max Upgrade Bombchu
     [0x0125] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00E8, 0x00CD, 0x1F, no_upgrade, give_double_magic, -1, -1, NULL), // Max Upgrade Magic
     [0x0126] = ITEM_ROW(0x53,      GILDED_CHEST, 0x08, -1, 0x003A, 0x00DE, 0x2F, no_upgrade, no_effect, -1, -1, NULL), // Max Upgrade Ocarina
+
+    [0x0127] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x0080, 0x01AB, 0x9B, no_upgrade, give_quest_item, 18, -1, NULL), // Kokiri Emerald
+    [0x0128] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x0081, 0x01AC, 0x9C, no_upgrade, give_quest_item, 19, -1, NULL), // Goron Ruby
+    [0x0129] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x0082, 0x01AD, 0x9D, no_upgrade, give_quest_item, 20, -1, NULL), // Zora Sapphire
+    [0x012A] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x0040, 0x01AE, 0x95, no_upgrade, give_quest_item,  5, -1, NULL), // Light Medallion
+    [0x012B] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x003E, 0x01AF, 0x96, no_upgrade, give_quest_item,  0, -1, NULL), // Forest Medallion
+    [0x012C] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x003C, 0x01B0, 0x97, no_upgrade, give_quest_item,  1, -1, NULL), // Fire Medallion
+    [0x012D] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x003D, 0x01B1, 0x98, no_upgrade, give_quest_item,  2, -1, NULL), // Water Medallion
+    [0x012E] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x0041, 0x01B2, 0x99, no_upgrade, give_quest_item,  4, -1, NULL), // Shadow Medallion
+    [0x012F] = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x003F, 0x01B3, 0x9A, no_upgrade, give_quest_item,  3, -1, NULL), // Spirit Medallion
 };
 
 /*  Determine which message to display based on the number of silver rupees collected.

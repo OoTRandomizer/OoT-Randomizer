@@ -36,6 +36,7 @@
             "Bottom of the Well MQ Main Area Right Slingshot Wonderitem 2": "Slingshot",
             "Bottom of the Well MQ Main Area Right Slingshot Wonderitem 3": "Slingshot",
             "Bottom of the Well MQ Main Area Right Slingshot Wonderitem 4": "Slingshot",
+            "Bottom of the Well MQ Perimeter Behind Gate Pot": "has_explosives and Slingshot",
             "Wall Fairy": "has_bottle and Slingshot" # The fairy pot is obsolete
         },
         "exits": {

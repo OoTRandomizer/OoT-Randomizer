@@ -116,8 +116,8 @@ RANDO_CONTEXT:
 .include "drop_overrides/bg_haka_tubo.asm"
 .include "drop_overrides/bg_spot18_basket.asm"
 .include "drop_overrides/obj_comb.asm"
-.include "drop_overrides/actor.asm"
 .include "drop_overrides/en_wonderitem.asm"
+.include "actor.asm"
 .include "rand_seed.asm"
 .include "messages.asm"
 .include "player_save_mask.asm"
@@ -127,16 +127,24 @@ RANDO_CONTEXT:
 .include "en_item00.asm"
 .include "volvagia.asm"
 .include "key_counter.asm"
-
 .include "armos.asm"
 .include "ocarina_buttons.asm"
 .include "fairy_ocarina.asm"
-
+.include "en_dns.asm"
+.include "bg_gate_shutter.asm"
 
 .align 0x10
 .importobj "../build/bundle.o"
 
 .align 0x10
+
+; This address bump avoids an audio issue where random crackling or buzzing noises play at possibly
+; very high volume during the entire game, even on the N64 logo screen. If this issue reappears,
+; double this number.
+;
+; For possible proper fixes, see:
+; https://discord.com/channels/274180765816848384/512048482677424138/1251961594380947587
+.skip 0x200
 
 AUDIO_THREAD_MEM_START:
 .skip AUDIO_THREAD_MEM_SIZE

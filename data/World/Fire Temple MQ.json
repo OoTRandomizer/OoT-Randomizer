@@ -70,6 +70,10 @@
             "Fire Temple MQ Iron Knuckle Room Pot 2": "True",
             "Fire Temple MQ Iron Knuckle Room Pot 3": "True",
             "Fire Temple MQ Iron Knuckle Room Pot 4": "True",
+            "Fire Temple MQ Iron Knuckle Room Pot 5": "True",
+            "Fire Temple MQ Iron Knuckle Room Pot 6": "True",
+            "Fire Temple MQ Iron Knuckle Room Pot 7": "True",
+            "Fire Temple MQ Iron Knuckle Room Pot 8": "True",
             "Fairy Pot": "has_bottle"
         }
     },
@@ -84,7 +88,9 @@
             "Fire Temple MQ Big Lava Room Left Pot": "True",
             "Fire Temple MQ Big Lava Room Right Pot": "Hookshot or logic_fire_mq_blocked_chest",
             "Fire Temple MQ Big Lava Room Alcove Pot": "True",
-            "Fire Temple MQ Boss Key Chest Room Pot": "
+            "Fire Temple MQ Boss Key Chest Room Pot 1": "
+                has_fire_source and (Bow or logic_fire_mq_bk_chest) and Hookshot",
+            "Fire Temple MQ Boss Key Chest Room Pot 2": "
                 has_fire_source and (Bow or logic_fire_mq_bk_chest) and Hookshot",
             "Fire Temple MQ GS Big Lava Room Open Door": "True",
             "Fire Temple MQ Boss Key Hookshot Wonderitem": "has_fire_source and (Bow or logic_fire_mq_bk_chest) and Hookshot",
@@ -139,7 +145,9 @@
             "Fire Temple MQ Lizalfos Maze Upper Chest": "True",
             "Fire Temple MQ Upper Lizalfos Maze Crate 1": "True",
             "Fire Temple MQ Upper Lizalfos Maze Crate 2": "True",
-            "Fire Temple MQ Upper Lizalfos Maze Crate 3": "True"
+            "Fire Temple MQ Upper Lizalfos Maze Crate 3": "True",
+            "Fire Temple MQ Upper Lizalfos Maze Small Wooden Crate 1": "True",
+            "Fire Temple MQ Upper Lizalfos Maze Small Wooden Crate 2": "True"
         },
         "exits": {
             "Fire Temple Shortcut": "has_explosives",
@@ -185,6 +193,7 @@
         "locations": {
             "Fire Temple MQ Narrow Path Room Pot 1": "True",
             "Fire Temple MQ Narrow Path Room Pot 2": "True",
+            "Fire Temple MQ Narrow Path Room Pot 3": "True",
             "Fairy Pot": "has_bottle"
         }
     },
@@ -199,6 +208,11 @@
             "Fire Temple MQ Shoot Torch On Wall Room Center Crate": "True",
             "Fire Temple MQ Shoot Torch On Wall Room Left Crate 1": "True",
             "Fire Temple MQ Shoot Torch On Wall Room Left Crate 2": "True",
+            "Fire Temple MQ Shoot Torch On Wall Room Small Wooden Crate 1": "True",
+            "Fire Temple MQ Shoot Torch On Wall Room Small Wooden Crate 2": "True",
+            "Fire Temple MQ Shoot Torch On Wall Room Small Wooden Crate 3": "True",
+            "Fire Temple MQ Shoot Torch On Wall Room Small Wooden Crate 4": "True",
+            "Fire Temple MQ Shoot Torch On Wall Room Small Wooden Crate 5": "True",
             "Fire Temple MQ Shoot Torch on Wall Room Hookshot Wonderitem": "can_use(Hookshot)"
         },
         "exits": {
@@ -211,6 +225,7 @@
         "dungeon": "Fire Temple",
         "locations": {
             "Fire Temple MQ Flame Maze Left Pot 1": "True",
+            "Fire Temple MQ Flame Maze Left Pot 2": "True",
             "Fire Temple MQ GS Flame Maze Center": "has_explosives",
             "Fire Temple MQ GS Above Flame Maze": "
                 (Hookshot and (Small_Key_Fire_Temple, 5)) or

@@ -654,8 +654,7 @@ static void draw_triforce_count_fileselect(z64_disp_buf_t* db, const uint8_t* di
     }
 
     gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, bright_alpha);
-    text_print_size("/", get_left(dataCurrent->pos) + 4, top, 8);
-    text_flush_size(db, 8, 8, 0, 0);
+    text_print_size(db, "/", get_left(dataCurrent->pos) + 4, top, 8, 8);
 
     sprite_load(db, &item_digit_sprite, 0, 10);
     // Triforce goal number is always in yellow.

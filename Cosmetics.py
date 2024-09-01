@@ -978,20 +978,24 @@ def patch_input_viewer(rom: Rom, settings: Settings, log: CosmeticsLog, symbols:
 
 def patch_song_names(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]) -> None:
     bytes_to_write = []
+    rom.write_byte(symbols['CFG_SONG_NAME_STATE'], 0x00)
     if settings.display_custom_song_names != 'off':
         if settings.display_custom_song_names == 'top':
-            rom.write_byte(symbols['CFG_SONG_NAME_POSITION'], 0x00)
+            rom.write_byte(symbols['CFG_SONG_NAME_STATE'], 0x01)
         if settings.display_custom_song_names == 'pause':
-            rom.write_byte(symbols['CFG_SONG_NAME_POSITION'], 0x01)
+            rom.write_byte(symbols['CFG_SONG_NAME_STATE'], 0x02)
 
     for index, song_name in enumerate(log.bgm.values()):
         if index >= 47:
             break
-        if len(song_name) > 50:
-            song_name_cropped = song_name[:50]
-            text_bytes = [ord(c) for c in song_name_cropped]
+        if song_name == 'None':
+            text_bytes = [ord('\0')] * 50
         else:
-            text_bytes = [ord(c) for c in song_name] + [ord('\0')] * (50 - len(song_name))
+            if len(song_name) > 50:
+                song_name_cropped = song_name[:50]
+                text_bytes = [ord('?' if ord(c) >= 0x80 else c) for c in song_name_cropped]
+            else:
+                text_bytes = [ord('?' if ord(c) >= 0x80 else c) for c in song_name] + [ord('\0')] * (50 - len(song_name))
         bytes_to_write += text_bytes
     rom.write_bytes(symbols['CFG_SONG_NAMES'], bytes_to_write)
     log.display_custom_song_names = settings.display_custom_song_names
@@ -1209,7 +1213,7 @@ patch_sets[0x1F073FE2] = {
     ],
     "symbols": {
         **patch_sets[0x1F073FE1]["symbols"],
-        "CFG_SONG_NAME_POSITION": 0x006C,
+        "CFG_SONG_NAME_STATE": 0x006C,
         "CFG_SONG_NAMES": 0x006D,
     }
 }

@@ -9,6 +9,10 @@ void manage_uninvert_yaxis() {
         if (z64_MessageGetState(((uint8_t*)(&z64_game)) + 0x20D8) == 4) {
             return;
         }
+        // Also never in pause menu.
+        if (z64_game.pause_ctxt.state == PAUSE_STATE_MAIN) {
+            return;
+        }
         if (z64_game.camera_mode == CAM_MODE_FIRST_PERSON ||
             z64_game.camera_mode == CAM_MODE_AIM_ADULT ||
             z64_game.camera_mode == CAM_MODE_AIM_BOOMERANG ||

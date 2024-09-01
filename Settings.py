@@ -243,7 +243,7 @@ class Settings(SettingInfos):
 
     def sanitize_seed(self) -> None:
         # leave only alphanumeric and some punctuation
-        self.seed = re.sub(r'[^a-zA-Z0-9_-]', '', self.seed, re.UNICODE)
+        self.seed = re.sub(r'[^a-zA-Z0-9_-]', '', self.seed)
 
     def update_seed(self, seed: str) -> None:
         if seed is None or seed == '':
