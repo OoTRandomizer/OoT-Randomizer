@@ -5254,15 +5254,20 @@ class SettingInfos:
         }
     )
 
-    slowdown_music_when_lowhp = Checkbutton(
-        gui_text       = 'Slow Down Music When Low HP',
+    low_hp_music = Combobox(
+        gui_text       = 'Low HP Music',
         shared         = False,
         cosmetic       = True,
+        choices        = {
+            'default': 'Default',
+            'custom_music_when_low_hp':     'Custom Music For Low HP',
+            'slow_music_when_lowhp':        'Slow Down Music For Low HP',
+
+        },
+        default        = 'default',
         gui_tooltip    = '''\
-            The music will slow down slightly when being low on HP.
-            Does not apply on the standard battle enemy music.
+            Change the music when being low on HP.
         ''',
-        default        = False,
     )
 
     sfx_silver_rupee = Combobox(

@@ -8,8 +8,6 @@
 AUDIO_THREAD_MEM_SIZE equ \
 (0x37F00 - 0x6670 + @fanfare_audioseq_size + @fanfare_audiobank_size + @bgm_audioseq_size + @bgm_audiobank_size)
 
-
-
 AUDIO_THREAD_INFO:
 .word \
 @fanfare_audioseq_size,     \
@@ -42,7 +40,6 @@ AudioLoad_SyncLoadFont_StatusHack:
     li      t6, FONTLOADSTATUS_EXTENDED
     jr      ra
     addu    t6, t6, v0
-
 
 //used to calculate the remaining free size of the audio thread heap
 get_audio_pointers:

@@ -1,6 +1,7 @@
 #ifndef MUSIC_H
 #define MUSIC_H
 
+#include "seqcmd.h"
 #include <stdbool.h>
 #include "z64.h"
 #include "triforce.h"
@@ -17,6 +18,13 @@ typedef enum {
     /* 1 */ SONG_NAME_TOP, // Top of the screen.
     /* 2 */ SONG_NAME_PAUSE, // Pause screen only.
 } SongNamePosition;
+
+typedef enum SequencePlayerId {
+    /* 0 */ SEQ_PLAYER_BGM_MAIN,
+    /* 1 */ SEQ_PLAYER_FANFARE,
+    /* 2 */ SEQ_PLAYER_SFX,
+    /* 3 */ SEQ_PLAYER_BGM_SUB
+} SequencePlayerId;
 
 
 #endif

@@ -1,11 +1,13 @@
 #ifndef Z64_H
 #define Z64_H
 #include <stdint.h>
+#include "stdint.h"
 #include <n64.h>
 #include "z64_math.h"
 #include "color.h"
 #include "z64collision_check.h"
 #include "save.h"
+#include "audio.h"
 
 #define Z64_OOT10             0x00
 #define Z64_OOT11             0x01
@@ -1393,7 +1395,12 @@ typedef struct {
     float          unk;
     colorRGB8_t    color;
   }                target_arr[3];          /* 0x01CE0 */
-  char             unk_0C_3_[0x000C];      /* 0x01D1C */
+  //char             unk_0C_3_[0x000C];      /* 0x01D1C */
+  z64_actor_t     *unk_8C;
+  z64_actor_t     *bgmEnemy;
+  z64_actor_t     *unk_94;
+
+
   uint32_t         swch_flags;             /* 0x01D28 */
   uint32_t         temp_swch_flags;        /* 0x01D2C */
   uint32_t         unk_flags_0;            /* 0x01D30 */
@@ -1989,6 +1996,7 @@ typedef enum {
 #define Font_LoadChar_addr                      0x8005BCE4
 #define GetItem_Draw_addr                       0x800570C0
 #define z64_Audio_GetActiveSeqId_addr           0x800CAB18
+#define z64_Audio_QueuSeqCmd_addr               0x800CAA70
 #define z64_Play_SetupRespawnPoint_addr         0x8009D94C
 #define z64_EffectSsKiraKira_SpawnSmall_addr    0x8001C66C
 
@@ -2078,6 +2086,7 @@ typedef void(*PlaySFX_proc) (uint16_t sfxId);
 typedef void(*z64_ScalePitchAndTempo_proc)(float scaleTempoAndFreq, uint8_t duration);
 typedef void(*GetItem_Draw_proc)(z64_game_t* game, int16_t drawId);
 typedef uint16_t (*z64_Audio_GetActiveSeqId_proc)(uint8_t seqId);
+typedef void(*z64_Audio_QueueSeqCmd_proc)(u32 cmd);
 typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawnMode, int32_t playerParams);
 
 /* data */
@@ -2171,6 +2180,7 @@ typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawn
 #define Message_ContinueTextbox ((Message_ContinueTextbox_proc)Message_ContinueTextbox_addr)
 #define z64_ScalePitchAndTempo        ((z64_ScalePitchAndTempo_proc)z64_ScalePitchAndTempo_addr)
 #define z64_Audio_GetActiveSeqId ((z64_Audio_GetActiveSeqId_proc)z64_Audio_GetActiveSeqId_addr)
+#define z64_Audio_QueueSeqCmd    ((z64_Audio_QueueSeqCmd_proc)z64_Audio_QueuSeqCmd_addr)
 #define z64_Play_SetupRespawnPoint ((z64_Play_SetupRespawnPoint_proc)z64_Play_SetupRespawnPoint_addr)
 
 #define PlaySFX ((PlaySFX_proc)PlaySFX_addr)
@@ -2443,5 +2453,12 @@ typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawn
 
 extern void Fault_AddHungupAndCrashImpl(const char* msg1, const char* msg2);
 extern int32_t sprintf(char* dst, char* fmt, ...);
-
+extern void Audio_SetBgmEnemyVolume(f32 dist);
+extern f32 z64_sqrtf(f32 f);
+extern u8 gAudioSpecId;
+extern u8 D_8016B9F3;
+extern Vec3f* sSariaBgmPtr;
+extern void Audio_SetVolumeScale(u8 seqPlayerIndex, u8 scaleIndex, u8 targetVol, u8 volFadeTimer);
+extern void Audio_SplitBgmChannels(s8 volSplit);
+extern void Audio_PlaySequenceWithSeqPlayerIO(u8 seqPlayerIndex, u16 seqId, u8 fadeInDuration, s8 ioPort, s8 ioData);
 #endif

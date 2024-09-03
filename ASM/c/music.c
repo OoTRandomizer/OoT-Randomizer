@@ -1,13 +1,149 @@
 #include "music.h"
+#define SQ(x) ((x)*(x))
 
 extern uint8_t CFG_SPEEDUP_MUSIC_FOR_LAST_TRIFORCE_PIECE;
 extern uint8_t CFG_SLOWDOWN_MUSIC_WHEN_LOWHP;
 extern char CFG_SONG_NAMES[];
 extern uint8_t CFG_SONG_NAME_STATE;
+extern uint8_t CFG_DISABLE_BATTLE_MUSIC;
 
 static uint16_t previousSeqIndexChange = 0;
 static uint8_t isSlowedDown = 0;
 static uint8_t isSpeedup = 0;
+
+void Audio_PlaySariaBgm(Vec3f* pos, u16 seqId, u16 distMax) {
+    f32 absY;
+    f32 dist;
+    u8 vol;
+    f32 prevDist;
+    u8 returnToSequence;
+    if (seqId == 62) {
+        returnToSequence = 48;
+    } else {
+        returnToSequence = 40;
+    }
+    if (CFG_SLOWDOWN_MUSIC_WHEN_LOWHP == 2) {
+        if (z64_Audio_GetActiveSeqId(SEQ_PLAYER_BGM_SUB) == 74) {
+            SEQCMD_SET_CHANNEL_DISABLE_MASK(SEQ_PLAYER_BGM_SUB, 0);
+            sSariaBgmPtr = NULL;
+            return;
+        } else if (z64_Audio_GetActiveSeqId(SEQ_PLAYER_BGM_MAIN) != returnToSequence) {
+            Audio_PlaySequenceWithSeqPlayerIO(SEQ_PLAYER_BGM_MAIN, returnToSequence, 0, 7, 2);
+            sSariaBgmPtr = NULL;
+        }
+    }
+    if (D_8016B9F3 != 0) {
+        D_8016B9F3--;
+        return;
+    }
+
+    dist = z64_sqrtf(SQ(pos->z) + SQ(pos->x));
+    if (sSariaBgmPtr == NULL) {
+        sSariaBgmPtr = pos;
+        Audio_PlaySequenceWithSeqPlayerIO(SEQ_PLAYER_BGM_SUB, seqId, 0, 7, 2);
+    } else {
+        prevDist = z64_sqrtf(SQ(sSariaBgmPtr->z) + SQ(sSariaBgmPtr->x));
+        if (dist < prevDist) {
+            sSariaBgmPtr = pos;
+        } else {
+            dist = prevDist;
+        }
+    }
+
+    if (pos->y < 0.0f) {
+        absY = -pos->y;
+    } else {
+        absY = pos->y;
+    }
+
+    if ((distMax / 15.0f) < absY) {
+        vol = 0;
+    } else if (dist < distMax) {
+        vol = (1.0f - (dist / distMax)) * 127.0f;
+    } else {
+        vol = 0;
+    }
+
+    if (seqId != 40) {
+
+        Audio_SplitBgmChannels(vol);
+    }
+
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_SUB, 3, vol, 0);
+    Audio_SetVolumeScale(SEQ_PLAYER_BGM_MAIN, 3, 0x7F - vol, 0);
+}
+
+void func_800F6964(u16 arg0) {
+    s32 skip;
+    u8 channelIdx;
+
+    SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_MAIN, (arg0 * 3) / 2);
+    SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_FANFARE, (arg0 * 3) / 2);
+    for (channelIdx = 0; channelIdx < 16; channelIdx++) {
+        skip = false;
+        switch (channelIdx) {
+            case 11:
+            case 12:
+                if (gAudioSpecId == 10) {
+                    skip = true;
+                }
+                break;
+            case 13:
+                skip = true;
+                break;
+        }
+
+        if (!skip) {
+            SEQCMD_SET_CHANNEL_VOLUME(SEQ_PLAYER_SFX, channelIdx, arg0 >> 1, 0);
+        }
+    }
+    if (CFG_SLOWDOWN_MUSIC_WHEN_LOWHP == 2) {
+
+        if (z64_Audio_GetActiveSeqId(SEQ_PLAYER_BGM_SUB) != 74) {
+            SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_SUB, (arg0 * 3) / 2);
+        }
+    } else {
+        SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_SUB, (arg0 * 3) / 2);
+    }
+}
+
+uint8_t update_seq_mode_hook(z64_game_t* play) {
+    u8 seqMode = 0xFF;
+    if (play->bgmEnemy != NULL) {
+        if (CFG_SLOWDOWN_MUSIC_WHEN_LOWHP == 2) {
+            if (!Health_IsCritical()) {
+                if (!CFG_DISABLE_BATTLE_MUSIC) {
+                    seqMode = 1;
+                    Audio_SetBgmEnemyVolume(z64_sqrtf(play->bgmEnemy->distsq_from_link));
+                }
+            }
+        } else {
+            if (!CFG_DISABLE_BATTLE_MUSIC) {
+                seqMode = 1;
+                Audio_SetBgmEnemyVolume(z64_sqrtf(play->bgmEnemy->distsq_from_link));
+            }
+        }
+    }
+    return seqMode;
+}
+
+void Audio_UpdateLowHpMusic(void) {
+    if (CFG_SLOWDOWN_MUSIC_WHEN_LOWHP == 2) {
+        if (Health_IsCritical()) {
+            if (z64_Audio_GetActiveSeqId(SEQ_PLAYER_BGM_SUB) != 74 /*NA_BGM_NAVI_OPENING*/) {
+                SEQCMD_PLAY_SEQUENCE(SEQ_PLAYER_BGM_SUB, 0, 0, 74 /*NA_BGM_NAVI_OPENING*/);
+            }
+            SEQCMD_SET_SEQPLAYER_VOLUME(SEQ_PLAYER_BGM_SUB, 0, 0x7F);
+            SEQCMD_SET_CHANNEL_DISABLE_MASK(SEQ_PLAYER_BGM_MAIN, 0xFFFF);
+        } else if (!Health_IsCritical()) {
+            if (z64_Audio_GetActiveSeqId(SEQ_PLAYER_BGM_SUB) == 74 /*NA_BGM_NAVI_OPENING*/) {
+                SEQCMD_STOP_SEQUENCE(SEQ_PLAYER_BGM_SUB, 0);
+                SEQCMD_SET_SEQPLAYER_VOLUME(SEQ_PLAYER_BGM_MAIN, 0, 0x7F);
+            }
+            SEQCMD_SET_CHANNEL_DISABLE_MASK(SEQ_PLAYER_BGM_MAIN, 0);
+        }
+    }
+}
 
 void manage_music_changes() {
     if (CFG_SPEEDUP_MUSIC_FOR_LAST_TRIFORCE_PIECE && !isSlowedDown) {
@@ -19,7 +155,7 @@ void manage_music_changes() {
             isSpeedup = 1;
         }
     }
-    if (CFG_SLOWDOWN_MUSIC_WHEN_LOWHP) {
+    if (CFG_SLOWDOWN_MUSIC_WHEN_LOWHP == 1) {
         if (Health_IsCritical()) {
             if (z64_Audio_GetActiveSeqId(0) != previousSeqIndexChange || isSpeedup) {
                 // One tone down : 2^(-2/12)
@@ -34,6 +170,7 @@ void manage_music_changes() {
             previousSeqIndexChange = 0;
         }
     }
+    Audio_UpdateLowHpMusic();
 }
 
 _Bool Health_IsCritical(void) {

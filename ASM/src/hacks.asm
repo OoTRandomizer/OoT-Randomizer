@@ -70,6 +70,16 @@ Gameplay_InitSkybox:
     nop
 .endarea
 
+
+;==================================================================================================
+; Hook func_800F6964
+;==================================================================================================
+
+.org 0x8009B114
+    ; replaces
+    ; jal 0x800C7684
+    jal func_800F6964
+
 ;==================================================================================================
 ; Increase Number of Audio Banks, and Audiotable (samples)
 ;==================================================================================================
@@ -4156,3 +4166,5 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/ovl_obj_mure3.asm"
 .include "hacks/z_parameter.asm"
 .include "hacks/z_file_choose.asm"
+.include "hacks/z_player.asm"
+.include "hacks/z_en_river_sound.asm"

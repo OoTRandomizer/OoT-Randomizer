@@ -1,6 +1,9 @@
 /* Addresses should be listed in order */
 z64_EquippedItemOutlineTex = 0x2000E00;
 z64_Gfx_SetupDL_42Opa = 0x8007E868;
+Audio_SetBgmEnemyVolume = 0x800C6E48;
+z64_sqrtf = 0x800D0DC0;
+gAudioSpecId = 0x801043C0;
 Audio_StopCurrentMusic = 0x800C7684;
 sprintf = 0x800CE7b4;
 Fault_AddHungupAndCrashImpl = 0x800AF564;
@@ -21,3 +24,9 @@ z64_sEquipAnimTimer = 0x8039EAB4;
 z64_sEquipMoveTimer = 0x8039EAB8;
 gActorOverlayTable = 0x800E8530;
 Message_CloseTextbox = 0x800d6218;
+D_8016B9F3 = 0x80121F0A;
+sSariaBgmPtr = 0x8010195C;
+Audio_SetVolumeScale = 0x800CACA4;
+Audio_SplitBgmChannels = 0x800C5E4C;
+Audio_PlaySequenceWithSeqPlayerIO = 0x800C6B54;
+

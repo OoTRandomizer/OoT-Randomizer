@@ -52,9 +52,6 @@ def patch_music(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[s
         Music.randomize_music(rom, settings, log, symbols)
     else:
         Music.restore_music(rom)
-    # Remove battle music
-    if settings.disable_battle_music:
-        rom.write_byte(0xBE447F, 0x00)
 
 
 def patch_model_colors(rom: Rom, color: Optional[list[int]], model_addresses: tuple[list[int], list[int], list[int]]) -> None:
@@ -942,11 +939,24 @@ def patch_music_changes(rom: Rom, settings: Settings, log: CosmeticsLog, symbols
         rom.write_byte(symbols['CFG_SPEEDUP_MUSIC_FOR_LAST_TRIFORCE_PIECE'], 0x00)
     log.speedup_music_for_last_triforce_piece = settings.speedup_music_for_last_triforce_piece
 
-    if settings.slowdown_music_when_lowhp:
+    if settings.low_hp_music == 'slow_music_when_lowhp':
         rom.write_byte(symbols['CFG_SLOWDOWN_MUSIC_WHEN_LOWHP'], 0x01)
-    else:
+    # If generating from patch, do a version check to make sure low HP music is supported.
+    if settings.low_hp_music == 'custom_music_when_low_hp':
+        if settings.patch_file != '':
+            rom_version_bytes = rom.read_version_bytes()
+            rom_version = f'{rom_version_bytes[0]}.{rom_version_bytes[1]}.{rom_version_bytes[2]}'
+            # needs to match current version when pr is closed
+            if compare_version(rom_version, '8.1.80') < 0:
+                log.errors.append("Custom low HP is not supported by this patch version. Setting to default.")
+                rom.write_byte(symbols['CFG_SLOWDOWN_MUSIC_WHEN_LOWHP'], 0x00)
+            else:
+                rom.write_byte(symbols['CFG_SLOWDOWN_MUSIC_WHEN_LOWHP'], 0x02)
+        else:
+            rom.write_byte(symbols['CFG_SLOWDOWN_MUSIC_WHEN_LOWHP'], 0x02)
+    if settings.low_hp_music == 'default':
         rom.write_byte(symbols['CFG_SLOWDOWN_MUSIC_WHEN_LOWHP'], 0x00)
-    log.slowdown_music_when_lowhp = settings.slowdown_music_when_lowhp
+    log.low_hp_music = settings.low_hp_music
 
 def patch_correct_model_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]) -> None:
     if settings.correct_model_colors:
@@ -999,6 +1009,13 @@ def patch_song_names(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: d
         bytes_to_write += text_bytes
     rom.write_bytes(symbols['CFG_SONG_NAMES'], bytes_to_write)
     log.display_custom_song_names = settings.display_custom_song_names
+
+def patch_battle_music(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]) -> None:
+    if settings.disable_battle_music:
+        rom.write_byte(symbols['CFG_DISABLE_BATTLE_MUSIC'], 0x01)
+    else:
+        rom.write_byte(symbols['CFG_DISABLE_BATTLE_MUSIC'], 0x01)
+    #log.disable_battle_music = settings.disable_battle_music
 
 legacy_cosmetic_data_headers: list[int] = [
     0x03481000,
@@ -1215,6 +1232,18 @@ patch_sets[0x1F073FE2] = {
         **patch_sets[0x1F073FE1]["symbols"],
         "CFG_SONG_NAME_STATE": 0x006C,
         "CFG_SONG_NAMES": 0x006D,
+    }
+}
+
+# update when merged
+# 8.1.80
+patch_sets[0x1F073FE3] = {
+    "patches": patch_sets[0x1F073FE2]["patches"] + [
+        patch_battle_music,
+    ],
+    "symbols": {
+        **patch_sets[0x1F073FE2]["symbols"],
+        "CFG_DISABLE_BATTLE_MUSIC": 0x0AC7,
     }
 }
 

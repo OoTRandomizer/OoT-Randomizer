@@ -47,7 +47,7 @@ bgm_sequence_ids: tuple[tuple[str, int], ...] = (
     ("Spirit Temple", 0x3F),
     ("Horse Race", 0x40),
     ("Ingo Theme", 0x42),
-    ("Fairy Flying", 0x4A),
+    ("Low HP", 0x4A),
     ("Deku Tree", 0x4B),
     ("Windmill Hut", 0x4C),
     ("Shooting Gallery", 0x4E),
@@ -469,8 +469,11 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
     for i in bgmlist:
         base = 0xB89911 + 0xDD + (i * 2)
         j = replacement_dict.get(i if new_sequences[i].size else new_sequences[i].address, None)
-        if j:
-            rom.write_byte(base, j.instrument_set)
+        if i == 0x4A:
+            rom.write_byte(base, j.instrument_set + fanfare_bank_shift)
+        else:
+            if j:
+                rom.write_byte(base, j.instrument_set)
     # Update instrument sets for fanfare sequences
     for i in fanfarelist:
         base = 0xB89911 + 0xDD + (i * 2)
@@ -571,9 +574,13 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                             instr_offset_in_file += instrument['size']
                     added_banks.append(bank)
                     new_bank_index += 1
-
+                if i == 0x4A:
+                    # write cache type for bank to 1 if the sequence is fairy flying (Low HP music)
+                    bank_entry[9] = 1
                 # Update the sequence's bank (instrument set)
                 rom.write_byte(seq_bank_base, bank.index)
+    # write cache type for sequence fairy flying (Low HP music)
+    rom.write_byte(0x00B89F89, 0x01)
 
 
     # Patch the new instrument data into the ROM in a new file.

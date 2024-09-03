@@ -144,7 +144,7 @@ RANDO_CONTEXT:
 ;
 ; For possible proper fixes, see:
 ; https://discord.com/channels/274180765816848384/512048482677424138/1251961594380947587
-.skip 0x200
+.skip 0x400
 
 AUDIO_THREAD_MEM_START:
 .skip AUDIO_THREAD_MEM_SIZE
