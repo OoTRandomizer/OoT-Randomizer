@@ -702,3 +702,21 @@ DemoEffect_DrawJewel:
     sw      s3, 0x40(sp)
     jr      a2
     nop
+
+SKIP_N64_LOGO:
+.byte 0x00
+.align 4
+
+skip_nintendo_logo:
+    ; Displaced code
+    lui     v0, 0x8012
+
+    lb      t4, SKIP_N64_LOGO
+    beqz    t4, @@return
+    nop
+
+    li      t3, 0x01
+
+@@return:
+    jr      ra
+    nop
