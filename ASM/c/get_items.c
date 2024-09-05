@@ -134,7 +134,7 @@ override_key_t get_override_search_key(z64_actor_t *actor, uint8_t scene, uint8_
         };
     } else if (scene == 0x3E && actor->actor_id == 0x011A) {
         return (override_key_t){
-            .scene = z64_file.grotto_id,
+            .scene = z64_file.respawn[RESPAWN_MODE_RETURN].data,
             .type = OVR_GROTTO_SCRUB,
             .pad = 0,
             .flag = item_id,
@@ -763,7 +763,7 @@ bool Item00_KillActorIfFlagIsSet(z64_actor_t* actor) {
         flag.scene = z64_game.scene_index;
         if (z64_game.scene_index == 0x3E) {
             flag.grotto.room = actor->room_index;
-            flag.grotto.grotto_id = z64_file.grotto_id & 0x1F;
+            flag.grotto.grotto_id = z64_file.respawn[RESPAWN_MODE_RETURN].data & 0x1F;
             flag.grotto.flag = CURR_ACTOR_SPAWN_INDEX;
             flag.grotto.subflag = 0;
         } else {

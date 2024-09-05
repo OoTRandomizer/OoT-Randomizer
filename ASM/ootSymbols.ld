@@ -1,5 +1,6 @@
 /* Addresses should be listed in order */
 z64_EquippedItemOutlineTex = 0x2000E00;
+Actor_SetColorFilter = 0x80027090;
 z64_Gfx_SetupDL_42Opa = 0x8007E868;
 Audio_StopCurrentMusic = 0x800C7684;
 sprintf = 0x800CE7b4;
