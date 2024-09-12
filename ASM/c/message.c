@@ -2,6 +2,7 @@
 #include "z64.h"
 #include "stdbool.h"
 #include "save.h"
+#include "dungeon_info.h"
 
 // no support for kana since they're not part of the message charset
 char FILENAME_ENCODING[256] = {
@@ -114,6 +115,96 @@ bool Message_Decode_Additional_Control_Codes(uint8_t currChar, uint32_t* pDecode
         case 0xF2: {
             // Outgoing item filename
             Message_AddFileName(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, PLAYER_NAMES[PLAYER_NAME_ID]);
+            (*pDecodedBufPos)--;
+            return true;
+        }
+        case 0xF3: {
+            // Farore's Wind destination
+            switch (z64_file.respawn[RESPAWN_MODE_TOP].entranceIndex) {
+                case 0x000:
+                case 0x252: {
+                    // Deku Tree
+                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[0].name);
+                    break;
+                }
+                case 0x004:
+                case 0x0C5: {
+                    // DC
+                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[1].name);
+                    break;
+                }
+                case 0x028:
+                case 0x407: {
+                    // Jabu
+                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[2].name);
+                    break;
+                }
+                case 0x169:
+                case 0x24E: {
+                    // Forest Temple
+                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[3].name);
+                    break;
+                }
+                case 0x165:
+                case 0x175: {
+                    // Fire Temple
+                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[4].name);
+                    break;
+                }
+                case 0x010:
+                case 0x423: {
+                    // Water Temple
+                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[5].name);
+                    break;
+                }
+                case 0x037:
+                case 0x2B2: {
+                    // Shadow Temple
+                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[6].name);
+                    break;
+                }
+                case 0x082:
+                case 0x2F5:
+                case 0x3F0:
+                case 0x3F4: {
+                    // Spirit Temple
+                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[7].name);
+                    break;
+                }
+                case 0x098: {
+                    // BotW
+                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[8].name);
+                    break;
+                }
+                case 0x088: {
+                    // Ice
+                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[9].name);
+                    break;
+                }
+                case 0x008: {
+                    // GTG
+                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[11].name);
+                    break;
+                }
+                case 0x41B:
+                case 0x467:
+                case 0x534:
+                case 0x538:
+                case 0x53C:
+                case 0x540:
+                case 0x544:
+                case 0x548:
+                case 0x54C: {
+                    // Ganon
+                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[12].name);
+                    break;
+                }
+                default: {
+                    // Vanilla text
+                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, "the Warp Point");
+                    break;
+                }
+            }
             (*pDecodedBufPos)--;
             return true;
         }

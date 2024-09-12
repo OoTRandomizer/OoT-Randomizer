@@ -65,6 +65,7 @@ CONTROL_CODES: dict[int, tuple[str, int, Callable[[Any], str]]] = {
     0xF0: ('silver_rupee', 1, lambda d: '<silver rupee count ' + "{:02x}".format(d) + '>' ),
     0xF1: ('key_count', 1, lambda d: '<key count ' + "{:02x}".format(d) + '>' ),
     0xF2: ('outgoing_item_filename', 0, lambda _: '<outgoing item filename>' ),
+    0xF3: ('farores_wind_destination', 0, lambda _: '<farores_wind_destination>' ),
 }
 
 # Maps unicode characters to corresponding bytes in OOTR's character set.
@@ -161,6 +162,7 @@ ITEM_MESSAGES: list[tuple[int, str]] = [
     (0x0038, "\x08\x13\x11You found the \x05\x41Megaton Hammer\x05\x40!\x01It's so heavy, you need to\x01use two hands to swing it!"),
     (0x0039, "\x08\x13\x0FYou found the \x05\x41Lens of Truth\x05\x40!\x01Mysterious things are hidden\x01everywhere!"),
     (0x003A, "\x08\x13\x08You found the \x05\x41Ocarina of Time\x05\x40!\x01It glows with a mystical light..."),
+    (0x003B, "\x08You cast Farore's Wind!\x01\x1C\x05\x42Return to \xF3\x01Dispel the Warp Point\x01Exit\x05\x40"),
     (0x003C, "\x08\x13\x67You received the \x05\x41Fire\x01Medallion\x05\x40!\x01Darunia awakens as a Sage and\x01adds his power to yours!"),
     (0x003D, "\x08\x13\x68You received the \x05\x43Water\x01Medallion\x05\x40!\x01Ruto awakens as a Sage and\x01adds her power to yours!"),
     (0x003E, "\x08\x13\x66You received the \x05\x42Forest\x01Medallion\x05\x40!\x01Saria awakens as a Sage and\x01adds her power to yours!"),
