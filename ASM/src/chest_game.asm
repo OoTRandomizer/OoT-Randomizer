@@ -113,6 +113,8 @@ chestgame_force_game_loss_left:
     nop
     ; simulate lost game
     addiu   $t0, $zero, 0x0071
+    j       chestgame_warn_player_of_rigged_game
+    nop
 
 @@return:
     jr      $ra
@@ -138,7 +140,27 @@ chestgame_force_game_loss_right:
     nop
     ; simulate lost game
     addiu   $v1, $zero, 0x0071
+    j       chestgame_warn_player_of_rigged_game
+    nop
 
 @@return:
     jr      $ra
     nop
+
+; Add a helper message if the tcg_requires_lens
+; setting is enabled and the player still attempts
+; the game.
+chestgame_warn_player_of_rigged_game:
+    addiu   $sp, $sp, -0x20
+    sw      $ra, 0x14($sp)
+    sw      $v0, 0x18($sp)
+    sw      $v1, 0x1C($sp)
+
+    jal     treasure_chest_game_message
+    nop
+
+    lw      $ra, 0x14($sp)
+    lw      $v0, 0x18($sp)
+    lw      $v1, 0x1C($sp)
+    jr      $ra
+    addiu   $sp, $sp, 0x20

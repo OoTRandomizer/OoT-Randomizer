@@ -3658,9 +3658,15 @@ DemoEffect_DrawJewel_AfterHook:
 ; Left/right do the same check for the get item ID,
 ; but use different registers for the actor spawn branch
 ; and chest actor references for coordinates.
+; Replaces:
+;   lwc1    $f0, 0x0024(v1)
+;   lwc1    $f2, 0x0028(v1)
 .orga 0xE43964
     jal chestgame_force_game_loss_left
     nop
+; Replaces:
+;   lwc1    $f0, 0x0024(v0)
+;   lwc1    $f2, 0x0028(v0)
 .orga 0xE43A0C
     jal chestgame_force_game_loss_right
     nop

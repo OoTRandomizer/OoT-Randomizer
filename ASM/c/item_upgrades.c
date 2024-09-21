@@ -183,7 +183,10 @@ uint16_t upgrade_key_model(z64_file_t* save, override_t override) {
     uint16_t item_id = override.value.base.item_id;
     // Force treasure chest game loss if the setting to require Lens of Truth
     // is enabled. Room index is checked to avoid overriding the salesman's item.
-    if (item_id == 0x0071 && !SHUFFLE_CHEST_GAME && TCG_REQUIRES_LENS && save->items[Z64_SLOT_LENS] != Z64_ITEM_LENS && z64_game.room_index != 0) {
+    if (item_id == 0x0071 && !SHUFFLE_CHEST_GAME && TCG_REQUIRES_LENS
+     && override.value.base.player == PLAYER_ID
+     && save->items[Z64_SLOT_LENS] != Z64_ITEM_LENS
+     && z64_game.room_index != 0) {
         return 0x0072; // Green Rupee (Chest Game)
     }
     if (CUSTOM_KEY_MODELS) {
