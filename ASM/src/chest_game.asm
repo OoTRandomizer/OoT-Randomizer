@@ -95,8 +95,8 @@ chestgame_delayed_chest_open:
 ; contents if the tcg_requires_lens setting is enabled
 chestgame_force_game_loss_left:
     ; displaced code
-    lwc1    $f0, 0x0024($v0)
-    lwc1    $f2, 0x0028($v0)
+    lwc1    $f0, 0x0024($v1)
+    lwc1    $f2, 0x0028($v1)
     ; check setting
     lb      $t7, TCG_REQUIRES_LENS
     beqz    $t7, @@return

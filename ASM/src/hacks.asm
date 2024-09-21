@@ -3656,7 +3656,8 @@ DemoEffect_DrawJewel_AfterHook:
 ; Show a key in the unopened chest regardless of chest
 ; contents if the tcg_requires_lens setting is enabled.
 ; Left/right do the same check for the get item ID,
-; but use different registers for the actor spawn branch.
+; but use different registers for the actor spawn branch
+; and chest actor references for coordinates.
 .orga 0xE43964
     jal chestgame_force_game_loss_left
     nop
