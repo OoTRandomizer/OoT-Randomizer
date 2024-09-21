@@ -1,5 +1,7 @@
 SHUFFLE_CHEST_GAME:
 .byte 0x00
+TCG_REQUIRES_LENS:
+.byte 0x00
 .align 4
 
 chestgame_buy_item_hook:
@@ -88,3 +90,55 @@ chestgame_delayed_chest_open:
 @@return:
     jr      ra
     lw      a0, 0x004C($sp)     ; displaced code
+
+; Show a key in the unopened chest regardless of chest
+; contents if the tcg_requires_lens setting is enabled
+chestgame_force_game_loss_left:
+    ; displaced code
+    lwc1    $f0, 0x0024($v0)
+    lwc1    $f2, 0x0028($v0)
+    ; check setting
+    lb      $t7, TCG_REQUIRES_LENS
+    beqz    $t7, @@return
+    nop
+    ; safety check to prevent simulated loss if keys are shuffled
+    lb      $t7, SHUFFLE_CHEST_GAME
+    bnez    $t7, @@return
+    nop
+    ; check if player has lens of truth
+    lui     $t1, hi(SAVE_CONTEXT + 0x81)
+    lb      $t2, lo(SAVE_CONTEXT + 0x81)($t1) ; lens item slot
+    li      $t3, 15 ; lens item ID
+    beq     $t2, $t3, @@return
+    nop
+    ; simulate lost game
+    addiu   $t0, $zero, 0x0071
+
+@@return:
+    jr      $ra
+    nop
+
+chestgame_force_game_loss_right:
+    ; displaced code
+    lwc1    $f0, 0x0024($v0)
+    lwc1    $f2, 0x0028($v0)
+    ; check setting
+    lb      $t7, TCG_REQUIRES_LENS
+    beqz    $t7, @@return
+    nop
+    ; safety check to prevent simulated loss if keys are shuffled
+    lb      $t7, SHUFFLE_CHEST_GAME
+    bnez    $t7, @@return
+    nop
+    ; check if player has lens of truth
+    lui     $t1, hi(SAVE_CONTEXT + 0x81)
+    lb      $t2, lo(SAVE_CONTEXT + 0x81)($t1) ; lens item slot
+    li      $t3, 15 ; lens item ID
+    beq     $t2, $t3, @@return
+    nop
+    ; simulate lost game
+    addiu   $v1, $zero, 0x0071
+
+@@return:
+    jr      $ra
+    nop

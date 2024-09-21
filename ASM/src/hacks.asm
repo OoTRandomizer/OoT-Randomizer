@@ -3653,6 +3653,17 @@ DemoEffect_DrawJewel_AfterHook:
     jal     chestgame_delayed_chest_open
     nop
 
+; Show a key in the unopened chest regardless of chest
+; contents if the tcg_requires_lens setting is enabled.
+; Left/right do the same check for the get item ID,
+; but use different registers for the actor spawn branch.
+.orga 0xE43964
+    jal chestgame_force_game_loss_left
+    nop
+.orga 0xE43A0C
+    jal chestgame_force_game_loss_right
+    nop
+
 ;==================================================================================================
 ; Bombchu Ticking Color
 ;==================================================================================================

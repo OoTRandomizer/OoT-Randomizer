@@ -131,6 +131,7 @@
         "easier_fire_arrow_entry": false,
         "fae_torch_count": 3,
         "ruto_already_f1_jabu": false,
+        "tcg_requires_lens": false,
         "ocarina_songs": "off",
         "correct_chest_appearances": "off",
         "chest_textures_specific": [
@@ -339,6 +340,7 @@
         "easier_fire_arrow_entry": false,
         "fae_torch_count": 3,
         "ruto_already_f1_jabu": false,
+        "tcg_requires_lens": false,
         "ocarina_songs": "off",
         "correct_chest_appearances": "both",
         "chest_textures_specific": [
@@ -545,6 +547,7 @@
         "easier_fire_arrow_entry": false,
         "fae_torch_count": 3,
         "ruto_already_f1_jabu": true,
+        "tcg_requires_lens": false,
         "ocarina_songs": "off",
         "correct_chest_appearances": "both",
         "chest_textures_specific": [
@@ -752,6 +755,7 @@
         "easier_fire_arrow_entry": false,
         "fae_torch_count": 3,
         "ruto_already_f1_jabu": false,
+        "tcg_requires_lens": false,
         "ocarina_songs": "off",
         "correct_chest_appearances": "off",
         "chest_textures_specific": [
@@ -964,6 +968,7 @@
         "easier_fire_arrow_entry": false,
         "fae_torch_count": 3,
         "ruto_already_f1_jabu": true,
+        "tcg_requires_lens": false,
         "ocarina_songs": "off",
         "correct_chest_appearances": "textures",
         "chest_textures_specific": [
@@ -1167,6 +1172,7 @@
         "easier_fire_arrow_entry": false,
         "fae_torch_count": 3,
         "ruto_already_f1_jabu": true,
+        "tcg_requires_lens": false,
         "ocarina_songs": "off",
         "correct_chest_appearances": "textures",
         "chest_textures_specific": [
@@ -1544,6 +1550,7 @@
         "easier_fire_arrow_entry": false,
         "fae_torch_count": 3,
         "ruto_already_f1_jabu": false,
+        "tcg_requires_lens": false,
         "ocarina_songs": "all",
         "correct_chest_appearances": "off",
         "chest_textures_specific": [
@@ -1736,6 +1743,7 @@
         "easier_fire_arrow_entry": false,
         "fae_torch_count": 3,
         "ruto_already_f1_jabu": false,
+        "tcg_requires_lens": false,
         "ocarina_songs": "off",
         "correct_chest_appearances": "off",
         "chest_textures_specific": [
@@ -1953,6 +1961,7 @@
         "easier_fire_arrow_entry": false,
         "fae_torch_count": 3,
         "ruto_already_f1_jabu": true,
+        "tcg_requires_lens": false,
         "ocarina_songs": "off",
         "correct_chest_appearances": "both",
         "chest_textures_specific": [
@@ -2166,6 +2175,7 @@
         "easier_fire_arrow_entry": true,
         "fae_torch_count": 5,
         "ruto_already_f1_jabu": false,
+        "tcg_requires_lens": false,
         "ocarina_songs": "off",
         "correct_chest_appearances": "off",
         "chest_textures_specific": [
@@ -2344,6 +2354,7 @@
         "easier_fire_arrow_entry": false,
         "fae_torch_count": 2,
         "ruto_already_f1_jabu": false,
+        "tcg_requires_lens": false,
         "ocarina_songs": "off",
         "correct_chest_appearances": "textures",
         "chest_textures_specific": [

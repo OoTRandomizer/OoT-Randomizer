@@ -1446,6 +1446,9 @@ class SettingInfos:
             'Anywhere': Treasure Chest Game keys can appear anywhere
             in the world.
         ''',
+        disable        = {
+            '!vanilla': {'settings': ['tcg_requires_lens']}
+        },
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
@@ -3344,6 +3347,20 @@ class SettingInfos:
         ''',
         default        = False,
         shared         = True,
+    )
+
+    tcg_requires_lens = Checkbutton(
+        gui_text       = 'Require Lens of Truth for Treasure Chest Game',
+        gui_tooltip    = '''\
+            Force the player to always lose the
+            treasure chest game in the first room
+            unless they have the Lens of Truth.
+            Does not function if Treasure Chest Game
+            small keys are shuffled.
+        ''',
+        default          = False,
+        disabled_default = False,
+        shared           = True,
     )
 
     ocarina_songs = Combobox(

@@ -4,7 +4,8 @@
 #include "z64.h"
 
 extern uint32_t FREE_BOMBCHU_DROPS;
-
+extern uint8_t SHUFFLE_CHEST_GAME;
+extern uint8_t TCG_REQUIRES_LENS;
 
 // The layout of this struct is part of the definition of the co-op context.
 // If you change it, bump the co-op context version in coop_state.asm and update Notes/coop-ctx.md
@@ -180,6 +181,11 @@ uint16_t bombchus_to_bag(z64_file_t* save, override_t override) {
 
 uint16_t upgrade_key_model(z64_file_t* save, override_t override) {
     uint16_t item_id = override.value.base.item_id;
+    // Force treasure chest game loss if the setting to require Lens of Truth
+    // is enabled. Room index is checked to avoid overriding the salesman's item.
+    if (item_id == 0x0071 && !SHUFFLE_CHEST_GAME && TCG_REQUIRES_LENS && save->items[Z64_SLOT_LENS] != Z64_ITEM_LENS && z64_game.room_index != 0) {
+        return 0x0072; // Green Rupee (Chest Game)
+    }
     if (CUSTOM_KEY_MODELS) {
         if (item_id == 0x0071) {
             // Treasure Chest Game Key
