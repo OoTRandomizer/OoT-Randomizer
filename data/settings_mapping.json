@@ -348,8 +348,7 @@
             "big_poe_count",
             "easier_fire_arrow_entry",
             "fae_torch_count",
-            "ruto_already_f1_jabu",
-            "tcg_requires_lens"
+            "ruto_already_f1_jabu"
           ]
         },
         {
@@ -378,7 +377,8 @@
             "no_collectible_hearts",
             "starting_tod",
             "blue_fire_arrows",
-            "fix_broken_drops"
+            "fix_broken_drops",
+            "tcg_requires_lens"
           ]
         },
         {
