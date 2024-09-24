@@ -108,6 +108,12 @@
             "Ganons Castle Lobby": "
                 (is_child and at('Ganons Castle Lobby', is_child)) or
                 (is_adult and at('Ganons Castle Lobby', is_adult))",
+            "Ganons Castle Main": "
+                (is_child and at('Ganons Castle Main', is_child)) or
+                (is_adult and at('Ganons Castle Main', is_adult))",
+            "Ganons Castle Tower": "
+                (is_child and at('Ganons Castle Tower', is_child)) or
+                (is_adult and at('Ganons Castle Tower', is_adult))",
             "Gerudo Training Ground Lobby": "
                 (is_child and at('Gerudo Training Ground Lobby', is_child)) or
                 (is_adult and at('Gerudo Training Ground Lobby', is_adult))",

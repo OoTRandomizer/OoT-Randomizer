@@ -116,6 +116,7 @@ class Spoiler:
             "Dungeon": 5,
             "ChildBoss": 6,
             "AdultBoss": 6,
+            "SpecialBoss": 6,
             "Hideout": 7,
             "SpecialInterior": 7,
             "Interior": 7,

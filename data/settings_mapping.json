@@ -170,6 +170,7 @@
             "shuffle_grotto_entrances",
             "shuffle_dungeon_entrances",
             "shuffle_bosses",
+            "shuffle_ganon_tower",
             "shuffle_overworld_entrances",
             "shuffle_gerudo_valley_river_exit",
             "owl_drops",

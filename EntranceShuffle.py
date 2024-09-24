@@ -130,6 +130,9 @@ entrance_shuffle_table = [
     ('AdultBoss',       ('Spirit Temple Before Boss -> Twinrova Boss Room',                 { 'index': 0x008D, 'savewarp_addresses': [ 0xB062F2, 0xBC6122 ] }),
                         ('Twinrova Boss Room -> Spirit Temple Before Boss',                 { 'index': 0x02F5 })),
 
+    ('SpecialBoss',     ('Ganons Castle Main -> Ganons Castle Tower',                       { 'index': 0x041B }),
+                        ('Ganons Castle Tower -> Ganons Castle Main',                       { 'index': 0x0534 })),
+
     ('Interior',        ('Kokiri Forest -> KF Midos House',                                 { 'index': 0x0433 }),
                         ('KF Midos House -> Kokiri Forest',                                 { 'index': 0x0443 })),
     ('Interior',        ('Kokiri Forest -> KF Sarias House',                                { 'index': 0x0437 }),
@@ -508,6 +511,8 @@ def shuffle_random_entrances(worlds: list[World]) -> None:
         if worlds[0].settings.shuffle_bosses == 'full':
             entrance_pools['Boss'] = world.get_shufflable_entrances(type='ChildBoss', only_primary=True)
             entrance_pools['Boss'] += world.get_shufflable_entrances(type='AdultBoss', only_primary=True)
+            if worlds[0].settings.shuffle_ganon_tower:
+                entrance_pools['Boss'] += world.get_shufflable_entrances(type='SpecialBoss', only_primary=True)
             if worlds[0].settings.open_forest == 'closed':
                 # Deku is forced vanilla below, so Queen Gohma must be vanilla to ensure she is reachable.
                 # This is already enforced by the fill algorithm in most cases, but this covers the odd settings combination where it isn't.
@@ -515,6 +520,8 @@ def shuffle_random_entrances(worlds: list[World]) -> None:
         elif worlds[0].settings.shuffle_bosses == 'limited':
             entrance_pools['ChildBoss'] = world.get_shufflable_entrances(type='ChildBoss', only_primary=True)
             entrance_pools['AdultBoss'] = world.get_shufflable_entrances(type='AdultBoss', only_primary=True)
+            if worlds[0].settings.shuffle_ganon_tower:
+                entrance_pools['AdultBoss'] += world.get_shufflable_entrances(type='SpecialBoss', only_primary=True)
             if worlds[0].settings.open_forest == 'closed':
                 # Deku is forced vanilla below, so Queen Gohma must be vanilla to ensure she is reachable.
                 # This is already enforced by the fill algorithm in most cases, but this covers the odd settings combination where it isn't.

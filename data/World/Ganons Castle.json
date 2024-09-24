@@ -4,6 +4,15 @@
         "dungeon": "Ganons Castle",
         "exits": {
             "Castle Grounds From Ganons Castle": "True",
+            "Ganons Castle Main": "True",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Main",
+        "dungeon": "Ganons Castle",
+        "savewarp": "Ganons Castle Grounds -> Ganons Castle Lobby",
+        "exits": {
             "Ganons Castle Forest Trial": "True",
             "Ganons Castle Water Trial": "True",
             "Ganons Castle Shadow Trial": "True",
@@ -17,8 +26,7 @@
                 (skipped_trials[Water] or 'Water Trial Clear') and
                 (skipped_trials[Shadow] or 'Shadow Trial Clear') and
                 (skipped_trials[Spirit] or 'Spirit Trial Clear') and
-                (skipped_trials[Light] or 'Light Trial Clear')",
-            "Farores Wind Warp": "can_use(Farores_Wind)"
+                (skipped_trials[Light] or 'Light Trial Clear')"
         }
     },
     {

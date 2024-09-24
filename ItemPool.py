@@ -794,6 +794,20 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                 dungeon = Dungeon.from_vanilla_reward(ItemFactory(location.vanilla_item, world))
                 dungeon.reward.append(ItemFactory(item, world))
 
+        # Ganon boss key
+        elif location.vanilla_item == 'Boss Key (Ganons Castle)':
+            if world.settings.shuffle_ganon_bosskey == 'vanilla':
+                shuffle_item = False
+            elif world.settings.shuffle_ganon_bosskey == 'remove':
+                world.state.collect(ItemFactory(item, world))
+                item = get_junk_item()[0]
+                shuffle_item = True
+            elif world.settings.shuffle_ganon_bosskey in ('any_dungeon', 'overworld', 'keysanity', 'regional'):
+                shuffle_item = True
+            else:
+                dungeon = [dungeon for dungeon in world.dungeons if dungeon.name == 'Ganons Castle'][0]
+                dungeon.boss_key.append(ItemFactory(item, world))
+
         # Dungeon Items
         elif location.dungeon is not None:
             dungeon = location.dungeon
@@ -806,7 +820,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                     item = get_junk_item()[0]
                     shuffle_item = True
                 else:
-                    shuffle_setting = world.settings.shuffle_bosskeys if dungeon.name != 'Ganons Castle' else world.settings.shuffle_ganon_bosskey
+                    shuffle_setting = world.settings.shuffle_bosskeys
                     dungeon_collection = dungeon.boss_key
                     if shuffle_setting == 'vanilla':
                         shuffle_item = False

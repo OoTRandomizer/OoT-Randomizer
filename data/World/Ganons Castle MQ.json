@@ -14,6 +14,7 @@
     {
         "region_name": "Ganons Castle Main",
         "dungeon": "Ganons Castle",
+        "savewarp": "Ganons Castle Grounds -> Ganons Castle Lobby",
         "exits": {
             "Ganons Castle Forest Trial": "here(is_adult or Kokiri_Sword)",
             "Ganons Castle Water Trial": "True",
@@ -61,7 +62,7 @@
             "Ganons Castle MQ Water Trial Chest": "Blue_Fire",
             "Ganons Castle MQ Water Trial Recovery Heart": "
                 Blue_Fire or (logic_boomerang_boulders and can_use(Boomerang))",
-            "Blue Fire": "has_bottle"
+            "Blue Fire": "has_bottle and (can_jumpslash or has_explosives)"
         },
         "exits": {
             "Ganons Castle Water Trial Push Block Room": "Blue_Fire and (Small_Key_Ganons_Castle, 3)"
@@ -244,11 +245,11 @@
         "region_name": "Ganons Castle Deku Scrubs",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Castle MQ Deku Scrub Center-Left": "True",
-            "Ganons Castle MQ Deku Scrub Center": "True",
-            "Ganons Castle MQ Deku Scrub Center-Right": "True",
-            "Ganons Castle MQ Deku Scrub Left": "True",
-            "Ganons Castle MQ Deku Scrub Right": "True",
+            "Ganons Castle MQ Deku Scrub Center-Left": "can_stun_deku",
+            "Ganons Castle MQ Deku Scrub Center": "can_stun_deku",
+            "Ganons Castle MQ Deku Scrub Center-Right": "can_stun_deku",
+            "Ganons Castle MQ Deku Scrub Left": "can_stun_deku",
+            "Ganons Castle MQ Deku Scrub Right": "can_stun_deku",
             "Free Fairies": "has_bottle"
         }
     }

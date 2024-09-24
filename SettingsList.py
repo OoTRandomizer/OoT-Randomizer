@@ -646,7 +646,7 @@ class SettingInfos:
             'glitched':   {'settings': ['allowed_tricks', 'shuffle_interior_entrances', 'shuffle_hideout_entrances', 'shuffle_grotto_entrances',
                                          'shuffle_dungeon_entrances', 'shuffle_overworld_entrances', 'shuffle_gerudo_valley_river_exit', 'owl_drops',
                                          'warp_songs', 'spawn_positions', 'mq_dungeons_mode', 'mq_dungeons_specific',
-                                         'mq_dungeons_count', 'shuffle_bosses', 'dungeon_shortcuts', 'deadly_bonks',
+                                         'mq_dungeons_count', 'shuffle_bosses', 'shuffle_ganon_tower', 'dungeon_shortcuts', 'deadly_bonks',
                                          'shuffle_freestanding_items', 'shuffle_pots', 'shuffle_crates', 'shuffle_beehives', 'shuffle_silver_rupees', 'shuffle_wonderitems']},
             'none':       {'settings': ['allowed_tricks', 'logic_no_night_tokens_without_suns_song', 'reachable_locations']},
         },
@@ -2269,6 +2269,28 @@ class SettingInfos:
             'limited':   'Age-Restricted',
             'full':      'Full',
         },
+        disable        = {
+            'off' : {'settings': ['shuffle_ganon_tower']},
+        },
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    )
+
+    shuffle_ganon_tower = Checkbutton(
+        gui_text       = "Shuffle Ganon's Tower Entrance",
+        gui_tooltip    = '''\
+            Shuffle the entrance from Ganon's Castle to
+            Ganon's Tower, just behind the trials barrier,
+            into the adult boss entrance pool if "Shuffle
+            Boss Entrances" is set to "Age-Restricted", or
+            the boss entrance pool if it's set to "Full".
+
+            The entrance from Ganon's Tower to Ganondorf's
+            boss room is never shuffled.
+        ''',
+        default        = False,
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',

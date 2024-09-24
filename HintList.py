@@ -227,14 +227,28 @@ conditional_always: dict[str, Callable[[World], bool]] = {
     'LH Loach Fishing':             lambda world: world.settings.shuffle_loach_reward == 'vanilla',
 }
 
+def rainbow_bridge_hint_kind(world: World) -> str:
+    if world.settings.bridge == 'open':
+        return 'never'
+    elif world.settings.bridge == 'vanilla':
+        return 'always'
+    elif world.settings.bridge == 'stones':
+        return 'always' if world.settings.bridge_stones > 1 else 'sometimes'
+    elif world.settings.bridge == 'medallions':
+        return 'always' if world.settings.bridge_medallions > 1 else 'sometimes'
+    elif world.settings.bridge == 'dungeons':
+        return 'always' if world.settings.bridge_rewards > 2 else 'sometimes' if world.settings.bridge_rewards > 1 else 'never'
+    elif world.settings.bridge == 'tokens':
+        return 'always' if world.settings.bridge_tokens > 20 else 'sometimes' if world.settings.bridge_tokens > 10 else 'never'
+    elif world.settings.bridge == 'hearts':
+        return 'always' if world.settings.bridge_hearts > world.settings.starting_hearts + 1 else 'sometimes' if world.settings.bridge_hearts > world.settings.starting_hearts else 'never'
+    else:
+        raise NotImplementedError(f'Unimplemented bridge condition: {world.settings.bridge}')
+
 # Entrance hints required under certain settings
 conditional_entrance_always: dict[str, Callable[[World], bool]] = {
-    'Ganons Castle Grounds -> Ganons Castle Lobby': lambda world: (world.settings.bridge != 'open'
-        and (world.settings.bridge != 'stones' or world.settings.bridge_stones > 1)
-        and (world.settings.bridge != 'medallions' or world.settings.bridge_medallions > 1)
-        and (world.settings.bridge != 'dungeons' or world.settings.bridge_rewards > 2)
-        and (world.settings.bridge != 'tokens' or world.settings.bridge_tokens > 20)
-        and (world.settings.bridge != 'hearts' or world.settings.bridge_hearts > world.settings.starting_hearts + 1)),
+    'Ganons Castle Grounds -> Ganons Castle Lobby': lambda world: rainbow_bridge_hint_kind(world) == 'always',
+    'Ganons Castle Main -> Ganons Castle Tower': lambda world: world.settings.trials > 3 or (rainbow_bridge_hint_kind(world) == 'always' and not world.shuffle_special_dungeon_entrances),
 }
 
 # Dual hints required under certain settings
@@ -276,10 +290,8 @@ conditional_sometimes: dict[str, Callable[[World], bool]] = {
     'Twinrova Rewards':                         lambda world: world.settings.shuffle_dungeon_rewards not in ('vanilla', 'reward'),
 
     # Conditional entrance hints
-    'Ganons Castle Grounds -> Ganons Castle Lobby': lambda world: (world.settings.bridge != 'open'
-        and (world.settings.bridge != 'dungeons' or world.settings.bridge_rewards > 1)
-        and (world.settings.bridge != 'tokens' or world.settings.bridge_tokens > 10)
-        and (world.settings.bridge != 'hearts' or world.settings.bridge_hearts > world.settings.starting_hearts)),
+    'Ganons Castle Grounds -> Ganons Castle Lobby': lambda world: rainbow_bridge_hint_kind(world) != 'never',
+    'Ganons Castle Main -> Ganons Castle Tower': lambda world: world.settings.trials > 0 or (rainbow_bridge_hint_kind(world) != 'never' and not world.shuffle_special_dungeon_entrances),
 }
 
 # Table of hints, format is (name, hint text, clear hint text, type of hint) there are special characters that are read for certain in game commands:
@@ -1389,6 +1401,7 @@ hintTable: dict[str, tuple[list[str] | str, Optional[str], str | list[str]]] = {
     'Kakariko Village -> Bottom of the Well':                   ("a #village well# leads to", None, 'entrance'),
 
     'Ganons Castle Grounds -> Ganons Castle Lobby':             ("the #rainbow bridge# leads to", None, 'entrance'),
+    'Ganons Castle Main -> Ganons Castle Tower':                ("a #castle barrier# protects the way to", "#Ganon's trials# protect the way to", 'entrance'),
 
     'KF Links House':                                           ("Link's House", None, 'region'),
     'Temple of Time':                                           ("the #Temple of Time#", None, 'region'),
@@ -1476,6 +1489,7 @@ hintTable: dict[str, tuple[list[str] | str, Optional[str], str | list[str]]] = {
     'Morpha Boss Room':                                         ("the #Giant Aquatic Amoeba#", "#Morpha#", 'region'),
     'Bongo Bongo Boss Room':                                    ("the #Phantom Shadow Beast#", "#Bongo Bongo#", 'region'),
     'Twinrova Boss Room':                                       ("the #Sorceress Sisters#", "#Twinrova#", 'region'),
+    'Ganons Castle Tower':                                      ("#Ganon's Tower#", None, 'region'),
 
     # Junk hints must satisfy all the following conditions:
     # - They aren't inappropriate.

@@ -441,7 +441,7 @@ class HintArea(Enum):
             else:
                 parent_region = current_spot.parent_region
 
-            if parent_region.hint and (original_parent.name == 'Root' or parent_region.name != 'Root'):
+            if (parent_region.hint or (use_alt_hint and parent_region.alt_hint)) and (original_parent.name == 'Root' or parent_region.name != 'Root'):
                 if use_alt_hint and parent_region.alt_hint:
                     return parent_region.alt_hint
                 return parent_region.hint
@@ -1271,7 +1271,7 @@ def build_gossip_hints(spoiler: Spoiler, worlds: list[World]) -> None:
     for world in worlds:
         for location in world.hinted_dungeon_reward_locations.values():
             if world.settings.enhance_map_compass:
-                if world.mixed_pools_bosses or world.settings.shuffle_dungeon_rewards not in ('vanilla', 'reward'):
+                if world.entrance_rando_reward_hints:
                     # In these settings, there is not necessarily one dungeon reward in each dungeon,
                     # so we instead have each compass hint the area of its dungeon's vanilla reward.
                     compass_locations = [
