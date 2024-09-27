@@ -336,6 +336,7 @@
             "GF Chest": "(is_child and can_mega) or
                 (is_adult and can_use(Hover_Boots) or can_use(Scarecrow) or can_use(Longshot) or can_mega)",
             #// known softlock if child opens this chest, so only put it in logic for adult
+            "GF Freestanding PoH": "is_child and can_hover",
             "GF HBA 1000 Points": "
                 Gerudo_Membership_Card and can_ride_epona and Bow and is_adult",
             "GF HBA 1500 Points": "

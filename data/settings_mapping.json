@@ -167,6 +167,7 @@
             "empty_dungeons_count",
             "shuffle_interior_entrances",
             "shuffle_hideout_entrances",
+            "shuffle_gerudo_fortress_heart_piece",
             "shuffle_grotto_entrances",
             "shuffle_dungeon_entrances",
             "shuffle_bosses",

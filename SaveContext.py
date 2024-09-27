@@ -27,7 +27,7 @@ class Scenes(IntEnum):
     WATER_TEMPLE = 0x05
     SPIRIT_TEMPLE = 0x06
     SHADOW_TEMPLE = 0x07
-    # Bean patch scenes
+    # Various overworld scenes
     GRAVEYARD = 0x53
     ZORAS_RIVER = 0x54
     KOKIRI_FOREST = 0x55
@@ -35,6 +35,7 @@ class Scenes(IntEnum):
     GERUDO_VALLEY = 0x5A
     LOST_WOODS = 0x5B
     DESERT_COLOSSUS = 0x5C
+    GERUDO_FORTRESS = 0x5D
     DEATH_MOUNTAIN_TRAIL = 0x60
     DEATH_MOUNTAIN_CRATER = 0x61
     GORON_CITY = 0x62

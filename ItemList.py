@@ -54,6 +54,7 @@ item_table: dict[str, tuple[str, Optional[bool], Optional[int], Optional[dict[st
     'Gerudo Membership Card':                          ('Item',     True,  0x003A, None),
     'Heart Container':                                 ('Item',     True,  0x003D, {'alias': ('Piece of Heart', 4), 'progressive': float('Inf')}),
     'Piece of Heart':                                  ('Item',     True,  0x003E, {'progressive': float('Inf')}),
+    'Piece of Heart (Out of Logic)':                   ('Item',     None,  0x003E, None),
     'Boss Key':                                        ('BossKey',  True,  0x003F, None),
     'Compass':                                         ('Compass',  None,  0x0040, None),
     'Map':                                             ('Map',      None,  0x0041, None),

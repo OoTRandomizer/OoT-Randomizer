@@ -11,7 +11,8 @@
         "exits": {
             "Root Exits": "is_starting_age or Time_Travel",
             "HC Garden Skippable Locations": "skip_child_zelda",
-            "Beyond Door of Time Skippable Locations": "skip_reward_from_rauru"
+            "Beyond Door of Time Skippable Locations": "skip_reward_from_rauru",
+            "GF Above Jail Child Locations": "shuffle_gerudo_fortress_heart_piece == 'remove' or not shuffle_hideout_entrances"
         }
     },
     {
@@ -848,7 +849,17 @@
             "Hideout Hall to Balcony": "True",
             "Gerudo Fortress": "True",
             "GF Chest Roof": "can_use(Longshot)",
-            "GF Break Room Entrance": "damage_multiplier != 'ohko' or can_use(Nayrus_Love)"
+            "GF Break Room Entrance": "damage_multiplier != 'ohko' or can_use(Nayrus_Love)",
+            "GF Above Jail Child Locations": "is_child"
+        }
+    },
+    {
+        # Hack to make ALR work if hideout entrances are unshuffled
+        "region_name": "GF Above Jail Child Locations",
+        "scene": "Gerudo Fortress",
+        "hint": "GERUDO_FORTRESS",
+        "locations": {
+            "GF Freestanding PoH": "True"
         }
     },
     {
