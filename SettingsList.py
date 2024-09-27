@@ -2497,8 +2497,8 @@ class SettingInfos:
             'random': 'Random # of Items Per Shop',
         },
         disable        = {
-            'off':  {'settings': ['shopsanity_prices']},
-            '0':    {'settings': ['shopsanity_prices']},
+            'off':  {'settings': ['special_deal_price_distribution', 'special_deal_price_min', 'special_deal_price_max']},
+            '0':    {'settings': ['special_deal_price_distribution', 'special_deal_price_min', 'special_deal_price_max']},
         },
         gui_tooltip    = '''\
             Randomizes Shop contents.
@@ -2539,36 +2539,73 @@ class SettingInfos:
         },
     )
 
-    shopsanity_prices = Combobox(
-        gui_text         = 'Shopsanity Prices',
-        default          = 'random',
+    special_deal_price_distribution = Combobox(
+        gui_text         = 'Special Deal Prices',
+        default          = 'betavariate',
         choices          = {
-            'random':          "Random",
-            'random_starting': "Starting Wallet",
-            'random_adult':    "Adult's Wallet",
-            'random_giant':    "Giant's Wallet",
-            'random_tycoon':   "Tycoon's Wallet",
-            'affordable':      "Affordable",
+            'vanilla':     'Vanilla',
+            'betavariate': 'Weighted',
+            'uniform':     'Uniform',
+        },
+        disable          = {
+            'vanilla': {'settings': ['special_deal_price_min', 'special_deal_price_max']},
         },
         gui_tooltip      = '''\
-            Controls the randomization of prices for shopsanity items.
-            For more control, utilize the plandomizer.
+            Controls how the prices for Special Deal items in shops are
+            selected. For more control, utilize the plandomizer.
 
-            'Random': The default randomization. Shop prices for
-            shopsanity items will range between 0 to 300 rupees,
-            with a bias towards values slightly below the middle of the
-            range, in multiples of 5.
+            'Vanilla': 'Each item will be sold for the price of the item
+            that appears in its slot in the vanilla game.
 
-            'X Wallet': Shop prices for shopsanity items will range
-            between 0 and the specified wallet's maximum capacity,
-            in multiples of 5.
+            'Weighted': Shop prices will be biased towards slightly below
+            the middle of the selected range, with very low or very high
+            prices only appearing rarely.
 
-            'Affordable': Shop prices for shopsanity items will be
-            fixed to 10 rupees.
+            'Uniform': Each price value in the selected range is equally
+            likely.
         ''',
-        disabled_default =  'random',
         shared           = True,
         gui_params       = {
+            "hide_when_disabled": True,
+        },
+    )
+
+    special_deal_price_min = Scale(
+        gui_text       = 'Minimum Special Deal Price',
+        default        = 0,
+        minimum        = 0,
+        maximum        = 995,
+        step           = 5,
+        shared         = True,
+        gui_tooltip    = '''\
+            Select the minimum price in rupees for Special Deal
+            items in shops. Prices will be selected randomly in
+            multiples of 5 according to the "Special Deal Price
+            Distribution" setting. Set this setting and "Maximum
+            Special Deal Price" to the same value to give all
+            Special Deals a fixed price.
+        ''',
+        gui_params     = {
+            "hide_when_disabled": True,
+        },
+    )
+
+    special_deal_price_max = Scale(
+        gui_text       = 'Maximum Special Deal Price',
+        default        = 300,
+        minimum        = 0,
+        maximum        = 995,
+        step           = 5,
+        shared         = True,
+        gui_tooltip    = '''\
+            Select the maximum price in rupees for Special Deal
+            items in shops. Prices will be selected randomly in
+            multiples of 5 according to the "Special Deal Price
+            Distribution" setting. Set this setting and "Minimum
+            Special Deal Price" to the same value to give all
+            Special Deals a fixed price.
+        ''',
+        gui_params     = {
             "hide_when_disabled": True,
         },
     )
