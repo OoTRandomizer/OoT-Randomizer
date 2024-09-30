@@ -363,7 +363,7 @@ void draw_gi_blue_fire_candle(z64_game_t* game, uint32_t draw_id) {
                                1, game->common.state_frames * 1, -(game->common.state_frames * 8), 16, 32));
     duplicate_sys_matrix();
     translate_sys_matrix(-8.0f, -2.0f, 0.0f, 1);
-    update_sys_matrix(game->mf_11DA0);
+    update_sys_matrix(game->billboard_mtx);
     gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[1].dlist);
     pop_sys_matrix();
@@ -384,7 +384,7 @@ void draw_gi_fairy_lantern(z64_game_t* game, uint32_t draw_id) {
                                0, 0, 0, 32, 32,
                                1, game->common.state_frames, -(game->common.state_frames * 6), 32, 32));
     duplicate_sys_matrix();
-    update_sys_matrix(game->mf_11DA0);
+    update_sys_matrix(game->billboard_mtx);
     gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[2].dlist);
     pop_sys_matrix();
@@ -399,7 +399,7 @@ void draw_gi_fairy(z64_game_t* game, uint32_t draw_id) {
                                0, 0, 0, 32, 32,
                                1, game->common.state_frames, -(game->common.state_frames * 6), 32, 32));
     duplicate_sys_matrix();
-    update_sys_matrix(game->mf_11DA0);
+    update_sys_matrix(game->billboard_mtx);
     gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
     // Not sure how much of this is required but these are called from the bottle DL. Not including them causes it to draw weird
     gDPSetRenderMode(gfx->poly_xlu.p++, G_RM_PASS, G_RM_AA_ZB_XLU_SURF2);
@@ -426,7 +426,7 @@ void draw_gi_poe_bottles(z64_game_t* game, uint32_t draw_id) {
                                0, 0, 0, 16, 32,
                                1, game->common.state_frames * 1, -(game->common.state_frames * 6), 16, 32));
     duplicate_sys_matrix();
-    update_sys_matrix(game->mf_11DA0);
+    update_sys_matrix(game->billboard_mtx);
     gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[3].dlist);
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[2].dlist);
@@ -749,4 +749,38 @@ void draw_gi_magic_meter(z64_game_t* game, uint32_t draw_id) {
     gDPSetPrimColor(gfx->poly_opa.p++, 0, 0x80, prim_outline.r, prim_outline.g, prim_outline.b, prim_outline.a);
     gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[2].dlist);
 
+}
+void draw_gi_flame(z64_game_t *game, colorRGBA8_t prim, colorRGBA8_t env) {
+    z64_gfx_t *gfx = game->common.gfx;
+    static const uint32_t kFlameDlist = 0x52a10;
+
+    update_sys_matrix(game->billboard_mtx);
+    translate_sys_matrix(0, -35.0f, -10.0f, 1);
+    scale_sys_matrix(.0125,.0075,.01, 1);
+    gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW);
+
+    int16_t redGreen = 20;
+
+    append_setup_dl_25_to_xlu(gfx);
+    gDPSetEnvColor(gfx->poly_xlu.p++, env.r, env.g, env.b, 0);
+    gDPSetPrimColor(gfx->poly_xlu.p++, 0x0, 0x80, prim.r, prim.g, prim.b, 255);
+
+    gSPSegment(gfx->poly_xlu.p++, 0x08,
+        gen_double_tile(gfx, G_TX_RENDERTILE, 0, 0, 0x20, 0x40, 1, 0,
+            (-game->gameplay_frames & 0x7F) << 2, 0x20, 0x80));
+
+    gSPDisplayList(gfx->poly_xlu.p++, 0x04000000 | kFlameDlist);
+
+}
+
+void draw_gi_opa_with_flame(z64_game_t* game, uint32_t draw_id) {
+
+    draw_gi_various_opa0(game, draw_id);
+    draw_gi_flame(game, item_draw_table[draw_id].args[1].color, item_draw_table[draw_id].args[2].color);
+}
+
+void draw_gi_deku_nut_with_flame(z64_game_t* game, uint32_t draw_id) {
+
+    draw_gi_deku_nut(game, draw_id);
+    draw_gi_flame(game, item_draw_table[draw_id].args[1].color, item_draw_table[draw_id].args[2].color);
 }
