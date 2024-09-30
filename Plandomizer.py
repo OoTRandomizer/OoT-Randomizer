@@ -20,7 +20,7 @@ from JSONDump import dump_obj, CollapseList, CollapseDict, AlignedDict, SortedDi
 from Location import Location, LocationIterator, LocationFactory
 from LocationList import location_groups, location_table
 from Search import Search
-from SettingsList import build_close_match, validate_settings
+from SettingsList import build_close_match, validate_settings, settings_versioning
 from Spoiler import Spoiler, HASH_ICONS, PASSWORD_NOTES
 from version import __version__
 
@@ -1176,6 +1176,10 @@ class Distribution:
 
         self.settings.update(update_dict['_settings'])
         if 'settings' in self.src_dict:
+            for setting in self.src_dict['settings']:
+                for setting_version in settings_versioning:
+                    if setting == setting_version.old_name:
+                        self.src_dict['settings'][setting_version.new_name] = self.src_dict['settings'].pop(setting_version.old_name)
             validate_settings(self.src_dict['settings'])
             self.src_dict['_settings'] = self.src_dict['settings']
             del self.src_dict['settings']
@@ -1306,7 +1310,7 @@ class Distribution:
             'settings': self.settings.to_json(),
         }
 
-        if not self.settings.password_lock:
+        if not self.settings.password_lock or not spoiler:
             self_dict.pop('password')
 
         if spoiler:

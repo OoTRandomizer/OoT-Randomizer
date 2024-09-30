@@ -1,0 +1,10 @@
+{
+    "settings": {
+        "triforce_hunt": true,
+        "shuffle_pots": "all",
+        "triforce_count_per_world": 100,
+        "triforce_goal_per_world": 50,
+        "junk_ice_traps": "custom_percent",
+        "custom_ice_trap_percent": 75
+    }
+}

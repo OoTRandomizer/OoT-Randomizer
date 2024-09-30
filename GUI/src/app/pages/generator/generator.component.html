@@ -289,14 +289,9 @@
             <input class="footerInputShort" nbInput type="text" maxlength="260" fieldSize="small" [(ngModel)]="seedString">
             <!--Padding-->
             <div class="tabsetPadding"></div>
-            <!--Release Versions Only-->
-            <ng-container *ngIf="global.getGlobalVar('webIsMasterVersion')">
+            <ng-container>
               <button class="footerGenerateButtonNormalSmall" nbButton status="success" [disabled]="!generateSeedButtonEnabled" (click)="generateSeed()">Generate Seed!</button>
               <button class="footerGenerateButtonRaceSmall" nbButton status="info" [disabled]="!generateSeedButtonEnabled" (click)="generateSeed(false, true)">Generate Race Seed!</button>
-            </ng-container>
-            <!--Dev Version-->
-            <ng-container *ngIf="!global.getGlobalVar('webIsMasterVersion')">
-              <button class="footerGenerateButton" nbButton fullWidth status="success" [disabled]="!generateSeedButtonEnabled" (click)="generateSeed()">Generate Seed!</button>
             </ng-container>
           </ng-container>
         </nb-tab>

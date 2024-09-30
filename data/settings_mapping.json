@@ -179,7 +179,7 @@
             "triforce_count_per_world",
             "triforce_goal_per_world",
             "free_bombchu_drops",
-            "one_item_per_dungeon"
+            "plandomized_locations"
           ]
         },
         {
@@ -328,7 +328,8 @@
         {
           "name": "speedup_section",
           "text": "Timesavers",
-          "row_span": [1,1,1],
+          "col_span": 2,
+          "row_span": [3,3,3],
           "settings": [
             "skip_reward_from_rauru",
             "no_escape_sequence",
@@ -342,52 +343,66 @@
             "fast_bunny_hood",
             "auto_equip_masks",
             "plant_beans",
+            "easier_fire_arrow_entry",
+            "fae_torch_count",
+            "ruto_already_f1_jabu",
+            "fast_shadow_boat",
             "chicken_count_random",
             "chicken_count",
             "big_poe_count_random",
-            "big_poe_count",
-            "easier_fire_arrow_entry",
-            "fae_torch_count",
-            "ruto_already_f1_jabu"
+            "big_poe_count"
           ]
         },
         {
-          "name": "misc_section",
-          "text": "Misc",
-          "row_span": [1,1,1],
+          "name": "hints_information_section",
+            "text": "Hints and Information",
+            "col_span": 1,
+            "row_span": [2,2,2],
+            "settings": [
+              "clearer_hints",
+              "hints",
+              "hint_dist",
+              "bingosync_url",
+              "misc_hints",
+              "correct_chest_appearances",
+              "chest_textures_specific",
+              "soa_unlocks_chest_texture",
+              "minor_items_as_major_chest",
+              "invisible_chests",
+              "correct_potcrate_appearances",
+              "key_appearance_match_dungeon",
+              "potcrate_textures_specific",
+              "soa_unlocks_potcrate_texture"
+          ]
+        },
+        {
+          "name": "gameplay_changes_section",
+          "text": "Gameplay Changes",
+          "col_span": 1,
+          "row_span": [3,3,3],
           "settings": [
             "ocarina_songs",
-            "correct_chest_appearances",
-            "chest_textures_specific",
-            "soa_unlocks_chest_texture",
-            "minor_items_as_major_chest",
-            "invisible_chests",
-            "correct_potcrate_appearances",
-            "potcrate_textures_specific",
-            "soa_unlocks_potcrate_texture",
-            "key_appearance_match_dungeon",
-            "clearer_hints",
-            "hints",
-            "hint_dist",
-            "bingosync_url",
-            "misc_hints",
             "text_shuffle",
             "damage_multiplier",
             "deadly_bonks",
-            "no_collectible_hearts",
             "starting_tod",
             "blue_fire_arrows",
             "fix_broken_drops",
+            "no_collectible_hearts",
+            "one_item_per_dungeon",
             "max_upgrade_items"
           ]
         },
         {
           "name": "item_pool_section",
           "text": "Item Pool",
+          "col_span": 1,
           "row_span": [1,1,1],
           "settings": [
             "item_pool_value",
             "junk_ice_traps",
+            "custom_ice_trap_percent",
+            "custom_ice_trap_count",
             "ice_trap_appearance"
           ]
         }

@@ -86,6 +86,8 @@ class Spoiler:
 
     def build_password(self, password: bool = False) -> None:
         dist_password = self.settings.distribution.password
+        if password and None in dist_password and not self.settings.create_spoiler:
+            raise Exception('You must enable spoiler log or use plandomizer to define one to use the password feature.')
         for i in range(6):
             if password:
                 self.password.append(random.randint(1, 5) if dist_password[i] is None else PASSWORD_NOTES.index(dist_password[i]) + 1)

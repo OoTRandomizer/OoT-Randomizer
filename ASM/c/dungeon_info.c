@@ -64,6 +64,8 @@ extern uint8_t CFG_DUNGEON_REWARD_WORLDS[9];
 
 extern uint8_t CFG_DUNGEON_INFO_SILVER_RUPEES;
 
+extern int8_t CFG_DUNGEON_PRECOMPLETED[14];
+
 extern extended_savecontext_static_t extended_savectx;
 extern silver_rupee_data_t silver_rupee_vars[0x16][2];
 
@@ -217,7 +219,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
         int bg_left = (Z64_SCREEN_WIDTH - bg_width) / 2;
         int bg_top = (Z64_SCREEN_HEIGHT - bg_height) / 2;
 
-        int left = bg_left + padding;
+        uint16_t left = bg_left + padding;
         int start_top = bg_top + padding;
 
         // Draw background
@@ -293,12 +295,29 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
 
         left += icon_size + padding;
 
-        // Draw dungeon names
-
+        // Draw the list of dungeons.
+        // Pre completed dungeons are grayed and crossed out.
         for (int i = 0; i < rows; i++) {
+            gDPPipeSync(db->p++);
             dungeon_entry_t* d = &(dungeons[i]);
+            bool empty = CFG_DUNGEON_PRECOMPLETED[d->index];
             int top = start_top + ((icon_size + padding) * i) + 1;
-            text_print_size(db, d->name, left, top, font_width, font_height);
+            if (empty) {
+                gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0x7F);
+                uint16_t sizeRectangle = text_print_size(db, d->name, left, top, font_width, font_height) - left;
+                gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xBF);
+                gDPSetCombineMode(db->p++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
+                gSPTextureRectangle(db->p++,
+                        left * 4, (top + 5) * 4,
+                        (left + sizeRectangle) * 4, ((top + 5) + 1) * 4,
+                        0,
+                        0, 0,
+                        1024, 1024);
+                gDPSetCombineMode(db->p++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
+            } else {
+                gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
+                text_print_size(db, d->name, left, top, font_width, font_height);
+            }
         }
 
         left += ((SHUFFLE_CHEST_GAME == 1 ? 11 : 8) * font_width) + padding;
@@ -829,20 +848,36 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
         int start_top = bg_top + padding;
 
         draw_background(db, bg_left, bg_top, bg_width, bg_height);
-        gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
 
         // Draw dungeon names
 
         for (int i = 0; i < 12; i++) {
             dungeon_entry_t* d = &(dungeons[i + (i > 9 ? 1 : 0)]); // skip Hideout
+            bool empty = CFG_DUNGEON_PRECOMPLETED[d->index];
             int top = start_top + ((icon_size + padding) * i) + 1;
-            text_print(db, d->name, left, top);
+            if (empty) {
+                gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0x7F);
+                uint16_t sizeRectangle = text_print(db, d->name, left, top) - left;
+                gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xBF);
+                gDPSetCombineMode(db->p++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
+                gSPTextureRectangle(db->p++,
+                        left * 4, (top + 6) * 4,
+                        (left + sizeRectangle) * 4, (top + 6 + 2) * 4,
+                        0,
+                        0, 0,
+                        1024, 1024);
+                gDPSetCombineMode(db->p++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
+            } else {
+                gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
+                text_print(db, d->name, left, top);
+            }
         }
 
         left += (8 * font_sprite.tile_w) + padding;
 
         // Draw maps and compasses
 
+        gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
         if (show_map_compass) {
             // Draw maps
 

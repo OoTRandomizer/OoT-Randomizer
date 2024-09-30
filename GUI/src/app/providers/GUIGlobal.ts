@@ -1506,9 +1506,17 @@ export class GUIGlobal implements OnDestroy {
     }
 
     if (raceSeed) {
+      let masterVersion = this.getGlobalVar("webIsMasterVersion");
+
       useStaticSeed = ""; //Static seeds aren't allowed in race mode
       settingsFile["create_spoiler"] = true; //Force spoiler mode to on
-      settingsFile["encrypt"] = true;
+      
+      if (masterVersion) {
+        settingsFile["encrypt"] = true;
+      }
+      else {
+        settingsFile["web_lock"] = true; //This is filtered out by the web endpoint before generation
+      }
     }
     else {
       delete settingsFile["encrypt"];

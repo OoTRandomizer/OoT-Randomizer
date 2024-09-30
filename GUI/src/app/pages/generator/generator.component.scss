@@ -261,11 +261,10 @@
   .comboBoxLabel {
     position: relative;
     display: block;
-    left: 10px;
-    width: calc(100% - 10px); 
+    padding-left: 10px;
 
     &.oneLineComboBox {
-      left: 0;
+      padding-left: 0;
     }
   }
 

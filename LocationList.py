@@ -1259,6 +1259,9 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Jabu Jabus Belly MQ Falling Like-Like Room Left Cow Wonderitem 1", ("Wonderitem",0x02, (11,0,23), None,                       'Recovery Heart',                        ("Jabu Jabu's Belly", "Master Quest", "Wonderitem"))),
     ("Jabu Jabus Belly MQ Falling Like-Like Room Left Cow Wonderitem 2", ("Wonderitem",0x02, (11,0,24), None,                       'Recovery Heart',                        ("Jabu Jabu's Belly", "Master Quest", "Wonderitem"))),
     ("Jabu Jabus Belly MQ Falling Like-Like Room Left Cow Wonderitem 3", ("Wonderitem",0x02, (11,0,25), None,                       'Recovery Heart',                        ("Jabu Jabu's Belly", "Master Quest", "Wonderitem"))),
+    ("Jabu Jabus Belly MQ Falling Like-Like Room Explosives Wonderitem 1", ("Wonderitem",0x02, (11,0,28), None,                     'Fairy Drop',                            ("Jabu Jabu's Belly", "Master Quest", "Wonderitem"))),
+    ("Jabu Jabus Belly MQ Falling Like-Like Room Explosives Wonderitem 2", ("Wonderitem",0x02, (11,0,29), None,                     'Fairy Drop',                            ("Jabu Jabu's Belly", "Master Quest", "Wonderitem"))),
+    ("Jabu Jabus Belly MQ Falling Like-Like Room Explosives Wonderitem 3", ("Wonderitem",0x02, (11,0,30), None,                     'Fairy Drop',                            ("Jabu Jabu's Belly", "Master Quest", "Wonderitem"))),
 
 
     # Jabu Jabu's Belly Shared

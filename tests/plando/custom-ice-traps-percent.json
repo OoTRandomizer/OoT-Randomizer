@@ -1,0 +1,6 @@
+{
+    "settings": {
+        "junk_ice_traps": "custom_percent",
+        "custom_ice_trap_percent": 75
+    }
+}

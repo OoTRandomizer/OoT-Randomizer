@@ -8,6 +8,7 @@ This is a randomizer for _The Legend of Zelda: Ocarina of Time_ for the Nintendo
   * [Settings](#settings)
   * [Known Issues](#known-issues)
 * [Changelog](#changelog)
+  * [8.2](#82)
   * [8.1](#81)
   * [8.0](#80)
   * [7.1](#71)
@@ -28,7 +29,7 @@ https://ootrandomizer.com
 
 If you wish to run the script raw, clone this repository and either run ```Gui.py``` for a
 graphical interface or ```OoTRandomizer.py``` for the command line version. They both require Python 3.8+.
-To use the GUI, [NodeJS](https://nodejs.org/download/release/v20.11.1/) (v20 LTS, with npm) will additionally need to be installed. NodeJS v14.14.0 and earlier are no longer supported.
+To use the GUI, [NodeJS](https://nodejs.org/download/release/v20.17.0/) (v20 LTS, with npm) will additionally need to be installed. NodeJS v14.14.0 and earlier are no longer supported.
 The first time ```Gui.py``` is run it will need to install necessary components, which could take a few minutes. Subsequent instances will run much quicker.
 Supported output formats are .z64 (N64/Emulator), .wad (Wii VC, channel IDs NICE/NRKE recommended), Uncompressed ROM (for developmental purposes, offline build only)
 and .zpf/.zpfz (patch files, for sharing seeds with others).
@@ -111,6 +112,17 @@ issue. You should always Hard Reset to avoid this issue entirely.
 
 ### Dev
 
+* New options `Custom (count)` and `Custom (%)` for the `Ice Traps` setting.
+* Now supports custom music written for the Majora's Mask Randomizer.
+* New Magic Meter item model to allow magic drops to be shuffled in the future.
+* New hidden `plandomized_locations` setting to allow presets to place specific items at specific locations.
+* The first text box from each carpenter in the Thieves' Hideout is skipped.
+* New setting to speed up the boat ride in the Shadow Temple.
+* Seeds rolled on ootrandomizer.com display their ID in the top left corner of the file select screen.
+* The `Other` tab of the generator has been rearranged for better grouping of settings, and the `One Major Item per Dungeon` setting has been moved there since it was causing frequent failures with `Randomize Main Rule Settings`.
+
+### 8.2
+
 #### New Settings and Options
 * New cosmetic option `Input Viewer` for showing control stick values and pressed buttons at the bottom of the screen.
 * Add new options for chest/pot/etc. textures, including `Stone of Agony Unlocks Chest Textures` which gives new functionality to the Stone of Agony.
@@ -130,6 +142,8 @@ issue. You should always Hard Reset to avoid this issue entirely.
 * Fairy pots are now included in `Shuffle Pots`.
 * A message is shown the first time a seed with No Logic is generated, to warn the user that the seed may be unbeatable.
 * New hint distribution field `excluded_goal_categories` to disable specific goal categories.
+* Pre-completed dungeons are crossed out in the dungeon overview menus (A or D-left on the inventory screen).
+* New hint distribution field `one_hint_per_goal` can be set to `true` or `false` to override the automatic settings-based behavior of how goal hints are selected.
 
 #### Bug Fixes
 * Goal hints can now hint items required to defeat Ganon even if they're not required for the rainbow bridge, Ganon's boss key, or the trials. These items will be hinted as being on the "path of the hero".
@@ -148,6 +162,7 @@ issue. You should always Hard Reset to avoid this issue entirely.
 * Fix a bug where a foolish hint could be generated for an area despite not having any shuffled item locations.
 * Fix a bug where spoiler logs' `randomized_settings` fields could be incomplete.
 * Prevent setting names from overlapping with scrollbars in the GUI.
+* Add missing Wonderitems in MQ Jabu Jabu's falling Like Like room.
 
 #### New Speedups
 * Meg will now take less time before respawning after getting hurt.
@@ -164,6 +179,7 @@ issue. You should always Hard Reset to avoid this issue entirely.
 * Major items from pots, crates, etc now display above Link's head while the text box is open.
 * Gameplay is no longer interrupted if you receive a junk item from another player in multiworld.
 * Removed the potentially confusing Master Sword icon from the Rainbow Bridge page of the adult Temple of Time altar text.
+* Blue warps now set time of day each time they're taken, fixing a potential softlock.
 
 ### 8.1
 

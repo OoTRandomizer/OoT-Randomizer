@@ -1,6 +1,7 @@
 #include "objects.h"
 #include "z64.h"
 #include "get_items.h"
+#include "item_table.h"
 
 extern uint8_t FIX_BROKEN_DROPS;
 
@@ -27,10 +28,10 @@ void enitem00_set_link_incoming_item_id(z64_actor_t* actor, z64_game_t* game, in
     // Run z64_ActorOfferGetItem regardless of FIX_BROKEN_DROPS
     if (!z64_ActorOfferGetItem(&this->actor, game, incoming_item_id, 50.0f, 10.0f) && FIX_BROKEN_DROPS) {
         switch (incoming_item_id) {
-            case 0x43: // GI_MAGIC_SMALL
+            case GI_MAGIC_JAR_SMALL: // GI_MAGIC_SMALL
                 z64_GiveItem(game, Z64_ITEM_MAGIC_SMALL);
                 break;
-            case 0x44: // GI_MAGIC_LARGE
+            case GI_MAGIC_JAR_LARGE: // GI_MAGIC_LARGE
                 z64_GiveItem(game, Z64_ITEM_MAGIC_LARGE);
                 break;
         }

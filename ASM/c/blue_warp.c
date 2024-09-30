@@ -7,6 +7,9 @@
 
 #define TEXT_STATE_CLOSING 2
 
+#define SCENE_VOLVAGIA_BOSS_ROOM 0x0015
+#define SCENE_MORPHA_BOSS_ROOM 0x0016
+
 extern uint8_t PLAYER_ID;
 extern uint8_t PLAYER_NAME_ID;
 extern bool REWARDS_AS_ITEMS;
@@ -42,6 +45,16 @@ int32_t DoorWarp1_PlayerInRange_Overwrite(z64_actor_t* actor, z64_game_t* game) 
             }
             extended_savectx.collected_dungeon_rewards[boss_idx] = true;
         }
+        // set time of day each time the blue warp is taken to reduce nonrepeatable access
+        if (game->scene_index == SCENE_MORPHA_BOSS_ROOM) {
+            z64_file.skybox_time = z64_file.day_time = 0x4800; // CLOCK_TIME(6, 45)
+        } else {
+            z64_file.skybox_time = z64_file.day_time = 0x8000; // CLOCK_TIME(12, 00)
+        }
+        // reset heat timer after Volvagia
+        if (game->scene_index == SCENE_VOLVAGIA_BOSS_ROOM) {
+            z64_file.timer_1_state = 0;
+        }
         // immediately activate the blue warp. Queued item will be given after the warp
         return true;
     }
@@ -57,38 +70,35 @@ int32_t DoorWarp1_IsShadowRewardObtained(void) {
 }
 
 void DoorWarp1_KokiriEmerald_Overwrite(void) {
-    z64_file.skybox_time = z64_file.day_time = 0x8000; // CLOCK_TIME(12, 00)
+    // code to run the first time the Queen Gohma blue warp is taken
 }
 
 void DoorWarp1_GoronRuby_Overwrite(void) {
-    z64_file.skybox_time = z64_file.day_time = 0x8000; // CLOCK_TIME(12, 00)
+    // code to run the first time the King Dodongo blue warp is taken
 }
 
 void DoorWarp1_ZoraSapphire_Overwrite(void) {
-    z64_file.skybox_time = z64_file.day_time = 0x8000; // CLOCK_TIME(12, 00)
+    // code to run the first time the Barinade blue warp is taken
 }
 
 void DoorWarp1_ForestMedallion_Overwrite(void) {
-    z64_file.skybox_time = z64_file.day_time = 0x8000; // CLOCK_TIME(12, 00)
+    // code to run the first time the Phantom Ganon blue warp is taken
 }
 
 void DoorWarp1_FireMedallion_Overwrite(void) {
-    z64_file.skybox_time = z64_file.day_time = 0x8000; // CLOCK_TIME(12, 00)
+    // code to run the first time the Volvagia blue warp is taken
     z64_file.event_chk_inf[2] |= 1 << 15; // DMT cloud circle no longer fire
-    z64_file.timer_1_state = 0; // reset heat timer
 }
 
 void DoorWarp1_WaterMedallion_Overwrite(void) {
-    z64_file.skybox_time = z64_file.day_time = 0x4800; // CLOCK_TIME(6, 45)
+    // code to run the first time the Morpha blue warp is taken
     z64_file.event_chk_inf[6] |= 1 << 9; // Lake Hylia water raised
 }
 
 void DoorWarp1_SpiritMedallion_Overwrite(void) {
-    extended_savectx.collected_dungeon_rewards[6] = true;
-    z64_file.skybox_time = z64_file.day_time = 0x8000; // CLOCK_TIME(12, 00)
+    // code to run the first time the Twinrova blue warp is taken
 }
 
 void DoorWarp1_ShadowMedallion_Overwrite(void) {
-    extended_savectx.collected_dungeon_rewards[7] = true;
-    z64_file.skybox_time = z64_file.day_time = 0x8000; // CLOCK_TIME(12, 00)
+    // code to run the first time the Bongo Bongo blue warp is taken
 }

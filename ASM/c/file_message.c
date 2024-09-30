@@ -3,6 +3,7 @@
 #include "text.h"
 
 extern uint8_t CFG_SHOW_SETTING_INFO;
+extern char WEB_ID_STRING_TXT[];
 extern char WORLD_STRING_TXT[];
 extern char CFG_CUSTOM_MESSAGE_1[];
 extern char CFG_CUSTOM_MESSAGE_2[];
@@ -45,6 +46,19 @@ static void print_msg(z64_disp_buf_t* db, const char* s, int* top) {
 }
 
 void draw_file_message(z64_disp_buf_t* db, const z64_menudata_t* menu_data) {
+    if (WEB_ID_STRING_TXT[0] != '\0') {
+        gDPSetPrimColor(db->p++, 0, 0, 255, 255, 255, 255);
+        int icon_count = 5;
+        int icon_size = 24;
+        int padding = 8;
+        int width = (icon_count * icon_size) + ((icon_count - 1) * padding);
+        int right = (Z64_SCREEN_WIDTH - width) / 2 - padding;
+        int left = right - 10 * TEXT_WIDTH;
+
+        text_print_size(db, "   Seed ID", left, 24 - TEXT_HEIGHT, TEXT_WIDTH, TEXT_HEIGHT);
+        text_print_size(db, WEB_ID_STRING_TXT, left, 24, TEXT_WIDTH, TEXT_HEIGHT);
+    }
+
     if (WORLD_STRING_TXT[0] != '\0') {
         gDPSetPrimColor(db->p++, 0, 0, 255, 255, 255, 255);
         int icon_count = 5;

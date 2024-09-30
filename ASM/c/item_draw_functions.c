@@ -714,3 +714,39 @@ void draw_gi_stones(z64_game_t* game, uint32_t draw_id) {
     gDPSetEnvColor(gfx->poly_opa.p++, 0x96, 0x78, 0x00, 0xFF);
     gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[1].dlist);
 }
+
+void draw_gi_magic_meter(z64_game_t* game, uint32_t draw_id) {
+    z64_gfx_t *gfx = game->common.gfx;
+
+    // InnerOutline
+    colorRGBA8_t prim_outline = item_draw_table[draw_id].args[5].color;
+    // Container
+    colorRGBA8_t prim_container = item_draw_table[draw_id].args[4].color;
+    colorRGBA8_t env_color = item_draw_table[draw_id].args[4].color;
+    // Magic
+    colorRGBA8_t prim_color = item_draw_table[draw_id].args[3].color;
+    if (CFG_CORRECT_MODEL_COLORS) {
+        prim_color.r = CFG_MAGIC_COLOR .r;
+        prim_color.g = CFG_MAGIC_COLOR .g;
+        prim_color.b = CFG_MAGIC_COLOR .b;
+    }
+
+   // Magic
+    append_setup_dl_25_to_opa(gfx);
+    gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gDPSetPrimColor(gfx->poly_opa.p++, 0, 0x80, prim_color.r, prim_color.g, prim_color.b, prim_color.a);
+    gDPSetEnvColor(gfx->poly_xlu.p++, env_color.r, env_color.g, env_color.b, env_color.a);
+    gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[1].dlist);
+    // Container
+    append_setup_dl_25_to_xlu(gfx);
+    gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gDPSetPrimColor(gfx->poly_xlu.p++, 0, 0x80, prim_container.r, prim_container.g, prim_container.b, prim_container.a);
+    gDPSetEnvColor(gfx->poly_xlu.p++, env_color.r, env_color.g, env_color.b, env_color.a);
+    gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[0].dlist);
+    // InnerOutline
+    append_setup_dl_25_to_opa(gfx);
+    gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gDPSetPrimColor(gfx->poly_opa.p++, 0, 0x80, prim_outline.r, prim_outline.g, prim_outline.b, prim_outline.a);
+    gSPDisplayList(gfx->poly_opa.p++, item_draw_table[draw_id].args[2].dlist);
+
+}

@@ -21,15 +21,13 @@ import Unittest as Tests
 from Utils import data_path
 
 
-def error(msg: str, can_fix: bool | str) -> None:
+def error(msg: str, can_fix: bool) -> None:
     if not hasattr(error, "count"):
         error.count = 0
     print(msg, file=sys.stderr)
     error.count += 1
     if can_fix:
         error.can_fix = True
-        if can_fix == 'release':
-            error.can_fix_release = True
     else:
         error.cannot_fix = True
 
@@ -115,14 +113,14 @@ def check_hell_mode_tricks(fix_errors: bool = False) -> None:
             print(file=file)
 
 
-def check_release_presets(fix_errors: bool = False) -> None:
+def check_preset_spoilers(fix_errors: bool = False) -> None:
     # Check to make sure spoiler logs are enabled for all presets.
     with open(data_path('presets_default.json'), encoding='utf-8') as f:
         presets = json.load(f)
 
     for preset_name, preset in presets.items():
         if not preset['create_spoiler']:
-            error(f'{preset_name} preset does not create spoiler logs', 'release')
+            error(f'{preset_name} preset does not create spoiler logs', True)
             preset['create_spoiler'] = True
 
     if fix_errors:
@@ -260,8 +258,7 @@ def run_ci_checks() -> NoReturn:
         check_code_style(args.fix)
         check_presets_formatting(args.fix)
         check_table_sizes()
-        if args.release:
-            check_release_presets(args.fix)
+        check_preset_spoilers(args.fix)
         check_message_duplicates()
 
     exit_ci(args.fix)

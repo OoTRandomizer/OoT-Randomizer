@@ -16,7 +16,7 @@ from typing import Any, Optional
 import StartingItems
 from version import __version__
 from Utils import local_path, data_path
-from SettingsList import SettingInfos, validate_settings
+from SettingsList import SettingInfos, validate_settings, settings_versioning
 from Plandomizer import Distribution
 
 LEGACY_STARTING_ITEM_SETTINGS: dict[str, dict[str, StartingItems.Entry]] = {
@@ -76,6 +76,10 @@ class Settings(SettingInfos):
     def __init__(self, settings_dict: dict[str, Any], strict: bool = False) -> None:
         super().__init__()
         self.numeric_seed: Optional[int] = None
+        for setting in settings_dict:
+            for setting_version in settings_versioning:
+                if setting == setting_version.old_name:
+                    settings_dict[setting_version.new_name] = settings_dict.pop(setting_version.old_name)
         if settings_dict.get('compress_rom', None):
             # Old compress_rom setting is set, so set the individual output settings using it.
             settings_dict['create_patch_file'] = settings_dict['compress_rom'] == 'Patch' or settings_dict.get('create_patch_file', False)
@@ -280,6 +284,9 @@ class Settings(SettingInfos):
 
         for location in self.disabled_locations:
             self.distribution.add_location(location, '#Junk')
+
+        for location in self.plandomized_locations:
+            self.distribution.add_location(location, self.plandomized_locations[location])
 
     def check_dependency(self, setting_name: str, check_random: bool = True) -> bool:
         return self.get_dependency(setting_name, check_random) is None

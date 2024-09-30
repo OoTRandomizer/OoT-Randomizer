@@ -225,7 +225,7 @@ void activate_override(override_t override) {
     item_row_t* item_row = get_item_row(resolved_item_id);
 
     active_override = override;
-    if (resolved_item_id == 0xCA) {
+    if (resolved_item_id == GI_TRIFORCE_PIECE) {
         active_override_is_outgoing = 2; // Send to everyone
     } else {
         active_override_is_outgoing = override.value.base.player != PLAYER_ID;
@@ -353,7 +353,7 @@ void pop_ice_trap() {
     override_t override = extended_savectx.incoming_queue[0];
     override_key_t key = { .all = override.key.all };
     override_value_base_t value = { .all = override.value.base.all };
-    if (value.item_id == 0x7C && value.player == PLAYER_ID) {
+    if (value.item_id == GI_ICE_TRAP && value.player == PLAYER_ID) {
         push_pending_ice_trap();
         pop_pending_item();
         after_key_received(key);
@@ -406,9 +406,10 @@ void try_pending_item() {
     if (override.key.all == 0) {
         return;
     }
+
     uint16_t resolved_item_id = resolve_upgrades(override);
     item_row_t* item_row = get_item_row(resolved_item_id);
-    if (override.value.base.item_id == 0xCA && override.value.base.player != PLAYER_ID) {
+    if (override.value.base.item_id == GI_TRIFORCE_PIECE && override.value.base.player != PLAYER_ID) {
         call_effect_function(item_row);
         pop_pending_item();
         after_key_received(override.key);
@@ -502,10 +503,10 @@ void get_item(z64_actor_t* from_actor, z64_link_t* link, int8_t incoming_item_id
 
     if (from_actor->actor_id == 0x0A) {
         // Update chest contents
-        if (override.value.base.item_id == 0x7C && override.value.base.player == PLAYER_ID && (FAST_CHESTS || active_item_fast_chest) && z64_game.scene_index != 0x0010) {
+        if (override.value.base.item_id == GI_ICE_TRAP && override.value.base.player == PLAYER_ID && (FAST_CHESTS || active_item_fast_chest) && z64_game.scene_index != 0x0010) {
             // Use ice trap base item ID to freeze Link as the chest opens rather than playing the full item get animation
             //HACK: Not used in treasure box shop since it causes crashes that seem to be related to a timer being shared between ice traps and something in the minigame
-            base_item_id = 0x7C;
+            base_item_id = GI_ICE_TRAP;
         }
         from_actor->variable = (from_actor->variable & 0xF01F) | (base_item_id << 5);
     }
@@ -885,7 +886,7 @@ int16_t get_override_drop_id(int16_t dropId) {
 
 void dispatch_item(uint16_t resolved_item_id, uint8_t player, override_t* override, item_row_t* item_row) {
     // Give the item to the right place
-    if (resolved_item_id == 0xCA) {
+    if (resolved_item_id == GI_TRIFORCE_PIECE) {
         // Send triforce to everyone
         push_outgoing_override(override);
         call_effect_function(item_row);
@@ -991,7 +992,7 @@ void get_skulltula_token(z64_actor_t* token_actor) {
     uint8_t player;
     if (override.key.all == 0) {
         // Give a skulltula token if there is no override
-        item_id = 0x5B;
+        item_id = GI_SKULL_TOKEN;
         player = PLAYER_ID;
     } else {
         item_id = override.value.base.item_id;
@@ -1026,11 +1027,11 @@ void fairy_ocarina_getitem() {
     override_t override = lookup_override_by_key(lw_gift_from_saria);
     uint16_t resolved_item_id = resolve_upgrades(override);
     switch (resolved_item_id) {
-        case 0x003B: { // Fairy Ocarina
+        case GI_OCARINA_FAIRY: { // Fairy Ocarina
             z64_file.items[Z64_SLOT_OCARINA] = 0x07;
             break;
         }
-        case 0x000C: { // Ocarina of Time
+        case GI_OCARINA_OF_TIME: { // Ocarina of Time
             z64_file.items[Z64_SLOT_OCARINA] = 0x08;
             break;
         }

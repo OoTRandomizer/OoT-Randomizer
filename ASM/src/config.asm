@@ -1,6 +1,12 @@
 ;==================================================================================================
 ; Settings and tables which the front-end may write
 ;==================================================================================================
+; These values must be properly aligned to prevent an Address Error Exception on access. You can
+; see what address a symbol was given after building in the build/asm_symbols.txt file.
+; Byte values do not need to be aligned.
+; Halfword values must be on an even byte boundary. ".align 2" can fix this value type's alignment.
+; Word values must be on a byte boundary divisible by 4. ".align 4" can correct a misalignment.
+; Doubleword values must be on a byte boundary divisible by 8. ".align 8" can fix a misalignment.
 
 ; This is used to determine if and how the cosmetics can be patched
 ; It this moves then the version will no longer be valid, so it is important that this does not move
@@ -123,6 +129,11 @@ WORLD_STRING_TXT:
 TIME_STRING_TXT:
 .endarea
 
+; web seed ID string (max length 10 chars)
+.area 0x10, 0
+WEB_ID_STRING_TXT:
+.endarea
+
 ; Initial Save Data table:
 ;
 ; This table describes what extra data should be written when a new save file is created. It must be terminated with
@@ -142,7 +153,7 @@ INITIAL_SAVE_DATA:
 EXTENDED_INITIAL_SAVE_DATA:
 .endarea
 
-.area 0x108, 0 ; size must be at least 8 * ((max object_id parameter Patches.add_to_extended_object_table is called with) - 0x192)
+.area 0x110, 0 ; size must be at least 8 * ((max object_id parameter Patches.add_to_extended_object_table is called with) - 0x192)
 EXTENDED_OBJECT_TABLE:
 .endarea
 
@@ -244,6 +255,9 @@ PASSWORD:
 .endarea
 REWARDS_AS_ITEMS:
 .byte 0x00
+.area 14, 0x00
+CFG_DUNGEON_PRECOMPLETED:
+.endarea
 .align 4
 
 ; These configuration values are given fixed addresses to aid auto-trackers.

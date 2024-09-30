@@ -1,0 +1,6 @@
+{
+    "settings": {
+        "junk_ice_traps": "custom_count",
+        "custom_ice_trap_count": 50
+    }
+}
