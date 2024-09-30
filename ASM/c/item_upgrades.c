@@ -132,9 +132,9 @@ uint16_t ocarina_upgrade(z64_file_t* save, override_t override) {
 
 uint16_t max_upgrade_wallet_upgrade(z64_file_t* save, override_t override) {
     if (CFG_SHOPSANITY_ENABLED) {
-        return 0xC7; // Tycoon's Wallet
+        return GI_TYCOONS_WALLET;
     }
-    return 0x46; // Giant's Wallet
+    return GI_WALLET_GIANT;
 }
 
 uint16_t arrows_to_rupee(z64_file_t* save, override_t override) {

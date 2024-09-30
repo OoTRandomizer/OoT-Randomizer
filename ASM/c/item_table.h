@@ -328,7 +328,18 @@ typedef enum GetItemID {
     /* 0x0119 */ GI_FAIRY,
     /* 0x011A */ GI_NOTHING,
 
-    // 0x011B through 0x0126 reserved for https://github.com/OoTRandomizer/OoT-Randomizer/pull/2108
+    /* 0x011B */ GI_MAX_UPGRADE_HOOKSHOT, // Max Upgrade Hookshot
+    /* 0x011C */ GI_MAX_UPGRADE_STRENGTH, // Max Upgrade Strength
+    /* 0x011D */ GI_MAX_UPGRADE_BOMB_BAG, // Max Upgrade Bomb Bag
+    /* 0x011E */ GI_MAX_UPGRADE_BOW, // Max Upgrade Bow
+    /* 0x011F */ GI_MAX_UPGRADE_SLINGSHOT, // Max Upgrade Slingshot
+    /* 0x0120 */ GI_MAX_UPGRADE_WALLET, // Max Upgrade Wallet
+    /* 0x0121 */ GI_MAX_UPGRADE_SCALE, // Max Upgrade Scale
+    /* 0x0122 */ GI_MAX_UPGRADE_NUT, // Max Upgrade Nut
+    /* 0x0123 */ GI_MAX_UPGRADE_STICK, // Max Upgrade Stick
+    /* 0x0124 */ GI_MAX_UPGRADE_BOMBCHU, // Max Upgrade Bombchu
+    /* 0x0125 */ GI_MAX_UPGRADE_MAGIC, // Max Upgrade Magic
+    /* 0x0126 */ GI_MAX_UPGRADE_OCARINA, // Max Upgrade Ocarina
 
     // TODO: remove hardcoded value when that PR gets merged
     /* 0x0127 */ GI_KOKIRI_EMERALD = 0x0127,
