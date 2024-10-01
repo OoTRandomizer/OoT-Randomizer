@@ -138,7 +138,7 @@ void draw_dpad_and_menu_utilities() {
             if (CFG_CORRECT_MODEL_COLORS) {
                 gDPSetPrimColor(db->p++, 0, 0, CFG_A_BUTTON_COLOR.r, CFG_A_BUTTON_COLOR.g, CFG_A_BUTTON_COLOR.b, alpha);
             }
-            if (z64_file.scene_flags[0x50].unk_00_ & 1 << 0) { // A
+            if (has_ocarina_button(OCARINA_A_BUTTON)) {
                 sprite_draw(db, &ocarina_button_sprite, 0, left_ocarina_buttons, top_ocarina_buttons, icon_width, icon_height);
             }
 
@@ -146,16 +146,16 @@ void draw_dpad_and_menu_utilities() {
             if (CFG_CORRECT_MODEL_COLORS) {
                 gDPSetPrimColor(db->p++, 0, 0, CFG_C_BUTTON_COLOR.r, CFG_C_BUTTON_COLOR.g, CFG_C_BUTTON_COLOR.b, alpha);
             }
-            if (z64_file.scene_flags[0x50].unk_00_ & 1 << 2) { // C Down
+            if (has_ocarina_button(OCARINA_C_DOWN_BUTTON)) {
                 sprite_draw(db, &ocarina_button_sprite, 1, left_ocarina_buttons + icon_width, top_ocarina_buttons, icon_width, icon_height);
             }
-            if (z64_file.scene_flags[0x50].unk_00_ & 1 << 4) { // C right
+            if (has_ocarina_button(OCARINA_C_RIGHT_BUTTON)) {
                 sprite_draw(db, &ocarina_button_sprite, 2, left_ocarina_buttons + 2*icon_width, top_ocarina_buttons, icon_width, icon_height);
             }
-            if (z64_file.scene_flags[0x50].unk_00_ & 1 << 3) { // C left
+            if (has_ocarina_button(OCARINA_C_LEFT_BUTTON)) {
                 sprite_draw(db, &ocarina_button_sprite, 3, left_ocarina_buttons + 3*icon_width, top_ocarina_buttons, icon_width, icon_height);
             }
-            if (z64_file.scene_flags[0x50].unk_00_ & 1 << 1) { // C up
+            if (has_ocarina_button(OCARINA_C_UP_BUTTON)) {
                 sprite_draw(db, &ocarina_button_sprite, 4, left_ocarina_buttons + 4*icon_width, top_ocarina_buttons, icon_width, icon_height);
             }
 

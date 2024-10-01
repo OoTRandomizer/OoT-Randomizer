@@ -382,6 +382,7 @@
           "row_span": [3,3,3],
           "settings": [
             "ocarina_songs",
+            "show_ocarina_melodies",
             "text_shuffle",
             "damage_multiplier",
             "deadly_bonks",

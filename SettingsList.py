@@ -3418,6 +3418,16 @@ class SettingInfos:
         shared         = True,
     )
 
+    show_ocarina_melodies = Checkbutton(
+        gui_text       = 'Display Ocarina Melodies',
+        gui_tooltip    = '''\
+            Display a window that shows the melodies inputs
+            when you pull out the Ocarina.
+        ''',
+        default        = False,
+        shared         = True,
+    )
+
     hint_dist = Combobox(
         gui_text       = 'Hint Distribution',
         default        = 'balanced',

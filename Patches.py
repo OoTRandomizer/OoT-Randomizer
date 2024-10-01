@@ -2149,6 +2149,29 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     patch_songs(world, rom)
 
+    if world.settings.show_ocarina_melodies:
+        symbol = rom.sym('SHOW_OCARINA_MELODIES')
+        bytes_to_write = []
+        for name, song in world.song_notes.items():
+            notes = str(world.song_notes[name])
+            for note in notes:
+                if note == 'A':
+                    bytes_to_write.append(0)
+                if note == '^':
+                    bytes_to_write.append(1)
+                if note == 'v':
+                    bytes_to_write.append(2)
+                if note == '<':
+                    bytes_to_write.append(3)
+                if note == '>':
+                    bytes_to_write.append(4)
+            if world.song_notes[name].length < 8:
+                for i in range(8 - world.song_notes[name].length):
+                    bytes_to_write.append(5)
+
+        rom.write_bytes(rom.sym('SONG_MELODIES'), bytes_to_write)
+        rom.write_byte(symbol, 0x01)
+
     if world.settings.shuffle_individual_ocarina_notes:
         rom.write_byte(rom.sym('SHUFFLE_OCARINA_BUTTONS'), 1)
         epona_notes = str(world.song_notes['Eponas Song'])

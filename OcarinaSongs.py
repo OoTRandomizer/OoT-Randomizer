@@ -69,6 +69,21 @@ DIFFICULTY_ORDER: list[str] = [
     'Nocturne of Shadow',
 ]
 
+USUAL_SORT_ORDER: list[str] = [
+    'Zeldas Lullaby',
+    'Eponas Song',
+    'Sarias Song',
+    'Suns Song',
+    'Song of Time',
+    'Song of Storms',
+    'Minuet of Forest',
+    'Bolero of Fire',
+    'Serenade of Water',
+    'Requiem of Spirit',
+    'Nocturne of Shadow',
+    'Prelude of Light',
+]
+
 #    Song name:    (rom index, warp,   vanilla activation),
 SONG_TABLE: dict[str, tuple[int, bool, str]] = {
     'Zeldas Lullaby':     ( 8, False, '<^><^>'),
@@ -428,7 +443,13 @@ def generate_song_list(world: World, frog: bool, warp: bool) -> dict[str, Song]:
     for name in DIFFICULTY_ORDER:
         if name not in fixed_songs:
             fixed_songs[name] = random_songs.pop(0)
-    return fixed_songs
+
+    # and re-order them back to their usual order for spoiler log and in-game display
+    fixed_songs_ordered = {}
+    for name in USUAL_SORT_ORDER:
+        fixed_songs_ordered[name] = fixed_songs[name]
+
+    return fixed_songs_ordered
 
 
 # replace the playback and activation requirements for the ocarina songs

@@ -23,6 +23,7 @@
 #include "uninvertYaxis.h"
 #include "debug.h"
 #include "inputviewer.h"
+#include "ocarina_buttons.h"
 #include "message.h"
 
 void Gameplay_InitSkybox(z64_game_t* globalCtx, int16_t skyboxId);
@@ -59,6 +60,7 @@ void after_game_state_update() {
         draw_illegal_model_text(&rando_overlay_db);
         draw_input_viewer(&rando_overlay_db);
         display_song_name(&rando_overlay_db);
+        draw_ocarina_melodies(&rando_overlay_db);
 #if DEBUG_MODE
         debug_utilities(&debug_db);
 #endif

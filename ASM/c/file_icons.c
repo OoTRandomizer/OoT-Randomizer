@@ -402,19 +402,19 @@ static void populate_songs(const z64_file_t* file, music_tile_info_t* songs) {
 // Populate button titles
 static void populate_buttons(const z64_file_t* file, button_tile_info_t* buttons) {
     buttons->bits = 0;
-    if (file->scene_flags[0x50].unk_00_ & 1 << 0) { // A
+    if (file->scene_flags[0x50].unk_00_ & OCARINA_A_BUTTON) {
        buttons->bits |= 1 << 0;
     }
-    if (file->scene_flags[0x50].unk_00_ & 1 << 2) { // C Down
+    if (file->scene_flags[0x50].unk_00_ & OCARINA_C_DOWN_BUTTON) {
        buttons->bits |= 1 << 1;
     }
-    if (file->scene_flags[0x50].unk_00_ & 1 << 4) { // C right
+    if (file->scene_flags[0x50].unk_00_ & OCARINA_C_RIGHT_BUTTON) {
        buttons->bits |= 1 << 2;
     }
-    if (file->scene_flags[0x50].unk_00_ & 1 << 3) { // C left
+    if (file->scene_flags[0x50].unk_00_ & OCARINA_C_LEFT_BUTTON) {
        buttons->bits |= 1 << 3;
     }
-    if (file->scene_flags[0x50].unk_00_ & 1 << 1) { // C up
+    if (file->scene_flags[0x50].unk_00_ & OCARINA_C_UP_BUTTON) {
        buttons->bits |= 1 << 4;
     }
 }
