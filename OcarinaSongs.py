@@ -439,12 +439,12 @@ def generate_song_list(world: World, frog: bool, warp: bool) -> dict[str, Song]:
         raise ShuffleError('Could not generate random songs')
 
     # sort the songs by length
-
+    random_songs.sort(key=lambda s: s.difficulty)
     for name in DIFFICULTY_ORDER:
         if name not in fixed_songs:
             fixed_songs[name] = random_songs.pop(0)
 
-    # sort the songs back in their usual order
+    # and re-order them back to their usual order for spoiler log and in-game display
     fixed_songs_ordered = {}
     for name in USUAL_SORT_ORDER:
         fixed_songs_ordered[name] = fixed_songs[name]
