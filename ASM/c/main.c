@@ -64,7 +64,6 @@ void after_game_state_update() {
 #if DEBUG_MODE
         debug_utilities(&debug_db);
 #endif
-
     }
     close_rando_display_buffer();
     give_sage_gifts();

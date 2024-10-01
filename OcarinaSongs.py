@@ -70,19 +70,19 @@ DIFFICULTY_ORDER: list[str] = [
 ]
 
 USUAL_SORT_ORDER: list[str] = [
- 'Zeldas Lullaby',
- 'Eponas Song',
- 'Sarias Song',
- 'Suns Song',
- 'Song of Time',
- 'Song of Storms',
- 'Minuet of Forest',
- 'Bolero of Fire',
- 'Serenade of Water',
- 'Requiem of Spirit',
- 'Nocturne of Shadow',
- 'Prelude of Light',
- ]
+    'Zeldas Lullaby',
+    'Eponas Song',
+    'Sarias Song',
+    'Suns Song',
+    'Song of Time',
+    'Song of Storms',
+    'Minuet of Forest',
+    'Bolero of Fire',
+    'Serenade of Water',
+    'Requiem of Spirit',
+    'Nocturne of Shadow',
+    'Prelude of Light',
+]
 
 #    Song name:    (rom index, warp,   vanilla activation),
 SONG_TABLE: dict[str, tuple[int, bool, str]] = {
