@@ -289,6 +289,9 @@ ITEM_MESSAGES: list[tuple[int, str]] = [
     (0x90B3, "\x08\x13\x58You got \x05\x41Deku Seeds\x05\x40!\x01Use these as bullets\x01for your Slingshot."),
     (0x90B4, "\x08You found a \x05\x41fairy\x05\x40!\x01Your health has been restored!"),
     (0x90B5, "\x08You found \x05\x43literally nothing\x05\x40!"),
+    (0x90B6, "\x08\x13\x4DYou found a \x05\x41Bomb Bag\x05\x40!\x01This is the \x05\x43biggest bomb bag\x05\x40,\x01it can carry up to \x05\x4640\x05\x40 Bombs!"),
+    (0x90B7, "\x08\x13\x03You found the \x05\x41Fairy Bow\x05\x40 and\x01\x05\x43the biggest quiver\x05\x40!"),
+    (0x90B8, "\x08\x13\x06You found the \x05\x41Fairy Slingshot\x05\x40\x01and a \x05\x43Deku Seeds Bullet Bag\x05\x40.\x01This bag can hold up to \x05\x4640\x05\x40\x01slingshot bullets."),
 ]
 
 KEYSANITY_MESSAGES: list[tuple[int, str]] = [

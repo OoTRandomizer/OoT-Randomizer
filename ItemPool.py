@@ -357,6 +357,21 @@ exclude_from_major: list[str] = [
     'Piece of Heart (Treasure Chest Game)',
 ]
 
+max_upgrade_items: dict[str, str] = {
+    'Progressive Hookshot': 'Max Upgrade Hookshot',
+    'Progressive Strength Upgrade': 'Max Upgrade Strength',
+    'Bomb Bag': 'Max Upgrade Bomb Bag',
+    'Bow': 'Max Upgrade Bow',
+    'Slingshot': 'Max Upgrade Slingshot',
+    'Progressive Wallet': 'Max Upgrade Wallet',
+    'Progressive Scale': 'Max Upgrade Scale',
+    'Deku Nut Capacity': 'Max Upgrade Nut',
+    'Deku Stick Capacity': 'Max Upgrade Stick',
+    'Bombchus': 'Max Upgrade Bombchu',
+    'Magic Meter': 'Max Upgrade Magic',
+    'Ocarina': 'Max Upgrade Ocarina',
+}
+
 item_groups: dict[str, Sequence[str]] = {
     'Junk': remove_junk_items,
     'JunkSong': ('Prelude of Light', 'Serenade of Water'),
@@ -875,6 +890,10 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         # The rest of the overworld items.
         elif location.type in ("Chest", "NPC", "Song", "Collectable", "Cutscene", "BossHeart"):
             shuffle_item = True
+
+        # Replace with max upgrade item if enabled.
+        if item in max_upgrade_items and item in world.settings.max_upgrade_items:
+            item = max_upgrade_items[item]
 
         # Now, handle the item as necessary.
         if shuffle_item:

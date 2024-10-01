@@ -3897,6 +3897,36 @@ class SettingInfos:
         },
     )
 
+    max_upgrade_items = MultipleSelect(
+        gui_text       = 'Max Upgrade Items',
+        default        = [],
+        choices        = {
+            'Progressive Hookshot':         'Hookshot',
+            'Progressive Strength Upgrade': 'Strength',
+            'Bomb Bag':                     'Bomb Bag',
+            'Bow':                          'Bow',
+            'Slingshot':                    'Slingshot',
+            'Progressive Wallet':           'Wallet',
+            'Progressive Scale':            'Scale',
+            'Deku Nut Capacity':            'Nut Capacity',
+            'Deku Stick Capacity':          'Stick Capacity',
+           #'Bombchus':                     'Bombchus', # Bombchus don't have an upgrade system yet
+            'Magic Meter':                  'Magic Meter',
+            'Ocarina':                      'Ocarina',
+        },
+        gui_tooltip    = '''\
+            Select the items that, when obtained, will also give all
+            of their upgrades.
+
+            For example, picking up a Bow will grant the Fairy Bow
+            and the Biggest Quiver.
+
+            The amount of items in each pool is not modified by this
+            setting.
+        ''',
+        shared         = True,
+    )
+
     item_pool_value = Combobox(
         gui_text       = 'Item Pool',
         default        = 'balanced',

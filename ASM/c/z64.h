@@ -1897,11 +1897,24 @@ typedef enum {
 } PauseBgPreRenderState;
 
 
+typedef enum UpgradeType {
+    /* 0x00 */ UPG_QUIVER,
+    /* 0x01 */ UPG_BOMB_BAG,
+    /* 0x02 */ UPG_STRENGTH,
+    /* 0x03 */ UPG_SCALE,
+    /* 0x04 */ UPG_WALLET,
+    /* 0x05 */ UPG_BULLET_BAG,
+    /* 0x06 */ UPG_DEKU_STICKS,
+    /* 0x07 */ UPG_DEKU_NUTS,
+    /* 0x08 */ UPG_MAX
+} UpgradeType;
 
 /* helper macros */
 #define LINK_IS_ADULT (z64_file.link_age == 0)
 #define SLOT(item) gItemSlots[item]
 #define INV_CONTENT(item) z64_file.items[SLOT(item)]
+#define AMMO(item) z64_file.ammo[SLOT(item)]
+#define CAPACITY(upg, value) gUpgradeCapacities[upg][value]
 #define ABS(x) ((x) >= 0 ? (x) : -(x))
 
 /* dram addresses */
@@ -1929,6 +1942,7 @@ typedef enum {
 #define z64_SwitchAgeEquips_addr                0x8006F804
 #define z64_UpdateItemButton_addr               0x8006FB50
 #define z64_GiveItem_addr                       0x8006FDCC
+#define z64_Inventory_ChangeUpgrade_addr        0x80081294
 #define z64_UpdateEquipment_addr                0x80079764
 #define z64_LoadRoom_addr                       0x80080A3C
 #define z64_UnloadRoom_addr                     0x80080C98
@@ -1964,6 +1978,8 @@ typedef enum {
 #define z64_link_addr                           0x801DAA30
 #define z64_state_ovl_tab_addr                  0x800F1340
 #define z64_event_state_1_addr                  0x800EF1B0
+#define gItemSlots_addr                         0x800F8F34
+#define gUpgradeCapacities_addr                 0x800F8CCC
 #define z64_LinkInvincibility_addr              0x8038E578
 #define z64_LinkDamage_addr                     0x8038E6A8
 #define z64_ObjectSpawn_addr                    0x800812F0
@@ -2046,7 +2062,9 @@ typedef void (*z64_DisplayTextbox_proc)   (z64_game_t* game, uint16_t text_id,
                                            int unknown_);
 typedef void (*z64_GiveItem_proc)         (z64_game_t* game, uint8_t item);
 
-typedef void(*z64_LinkDamage_proc)        (z64_game_t* ctxt, z64_link_t* link,
+typedef void (*z64_Inventory_ChangeUpgrade_proc)(int16_t upgrade, int16_t value);
+
+typedef void(*z64_LinkDamage_proc)        (z64_game_t* ctxt, z64_link_t *link,
                                            uint8_t damage_type, float unk_00, uint32_t unk_01,
                                            uint16_t unk_02);
 typedef void(*z64_LinkInvincibility_proc) (z64_link_t* link, uint8_t frames);
@@ -2106,6 +2124,11 @@ typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawn
                                                       z64_state_ovl_tab_addr)
 #define z64_event_state_1       (*(uint32_t*)         z64_event_state_1_addr)
 
+//extern uint8_t gItemSlots[56];
+#define gItemSlots              ( (uint8_t*) gItemSlots_addr)
+
+// extern uint16_t gUpgradeCapacities[UPG_MAX][4];
+#define gUpgradeCapacities      ( (uint16_t (*)[4]) gUpgradeCapacities_addr)
 
 /* functions */
 #define z64_ActorKill               ((z64_ActorKillFunc)    z64_ActorKill_addr)
@@ -2139,6 +2162,8 @@ typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawn
 #define z64_DisplayTextbox      ((z64_DisplayTextbox_proc)                    \
                                                       z64_DisplayTextbox_addr)
 #define z64_GiveItem            ((z64_GiveItem_proc)  z64_GiveItem_addr)
+
+#define z64_Inventory_ChangeUpgrade ((z64_Inventory_ChangeUpgrade_proc) z64_Inventory_ChangeUpgrade_addr)
 
 #define z64_LinkDamage          ((z64_LinkDamage_proc)z64_LinkDamage_addr)
 #define z64_LinkInvincibility   ((z64_LinkInvincibility_proc)                 \

@@ -537,6 +537,19 @@ hintTable: dict[str, tuple[list[str] | str, Optional[str], str | list[str]]] = {
     'Fairy Drop':                                               (["an annoying companion", "Navi's cousin"], "a Stray Fairy", 'item'),
     'Nothing':                                                  (["emptiness", "loneliness"], "Nothing", 'item'),
 
+    'Max Upgrade Hookshot':                                     (["Water Tenple's keepsake", "the largest Grapple Beam", "the BOINGEST! chain"], "a Max Upgrade Hookshot", 'item'),
+    'Max Upgrade Strength':                                     (["power gloves", "metal mittens", "the heavy lifty"], "a Max Upgrade Strength", 'item'),
+    'Max Upgrade Bomb Bag':                                     (["biggest explosive container", "a huge blast bag"], "a Max Upgrade Bomb Bag", 'item'),
+    'Max Upgrade Bow':                                          (["a fully archery enabler", "a very danger dart launcher"], "a Max Upgrade Bow", 'item'),
+    'Max Upgrade Slingshot':                                    (["a seed shooter", "a rubberband", "a child's catapult"], "a Max Upgrade Slingshot", 'item'),
+    'Max Upgrade Wallet':                                       (["the biggest mo' money holder", "a big gem purse", "a huge portable bank"], "a Max Upgrade Wallet", 'item'),
+    'Max Upgrade Scale':                                        (["the deepest dive", "a piece of Zora"], "a Max Upgrade Zora Scale", 'item'),
+    'Max Upgrade Nut':                                          (["even more nuts", "the largest flashbang storage"], "Max Upgrade Deku Nut Capacity", 'item'),
+    'Max Upgrade Stick':                                        (["tons of lumber rack", "even more flammable twigs"], "Max Upgrade Deku Stick Capacity", 'item'),
+    'Max Upgrade Bombchu':                                      (["tons of mice bombs", "tons of proximity mice", "tons of wall crawlers", "tons of trail blazers"], "Max Upgrade Bombchus", 'item'),
+    'Max Upgrade Magic':                                        (["ultimate mystic training", "lots of pixie dust", "the largest green rectangle"], "a Max Upgrade Magic Meter", 'item'),
+    'Max Upgrade Ocarina':                                      (["a time flute"], "a Max Upgrade Ocarina", 'item'),
+
     'ZR Frogs Ocarina Game':                                       (["an #amphibian feast# yields", "the #croaking choir's magnum opus# awards", "the #froggy finale# yields"], "the final reward from the #Frogs of Zora's River# is", ['overworld', 'sometimes']),
     'KF Links House Cow':                                          ("the #bovine bounty of a horseback hustle# gifts", "#Malon's obstacle course# leads to", 'always'),
 

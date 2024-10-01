@@ -389,7 +389,8 @@
             "blue_fire_arrows",
             "fix_broken_drops",
             "no_collectible_hearts",
-            "one_item_per_dungeon"
+            "one_item_per_dungeon",
+            "max_upgrade_items"
           ]
         },
         {

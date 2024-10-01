@@ -3,6 +3,7 @@
 #include "get_items.h"
 #include "item_table.h"
 #include "z64.h"
+#include "shop.h"
 
 extern uint32_t FREE_BOMBCHU_DROPS;
 
@@ -116,7 +117,7 @@ uint16_t bombchu_upgrade(z64_file_t* save, override_t override) {
     if (save->items[Z64_SLOT_BOMBCHU] == ITEM_NONE) {
         return GI_BOMBCHUS_20; // Bombchu 20 pack
     }
-    if (save->ammo[8] <= 5) {
+    if (AMMO(ITEM_BOMBCHU) <= 5) {
         return GI_BOMBCHUS_10; // Bombchu 10 pack
     }
     return GI_BOMBCHUS_5; // Bombchu 5 pack
@@ -127,6 +128,13 @@ uint16_t ocarina_upgrade(z64_file_t* save, override_t override) {
         case ITEM_NONE: case 0: return GI_OCARINA_FAIRY; // Fairy Ocarina
         default: return GI_OCARINA_OF_TIME; // Ocarina of Time
     }
+}
+
+uint16_t max_upgrade_wallet_upgrade(z64_file_t* save, override_t override) {
+    if (CFG_SHOPSANITY_ENABLED) {
+        return GI_TYCOONS_WALLET;
+    }
+    return GI_WALLET_GIANT;
 }
 
 uint16_t arrows_to_rupee(z64_file_t* save, override_t override) {
