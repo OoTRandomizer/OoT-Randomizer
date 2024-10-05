@@ -582,10 +582,16 @@ void draw_debug_menu(z64_disp_buf_t* db) {
             (13 * font_width) +
             (8 * padding);
         int bg_height = (rows * icon_size) + ((rows + 1) * padding);
-        int bg_left = (Z64_SCREEN_WIDTH - bg_width) / 2;
-        int bg_top = (Z64_SCREEN_HEIGHT - bg_height) / 2;
         int alphaBackground = 0xD0;
 
+        // Need a bigger and clearer background for the actor menu.
+        if (current_menu_indexes.main_index == 7 && current_menu_indexes.sub_menu_index > 1) {
+            bg_width *= 1.5;
+            alphaBackground = 0xB0;
+        }
+
+        int bg_left = (Z64_SCREEN_WIDTH - bg_width) / 2;
+        int bg_top = (Z64_SCREEN_HEIGHT - bg_height) / 2;
         int left = bg_left + padding;
         int start_top = bg_top;
 
@@ -683,7 +689,7 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                     break;
                 case 2: // Bosses
                     gDPSetPrimColor(db->p++, 0, 0, 255, 255, 255, 255);
-                    for (int i = 0; i < 11; i++) {
+                    for (int i = 0; i < 10; i++) {
                         warp_t* d = &(bosses_warps[i]);
                         int top = start_top + ((icon_size + padding) * i) + 1;
                         if (i != current_menu_indexes.boss_index) {
@@ -745,6 +751,7 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                     break;
                 case 7: // Actor table
                     gDPSetPrimColor(db->p++, 0, 0, 255, 255, 255, 255);
+                    colorRGBA8_t color = { 0xFF, 0xFF, 0xFF, 0xFF};
                     if (current_menu_indexes.sub_menu_index == 1) {
                         for (int i = 0; i < ACTORTYPE_CHEST + 1; i++) {
                             menu_category_t* d = &(actor_categories[i]);
@@ -784,7 +791,10 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                             uint32_t numberToConvert = (uintptr_t)actor;
                             char AddressActor[10];
                             decimal_to_hex(numberToConvert, AddressActor);
-                            text_print_size(db, AddressActor, left + 10*font_width, top + 5, font_width, font_height);
+                            text_print_size(db, AddressActor, left + 7*font_width, top + 5, font_width, font_height);
+                            draw_int_size(db, actor->pos_world.x, left + 20*font_width + 5, top + 5, color, font_width, font_height);
+                            draw_int_size(db, actor->pos_world.y, left + 25*font_width + 5, top + 5, color, font_width, font_height);
+                            draw_int_size(db, actor->pos_world.z, left + 30*font_width + 5, top + 5, color, font_width, font_height);
                             actor = actor->next;
                         }
                     }
@@ -811,7 +821,7 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                                     decimal_to_hex(overlay_id, idActor);
                                     text_print_size(db, idActor, left + 5, top + 5, font_width, font_height);
                                     char ramStartOverlay[10];
-                                    uint32_t numberToConvert = (uintptr_t)overlay.vramStart;
+                                    uint32_t numberToConvert = (uintptr_t)overlay.loadedRamAddr;
                                     decimal_to_hex(numberToConvert, ramStartOverlay);
                                     text_print_size(db, ramStartOverlay, left + 10*font_width + 5, top + 5, font_width, font_height);
                                 }
