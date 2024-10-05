@@ -283,7 +283,7 @@ def exit_ci(fix_errors: bool = False) -> NoReturn:
                     which_errors = 'some of these errors'
                 else:
                     which_errors = 'these errors'
-                print(f'Run `CI.py --fix --no_unit_tests{release_arg}` to automatically fix {which_errors}.', file=sys.stderr)
+                print(f'Run `./CI.py --fix --no_unit_tests{release_arg}` to automatically fix {which_errors}.', file=sys.stderr)
             sys.exit(1)
     else:
         print(f'CI checks successful.')
