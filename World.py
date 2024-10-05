@@ -2,6 +2,7 @@ from __future__ import annotations
 import copy
 import json
 import logging
+import math
 import os
 import random
 from collections import OrderedDict, defaultdict
@@ -56,6 +57,24 @@ class World:
         self.event_items: set[str] = set()
         self.settings: Settings = settings.copy()
         self.distribution: WorldDistribution = settings.distribution.world_dists[world_id]
+
+        # errors for setting incompatibilities not yet caught by the GUI, see also https://github.com/OoTRandomizer/OoT-Randomizer/issues/1827
+        required_hearts = 0
+        if settings.lacs_condition == 'hearts':
+            required_hearts = max(required_hearts, settings.lacs_hearts)
+        if settings.bridge == 'hearts':
+            required_hearts = max(required_hearts, settings.bridge_hearts)
+        if settings.shuffle_ganon_bosskey == 'hearts':
+            required_hearts = max(required_hearts, settings.ganon_bosskey_hearts)
+        available_hearts = {
+            'ludicrous': 20,
+            'plentiful': 20,
+            'balanced': 20,
+            'scarce': settings.starting_hearts + 9 - math.ceil((settings.starting_hearts - 3) / 2),
+            'minimal': settings.starting_hearts,
+        }[settings.item_pool_value]
+        if required_hearts > available_hearts:
+            raise ValueError(f"Not enough heart pieces/containers in item pool for win conditions ({available_hearts} available but {required_hearts} required). Decrease the number of required hearts or increase the item pool.")
 
         # rename a few attributes...
         self.keysanity: bool = settings.shuffle_smallkeys in ('keysanity', 'remove', 'any_dungeon', 'overworld', 'regional')
