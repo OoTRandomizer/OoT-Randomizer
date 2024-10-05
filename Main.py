@@ -241,7 +241,22 @@ def compress_rom(input_file: str, output_file: str, delete_input: bool = False) 
         logger.info("OS not supported for ROM compression.")
         raise Exception("This operating system does not support ROM compression. You may only output patch files or uncompressed ROMs.")
 
-    run_process(logger, [compressor_path, input_file, output_file])
+    # Runs compressor with a working directory of ASM/roms/
+    # to make file permissions for dev containers easier to
+    # define. If the ARCHIVE.bin file created by the compressor
+    # was not generated before the container ran, it would create
+    # an ARCHIVE.bin/ folder instead. The ASM/roms/ folder already
+    # exists in the repository and is used to contain other
+    # working files for ROM generation. The compressor does not
+    # have an option to define where to store ARCHIVE.bin short
+    # of recompiling, always using the working directory.
+    #
+    # `cwd` argument for Popen behaves differently with relative
+    # paths for Windows/macOS and Linux when searching for the
+    # executable. Behavior is consistent with absolute paths.
+    # Input/output files are already defined as absolute through
+    # `Utils.default_output_path()`.
+    run_process(logger, [os.path.realpath(compressor_path), input_file, output_file], working_dir=os.path.realpath('./ASM/roms/'))
     if delete_input:
         os.remove(input_file)
 

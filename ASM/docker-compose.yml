@@ -1,0 +1,27 @@
+name: ootr-dev
+
+services:
+  toolchain:
+    build:
+      context: .
+      args:
+        USERNAME: ootr
+        USER_UID: ${DOCKER_UID:-1000}
+        USER_GID: ${DOCKER_GID:-1000}
+    user: ${DOCKER_UID_GID:-}
+    volumes:
+      - ..:/app/OoT-Randomizer:cached
+      - ./build:/app/OoT-Randomizer/ASM/build:consistent
+      - ./roms:/app/OoT-Randomizer/ASM/roms:consistent
+      - ../Output:/app/OoT-Randomizer/Output:consistent
+      - ../data/generated:/app/OoT-Randomizer/data/generated:consistent
+      - ../Logs:/app/OoT-Randomizer/Logs:consistent
+
+    # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: python3 /app/OoT-Randomizer/ASM/build.py --compile-c

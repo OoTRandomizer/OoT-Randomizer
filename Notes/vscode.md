@@ -75,6 +75,20 @@ VS Code has a panel to run and debug Python unit tests. `pytest` is recommended 
 
 The testing panel can be opened by clicking the flask icon in the left toolbar. To run all tests, DO NOT use the Run All Tests button. Click the Run Test button next to Unittest.py in the test tree. For more information on VS Code unit testing, see [the official VS Code Python testing page](https://code.visualstudio.com/docs/python/testing#_run-tests).
 
+## Dev Containers
+
+If the [Dev Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension is installed, it should automatically detect the configuration file in `/.devcontainer/devcontainer.json`. If you allow it to activate, it will create a Debian container with python, node, glankk's N64 toolchain, and armips for compiling and running all code for the randomizer. To manually activate it:
+
+- Bring up the command palette with F1
+- Select `Dev Container: Open Folder in Container...`
+- Select the root of the randomizer repository and wait for the container to build.
+
+Before using any of the build scripts, ensure an uncompressed v1.0 NTSC US ROM is placed at `ASM/roms/base.z64` relative to the repository's root. The randomizer will create this file for you when generating a patched ROM or wad.
+
+Debugging and building options described below will work with no additional changes while inside the container. Alternatively, any new terminal prompt in VSCode will allow you to run commands inside the container. Randomizer source code is mounted to `/app/OoT-Randomizer`.
+
+Running the GUI from the container is not currently supported. It is technically possible by either running an X server in the container or sharing the host's X server, but this approach is not cross-platform-friendly. The GUI can still be run from the host outside of VSCode. It will share code changes with the container through the container's mounted folders.
+
 ## Building the ASM/C code
 
 Instead of manually running the build script in a terminal, you can add a build task to VS Code by creating a `.vscode/tasks.json` file with the following content:
@@ -88,7 +102,8 @@ Instead of manually running the build script in a terminal, you can add a build 
             "type": "shell",
             "command": "python3",
             "args": [
-                "${workspaceFolder}/ASM/build.py"
+                "${workspaceFolder}/ASM/build.py",
+                "--compile-c"
             ],
             "group": {
                 "kind": "build",

@@ -204,7 +204,7 @@ class TestPlandomizer(unittest.TestCase):
 
     def test_rom_patching(self):
         # This makes sure there are no crashes while patching.
-        if not os.path.isfile('./ZOOTDEC.z64'):
+        if not os.path.isfile('./ASM/roms/base.z64'):
             self.skipTest("Base ROM file not available.")
         filename = "plando-ammo-max-out-of-bounds"
         logic_rules_settings = ['glitchless', 'glitched', 'none']
@@ -555,7 +555,7 @@ class TestHints(unittest.TestCase):
         self.assertIn('Hyrule Castle', woth)
 
     def test_ganondorf(self):
-        if not os.path.isfile('./ZOOTDEC.z64'):
+        if not os.path.isfile('./ASM/roms/base.z64'):
             self.skipTest("Base ROM file not available.")
         filenames = [
             "light-arrows-1",
@@ -855,9 +855,9 @@ class TestValidSpoilers(unittest.TestCase):
 
 class TestTextShuffle(unittest.TestCase):
     def test_text_shuffle(self):
-        if not os.path.isfile('./ZOOTDEC.z64'):
+        if not os.path.isfile('./ASM/roms/base.z64'):
             self.skipTest("Base ROM file not available.")
-        rom = Rom("./ZOOTDEC.z64")
+        rom = Rom("./ASM/roms/base.z64")
         messages = read_messages(rom)
         shuffle_messages(messages)
         shuffle_messages(messages, False)
