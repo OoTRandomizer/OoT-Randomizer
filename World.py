@@ -14,6 +14,7 @@ from Goals import Goal, GoalCategory
 from HintList import get_required_hints, misc_item_hint_table, misc_location_hint_table
 from Hints import HintArea, hint_dist_keys, hint_dist_files
 from Item import Item, ItemFactory, ItemInfo, make_event_item
+from ItemList import REWARD_COLORS
 from ItemPool import reward_list
 from Location import Location, LocationFactory
 from LocationList import business_scrubs, location_groups, location_table
@@ -41,7 +42,12 @@ class World:
         self.shop_prices: dict[str, int] = {}
         self.scrub_prices: dict[int, int] = {}
         self.maximum_wallets: int = 0
-        self.hinted_dungeon_reward_locations: dict[str, Location] = {}
+        self.hinted_dungeon_reward_locations: dict[str, Optional[Location]] = {
+            name: None
+            for name, count in settings.starting_items.items()
+            if name in REWARD_COLORS
+            and count.count > 0
+        }
         self.misc_hint_item_locations: dict[str, Location] = {}
         self.misc_hint_location_items: dict[str, Item] = {}
         self.triforce_count: int = 0

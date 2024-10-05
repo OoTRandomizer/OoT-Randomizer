@@ -1270,6 +1270,9 @@ def build_gossip_hints(spoiler: Spoiler, worlds: list[World]) -> None:
     # Add misc. item hint locations to "checked" locations if the respective hint is reachable without the hinted item.
     for world in worlds:
         for location in world.hinted_dungeon_reward_locations.values():
+            if location is None:
+                # ignore starting items
+                continue
             if world.settings.enhance_map_compass:
                 if world.mixed_pools_bosses or world.settings.shuffle_dungeon_rewards not in ('vanilla', 'reward'):
                     # In these settings, there is not necessarily one dungeon reward in each dungeon,
@@ -1700,7 +1703,11 @@ def build_boss_string(reward: str, color: str, world: World) -> str:
             text = GossipText(f"\x08\x13{item_icon}One in #@'s pocket#...", [color], prefix='')
     else:
         location = world.hinted_dungeon_reward_locations[reward]
-        location_text = HintArea.at(location).text(world.settings.clearer_hints, preposition=True, world=None if location.world.id == world.id else location.world.id + 1)
+        if location is None:
+            hint_area = HintArea.ROOT
+        else:
+            hint_area = HintArea.at(location)
+        location_text = hint_area.text(world.settings.clearer_hints, preposition=True, world=None if location.world.id == world.id else location.world.id + 1)
         text = GossipText(f"\x08\x13{item_icon}One {location_text}...", [color], prefix='')
     return str(text) + '\x04'
 

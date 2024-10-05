@@ -300,7 +300,7 @@ class Spoiler:
         for w, sw in zip(worlds, self.worlds):
             # But the actual location saved here may be in a different world
             for item_name, item_location in w.hinted_dungeon_reward_locations.items():
-                sw.hinted_dungeon_reward_locations[item_name] = self.worlds[item_location.world.id].get_location(item_location.name)
+                sw.hinted_dungeon_reward_locations[item_name] = None if item_location is None else self.worlds[item_location.world.id].get_location(item_location.name)
             for hint_type, item_location in w.misc_hint_item_locations.items():
                 sw.misc_hint_item_locations[hint_type] = self.worlds[item_location.world.id].get_location(item_location.name)
 
