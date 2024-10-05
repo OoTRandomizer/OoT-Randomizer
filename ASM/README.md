@@ -1,5 +1,23 @@
 Advanced modifications to the Randomzier source require a bit more software than what is needed for running it.
 
+# Global Prequisites
+- Put the ROM you want to patch at `roms/base.z64`. This needs to be an uncompressed ROM; OoTRandomizer will create it when you run it with a compressed ROM.
+
+# Option 1: Docker
+Using Docker will automatically download and set up the tools required to compile and run all code in the randomizer, on any OS. Setting up Docker also enables the use of the [Dev Containers](https://code.visualstudio.com/docs/devcontainers/containers) extension in VSCode (see `/Notes/vscmode.md` for more details).
+- Install Docker Desktop
+  - Windows: https://docs.docker.com/desktop/install/windows-install/
+  - macOS: https://docs.docker.com/desktop/install/mac-install/
+  - Linux: https://docs.docker.com/desktop/install/linux/
+    - *(Optional)* Install [Docker CE](https://docs.docker.com/engine/install/) and the [Compose plugin](https://docs.docker.com/compose/install/linux/) in place of Desktop if desired, or use podman.
+    - Do *NOT* use the Ubuntu snap package.
+- On Windows, run `build.bat`
+- On Linux or macOS, run `build.sh`
+- Alternatively, run `docker compose up` in the `ASM` folder.
+  - Linux users must supply a user ID and group ID pair for the container to run as so compiled code is not owned by root. See `build.sh` for details. This does not affect Windows or macOS.
+- All ASM and C code will be recompiled each time the build scripts are run.
+
+# Option 2: Manual setup
 ## Assembly: armips
 ### Windows Prerequisite
 - Download and install the [Visual Studio 2015-202x Visual C++ Redistributable](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#visual-studio-2015-2017-2019-and-2022) package.
@@ -10,7 +28,6 @@ Advanced modifications to the Randomzier source require a bit more software than
   - [Windows automated builds](https://buildbot.orphis.net/armips/)
   - On other platforms you'll need either `clang` or `gcc`, `cmake`, and either `ninja` or `make` installed. All of these should be available in the package repositories of every major Linux distribution and Homebrew on macOS. After, follow the [building from source instructions](https://github.com/Kingcom/armips#22-building-from-source).
 - Put the armips executable in the `tools` directory, or somewhere in your PATH.
-- Put the ROM you want to patch at `roms/base.z64`. This needs to be an uncompressed ROM; OoTRandomizer will produce one at ZOOTDEC.z64 when you run it with a compressed ROM.
 - Run `python build.py --no-compile-c`, which will:
   - create `roms/patched.z64`
   - update some `txt` files in `build/` and in `../data/generated/`. Check `git status` to see which ones have changed. Make sure you submit them all together!

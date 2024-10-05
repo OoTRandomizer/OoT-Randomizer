@@ -360,7 +360,7 @@ def process_pot(actor_bytes):
         'item_id': item_dict[item_id],
     }
 
-#rom = Rom('ZOOTDEC.z64')
+#rom = Rom('ASM/roms/base.z64')
 rom = Rom('zeloot_mqdebug.z64')
 pots = get_crates(rom)
 
