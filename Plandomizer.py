@@ -1108,32 +1108,18 @@ class WorldDistribution:
                     add_starting_item_with_ammo(items, location.item.name)
 
         effective_adult_trade_item_index = -1
-        effective_child_trade_item_index = -1
-        effective_adult_trade_item = None
-        effective_child_trade_item = None
-        trade_starting_items = list(items.keys())
-        for item_name in trade_starting_items:
+        for item_name in items:
             if item_name in trade_items:
                 if item_name in world.settings.adult_trade_start:
                     if trade_items.index(item_name) > effective_adult_trade_item_index:
                         effective_adult_trade_item_index = trade_items.index(item_name)
-                        effective_adult_trade_item = items[item_name]
                 else:
                     raise RuntimeError(f'An unshuffled trade item was included as a starting item. Please either remove {item_name} from starting items or add it to Adult Trade Sequence Items.')
-                del items[item_name]
             if item_name in child_trade_items:
-                if item_name in world.settings.shuffle_child_trade or item_name == 'Zeldas Letter':
-                    if child_trade_items.index(item_name) > effective_child_trade_item_index:
-                        effective_child_trade_item_index = child_trade_items.index(item_name)
-                        effective_child_trade_item = items[item_name]
-                else:
+                if item_name not in world.settings.shuffle_child_trade and item_name != 'Zeldas Letter':
                     raise RuntimeError(f'An unshuffled trade item was included as a starting item. Please either remove {item_name} from starting items or add it to Shuffled Child Trade Sequence Items.')
-                del items[item_name]
 
-        if effective_child_trade_item_index >= 0:
-            items[child_trade_items[effective_child_trade_item_index]] = effective_child_trade_item
         if effective_adult_trade_item_index >= 0:
-            items[trade_items[effective_adult_trade_item_index]] = effective_adult_trade_item
             world.adult_trade_starting_inventory = trade_items[effective_adult_trade_item_index]
 
         self.effective_starting_items = items

@@ -1015,18 +1015,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     elif world.settings.open_kakariko != 'closed':
         rom.write_byte(rom.sym('OPEN_KAKARIKO'), 1)
 
-    # Mark starting trade items as owned
-    # The effective starting item seen in the player inventory will be the
-    # latest shuffled item in the trade sequence, calculated in
-    # Plandomizer.WorldDistribution.configure_effective_starting_items.
-    owned_flags = 0
-    for item_name in world.distribution.starting_items.keys():
-        if item_name in child_trade_items:
-            owned_flags += 0x1 << (child_trade_items.index(item_name))
-        if item_name in trade_items:
-            owned_flags += 0x1 << (trade_items.index(item_name) + 11)
-    save_context.write_permanent_flags(Scenes.DEATH_MOUNTAIN_TRAIL, FlagType.UNK00, owned_flags)
-
     # Mark unreachable trade-ins as traded. Only applicable with trade quest shuffle off,
     # and only practically affects the Blue Potion purchase from Granny's Potion Shop.
     if not world.settings.adult_trade_shuffle and len(world.settings.adult_trade_start) > 0:
@@ -1066,7 +1054,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         save_context.write_bits(0x0EDD, 0x01) # "Obtained Zelda's Letter"
         save_context.write_bits(0x0EDE, 0x02) # "Learned Zelda's Lullaby"
         save_context.write_bits(0x00D4 + 0x5F * 0x1C + 0x04 + 0x3, 0x10) # "Moved crates to access the courtyard"
-    if world.skip_child_zelda or "Zeldas Letter" in world.distribution.starting_items.keys():
+    if 'Zeldas Letter' in world.distribution.starting_items:
         if world.settings.open_kakariko != 'closed':
             save_context.write_bits(0x0F07, 0x40)  # "Spoke to Gate Guard About Mask Shop"
         if world.settings.complete_mask_quest:
