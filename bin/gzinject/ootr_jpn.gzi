@@ -1,4 +1,4 @@
-# ootr remapping for NACE and NACJ
+# ootr remapping for NACJ
 0000 00000000 00000001
 # use 8MB memory
 0304 00002EB0 60000000
