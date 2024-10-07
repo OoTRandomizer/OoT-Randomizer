@@ -880,6 +880,7 @@ class TestTextShuffle(unittest.TestCase):
         shuffle_messages(messages)
         shuffle_messages(messages, False)
 
+
 class TestSceneFlags(unittest.TestCase):
     def test_build_room_xflags(self):
         from SceneFlags import build_room_xflags, encode_room_xflags
