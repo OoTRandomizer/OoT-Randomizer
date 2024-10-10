@@ -153,12 +153,24 @@ post.on('browseForFile', function (event) {
   if (!data || typeof (data) != "object" || Object.keys(data).length != 1 || !data["fileTypes"] || typeof (data["fileTypes"]) != "object")
     return false;
 
-  return remote.dialog.showOpenDialogSync({ filters: data.fileTypes, properties: ["openFile", "treatPackageAsDirectory"]});
+  let res = remote.dialog.showOpenDialogSync({ filters: data.fileTypes, properties: ["openFile", "treatPackageAsDirectory"]});
+
+  // Canceled dialog
+  if (!res || res.length != 1 || !res[0] || res[0].length < 1) return res;
+
+  // Use relative paths whenever possible
+  return [path.relative(pythonSourcePath, res[0])];
 });
 
 
 post.on('browseForDirectory', function (event) {
-  return remote.dialog.showOpenDialogSync({ properties: ["openDirectory", "createDirectory", "treatPackageAsDirectory"] });
+  let res = remote.dialog.showOpenDialogSync({ properties: ["openDirectory", "createDirectory", "treatPackageAsDirectory"] });
+
+  // Canceled dialog
+  if (!res || res.length != 1 || !res[0] || res[0].length < 1) return res;
+
+  // Use relative paths whenever possible
+  return [path.relative(pythonSourcePath, res[0])];
 });
 
 post.on('createAndOpenPath', function (event) {

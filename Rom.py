@@ -33,7 +33,7 @@ class Rom(BigStream):
         if file is None:
             return
 
-        decompressed_file: str = local_path('ZOOTDEC.z64')
+        decompressed_file: str = local_path('ASM/roms/base.z64')
 
         os.chdir(local_path())
 

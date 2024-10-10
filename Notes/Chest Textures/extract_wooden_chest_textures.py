@@ -1,4 +1,4 @@
-with open('../../ZOOTDEC.z64', 'rb') as rom:
+with open('../../ASM/roms/base.z64', 'rb') as rom:
     rom.seek(0xFEC798, 0)
     front = rom.read(4096)
     base = rom.read(2048)
