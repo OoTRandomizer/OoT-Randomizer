@@ -385,14 +385,14 @@ entrance_shuffle_table = [
     ('WarpSong',        ('Nocturne of Shadow Warp -> Graveyard Warp Pad Region',            { 'index': 0x0568, 'addresses': [0xBF0244] })),
     ('WarpSong',        ('Prelude of Light Warp -> Temple of Time',                         { 'index': 0x05F4, 'addresses': [0xBF0246] })),
 
-    ('BlueWarp',        ('Queen Gohma Boss Room -> KF Outside Deku Tree',                   { 'index': 0x0457, 'addresses': [0xAC93A2, 0xCA3142, 0xCA316A] })),
-    ('BlueWarp',        ('King Dodongo Boss Room -> Death Mountain',                        { 'index': 0x047A, 'addresses': [0xAC9336, 0xCA30CA, 0xCA30EA] })),
-    ('BlueWarp',        ('Barinade Boss Room -> Zoras Fountain',                            { 'index': 0x010E, 'addresses': [0xAC936A, 0xCA31B2, 0xCA3702] })),
-    ('BlueWarp',        ('Phantom Ganon Boss Room -> Sacred Forest Meadow',                 { 'index': 0x0608, 'addresses': [0xAC9F96, 0xCA3D66, 0xCA3D5A, 0xCA3D32], 'child_index': 0x0600 })),
-    ('BlueWarp',        ('Volvagia Boss Room -> DMC Central Local',                         { 'index': 0x0564, 'addresses': [0xACA516, 0xCA3DF2, 0xCA3DE6, 0xCA3DBE], 'child_index': 0x04F6 })),
-    ('BlueWarp',        ('Morpha Boss Room -> Lake Hylia',                                  { 'index': 0x060C, 'addresses': [0xAC995A, 0xCA3E82, 0xCA3E76, 0xCA3E4A], 'child_index': 0x0604 })),
-    ('BlueWarp',        ('Bongo Bongo Boss Room -> Graveyard Warp Pad Region',              { 'index': 0x0580, 'addresses': [0xACA496, 0xCA3FA2, 0xCA3F96, 0xCA3F6A], 'child_index': 0x0568 })),
-    ('BlueWarp',        ('Twinrova Boss Room -> Desert Colossus',                           { 'index': 0x0610, 'addresses': [0xACA402, 0xCA3F12, 0xCA3F06, 0xCA3EDA], 'child_index': 0x01F1 })),
+    ('BlueWarp',        ('Queen Gohma Blue Warp -> KF Outside Deku Tree',                   { 'index': 0x0457, 'addresses': [0xAC93A2, 0xCA3142, 0xCA316A] })),
+    ('BlueWarp',        ('King Dodongo Blue Warp -> Death Mountain',                        { 'index': 0x047A, 'addresses': [0xAC9336, 0xCA30CA, 0xCA30EA] })),
+    ('BlueWarp',        ('Barinade Blue Warp -> Zoras Fountain',                            { 'index': 0x010E, 'addresses': [0xAC936A, 0xCA31B2, 0xCA3702] })),
+    ('BlueWarp',        ('Phantom Ganon Blue Warp -> Sacred Forest Meadow',                 { 'index': 0x0608, 'addresses': [0xAC9F96, 0xCA3D66, 0xCA3D5A, 0xCA3D32], 'child_index': 0x0600 })),
+    ('BlueWarp',        ('Volvagia Blue Warp -> DMC Central Local',                         { 'index': 0x0564, 'addresses': [0xACA516, 0xCA3DF2, 0xCA3DE6, 0xCA3DBE], 'child_index': 0x04F6 })),
+    ('BlueWarp',        ('Morpha Blue Warp -> Lake Hylia',                                  { 'index': 0x060C, 'addresses': [0xAC995A, 0xCA3E82, 0xCA3E76, 0xCA3E4A], 'child_index': 0x0604 })),
+    ('BlueWarp',        ('Bongo Bongo Blue Warp -> Graveyard Warp Pad Region',              { 'index': 0x0580, 'addresses': [0xACA496, 0xCA3FA2, 0xCA3F96, 0xCA3F6A], 'child_index': 0x0568 })),
+    ('BlueWarp',        ('Twinrova Blue Warp -> Desert Colossus',                           { 'index': 0x0610, 'addresses': [0xACA402, 0xCA3F12, 0xCA3F06, 0xCA3EDA], 'child_index': 0x01F1 })),
 
     ('Extra',           ('ZD Eyeball Frog Timeout -> Zoras Domain',                         { 'index': 0x0153 })),
     ('Extra',           ('ZR Top of Waterfall -> Zora River',                               { 'index': 0x0199 })),
@@ -565,7 +565,7 @@ def shuffle_random_entrances(worlds: list[World]) -> None:
             elif pool_type == 'Spawn':
                 valid_target_types = ('Spawn', 'WarpSong', 'BlueWarp', 'OwlDrop', 'OverworldOneWay', 'Overworld', 'Interior', 'SpecialInterior', 'Extra')
                 # Restrict spawn entrances from linking to regions with no or extremely specific glitchless itemless escapes.
-                one_way_target_entrance_pools[pool_type] = build_one_way_targets(world, valid_target_types, exclude=['Volvagia Boss Room -> DMC Central Local', 'Bolero of Fire Warp -> DMC Central Local', 'Queen Gohma Boss Room -> KF Outside Deku Tree'])
+                one_way_target_entrance_pools[pool_type] = build_one_way_targets(world, valid_target_types, exclude=['Volvagia Blue Warp -> DMC Central Local', 'Bolero of Fire Warp -> DMC Central Local', 'Queen Gohma Blue Warp -> KF Outside Deku Tree'])
             elif pool_type == 'WarpSong':
                 valid_target_types = ('Spawn', 'WarpSong', 'BlueWarp', 'OwlDrop', 'OverworldOneWay', 'Overworld', 'Interior', 'SpecialInterior', 'Extra')
                 one_way_target_entrance_pools[pool_type] = build_one_way_targets(world, valid_target_types)
@@ -639,25 +639,25 @@ def shuffle_random_entrances(worlds: list[World]) -> None:
         }
         # if a boss room is inside a dungeon entrance (or inside a dungeon which is inside a dungeon entrance), make the blue warp go to that dungeon's blue warp target
         dungeon_exits = {
-            'Deku Tree Lobby -> KF Outside Deku Tree': world.get_entrance('Queen Gohma Boss Room -> KF Outside Deku Tree'),
-            'Dodongos Cavern Beginning -> Death Mountain': world.get_entrance('King Dodongo Boss Room -> Death Mountain'),
-            'Jabu Jabus Belly Beginning -> Zoras Fountain': world.get_entrance('Barinade Boss Room -> Zoras Fountain'),
-            'Forest Temple Lobby -> SFM Forest Temple Entrance Ledge': world.get_entrance('Phantom Ganon Boss Room -> Sacred Forest Meadow'),
-            'Fire Temple Lower -> DMC Fire Temple Entrance': world.get_entrance('Volvagia Boss Room -> DMC Central Local'),
-            'Water Temple Lobby -> Lake Hylia': world.get_entrance('Morpha Boss Room -> Lake Hylia'),
-            'Shadow Temple Entryway -> Graveyard Warp Pad Region': world.get_entrance('Bongo Bongo Boss Room -> Graveyard Warp Pad Region'),
-            'Spirit Temple Lobby -> Desert Colossus From Spirit Lobby': world.get_entrance('Twinrova Boss Room -> Desert Colossus'),
+            'Deku Tree Lobby -> KF Outside Deku Tree': world.get_entrance('Queen Gohma Blue Warp -> KF Outside Deku Tree'),
+            'Dodongos Cavern Beginning -> Death Mountain': world.get_entrance('King Dodongo Blue Warp -> Death Mountain'),
+            'Jabu Jabus Belly Beginning -> Zoras Fountain': world.get_entrance('Barinade Blue Warp -> Zoras Fountain'),
+            'Forest Temple Lobby -> SFM Forest Temple Entrance Ledge': world.get_entrance('Phantom Ganon Blue Warp -> Sacred Forest Meadow'),
+            'Fire Temple Lower -> DMC Fire Temple Entrance': world.get_entrance('Volvagia Blue Warp -> DMC Central Local'),
+            'Water Temple Lobby -> Lake Hylia': world.get_entrance('Morpha Blue Warp -> Lake Hylia'),
+            'Shadow Temple Entryway -> Graveyard Warp Pad Region': world.get_entrance('Bongo Bongo Blue Warp -> Graveyard Warp Pad Region'),
+            'Spirit Temple Lobby -> Desert Colossus From Spirit Lobby': world.get_entrance('Twinrova Blue Warp -> Desert Colossus'),
         }
 
         for (blue_warp, boss_door_exit) in (
-            (world.get_entrance('Queen Gohma Boss Room -> KF Outside Deku Tree'), world.get_entrance('Queen Gohma Boss Room -> Deku Tree Before Boss')),
-            (world.get_entrance('King Dodongo Boss Room -> Death Mountain'), world.get_entrance('King Dodongo Boss Room -> Dodongos Cavern Mouth')),
-            (world.get_entrance('Barinade Boss Room -> Zoras Fountain'), world.get_entrance('Barinade Boss Room -> Jabu Jabus Belly Before Boss')),
-            (world.get_entrance('Phantom Ganon Boss Room -> Sacred Forest Meadow'), world.get_entrance('Phantom Ganon Boss Room -> Forest Temple Before Boss')),
-            (world.get_entrance('Volvagia Boss Room -> DMC Central Local'), world.get_entrance('Volvagia Boss Room -> Fire Temple Before Boss')),
-            (world.get_entrance('Morpha Boss Room -> Lake Hylia'), world.get_entrance('Morpha Boss Room -> Water Temple Before Boss')),
-            (world.get_entrance('Bongo Bongo Boss Room -> Graveyard Warp Pad Region'), world.get_entrance('Bongo Bongo Boss Room -> Shadow Temple Before Boss')),
-            (world.get_entrance('Twinrova Boss Room -> Desert Colossus'), world.get_entrance('Twinrova Boss Room -> Spirit Temple Before Boss')),
+            (world.get_entrance('Queen Gohma Blue Warp -> KF Outside Deku Tree'), world.get_entrance('Queen Gohma Boss Room -> Deku Tree Before Boss')),
+            (world.get_entrance('King Dodongo Blue Warp -> Death Mountain'), world.get_entrance('King Dodongo Boss Room -> Dodongos Cavern Mouth')),
+            (world.get_entrance('Barinade Blue Warp -> Zoras Fountain'), world.get_entrance('Barinade Boss Room -> Jabu Jabus Belly Before Boss')),
+            (world.get_entrance('Phantom Ganon Blue Warp -> Sacred Forest Meadow'), world.get_entrance('Phantom Ganon Boss Room -> Forest Temple Before Boss')),
+            (world.get_entrance('Volvagia Blue Warp -> DMC Central Local'), world.get_entrance('Volvagia Boss Room -> Fire Temple Before Boss')),
+            (world.get_entrance('Morpha Blue Warp -> Lake Hylia'), world.get_entrance('Morpha Boss Room -> Water Temple Before Boss')),
+            (world.get_entrance('Bongo Bongo Blue Warp -> Graveyard Warp Pad Region'), world.get_entrance('Bongo Bongo Boss Room -> Shadow Temple Before Boss')),
+            (world.get_entrance('Twinrova Blue Warp -> Desert Colossus'), world.get_entrance('Twinrova Boss Room -> Spirit Temple Before Boss')),
         ):
             target = boss_door_exit.replaces or boss_door_exit
             if True: #TODO not world.settings.decouple_entrances

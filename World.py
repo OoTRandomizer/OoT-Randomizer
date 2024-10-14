@@ -588,8 +588,8 @@ class World:
             if 'time_passes' in region:
                 new_region.time_passes = region['time_passes']
                 new_region.provides_time = TimeOfDay.ALL
-            if new_region.name == 'Ganons Castle Grounds':
-                new_region.provides_time = TimeOfDay.DAMPE
+            if 'provides_time' in region:
+                new_region.provides_time = getattr(TimeOfDay, region['provides_time'])
             if 'locations' in region:
                 for location, rule in region['locations'].items():
                     new_location = LocationFactory(location)
