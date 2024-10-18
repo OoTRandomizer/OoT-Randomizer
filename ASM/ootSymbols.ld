@@ -1,5 +1,21 @@
 /* Addresses should be listed in order */
 z64_EquippedItemOutlineTex = 0x2000E00;
+Flags_GetSwitch = 0x8002049C;
+Flags_SetSwitch = 0x800204D0;
+Flags_UnsetSwitch = 0x80020510;
+Flags_GetUnknown = 0x80020554;
+Flags_SetUnknown = 0x80020588;
+Flags_UnsetUnknown = 0x800205C8;
+Flags_GetTreasure = 0x8002060C;
+Flags_SetTreasure = 0x80020624;
+Flags_GetClear = 0x80020640;
+Flags_SetClear = 0x80020658;
+Flags_UnsetClear = 0x80020674;
+Flags_GetTempClear = 0x80020694;
+Flags_SetTempClear = 0x800206AC;
+Flags_UnsetTempClear = 0x800206C8;
+Flags_GetCollectible = 0x800206E8;
+Flags_SetCollectible = 0x8002071C;
 Actor_SetColorFilter = 0x80027090;
 z64_Gfx_SetupDL_42Opa = 0x8007E868;
 Audio_StopCurrentMusic = 0x800C7684;

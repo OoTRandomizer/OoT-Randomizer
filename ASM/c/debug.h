@@ -10,6 +10,22 @@
 
 extern uint8_t SKIP_N64_LOGO;
 void Actor_SetColorFilter(z64_actor_t* actor, int16_t colorFlag, int16_t colorIntensityMax, int16_t bufFlag, int16_t duration);
+int32_t Flags_GetSwitch(z64_game_t* play, int32_t flag);
+void Flags_SetSwitch(z64_game_t* play, int32_t flag);
+void Flags_UnsetSwitch(z64_game_t* play, int32_t flag);
+int32_t Flags_GetUnknown(z64_game_t* play, int32_t flag);
+void Flags_SetUnknown(z64_game_t* play, int32_t flag);
+void Flags_UnsetUnknown(z64_game_t* play, int32_t flag);
+int32_t Flags_GetTreasure(z64_game_t* play, int32_t flag);
+void Flags_SetTreasure(z64_game_t* play, int32_t flag);
+int32_t Flags_GetClear(z64_game_t* play, int32_t flag);
+void Flags_SetClear(z64_game_t* play, int32_t flag);
+void Flags_UnsetClear(z64_game_t* play, int32_t flag);
+int32_t Flags_GetTempClear(z64_game_t* play, int32_t flag);
+void Flags_SetTempClear(z64_game_t* play, int32_t flag);
+void Flags_UnsetTempClear(z64_game_t* play, int32_t flag);
+int32_t Flags_GetCollectible(z64_game_t* play, int32_t flag);
+void Flags_SetCollectible(z64_game_t* play, int32_t flag);
 
 typedef struct {
     int8_t main_index;
@@ -22,6 +38,8 @@ typedef struct {
     int8_t actor_index;
     int8_t specific_actor_index;
     int8_t overlay_index;
+    int8_t scene_flag_index;
+    int8_t scene_flag;
 } menu_index_t;
 
 typedef struct {

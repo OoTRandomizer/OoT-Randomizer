@@ -65,6 +65,7 @@ How to use the Debug mode:
   - Bunny Hood
   - In-game clock
   - Actor and overlay list
+  - Scene flags setters
 The menu will appear if you press either Dpad-Up or L.
 Use Dpad-Left/Dpad-Right and A/B to navigate it.
 The warps and items are easily customizable with the code at the top of debug.c.
