@@ -19,6 +19,7 @@ menu_category_t menu_categories[] = {
     {  6, "Display clock"},
     {  7, "Actor table"},
     {  8, "Overlay table"},
+    {  9, "Scene flags"}
 };
 
 warp_t dungeon_warps[] = {
@@ -241,6 +242,15 @@ menu_category_t actor_categories[] = {
     {  11, "CHEST"},
 };
 
+menu_category_t flag_categories[] = {
+    {  0, "Switch"},
+    {  1, "Unknown"},
+    {  2, "Treasure"},
+    {  3, "Clear"},
+    {  4, "Temp clear"},
+    {  5, "Collectible"},
+};
+
 void draw_debug_int(int whichNumber, int numberToShow) {
     if (whichNumber < 0 || whichNumber > 9) {
         return;
@@ -300,6 +310,24 @@ void draw_timeofday(z64_disp_buf_t* db) {
     draw_int(db, minutes, draw_x + 2*rupee_digit_sprite.tile_w + font_sprite.tile_w, draw_y_text, color);
 }
 
+bool get_flag(uint8_t flagtype, uint8_t flag) {
+    switch (flagtype)
+    {
+        case 0:
+            return Flags_GetSwitch(&z64_game, flag);
+        case 1:
+            return Flags_GetUnknown(&z64_game, flag);
+        case 2:
+            return Flags_GetTreasure(&z64_game, flag);
+        case 3:
+            return Flags_GetClear(&z64_game, flag);
+        case 4:
+            return Flags_GetTempClear(&z64_game, flag);
+        case 5:
+            return Flags_GetCollectible(&z64_game, flag);
+    }
+}
+
 void debug_utilities(z64_disp_buf_t* db)
 {
     // Press L to levitate
@@ -318,6 +346,13 @@ int debug_menu_is_drawn() {
 }
 
 void decimal_to_hex(uint32_t decimalValue, char* hexValue) {
+    hexValue[0] = '0';
+    hexValue[1] = 'x';
+    if (decimalValue == 0) {
+        hexValue[2] = '0';
+        hexValue[3] = '\0';
+        return;
+    }
     uint8_t hexSize = 0;
     char hexValueInvert[10];
     while (decimalValue > 0) {
@@ -325,8 +360,6 @@ void decimal_to_hex(uint32_t decimalValue, char* hexValue) {
         hexValueInvert[hexSize++] = "0123456789ABCDEF"[remainder];
         decimalValue /= 16;
     }
-    hexValue[0] = '0';
-    hexValue[1] = 'x';
     for (int i = 0; i < hexSize; i++) {
         hexValue[2 + i] = hexValueInvert[hexSize - 1 - i];
     }
@@ -344,13 +377,13 @@ void draw_debug_menu(z64_disp_buf_t* db) {
         if (current_menu_indexes.sub_menu_index == 0) {
             if (z64_game.common.input[0].pad_pressed.dr) {
                 current_menu_indexes.main_index++;
-                if (current_menu_indexes.main_index > 8) {
+                if (current_menu_indexes.main_index > 9) {
                     current_menu_indexes.main_index = 0;
                 }
             }
             if (z64_game.common.input[0].pad_pressed.dl) {
                 if (current_menu_indexes.main_index == 0) {
-                    current_menu_indexes.main_index = 8;
+                    current_menu_indexes.main_index = 9;
                 } else {
                     current_menu_indexes.main_index--;
                 }
@@ -563,6 +596,86 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                         }
                     }
                     break;
+                case 9: // Scene flags
+                    if (current_menu_indexes.sub_menu_index == 1) {
+                        if (z64_game.common.input[0].pad_pressed.dr) {
+                            current_menu_indexes.scene_flag_index++;
+                            if (current_menu_indexes.scene_flag_index > 5) {
+                                current_menu_indexes.scene_flag_index = 0;
+                            }
+                        }
+                        if (z64_game.common.input[0].pad_pressed.dl) {
+                            current_menu_indexes.scene_flag_index--;
+                            if (current_menu_indexes.scene_flag_index < 0) {
+                                current_menu_indexes.scene_flag_index = 5;
+                            }
+                        }
+                    }
+                    if (current_menu_indexes.sub_menu_index == 2) {
+                        if (z64_game.common.input[0].pad_pressed.dr) {
+                            current_menu_indexes.scene_flag++;
+                            if (current_menu_indexes.scene_flag > 0x1F) {
+                                current_menu_indexes.scene_flag = 0;
+                            }
+                        }
+                        if (z64_game.common.input[0].pad_pressed.dl) {
+                            current_menu_indexes.scene_flag--;
+                            if (current_menu_indexes.scene_flag < 0) {
+                                current_menu_indexes.scene_flag = 0x1F;
+                            }
+                        }
+                        if (z64_game.common.input[0].pad_pressed.a) {
+                            switch (current_menu_indexes.scene_flag_index)
+                            {
+                                case 0:
+                                    if (Flags_GetSwitch(&z64_game, current_menu_indexes.scene_flag)) {
+                                        Flags_UnsetSwitch(&z64_game, current_menu_indexes.scene_flag);
+                                    }
+                                    else {
+                                        Flags_SetSwitch(&z64_game, current_menu_indexes.scene_flag);
+                                    }
+                                    break;
+                                case 1:
+                                    if (Flags_GetUnknown(&z64_game, current_menu_indexes.scene_flag)) {
+                                        Flags_UnsetUnknown(&z64_game, current_menu_indexes.scene_flag);
+                                    }
+                                    else {
+                                        Flags_SetUnknown(&z64_game, current_menu_indexes.scene_flag);
+                                    }
+                                    break;
+                                case 2:
+                                    if (Flags_GetTreasure(&z64_game, current_menu_indexes.scene_flag) == 0) {
+                                        Flags_SetTreasure(&z64_game, current_menu_indexes.scene_flag);
+                                    }
+                                    break;
+                                case 3:
+                                    if (Flags_GetClear(&z64_game, current_menu_indexes.scene_flag)) {
+                                        Flags_UnsetClear(&z64_game, current_menu_indexes.scene_flag);
+                                    }
+                                    else {
+                                        Flags_SetClear(&z64_game, current_menu_indexes.scene_flag);
+                                    }
+                                    break;
+                                case 4:
+                                    if (Flags_GetTempClear(&z64_game, current_menu_indexes.scene_flag)) {
+                                        Flags_UnsetTempClear(&z64_game, current_menu_indexes.scene_flag);
+                                    }
+                                    else {
+                                        Flags_SetTempClear(&z64_game, current_menu_indexes.scene_flag);
+                                    }
+                                    break;
+                                case 5:
+                                    if (Flags_GetCollectible(&z64_game, current_menu_indexes.scene_flag) == 0) {
+                                        Flags_SetCollectible(&z64_game, current_menu_indexes.scene_flag);
+                                    }
+                                    break;
+                            }
+                        }
+                        if (z64_game.common.input[0].pad_pressed.a && current_menu_indexes.sub_menu_index < 2) {
+                            current_menu_indexes.sub_menu_index++;
+                        }
+                    }
+                    break;
                 default:
                     break;
             }
@@ -608,7 +721,7 @@ void draw_debug_menu(z64_disp_buf_t* db) {
 
         if (current_menu_indexes.sub_menu_index == 0) {
             gDPSetPrimColor(db->p++, 0, 0, 255, 255, 255, 255);
-            for (int i = 0; i < 9; i++) {
+            for (int i = 0; i < 10; i++) {
                 menu_category_t *d = &(menu_categories[i]);
                 int top = start_top + ((icon_size + padding) * i) + 1;
                 if (i != current_menu_indexes.main_index) {
@@ -829,6 +942,51 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                         }
                     }
                     break;
+
+                case 9: // Flags
+                    gDPSetPrimColor(db->p++, 0, 0, 255, 255, 255, 255);
+                    if (current_menu_indexes.sub_menu_index == 1) {
+                        for (int i = 0; i < 6; i++) {
+                            menu_category_t* d = &(flag_categories[i]);
+                            int top = start_top + ((icon_size + padding) * i) + 1;
+                            if (i != current_menu_indexes.scene_flag_index) {
+                                text_print_size(db, d->name, left + 5, top + 5, font_width, font_height);
+                            }
+                        }
+                        menu_category_t* d = &(flag_categories[current_menu_indexes.scene_flag_index]);
+                        int top = start_top + ((icon_size + padding) * current_menu_indexes.scene_flag_index) + 1;
+                        gDPSetPrimColor(db->p++, 0, 0, 0xE0, 0xE0, 0x10, 255);
+                        text_print_size(db, d->name, left + 5, top + 5, font_width, font_height);
+                    }
+                    if (current_menu_indexes.sub_menu_index == 2) {
+                        menu_category_t* d = &(flag_categories[current_menu_indexes.scene_flag_index]);
+                        int top = start_top;
+                        gDPSetPrimColor(db->p++, 0, 0, 0xE0, 0xE0, 0x10, 255);
+                        text_print_size(db, d->name, left + 5, top + 5, font_width, font_height);
+                        char scene_flag[4];
+                        decimal_to_hex(current_menu_indexes.scene_flag, scene_flag);
+                        text_print_size(db, scene_flag, left + 100, top + 5, font_width, font_height);
+                        top += 20;
+                        for (int i = 0; i < 2; i++) {
+                            for (int j = 0; j < 0x10; j++) {
+                                uint8_t flag = i * 0x10 + j;
+                                if (get_flag(current_menu_indexes.scene_flag_index, flag)) {
+                                    gDPSetPrimColor(db->p++, 0, 0, 0x00, 0xFF, 0x00, 255);
+                                    if (flag == current_menu_indexes.scene_flag) {
+                                        gDPSetPrimColor(db->p++, 0, 0, 0xE0, 0xE0, 0x10, 255);
+                                    }
+                                    text_print_size(db, "1", left + 5 + ((font_width + padding) * j), top + ((icon_size + padding) * i) + 1, font_width, font_height);
+                                }
+                                else {
+                                    gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0x00, 0x00, 255);
+                                    if (flag == current_menu_indexes.scene_flag) {
+                                        gDPSetPrimColor(db->p++, 0, 0, 0xE0, 0xE0, 0x10, 255);
+                                    }
+                                    text_print_size(db, "0", left + 5 + ((font_width + padding) * j), top + ((icon_size + padding) * i) + 1, font_width, font_height);
+                                }
+                            }
+                        }
+                    }
                 default:
                     break;
             }
