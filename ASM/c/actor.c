@@ -41,7 +41,7 @@ void Actor_BuildFlag(z64_actor_t* actor, xflag_t* flag, uint16_t actor_index, ui
     flag->scene = z64_game.scene_index;
     if (z64_game.scene_index == 0x3E) {
         flag->grotto.room = actor->room_index;
-        flag->grotto.grotto_id = z64_file.grotto_id & 0x1F;
+        flag->grotto.grotto_id = z64_file.respawn[RESPAWN_MODE_RETURN].data & 0x1F;
         flag->grotto.flag = actor_index;
         flag->grotto.subflag = subflag;
     } else {
