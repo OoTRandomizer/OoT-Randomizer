@@ -34,6 +34,9 @@ void c_init() {
     override_flags_init();
     models_init();
     init_textures();
+#if DEBUG_MODE
+    SKIP_N64_LOGO = 1;
+#endif
 }
 
 void before_game_state_update() {
