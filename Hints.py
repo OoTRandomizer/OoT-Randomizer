@@ -1813,11 +1813,23 @@ def build_misc_item_hints(world: World, messages: list[Message], allow_duplicate
 def build_misc_location_hints(world: World, messages: list[Message]) -> None:
     for hint_type, data in misc_location_hint_table.items():
         text = data['location_fallback']
-        if hint_type in world.settings.misc_hints:
-            if hint_type in world.misc_hint_location_items:
-                item = world.misc_hint_location_items[hint_type]
+        if hint_type == 'big_poes':
+            # Special cased because we need to insert the big poes number.
+            item = world.misc_hint_location_items[hint_type]
+            poe_points = world.settings.big_poe_count * 100
+            if hint_type in world.settings.misc_hints:
                 text = data['location_text'].format(item=get_hint(get_item_generic_name(item),
-                                                                  world.settings.clearer_hints).text)
+                                                                    world.settings.clearer_hints).text, poe_points=poe_points)
+            else:
+                text = data['location_fallback'].format(poe_points=poe_points)
+            update_message_by_id(messages, data['id'], text)
+            return
+        else:
+            if hint_type in world.settings.misc_hints:
+                if hint_type in world.misc_hint_location_items:
+                    item = world.misc_hint_location_items[hint_type]
+                    text = data['location_text'].format(item=get_hint(get_item_generic_name(item),
+                                                                        world.settings.clearer_hints).text)
 
         update_message_by_id(messages, data['id'], str(GossipText(text, ['Green'], prefix='')), 0x23)
 

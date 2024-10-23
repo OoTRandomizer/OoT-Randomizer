@@ -1436,6 +1436,7 @@
         "locations": {
             "Market 10 Big Poes": "
                 is_adult and (Big_Poe or (Bottle_with_Big_Poe, big_poe_count))",
+            "Market 10 Big Poes Hint": "is_adult",
             "Market Guard House Child Crate 1": "is_child and can_break_crate",
             "Market Guard House Child Crate 2": "is_child and can_break_crate",
             "Market Guard House Child Crate 3": "is_child and can_break_crate",

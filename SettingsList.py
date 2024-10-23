@@ -3486,6 +3486,7 @@ class SettingInfos:
             'frogs2':         'Frogs Ocarina Game',
             'mask_shop':  'Shuffled Mask Shop',
             'unique_merchants':  'Unique Merchants',
+            'big_poes':  'Market Big Poes',
         },
         gui_tooltip    = '''\
             This setting adds some hints at locations
@@ -3539,6 +3540,9 @@ class SettingInfos:
             If Shuffle Magic Beans is enabled, the Magic bean
             salesman will tell what the reward is for buying
             the 60 Rupees item.
+
+            The Poe collector will tell the reward for selling
+            him Big Poes.
         ''',
         shared         = True,
         default        = ['altar', 'ganondorf', 'warp_songs_and_owls'],

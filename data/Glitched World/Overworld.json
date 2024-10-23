@@ -527,6 +527,7 @@
             "Market 10 Big Poes": "
                 is_adult and
                 (Big_Poe or (Bottle_with_Big_Poe, big_poe_count))",
+            "Market 10 Big Poes Hint": "is_adult",
             "Market GS Guard House": "is_child"
         }
     },
