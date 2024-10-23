@@ -15,7 +15,15 @@
         },
         "exits": {
             "Deku Tree Before Boss": "True",
-            "KF Outside Deku Tree": "'Defeat Queen Gohma'"
+            "Queen Gohma Blue Warp": "'Defeat Queen Gohma'"
+        }
+    },
+    {
+        "region_name": "Queen Gohma Blue Warp",
+        "scene": "Deku Tree Boss",
+        "provides_time": "DAY",
+        "exits": {
+            "KF Outside Deku Tree": "at_day"
         }
     },
     {
@@ -35,7 +43,15 @@
         },
         "exits": {
             "Dodongos Cavern Mouth": "True",
-            "Death Mountain": "'Defeat King Dodongo'"
+            "King Dodongo Blue Warp": "'Defeat King Dodongo'"
+        }
+    },
+    {
+        "region_name": "King Dodongo Blue Warp",
+        "scene": "Dodongos Cavern Boss",
+        "provides_time": "DAY",
+        "exits": {
+            "Death Mountain": "at_day"
         }
     },
     {
@@ -57,7 +73,15 @@
         },
         "exits": {
             "Jabu Jabus Belly Before Boss": "False",
-            "Zoras Fountain": "'Defeat Barinade'"
+            "Barinade Blue Warp": "'Defeat Barinade'"
+        }
+    },
+    {
+        "region_name": "Barinade Blue Warp",
+        "scene": "Jabu Jabus Belly Boss",
+        "provides_time": "DAY",
+        "exits": {
+            "Zoras Fountain": "at_day"
         }
     },
     {
@@ -74,7 +98,15 @@
         },
         "exits": {
             "Forest Temple Before Boss": "False",
-            "Sacred Forest Meadow": "'Defeat Phantom Ganon'"
+            "Phantom Ganon Blue Warp": "'Defeat Phantom Ganon'"
+        }
+    },
+    {
+        "region_name": "Phantom Ganon Blue Warp",
+        "scene": "Forest Temple Boss",
+        "provides_time": "DAY",
+        "exits": {
+            "Sacred Forest Meadow": "at_day"
         }
     },
     {
@@ -90,7 +122,15 @@
         },
         "exits": {
             "Fire Temple Before Boss": "False",
-            "DMC Central Local": "'Defeat Volvagia'"
+            "Volvagia Blue Warp": "'Defeat Volvagia'"
+        }
+    },
+    {
+        "region_name": "Volvagia Blue Warp",
+        "scene": "Fire Temple Boss",
+        "provides_time": "DAY",
+        "exits": {
+            "DMC Central Local": "at_day"
         }
     },
     {
@@ -108,7 +148,15 @@
         },
         "exits": {
             "Water Temple Before Boss": "False",
-            "Lake Hylia": "'Defeat Morpha'"
+            "Morpha Blue Warp": "'Defeat Morpha'"
+        }
+    },
+    {
+        "region_name": "Morpha Blue Warp",
+        "scene": "Water Temple Boss",
+        "provides_time": "DAY",
+        "exits": {
+            "Lake Hylia": "at_day"
         }
     },
     {
@@ -127,7 +175,15 @@
         },
         "exits": {
             "Shadow Temple Before Boss": "False",
-            "Graveyard Warp Pad Region": "'Defeat Bongo Bongo'"
+            "Bongo Bongo Blue Warp": "'Defeat Bongo Bongo'"
+        }
+    },
+    {
+        "region_name": "Bongo Bongo Blue Warp",
+        "scene": "Shadow Temple Boss",
+        "provides_time": "DAY",
+        "exits": {
+            "Graveyard Warp Pad Region": "at_day"
         }
     },
     {
@@ -143,7 +199,15 @@
         },
         "exits": {
             "Spirit Temple Before Boss": "False",
-            "Desert Colossus": "'Defeat Twinrova'"
+            "Twinrova Blue Warp": "'Defeat Twinrova'"
+        }
+    },
+    {
+        "region_name": "Twinrova Blue Warp",
+        "scene": "Spirit Temple Boss",
+        "provides_time": "DAY",
+        "exits": {
+            "Desert Colossus": "at_day"
         }
     },
     {
