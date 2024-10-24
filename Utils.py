@@ -57,7 +57,11 @@ def default_output_path(path: str) -> str:
 
     if not os.path.exists(path):
         os.mkdir(path)
-    return path
+
+    # Convert output path to absolute path if necessary
+    abs_path = os.path.realpath(path)
+
+    return abs_path
 
 
 def read_logic_file(file_path: str):
@@ -199,8 +203,8 @@ def subprocess_args(include_stdout: bool = True) -> dict[str, Any]:
     return ret
 
 
-def run_process(logger: logging.Logger, args: Sequence[str], stdin: Optional[AnyStr] = None) -> None:
-    process = subprocess.Popen(args, bufsize=1, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+def run_process(logger: logging.Logger, args: Sequence[str], stdin: Optional[AnyStr] = None, working_dir: Optional[str] = None) -> None:
+    process = subprocess.Popen(args, bufsize=1, stdout=subprocess.PIPE, stdin=subprocess.PIPE, cwd=working_dir)
     filecount = None
     if stdin is not None:
         process.communicate(input=stdin)
