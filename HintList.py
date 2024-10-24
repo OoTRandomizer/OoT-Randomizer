@@ -1456,7 +1456,7 @@ hintTable: dict[str, tuple[list[str] | str, Optional[str], str | list[str]]] = {
     'HF Southeast Grotto':                                      ("a #generic grotto#", None, 'region'),
     'KF Storms Grotto':                                         ("a #generic grotto#", None, 'region'),
     'LW Near Shortcuts Grotto':                                 ("a #generic grotto#", None, 'region'),
-    'HF Inside Fence Grotto':                                   ("a #single Upgrade Deku Scrub#", None, 'region'),
+    'HF Inside Fence Grotto':                                   ("a #lonely Deku Scrub#", None, 'region'),
     'LW Scrubs Grotto':                                         ("#2 Deku Scrubs# including an Upgrade one", None, 'region'),
     'Colossus Grotto':                                          ("2 Deku Scrubs", None, 'region'),
     'ZR Storms Grotto':                                         ("2 Deku Scrubs", None, 'region'),
