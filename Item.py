@@ -138,7 +138,7 @@ class Item:
             return False
         return ((self.type in ('SmallKey', 'SmallKeyRing') and self.world.settings.shuffle_smallkeys in ('remove', 'vanilla', 'dungeon')) or
                 (self.type in ('HideoutSmallKey', 'HideoutSmallKeyRing') and self.world.settings.shuffle_hideoutkeys == 'vanilla') or
-                (self.type in ('TCGSmallKey', 'HideoutSmallKeyRing') and self.world.settings.shuffle_tcgkeys in ('remove', 'vanilla')) or
+                (self.type in ('TCGSmallKey', 'TCGSmallKeyRing') and self.world.settings.shuffle_tcgkeys in ('remove', 'vanilla')) or
                 (self.type == 'BossKey' and self.world.settings.shuffle_bosskeys in ('remove', 'vanilla', 'dungeon')) or
                 (self.type == 'GanonBossKey' and self.world.settings.shuffle_ganon_bosskey in ('remove', 'vanilla', 'dungeon')) or
                 ((self.map or self.compass) and (self.world.settings.shuffle_mapcompass in ('remove', 'startwith', 'vanilla', 'dungeon'))) or
