@@ -1149,22 +1149,11 @@ def get_important_check_hint(spoiler: Spoiler, world: World, checked: set[str]) 
     for location in world.get_filled_locations():
         region = HintArea.at(location).text(world.settings.clearer_hints)
         if region == hint_loc:
-            if (location.item.majoritem
-                # exclude locked items
+            if ((location.item.majoritem or location.item.name in ('Biggoron Sword', 'Double Defense'))
                 and not location.locked
-                and not (location.name == 'Song from Impa' and 'Zeldas Letter' in world.settings.starting_items and 'Zeldas Letter' not in world.settings.shuffle_child_trade)
-                # Special cases where the item is only considered major for important checks hints
-                or location.item.name == 'Biggoron Sword'
-                or location.item.name == 'Double Defense'
-                # Handle make keys not in own dungeon major items
-                or (location.item.type in ('SmallKey', 'SmallKeyRing') and not (world.settings.shuffle_smallkeys == 'dungeon' or world.settings.shuffle_smallkeys == 'vanilla'))
-                or (location.item.type in ('HideoutSmallKey', 'HideoutSmallKeyRing') and not world.settings.shuffle_hideoutkeys == 'vanilla')
-                or (location.item.type in ('TCGSmallKey', 'TCGSmallKeyRing') and not world.settings.shuffle_tcgkeys == 'vanilla')
-                or (location.item.type == 'BossKey' and not (world.settings.shuffle_bosskeys == 'dungeon' or world.settings.shuffle_bosskeys == 'vanilla'))
-                or (location.item.type == 'GanonBossKey' and not (world.settings.shuffle_ganon_bosskey == 'vanilla'
-                    or world.settings.shuffle_ganon_bosskey == 'dungeon' or world.settings.shuffle_ganon_bosskey == 'on_lacs'
-                    or world.settings.shuffle_ganon_bosskey == 'stones' or world.settings.shuffle_ganon_bosskey == 'medallions'
-                    or world.settings.shuffle_ganon_bosskey == 'dungeons' or world.settings.shuffle_ganon_bosskey == 'tokens'))):
+                and not (location.name == 'Song from Impa'
+                         and 'Zeldas Letter' in world.settings.starting_items
+                         and 'Zeldas Letter' not in world.settings.shuffle_child_trade)):
                 item_count = item_count + 1
 
     checked.add(hint_loc + ' Important Check')
