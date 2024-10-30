@@ -1151,9 +1151,8 @@ def get_important_check_hint(spoiler: Spoiler, world: World, checked: set[str]) 
         if region == hint_loc:
             if ((location.item.majoritem or location.item.name in ('Biggoron Sword', 'Double Defense'))
                 and not location.locked
-                and not (location.name == 'Song from Impa'
-                         and 'Zeldas Letter' in world.settings.starting_items
-                         and 'Zeldas Letter' not in world.settings.shuffle_child_trade)):
+                and not (location.name == 'Song from Impa' and world.skip_child_zelda)
+                and not (location.item.type == 'GanonBossKey' and not world.settings.shuffle_ganon_bosskey == 'on_lacs')):
                 item_count = item_count + 1
 
     checked.add(hint_loc + ' Important Check')
