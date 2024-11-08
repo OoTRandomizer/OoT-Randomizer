@@ -735,51 +735,50 @@ export class GUIGlobal implements OnDestroy {
     }
   }
 
-  isVersionNewer(newVersion: string, oldVersion: string, newSubVersion: number = 0, oldSubVersion: number = 0) {
+  isVersionNewer(newVersion: string, oldVersion: string, newSubVersion?: number, oldSubVersion?: number) {
+   
+    const newVersionParts: number[] = this.parseVersion(newVersion, newSubVersion);
+    const oldVersionParts: number[] = this.parseVersion(oldVersion, oldSubVersion);
 
-    //Strip away dev strings
-    if (oldVersion.startsWith("dev") && oldVersion.includes("_"))
-      oldVersion = oldVersion.split("_")[1];
-
-    if (newVersion.startsWith("dev") && newVersion.includes("_"))
-      newVersion = newVersion.split("_")[1];
-
-    let oldSplit = oldVersion.replace('v', '').replace(' ', '.').split('.');
-    let newSplit = newVersion.replace('v', '').replace(' ', '.').split('.');
-
-    //Version is not newer if the new version doesn't satisfy the format
-    if (newSplit.length < 3)
-      return false;
-    else if (newSplit.length == 4)
-      newSubVersion = newSubVersion == 0 ? Number(newSplit[3]) : 0;
-
-    //Version is newer if the old version doesn't satisfy the format
-    if (oldSplit.length < 3)
-      return true;
-    else if (oldSplit.length == 4)
-      oldSubVersion = oldSubVersion == 0 ? Number(oldSplit[3]) : 0;
-
-    //Compare major.minor.revision
-    if (Number(newSplit[0]) > Number(oldSplit[0])) {
-      return true;
-    }
-    else if (Number(newSplit[0]) == Number(oldSplit[0])) {
-      if (Number(newSplit[1]) > Number(oldSplit[1])) {
+    // Find the longer of the two arrays
+    const maxArrayLength: number = Math.max(newVersionParts.length, oldVersionParts.length);
+  
+    for (let i = 0; i < maxArrayLength; i++) {
+      const newNum: number = newVersionParts[i] || 0;
+      const oldNum: number = oldVersionParts[i] || 0;
+  
+      if (newNum > oldNum) 
         return true;
-      }
-      else if (Number(newSplit[1]) == Number(oldSplit[1])) {
-        if (Number(newSplit[2]) > Number(oldSplit[2])) {
-          return true;
-        }
-        else if (Number(newSplit[2]) == Number(oldSplit[2])) {
-          if (newSubVersion > oldSubVersion) {
-            return true;
-          }
-        }
-      }
+      if (newNum < oldNum) 
+        return false;
+    }
+  
+    return false;
+  }
+
+  parseVersion(versionStr: string, forcedSubVersion?: number) {
+    if (versionStr.includes('_')) {
+      versionStr = versionStr.substring(versionStr.indexOf('_') + 1);
     }
 
-    return false;
+    versionStr = versionStr.replace(/^v/i, '');
+
+    // Split the version string into its parts
+    const versionNums: number[] = versionStr
+      .split(/[^0-9]+/)
+      .filter(Boolean) // Remove empty strings
+      .map(Number);
+
+    if (forcedSubVersion !== undefined) {
+      // Ensure the array has all 4 elements of a version with supplementary version, fill up with 0s
+      while (versionNums.length < 4) {
+        versionNums.push(0);
+      }
+      // Set the subversion number as the fourth number in the array
+      versionNums[3] = forcedSubVersion;
+    }
+
+    return versionNums;
   }
 
   findSettingByName(settingName: string) {
