@@ -631,7 +631,8 @@
             "sfx_menu_select",
             "sfx_low_hp",
             "sfx_silver_rupee",
-            "sfx_get_small_item"
+            "sfx_get_small_item",
+            "sfx_rupee_change"
           ]
         }
       ]

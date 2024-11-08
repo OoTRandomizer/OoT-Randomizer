@@ -5457,6 +5457,23 @@ class SettingInfos:
         }
     )
 
+    sfx_rupee_change = Combobox(
+        gui_text       = 'Rupee Change',
+        shared         = False,
+        cosmetic       = True,
+        choices        = Sounds.get_setting_choices(Sounds.SoundHooks.RUPEE_CHANGE),
+        default        = 'default',
+        gui_tooltip    = '''\
+            Change the sound for rupee changes.
+        ''',
+        gui_params     = {
+            'randomize_key': 'randomize_all_sfx',
+            'distribution': [
+                ('random-ear-safe', 1),
+            ]
+        }
+    )
+
     setting_infos: dict[str, SettingInfo] = {}
     setting_map: dict = {}
 

@@ -761,6 +761,7 @@ def patch_sfx(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str
           ('sfx_explosion',        Sounds.SoundHooks.EXPLOSION),
           ('sfx_daybreak',         Sounds.SoundHooks.DAYBREAK),
           ('sfx_cucco',            Sounds.SoundHooks.CUCCO),
+          ('sfx_rupee_change',     Sounds.SoundHooks.RUPEE_CHANGE),
     ]
     sound_dict = Sounds.get_patch_dict()
     sounds_keyword_label = {sound.value.keyword: sound.value.label for sound in Sounds.Sounds}
