@@ -16,6 +16,9 @@ services:
       - ../Output:/app/OoT-Randomizer/Output:consistent
       - ../data/generated:/app/OoT-Randomizer/data/generated:consistent
       - ../Logs:/app/OoT-Randomizer/Logs:consistent
+    network_mode: host
+    extra_hosts:
+      - host.docker.internal:host-gateway
 
     # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
     cap_add:
