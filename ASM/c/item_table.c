@@ -3,6 +3,7 @@
 #include "dungeon_info.h"
 #include "item_effects.h"
 #include "item_upgrades.h"
+#include "message.h"
 #include "save.h"
 #include "util.h"
 #include "z64.h"
@@ -68,13 +69,13 @@ item_row_t item_table[GI_RANDO_MAX] = {
     [GI_EYE_DROPS]                                              = ITEM_ROW(0x53,      GILDED_CHEST, 0x36, -1, 0x000E, 0x013F, 0x52, no_upgrade, trade_quest_upgrade, 0x36, -1, NULL), // Eye Drops
     [GI_CLAIM_CHECK]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x37, -1, 0x000A, 0x0142, 0x55, no_upgrade, trade_quest_upgrade, 0x37, -1, NULL), // Claim Check
 
-    [GI_SWORD_KOKIRI]                                           = ITEM_ROW(0x53,      GILDED_CHEST, 0x3B, -1, 0x00A4, 0x018D, 0x74, no_upgrade, no_effect, -1, -1, NULL), // Kokiri Sword
+    [GI_SWORD_KOKIRI]                                           = ITEM_ROW(0x53,      GILDED_CHEST, 0x3B, -1, 0x00A4, 0x018D, 0x74, no_upgrade, equip_kokiri_sword_message, -1, -1, NULL), // Kokiri Sword
     [GI_SWORD_KNIFE]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x3D, -1, 0x004B, 0x00F8, 0x43, no_upgrade, no_effect, -1, -1, NULL), // Giant's Knife
-    [GI_SHIELD_DEKU]                                            = ITEM_ROW(0x53,       BROWN_CHEST, 0x3E, -1, 0x90AD, 0x00CB, 0x1D, no_upgrade, no_effect, -1, -1, NULL), // Deku Shield
-    [GI_SHIELD_HYLIAN]                                          = ITEM_ROW(0x53,       BROWN_CHEST, 0x3F, -1, 0x90AE, 0x00DC, 0x2C, no_upgrade, no_effect, -1, -1, NULL), // Hylian Shield
-    [GI_SHIELD_MIRROR]                                          = ITEM_ROW(0x53,      GILDED_CHEST, 0x40, -1, 0x004E, 0x00EE, 0x3A, no_upgrade, no_effect, -1, -1, NULL), // Mirror Shield
-    [GI_TUNIC_GORON]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x42, -1, 0x90AF, 0x00F2, 0x3C, no_upgrade, no_effect, -1, -1, NULL), // Goron Tunic
-    [GI_TUNIC_ZORA]                                             = ITEM_ROW(0x53,      GILDED_CHEST, 0x43, -1, 0x90B0, 0x00F2, 0x3D, no_upgrade, no_effect, -1, -1, NULL), // Zora Tunic
+    [GI_SHIELD_DEKU]                                            = ITEM_ROW(0x53,       BROWN_CHEST, 0x3E, -1, 0x90AD, 0x00CB, 0x1D, no_upgrade, equip_deku_shield_message, -1, -1, NULL), // Deku Shield
+    [GI_SHIELD_HYLIAN]                                          = ITEM_ROW(0x53,       BROWN_CHEST, 0x3F, -1, 0x90AE, 0x00DC, 0x2C, no_upgrade, equip_hylian_shield_message, -1, -1, NULL), // Hylian Shield
+    [GI_SHIELD_MIRROR]                                          = ITEM_ROW(0x53,      GILDED_CHEST, 0x40, -1, 0x004E, 0x00EE, 0x3A, no_upgrade, equip_mirror_shield_message, -1, -1, NULL), // Mirror Shield
+    [GI_TUNIC_GORON]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x42, -1, 0x90AF, 0x00F2, 0x3C, no_upgrade, equip_goron_tunic_message, -1, -1, NULL), // Goron Tunic
+    [GI_TUNIC_ZORA]                                             = ITEM_ROW(0x53,      GILDED_CHEST, 0x43, -1, 0x90B0, 0x00F2, 0x3D, no_upgrade, equip_zora_tunic_message, -1, -1, NULL), // Zora Tunic
     [GI_BOOTS_IRON]                                             = ITEM_ROW(0x53,      GILDED_CHEST, 0x45, -1, 0x0053, 0x0118, 0x47, no_upgrade, no_effect, -1, -1, NULL), // Iron Boots
     [GI_BOOTS_HOVER]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x46, -1, 0x0054, 0x0157, 0x5F, no_upgrade, no_effect, -1, -1, NULL), // Hover Boots
     [GI_QUIVER_40]                                              = ITEM_ROW(0x53,      GILDED_CHEST, 0x4B, -1, 0x0056, 0x00BE, 0x16, no_upgrade, no_effect, -1, -1, NULL), // Big Quiver
