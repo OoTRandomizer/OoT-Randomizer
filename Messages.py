@@ -1323,6 +1323,7 @@ def shuffle_messages(messages: list[Message], except_hints: bool = True) -> list
         )
         shuffle_exempt = [
             0x045C,         # Adult shooting gallery helping message when the player wins without having a bow
+            0x045E,         # Equipment prompt
             0x208D,         # "One more lap!" for Cow in House race.
             0xFFFC,         # Character data from JP table used on title and file select screens
         ]
