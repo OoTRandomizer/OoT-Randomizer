@@ -1091,18 +1091,19 @@ class WorldDistribution:
             if iter_world.settings.empty_dungeons_mode != 'none':
                 skipped_locations_from_dungeons: list[Location] = []
                 if iter_world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward'):
-                    skipped_locations_from_dungeons += [world.get_location(loc_name) for loc_name in location_groups['Boss'] if loc_name != 'ToT Reward from Rauru']
-                elif world.settings.shuffle_dungeon_rewards == 'dungeon':
+                    skipped_locations_from_dungeons += [iter_world.get_location(loc_name) for loc_name in location_groups['Boss'] if loc_name != 'ToT Reward from Rauru']
+                elif iter_world.settings.shuffle_dungeon_rewards == 'dungeon':
                     skipped_locations_from_dungeons += [location for location in iter_world.get_filled_locations() if location.item.type == 'DungeonReward']
-                if world.settings.shuffle_song_items == 'song':
-                    skipped_locations_from_dungeons += [world.get_location(loc_name) for loc_name in location_groups['Song']]
-                elif world.settings.shuffle_song_items == 'dungeon':
-                    skipped_locations_from_dungeons += [world.get_location(loc_name) for loc_name in location_groups['BossHeart']]
+                if iter_world.settings.shuffle_song_items == 'song':
+                    skipped_locations_from_dungeons += [iter_world.get_location(loc_name) for loc_name in location_groups['Song']]
+                elif iter_world.settings.shuffle_song_items == 'dungeon':
+                    skipped_locations_from_dungeons += [iter_world.get_location(loc_name) for loc_name in location_groups['BossHeart']]
                 for location in skipped_locations_from_dungeons:
-                    hint_area = HintArea.at(location)
-                    if hint_area.is_dungeon and iter_world.empty_dungeons[hint_area.dungeon_name].empty:
-                        skipped_locations.append(location)
-                        world.item_added_hint_types['barren'].append(location.item.name)
+                    if location.item is not None and world.id == location.item.world.id:
+                        hint_area = HintArea.at(location)
+                        if hint_area.is_dungeon and iter_world.empty_dungeons[hint_area.dungeon_name].empty:
+                            skipped_locations.append(location)
+                            world.item_added_hint_types['barren'].append(location.item.name)
             for location in skipped_locations:
                 if iter_world.id == world.id:
                     self.skipped_locations.append(location)
