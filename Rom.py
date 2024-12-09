@@ -91,6 +91,7 @@ class Rom(BigStream):
         for i in range(0, bank_index_length):
             bank_entry = self.read_bytes(AUDIOBANK_INDEX_ADDR + 0x10 + i*0x10, 0x10)    
             bank = AudioBank(bank_entry, audiobank, self.audiotable, audiotable_index)
+            bank.bank_index = i
             self.audiobanks.append(bank)
 
 
@@ -323,12 +324,12 @@ class Rom(BigStream):
             audiobank_bytes.extend(bank.bank_data)
             bank.bank_offset = bank_data_offset
             entry = bank.build_entry()
-            self.write_bytes(audiobank_index_addr + 0x10 + i * 0x10, entry)
+            self.write_bytes(audiobank_index_addr + 0x10 + bank.bank_index * 0x10, entry)
             i += 1
             for dupe_bank in bank.duplicate_banks:
                 entry = bytearray(dupe_bank.build_entry(bank_data_offset))
                 entry[4:8] = bank.size.to_bytes(4, 'big')
-                self.write_bytes(audiobank_index_addr + 0x10 + i * 0x10, entry)
+                self.write_bytes(audiobank_index_addr + 0x10 + bank.bank_index * 0x10, entry)
                 i += 1
             bank_data_offset += len(bank.bank_data)
 
