@@ -1,0 +1,152 @@
+# This template may be used as a starting point for developing
+# new custom voice packs for OOTR
+# All comments (anything after # on a line) will be stripped out by the patcher
+{
+    # Items in the "sfx" dictionary are patched into the game by their SFX ID
+    # SFX typically choose randomly between multiple sounds when being played
+    # This will be denoted about the SFX ID after the name as (x) where x is the number
+    # of files that the game expects. If less files are present than expected
+    # the ones provided will randomly be chosen to fill all of the required
+    #
+    # Note: 
+    #      Some SFX share the same audio files. Those SFX are excluded except for on which was chosen to be the primary
+    #      An example of this would be the strong attack SFX which
+    #      shares some of its sounds with the SFX for casting Nayru's or Farore's
+    # Note:
+    #      Some vanilla SFX consist of a sequence of sounds that play one after another
+    #      Examples are the death SFX sequence and the idle animation SFX
+    #      For flexibility, when patching using SFX ID, these will use a single
+    #      sound file and the sequence will be updated to only play that single file
+    # 
+    # Voice packs can be used interchangeably between child/adult
+    # 
+    "sfx": {
+        # Adult SFX
+
+        # Adult Link Attacks (4)
+        "0x6800": ["mario-wah.wav", "mario-yah.wav", "mario-yahh.wav", "mario-wah02.wav"], 
+
+        # Adult Link Strong Attacks (2)
+        # Shared with Nayru's and Farore's SFX
+        "0x6801": ["mario-yahoo.wav", "mario-wahah.wav"], 
+
+        # Adult Link Lashing Epona (2)
+        "0x6802": [], 
+
+        # Adult Link Dangling Gasp/Grunt (2)
+        "0x6803": ["mario-woa.wav"], 
+
+        # Adult Link Climbing Ledge after having fallen on it (2)
+        # Also used for bonking
+        "0x6804": [], 
+
+        # Adult Link Hurt (3)
+        # Shared with SFX played when grabbed by a redead
+        "0x6805": [], 
+
+        # Adult Link knock back landing (3)
+        "0x6806": [], 
+
+        # Adult Link Gasp (2)
+        "0x6807": [], 
+
+        # Adult Link Fall (2)
+        # Shared with SFX played when getting knocked back
+        "0x6808": [], 
+
+        # Adult Link Pant (2)
+        "0x6809": [], 
+
+        # Adult Link Refreshed (1)
+        "0x680A": [], 
+
+        # Adult Link Death Sequence (1)
+        "0x680B": [], 
+
+        # Adult Link Sneeze Idle Sequence (1)
+        "0x680E": [], 
+
+        # Adult Link Sweat Idle Sequence (1)
+        "0x680F": [], 
+
+        # Adult Link Drink (1)
+        "0x6810": [], 
+
+        # Adult Link Stretch Idle Sequence (1)
+        "0x6811": [], 
+
+        # Adult Link Jump/Climb (2)
+        "0x6814": [], 
+
+        # Adult Link Surprised (1)
+        "0x6816": [], 
+
+        # Adult Link Fall Damage (1)
+        "0x681A": [],
+
+
+        # Child SFX
+        # Child Link Attacks (4)
+        "0x6820": [],
+
+        # Child Link Strong Attacks (2)
+        "0x6821": [],
+
+        # Child Link Dangling Gasp/Grunt (2)
+        "0x6823": [],
+
+        # Child Link Climbing Ledge after having fallen on it (2)
+        "0x6824": [],
+
+        # Child Link Hurt (3)
+        "0x6825": [],
+
+        # Child Link knock back landing (3)
+        "0x6826": [],
+
+        # Child Link Gasp (2)
+        "0x6827": [],
+
+        # Child Link Fall (2)
+        "0x6828": [],
+
+        # Child Link Pant (2)
+        "0x6829": [],
+
+        # Child Link Refreshed (1)
+        "0x682A": [],
+
+        # Child Link Death Sequence (1)
+        "0x682B": [],
+
+        # Child Link Grabbed By Redead (1)
+        "0x682D": [],
+
+        # Child Link Sneeze Idle Sequence (1)
+        "0x682E": [],
+
+        # Child Link Sweat Idle Sequence (1)
+        "0x682F": [],
+
+        # Child Link Drink (1)
+        "0x6830": [],
+
+        # Child Link Stretch Idle Sequence (1)
+        "0x6831": [],
+
+        # Child Link Shiver (1)
+        "0x6833": [],
+
+        # Child Link Jump/Climb (2)
+        "0x6834": [],
+
+        # Child Link Surprised (1)
+        "0x6836": [],
+
+        # Child Link Fall Damage (1)
+        "0x683A": [],
+
+        # Child Link Din's Fire (1)
+        "0x683C": []
+    }
+}

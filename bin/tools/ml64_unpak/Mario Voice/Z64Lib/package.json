@@ -1,0 +1,13 @@
+{
+  "name": "Z64Lib",
+  "version": "1.0.2",
+  "description": "",
+  "main": "Z64Lib.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "updateUrl": "https://nexus.inpureprojects.info/ModLoader64/mods/Z64Lib/update/update.json"
+}

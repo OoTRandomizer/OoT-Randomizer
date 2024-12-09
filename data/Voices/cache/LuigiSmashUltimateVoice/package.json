@@ -1,0 +1,13 @@
+{
+  "name": "Luigi Super Smash Bros. Ultimate Voice",
+  "version": "1.0.0",
+  "description": "Makes Adult Link sound like Luigi from Smash Ultimate",
+  "main": "OotO_SoundTemplate.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "Asra",
+  "license": "ISC",
+  "core": "OcarinaofTime"
+}

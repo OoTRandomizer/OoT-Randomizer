@@ -1,0 +1,54 @@
+Child:
+
+6820 - Attack Yell / Rolling
+6821 - Long Attack Yell
+6823 - Grab Ledge
+6824 - Climb Ledge / Bonk into Wall
+6825 - Hurt by Enemy
+6826 - Frozen in Ice
+6827 - Short Fall Scream
+6828 - Long Fall Scream / General Screams
+6829 - Low HP
+682A - Breath after Drink / Surfacing from Water
+682B - Death Grunts
+682C - Falling into Lava / Taken by Wallmaster
+682D - Grabbed by Redead / Grabbed by Wallmaster
+682E - Shiver and Sneeze in Cold Places
+682F - Sweating in Hot Places
+6030 - Drinking from Bottle
+6831 - Yawning
+6834 - Jumping
+6835 - Casting Nayru's Love / Short Yell
+6836 - Surprised Gasp / Shocked Gasp
+6837 - Casting Farore's Wind / Short Shout
+6838 - Pushing Block
+683A - Cringing from Fall Damage
+683C - Casting Din's Fire / Long Yell
+
+Adult:
+
+6800 - Attack Yell / Rolling
+6801 - Long Attack Yell
+6802 - Whips Epona
+6803 - Grab Ledge
+6804 - Climb Ledge / Bonk into Wall
+6805 - Hurt by Enemy
+6806 - Frozen in Ice
+6807 - Short Fall Scream
+6808 - Long Fall Scream / General Screams
+6809 - Low HP
+680A - Breath after Drink / Surfacing from Water
+680B - Death Grunts
+680C - Falling into Lava / Taken by Wallmaster
+680D - Grabbed by Redead / Grabbed by Wallmaster
+680E - Shiver and Sneeze in Cold Places
+680F - Sweating in Hot Places
+6010 - Drinking from Bottle
+6811 - Yawning
+6814 - Jumping
+6815 - Casting Nayru's Love / Short Yell
+6816 - Surprised Gasp / Shocked Gasp
+6817 - Casting Farore's Wind / Short Shout
+6818 - Pushing Block
+681A - Cringing from Fall Damage
+681C - Casting Din's Fire / Long Yell

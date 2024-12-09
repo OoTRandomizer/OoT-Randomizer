@@ -1,0 +1,17 @@
+{
+    "mario-wah.wav": "Child Link - Attack 1",
+    "mario-yah.wav": ["Child Link - Attack 2", "Child Link - Hup 1", "Child Link - Hup 2"],
+    "mario-yahh.wav": "Child Link - Attack 3",
+    "mario-wah02.wav": "Child Link - Attack 4",
+    "mario-die.wav": "Child Link - Dying Gasp",
+    "mario-yahoo.wav": "Child Link - Strong Attack 1",
+    "mario-wahah.wav": "Child Link - Strong Attack 2",
+    "mario-hit.wav": ["Child Link - Hurt 1", "Child Link - Hurt 2", "Child Link - Hurt 3", "Child Link - Hurt 4", "Child Link - Hurt 5"],
+    "mario-woa.wav": ["Child Link - Dangling Gasp 1", "Child Link - Dangling Gasp 2"], 
+    "mario-wahhh.wav": ["Child Link - Falling 1", "Child Link - Falling 2"],
+    "mario-ooph.wav" : "Child Link - Painful Landing",
+    "mario-ooh.wav": ["Child Link - Wheeze", "Child Link - Exhausted Panting"],
+    "mario-ledge-climb.wav": ["Child Link - Sigh 1", "Child Link - Sigh 2"],
+    "mario-here-we-go.wav": "Child Link - Cast Spell",
+    "mario-hrumph.wav": "Child Link - Grunt"
+}

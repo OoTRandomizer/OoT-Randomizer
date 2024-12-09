@@ -12,9 +12,15 @@ from Utils import is_bundled, subprocess_args, local_path, data_path, get_versio
 from crc import calculate_crc
 from ntype import BigStream
 from version import base_version, branch_identifier, supplementary_version
+from Audiobank import AudioBank
 
 DMADATA_START: int = 0x7430  # NTSC 1.0/1.1: 0x7430, NTSC 1.2: 0x7960, Debug: 0x012F70
+AUDIOTABLE_DMADATA_INDEX: int = 5
+AUDIOBANK_DMADATA_INDEX: int = 3
+AUDIOTABLE_DMADATA_INDEX: int = 5
 
+AUDIOBANK_INDEX_ADDR = 0x00B896A0
+AUDIOTABLE_INDEX_ADDR = 0x00B8A1C0
 
 class Rom(BigStream):
     def __init__(self, file: Optional[str] = None) -> None:
@@ -25,6 +31,8 @@ class Rom(BigStream):
         self.changed_dma: dict[int, tuple[int, int, int]] = {}
         self.force_patch: list[int] = []
         self.dma: DMAIterator = DMAIterator(self, DMADATA_START)
+        self.audiotable: bytearray = None
+        self.audiobanks: list[AudioBank] = None
 
         with open(data_path('generated/symbols.json'), 'r') as stream:
             symbols = json.load(stream)
@@ -57,6 +65,34 @@ class Rom(BigStream):
 
         # Add version number to header.
         self.write_version_bytes()
+
+        bank_index_header: bytearray = self.read_bytes(AUDIOBANK_INDEX_ADDR, 0x10)
+        bank_index_length = int.from_bytes(bank_index_header[0:2], 'big')
+
+
+        # Read original audiotable
+        self.audiotable_dma_entry = self.dma[AUDIOTABLE_DMADATA_INDEX]
+        self.audiobank_dma_entry = self.dma[AUDIOBANK_DMADATA_INDEX]
+        
+        audiobank_start, audiobank_end, audiobank_size = self.audiobank_dma_entry.as_tuple()
+        audiotable_start, audiotable_end, audiotable_size = self.audiotable_dma_entry.as_tuple()
+        self.audiotable = self.read_bytes(audiotable_start, audiotable_size)
+        
+        # Read Audiobank file
+        audiobank = self.read_bytes(audiobank_start, audiobank_size)    
+
+        # Read Audiotable index
+        audiotable_index_header: bytearray = self.read_bytes(AUDIOTABLE_INDEX_ADDR, 0x10)
+        audiotable_index_length = int.from_bytes(audiotable_index_header[0:2], 'big')
+        audiotable_index = self.read_bytes(AUDIOTABLE_INDEX_ADDR, 0x10*audiotable_index_length + 0x10)
+
+        self.audiobanks = []
+        # Read audio banks
+        for i in range(0, bank_index_length):
+            bank_entry = self.read_bytes(AUDIOBANK_INDEX_ADDR + 0x10 + i*0x10, 0x10)    
+            bank = AudioBank(bank_entry, audiobank, self.audiotable, audiotable_index)
+            self.audiobanks.append(bank)
+
 
     def copy(self) -> Rom:
         new_rom: Rom = Rom()
@@ -261,6 +297,55 @@ class Rom(BigStream):
         if size < original_size:
             self.changed_address.update(zip(range(size, original_size-1), [0]*(original_size-size)))
 
+    def write_audiotable(self) -> int:
+        new_audiotable_start = -1
+        audiotable_start, audiotable_end, audiotable_size = self.audiotable_dma_entry.as_tuple()
+        new_audiotable_start = audiotable_start
+        if len(self.audiotable) > audiotable_size: # Data was added to audiotable so it needs to be relocated
+            # Zeroize original file
+            self.write_bytes(audiotable_start, [0] * audiotable_size)
+            # Get new address for the file
+            new_audiotable_start = self.dma.free_space(len(self.audiotable))
+        # Write the file to the new address
+        self.write_bytes(new_audiotable_start, self.audiotable)
+        # Update DMA
+        if new_audiotable_start > 0:
+            self.audiotable_dma_entry.update(new_audiotable_start, new_audiotable_start + len(self.audiotable))
+        return new_audiotable_start
+
+    def write_audiobanks(self, audiobank_index_addr: int) -> int:
+        audiobank_start, audiobank_end, audiobank_size = self.audiobank_dma_entry.as_tuple()
+        # Loop through all of the banks and compile the data, build the index
+        audiobank_bytes: bytearray = bytearray(0)
+        bank_data_offset = len(audiobank_bytes)
+        i: int = 0
+        for bank in self.audiobanks:
+            audiobank_bytes.extend(bank.bank_data)
+            bank.bank_offset = bank_data_offset
+            entry = bank.build_entry()
+            self.write_bytes(audiobank_index_addr + 0x10 + i * 0x10, entry)
+            i += 1
+            for dupe_bank in bank.duplicate_banks:
+                entry = bytearray(dupe_bank.build_entry(bank_data_offset))
+                entry[4:8] = bank.size.to_bytes(4, 'big')
+                self.write_bytes(audiobank_index_addr + 0x10 + i * 0x10, entry)
+                i += 1
+            bank_data_offset += len(bank.bank_data)
+
+        new_audiobank_start = audiobank_start
+        if len(audiobank_bytes) > self.audiobank_dma_entry.size:
+            # Zeroize original file
+            self.write_bytes(audiobank_start, [0]*audiobank_size)
+            # Get new address for the file
+            new_audiobank_start = self.dma.free_space(len(audiobank_bytes))
+
+        # Write the file to the new address
+        self.write_bytes(new_audiobank_start, audiobank_bytes)
+        self.audiobank_dma_entry.update(new_audiobank_start, new_audiobank_start + len(audiobank_bytes))
+
+        # Update size of bank table in the Audiobank table header.
+        self.write_bytes(audiobank_index_addr, len(self.audiobanks).to_bytes(2, 'big'))
+        return i
 
 class DMAEntry:
     def __init__(self, rom: Rom, index: int) -> None:

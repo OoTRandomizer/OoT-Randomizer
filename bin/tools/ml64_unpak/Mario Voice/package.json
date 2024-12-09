@@ -1,0 +1,17 @@
+{
+  "name": "Mario Voice",
+  "version": "1.0.0",
+  "description": "",
+  "main": "OotO_SoundTemplate.js",
+  "author": "UltiMario",
+  "credits": "",
+  "license": "GPL-3.0",
+  "core": "OcarinaofTime",
+  "zzplayas": {
+    "adult_model": "",
+    "child_model": "",
+    "anim_file": "",
+    "adult_icon": "",
+    "child_icon": ""
+  }
+}

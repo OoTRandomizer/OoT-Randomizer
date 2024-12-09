@@ -20,8 +20,6 @@ if TYPE_CHECKING:
     from Settings import Settings
 
 AUDIOSEQ_DMADATA_INDEX: int = 4
-AUDIOBANK_DMADATA_INDEX: int = 3
-AUDIOTABLE_DMADATA_INDEX: int = 5
 
 # Format: (Title, Sequence ID)
 bgm_sequence_ids: tuple[tuple[str, int], ...] = (
@@ -352,7 +350,8 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
 
     # If custom banks are supported, we're going to make copies of the banks to be used for fanfares
     # In that case, need to update the fanfare sequence's bank to point to the new one
-    fanfare_bank_shift = 0x26 if CUSTOM_BANKS_SUPPORTED else 0
+    #fanfare_bank_shift = 0x26 if CUSTOM_BANKS_SUPPORTED else 0
+    fanfare_bank_shift = 0
 
     # Update pointer table
     for i in range(0x6E):
@@ -399,23 +398,18 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
     # Builds new audio bank entrys for fanfares to prevent fanfares killing bgm in areas like Goron City
     bank_index_base = (rom.read_int32(symbols['CFG_AUDIOBANK_TABLE_EXTENDED_ADDR']) - 0x80400000) + 0x3480000
     # Build new fanfare banks by copying each entry in audiobank_index
-    for i in range(0, 0x26):
-        bank_entry = rom.read_bytes(bank_index_base + 0x10 + 0x10 * i, 0x10) # Get the vanilla entry
-        bank_entry[9] = 1 # Update the cache type to 1
-        rom.write_bytes(bank_index_base + 0x270 + 0x10 * i, bank_entry) # Write the new entry at the end of the bank table.
-    rom.write_byte(bank_index_base + 0x01, 0x4C) # Updates AudioBank Index Header if no custom banks are present as this would be 0x26 which would crash the game if a fanfare was played
+    #for i in range(0, 0x26):
+    #    bank_entry = rom.read_bytes(bank_index_base + 0x10 + (0x10*i), 0x10) # Get the vanilla entry
+    #    bank_entry[9] = 1 # Update the cache type to 1
+    #    rom.write_bytes(bank_index_base + 0x270 + 0x10*i, bank_entry) # Write the new entry at the end of the bank table.
+    #rom.write_byte(bank_index_base + 0x01, 0x4C) # Updates AudioBank Index Header if no custom banks are present as this would be 0x26 which would crash the game if a fanfare was played
 
     added_banks: list[AudioBank] = [] # Store copies of all the banks we've added
     added_samples: list[Sample] = []  # Store copies of all the samples we've added
-    new_bank_index = 0x4C
+    new_bank_index = 0x26
     instr_data = bytearray(0)  # Store all the new instrument data that will be added to the end of audiotable
 
-    audiobank_dma_entry = rom.dma[AUDIOBANK_DMADATA_INDEX]
-    audiotable_dma_entry = rom.dma[AUDIOTABLE_DMADATA_INDEX]
-    audiobank_start, audiobank_end, audiobank_size = audiobank_dma_entry.as_tuple()
-    audiotable_start, audiotable_end, audiotable_size = audiotable_dma_entry.as_tuple()
-
-    instr_offset_in_file = audiotable_size
+    instr_offset_in_file = len(rom.audiotable)
     bank_table_base = 0
 
     # Load OOT Audiobin
@@ -614,54 +608,10 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
     # Patch the new instrument data into the ROM in a new file.
     # If there is any instrument data to add, move the entire audiotable file to a new location in the ROM.
     if len(instr_data) > 0:
-        # Read the original audiotable data
-        audiotable_data = rom.read_bytes(audiotable_start, audiotable_size)
-        # Zeroize existing file
-        rom.write_bytes(audiotable_start, [0] * audiotable_size)
         # Add the new data
-        audiotable_data += instr_data
-        # Get new address for the file
-        new_audiotable_start = rom.dma.free_space(len(audiotable_data))
-        # Write the file to the new address
-        rom.write_bytes(new_audiotable_start, audiotable_data)
-        # Update DMA
-        audiotable_dma_entry.update(new_audiotable_start, new_audiotable_start + len(audiotable_data))
-        log.instr_dma_index = audiotable_dma_entry.index
+        rom.audiotable += instr_data
 
-    # Add new audio banks
-    new_bank_data = bytearray(0)
-    # Read the original audiobank data
-    audiobank_data = rom.read_bytes(audiobank_start, audiobank_size)
-    new_bank_offset = len(audiobank_data)
-    for bank in added_banks:
-        # Sample pointers should already be correct now
-        # bank.update_zsound_pointers()
-        bank.offset = new_bank_offset
-        #absolute_offset = new_audio_banks_addr + new_bank_offset
-        bank_entry = bank.build_entry(new_bank_offset)
-        rom.write_bytes(bank_table_base + 0x10 + bank.bank_index * 0x10, bank_entry)
-        for dupe_bank in bank.duplicate_banks:
-            bank_entry = bytearray(dupe_bank.build_entry(new_bank_offset))
-            bank_entry[4:8] = bank.size.to_bytes(4, 'big')
-            rom.write_bytes(bank_table_base + 0x10 + dupe_bank.bank_index * 0x10, bank_entry)
-        new_bank_data += bank.bank_data
-        new_bank_offset += len(bank.bank_data)
-
-    # If there is any audiobank data to add, move the entire audiobank file to a new place in ROM. Update the existing dmadata record
-    if len(new_bank_data) > 0:
-        # Zeroize existing file
-        rom.write_bytes(audiobank_start, [0] * audiobank_size)
-        # Add the new data
-        audiobank_data += new_bank_data
-        # Get new address for the file
-        new_audio_banks_addr = rom.dma.free_space(len(audiobank_data))
-        # Write the file to the new address
-        rom.write_bytes(new_audio_banks_addr, audiobank_data)
-        # Update DMA
-        audiobank_dma_entry.update(new_audio_banks_addr, new_audio_banks_addr + len(audiobank_data))
-        log.bank_dma_index = audiobank_dma_entry.index
-        # Update size of bank table in the Audiobank table header.
-        rom.write_bytes(bank_table_base, new_bank_index.to_bytes(2, 'big'))
+    rom.audiobanks.extend(added_banks)
 
     # Update the init heap size. This size is normally hardcoded based on the number of audio banks.
     init_heap_size = rom.read_int32(0xB80118)
