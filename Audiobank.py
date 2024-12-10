@@ -81,16 +81,15 @@ class Sample:
         self.codec = (self.sample_header[0] & 0xF0) >> 4
         self.medium = (self.sample_header[0] & 0x0C) >> 2
         self.size = int.from_bytes(self.sample_header[1:4], 'big')
-        self.addr = int.from_bytes(self.sample_header[4:8], 'big')
+        self.addr = int.from_bytes(self.sample_header[4:8], 'big', signed=True)
         if(sample_offset != 0):
             self.loop_addr = int.from_bytes(self.sample_header[8:12], 'big')
             self.book_addr = int.from_bytes(self.sample_header[12:16], 'big')
             self.loop = AdpcmLoop(bankdata, self.loop_addr)
             self.book = AdpcmBook(bankdata, self.book_addr)
 
-        if audiotable_file and self.addr > len(audiotable_file): # The offset is higher than the total size of audiotable so we'll assume it doesn't actually exist. # We'll need to get the sample data from ZSOUND files in the archive.
+        if self.addr == -1 : # If the offset is set to 0xFFFFFFFF then we need to get the sample data from ZSOUND files in the archive.
             self.data = None
-            self.addr = -1
             return
         # Read the audiotable pointer table entry
         if audiotable_file and audiotable_index:
@@ -98,6 +97,10 @@ class Sample:
             audiotable_entry = audiotable_index[audiotable_index_offset:audiotable_index_offset + 0x10]
             audiotable_offset = int.from_bytes(audiotable_entry[0:4], 'big')
             sample_address = audiotable_offset + self.addr
+            if sample_address < 0 or sample_address > len(audiotable_file): # If the calculated address falls outside of audiotable then we probably need to get the sample data from ZSOUND files in the archive
+                self.data = None
+                self.addr = -1
+                return
             self.audiotable_addr = sample_address
             # Read the sample data
             self.data = audiotable_file[sample_address:sample_address+self.size]
@@ -136,7 +139,8 @@ class AudioBank:
         self.num_sfx: int = int.from_bytes(table_entry[14:16], 'big')
         self.bank_data = audiobank_file[self.bank_offset:self.bank_offset + self.size]
         self.original_data = self.bank_data.copy()
-        self.table_entry: bytearray = table_entry
+        self.original_table_entry = table_entry.copy()
+        self.table_entry: bytearray = table_entry.copy()
         self.duplicate_banks: list[AudioBank] = []
         # Process the bank
 

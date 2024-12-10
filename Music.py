@@ -438,6 +438,7 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                 mm_audiobin = Audiobin(mm_audiobank, mm_audiobank_index, mm_audiotable, mm_audiotable_index)
             break
 
+    # Loop through each sequence and patch custom banks
     for i in range(0x6E):
         bank_table_base = (rom.read_int32(symbols['CFG_AUDIOBANK_TABLE_EXTENDED_ADDR']) - 0x80400000) + 0x3480000
         seq_bank_base = 0xB89911 + 0xDD + (i * 2)
@@ -482,18 +483,19 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
             for added_bank in added_banks:
                 if added_bank.original_data == bankdata:
                     newbank = added_bank
-                    if added_bank.table_entry[8:16] != bank_entry[8:16]: # We've already added this bank but it has different metadata
+                    if added_bank.original_table_entry[8:16] != bank_entry[8:16]: # We've already added this bank but it has different metadata
                         found: bool = False
                         for bank in added_bank.duplicate_banks:
-                            if bank.table_entry[8:16] == bank_entry[8:16]:
+                            if bank.original_table_entry[8:16] == bank_entry[8:16]:
                                 found = True
                                 newbank = bank
                                 break
                         if not found:
+                            # Make a new bank with just the meta and add it as a duplicate so it can be added separately but point to the same data.
                             dupe_bank = AudioBank(bank_entry, bytearray(0), None, None)
                             dupe_bank.bank_index = new_bank_index
                             new_bank_index += 1
-                            newbank.duplicate_banks.append(dupe_bank) # Make a new bank with just the meta and add it as a duplicate so it can be added separately but point to the same data.
+                            newbank.duplicate_banks.append(dupe_bank)
                             newbank = dupe_bank
                     break
 
@@ -502,6 +504,10 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                     newbank = vanilla_mm_bank
                 else:
                     newbank = AudioBank(bank_entry, bankdata, audiobin.Audiotable, audiobin.Audiotable_index)
+                # For MM tracks, force Audiotable index to 0 in the bank's table entry
+                if j.game == SequenceGame.MM:
+                    newbank.audiotable_id = 0
+                    newbank.table_entry[10] = 0
                 newbank.bank_index = new_bank_index
 
                 zsound_samples: list[Sample] = []
