@@ -29,8 +29,9 @@ LEGACY_STARTING_ITEM_SETTINGS: dict[str, dict[str, StartingItems.Entry]] = {
 class ArgumentDefaultsHelpFormatter(argparse.RawTextHelpFormatter):
 
     def _get_help_string(self, action) -> Optional[str]:
-        if  action.help is not None:
+        if action.help is not None:
             return textwrap.dedent(action.help)
+        return None
 
 
 # 32 characters
@@ -198,7 +199,7 @@ class Settings(SettingInfos):
         for setting in filter(lambda s: s.shared and s.bitwidth > 0, self.setting_infos.values()):
             cur_bits = bits[:setting.bitwidth]
             bits = bits[setting.bitwidth:]
-            value = None
+            value: Any = None
             if setting.type == bool:
                 value = True if cur_bits[0] == 1 else False
             elif setting.type == str:
@@ -358,7 +359,7 @@ class Settings(SettingInfos):
         if legacy_starting_items:
             settings = self.copy()
             for setting_name, items in LEGACY_STARTING_ITEM_SETTINGS.items():
-                starting_items = []
+                starting_items: list[str] = []
                 setattr(settings, setting_name, starting_items)
                 for entry in items.values():
                     if entry.item_name in self.starting_items:

@@ -1,11 +1,17 @@
 from __future__ import annotations
+from typing import TypedDict
 
+
+class TrickInfo(TypedDict):
+    name: str
+    tags: tuple[str, ...]
+    tooltip: str
 
 # Below is the list of possible glitchless tricks.
 # The order they are listed in is also the order in which
 # they appear to the user in the GUI, so a sensible order was chosen
 
-logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
+logic_tricks: dict[str, TrickInfo] = {
 
     # General tricks
 

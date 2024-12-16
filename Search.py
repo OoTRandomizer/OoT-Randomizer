@@ -127,7 +127,7 @@ class Search:
     # Returns a queue of the exits whose access rule failed,
     # as a cache for the exits to try on the next iteration.
     def _expand_regions(self, exit_queue: list[Entrance], regions: dict[Region, int], age: Optional[str]) -> list[Entrance]:
-        failed = []
+        failed: list[Entrance] = []
         for exit in exit_queue:
             if exit.world and exit.connected_region and exit.connected_region not in regions:
                 # Evaluate the access rule directly, without tod

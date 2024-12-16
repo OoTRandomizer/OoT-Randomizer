@@ -1,10 +1,21 @@
 from __future__ import annotations
-from typing import TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Optional, Any, TypedDict
 
 if TYPE_CHECKING:
     from Region import Region
     from RulesCommon import AccessRule
     from World import World
+
+    class EntranceData(TypedDict, total=False):
+        index: int
+        child_index: int
+        addresses: list[int]
+        savewarp_addresses: list[int]
+        grotto_id: int
+        entrance: int
+        content: int
+        scene: int
+        savewarp_fallback: int
 
 
 class Entrance:
@@ -20,7 +31,7 @@ class Entrance:
         self.assumed: Optional[Entrance] = None
         self.type: Optional[str] = None
         self.shuffled: bool = False
-        self.data: Optional[dict[str, Any]] = None
+        self.data: EntranceData = {}
         self.primary: bool = False
         self.always: bool = False
         self.never: bool = False

@@ -93,33 +93,35 @@ class ModelPointerWriter:
 
 # Either return the starting index of the requested data (when start == 0)
 # or the offset of the element in the footer, if it exists (start > 0)
-def scan(bytes: bytearray, data: bytearray | str, start: int = 0) -> int:
-    databytes = data
+def scan(bytes_to_scan: bytearray, data: bytearray | str, start: int = 0) -> int:
+    databytes: bytearray | bytes
     # If a string was passed, encode string as bytes
     if isinstance(data, str):
         databytes = data.encode()
+    else:
+        databytes = data
     dataindex = 0
-    for i in range(start, len(bytes)):
+    for i in range(start, len(bytes_to_scan)):
         # Byte matches next byte in string
-        if bytes[i] == databytes[dataindex]:
+        if bytes_to_scan[i] == databytes[dataindex]:
             dataindex += 1
             # Special case: Bottle, Bow, Slingshot, Fist.L, and Fist.R are subsets of
             # Bottle.Hand.L, Bow.String, Slingshot.String, Gauntlet.Fist.L, and Gauntlet.Fist.R respectively
             # And Hookshot which is a subset of Hookshot.Spike, Hookshot.Chain, Hookshot.Aiming.Reticule
             # This leads to false positives. So if the next byte is . (0x2E) then reset the count.
-            if isinstance(data, str) and data in ["Bottle", "Bow", "Slingshot", "Hookshot", "Fist.L", "Fist.R", "Blade.3"] and i < len(bytes) - 1 and bytes[i+1] == 0x2E:
+            if isinstance(data, str) and data in ["Bottle", "Bow", "Slingshot", "Hookshot", "Fist.L", "Fist.R", "Blade.3"] and i < len(bytes_to_scan) - 1 and bytes_to_scan[i+1] == 0x2E:
                 # Blade.3 is even wackier, as it is a subset of Blade.3.Break,
                 # and also a forward subset of Broken.Blade.3, and has a period in it
                 if data == "Blade.3":
                     resetCount = False
                     # If current byte is the "e" in "Blade.3", the period detected is the expected one- Carry on
                     # If it isn't, then reset the count
-                    if bytes[i] != 0x65:
+                    if bytes_to_scan[i] != 0x65:
                         resetCount = True
                     # Make sure i is large enough, "Broken.Blad" is 11 chars (remember we're currently at the e)
                     if not resetCount and i > 10:
                         # Check if "Broken." immediately preceeds this string
-                        preceedingBytes = bytes[i-11:i-4]
+                        preceedingBytes = bytes_to_scan[i-11:i-4]
                         if preceedingBytes == bytearray(b'Broken.'):
                             resetCount = True
                     if resetCount:
@@ -128,7 +130,7 @@ def scan(bytes: bytearray, data: bytearray | str, start: int = 0) -> int:
                 # "Gauntlet.Fis" is 12 chars (we are currently at the t)
                 elif data in ["Fist.L", "Fist.R"] and i > 11:
                     # Check if "Gauntlet." immediately preceeds this string
-                    preceedingBytes = bytes[i-12:i-3]
+                    preceedingBytes = bytes_to_scan[i-12:i-3]
                     if preceedingBytes == bytearray(b'Gauntlet.'):
                         dataindex = 0
                 # Default case for Bottle, Bow, Slingshot, Hookshot, reset count
@@ -138,7 +140,7 @@ def scan(bytes: bytearray, data: bytearray | str, start: int = 0) -> int:
             # (Blade.3 and fists can check in the previous stanza since a . will be encountered at some point)
             if isinstance(data, str) and data == "Hookshot" and dataindex == 1 and i > 3:
                 # Check if "FPS." immediately preceeds this string
-                preceedingBytes = bytes[i-4:i]
+                preceedingBytes = bytes_to_scan[i-4:i]
                 if preceedingBytes == bytearray(b'FPS.'):
                     dataindex = 0
             # More special cases added by the new pipeline...
@@ -146,20 +148,20 @@ def scan(bytes: bytearray, data: bytearray | str, start: int = 0) -> int:
             # And Hand.L specifically is a forward subset of Bottle.Hand.L
             if isinstance(data, str) and data in ["Hand.L", "Hand.R"] and dataindex == 1:
                 if i > 8:
-                    preceedingBytes = bytes[i-9:i]
+                    preceedingBytes = bytes_to_scan[i-9:i]
                     if preceedingBytes == bytearray(b'Gauntlet.'):
                         dataindex = 0
                 if dataindex == 1 and i > 3:
-                    preceedingBytes = bytes[i-4:i]
+                    preceedingBytes = bytes_to_scan[i-4:i]
                     if preceedingBytes == bytearray(b'FPS.'):
                         dataindex = 0
                 if data == "Hand.L" and dataindex == 1 and i > 6:
-                    preceedingBytes = bytes[i-7:i]
+                    preceedingBytes = bytes_to_scan[i-7:i]
                     if preceedingBytes == bytearray(b'Bottle.'):
                         dataindex = 0
             # Forearm.L and Forearm.R are forward subsets of FPS.Forearm.X
             if isinstance(data, str) and data in ["Forearm.L", "Forearm.R"] and dataindex == 1 and i > 3:
-                preceedingBytes = bytes[i-4:i]
+                preceedingBytes = bytes_to_scan[i-4:i]
                 if preceedingBytes == bytearray(b'FPS.'):
                     dataindex = 0
             # All bytes have been found, so a match
@@ -172,7 +174,7 @@ def scan(bytes: bytearray, data: bytearray | str, start: int = 0) -> int:
                     i += 2
                     offsetbytes = []
                     for j in range(4):
-                        offsetbytes.append(bytes[i + j])
+                        offsetbytes.append(bytes_to_scan[i + j])
                     return int.from_bytes(offsetbytes, 'big')
         # Match has been broken, reset to start of string
         else:
@@ -209,9 +211,9 @@ def LoadVanilla(rom: Rom, missing: list[str], rebase: int, linkstart: int, links
     for i in range(linksize):
         vanillaData.append(rom.buffer[linkstart + i])
     segment = 0x06
-    vertices = {}
-    matrices = {}
-    textures = {}
+    vertices: dict[int, list[int]] = {}
+    matrices: dict[int, list[int]] = {}
+    textures: dict[int, list[int]] = {}
     displayLists = {}
     # For each missing piece, grab data from its vanilla display list
     for item in missing:
@@ -283,7 +285,7 @@ def LoadVanilla(rom: Rom, missing: list[str], rebase: int, linkstart: int, links
                 # Grab the address from the low byte without the base offset
                 texOffset = lo & 0x00FFFFFF
                 numTexels = -1
-                returnStack = []
+                returnStack: list[int] = []
                 j = i+8
                 # The point of this loop is just to find the number of texels
                 # so that it may be multiplied by the bytesPerTexel so we know
@@ -343,7 +345,7 @@ def LoadVanilla(rom: Rom, missing: list[str], rebase: int, linkstart: int, links
             i += 8
         displayLists[item] = (displayList, offset)
     # Create vanilla zobj of the pieces from data collected during crawl
-    vanillaZobj = []
+    vanillaZobj: list[int] = []
     # Add textures, vertices, and matrices to the beginning of the zobj
     # Textures
     oldTex2New = {}
@@ -473,13 +475,13 @@ def CorrectSkeleton(zobj: bytearray, skeleton: list[list[int]], agestr: str) -> 
         hasVanillaSkeleton = True
         for i in range(21):
             offset = limb + i * 0x10
-            bytes = []
-            bytes.extend(int.to_bytes(skeleton[i][0], 2, 'big'))
-            bytes.extend(int.to_bytes(skeleton[i][1], 2, 'big'))
-            bytes.extend(int.to_bytes(skeleton[i][2], 2, 'big'))
+            skeleton_bytes: list[int] = []
+            skeleton_bytes.extend(int.to_bytes(skeleton[i][0], 2, 'big'))
+            skeleton_bytes.extend(int.to_bytes(skeleton[i][1], 2, 'big'))
+            skeleton_bytes.extend(int.to_bytes(skeleton[i][2], 2, 'big'))
             # Overwrite the X, Y, Z bytes with their vanilla values
             for j in range(6):
-                zobj[offset+j] = bytes[j]
+                zobj[offset+j] = skeleton_bytes[j]
     return hasVanillaSkeleton
 
 
@@ -530,7 +532,7 @@ def LoadModel(rom: Rom, model: str, age: int) -> int:
         # Find which pieces, if any, are missing from this model
         missing = []
         present = {}
-        DLOffsets = {}
+        DLOffsets: dict[str, int] = {}
         for piece in pieces:
             offset = scan(zobj, piece, footerstart)
             if offset == -1:

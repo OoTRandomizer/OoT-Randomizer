@@ -6,20 +6,20 @@ import os
 import random
 from collections import OrderedDict, defaultdict
 from collections.abc import Iterable, Iterator
-from typing import Any, Optional
+from typing import Any, Callable, Optional
 
 from Dungeon import Dungeon
 from Entrance import Entrance
-from Goals import Goal, GoalCategory
+from Goals import Goal, GoalCategory, GoalItem
 from HintList import get_required_hints, misc_item_hint_table, misc_location_hint_table
-from Hints import HintArea, hint_dist_keys, hint_dist_files
+from Hints import HintArea, RegionRestriction, hint_dist_files, hint_dist_keys
 from Item import Item, ItemFactory, ItemInfo, make_event_item
 from ItemList import REWARD_COLORS
 from ItemPool import reward_list
 from Location import Location, LocationFactory
-from LocationList import business_scrubs, location_groups, location_table
-from OcarinaSongs import generate_song_list, Song
-from Plandomizer import WorldDistribution, InvalidFileException
+from LocationList import LocationDefault, business_scrubs, location_groups, location_table
+from OcarinaSongs import Song, generate_song_list
+from Plandomizer import InvalidFileException, WorldDistribution
 from Region import Region, TimeOfDay
 from RuleParser import Rule_AST_Transformer
 from Settings import Settings
@@ -55,6 +55,7 @@ class World:
         self.empty_areas: dict[HintArea, dict[str, Any]] = {}
         self.barren_dungeon: int = 0
         self.woth_dungeon: int = 0
+        self.get_barren_hint_prev: RegionRestriction = RegionRestriction.NONE
         self.randomized_list: list[str] = []
         self.cached_bigocto_location: Optional[Location] = None
 
@@ -88,13 +89,14 @@ class World:
         self.disable_trade_revert: bool = self.shuffle_interior_entrances or settings.shuffle_overworld_entrances or settings.adult_trade_shuffle
         self.skip_child_zelda: bool = 'Zeldas Letter' not in settings.shuffle_child_trade and \
                                       'Zeldas Letter' in self.distribution.starting_items
-        self.selected_adult_trade_item: str = None
+        self.selected_adult_trade_item: Optional[str] = None
         if not settings.adult_trade_shuffle and settings.adult_trade_start:
+            assert self.distribution.locations is not None
             self.selected_adult_trade_item = random.choice(settings.adult_trade_start)
             # Override the adult trade item used to control trade quest flags during patching if any are placed in plando.
             # This has to run here because the rule parser caches world attributes and this attribute impacts logic for buying a blue potion from Granny's Potion shop.
             adult_trade_matcher = self.distribution.pattern_matcher("#AdultTrade")
-            plando_adult_trade = list(filter(lambda location_record_pair: adult_trade_matcher(location_record_pair[1].item), self.distribution.pattern_dict_items(self.distribution.locations)))
+            plando_adult_trade: list[tuple[str, Any]] = list(filter(lambda location_record_pair: adult_trade_matcher(location_record_pair[1].item), self.distribution.pattern_dict_items(self.distribution.locations)))
             if plando_adult_trade:
                 self.selected_adult_trade_item = plando_adult_trade[0][1].item # ugly but functional, see the loop in Plandomizer.WorldDistribution.fill for how this is indexed
         self.adult_trade_starting_inventory: str = ''
@@ -143,7 +145,7 @@ class World:
                 self['Shadow Temple'] = self.EmptyDungeonInfo('Bongo Bongo')
 
                 for area in HintArea:
-                    if area.is_dungeon and area.dungeon_name in self:
+                    if area.dungeon_name is not None and area.dungeon_name in self:
                         self[area.dungeon_name].hint_name = area
 
             def __missing__(self, dungeon_name: str) -> EmptyDungeonInfo:
@@ -324,7 +326,7 @@ class World:
                 else:
                     cat = GoalCategory(category['category'], category['priority'], minimum_goals=category['minimum_goals'])
                 for goal in category['goals']:
-                    cat.add_goal(Goal(self, goal['name'], goal['hint_text'], goal['color'], items=list({'name': i['name'], 'quantity': i['quantity'], 'minimum': i['minimum'], 'hintable': i['hintable']} for i in goal['items'])))
+                    cat.add_goal(Goal(self, goal['name'], goal['hint_text'], goal['color'], items=[{'name': i['name'], 'quantity': i['quantity'], 'minimum': i['minimum'], 'hintable': i['hintable']} for i in goal['items']]))
                 if 'count_override' in category:
                     cat.goal_count = category['count_override']
                 else:
@@ -355,7 +357,7 @@ class World:
             self.one_hint_per_goal = self.hint_dist_user['one_hint_per_goal']
 
         # initialize category check for first rounds of goal hints
-        self.hinted_categories = []
+        self.hinted_categories: list[str] = []
 
         # Quick item lookup for All Goals Reachable setting
         self.goal_items = []
@@ -421,6 +423,7 @@ class World:
             dist_keys = self.distribution.distribution.src_dict['_settings'].keys()
         if self.settings.randomize_settings:
             setting_info = SettingInfos.setting_infos['randomize_settings']
+            assert setting_info.disable is not None
             self.randomized_list.extend(setting_info.disable[True]['settings'])
             for section in setting_info.disable[True]['sections']:
                 self.randomized_list.extend(get_settings_from_section(section))
@@ -526,11 +529,12 @@ class World:
             if nb_to_pick < 0:
                 raise RuntimeError(f"{dist_num_empty} dungeons are set to empty on world {self.id+1}, but only {self.settings.empty_dungeons_count} empty dungeons allowed")
             if len(empty_dungeon_pool) < nb_to_pick:
-                non_empty = 8 - dist_num_empty - len(empty_dungeon_pool)
-                raise RuntimeError(f"On world {self.id+1}, {dist_num_empty} dungeons are set to empty and {non_empty} to non-empty. Can't reach {self.settings.empty_dungeons_count} empty dungeons.")
+                num_non_empty = 8 - dist_num_empty - len(empty_dungeon_pool)
+                raise RuntimeError(f"On world {self.id+1}, {dist_num_empty} dungeons are set to empty and {num_non_empty} to non-empty. Can't reach {self.settings.empty_dungeons_count} empty dungeons.")
 
             # Prioritize non-MQ dungeons
-            non_mq, mq = [], []
+            non_mq: list[str] = []
+            mq: list[str] = []
             for dung in empty_dungeon_pool:
                 (mq if self.dungeon_mq[dung] else non_mq).append(dung)
             for dung in random.sample(non_mq, min(nb_to_pick, len(non_mq))):
@@ -552,11 +556,12 @@ class World:
             if nb_to_pick < 0:
                 raise RuntimeError("%d dungeons are set to MQ on world %d, but only %d MQ dungeons allowed." % (dist_num_mq, self.id+1, self.settings.mq_dungeons_count))
             if len(mq_dungeon_pool) < nb_to_pick:
-                non_mq = 8 - dist_num_mq - len(mq_dungeon_pool)
-                raise RuntimeError(f"On world {self.id+1}, {dist_num_mq} dungeons are set to MQ and {non_mq} to non-MQ. Can't reach {self.settings.mq_dungeons_count} MQ dungeons.")
+                num_non_mq = 8 - dist_num_mq - len(mq_dungeon_pool)
+                raise RuntimeError(f"On world {self.id+1}, {dist_num_mq} dungeons are set to MQ and {num_non_mq} to non-MQ. Can't reach {self.settings.mq_dungeons_count} MQ dungeons.")
 
             # Prioritize non-empty dungeons
-            non_empty, empty = [], []
+            non_empty: list[str] = []
+            empty: list[str] = []
             for dung in mq_dungeon_pool:
                 (empty if self.empty_dungeons[dung].empty else non_empty).append(dung)
             for dung in random.sample(non_empty, min(nb_to_pick, len(non_empty))):
@@ -732,7 +737,7 @@ class World:
     def set_scrub_prices(self) -> None:
         # Get Deku Scrub Locations
         scrub_locations = [location for location in self.get_locations() if location.type in ('Scrub', 'GrottoScrub')]
-        scrub_dictionary = {}
+        scrub_dictionary: dict[LocationDefault, list[Location]] = {}
         for location in scrub_locations:
             if location.default not in scrub_dictionary:
                 scrub_dictionary[location.default] = []
@@ -785,7 +790,7 @@ class World:
             for dungeon_item in self.empty_dungeons.items():
                 if dungeon_item[1].boss_name == boss:
                     dungeon_item[1].empty = True
-                    self.hint_type_overrides['barren'].append(dungeon_item[1].hint_name)
+                    self.hint_type_overrides['barren'].append(str(dungeon_item[1].hint_name))
 
     def set_goals(self) -> None:
         # Default goals are divided into 3 primary categories:
@@ -844,7 +849,7 @@ class World:
         # the hint type even though the hintable location set is identical to WOTH.
         if not self.settings.triforce_hunt:
             if self.settings.starting_age == 'child':
-                dot_items = [{'name': 'Temple of Time Access', 'quantity': 1, 'minimum': 1, 'hintable': True}]
+                dot_items: list[GoalItem] = [{'name': 'Temple of Time Access', 'quantity': 1, 'minimum': 1, 'hintable': True}]
                 if not self.settings.open_door_of_time:
                     dot_items.append({'name': 'Song of Time', 'quantity': 2 if self.settings.shuffle_song_items == 'any' and self.settings.item_pool_value == 'plentiful' else 1, 'minimum': 1, 'hintable': True})
                     if self.settings.shuffle_ocarinas:
@@ -1162,7 +1167,7 @@ class World:
                     if region is not None and region.locations is not None
                     for loc in region.locations
                     if not loc.locked
-                    and loc.has_item()
+                    and loc.item is not None
                     and not loc.item.event
                     and (loc.type != "Shop" or loc.name in self.shop_prices) # ignore regular shop items (but keep special deals)
                 ]
@@ -1172,7 +1177,6 @@ class World:
                     priority_types = (
                         "Wonderitem",
                         "Freestanding",
-                        "ActorOverride",
                         "RupeeTower",
                         "Pot",
                         "Crate",
@@ -1219,7 +1223,7 @@ class World:
         item.price = location.price if location.price is not None else item.price
         location.price = item.price
 
-        logging.getLogger('').debug('Placed %s [World %d] at %s [World %d]', item, item.world.id if hasattr(item, 'world') else -1, location, location.world.id if hasattr(location, 'world') else -1)
+        logging.getLogger('').debug(f'Placed {item!r} at {location!r}')
 
     def get_locations(self) -> list[Location]:
         if not self._cached_locations:
@@ -1227,13 +1231,13 @@ class World:
                 self._cached_locations.extend(region.locations)
         return self._cached_locations
 
-    def get_unfilled_locations(self) -> Iterable[Location]:
+    def get_unfilled_locations(self) -> Iterator[Location]:
         return filter(Location.has_no_item, self.get_locations())
 
-    def get_filled_locations(self) -> Iterable[Location]:
-        return filter(Location.has_item, self.get_locations())
+    def get_filled_locations(self, item_filter: Callable[[Item], bool] = lambda item: True) -> Iterator[Location]:
+        return filter(lambda loc: loc.item is not None and item_filter(loc.item), self.get_locations())
 
-    def get_progression_locations(self) -> Iterable[Location]:
+    def get_progression_locations(self) -> Iterator[Location]:
         return filter(Location.has_progression_item, self.get_locations())
 
     def get_entrances(self) -> list[Entrance]:
@@ -1301,7 +1305,7 @@ class World:
                 or location.name in self.hint_exclusions
                 or location.item is None
                 or location.item.type == 'Event'
-                or (location.item.type == 'DungeonReward' and location.item.world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward', 'dungeon'))
+                or (location.item.type == 'DungeonReward' and location.item.world is not None and location.item.world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward', 'dungeon'))
             ):
                 continue
 
@@ -1322,6 +1326,7 @@ class World:
             # check if any location in the area has a dungeon.
             area_info['dungeon'] = False
             for location in area_info['locations']:
+                assert location.parent_region is not None
                 if location.parent_region.dungeon is not None:
                     area_info['dungeon'] = True
                     break
@@ -1405,13 +1410,15 @@ class World:
         # is a progressive item. Normally this applies to things like bows, bombs
         # bombchus, bottles, slingshot, magic and ocarina. However if plentiful
         # item pool is enabled this could be applied to any item.
-        duplicate_item_woth = {}
+        duplicate_item_woth: dict[int, dict[str, list[Location]]] = {}
         woth_loc = [location for world_woth in spoiler.required_locations.values() for location in world_woth]
         for world in spoiler.worlds:
             duplicate_item_woth[world.id] = {}
         for location in woth_loc:
-            world_id = location.item.world.id
             item = location.item
+            assert item is not None
+            assert item.world is not None
+            world_id = item.world.id
 
             if item.name == 'Rutos Letter' and item.name in duplicate_item_woth[world_id]:
                 # Only the first Letter counts as a letter, subsequent ones are Bottles.
@@ -1437,11 +1444,16 @@ class World:
         for area, area_info in areas.items():
             useless_area = True
             for location in area_info['locations']:
-                world_id = location.item.world.id
+                assert location.world is not None
                 item = location.item
+                assert item is not None
+                assert item.world is not None
+                world_id = item.world.id
 
-                if ((not location.item.majoritem) or (location.item.name in exclude_item_list)) and \
-                    (location.item.name not in self.item_hint_type_overrides['barren']):
+                if (
+                    (not item.majoritem or item.name in exclude_item_list)
+                    and item.name not in self.item_hint_type_overrides['barren']
+                ):
                     # Minor items are always useless in logic
                     continue
 
@@ -1450,6 +1462,7 @@ class World:
                     # If this is the required Letter then it is not useless
                     dupe_locations = duplicate_item_woth[world_id][item.name]
                     for dupe_location in dupe_locations:
+                        assert dupe_location.world is not None
                         if dupe_location.world.id == location.world.id and dupe_location.name == location.name:
                             useless_area = False
                             break
@@ -1476,6 +1489,7 @@ class World:
 
                 # If this is a required item location, then it is not useless
                 for dupe_location in dupe_locations:
+                    assert dupe_location.world is not None
                     if dupe_location.world.id == location.world.id and dupe_location.name == location.name:
                         useless_area = False
                         break

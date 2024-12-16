@@ -46,12 +46,19 @@
 from __future__ import annotations
 import json
 from struct import pack, unpack
-from typing import Optional, Any
+from typing import Optional, Any, TypedDict
 
 from Rom import Rom
 from Utils import data_path
 
 SCENE_TABLE: int = 0xB71440
+
+
+class JsonFile(TypedDict):
+    Name: str
+    Start: Optional[str]
+    End: Optional[str]
+    RemapStart: Optional[str]
 
 
 class File:
@@ -63,15 +70,18 @@ class File:
         self.from_file: int = self.start
 
         # used to update the file's associated dmadata record
-        self.dma_key: int = self.start
+        self.dma_key: Optional[int] = self.start
 
     @classmethod
-    def from_json(cls, file: dict[str, Optional[str]]) -> File:
+    def from_json(cls, file: JsonFile) -> File:
+        start = file.get('Start', None)
+        end = file.get('End', None)
+        remap_start = file.get('RemapStart', None)
         return cls(
             file['Name'],
-            int(file['Start'], 16) if file.get('Start', None) is not None else 0,
-            int(file['End'], 16) if file.get('End', None) is not None else None,
-            int(file['RemapStart'], 16) if file.get('RemapStart', None) is not None else None
+            0 if start is None else int(start, 16),
+            None if end is None else int(end, 16),
+            None if remap_start is None else int(remap_start, 16),
         )
 
     def __repr__(self) -> str:
@@ -113,16 +123,29 @@ class CollisionMesh:
         rom.write_int32s(addr, [self.poly_addr, self.polytypes_addr, self.camera_data_addr])
 
 
+class JsonColDelta(TypedDict):
+    IsLarger: bool
+    Polys: list[dict[str, int]]
+    PolyTypes: list[dict[str, int]]
+    Cams: list[dict[str, int]]
+
+
 class ColDelta:
-    def __init__(self, delta: dict[str, bool | list[dict[str, int]]]) -> None:
+    def __init__(self, delta: JsonColDelta) -> None:
         self.is_larger: bool = delta['IsLarger']
         self.polys: list[dict[str, int]] = delta['Polys']
         self.polytypes: list[dict[str, int]] = delta['PolyTypes']
         self.cams: list[dict[str, int]] = delta['Cams']
 
 
+class JsonIcon(TypedDict):
+    Icon: int
+    Count: int
+    IconPoints: list[dict[str, int]]
+
+
 class Icon:
-    def __init__(self, data: dict[str, int | list[dict[str, int]]]) -> None:
+    def __init__(self, data: JsonIcon) -> None:
         self.icon: int = data["Icon"]
         self.count: int = data["Count"]
         self.points: list[IconPoint] = [IconPoint(x) for x in data["IconPoints"]]
@@ -367,8 +390,15 @@ class Scene:
         return records_offset
 
 
+class JsonRoom(TypedDict):
+    File: JsonFile
+    Id: int
+    Objects: list[str]
+    Actors: list[str]
+
+
 class Room:
-    def __init__(self, room: dict[str, int | list[str] | dict[str, Optional[str]]]):
+    def __init__(self, room: JsonRoom):
         self.file: File = File.from_json(room['File'])
         self.id: int = room['Id']
         self.objects: list[int] = [int(x, 16) for x in room['Objects']]
@@ -600,25 +630,25 @@ def insert_space(rom: Rom, file: File, vram_start: int, insert_section: int, ins
                 (offset + insert_size))
 
         # value contains the vram address
-        value = rom.read_int32(address)
+        base_value = rom.read_int32(address)
         reg = None
         if type == 2:
             # Data entry: value is the raw vram address
-            pass
+            value = base_value
         elif type == 4:
             # Jump OP: Get the address from a Jump instruction
-            value = 0x80000000 | (value & 0x03FFFFFF) << 2
+            value = 0x80000000 | (base_value & 0x03FFFFFF) << 2
         elif type == 5:
             # Load High: Upper half of an address load
-            reg = (value >> 16) & 0x1F
-            val_hi[reg] = (value & 0x0000FFFF) << 16
+            reg = (base_value >> 16) & 0x1F
+            val_hi[reg] = (base_value & 0x0000FFFF) << 16
             adr_hi[reg] = address
             # Do not process, wait until the lower half is read
             value = None
         elif type == 6:
             # Load Low: Lower half of the address load
-            reg = (value >> 21) & 0x1F
-            val_low = value & 0x0000FFFF
+            reg = (base_value >> 21) & 0x1F
+            val_low = base_value & 0x0000FFFF
             val_low = unpack('h', pack('H', val_low))[0]
             # combine with previous load high
             value = val_hi[reg] + val_low
@@ -641,6 +671,8 @@ def insert_space(rom: Rom, file: File, vram_start: int, insert_section: int, ins
                 new_value = op | new_value
                 rom.write_int32(address, new_value)
             elif type == 6:
+                assert reg is not None
+
                 # Load Low: Lower half of the address load
                 op = rom.read_int32(address) & 0xFFFF0000
                 new_val_low = new_value & 0x0000FFFF

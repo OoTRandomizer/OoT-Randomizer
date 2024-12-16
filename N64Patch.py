@@ -145,7 +145,7 @@ def create_patch_file(rom: Rom, file: str, xor_range: tuple[int, int] = (0x00B8A
 
     # Write the address changes. We'll store the data with XOR so that
     # the patch data won't be raw data from the patched rom.
-    data = []
+    data: list[int] = []
     block_start = block_end = None
     BLOCK_HEADER_SIZE = 7  # this is used to break up gaps
     for address in changed_addresses:
@@ -171,12 +171,11 @@ def create_patch_file(rom: Rom, file: str, xor_range: tuple[int, int] = (0x00B8A
         xor_address = write_block(rom, xor_address, xor_range, block_start, data, patch_data)
 
     # compress the patch file
-    patch_data = bytes(patch_data.buffer)
-    patch_data = zlib.compress(patch_data)
+    compressed_patch_data = zlib.compress(patch_data.buffer)
 
     # save the patch file
     with open(file, 'wb') as outfile:
-        outfile.write(patch_data)
+        outfile.write(compressed_patch_data)
 
 
 # This will apply a patch file to a source rom to generate a patched rom.
@@ -188,13 +187,13 @@ def apply_patch_file(rom: Rom, settings: Settings, sub_file: Optional[str] = Non
         with zipfile.ZipFile(file, 'r') as patch_archive:
             try:
                 with patch_archive.open(sub_file, 'r') as stream:
-                    patch_data = stream.read()
+                    compressed_patch_data = stream.read()
             except KeyError as ex:
                 raise FileNotFoundError('Patch file missing from archive. Invalid Player ID.')
     else:
         with open(file, 'rb') as stream:
-            patch_data = stream.read()
-    patch_data = BigStream(bytearray(zlib.decompress(patch_data)))
+            compressed_patch_data = stream.read()
+    patch_data = BigStream(bytearray(zlib.decompress(compressed_patch_data)))
 
     # make sure the header is correct
     if patch_data.read_bytes(length=4) != b'ZPFv':

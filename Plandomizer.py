@@ -67,7 +67,7 @@ class Record:
             if update_all or k in src_dict:
                 setattr(self, k, src_dict.get(k, p))
 
-    def to_json(self) -> dict[str, Any]:
+    def to_json(self) -> json:
         return {k: getattr(self, k) for (k, d) in self.properties.items() if getattr(self, k) != d}
 
     def __str__(self) -> str:
@@ -152,6 +152,8 @@ class LocationRecord(Record):
     def __init__(self, src_dict: dict[str, Any] | str) -> None:
         self.item: Optional[str | list[str]] = None
         self.player: Optional[int] = None
+        self.model: Optional[str] = None
+        self.price: Optional[int] = None
 
         if isinstance(src_dict, str):
             src_dict = {'item': src_dict}

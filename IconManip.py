@@ -13,7 +13,7 @@ else:
 if TYPE_CHECKING:
     from Rom import Rom
 
-RGBValues: TypeAlias = "MutableSequence[MutableSequence[int]]"
+RGBValues: TypeAlias = "list[list[int]]"
 
 
 # TODO
