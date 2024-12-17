@@ -398,7 +398,7 @@ class JsonRoom(TypedDict):
 
 
 class Room:
-    def __init__(self, room: JsonRoom):
+    def __init__(self, room: JsonRoom) -> None:
         self.file: File = File.from_json(room['File'])
         self.id: int = room['Id']
         self.objects: list[int] = [int(x, 16) for x in room['Objects']]

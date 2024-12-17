@@ -670,6 +670,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         elif location.vanilla_item in trade_items:
             if not world.settings.adult_trade_shuffle:
                 if location.vanilla_item == 'Pocket Egg' and world.settings.adult_trade_start:
+                    assert world.selected_adult_trade_item is not None
                     item = world.selected_adult_trade_item
                     shuffle_item = True
                 else:
@@ -810,6 +811,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                 shuffle_item = True
             else:
                 dungeon = Dungeon.from_vanilla_reward(ItemFactory(location.vanilla_item, world))
+                assert dungeon is not None
                 dungeon.reward.append(ItemFactory(item, world))
 
         # Ganon boss key

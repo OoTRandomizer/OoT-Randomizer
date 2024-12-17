@@ -153,6 +153,7 @@ class Search:
         for exit in exit_queue:
             # We don't look for new regions, just spreading the tod to our existing regions
             if exit.connected_region in regions and tod & ~regions[exit.connected_region]:
+                assert exit.world is not None
                 # Evaluate the access rule directly
                 if exit.access_rule(self.state_list[exit.world.id], spot=exit, age=age, tod=tod):
                     regions[exit.connected_region] |= tod
@@ -197,6 +198,7 @@ class Search:
             for loc in item_locations:
                 if loc in visited_locations:
                     continue
+                assert loc.world is not None
                 # Check adult first; it's the most likely.
                 if (loc.parent_region in adult_regions
                         and loc.access_rule(self.state_list[loc.world.id], spot=loc, age='adult')):
@@ -218,6 +220,7 @@ class Search:
     def collect_locations(self, item_locations: Optional[Iterable[Location]] = None) -> None:
         item_locations = item_locations or self.progression_locations()
         for location in self.iter_reachable_locations(item_locations):
+            assert location.item is not None
             # Collect the item for the state world it is for
             self.collect(location.item)
 
@@ -280,9 +283,8 @@ class Search:
 
     def test_category_goals(self, goal_categories: dict[str, GoalCategory], world_filter: Optional[int] = None) -> ValidGoals:
         valid_goals: ValidGoals = {}
-        for category_name, category in goal_categories.items():
-            valid_goals[category_name] = {}
-            valid_goals[category_name]['stateReverse'] = {}
+        for category_name in goal_categories:
+            valid_goals[category_name] = {'stateReverse': {}}
             for state in self.state_list:
                 # Must explicitly test for None as the world filter can be 0
                 # for the first world ID
@@ -291,19 +293,19 @@ class Search:
                 # multiworld
                 if world_filter is not None and state.world.id != world_filter:
                     continue
-                valid_goals[category_name]['stateReverse'][state.world.id] = []
+                valid_goals[category_name]['stateReverse'][state.world.id] = [] # type: ignore
                 world_category = state.world.goal_categories.get(category_name, None)
                 if world_category is None:
                     continue
                 for goal in world_category.goals:
-                    if goal.name not in valid_goals[category_name]:
-                        valid_goals[category_name][goal.name] = []
+                    if goal.name not in valid_goals[category_name]: # type: ignore
+                        valid_goals[category_name][goal.name] = [] # type: ignore
                     # Check if already beaten
                     if all(map(lambda i: state.has_full_item_goal(world_category, goal, i), goal.items)):
-                        valid_goals[category_name][goal.name].append(state.world.id)
+                        valid_goals[category_name][goal.name].append(state.world.id) # type: ignore
                         # Reverse lookup for checking if the category is already beaten.
                         # Only used to check if starting items satisfy the category.
-                        valid_goals[category_name]['stateReverse'][state.world.id].append(goal.name)
+                        valid_goals[category_name]['stateReverse'][state.world.id].append(goal.name) # type: ignore
         return valid_goals
 
     def iter_pseudo_starting_locations(self) -> Iterable[Location]:
@@ -324,12 +326,12 @@ class Search:
     def can_reach(self, region: Region, age: Optional[str] = None, tod: int = TimeOfDay.NONE) -> bool:
         if age == 'adult':
             if tod:
-                return region in self._cache.adult_regions and (self._cache.adult_regions[region] & tod or self._expand_tod_regions(self._cache.adult_regions, region, age, tod))
+                return region in self._cache.adult_regions and (self._cache.adult_regions[region] & tod or self._expand_tod_regions(self._cache.adult_regions, region, age, tod)) != 0
             else:
                 return region in self._cache.adult_regions
         elif age == 'child':
             if tod:
-                return region in self._cache.child_regions and (self._cache.child_regions[region] & tod or self._expand_tod_regions(self._cache.child_regions, region, age, tod))
+                return region in self._cache.child_regions and (self._cache.child_regions[region] & tod or self._expand_tod_regions(self._cache.child_regions, region, age, tod)) != 0
             else:
                 return region in self._cache.child_regions
         elif age == 'both':
@@ -359,6 +361,8 @@ class Search:
     # Returns whether the given age can access the spot at this age and tod,
     # by checking whether the search has reached the containing region, and evaluating the spot's access rule.
     def spot_access(self, spot: Location | Entrance, age: Optional[str] = None, tod: int = TimeOfDay.NONE) -> bool:
+        assert spot.parent_region is not None
+        assert spot.world is not None
         if age == 'adult' or age == 'child':
             return (self.can_reach(spot.parent_region, age=age, tod=tod)
                     and spot.access_rule(self.state_list[spot.world.id], spot=spot, age=age, tod=tod))

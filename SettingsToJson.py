@@ -115,6 +115,7 @@ def get_setting_json(setting: str, web_version: bool, as_array: bool = False) ->
         if key in setting_keys and (key not in version_specific_keys or version_specific):
             setting_json[key] = value
         if key == 'disable':
+            assert isinstance(value, dict)
             for option, types in value.items():
                 for s in types.get('settings', []):
                     if SettingInfos.setting_infos[s].shared:
@@ -154,12 +155,12 @@ def get_setting_json(setting: str, web_version: bool, as_array: bool = False) ->
             if option_name in setting_disable:
                 add_disable_option_to_json(setting_disable[option_name], option_json)
 
-            option_tooltip = setting_info.gui_params.get('choice_tooltip', {}).get(option_name, None)
+            option_tooltip = setting_info.gui_params.get('choice_tooltip', {}).get(option_name, None) # type: ignore # mypy doesn't know about dict.get???
             if option_tooltip is not None:
                 option_json['tooltip'] = remove_trailing_lines(
                     '<br>'.join(line.strip() for line in option_tooltip.split('\n')))
 
-            option_filter = setting_info.gui_params.get('filterdata', {}).get(option_name, None)
+            option_filter = setting_info.gui_params.get('filterdata', {}).get(option_name, None) # type: ignore # mypy doesn't know about dict.get???
             if option_filter is not None:
                 option_json['tags'] = option_filter
                 for tag in option_filter:

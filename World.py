@@ -5,8 +5,8 @@ import logging
 import os
 import random
 from collections import OrderedDict, defaultdict
-from collections.abc import Iterable, Iterator
-from typing import Any, Callable, Optional
+from collections.abc import Callable, Iterable, Iterator
+from typing import Any, Optional
 
 from Dungeon import Dungeon
 from Entrance import Entrance
@@ -133,7 +133,7 @@ class World:
                     self.boss_name: Optional[str] = boss_name
                     self.hint_name: Optional[HintArea] = None
 
-            def __init__(self):
+            def __init__(self) -> None:
                 super().__init__()
                 self['Deku Tree'] = self.EmptyDungeonInfo('Queen Gohma')
                 self['Dodongos Cavern'] = self.EmptyDungeonInfo('King Dodongo')

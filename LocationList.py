@@ -2644,8 +2644,12 @@ location_groups: dict[str, list[str]] = {
 
 
 def location_is_viewable(loc_name: str, correct_chest_appearances: str, fast_chests: bool, *, world: Optional[World] = None) -> bool:
-    return (
-        ((correct_chest_appearances in ('textures', 'both', 'classic') or not fast_chests) and loc_name in location_groups['Chest'])
-        or loc_name in location_groups['CanSee']
-        or (world is not None and world.bigocto_location() is not None and world.bigocto_location().name == loc_name)
-    )
+    if (correct_chest_appearances in ('textures', 'both', 'classic') or not fast_chests) and loc_name in location_groups['Chest']:
+        return True
+    if loc_name in location_groups['CanSee']:
+        return True
+    if world is not None:
+        bigocto_location = world.bigocto_location()
+        if bigocto_location is not None and bigocto_location.name == loc_name:
+            return True
+    return False

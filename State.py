@@ -6,7 +6,7 @@ from Item import Item, ItemInfo
 from RulesCommon import escape_name
 
 if TYPE_CHECKING:
-    from Goals import GoalCategory, Goal
+    from Goals import Goal, GoalCategory, GoalItem
     from Location import Location
     from Search import Search
     from World import World

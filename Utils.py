@@ -123,22 +123,21 @@ class VersionError(Exception):
     pass
 
 
-def check_version(checked_version: str) -> None:
-    if not hasattr(check_version, "base_regex"):
-        check_version.base_regex = re.compile("""^[ \t]*__version__ = ['"](.+)['"]""", flags=re.MULTILINE)
-        check_version.supplementary_regex = re.compile(r"^[ \t]*supplementary_version = (\d+)$", flags=re.MULTILINE)
-        check_version.full_regex = re.compile("""^[ \t]*__version__ = f['"]*(.+)['"]""", flags=re.MULTILINE)
-        check_version.url_regex = re.compile("""^[ \t]*branch_url = ['"](.+)['"]""", flags=re.MULTILINE)
+BASE_REGEX = re.compile("""^[ \t]*__version__ = ['"](.+)['"]""", flags=re.MULTILINE)
+SUPPLEMENTARY_REGEX = re.compile(r"^[ \t]*supplementary_version = (\d+)$", flags=re.MULTILINE)
+FULL_REGEX = re.compile("""^[ \t]*__version__ = f['"]*(.+)['"]""", flags=re.MULTILINE)
+URL_REGEX = re.compile("""^[ \t]*branch_url = ['"](.+)['"]""", flags=re.MULTILINE)
 
+def check_version(checked_version: str) -> None:
     if compare_version(checked_version, __version__) < 0:
         try:
             with urllib.request.urlopen(f'{branch_url.replace("https://github.com", "https://raw.githubusercontent.com").replace("tree/", "")}/version.py') as versionurl:
                 version_file = versionurl.read().decode("utf-8")
 
-                base_match = check_version.base_regex.search(version_file, re.MULTILINE)
-                supplementary_match = check_version.supplementary_regex.search(version_file, re.MULTILINE)
-                full_match = check_version.full_regex.search(version_file, re.MULTILINE)
-                url_match = check_version.url_regex.search(version_file, re.MULTILINE)
+                base_match = BASE_REGEX.search(version_file, re.MULTILINE)
+                supplementary_match = SUPPLEMENTARY_REGEX.search(version_file, re.MULTILINE)
+                full_match = FULL_REGEX.search(version_file, re.MULTILINE)
+                url_match = URL_REGEX.search(version_file, re.MULTILINE)
 
                 remote_base_version = base_match.group(1) if base_match else ""
                 remote_supplementary_version = int(supplementary_match.group(1)) if supplementary_match else 0
@@ -167,6 +166,8 @@ def check_version(checked_version: str) -> None:
 # not, on Windows and Linux. Typical use::
 #   subprocess.call(['program_to_run', 'arg_1'], **subprocess_args())
 def subprocess_args(include_stdout: bool = True) -> dict[str, Any]:
+    ret: dict[str, Any]
+
     # The following is true only on Windows.
     if hasattr(subprocess, 'STARTUPINFO'):
         # On Windows, subprocess calls will pop up a command window by default
@@ -199,11 +200,12 @@ def subprocess_args(include_stdout: bool = True) -> dict[str, Any]:
     return ret
 
 
-def run_process(logger: logging.Logger, args: Sequence[str], stdin: Optional[AnyStr] = None, *, check: bool = False) -> None:
+def run_process(logger: logging.Logger, args: Sequence[str], stdin: Optional[bytes] = None, *, check: bool = False) -> None:
     process = subprocess.Popen(args, bufsize=1, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
     if stdin is not None:
         process.communicate(input=stdin)
     else:
+        assert process.stdout is not None
         while True:
             line = process.stdout.readline()
             if line != b'':

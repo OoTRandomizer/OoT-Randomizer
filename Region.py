@@ -96,6 +96,8 @@ class Region:
     def can_fill(self, item: Item, manual: bool = False) -> bool:
         from Hints import HintArea
 
+        assert item.world is not None
+
         if not manual and self.world.settings.empty_dungeons_mode != 'none' and item.dungeonitem:
             # An empty dungeon can only store its own dungeon items
             if self.dungeon and self.dungeon.world.empty_dungeons[self.dungeon.name].empty:
@@ -129,7 +131,9 @@ class Region:
             if item.name in REWARD_COLORS:
                 is_hint_color_restricted = [REWARD_COLORS[item.name]] if shuffle_setting == 'regional' else None
             else:
-                is_hint_color_restricted = [HintArea.for_dungeon(item.name).color] if shuffle_setting == 'regional' else None
+                hint_area = HintArea.for_dungeon(item.name)
+                assert hint_area is not None
+                is_hint_color_restricted = [hint_area.color] if shuffle_setting == 'regional' else None
             is_dungeon_restricted = shuffle_setting == 'any_dungeon'
             is_overworld_restricted = shuffle_setting == 'overworld'
 

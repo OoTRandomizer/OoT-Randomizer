@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 # Old/New name of a setting
 class Setting_Info_Versioning:
-    def __init__(self, old_name, new_name):
+    def __init__(self, old_name, new_name) -> None:
         self.old_name = old_name # old name of the setting
         self.new_name = new_name # new name of the setting
 

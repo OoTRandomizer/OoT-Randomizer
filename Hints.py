@@ -1315,35 +1315,27 @@ def build_gossip_hints(spoiler: Spoiler, worlds: list[World]) -> None:
             assert location.item is not None
             assert location.world is not None
             if world.settings.enhance_map_compass:
-                if world.entrance_rando_reward_hints:
-                    # In these settings, there is not necessarily one dungeon reward in each dungeon,
-                    # so we instead have each compass hint the area of its dungeon's vanilla reward.
-                    compass_locations = [
-                        compass_location
-                        for compass_world in worlds
-                        for compass_location in compass_world.get_filled_locations()
-                        if Dungeon.from_vanilla_reward(location.item) is None # Light Medallion area is shown in menu from beginning of game
-                        or (
-                            compass_location.item is not None
-                            and compass_location.item.name == Dungeon.from_vanilla_reward(location.item).item_name('Compass')
-                            and compass_location.item.world == world
-                        )
-                    ]
-                else:
-                    # Each compass hints which reward is in its dungeon.
-                    compass_locations = []
-                    for compass_world in worlds:
-                        for compass_location in compass_world.get_filled_locations():
+                compass_locations = []
+                for compass_world in worlds:
+                    for compass_location in compass_world.get_filled_locations():
+                        if world.entrance_rando_reward_hints:
+                            # In these settings, there is not necessarily one dungeon reward in each dungeon,
+                            # so we instead have each compass hint the area of its dungeon's vanilla reward.
+                            dungeon = Dungeon.from_vanilla_reward(location.item)
+                        else:
+                            # Each compass hints which reward is in its dungeon.
                             dungeon = HintArea.at(location).dungeon(location.world)
-                            if (
-                                dungeon is None # free/ToT reward is shown in menu from beginning of game
-                                or (
-                                    compass_location.item is not None
-                                    and compass_location.item.name == dungeon.item_name('Compass')
-                                    and compass_location.item.world == world
-                                )
-                            ):
-                                compass_locations.append(compass_location)
+                        if (
+                            # with entrance_rando_reward_hints, Light Medallion area or free/ToT reward (otherwise) is shown in menu from beginning of game
+                            # without entrance_rando_reward_hints, free/ToT reward is shown in menu from beginning of game
+                            dungeon is None
+                            or (
+                                compass_location.item is not None
+                                and compass_location.item.name == dungeon.item_name('Compass')
+                                and compass_location.item.world == world
+                            )
+                        ):
+                            compass_locations.append(compass_location)
                 for compass_location in compass_locations:
                     if can_reach_hint(worlds, compass_location, location):
                         item_world = location.world
