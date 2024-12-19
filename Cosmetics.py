@@ -1233,7 +1233,7 @@ patch_sets[0x1F073FE2] = {
 
 # 8.2.22
 patch_sets[0x1F073FE3] = {
-    "patches": patch_sets[0x1F073FE0]["patches"] + [
+    "patches": patch_sets[0x1F073FE2]["patches"] + [
         patch_voice_pack,
     ],
     "symbols": {
