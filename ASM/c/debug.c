@@ -622,64 +622,66 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                     if (z64_game.common.input[0].pad_pressed.a && current_menu_indexes.sub_menu_index < 2) {
                         current_menu_indexes.sub_menu_index++;
                     }
-                    if (current_menu_indexes.sub_menu_index == 2) {
-                        if (z64_game.common.input[0].pad_pressed.dr) {
-                            current_menu_indexes.scene_flag++;
-                            if (current_menu_indexes.scene_flag > 0x1F) {
-                                current_menu_indexes.scene_flag = 0;
+                    else {
+                        if (current_menu_indexes.sub_menu_index == 2) {
+                            if (z64_game.common.input[0].pad_pressed.dr) {
+                                current_menu_indexes.scene_flag++;
+                                if (current_menu_indexes.scene_flag > 0x1F) {
+                                    current_menu_indexes.scene_flag = 0;
+                                }
                             }
-                        }
-                        if (z64_game.common.input[0].pad_pressed.dl) {
-                            current_menu_indexes.scene_flag--;
-                            if (current_menu_indexes.scene_flag < 0) {
-                                current_menu_indexes.scene_flag = 0x1F;
+                            if (z64_game.common.input[0].pad_pressed.dl) {
+                                current_menu_indexes.scene_flag--;
+                                if (current_menu_indexes.scene_flag < 0) {
+                                    current_menu_indexes.scene_flag = 0x1F;
+                                }
                             }
-                        }
-                        if (z64_game.common.input[0].pad_pressed.a) {
-                            switch (current_menu_indexes.scene_flag_index)
-                            {
-                                case 0:
-                                    if (Flags_GetSwitch(&z64_game, current_menu_indexes.scene_flag)) {
-                                        Flags_UnsetSwitch(&z64_game, current_menu_indexes.scene_flag);
-                                    }
-                                    else {
-                                        Flags_SetSwitch(&z64_game, current_menu_indexes.scene_flag);
-                                    }
-                                    break;
-                                case 1:
-                                    if (Flags_GetUnknown(&z64_game, current_menu_indexes.scene_flag)) {
-                                        Flags_UnsetUnknown(&z64_game, current_menu_indexes.scene_flag);
-                                    }
-                                    else {
-                                        Flags_SetUnknown(&z64_game, current_menu_indexes.scene_flag);
-                                    }
-                                    break;
-                                case 2:
-                                    if (Flags_GetTreasure(&z64_game, current_menu_indexes.scene_flag) == 0) {
-                                        Flags_SetTreasure(&z64_game, current_menu_indexes.scene_flag);
-                                    }
-                                    break;
-                                case 3:
-                                    if (Flags_GetClear(&z64_game, current_menu_indexes.scene_flag)) {
-                                        Flags_UnsetClear(&z64_game, current_menu_indexes.scene_flag);
-                                    }
-                                    else {
-                                        Flags_SetClear(&z64_game, current_menu_indexes.scene_flag);
-                                    }
-                                    break;
-                                case 4:
-                                    if (Flags_GetTempClear(&z64_game, current_menu_indexes.scene_flag)) {
-                                        Flags_UnsetTempClear(&z64_game, current_menu_indexes.scene_flag);
-                                    }
-                                    else {
-                                        Flags_SetTempClear(&z64_game, current_menu_indexes.scene_flag);
-                                    }
-                                    break;
-                                case 5:
-                                    if (Flags_GetCollectible(&z64_game, current_menu_indexes.scene_flag) == 0) {
-                                        Flags_SetCollectible(&z64_game, current_menu_indexes.scene_flag);
-                                    }
-                                    break;
+                            if (z64_game.common.input[0].pad_pressed.a) {
+                                switch (current_menu_indexes.scene_flag_index)
+                                {
+                                    case 0:
+                                        if (Flags_GetSwitch(&z64_game, current_menu_indexes.scene_flag)) {
+                                            Flags_UnsetSwitch(&z64_game, current_menu_indexes.scene_flag);
+                                        }
+                                        else {
+                                            Flags_SetSwitch(&z64_game, current_menu_indexes.scene_flag);
+                                        }
+                                        break;
+                                    case 1:
+                                        if (Flags_GetUnknown(&z64_game, current_menu_indexes.scene_flag)) {
+                                            Flags_UnsetUnknown(&z64_game, current_menu_indexes.scene_flag);
+                                        }
+                                        else {
+                                            Flags_SetUnknown(&z64_game, current_menu_indexes.scene_flag);
+                                        }
+                                        break;
+                                    case 2:
+                                        if (Flags_GetTreasure(&z64_game, current_menu_indexes.scene_flag) == 0) {
+                                            Flags_SetTreasure(&z64_game, current_menu_indexes.scene_flag);
+                                        }
+                                        break;
+                                    case 3:
+                                        if (Flags_GetClear(&z64_game, current_menu_indexes.scene_flag)) {
+                                            Flags_UnsetClear(&z64_game, current_menu_indexes.scene_flag);
+                                        }
+                                        else {
+                                            Flags_SetClear(&z64_game, current_menu_indexes.scene_flag);
+                                        }
+                                        break;
+                                    case 4:
+                                        if (Flags_GetTempClear(&z64_game, current_menu_indexes.scene_flag)) {
+                                            Flags_UnsetTempClear(&z64_game, current_menu_indexes.scene_flag);
+                                        }
+                                        else {
+                                            Flags_SetTempClear(&z64_game, current_menu_indexes.scene_flag);
+                                        }
+                                        break;
+                                    case 5:
+                                        if (Flags_GetCollectible(&z64_game, current_menu_indexes.scene_flag) == 0) {
+                                            Flags_SetCollectible(&z64_game, current_menu_indexes.scene_flag);
+                                        }
+                                        break;
+                                }
                             }
                         }
                     }
