@@ -8,6 +8,7 @@ const int8_t debug_text_height = 16;
 colorRGB8_t debug_text_color = { 0xE0, 0xE0, 0x10 }; // Yellow
 int8_t float_precision = 5;
 bool show_clock = false;
+uint8_t menu_cooldown = 20;
 
 menu_category_t menu_categories[] = {
     {  0, "Dungeons"},
@@ -108,7 +109,7 @@ room_t spirit_rooms[] = {
 };
 
 room_t botw_rooms[] = {
-    {  0x98, 0, { 0, -12, 117 }, 32768, "Main room"},
+    {  0x98, 0, { 0, -12, 117 }, 32768, "Main room Entrance"},
     {  0x98, 2, { -1650, 0, -739 }, 49152, "Coffin room"},
     {  0x98, 3, { 1140, 0, -1339 }, 0, "Beamos room"},
 };
@@ -267,8 +268,6 @@ void draw_debug_float(int whichNumber, float numberToShow) {
     debugNumbersFloat[whichNumber] = numberToShow;
 }
 
-#define CLOCK_TIME(hr, min) ((int32_t)(((hr) * 60 + (min)) * (float)0x10000 / (24 * 60) + 0.5f))
-
 void draw_timeofday(z64_disp_buf_t* db) {
 
     if (!show_clock) {
@@ -332,7 +331,7 @@ void debug_utilities(z64_disp_buf_t* db)
 {
     // Press L to levitate
     // Shoutouts to glankk
-    if (z64_game.common.input[0].pad_pressed.l) {
+    if (z64_game.common.input[0].raw.pad.du || z64_game.common.input[0].raw.pad.l) {
         z64_link.common.vel_1.y = 6.34375f;
     }
 
@@ -368,8 +367,17 @@ void decimal_to_hex(uint32_t decimalValue, char* hexValue) {
 
 void draw_debug_menu(z64_disp_buf_t* db) {
 
-    if (z64_game.common.input[0].pad_pressed.du || z64_game.common.input[0].pad_pressed.l) {
-        show_warp_menu = show_warp_menu ? 0 : 1;
+    if ((z64_game.common.input[0].raw.pad.du || z64_game.common.input[0].raw.pad.l) && z64_game.common.input[0].raw.pad.r) {
+        if (menu_cooldown == 20) {
+            show_warp_menu = show_warp_menu ? 0 : 1;
+        }
+        menu_cooldown--;
+    }
+    if (menu_cooldown < 20) {
+        menu_cooldown--;
+        if (menu_cooldown == 0) {
+            menu_cooldown = 20;
+        }
     }
 
     if (show_warp_menu) {
@@ -611,6 +619,9 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                             }
                         }
                     }
+                    if (z64_game.common.input[0].pad_pressed.a && current_menu_indexes.sub_menu_index < 2) {
+                        current_menu_indexes.sub_menu_index++;
+                    }
                     if (current_menu_indexes.sub_menu_index == 2) {
                         if (z64_game.common.input[0].pad_pressed.dr) {
                             current_menu_indexes.scene_flag++;
@@ -671,9 +682,6 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                                     break;
                             }
                         }
-                        if (z64_game.common.input[0].pad_pressed.a && current_menu_indexes.sub_menu_index < 2) {
-                            current_menu_indexes.sub_menu_index++;
-                        }
                     }
                     break;
                 default:
@@ -701,6 +709,10 @@ void draw_debug_menu(z64_disp_buf_t* db) {
         if (current_menu_indexes.main_index == 7 && current_menu_indexes.sub_menu_index > 1) {
             bg_width *= 1.5;
             alphaBackground = 0xB0;
+        }
+        // Some room names can be long so also increase the size for them.
+        if (current_menu_indexes.main_index == 0 && current_menu_indexes.sub_menu_index > 1) {
+            bg_width *= 1.5;
         }
 
         int bg_left = (Z64_SCREEN_WIDTH - bg_width) / 2;
@@ -881,11 +893,11 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                     else {
                         int8_t nbActors = 0;
                         z64_actor_t* actor = z64_game.actor_list[current_menu_indexes.actor_index].first;
-                        uint8_t currentActorPage = current_menu_indexes.specific_actor_index / 13;
-                        // Display actor list in 13 by 13 pages.
+                        uint8_t currentActorPage = current_menu_indexes.specific_actor_index / 10;
+                        // Display actor list in 10 by 10 pages.
                         while (actor != NULL) {
                             nbActors++;
-                            if (nbActors - 1 < currentActorPage * 13 || nbActors - 1 >= (currentActorPage + 1) * 13) {
+                            if (nbActors - 1 < currentActorPage * 10 || nbActors - 1 >= (currentActorPage + 1) * 10) {
                                 actor = actor->next;
                                 continue;
                             }
@@ -897,7 +909,7 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                             else {
                                 gDPSetPrimColor(db->p++, 0, 0, 255, 255, 255, 255);
                             }
-                            top = start_top + ((icon_size + padding) * ((nbActors - 1) % 13)) + 1;
+                            top = start_top + ((icon_size + padding) * ((nbActors - 1) % 10)) + 1;
                             char idActor[10];
                             decimal_to_hex(actor->actor_id, idActor);
                             text_print_size(db, idActor, left + 5, top + 5, font_width, font_height);
