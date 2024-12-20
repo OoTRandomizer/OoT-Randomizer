@@ -108,7 +108,7 @@ grotto_scenes: dict[str,str] = {
      'HF Near Kak Grotto': 'Hyrule Field',
      'HF Tektite Grotto': 'Hyrule Field',
      'HC Storms Grotto': 'Hyrule Castle',
-     'Kak Redead Grotto': 'Kakariko Village'
+     'Kak ReDead Grotto': 'Kakariko Village'
 }
 
 scene_groups: dict[str, list[str]] = {

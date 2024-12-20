@@ -2,6 +2,12 @@
     {
         "region_name": "Gerudo Training Ground Lobby",
         "dungeon": "Gerudo Training Ground",
+        "events": {
+            # Shuffle Silver Rupees off needs items to confirm all rupees were collected at once.
+            "Gerudo Training Ground Lava Silver Rupees Collected": "
+                (Silver_Rupee_Gerudo_Training_Ground_Lava, 6) and
+                (shuffle_silver_rupees or can_use(Hookshot) or can_use(Hover_Boots))"
+        },
         "locations": {
             "Gerudo Training Ground MQ Lobby Left Chest": "True",
             "Gerudo Training Ground MQ Lobby Right Chest": "True",
@@ -19,7 +25,7 @@
         "exits": {
             "Gerudo Fortress": "True",
             "Gerudo Training Ground Right Side": "here(can_use(Bow) or can_use(Slingshot))",
-            "Gerudo Training Ground Left Side": "has_fire_source",
+            "Gerudo Training Ground Left Side": "has_fire_source and can_kill_iron_knuckle",
             "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
@@ -27,28 +33,30 @@
         "region_name": "Gerudo Training Ground Right Side",
         "dungeon": "Gerudo Training Ground",
         "locations": {
-            "Gerudo Training Ground MQ Dinolfos Chest": "has_soul(Armos) and has_soul(Lizalfos_and_Dinalfos) and has_soul(Dodongo)",
-            "Gerudo Training Ground MQ Dinalfos 1": "can_kill_dinalfos",
-            "Gerudo Training Ground MQ Dinalfos 2": "can_kill_dinalfos",
-            "Gerudo Training Ground MQ Dinalfos 3": "can_kill_dinalfos",
+            "Gerudo Training Ground MQ Dinolfos Chest": "
+                is_adult and has_soul(Armos) and has_soul(Lizalfos_and_Dinalfos) and has_soul(Dodongo)",
+            # Shoot the Gerudo symbol above the door to the lava room.
+            "Gerudo Training Ground MQ Dinolfos Arrow Wonderitem": "can_use(Bow)",
+            "Gerudo Training Ground MQ Dinolfos 1": "can_kill_dinolfos",
+            "Gerudo Training Ground MQ Dinolfos 2": "can_kill_dinolfos",
+            "Gerudo Training Ground MQ Dinolfos 3": "can_kill_dinolfos",
             "Gerudo Training Ground MQ Dodongo 1": "can_kill_dodongo",
             "Gerudo Training Ground MQ Dodongo 2": "can_kill_dodongo",
             "Gerudo Training Ground MQ Armos": "can_kill_armos",
-
-            # Shoot the Gerudo symbol above the door to the lava room.
-            "Gerudo Training Ground MQ Dinolfos Arrow Wonderitem": "can_use(Bow)",
             "Wall Fairy": "has_bottle and can_use(Bow)"
         },
         "exits": {
-            "Gerudo Training Ground Lava Room Door": "can_kill_armos and can_kill_dinalfos and can_kill_dodongo"
+            "Gerudo Training Ground Lava Room Door": "
+                is_adult and has_soul(Armos) and has_soul(Lizalfos_and_Dinalfos) and has_soul(Dodongo)"
         }
     },
     {
         "region_name": "Gerudo Training Ground Lava Room Door",
         "dungeon": "Gerudo Training Ground",
         "exits": {
-            "Gerudo Training Ground Lava Room Front": " can_use(Bow)",
-            "Gerudo Training Ground Water Room Entrance": "can_use(Longshot)"
+            "Gerudo Training Ground Lava Room Front": "can_use(Bow)",
+            "Gerudo Training Ground Water Room Entrance": "can_use(Longshot)",
+            "Gerudo Training Ground Right Side": "True"
         }
     },
     {
@@ -58,29 +66,28 @@
             "Gerudo Training Ground MQ Lava Room Silver Rupee Front Left": "True",
             "Gerudo Training Ground MQ Lava Room Silver Rupee Front Center": "True",
             "Gerudo Training Ground MQ Lava Room Silver Rupee Front Right": "True",
-            "Gerudo Training Ground MQ Lava Room Bubble 1": "has_soul(Bubble) and Magic_Meter and Hover_Boots",
-            "Gerudo Training Ground MQ Lava Room Bubble 2": "has_soul(Bubble) and Magic_Meter",
-            "Gerudo Training Ground MQ Lava Room Bubble 3": "has_soul(Bubble) and Magic_Meter"
+            "Gerudo Training Ground MQ Lava Room Front Red Bubble": "has_soul(Bubble) and Magic_Meter"
         },
         "exits": {
-            "Gerudo Training Ground Right Side": "True",
             "Gerudo Training Ground Water Room Entrance": "True",
             "Gerudo Training Ground Lava Room Back": "
                 (Hookshot and at('Gerudo Training Ground Central Maze Right', True)) or
-                Hover_Boots or (Silver_Rupee_Gerudo_Training_Ground_Lava, 6)",
+                Hover_Boots or Gerudo_Training_Ground_Lava_Silver_Rupees_Collected",
             "Gerudo Training Ground Lava Room Door": "True"
         }
     },
     {
         "region_name": "Gerudo Training Ground Water Room Entrance",
         "dungeon": "Gerudo Training Ground",
+        "locations": {
+            "Gerudo Training Ground MQ Lava Room Middle Red Bubble": "has_soul(Bubble) and (Magic_Meter or Bow)"
+        },
         "exits": {
-            "Gerudo Training Ground Right Side": "Longshot",
+            "Gerudo Training Ground Lava Room Door": "Longshot",
             "Gerudo Training Ground Lava Room Front": "has_fire_source",
-            # Shuffle Silver Rupees off needs to confirm you can get all of the rupees in one go.
-            "Gerudo Training Ground Water Room": "
-                (Silver_Rupee_Gerudo_Training_Ground_Lava, 6) and
-                (shuffle_silver_rupees or Hookshot or Hover_Boots)"
+            "Gerudo Training Ground Lava Room Back Bubble": "
+                Hookshot and Gerudo_Training_Ground_Lava_Silver_Rupees_Collected",
+            "Gerudo Training Ground Water Room": "Gerudo_Training_Ground_Lava_Silver_Rupees_Collected"
         }
     },
     {
@@ -92,9 +99,18 @@
         },
         "exits": {
             "Gerudo Training Ground Lava Room Front": "Hookshot or Hover_Boots",
+            "Gerudo Training Ground Lava Room Back Bubble": "
+                Magic_Meter or Gerudo_Training_Ground_Lava_Silver_Rupees_Collected",
             "Gerudo Training Ground Lava Room Back Left": "
                 (Hookshot and at('Gerudo Training Ground Central Maze Right', True)) or
-                Hover_Boots or (Silver_Rupee_Gerudo_Training_Ground_Lava, 6)"
+                Hover_Boots or Gerudo_Training_Ground_Lava_Silver_Rupees_Collected"
+        }
+    },
+    {
+        "region_name": "Gerudo Training Ground Lava Room Back Bubble",
+        "dungeon": "Gerudo Training Ground",
+        "locations": {
+            "Gerudo Training Ground MQ Lava Room Back Red Bubble": "has_soul(Bubble) and (Magic_Meter or Bow)"
         }
     },
     {
@@ -110,7 +126,7 @@
         "locations": {
             "Gerudo Training Ground MQ Underwater Silver Rupee Chest": "
                 (Silver_Rupee_Gerudo_Training_Ground_Water, 3)",
-            "Gerudo Training Ground MQ Water Bari": "can_kill_biri"
+            "Gerudo Training Ground MQ Water Bari": "can_kill_bari"
         },
         "exits": {
             "Gerudo Training Ground Underwater": "
@@ -134,27 +150,18 @@
         "region_name": "Gerudo Training Ground Left Side",
         "dungeon": "Gerudo Training Ground",
         "locations": {
-            "Gerudo Training Ground MQ First Iron Knuckle Chest": "(is_adult or Kokiri_Sword or has_explosives) and has_soul(Iron_Knuckle)",
-            "Gerudo Training Ground MQ First Iron Knuckle": "(is_adult or Kokiri_Sword or has_explosives) and has_soul(Iron_Knuckle)"
-
-        },
-        "exits": {
-            "Gerudo Training Ground Slopes": "(is_adult or Kokiri_Sword or has_explosives) and has_soul(Iron_Knuckle)"
-        }
-    },
-    {
-        "region_name": "Gerudo Training Ground Slopes",
-        "dungeon": "Gerudo Training Ground",
-        "locations": {
+            "Gerudo Training Ground MQ First Iron Knuckle Chest": "True",
             "Gerudo Training Ground MQ Icicle Room Silver Rupee Freezard": "True",
             "Gerudo Training Ground MQ Icicle Room Silver Rupee Icicles": "True",
             "Gerudo Training Ground MQ Icicle Room Silver Rupee Center": "True",
             "Gerudo Training Ground MQ Icicle Room Silver Rupee Ceiling": "
-                can_use(Longshot) or (logic_gtg_without_hookshot and has_soul(Wallmaster)) or
+                can_use(Longshot) or
+                (logic_gtg_without_hookshot and not shuffle_silver_rupees and has_soul(Wallmaster)) or
                 (logic_gtg_mq_with_hookshot and can_use(Hookshot))",
             "Gerudo Training Ground MQ Icicle Room Silver Rupee Above Void": "True",
-            "Gerudo Training Ground MQ Slopes Freezard": "has_soul(Freezard) and (is_adult or (Kokiri_Sword and Sticks) or has_explosives)",
-            "Gerudo Training Ground MQ Slopes Wallmaster 1": "has_soul(Wallmaster) and (is_adult or Kokiri_Sword or has_explosives)"
+            "Gerudo Training Ground MQ First Iron Knuckle": "True",
+            "Gerudo Training Ground MQ Icicle Room Freezard": "can_kill_freezard",
+            "Gerudo Training Ground MQ Icicle Room Wallmaster": "has_soul(Wallmaster)"
         },
         "exits": {
             "Gerudo Training Ground Stalfos Room": "(Silver_Rupee_Gerudo_Training_Ground_Slopes, 5)"
@@ -165,9 +172,10 @@
         "dungeon": "Gerudo Training Ground",
         "locations": {
             # Very difficult to fight the Stalfos and Stulltulas under the time limit as child.
-            "Gerudo Training Ground MQ Before Heavy Block Chest": "is_adult and has_soul(Stalfos) and has_soul(Skulltula)",
-            "Gerudo Training Ground MQ Before Heavy Block Stalfos 1": "has_soul(Stalfos)",
-            "Gerudo Training Ground MQ Before Heavy Block Stalfos 2": "has_soul(Stalfos)",
+            "Gerudo Training Ground MQ Before Heavy Block Chest": "
+                is_adult and has_soul(Stalfos) and has_soul(Skulltula)",
+            "Gerudo Training Ground MQ Before Heavy Block Stalfos 1": "can_kill_stalfos",
+            "Gerudo Training Ground MQ Before Heavy Block Stalfos 2": "can_kill_stalfos",
             "Gerudo Training Ground MQ Before Heavy Block Skulltula 1": "has_soul(Skulltula)",
             "Gerudo Training Ground MQ Before Heavy Block Skulltula 2": "has_soul(Skulltula)",
             "Gerudo Training Ground MQ Before Heavy Block Skulltula 3": "has_soul(Skulltula)",
@@ -175,9 +183,11 @@
         },
         "exits": {
             "Gerudo Training Ground Back Areas": "
-                is_adult and has_soul(Stalfos) and has_soul(Skulltula) and (logic_lens_gtg_mq or can_use(Lens_of_Truth)) and Blue_Fire and
+                is_adult and has_soul(Stalfos) and has_soul(Skulltula) and Blue_Fire and
+                (logic_lens_gtg_mq or can_use(Lens_of_Truth)) and
                 (can_play(Song_of_Time) or (logic_gtg_fake_wall and Hover_Boots))",
-            "Gerudo Training Ground Heavy Block Room": "is_adult and has_soul(Stalfos) and has_soul(Skulltula) and can_use(Silver_Gauntlets)"
+            "Gerudo Training Ground Heavy Block Room": "
+                has_soul(Stalfos) and has_soul(Skulltula) and can_use(Silver_Gauntlets)"
         }
     },
     {
@@ -200,18 +210,30 @@
                 (Small_Key_Gerudo_Training_Ground, 3) and Megaton_Hammer and
                 (Hookshot or Bow or Bombs or logic_gtg_mq_eye_statue_jumpslash)",
             "Gerudo Training Ground MQ Eye Statue Chest": "Bow",
-            "Gerudo Training Ground MQ Second Iron Knuckle Chest": "has_soul(Iron_Knuckle) and has_soul(Torch_Slug)",
             "Gerudo Training Ground MQ Flame Circle Chest": "Hookshot or Bow or has_explosives",
-            "Gerudo Training Ground MQ Eye Statue Proximity Wonderitem": "can_use(Hover_Boots) or can_use(Longshot) or logic_gtg_eye_statue_wonderitem",
-            "Gerudo Training Ground MQ Second Iron Knuckle": "has_soul(Iron_Knuckle)",
-            "Gerudo Training Ground MQ Second Iron Knuckle Torch Slug 1": "has_soul(Torch_Slug)",
-            "Gerudo Training Ground MQ Second Iron Knuckle Torch Slug 2": "has_soul(Torch_Slug)"
+            "Gerudo Training Ground MQ Eye Statue Proximity Wonderitem": "
+                can_use(Hover_Boots) or can_use(Longshot) or logic_gtg_eye_statue_wonderitem",
+            "Gerudo Training Ground MQ Second Iron Knuckle": "True"
+        },
+        "exits": {
+            "Gerudo Training Ground Lava Room Back Upper Ledge": "has_soul(Torch_Slug)"
+        }
+    },
+    {
+        "region_name": "Gerudo Training Ground Lava Room Back Upper Ledge",
+        "dungeon": "Gerudo Training Ground",
+        "locations": {
+            "Gerudo Training Ground MQ Second Iron Knuckle Chest": "True",
+            "Gerudo Training Ground MQ Second Iron Knuckle Torch Slug 1": "True",
+            "Gerudo Training Ground MQ Second Iron Knuckle Torch Slug 2": "True"
         },
         "exits": {
             "Gerudo Training Ground Central Maze Right": "Megaton_Hammer",
             "Gerudo Training Ground Lava Room Back": "can_use(Fire_Arrows)",
+            "Gerudo Training Ground Lava Room Back Bubble": "
+                Hookshot and Gerudo_Training_Ground_Lava_Silver_Rupees_Collected",
             "Gerudo Training Ground Water Room Entrance": "
-                Longshot or (Hookshot and (Silver_Rupee_Gerudo_Training_Ground_Lava, 6))"
+                Longshot or (Hookshot and Gerudo_Training_Ground_Lava_Silver_Rupees_Collected)"
         }
     },
     {
@@ -222,9 +244,11 @@
             "Gerudo Training Ground MQ Maze Right Side Chest": "True"
         },
         "exits": {
-            "Gerudo Training Ground Right Side": "logic_gtg_mq_maze_right and Hookshot",
+            "Gerudo Training Ground Lava Room Door": "logic_gtg_mq_maze_right and Hookshot",
             "Gerudo Training Ground Lava Room Front": "can_use(Fire_Arrows)",
             "Gerudo Training Ground Lava Room Back": "can_use(Fire_Arrows)",
+            "Gerudo Training Ground Lava Room Back Bubble": "
+                Gerudo_Training_Ground_Lava_Silver_Rupees_Collected",
             "Gerudo Training Ground Lava Room Back Left": "can_use(Fire_Arrows)"
         }
     }

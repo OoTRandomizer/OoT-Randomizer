@@ -16,18 +16,25 @@
         "locations": {
             "Dodongos Cavern Map Chest": "can_blast_or_smash or Progressive_Strength_Upgrade",
             "Dodongos Cavern Deku Scrub Lobby": "can_stun_deku or Progressive_Strength_Upgrade",
+            "Dodongos Cavern Beamos Left Side": "
+                has_soul(Beamos) and (has_explosives or Progressive_Strength_Upgrade)",
+            "Dodongos Cavern Beamos Center": "
+                has_soul(Beamos) and (has_explosives or Progressive_Strength_Upgrade)",
+            "Dodongos Cavern Beamos Right Side": "
+                has_soul(Beamos) and (has_explosives or Progressive_Strength_Upgrade)",
+            "Dodongos Cavern Upper Bridge Keese 1": "
+                has_soul(Keese) and (is_adult or Kokiri_Sword or Sticks or Slingshot or Boomerang or
+                    (Nuts and (has_explosives or Progressive_Strength_Upgrade)))",
+            "Dodongos Cavern Upper Bridge Keese 2": "
+                has_soul(Keese) and (is_adult or Kokiri_Sword or Sticks or Slingshot or Boomerang or
+                    (Nuts and (has_explosives or Progressive_Strength_Upgrade)))",
             "Dodongos Cavern Gossip Stone": "here(can_blast_or_smash or Progressive_Strength_Upgrade)",
             "Gossip Stone Fairy": "
                 (can_blast_or_smash or Progressive_Strength_Upgrade) and
-                can_summon_gossip_fairy and has_bottle",
-            "Dodongos Cavern Beamos Left Side" : "(has_soul(Beamos)) and (has_explosives or Progressive_Strength_Upgrade)",
-            "Dodongos Cavern Beamos Center" : "(has_soul(Beamos)) and (has_explosives or Progressive_Strength_Upgrade)",
-            "Dodongos Cavern Beamos Right Side" : "(has_soul(Beamos)) and (has_explosives or Progressive_Strength_Upgrade)",
-            "Dodongos Cavern Upper Bridge Keese 1": "(has_soul(Keese)) and (can_use(Bow) or can_use(Slingshot) or at('Dodongos Cavern Climb', can_kill_keese))",
-            "Dodongos Cavern Upper Bridge Keese 2": "(has_soul(Keese)) and (can_use(Bow) or can_use(Slingshot) or at('Dodongos Cavern Climb', can_kill_keese))"
+                can_summon_gossip_fairy and has_bottle"
         },
         "exits": {
-            "Dodongos Cavern Lower Right Side": "here(can_blast_or_smash or Progressive_Strength_Upgrade)",
+            "Dodongos Cavern Lower Right Side": "can_blast_or_smash or Progressive_Strength_Upgrade",
             "Dodongos Cavern Torch Room": "is_adult",
             "Dodongos Cavern Staircase Room": "
                 at('Dodongos Cavern Torch Room', is_adult or Sticks or can_use(Dins_Fire))",
@@ -39,54 +46,54 @@
         "region_name": "Dodongos Cavern Lower Right Side",
         "dungeon": "Dodongos Cavern",
         "locations": {
-            "Dodongos Cavern Lower Lizalfos Hidden Recovery Heart": "True",
             "Dodongos Cavern Right Side Pot 1": "True",
             "Dodongos Cavern Right Side Pot 2": "True",
             "Dodongos Cavern Right Side Pot 3": "True",
             "Dodongos Cavern Right Side Pot 4": "True",
             "Dodongos Cavern Right Side Pot 5": "True",
             "Dodongos Cavern Right Side Pot 6": "True",
-            "Dodongos Cavern Lower Lizalfos Pot 1" : "True",
-            "Dodongos Cavern Lower Lizalfos Pot 2" : "True",
-            "Dodongos Cavern Lower Lizalfos Pot 3" : "True",
-            "Dodongos Cavern Lower Lizalfos Pot 4" : "True",
+            "Dodongos Cavern Lower Lizalfos Pot 1": "True",
+            "Dodongos Cavern Lower Lizalfos Pot 2": "True",
+            "Dodongos Cavern Lower Lizalfos Pot 3": "True",
+            "Dodongos Cavern Lower Lizalfos Pot 4": "True",
+            "Dodongos Cavern Right Side Baby Dodongo 1": "can_kill_baby_dodongo",
+            "Dodongos Cavern Right Side Baby Dodongo 2": "can_kill_baby_dodongo",
+            "Dodongos Cavern Right Side Baby Dodongo 3": "can_kill_baby_dodongo",
+            "Dodongos Cavern Right Side Baby Dodongo 4": "can_kill_baby_dodongo",
+            "Dodongos Cavern Right Side Baby Dodongo 5": "can_kill_baby_dodongo",
+            "Dodongos Cavern Right Side Baby Dodongo 6": "can_kill_baby_dodongo",
+            "Dodongos Cavern Right Side Keese 1": "can_kill_keese_stationary",
+            "Dodongos Cavern Right Side Keese 2": "can_kill_keese_stationary",
             "Dodongos Cavern GS Scarecrow": "
                 can_use(Scarecrow) or can_use(Longshot) or
-                (logic_dc_scarecrow_gs and (is_adult or can_child_attack))",
-            "Dodongos Cavern Right Side Baby Dodongo 1" : "can_kill_baby_dodongo",
-            "Dodongos Cavern Right Side Baby Dodongo 2" : "can_kill_baby_dodongo",
-            "Dodongos Cavern Right Side Baby Dodongo 3" : "can_kill_baby_dodongo",
-            "Dodongos Cavern Right Side Baby Dodongo 4" : "can_kill_baby_dodongo",
-            "Dodongos Cavern Right Side Baby Dodongo 5" : "can_kill_baby_dodongo",
-            "Dodongos Cavern Right Side Baby Dodongo 6" : "can_kill_baby_dodongo",
-            "Dodongos Cavern Right Side Keese 1" : "can_kill_keese",
-            "Dodongos Cavern Right Side Keese 2" : "can_kill_keese"
+                (logic_dc_scarecrow_gs and (is_adult or can_child_attack))"
         },
         "exits": {
             "Dodongos Cavern Lower Lizalfos Fight": "True",
-            "Dodongos Cavern Side Room Before Lower Lizalfos" : "here(can_blast_or_smash or can_kill_baby_dodongo)"
+            "Dodongos Cavern Side Room Before Lower Lizalfos": "can_blast_or_smash or can_kill_baby_dodongo"
         }
     },
     {
         "region_name": "Dodongos Cavern Side Room Before Lower Lizalfos",
         "dungeon": "Dodongos Cavern",
-        "locations" : {
-            "Dodongos Cavern GS Side Room Near Lower Lizalfos": "True",
-            "Dodongos Cavern Side Room Near Lower Lizalfos Keese 1": "can_kill_keese",
-            "Dodongos Cavern Side Room Near Lower Lizalfos Keese 2": "can_kill_keese",
-            "Dodongos Cavern Side Room Near Lower Lizalfos Keese 3": "can_kill_keese"
+        "locations": {
+            "Dodongos Cavern Side Room Near Lower Lizalfos Keese 1": "has_soul(Keese)",
+            "Dodongos Cavern Side Room Near Lower Lizalfos Keese 2": "has_soul(Keese)",
+            "Dodongos Cavern Side Room Near Lower Lizalfos Keese 3": "has_soul(Keese)",
+            "Dodongos Cavern GS Side Room Near Lower Lizalfos": "True"
         }
     },
     {
         "region_name": "Dodongos Cavern Lower Lizalfos Fight",
         "dungeon": "Dodongos Cavern",
-        "locations" : {
-            "Dodongos Cavern Lower Lizalfos 1" : "can_kill_lizalfos",
-            "Dodongos Cavern Lower Lizalfos 2" : "can_kill_lizalfos"
+        "locations": {
+            "Dodongos Cavern Lower Lizalfos Hidden Recovery Heart": "True",
+            "Dodongos Cavern Lower Lizalfos 1": "can_kill_lizalfos_with_bombs",
+            "Dodongos Cavern Lower Lizalfos 2": "can_kill_lizalfos_with_bombs"
         },
-        "exits" : {
-            "Dodongos Cavern Torch Room": "can_kill_lizalfos",
-            "Dodongos Cavern Lower Right Side": "can_kill_lizalfos"
+        "exits": {
+            "Dodongos Cavern Torch Room": "can_kill_lizalfos_with_bombs",
+            "Dodongos Cavern Lower Right Side": "has_soul(Lizalfos_and_Dinalfos)"
         }
     },
     {
@@ -99,9 +106,9 @@
             "Dodongos Cavern Torch Room Pot 2": "True",
             "Dodongos Cavern Torch Room Pot 3": "True",
             "Dodongos Cavern Torch Room Pot 4": "True",
-            "Dodongos Cavern Torch Room Dodongo 1": "can_kill_dodongo",
-            "Dodongos Cavern Torch Room Dodongo 2": "can_kill_dodongo",
-            "Dodongos Cavern Torch Room Dodongo 3": "can_kill_dodongo"
+            "Dodongos Cavern Torch Room Dodongo 1": "has_soul(Dodongo)",
+            "Dodongos Cavern Torch Room Dodongo 2": "has_soul(Dodongo)",
+            "Dodongos Cavern Torch Room Dodongo 3": "has_soul(Dodongo)"
         },
         "exits": {
             "Dodongos Cavern Lower Lizalfos Fight": "True"
@@ -111,15 +118,22 @@
         "region_name": "Dodongos Cavern Staircase Room",
         "dungeon": "Dodongos Cavern",
         "locations": {
-            "Dodongos Cavern Compass Chest": "can_blast_or_smash or Progressive_Strength_Upgrade",
             "Dodongos Cavern GS Vines Above Stairs": "
-                at('Dodongos Cavern Climb', True) or (logic_dc_vines_gs and can_use(Longshot))",
-            "Dodongos Cavern Compass Room Armos": "(has_soul(Armos)) and (can_blast_or_smash or Progressive_Strength_Upgrade)"
+                at('Dodongos Cavern Climb', True) or (logic_dc_vines_gs and can_use(Longshot))"
         },
         "exits": {
+            "Dodongos Cavern Compass Room": "can_blast_or_smash or Progressive_Strength_Upgrade",
             "Dodongos Cavern Climb": "
                 has_explosives or Progressive_Strength_Upgrade or
                 can_use(Dins_Fire) or (logic_dc_staircase and can_use(Bow))"
+        }
+    },
+    {
+        "region_name": "Dodongos Cavern Compass Room",
+        "dungeon": "Dodongos Cavern",
+        "locations": {
+            "Dodongos Cavern Compass Chest": "True",
+            "Dodongos Cavern Compass Room Armos": "has_soul(Armos)"
         }
     },
     {
@@ -133,22 +147,28 @@
             "Dodongos Cavern Deku Scrub Near Bomb Bag Left": "
                 can_blast_or_smash or
                 (logic_dc_scrub_room and is_adult and Progressive_Strength_Upgrade)",
-            "Dodongos Cavern Blade Room Behind Block Recovery Heart" : "True",
-            "Dodongos Cavern Staircase Pot 1" : "True",
-            "Dodongos Cavern Staircase Pot 2" : "True",
-            "Dodongos Cavern Staircase Pot 3" : "True",
-            "Dodongos Cavern Staircase Pot 4" : "True",
+            "Dodongos Cavern Blade Room Behind Block Recovery Heart": "True",
+            "Dodongos Cavern Staircase Pot 1": "True",
+            "Dodongos Cavern Staircase Pot 2": "True",
+            "Dodongos Cavern Staircase Pot 3": "True",
+            "Dodongos Cavern Staircase Pot 4": "True",
             "Dodongos Cavern Blade Room Pot 1": "
                 can_use(Boomerang) or at('Dodongos Cavern Far Bridge', True)",
             "Dodongos Cavern Blade Room Pot 2": "
                 can_use(Boomerang) or at('Dodongos Cavern Far Bridge', True)",
-            "Dodongos Cavern Staircase Skullwalltula": "can_kill_skullwalltula",
-            "Dodongos Cavern Climb Switch Room Armos 1" : "can_kill_armos",
-            "Dodongos Cavern Climb Switch Room Armos 2" : "can_kill_armos",
-            "Dodongos Cavern Climb Switch Room Armos 3" : "can_kill_armos",
-            "Dodongos Cavern Climb Switch Room Keese 1" : "(has_soul(Keese)) and (is_adult or (Kokiri_Sword or Sticks or Slingshot or Boomerang or has_explosives or Progressive_Strength_Upgrade))",
-            "Dodongos Cavern Climb Switch Room Keese 2" : "(has_soul(Keese)) and (is_adult or (Kokiri_Sword or Sticks or Slingshot or Boomerang or has_explosives or Progressive_Strength_Upgrade))"
-
+            "Dodongos Cavern Staircase Skullwalltula": "has_soul(Skullwalltula)",
+            "Dodongos Cavern Climb Switch Room Armos 1": "
+                has_soul(Armos) and (has_explosives or Progressive_Strength_Upgrade)",
+            "Dodongos Cavern Climb Switch Room Armos 2": "
+                has_soul(Armos) and (has_explosives or Progressive_Strength_Upgrade)",
+            "Dodongos Cavern Climb Switch Room Armos 3": "
+                has_soul(Armos) and (has_explosives or Progressive_Strength_Upgrade)",
+            "Dodongos Cavern Climb Switch Room Keese 1": "
+                has_soul(Keese) and (is_adult or Kokiri_Sword or Sticks or Slingshot or Boomerang or
+                    (Nuts and (has_explosives or Progressive_Strength_Upgrade)))",
+            "Dodongos Cavern Climb Switch Room Keese 2": "
+                has_soul(Keese) and (is_adult or Kokiri_Sword or Sticks or Slingshot or Boomerang or
+                    (Nuts and (has_explosives or Progressive_Strength_Upgrade)))"
         },
         "exits": {
             "Dodongos Cavern Single Eye Switch Room": "
@@ -178,6 +198,7 @@
             "Dodongos Cavern Before Upper Lizalfos Baby Dodongo 3": "can_kill_baby_dodongo"
         },
         "exits": {
+            "Dodongos Cavern Single Eye Switch Room": "True",
             "Dodongos Cavern Upper Lizalfos": "True"
         }
     },
@@ -185,14 +206,14 @@
         "region_name": "Dodongos Cavern Upper Lizalfos",
         "dungeon": "Dodongos Cavern",
         "locations": {
-            "Dodongos Cavern Lizalfos Upper Recovery Heart 1": "True",
-            "Dodongos Cavern Lizalfos Upper Recovery Heart 2": "True",
-            "Dodongos Cavern Upper Lizalfos 1" : "can_kill_lizalfos",
-            "Dodongos Cavern Upper Lizalfos 2" : "can_kill_lizalfos"
+            "Dodongos Cavern Upper Lizalfos Recovery Heart 1": "True",
+            "Dodongos Cavern Upper Lizalfos Recovery Heart 2": "True",
+            "Dodongos Cavern Upper Lizalfos 1": "can_kill_lizalfos",
+            "Dodongos Cavern Upper Lizalfos 2": "can_kill_lizalfos"
         },
         "exits": {
-            "Dodongos Cavern Before Upper Lizalfos": "(is_adult or Sticks or Slingshot or Bombs or Kokiri_Sword) and (has_soul(Lizalfos_and_Dinalfos))",
-            "Dodongos Cavern Far Bridge": "(is_adult or Sticks or Slingshot or Bombs or Kokiri_Sword) and (has_soul(Lizalfos_and_Dinalfos))"
+            "Dodongos Cavern Before Upper Lizalfos": "has_soul(Lizalfos_and_Dinalfos)",
+            "Dodongos Cavern Far Bridge": "can_kill_lizalfos"
         }
     },
     {
@@ -215,15 +236,28 @@
         "dungeon": "Dodongos Cavern",
         "savewarp": "Death Mountain -> Dodongos Cavern Beginning",
         "locations": {
-            "Dodongos Cavern GS Back Room": "can_blast_or_smash"
+            "Dodongos Cavern Before Boss Keese 1": "can_kill_keese",
+            "Dodongos Cavern Before Boss Keese 2": "can_kill_keese",
+            "Dodongos Cavern Before Back Room Keese 1": "can_kill_keese",
+            "Dodongos Cavern Before Back Room Keese 2": "can_kill_keese"
         },
         "exits": {
             "Dodongos Cavern Lobby": "True",
+            "Dodongos Cavern Back Side Room": "can_blast_or_smash",
             "Dodongos Cavern Before Boss": "True"
         }
     },
     {
-        # required to match MQ
+        "region_name": "Dodongos Cavern Back Side Room",
+        "dungeon": "Dodongos Cavern",
+        "savewarp": "Death Mountain -> Dodongos Cavern Beginning",
+        "locations": {
+            "Dodongos Cavern Back Room Armos": "has_soul(Armos)",
+            "Dodongos Cavern GS Back Room": "True"
+        }
+    },
+    {
+        # Required to match MQ
         "region_name": "Dodongos Cavern Before Boss",
         "dungeon": "Dodongos Cavern",
         "locations": {
@@ -231,11 +265,6 @@
             "Dodongos Cavern Last Block Pot 2": "True",
             "Dodongos Cavern Last Block Pot 3": "True",
             "Dodongos Cavern Last Block Pot 4": "True",
-            "Dodongos Cavern Before Boss Keese 1": "can_kill_keese",
-            "Dodongos Cavern Before Boss Keese 2": "can_kill_keese",
-            "Dodongos Cavern Before Back Room Keese 1": "can_kill_keese",
-            "Dodongos Cavern Before Back Room Keese 2": "can_kill_keese",
-            "Dodongos Cavern Back Room Armos" : "can_kill_armos",
             "Fairy Pot": "has_bottle"
         },
         "exits": {

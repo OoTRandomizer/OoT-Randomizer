@@ -2,11 +2,17 @@
     {
         "region_name": "Jabu Jabus Belly Beginning",
         "dungeon": "Jabu Jabus Belly",
-        "locations" : {
-            "Jabu Jabus Belly Entryway Octorok Left" : "can_kill_octorok_with_explosives",
-            "Jabu Jabus Belly Entryway Octorok Right" : "can_kill_octorok_with_explosives",
-            "Jabu Jabus Belly Entryway Shabom 1" : "can_kill_shabom",
-            "Jabu Jabus Belly Entryway Shabom 2" : "can_kill_shabom"
+        "locations": {
+            "Jabu Jabus Belly Entryway Octorok Left": "
+                has_soul(Octorok) and
+                (at('Jabu Jabus Belly Main', True) or can_use(Deku_Shield) or
+                   (is_adult and (Magic_Meter or Hylian_Shield)))",
+            "Jabu Jabus Belly Entryway Octorok Right": "
+                has_soul(Octorok) and
+                (at('Jabu Jabus Belly Main', True) or can_use(Deku_Shield) or
+                   (is_adult and (Magic_Meter or Hylian_Shield)))",
+            "Jabu Jabus Belly Entryway Shabom 1": "has_soul(Shabom)",
+            "Jabu Jabus Belly Entryway Shabom 2": "has_soul(Shabom)"
         },
         "exits": {
             "Zoras Fountain": "True",
@@ -32,48 +38,47 @@
             "Jabu Jabus Belly Basement Switch Room Pot 1": "True",
             "Jabu Jabus Belly Basement Switch Room Pot 2": "True",
             "Jabu Jabus Belly Basement Switch Room Pot 3": "True",
+            "Jabu Jabus Belly Elevator Room Biri": "has_soul(Biri_and_Bari)",
+            "Jabu Jabus Belly Pit Room Biri 1": "has_soul(Biri_and_Bari)",
+            "Jabu Jabus Belly Pit Room Biri 2": "has_soul(Biri_and_Bari)",
+            "Jabu Jabus Belly Pit Room Biri 3": "has_soul(Biri_and_Bari)",
+            "Jabu Jabus Belly Pit Room Bari 1": "has_soul(Biri_and_Bari)",
+            "Jabu Jabus Belly Pit Room Bari 2": "has_soul(Biri_and_Bari)",
+            "Jabu Jabus Belly Basement Biri 1": "has_soul(Biri_and_Bari)",
+            "Jabu Jabus Belly Basement Biri 2":"has_soul(Biri_and_Bari)",
+            "Jabu Jabus Belly Basement Biri 3":"has_soul(Biri_and_Bari)",
+            "Jabu Jabus Belly Basement Biri 4":"has_soul(Biri_and_Bari)",
+            "Jabu Jabus Belly Basement Switch Room Shabom 1": "has_soul(Shabom)",
+            "Jabu Jabus Belly Basement Switch Room Shabom 2": "has_soul(Shabom)",
+            "Jabu Jabus Belly Basement Switch Room Shabom 3": "has_soul(Shabom)",
+            "Jabu Jabus Belly Basement Switch Room Shabom 4": "has_soul(Shabom)",
+            "Jabu Jabus Belly Basement Switch Room Shabom 5": "has_soul(Shabom)",
+            "Jabu Jabus Belly Basement Switch Room Shabom 6": "has_soul(Shabom)",
+            "Jabu Jabus Belly Basement Switch Room Shabom 7": "has_soul(Shabom)",
+            "Jabu Jabus Belly Basement Switch Room Stinger 1": "has_soul(Stinger)",
+            "Jabu Jabus Belly Basement Switch Room Stinger 2": "has_soul(Stinger)",
+            "Jabu Jabus Belly Basement Switch Room Stinger 3": "has_soul(Stinger)",
+            "Jabu Jabus Belly Elevator Room Octorok": "has_soul(Octorok)",
+            "Jabu Jabus Belly Basement 2 Octoroks Left Octorok": "has_soul(Octorok)",
+            "Jabu Jabus Belly Basement 2 Octoroks Right Octorok": "has_soul(Octorok)",
+            "Jabu Jabus Belly Hallway Tailsparan 1": "has_soul(Tailpasaran)",
+            "Jabu Jabus Belly Hallway Tailsparan 2": "has_soul(Tailpasaran)",
+            "Jabu Jabus Belly Hallway Tailsparan 3": "has_soul(Tailpasaran)",
+            "Jabu Jabus Belly Hallway Tailsparan 4": "has_soul(Tailpasaran)",
+            "Jabu Jabus Belly Hallway Tailsparan 5": "has_soul(Tailpasaran)",
+            "Jabu Jabus Belly Boomerang Chest Stinger 1": "has_soul(Stinger)",
+            "Jabu Jabus Belly Boomerang Chest Stinger 2": "has_soul(Stinger)",
+            "Jabu Jabus Belly Boomerang Chest Stinger 3": "has_soul(Stinger)",
+            "Jabu Jabus Belly Boomerang Chest Stinger 4": "has_soul(Stinger)",
             "Jabu Jabus Belly GS Water Switch Room": "True",
             "Jabu Jabus Belly GS Lobby Basement Lower": "can_use(Boomerang) or can_use(Hookshot)",
             "Jabu Jabus Belly GS Lobby Basement Upper": "can_use(Boomerang) or can_use(Hookshot)",
-            "Fairy Pot": "has_bottle",
-            "Jabu Jabus Belly Elevator Room Biri" : "has_soul(Biri_and_Bari)", #This biri can be killed with the boxes in the room
-            "Jabu Jabus Belly Pit Room Biri 1" : "can_kill_biri",
-            "Jabu Jabus Belly Pit Room Biri 2" : "can_kill_biri",
-            "Jabu Jabus Belly Pit Room Biri 3" : "can_kill_biri",
-            "Jabu Jabus Belly Pit Room Bari 1" : "can_kill_biri",
-            "Jabu Jabus Belly Pit Room Bari 2" : "can_kill_biri",
-            "Jabu Jabus Belly Basement Biri 1" : "can_kill_biri",
-            "Jabu Jabus Belly Basement Biri 2": "can_kill_biri",
-            "Jabu Jabus Belly Basement Biri 3": "can_kill_biri",
-            "Jabu Jabus Belly Basement Biri 4": "can_kill_biri",
-            "Jabu Jabus Belly Basement Switch Room Shabom 1" : "can_kill_shabom",
-            "Jabu Jabus Belly Basement Switch Room Shabom 2" : "can_kill_shabom",
-            "Jabu Jabus Belly Basement Switch Room Shabom 3" : "can_kill_shabom",
-            "Jabu Jabus Belly Basement Switch Room Shabom 4" : "can_kill_shabom",
-            "Jabu Jabus Belly Basement Switch Room Shabom 5" : "can_kill_shabom",
-            "Jabu Jabus Belly Basement Switch Room Shabom 6" : "can_kill_shabom",
-            "Jabu Jabus Belly Basement Switch Room Shabom 7" : "can_kill_shabom",
-            "Jabu Jabus Belly Basement Switch Room Stinger 1" : "can_kill_stinger",
-            "Jabu Jabus Belly Basement Switch Room Stinger 2" : "can_kill_stinger",
-            "Jabu Jabus Belly Basement Switch Room Stinger 3" : "can_kill_stinger",
-            "Jabu Jabus Belly Basement Elevator Octorok" : "can_kill_octorok",
-            "Jabu Jabus Belly Basement 2 Octoroks Left Octorok" : "can_kill_octorok_with_explosives",
-            "Jabu Jabus Belly Basement 2 Octoroks Right Octorok" : "can_kill_octorok_with_explosives",
-            "Jabu Jabus Belly Tentacle Hallway Tailsparan 1": "can_kill_tailsparan",
-            "Jabu Jabus Belly Tentacle Hallway Tailsparan 2": "can_kill_tailsparan",
-            "Jabu Jabus Belly Tentacle Hallway Tailsparan 3": "can_kill_tailsparan",
-            "Jabu Jabus Belly Tentacle Hallway Tailsparan 4": "can_kill_tailsparan",
-            "Jabu Jabus Belly Tentacle Hallway Tailsparan 5": "can_kill_tailsparan",
-            "Jabu Jabus Belly Boomerang Chest Stinger 1" : "can_kill_stinger",
-            "Jabu Jabus Belly Boomerang Chest Stinger 2" : "can_kill_stinger",
-            "Jabu Jabus Belly Boomerang Chest Stinger 3" : "can_kill_stinger",
-            "Jabu Jabus Belly Boomerang Chest Stinger 4" : "can_kill_stinger"
+            "Fairy Pot": "has_bottle"
         },
         "exits": {
-            "Jabu Jabus Belly Depths": "can_use(Boomerang) and (has_soul(Jabu_Jabu_Tentacle))",
+            "Jabu Jabus Belly Depths": "can_use(Boomerang) and has_soul(Jabu_Jabu_Tentacle)",
             "Jabu Jabus Belly Before Boss": "
-                (logic_jabu_boss_hover and can_use(Hover_Boots))
-                or jabu_shortcuts or 'Jabu Jabus Belly Floor Lowered'"
+                (logic_jabu_boss_hover and can_use(Hover_Boots)) or jabu_shortcuts or Jabu_Jabus_Belly_Floor_Lowered"
         }
     },
     {
@@ -81,24 +86,23 @@
         "dungeon": "Jabu Jabus Belly",
         "locations": {
             "Jabu Jabus Belly Map Chest": "True",
-            "Jabu Jabus Belly Compass Chest": "can_kill_shabom",
-            "Jabu Jabus Belly Compass Chest Shabom 1" : "can_kill_shabom",
-            "Jabu Jabus Belly Compass Chest Shabom 2" : "can_kill_shabom",
-            "Jabu Jabus Belly Compass Chest Shabom 3" : "can_kill_shabom",
-            "Jabu Jabus Belly Compass Chest Shabom 4" : "can_kill_shabom",
-            "Jabu Jabus Belly Compass Chest Shabom 5" : "can_kill_shabom",
-            "Jabu Jabus Belly Compass Chest Shabom 6" : "can_kill_shabom",
-            "Jabu Jabus Belly Compass Chest Shabom 7" : "can_kill_shabom",
-            "Jabu Jabus Belly Compass Chest Shabom 8" : "can_kill_shabom",
-            "Jabu Jabus Belly Compass Chest Shabom 9" : "can_kill_shabom",
-            "Jabu Jabus Belly Last Tentacle Biri 1" : "can_kill_biri",
-            "Jabu Jabus Belly Last Tentacle Biri 2" : "can_kill_biri",
-            "Jabu Jabus Belly Last Tentacle Biri 3" : "can_kill_biri",
-            "Jabu Jabus Belly Last Tentacle Biri 4" : "can_kill_biri",
-            "Jabu Jabus Belly Wiggler Platforms Octorok" : "can_kill_octorok"
+            "Jabu Jabus Belly Compass Chest": "has_soul(Shabom)",
+            "Jabu Jabus Belly Compass Chest Shabom 1": "has_soul(Shabom)",
+            "Jabu Jabus Belly Compass Chest Shabom 2": "has_soul(Shabom)",
+            "Jabu Jabus Belly Compass Chest Shabom 3": "has_soul(Shabom)",
+            "Jabu Jabus Belly Compass Chest Shabom 4": "has_soul(Shabom)",
+            "Jabu Jabus Belly Compass Chest Shabom 5": "has_soul(Shabom)",
+            "Jabu Jabus Belly Compass Chest Shabom 6": "has_soul(Shabom)",
+            "Jabu Jabus Belly Compass Chest Shabom 7": "has_soul(Shabom)",
+            "Jabu Jabus Belly Compass Chest Shabom 8": "has_soul(Shabom)",
+            "Jabu Jabus Belly Compass Chest Shabom 9": "has_soul(Shabom)",
+            "Jabu Jabus Belly Last Tentacle Biri 1": "has_soul(Biri_and_Bari)",
+            "Jabu Jabus Belly Last Tentacle Biri 2": "has_soul(Biri_and_Bari)",
+            "Jabu Jabus Belly Last Tentacle Biri 3": "has_soul(Biri_and_Bari)",
+            "Jabu Jabus Belly Last Tentacle Biri 4": "has_soul(Biri_and_Bari)"
         },
         "exits": {
-            "Jabu Jabus Belly Past Big Octo": "(Sticks or Kokiri_Sword) and (has_soul(Octorok))"
+            "Jabu Jabus Belly Past Big Octo": "(Sticks or Kokiri_Sword) and has_soul(Octorok)"
         }
     },
     {
@@ -111,8 +115,9 @@
             "Jabu Jabus Belly Above Big Octo Pot 1": "True",
             "Jabu Jabus Belly Above Big Octo Pot 2": "True",
             "Jabu Jabus Belly Above Big Octo Pot 3": "True",
-            "Jabu Jabus Belly After Big Octo Biri 1" : "can_kill_biri",
-            "Jabu Jabus Belly After Big Octo Biri 2" : "can_kill_biri",
+            "Jabu Jabus Belly After Big Octo Biri 1": "has_soul(Biri_and_Bari)",
+            "Jabu Jabus Belly After Big Octo Biri 2": "has_soul(Biri_and_Bari)",
+            "Jabu Jabus Belly Wiggler Platforms Octorok": "True",
             "Nut Pot": "True"
         }
     },
@@ -121,13 +126,40 @@
         "dungeon": "Jabu Jabus Belly",
         "savewarp": "Zoras Fountain -> Jabu Jabus Belly Beginning",
         "locations": {
-            # Could have a trick to allow (is_adult or can_child_attack) for hitting the skulltula through the wall
-            "Jabu Jabus Belly GS Near Boss": "can_use_projectile or can_use(Dins_Fire)",
-            "Jabu Jabus Belly Before Boss Biri 1" : "can_kill_biri",
-            "Jabu Jabus Belly Before Boss Biri 2" : "can_kill_biri",
-            "Jabu Jabus Belly Before Boss Biri 3" : "can_kill_biri",
-            "Jabu Jabus Belly Before Boss Biri 4" : "can_kill_biri",
-            "Jabu Jabus Belly Before Boss Biri 5" : "can_kill_biri"
+            "Jabu Jabus Belly Before Boss Biri 1": "
+                has_soul(Biri_and_Bari) and
+                ((is_child and ((Kokiri_Sword and (can_take_damage or Nuts or Magic_Meter)) or Sticks or Boomerang)) or
+                    (is_adult and (can_take_damage or Nuts or Hookshot or Bow or Megaton_Hammer or Magic_Meter)) or
+                    Bombs or (Nuts and has_bombchus) or can_use(Dins_Fire) or
+                    (logic_jabu_boss_hover and can_use(Hover_Boots)) or jabu_shortcuts or Jabu_Jabus_Belly_Floor_Lowered)",
+            "Jabu Jabus Belly Before Boss Biri 2": "
+                has_soul(Biri_and_Bari) and
+                ((is_child and ((Kokiri_Sword and (can_take_damage or Nuts or Magic_Meter)) or Sticks or Boomerang)) or
+                    (is_adult and (can_take_damage or Nuts or Hookshot or Bow or Megaton_Hammer or Magic_Meter)) or
+                    Bombs or (Nuts and has_bombchus) or can_use(Dins_Fire) or
+                    (logic_jabu_boss_hover and can_use(Hover_Boots)) or jabu_shortcuts or Jabu_Jabus_Belly_Floor_Lowered)",
+            "Jabu Jabus Belly Before Boss Biri 3": "
+                has_soul(Biri_and_Bari) and
+                ((is_child and ((Kokiri_Sword and (can_take_damage or Nuts or Magic_Meter)) or Sticks or Boomerang)) or
+                    (is_adult and (can_take_damage or Nuts or Hookshot or Bow or Megaton_Hammer or Magic_Meter)) or
+                    Bombs or (Nuts and has_bombchus) or can_use(Dins_Fire) or
+                    (logic_jabu_boss_hover and can_use(Hover_Boots)) or jabu_shortcuts or Jabu_Jabus_Belly_Floor_Lowered)",
+            "Jabu Jabus Belly Before Boss Biri 4": "
+                has_soul(Biri_and_Bari) and
+                ((is_child and ((Kokiri_Sword and (can_take_damage or Nuts or Magic_Meter)) or Sticks or Boomerang)) or
+                    (is_adult and (can_take_damage or Nuts or Hookshot or Bow or Megaton_Hammer or Magic_Meter)) or
+                    Bombs or (Nuts and has_bombchus) or can_use(Dins_Fire) or
+                    (logic_jabu_boss_hover and can_use(Hover_Boots)) or jabu_shortcuts or Jabu_Jabus_Belly_Floor_Lowered)",
+            "Jabu Jabus Belly Before Boss Biri 5": "
+                has_soul(Biri_and_Bari) and
+                ((is_child and ((Kokiri_Sword and (can_take_damage or Nuts or Magic_Meter)) or Sticks or Boomerang)) or
+                    (is_adult and (can_take_damage or Nuts or Hookshot or Bow or Megaton_Hammer or Magic_Meter)) or
+                    Bombs or (Nuts and has_bombchus) or can_use(Dins_Fire) or
+                    (logic_jabu_boss_hover and can_use(Hover_Boots)) or jabu_shortcuts or Jabu_Jabus_Belly_Floor_Lowered)",
+            # Could have a trick to allow (is_adult or can_child_attack) for hitting the skulltula through the wall.
+            "Jabu Jabus Belly GS Near Boss": "
+                can_use_projectile or can_use(Dins_Fire) or
+                (logic_jabu_boss_hover and can_use(Hover_Boots)) or jabu_shortcuts or Jabu_Jabus_Belly_Floor_Lowered"
         },
         "exits": {
             "Jabu Jabus Belly Main": "True",

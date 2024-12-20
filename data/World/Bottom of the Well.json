@@ -14,18 +14,6 @@
         "locations": {
             "Bottom of the Well Front Center Bombable Chest": "has_explosives",
             "Bottom of the Well Freestanding Key": "Sticks or can_use(Dins_Fire)",
-            "Bottom of the Well Underwater Left Chest": "can_play(Zeldas_Lullaby)",
-            "Bottom of the Well Underwater Front Chest": "can_play(Zeldas_Lullaby)",
-            "Bottom of the Well Map Chest": "
-                has_explosives or
-                (Progressive_Strength_Upgrade and
-                    (at('Bottom of the Well Behind Locked Doors', True) or
-                        can_use(Dins_Fire) or (logic_botw_basement and Sticks)))",
-            "Bottom of the Well Invisible Chest": "
-                can_play(Zeldas_Lullaby) and (logic_lens_botw or can_use(Lens_of_Truth))",
-            # Sword not strictly necessary but being forced to do this with sticks isn't fair
-            "Bottom of the Well Lens of Truth Chest": "
-                (can_play(Zeldas_Lullaby) and (Kokiri_Sword or (Sticks and logic_child_deadhand))) and (has_soul(Dead_hand))",
             "Bottom of the Well Coffin Recovery Heart 1": "Sticks or can_use(Dins_Fire)",
             "Bottom of the Well Coffin Recovery Heart 2": "True",
             "Bottom of the Well Near Entrance Pot 1": "True",
@@ -49,20 +37,49 @@
             "Bottom of the Well Basement Silver Rupee Ladders Bottom": "True",
             "Bottom of the Well Basement Silver Rupee Ladders Middle": "True",
             "Bottom of the Well Basement Silver Rupee Ladders Top": "True",
+            "Bottom of the Well Entryway Skulltula": "has_soul(Skulltula)",
+            "Bottom of the Well Left Side Skulltula": "has_soul(Skulltula)",
+            "Bottom of the Well Patrolling Green Bubble": "has_soul(Bubble)",
+            "Bottom of the Well Like Like": "
+                has_soul(Likelike) and
+                (Kokiri_Sword or Sticks or Bombs or can_use(Dins_Fire) or
+                    at('Bottom of the Well Behind Locked Doors', Slingshot))",
+            "Bottom of the Well Basement ReDead Near Water": "has_soul(Redead_and_Gibdo)",
+            "Bottom of the Well Coffin Room Gibdo": "can_kill_redead",
             "Stick Pot": "True",
-            "Nut Pot": "True",
-            "Bottom of the Well Entryway Skulltula": "can_kill_skulltula",
-            "Bottom of the Well Left Side Skulltula": "can_kill_skulltula",
-            "Bottom of the Well Dead Hand Skulltula": "can_play(Zeldas_Lullaby) and can_kill_skulltula",
-            "Bottom of the Well Patrolling Bubble": "can_kill_bubble",
-            "Bottom of the Well Basement Redead Near Water": "can_kill_redead",
-            "Bottom of the Well Basement Redead Near Chest": "can_kill_redead",
-            "Bottom of the Well Coffin Room Redead": "can_kill_redead",
-            "Bottom of the Well Dead Hand": "can_play(Zeldas_Lullaby) and (Kokiri_Sword or (Sticks and logic_child_deadhand)) and (has_soul(Dead_hand))"
+            "Nut Pot": "True"
         },
         "exits": {
             "Bottom of the Well Left Side": "(Silver_Rupee_Bottom_of_the_Well_Basement, 5)",
+            "Bottom of the Well Underwater": "can_play(Zeldas_Lullaby)",
+            "Bottom of the Well Near Map Chest": "
+                has_explosives or
+                (Progressive_Strength_Upgrade and
+                    (can_use(Dins_Fire) or (logic_botw_basement and Sticks)))",
             "Bottom of the Well Behind Fake Walls": "logic_lens_botw or can_use(Lens_of_Truth)"
+        }
+    },
+    {
+        "region_name": "Bottom of the Well Underwater",
+        "dungeon": "Bottom of the Well",
+        "locations": {
+            "Bottom of the Well Underwater Left Chest": "True",
+            "Bottom of the Well Underwater Front Chest": "True",
+            "Bottom of the Well Invisible Chest": "logic_lens_botw or can_use(Lens_of_Truth)",
+            # Sword not strictly necessary but being forced to do this with sticks isn't fair.
+            "Bottom of the Well Lens of Truth Chest": "
+                has_soul(Dead_hand) and (Kokiri_Sword or (Sticks and logic_child_deadhand))",
+            "Bottom of the Well Before Dead Hand Skulltula": "can_kill_skulltula",
+            "Bottom of the Well Dead Hand": "
+                has_soul(Dead_hand) and (Kokiri_Sword or (Sticks and logic_child_deadhand))"
+        }
+    },
+    {
+        "region_name": "Bottom of the Well Near Map Chest",
+        "dungeon": "Bottom of the Well",
+        "locations": {
+            "Bottom of the Well Map Chest": "True",
+            "Bottom of the Well Basement ReDead Near Chest": "has_soul(Redead_and_Gibdo)"
         }
     },
     {
@@ -79,9 +96,8 @@
             "Bottom of the Well Center Room Pit Fall Blue Rupee 3": "True",
             "Bottom of the Well Center Room Pit Fall Blue Rupee 4": "True",
             "Bottom of the Well Center Room Pit Fall Blue Rupee 5": "True",
-            "Bottom of the Well Inside Gate Skulltula": "can_kill_skulltula",
-            "Bottom of the Well Center Room Wallmaster": "can_kill_wallmaster"
-
+            "Bottom of the Well Inside Gate Skulltula": "has_soul(Skulltula)",
+            "Bottom of the Well Center Room Wallmaster": "has_soul(Wallmaster)"
         },
         "exits": {
             "Bottom of the Well Left Side": "True",
@@ -108,18 +124,26 @@
             "Bottom of the Well West Inner Room Flying Pot 2": "has_soul(Flying_Pot)",
             "Bottom of the Well West Inner Room Flying Pot 3": "has_soul(Flying_Pot)",
             "Bottom of the Well Fire Keese Pot": "True",
-            "Bottom of the Well GS West Inner Room": "Boomerang",
-            "Bottom of the Well GS East Inner Room": "Boomerang",
-            "Bottom of the Well GS Like Like Cage": "Boomerang",
-            "Bottom of the Well Like Like": "can_kill_likelike",
             "Bottom of the Well Fire Keese 1": "can_kill_keese",
             "Bottom of the Well Fire Keese 2": "can_kill_keese",
             "Bottom of the Well Fire Keese 3": "can_kill_keese",
-            "Bottom of the Well Fire Keese Room Beamos": "can_kill_beamos",
-            "Bottom of the Well Behind Right Locked Door Keese 1": "can_kill_keese",
-            "Bottom of the Well Behind Right Locked Door Keese 2": "can_kill_keese",
-            "Bottom of the Well Behind Right Locked Door Keese 3": "can_kill_keese",
-            "Bottom of the Well Behind Right Locked Door Keese 4": "can_kill_keese"
+            "Bottom of the Well Fire Keese Beamos": "can_kill_beamos",
+            "Bottom of the Well East Inner Room Keese 1": "can_kill_keese_stationary",
+            "Bottom of the Well East Inner Room Keese 2": "
+                has_soul(Keese) and
+                (is_adult or Kokiri_Sword or Sticks or Slingshot or
+                    Boomerang or Bombs or (Nuts and has_bombchus))",
+            "Bottom of the Well East Inner Room Keese 3": "
+                has_soul(Keese) and
+                (is_adult or Kokiri_Sword or Sticks or Slingshot or
+                    Boomerang or Bombs or (Nuts and has_bombchus))",
+            "Bottom of the Well East Inner Room Keese 4": "can_kill_keese",
+            "Bottom of the Well GS West Inner Room": "Boomerang",
+            "Bottom of the Well GS East Inner Room": "Boomerang",
+            "Bottom of the Well GS Like Like Cage": "Boomerang"
+        },
+        "exits": {
+            "Bottom of the Well Near Map Chest": "Progressive_Strength_Upgrade"
         }
     }
 ]

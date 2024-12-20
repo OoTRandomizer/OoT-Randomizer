@@ -16,20 +16,20 @@
         "locations": {
             "Shadow Temple Map Chest": "has_soul(Redead_and_Gibdo) and has_soul(Keese)",
             "Shadow Temple Hover Boots Chest": "has_soul(Dead_hand)",
-            "Shadow Temple Whispering Walls Front Pot 1" : "True",
-            "Shadow Temple Whispering Walls Front Pot 2" : "True",
-            "Shadow Temple Whispering Walls Left Pot 1" : "True",
-            "Shadow Temple Whispering Walls Left Pot 2" : "True",
-            "Shadow Temple Whispering Walls Left Pot 3" : "True",
+            "Shadow Temple Whispering Walls Front Pot 1": "True",
+            "Shadow Temple Whispering Walls Front Pot 2": "True",
+            "Shadow Temple Whispering Walls Left Pot 1": "True",
+            "Shadow Temple Whispering Walls Left Pot 2": "True",
+            "Shadow Temple Whispering Walls Left Pot 3": "True",
             "Shadow Temple Whispering Walls Flying Pot": "has_soul(Flying_Pot)",
-            "Shadow Temple Whispering Walls Near Dead Hand Pot" : "True",
+            "Shadow Temple Whispering Walls Near Dead Hand Pot": "True",
             "Shadow Temple Map Chest Room Pot 1": "True",
             "Shadow Temple Map Chest Room Pot 2": "True",
-            "Nut Pot": "True",
-            "Shadow Temple Map Chest Keese 1": "can_kill_keese",
-            "Shadow Temple Map Chest Keese 2": "can_kill_keese",
-            "Shadow Temple Map Chest Redead": "can_kill_redead",
-            "Shadow Temple Dead Hand": "has_soul(Dead_hand)"
+            "Shadow Temple Map Chest Room Keese 1": "has_soul(Keese)",
+            "Shadow Temple Map Chest Room Keese 2": "has_soul(Keese)",
+            "Shadow Temple Map Chest Room ReDead": "has_soul(Redead_and_Gibdo)",
+            "Shadow Temple Dead Hand": "has_soul(Dead_hand)",
+            "Nut Pot": "True"
         },
         "exits": {
             "Shadow Temple First Beamos": "Hover_Boots"
@@ -39,16 +39,16 @@
         "region_name": "Shadow Temple First Beamos",
         "dungeon": "Shadow Temple",
         "locations": {
-            "Shadow Temple Compass Chest": "has_soul((Redead_and_Gibdo))",
+            "Shadow Temple Compass Chest": "has_soul(Redead_and_Gibdo)",
             "Shadow Temple Early Silver Rupee Chest": "(Silver_Rupee_Shadow_Temple_Scythe_Shortcut, 5)",
             "Shadow Temple Scythe Shortcut Silver Rupee Center Left": "True",
             "Shadow Temple Scythe Shortcut Silver Rupee Ledge": "True",
             "Shadow Temple Scythe Shortcut Silver Rupee Back Alcove": "True",
             "Shadow Temple Scythe Shortcut Silver Rupee Left Alcove": "True",
             "Shadow Temple Scythe Shortcut Silver Rupee Center Right": "True",
-            "Shadow Temple Early Beamos": "can_kill_beamos",
-            "Shadow Temple Compass Chest Redead 1": "can_kill_redead",
-            "Shadow Temple Compass Chest Redead 2": "can_kill_redead"
+            "Shadow Temple First Beamos": "can_kill_beamos",
+            "Shadow Temple Compass Room Gibdo 1": "has_soul(Redead_and_Gibdo)",
+            "Shadow Temple Compass Room Gibdo 2": "has_soul(Redead_and_Gibdo)"
         },
         "exits": {
             # If the shortcut is open, reverse shadow becomes an option, so we need to check for 4 keys with Lens/trick
@@ -58,12 +58,12 @@
             # Also, we only need to check shortcut keys here and at boat, since key requirements are always the same.
             "Shadow Temple Huge Pit": "
                 has_explosives and
-                    (((Small_Key_Shadow_Temple, 1) and not shadow_temple_shortcuts) or
+                (((Small_Key_Shadow_Temple, 1) and not shadow_temple_shortcuts) or
                     (Small_Key_Shadow_Temple, 5) or
                     ((Small_Key_Shadow_Temple, 4) and (logic_lens_shadow_platform or can_use(Lens_of_Truth))))",
             "Shadow Temple Guillotine Hallway": "
                 has_explosives and 
-                    (((Small_Key_Shadow_Temple, 1) and not shadow_temple_shortcuts) or
+                (((Small_Key_Shadow_Temple, 1) and not shadow_temple_shortcuts) or
                     (Small_Key_Shadow_Temple, 5) or
                     ((Small_Key_Shadow_Temple, 4) and Longshot and (logic_lens_shadow_platform or can_use(Lens_of_Truth))))",
             "Shadow Temple Boat": "shadow_temple_shortcuts"
@@ -73,11 +73,12 @@
         "region_name": "Shadow Temple Guillotine Hallway",
         "dungeon": "Shadow Temple",
         "locations": {
-            "Shadow Temple Guillotine Hallway Skulltula 1": "can_kill_skulltula",
-            "Shadow Temple Guillotine Hallway Skulltula 2": "can_kill_skulltula",
-            "Shadow Temple Guillotine Hallway Skulltula 3": "can_kill_skulltula",
-            "Shadow Temple Guillotine Hallway Skulltula 4": "can_kill_skulltula",
-            "Shadow Temple Huge Pit Bubble": "can_kill_bubble"
+            "Shadow Temple Guillotine Hallway Skulltula 1": "has_soul(Skulltula)",
+            "Shadow Temple Guillotine Hallway Skulltula 2": "has_soul(Skulltula)",
+            "Shadow Temple Guillotine Hallway Skulltula 3": "has_soul(Skulltula)",
+            "Shadow Temple Guillotine Hallway Skulltula 4": "has_soul(Skulltula)",
+            "Shadow Temple Huge Pit Wallmaster": "has_soul(Wallmaster)",
+            "Shadow Temple Huge Pit Red Bubble": "has_soul(Bubble) and Magic_Meter"
         }
     },
     {
@@ -93,19 +94,19 @@
             "Shadow Temple Huge Pit Silver Rupee Center": "True",
             "Shadow Temple Huge Pit Silver Rupee Center Front": "True",
             "Shadow Temple Huge Pit Silver Rupee Center Back": "True",
-            "Shadow Temple GS Invisible Blades Room": "has_soul(Likelike) and has_soul(Keese)",
-            "Shadow Temple Huge Pit Wallmaster": "can_kill_wallmaster",
             "Shadow Temple Huge Pit Beamos": "can_kill_beamos",
-            "Shadow Temple Huge Pit Stalfos": "can_kill_stalfos",
-            "Shadow Temple Invisible Scythe Keese 1": "can_kill_keese",
-            "Shadow Temple Invisible Scythe Keese 2": "can_kill_keese",
-            "Shadow Temple Invisible Scythe Keese 3": "can_kill_keese",
-            "Shadow Temple Invisible Scythe Like Like": "can_kill_likelike"
+            "Shadow Temple Huge Pit Stalfos": "has_soul(Stalfos)",
+            "Shadow Temple Invisible Blades Keese 1": "has_soul(Keese)",
+            "Shadow Temple Invisible Blades Keese 2": "has_soul(Keese)",
+            "Shadow Temple Invisible Blades Keese 3": "has_soul(Keese)",
+            "Shadow Temple Invisible Blades Like Like": "has_soul(Likelike)",
+            "Shadow Temple GS Invisible Blades Room": "has_soul(Likelike) and has_soul(Keese)"
         },
         "exits": {
             "Shadow Temple Falling Spikes": "(Silver_Rupee_Shadow_Temple_Huge_Pit, 5)",
             "Shadow Temple Invisible Spikes": "
-                (Small_Key_Shadow_Temple, 2) and (logic_lens_shadow_platform or can_use(Lens_of_Truth))"
+                (Small_Key_Shadow_Temple, 2) and (logic_lens_shadow_platform or can_use(Lens_of_Truth))",
+            "Shadow Temple Guillotine Hallway": "Longshot"
         }
     },
     {
@@ -131,26 +132,33 @@
         "dungeon": "Shadow Temple",
         "locations": {
             "Shadow Temple Invisible Spikes Chest": "has_soul(Redead_and_Gibdo)",
-            "Shadow Temple Freestanding Key": "
-                (Silver_Rupee_Shadow_Temple_Invisible_Spikes, 5) and
-                (Bombs or Progressive_Strength_Upgrade or
-                    (logic_shadow_freestanding_key and has_bombchus))",
             "Shadow Temple Invisible Spikes Silver Rupee Ledge": "Hookshot",
             "Shadow Temple Invisible Spikes Silver Rupee Right": "Hookshot",
             "Shadow Temple Invisible Spikes Silver Rupee Center": "True",
             "Shadow Temple Invisible Spikes Silver Rupee Left": "Hookshot",
             "Shadow Temple Invisible Spikes Silver Rupee Near Ledge": "Hookshot",
-            "Shadow Temple GS Single Giant Pot": "(Silver_Rupee_Shadow_Temple_Invisible_Spikes, 5)",
-            "Shadow Temple Invisible Spikes Redead 1": "can_kill_redead",
-            "Shadow Temple Invisible Spikes Redead 2": "can_kill_redead",
-            "Shadow Temple Spinning Pot Keese 1": "can_kill_keese and (Silver_Rupee_Shadow_Temple_Invisible_Spikes, 5)",
-            "Shadow Temple Spinning Pot Keese 2": "can_kill_keese and (Silver_Rupee_Shadow_Temple_Invisible_Spikes, 5)",
-            "Shadow Temple Spinning Pot Keese 3": "can_kill_keese and (Silver_Rupee_Shadow_Temple_Invisible_Spikes, 5)",
-            "Shadow Temple Spinning Pot Keese 4": "can_kill_keese and (Silver_Rupee_Shadow_Temple_Invisible_Spikes, 5)"
+            "Shadow Temple Invisible Spikes ReDead 1": "has_soul(Redead_and_Gibdo)",
+            "Shadow Temple Invisible Spikes ReDead 2": "has_soul(Redead_and_Gibdo)"
         },
         "exits": {
-            "Shadow Temple Wind Tunnel": "((has_soul(Redead_and_Gibdo) and Hookshot) or Longshot) and (Small_Key_Shadow_Temple, 3)",
+            "Shadow Temple Single Giant Pot Room": "(Silver_Rupee_Shadow_Temple_Invisible_Spikes, 5)",
+            "Shadow Temple Wind Tunnel": "
+                ((has_soul(Redead_and_Gibdo) and Hookshot) or Longshot) and (Small_Key_Shadow_Temple, 3)",
             "Shadow Temple Huge Pit": "logic_lens_shadow_platform or can_use(Lens_of_Truth)"
+        }
+    },
+    {
+        "region_name": "Shadow Temple Single Giant Pot Room",
+        "dungeon": "Shadow Temple",
+        "locations": {
+            "Shadow Temple Freestanding Key": "
+                Bombs or Progressive_Strength_Upgrade or
+                (logic_shadow_freestanding_key and has_bombchus)",
+            "Shadow Temple Single Giant Pot Keese 1": "has_soul(Keese)",
+            "Shadow Temple Single Giant Pot Keese 2": "has_soul(Keese)",
+            "Shadow Temple Single Giant Pot Keese 3": "has_soul(Keese)",
+            "Shadow Temple Single Giant Pot Keese 4": "has_soul(Keese)",
+            "Shadow Temple GS Single Giant Pot": "True"
         }
     },
     {
@@ -158,9 +166,9 @@
         "dungeon": "Shadow Temple",
         "locations": {
             "Shadow Temple Wind Hint Chest": "True",
-            "Shadow Temple Fan Hallway Skulltula": "can_kill_skulltula",
-            "Shadow Temple Wind Hint Left Redead": "can_kill_redead",
-            "Shadow Temple Wind Hint Right Redead": "can_kill_redead"
+            "Shadow Temple Wind Tunnel Skulltula": "has_soul(Skulltula) and Hookshot",
+            "Shadow Temple Wind Hint ReDead Left": "has_soul(Redead_and_Gibdo)",
+            "Shadow Temple Wind Hint ReDead Right": "has_soul(Redead_and_Gibdo)"
         },
         "exits": {
             "Shadow Temple After Wind": "True",
@@ -178,13 +186,13 @@
             "Shadow Temple After Wind Pot 2" : "True",
             "Shadow Temple After Wind Flying Pot 1": "has_soul(Flying_Pot)",
             "Shadow Temple After Wind Flying Pot 2": "has_soul(Flying_Pot)",
-            "Shadow Temple After Wind Redead Left": "can_kill_redead",
-            "Shadow Temple After Wind Redead Right": "can_kill_redead"
+            "Shadow Temple After Wind Gibdo Left": "has_soul(Redead_and_Gibdo)",
+            "Shadow Temple After Wind Gibdo Right": "has_soul(Redead_and_Gibdo)"
 
         },
         "exits": {
             "Shadow Temple Boat": "(Small_Key_Shadow_Temple, 4)",
-            "Shadow Temple Wind Tunnel": "True"
+            "Shadow Temple Wind Tunnel": "has_soul(Redead_and_Gibdo) and has_soul(Flying_Pot)"
         }
     },
     {
@@ -212,15 +220,15 @@
             "Shadow Temple Invisible Floormaster Pot 1": "True",
             "Shadow Temple Invisible Floormaster Pot 2": "True",
             "Shadow Temple Spike Walls Pot": "True",
-            "Shadow Temple GS Triple Giant Pot": "True",
             "Shadow Temple 3 Spinning Pots Wonderitem": "can_use(Bow)",
-            "Shadow Temple Spike Walls Left Redead": "can_use(Dins_Fire) and can_kill_redead",
-            "Shadow Temple Spike Walls Right Redead": "can_use(Dins_Fire) and can_kill_redead",
-            "Shadow Temple Invisible Walls Floormaster 1": "can_kill_floormaster",
-            "Shadow Temple Invisible Walls Floormaster 2": "can_kill_floormaster",
-            "Shadow Temple Invisible Floormaster": "can_kill_floormaster",
-            "Shadow Temple Boat Stalfos 1": "can_kill_stalfos",
-            "Shadow Temple Boat Stalfos 2": "can_kill_stalfos"
+            "Shadow Temple Spike Walls Left ReDead": "can_use(Dins_Fire) and has_soul(Redead_and_Gibdo)",
+            "Shadow Temple Spike Walls Right ReDead": "can_use(Dins_Fire) and has_soul(Redead_and_Gibdo)",
+            "Shadow Temple Invisible Walls Floormaster 1": "has_soul(Floormaster)",
+            "Shadow Temple Invisible Walls Floormaster 2": "has_soul(Floormaster)",
+            "Shadow Temple Invisible Floormaster": "has_soul(Floormaster)",
+            "Shadow Temple Boat Stalfos 1": "has_soul(Stalfos)",
+            "Shadow Temple Boat Stalfos 2": "has_soul(Stalfos)",
+            "Shadow Temple GS Triple Giant Pot": "True"
         },
         "exits": {
             "Shadow Temple 3 Spinning Pots Rupees": "

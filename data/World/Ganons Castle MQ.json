@@ -3,20 +3,20 @@
         "region_name": "Ganons Castle Lobby",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Castle MQ Entry Hallway Armos 1": "can_kill_armos",
-            "Ganons Castle MQ Entry Hallway Armos 2": "can_kill_armos",
-            "Ganons Castle MQ Entry Hallway Bubble 1": "can_kill_bubble",
-            "Ganons Castle MQ Entry Hallway Bubble 2": "can_kill_bubble",
-            "Ganons Castle MQ Entry Hallway Iron Knuckle": "has_soul(Iron_Knuckle) and (is_adult or Kokiri_Sword or has_explosives)"
+            "Ganons Castle MQ Entry Hallway Armos Left": "can_kill_armos",
+            "Ganons Castle MQ Entry Hallway Armos Right": "can_kill_armos",
+            "Ganons Castle MQ Entry Hallway Green Bubble Left": "can_kill_green_bubble",
+            "Ganons Castle MQ Entry Hallway Green Bubble Right": "can_kill_green_bubble",
+            "Ganons Castle MQ Entry Hallway Iron Knuckle": "can_kill_iron_knuckle"
         },
         "exits": {
             "Castle Grounds From Ganons Castle": "True",
             "Ganons Castle Main": "
-                here(
-                    (has_soul(Armos) and has_soul(Bubble) and has_soul(Iron_Knuckle)) and
-                        (is_adult or
-                        (Kokiri_Sword and (Sticks or has_explosives or Nuts or Boomerang)) or
-                        (has_explosives and (Sticks or ((Nuts or Boomerang) and Slingshot)))))",
+                has_soul(Armos) and has_soul(Bubble) and has_soul(Iron_Knuckle) and
+                here(is_adult or
+                    (Kokiri_Sword and (Sticks or has_explosives or Nuts or Boomerang)) or
+                    (has_explosives and (Sticks or ((Nuts or Boomerang) and Slingshot)))
+                    (Sticks and Slingshot and (Nuts or Boomerang)))",
             "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
@@ -45,18 +45,28 @@
         "region_name": "Ganons Castle Forest Trial",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Castle MQ Forest Trial Freestanding Key": "can_use(Hookshot) or can_use(Boomerang)",
+            "Ganons Castle MQ Forest Trial Freestanding Key": "can_use(Hookshot) or can_use(Boomerang)"
+        },
+        "exits": {
+            "Ganons Castle Forest Trial Wind Room": "has_soul(Stalfos)"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Forest Trial Wind Room",
+        "dungeon": "Ganons Castle",
+        "locations": {
             "Ganons Castle MQ Forest Trial Eye Switch Chest": "can_use(Bow) or can_use(Slingshot)",
             "Ganons Castle MQ Forest Trial Frozen Eye Switch Chest": "has_fire_source",
-            "Ganons Castle MQ Forest Trial Stalfos 1": "has_soul(Stalfos)",
-            "Ganons Castle MQ Forest Trial Stalfos 2": "has_soul(Stalfos)",
-            "Ganons Castle MQ Forest Trial Armos": "has_soul(Armos) and has_explosives",
+            "Ganons Castle MQ Forest Trial Stalfos 1": "True",
+            "Ganons Castle MQ Forest Trial Stalfos 2": "True",
+            "Ganons Castle MQ Forest Trial Armos": "can_kill_armos",
             "Ganons Castle MQ Forest Trial Beamos 1": "can_kill_beamos",
             "Ganons Castle MQ Forest Trial Beamos 2": "can_kill_beamos",
             "Ganons Castle MQ Forest Trial Beamos 3": "can_kill_beamos",
             "Ganons Castle MQ Forest Trial Beamos 4": "can_kill_beamos",
             "Ganons Castle MQ Forest Trial Beamos 5": "can_kill_beamos",
-            "Ganons Castle MQ Forest Trial Beamos 6": "can_kill_beamos"
+            "Ganons Castle MQ Forest Trial Beamos Near Armos": "
+                has_soul(Beamos) and (has_explosives or can_kill_armos)"
         },
         "exits": {
             "Ganons Castle Forest Trial Ending": "is_adult and can_play(Song_of_Time)"
@@ -80,9 +90,9 @@
             "Ganons Castle MQ Water Trial Chest": "Blue_Fire",
             "Ganons Castle MQ Water Trial Recovery Heart": "
                 Blue_Fire or (logic_boomerang_boulders and can_use(Boomerang))",
-            "Ganons Castle MQ Water Trial Freezard 1": "has_soul(Freezard) and (is_adult or has_explosives or can_use(Dins_Fire))",
-            "Ganons Castle MQ Water Trial Freezard 2": "has_soul(Freezard) and (is_adult or has_explosives or can_use(Dins_Fire))",
-            "Ganons Castle MQ Water Trial Freezard 3": "has_soul(Freezard) and (is_adult or has_explosives or can_use(Dins_Fire))",
+            "Ganons Castle MQ Water Trial Freezard 1": "can_kill_freezard",
+            "Ganons Castle MQ Water Trial Freezard 2": "can_kill_freezard",
+            "Ganons Castle MQ Water Trial Freezard 3": "can_kill_freezard",
             "Blue Fire": "has_bottle and (can_jumpslash or has_explosives)"
         },
         "exits": {
@@ -98,10 +108,11 @@
             "Ganons Castle MQ Water Trial Silver Rupee Center Left": "True",
             "Ganons Castle MQ Water Trial Silver Rupee Red Ice": "is_adult",
             "Ganons Castle MQ Water Trial Silver Rupee Above Void": "True",
-            "Ganons Castle MQ Water Trial Ice Keese 1": "can_kill_keese",
-            "Ganons Castle MQ Water Trial Ice Keese 2": "can_kill_keese",
-            "Ganons Castle MQ Water Trial Ice Keese 3": "can_kill_keese",
-            "Ganons Castle MQ Water Trial Ice Keese 4": "can_kill_keese"
+            "Ganons Castle MQ Water Trial Ice Keese": "can_kill_keese",
+            "Ganons Castle MQ Water Trial Keese": "can_kill_keese_stationary",
+            "Ganons Castle MQ Water Trial Invisible Keese": "
+                can_kill_keese_stationary and (logic_lens_castle_mq or can_use(Lens_of_Truth))",
+            "Ganons Castle MQ Water Trial Fire Keese": "can_kill_keese"
         },
         "exits": {
             "Ganons Castle Water Trial Ending": "(Silver_Rupee_Ganons_Castle_Water_Trial, 5)"
@@ -126,7 +137,8 @@
                 is_adult and ((Bow and (Hookshot or Hover_Boots)) or
                 at('Ganons Castle Shadow Trial Moving Platform',
                     has_explosives or Progressive_Strength_Upgrade or can_use(Dins_Fire)))",
-            "Ganons Castle MQ Shadow Trial Bubble": "has_soul(Bubble) and ((is_adult and (Bow or Magic_Meter)) or Slingshot)"
+            "Ganons Castle MQ Shadow Trial Green Bubble": "
+                has_soul(Bubble) and (Bombs or (is_adult and (Bow or Magic_Meter)) or can_use(Slingshot))"
         },
         "exits": {
             "Ganons Castle Shadow Trial Moving Platform": "
@@ -184,7 +196,10 @@
                 can_use(Goron_Tunic) and can_use(Golden_Gauntlets)",
             "Ganons Castle MQ Fire Trial Silver Rupee Left Front": "can_use(Goron_Tunic)",
             "Ganons Castle MQ Fire Trial Silver Rupee Left Center": "can_use(Goron_Tunic)",
-            "Ganons Castle MQ Fire Trial Silver Rupee Left Back": "can_use(Goron_Tunic)"
+            "Ganons Castle MQ Fire Trial Silver Rupee Left Back": "can_use(Goron_Tunic)",
+            "Ganons Castle MQ Fire Trial Beamos": "can_use(Goron_Tunic) and can_kill_beamos",
+            "Ganons Castle MQ Fire Trial Torch Slug 1": "can_use(Goron_Tunic) and has_soul(Torch_Slug)",
+            "Ganons Castle MQ Fire Trial Torch Slug 2": "can_use(Goron_Tunic) and has_soul(Torch_Slug)"
         },
         "exits": {
             "Ganons Castle Fire Trial Ending": "
@@ -200,38 +215,60 @@
         },
         "locations": {
             "Ganons Castle MQ Fire Trial Pot 1": "True",
-            "Ganons Castle MQ Fire Trial Pot 2": "True",
-            "Ganons Castle MQ Fire Trial Beamos": "can_kill_beamos",
-            "Ganons Castle MQ Fire Trial Torch Slug 1": "has_soul(Torch_Slug)",
-            "Ganons Castle MQ Fire Trial Torch Slug 2": "has_soul(Torch_Slug)"
+            "Ganons Castle MQ Fire Trial Pot 2": "True"
         }
     },
     {
         "region_name": "Ganons Castle Light Trial",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Castle MQ Light Trial Lullaby Chest": "can_play(Zeldas_Lullaby)",
             "Ganons Castle MQ Light Trial Torch Slug 1": "has_soul(Torch_Slug)",
             "Ganons Castle MQ Light Trial Torch Slug 2": "has_soul(Torch_Slug)",
-            "Ganons Castle MQ Light Trial Lizalfos": "has_soul(Lizalfos_and_Dinalfos)"
+            "Ganons Castle MQ Light Trial Dinolfos": "has_soul(Lizalfos_and_Dinalfos)"
         },
         "exits": {
-            "Ganons Castle Light Trial Boulder Room": "
-                (Small_Key_Ganons_Castle, 2) and (Hookshot or logic_light_trial_mq) and has_soul(Torch_Slug) and has_soul(Lizalfos_and_Dinalfos)"
+            "Ganons Castle Light Trial Hallway": "has_soul(Torch_Slug) and has_soul(Lizalfos_and_Dinalfos)"
         }
     },
     {
-        "region_name": "Ganons Castle Light Trial Boulder Room",
+        "region_name": "Ganons Castle Light Trial Hallway",
+        "dungeon": "Ganons Castle",
+        "locations": {
+            "Ganons Castle MQ Light Trial Lullaby Chest": "can_play(Zeldas_Lullaby)"
+        },
+        "exits": {
+            "Ganons Castle Light Trial Boulder Room Front": "(Small_Key_Ganons_Castle, 2)"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Light Trial Boulder Room Front",
+        "dungeon": "Ganons Castle",
+        "locations": {
+            "Ganons Castle MQ Light Trial Beamos": "can_kill_beamos"
+        },
+        "exits": {
+            "Ganons Castle Light Trial Boulder Room Back": "Hookshot or logic_light_trial_mq"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Light Trial Boulder Room Back",
         "dungeon": "Ganons Castle",
         "locations": {
             "Ganons Castle MQ Light Trial Recovery Heart 1": "True",
-            "Ganons Castle MQ Light Trial Recovery Heart 2": "True",
-            "Ganons Castle MQ Light Trial Beamos": "can_kill_beamos",
-            "Ganons Castle MQ Light Trial Skullwalltula": "(Small_Key_Ganons_Castle, 3) and has_soul(Skullwalltula)"
+            "Ganons Castle MQ Light Trial Recovery Heart 2": "True"
         },
         "exits": {
-            "Ganons Castle Light Trial Ending": "
-                (Small_Key_Ganons_Castle, 3) and (logic_lens_castle_mq or can_use(Lens_of_Truth))"
+            "Ganons Castle Light Trial Fake Ending": "(Small_Key_Ganons_Castle, 3)"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Light Trial Fake Ending",
+        "dungeon": "Ganons Castle",
+        "locations": {
+            "Ganons Castle MQ Light Trial Skullwalltula": "has_soul(Skullwalltula)"
+        },
+        "exits": {
+            "Ganons Castle Light Trial Ending": "logic_lens_castle_mq or can_use(Lens_of_Truth)"
         }
     },
     {
@@ -249,21 +286,24 @@
         "region_name": "Ganons Castle Spirit Trial",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Castle MQ Spirit Trial First Chest": "True",
-            "Ganons Castle MQ Spirit Trial Torch Slug": "has_soul(Torch_Slug)",
-            "Ganons Castle MQ Spirit Trial Fire Keese 1": "has_soul(Keese)",
-            "Ganons Castle MQ Spirit Trial Fire Keese 2": "has_soul(Keese)",
-            "Ganons Castle MQ Spirit Trial Iron Knuckle": "has_soul(Iron_Knuckle) and can_use(Bow)"
+            "Ganons Castle MQ Spirit Trial Torch Slug": "can_kill_torch_slug",
+            "Ganons Castle MQ Spirit Trial Fire Keese 1": "can_kill_keese",
+            "Ganons Castle MQ Spirit Trial Fire Keese 2": "can_kill_keese",
+            "Ganons Castle MQ Spirit Trial Iron Knuckle": "
+                can_kill_iron_knuckle and (can_use(Bow) or can_use(Slingshot))"
         },
         "exits": {
-            "Ganons Castle Spirit Trial After Knuckle": "can_use(Megaton_Hammer) and ((Bow and has_soul(Iron_Knuckle)) or logic_rusted_switches)"
+            "Ganons Castle Spirit Trial After Knuckle": "
+                can_use(Megaton_Hammer) and ((Bow and has_soul(Iron_Knuckle)) or logic_rusted_switches)"
         }
     },
     {
         "region_name": "Ganons Castle Spirit Trial After Knuckle",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Castle MQ Spirit Trial Bubble 1": "has_soul(Bubble)"
+            "Ganons Castle MQ Spirit Trial First Chest": "True",
+            "Ganons Castle MQ Spirit Trial Green Bubble 1": "has_soul(Bubble)",
+            "Ganons Castle MQ Spirit Trial Green Bubble 2": "has_soul(Bubble) and (has_bombchus or Magic_Meter)"
         },
         "exits": {
             "Ganons Castle Spirit Trial Second Room": "has_bombchus"
@@ -274,10 +314,9 @@
         "dungeon": "Ganons Castle",
         "locations": {
             "Ganons Castle MQ Spirit Trial Invisible Chest": "logic_lens_castle_mq or can_use(Lens_of_Truth)",
-            "Ganons Castle MQ Spirit Trial Bubble 2": "has_soul(Bubble)",
             "Ganons Castle MQ Spirit Trial Gibdo": "has_soul(Redead_and_Gibdo)",
-            "Ganons Castle MQ Spirit Trial Redead 1": "has_soul(Redead_and_Gibdo)",
-            "Ganons Castle MQ Spirit Trial Redead 2": "has_soul(Redead_and_Gibdo)"
+            "Ganons Castle MQ Spirit Trial ReDead 1": "has_soul(Redead_and_Gibdo)",
+            "Ganons Castle MQ Spirit Trial ReDead 2": "has_soul(Redead_and_Gibdo)"
         },
         "exits": {
             "Ganons Castle Spirit Trial Ending": "can_use(Fire_Arrows) and Mirror_Shield"
@@ -290,14 +329,13 @@
             "Spirit Trial Clear": "can_use(Light_Arrows)"
         },
         "locations": {
-
-            "Ganons Castle MQ Spirit Trial Wallmaster": "has_soul(Wallmaster)",
             "Ganons Castle MQ Spirit Trial Sun Front Left Chest": "True",
             "Ganons Castle MQ Spirit Trial Sun Back Left Chest": "True",
             "Ganons Castle MQ Spirit Trial Golden Gauntlets Chest": "True",
             "Ganons Castle MQ Spirit Trial Sun Back Right Chest": "True",
             "Ganons Castle MQ Spirit Trial Pot 1": "True",
             "Ganons Castle MQ Spirit Trial Pot 2": "True",
+            "Ganons Castle MQ Spirit Trial Wrong Sun Wallmaster": "has_soul(Wallmaster)",
             "Nut Pot": "True"
         }
     },

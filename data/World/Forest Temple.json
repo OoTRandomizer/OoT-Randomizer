@@ -7,9 +7,9 @@
             "Forest Temple GS First Room": "
                 (is_adult and (Hookshot or Bow or Bombs)) or (is_child and (Boomerang or Slingshot)) or
                 has_bombchus or can_use(Dins_Fire) or (logic_forest_first_gs and (Bombs or can_jumpslash))",
-            "Forest Temple Entrance Wolfos 1" : "can_kill_wolfos",
-            "Forest Temple Entrance Wolfos 2" : "can_kill_wolfos",
-            "Forest Temple First Hallway Skulltula" : "can_kill_skulltula"
+            "Forest Temple First Room Wolfos 1": "can_kill_wolfos",
+            "Forest Temple First Room Wolfos 2": "can_kill_wolfos",
+            "Forest Temple First Hallway Skulltula": "can_kill_skulltula"
         },
         "exits": {
             "SFM Forest Temple Entrance Ledge": "True",
@@ -21,7 +21,7 @@
         "region_name": "Forest Temple Central Area",
         "dungeon": "Forest Temple",
         "locations": {
-            "Forest Temple First Stalfos Chest": "(has_soul(Stalfos)) and (is_adult or Kokiri_Sword)",
+            "Forest Temple First Stalfos Chest": "can_kill_stalfos",
             "Forest Temple Center Room Right Pot 1": "True",
             "Forest Temple Center Room Right Pot 2": "True",
             "Forest Temple Center Room Right Pot 3": "True",
@@ -30,46 +30,50 @@
             "Forest Temple Center Room Left Pot 3": "True",
             "Forest Temple Lower Stalfos Pot 1": "True",
             "Forest Temple Lower Stalfos Pot 2": "True",
+            "Forest Temple Before Lower Stalfos Hallway Blue Bubble": "can_kill_blue_bubble",
+            "Forest Temple Lower Stalfos 1": "can_kill_stalfos",
+            "Forest Temple Lower Stalfos 2": "can_kill_stalfos",
             "Forest Temple GS Lobby": "can_use(Hookshot) or can_use(Boomerang)",
-            "Fairy Pot": "has_bottle",
-            "Forest Temple Before Lower Stalfos Hallway Bubble" : "can_kill_bubble",
-            "Forest Temple Lower Stalfos 1" : "can_kill_stalfos",
-            "Forest Temple Lower Stalfos 2" : "can_kill_stalfos"
+            "Fairy Pot": "has_bottle"
         },
         "exits": {
             "Forest Temple NW Outdoors": "can_play(Song_of_Time) or is_child",
             "Forest Temple NE Outdoors": "can_use(Bow) or can_use(Slingshot)",
-            "Forest Temple Block Push Room": "(Small_Key_Forest_Temple, 1)",
+            "Forest Temple Before Block Puzzle": "(Small_Key_Forest_Temple, 1)",
             "Forest Temple Basement": "
-                (Forest_Temple_Jo and Forest_Temple_Beth and Forest_Temple_Amy_and_Meg) or forest_temple_shortcuts"
+                (Forest_Temple_Jo_and_Beth and Forest_Temple_Amy_and_Meg) or forest_temple_shortcuts"
         }
     },
     {
         "region_name": "Forest Temple NW Outdoors",
         "dungeon": "Forest Temple",
         "locations": {
+            "Forest Temple Level Island Courtyard Lower Deku Baba": "can_kill_deku_baba",
+            "Forest Temple Level Island Courtyard Octorok": "can_kill_octorok_with_bombs_or_magic",
+            "Forest Temple Level Island Courtyard Skullwalltula Lower": "
+                has_soul(Skullwalltula) and
+                (is_adult or Boomerang or Slingshot or can_use(Dins_Fire) or has_explosives)",
+            "Forest Temple Level Island Courtyard Skullwalltula Middle": "
+                has_soul(Skullwalltula) and
+                (can_use(Hookshot) or can_use(Bow) or can_use(Megaton_Hammer) or
+                    can_use(Boomerang) or can_use(Slingshot) or has_explosives)",
+            "Forest Temple Level Island Courtyard Skullwalltula Upper": "
+                has_soul(Skullwalltula) and
+                (can_use(Hookshot) or can_use(Bow) or can_use(Megaton_Hammer) or
+                    can_use(Boomerang) or can_use(Slingshot) or can_use(Dins_Fire) or has_explosives)",
             "Forest Temple GS Level Island Courtyard": "
                 can_use(Longshot) or
                 at('Forest Temple Outside Upper Ledge', can_use(Hookshot) or can_use(Boomerang))",
             "Deku Baba Sticks": "has_soul(Deku_Baba) and (is_adult or Kokiri_Sword or Boomerang)",
             "Deku Baba Nuts": "
-                has_soul(Deku_Baba) and (
-                    is_adult or Slingshot or Sticks or
-                    has_explosives or Kokiri_Sword or can_use(Dins_Fire)
-                )",
-            "Forest Temple NW Outdoors Deku Baba": "can_kill_deku_baba",
-            "Forest Temple Left Courtyard Octorok": "can_kill_octorok_with_explosives",
-            "Forest Temple Left Courtyard Vines Skullwalltula Lower": "(has_soul(Skullwalltula)) and (has_explosives or can_use(Dins_Fire) or can_use(Bow) or can_use(Progressive_Hookshot) or can_use(Slingshot) or can_use(Boomerang))",
-            "Forest Temple Left Courtyard Vines Skullwalltula Middle": "(has_soul(Skullwalltula)) and (has_explosives or can_use(Bow) or can_use(Progressive_Hookshot) or can_use(Slingshot) or can_use(Boomerang))",
-            "Forest Temple Left Courtyard Vines Skullwalltula Upper": "(has_soul(Skullwalltula)) and (has_explosives or can_use(Bow) or can_use(Progressive_Hookshot) or can_use(Slingshot) or can_use(Boomerang))"
+                has_soul(Deku_Baba) and
+                (is_adult or Slingshot or Sticks or has_explosives or Kokiri_Sword or can_use(Dins_Fire))"
         },
         "exits": {
-            "Forest Temple NE Outdoors": "(Progressive_Scale, 2)",
-            # Other methods of crossing through the well are not currently relevant.
-            "Forest Temple Outdoors High Balconies": "
-                here((has_soul(Bubble)) and
-                    (is_adult or has_explosives or
-                        ((Boomerang or Nuts or Deku_Shield) and (Sticks or Kokiri_Sword or Slingshot))))",
+            "Forest Temple NE Outdoors": "
+                can_use(Iron_Boots) or can_use(Longshot) or (Progressive_Scale, 2) or
+                (logic_forest_well_swim and can_use(Hookshot))",
+            "Forest Temple Outdoors High Balconies": "can_kill_blue_bubble",
             "Forest Temple NW Outdoors Freestandings": "logic_forest_courtyard_hearts and can_use(Boomerang)"
         }
     },
@@ -77,12 +81,10 @@
         "region_name": "Forest Temple Outdoors High Balconies",
         "dungeon": "Forest Temple",
         "locations": {
-            "Forest Temple Well Chest": "True",
             "Forest Temple Map Chest": "has_soul(Bubble)",
-            "Forest Temple Well Recovery Heart 1": "True",
-            "Forest Temple Well Recovery Heart 2": "True",
-            "Forest Temple Map Chest Bubble": "can_kill_bubble",
-            "Forest Temple Right Courtyard Balcony Deku Baba" : "can_kill_deku_baba"
+            "Forest Temple Well Chest": "True",
+            "Forest Temple Map Chest Blue Bubble": "has_soul(Bubble)",
+            "Forest Temple Raised Island Courtyard Upper Deku Baba": "can_kill_deku_baba"
         },
         "exits": {
             "Forest Temple NW Outdoors": "True",
@@ -99,18 +101,25 @@
                 can_use(Hookshot) or at('Forest Temple Falling Room', True) or
                 (logic_forest_outdoors_ledge and can_use(Hover_Boots) and
                     at('Forest Temple Outdoors High Balconies', True))",
+            "Forest Temple Well Recovery Heart 1": "
+                can_use(Iron_Boots) or at('Forest Temple Outdoors High Balconies', True)",
+            "Forest Temple Well Recovery Heart 2": "
+                can_use(Iron_Boots) or at('Forest Temple Outdoors High Balconies', True)",
+            "Forest Temple Raised Island Courtyard Lower Deku Baba": "can_kill_deku_baba",
+            "Forest Temple Raised Island Courtyard Skullwalltula": "
+                has_soul(Skullwalltula) and
+                (can_use(Bow) or can_use(Slingshot) or
+                    at('Forest Temple Outdoors High Balconies', can_use(Hookshot) or can_use(Megaton_Hammer) or
+                        can_use(Boomerang) or can_use(Dins_Fire) or Bombs or
+                        ((is_adult or Kokiri_Sword) and Magic_Meter) or (can_jumpslash and can_take_damage)))",
+            "Forest Temple Raised Island Courtyard Octorok": "can_kill_octorok_with_bombs_or_magic",
             "Forest Temple GS Raised Island Courtyard": "
                 can_use(Hookshot) or (logic_forest_outdoor_east_gs and can_use(Boomerang)) or
                 at('Forest Temple Falling Room', can_use(Bow) or can_use(Dins_Fire) or has_explosives)",
             "Deku Baba Sticks": "has_soul(Deku_Baba) and (is_adult or Kokiri_Sword or Boomerang)",
             "Deku Baba Nuts": "
-                has_soul(Deku_Baba) and (
-                    is_adult or Slingshot or Sticks or
-                    has_explosives or Kokiri_Sword or can_use(Dins_Fire)
-                )",
-            "Forest Temple NE Outdoors Deku Baba": "can_kill_deku_baba",
-            "Forest Temple Right Courtyard Balcony Skullwalltula": "(has_soul(Skullwalltula)) and (can_use(Bow) or can_use(Slingshot) or at('Forest Temple Outdoors High Balconies', can_use(Hookshot) or can_use(Boomerang)))",
-            "Forest Temple Right Courtyard Octorok": "can_kill_octorok_with_explosives"
+                has_soul(Deku_Baba) and
+                (is_adult or Slingshot or Sticks or has_explosives or Kokiri_Sword or can_use(Dins_Fire))"
         },
         "exits": {
             "Forest Temple Outdoors High Balconies": "
@@ -120,35 +129,60 @@
         }
     },
     {
-        "region_name": "Forest Temple Block Push Room",
+        "region_name": "Forest Temple Before Block Puzzle",
         "dungeon": "Forest Temple",
         "locations": {
             "Forest Temple Eye Switch Chest": "
                 Progressive_Strength_Upgrade and (can_use(Bow) or can_use(Slingshot))",
             "Forest Temple After First Locked Door Skulltula": "can_kill_skulltula",
-            "Forest Temple Block Push Room Lower Bubble": "can_kill_bubble",
-            "Forest Temple Block Push Room Upper Bubble 1": "Progressive_Strength_Upgrade and can_kill_bubble and is_adult",
-            "Forest Temple Block Push Room Upper Bubble 2": "Progressive_Strength_Upgrade and can_kill_bubble and is_adult",
-            "Forest Temple First Twisted Hallway Wallmaster": "Progressive_Strength_Upgrade and (Small_Key_Forest_Temple,2) and can_kill_wallmaster and is_adult"
+            "Forest Temple Block Push Room Lower Blue Bubble": "can_kill_blue_bubble"
         },
         "exits": {
             "Forest Temple Outside Upper Ledge": "
                 can_use(Hover_Boots) or
                 (logic_forest_outside_backdoor and Progressive_Strength_Upgrade and can_jumpslash)",
-            "Forest Temple Bow Region": "
-                Progressive_Strength_Upgrade and (Small_Key_Forest_Temple, 3) and is_adult",
-            "Forest Temple Straightened Hall": "
-                Progressive_Strength_Upgrade and (Small_Key_Forest_Temple, 2) and can_use(Bow)"
+            "Forest Temple After Block Puzzle": "Progressive_Strength_Upgrade and is_adult"
             # Child cannot climb these large blocks
+        }
+    },
+    {
+        "region_name": "Forest Temple After Block Puzzle",
+        "dungeon": "Forest Temple",
+        "locations": {
+            "Forest Temple Block Push Room Upper Blue Bubble 1": "can_kill_blue_bubble",
+            "Forest Temple Block Push Room Upper Blue Bubble 2": "can_kill_blue_bubble"
+        },
+        "exits": {
+            "Forest Temple Twisted Hall": "(Small_Key_Forest_Temple, 2)"
+        }
+    },
+    {
+        "region_name": "Forest Temple Twisted Hall",
+        "dungeon": "Forest Temple",
+        "locations": {
+            "Forest Temple First Twisted Hallway Wallmaster": "has_soul(Wallmaster)"
+        },
+        "exits": {
+            "Forest Temple Straightened Hall": "Bow",
+            "Forest Temple Red Poe Room": "(Small_Key_Forest_Temple, 3)"
         }
     },
     {
         "region_name": "Forest Temple Straightened Hall",
         "dungeon": "Forest Temple",
         "locations": {
-            "Forest Temple Boss Key Chest": "True",
-            "Forest Temple Balcony Bubble 1": "can_kill_bubble",
-            "Forest Temple Balcony Bubble 2": "can_kill_bubble"
+            "Forest Temple Boss Key Chest": "True"
+        },
+        "exits": {
+            "Forest Temple Blue Bubbles Room": "True"
+        }
+    },
+    {
+        "region_name": "Forest Temple Blue Bubbles Room",
+        "dungeon": "Forest Temple",
+        "locations": {
+            "Forest Temple Bubble Room Blue Bubble 1": "can_kill_blue_bubble",
+            "Forest Temple Bubble Room Blue Bubble 2": "can_kill_blue_bubble"
         },
         "exits": {
             "Forest Temple Outside Upper Ledge": "has_soul(Bubble)"
@@ -158,11 +192,12 @@
         "region_name": "Forest Temple Outside Upper Ledge",
         "dungeon": "Forest Temple",
         "locations": {
-            "Forest Temple Floormaster Chest": "can_kill_floormaster",
-            "Forest Temple Balcony Floormaster": "can_kill_floormaster",
-            "Forest Temple Balcony Deku Baba": "can_kill_deku_baba"
+            "Forest Temple Floormaster Chest": "has_soul(Floormaster)",
+            "Forest Temple Floormaster": "has_soul(Floormaster)",
+            "Forest Temple Level Island Courtyard Upper Deku Baba": "can_kill_deku_baba"
         },
         "exits": {
+            "Forest Temple Blue Bubbles Room": "True",
             "Forest Temple NW Outdoors": "True",
             "Forest Temple NW Outdoors Freestandings": "True"
         }
@@ -176,31 +211,28 @@
         }
     },
     {
-        "region_name": "Forest Temple Bow Region",
+        "region_name": "Forest Temple Red Poe Room",
         "dungeon": "Forest Temple",
-        "events": {
-            "Forest Temple Jo": "can_use(Bow)"
-        },
         "locations": {
-            "Forest Temple Red Poe Chest": "can_use(Bow)",
+            "Forest Temple Red Poe Chest": "Bow",
             "Forest Temple Upper Stalfos Pot 1" : "True",
             "Forest Temple Upper Stalfos Pot 2" : "True",
             "Forest Temple Upper Stalfos Pot 3" : "True",
             "Forest Temple Upper Stalfos Pot 4" : "True"
         },
         "exits": {
-            "Forest Temple After Upper Stalfos": "can_kill_stalfos"
+            "Forest Temple Blue Poe Room": "has_soul(Stalfos)"
         }
     },
     {
-        "region_name": "Forest Temple After Upper Stalfos",
+        "region_name": "Forest Temple Blue Poe Room",
         "dungeon": "Forest Temple",
         "events": {
-            "Forest Temple Beth": "can_use(Bow)"
+            "Forest Temple Jo and Beth": "Bow"
         },
         "locations": {
             "Forest Temple Bow Chest": "True",
-            "Forest Temple Blue Poe Chest": "can_use(Bow)",
+            "Forest Temple Blue Poe Chest": "Bow",
             "Forest Temple Blue Poe Room Pot 1" : "True",
             "Forest Temple Blue Poe Room Pot 2" : "True",
             "Forest Temple Blue Poe Room Pot 3" : "True",
@@ -216,9 +248,9 @@
         "region_name": "Forest Temple Second Twisted Hallway",
         "dungeon" : "Forest Temple",
         "locations": {
-            "Forest Temple Second Twisted Hallway Bubble 1": "can_kill_bubble",
-            "Forest Temple Second Twisted Hallway Bubble 2": "can_kill_bubble",
-            "Forest Temple Second Twisted Hallway Wallmaster": "can_kill_wallmaster"
+            "Forest Temple Second Twisted Hallway Wallmaster": "has_soul(Wallmaster)",
+            "Forest Temple Second Twisted Hallway Green Bubble 1": "has_soul(Bubble)",
+            "Forest Temple Second Twisted Hallway Green Bubble 2": "has_soul(Bubble)"
         },
         "exits": {
             "Forest Temple Frozen Eye Switch Room": "(Small_Key_Forest_Temple, 5)"
@@ -239,16 +271,16 @@
         "region_name": "Forest Temple Falling Room",
         "dungeon": "Forest Temple",
         "events": {
-            "Forest Temple Amy and Meg": "can_use(Bow)"
+            "Forest Temple Amy and Meg": "Bow"
         },
         "locations": {
             "Forest Temple Falling Ceiling Room Chest": "True",
-            "Forest Temple Green Poe Room Pot 1" : "True",
-            "Forest Temple Green Poe Room Pot 2" : "True",
-            "Forest Temple Falling Ceiling Room Skulltula 1": "can_kill_skulltula",
-            "Forest Temple Falling Ceiling Room Skulltula 2": "can_kill_skulltula",
-            "Forest Temple Falling Ceiling Room Skulltula 3": "can_kill_skulltula",
-            "Forest Temple After Green Poe Hallway Skulltula": "can_use(Bow) and can_kill_skulltula"
+            "Forest Temple Green Poe Room Pot 1": "True",
+            "Forest Temple Green Poe Room Pot 2": "True",
+            "Forest Temple Falling Ceiling Room Skulltula 1": "has_soul(Skulltula)",
+            "Forest Temple Falling Ceiling Room Skulltula 2": "has_soul(Skulltula)",
+            "Forest Temple Falling Ceiling Room Skulltula 3": "has_soul(Skulltula)",
+            "Forest Temple After Green Poe Hallway Skulltula": "Bow and has_soul(Skulltula)"
         },
         "exits": {
             "Forest Temple NE Outdoors": "True"

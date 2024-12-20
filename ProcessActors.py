@@ -177,7 +177,7 @@ scenes = [
     "Fairy's Fountain",
     "Great Fairy's Fountain (Spells)",
     "Grottos",
-    "Grave (Redead)",
+    "Grave (ReDead)",
     "Grave (Fairy's Fountain)",
     "Royal Family's Tomb",
     "Shooting Gallery",

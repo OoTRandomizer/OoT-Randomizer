@@ -8,24 +8,34 @@
             "Deku Tree Compass Room Side Chest": "True",
             "Deku Tree Lower Lobby Recovery Heart": "True",
             "Deku Tree Upper Lobby Recovery Heart": "is_adult or can_child_attack or Nuts",
+            "Deku Tree Lobby Vines Lowest Skullwalltula": "
+                has_soul(Skullwalltula) and
+                (is_adult or Sticks or has_explosives or Slingshot or Boomerang or can_use(Dins_Fire) or
+                    (Kokiri_Sword and (can_take_damage or
+                        correct_chest_appearances == 'Off' or correct_chest_appearances == 'Texture')))",
+            "Deku Tree Lobby Vines Left Lower Skullwalltula": "
+                has_soul(Skullwalltula) and
+                (can_use_projectile or can_use(Hammer) or can_use(Dins_Fire) or
+                    (can_jumpslash and can_take_damage) or
+                    ((is_adult or Sticks) and
+                        (correct_chest_appearances == 'Off' or correct_chest_appearances == 'Texture')))",
+            "Deku Tree Lobby Vines Upper Skullwalltula": "
+                has_soul(Skullwalltula) and
+                (can_use_projectile or can_use(Hammer) or can_use(Dins_Fire) or
+                    (can_jumpslash and can_take_damage))",
+            "Deku Tree Lobby Skulltula 1": "can_kill_skulltula",
+            "Deku Tree Lobby Skulltula 2": "can_kill_skulltula",
+            "Deku Tree Lobby Skulltula 3": "can_kill_skulltula",
+            "Deku Tree Compass Room Skulltula": "can_kill_skulltula",
             "Deku Tree GS Compass Room": "is_adult or can_child_attack",
             "Deku Baba Sticks": "has_soul(Deku_Baba) and (is_adult or Kokiri_Sword or Boomerang)",
             "Deku Baba Nuts": "
-                has_soul(Deku_Baba) and (
-                    is_adult or Slingshot or Sticks or
-                    has_explosives or Kokiri_Sword or can_use(Dins_Fire)
-                )",
-            "Deku Tree Vines Lowest Skullwalltula": "(has_soul(Skullwalltula)) and ((is_child and (Slingshot or Boomerang)) or (is_adult and (Bow or Hookshot)) or has_explosives or can_use(Dins_Fire))" ,
-            "Deku Tree Vines Left Lower Skullwalltula": "(has_soul(Skullwalltula)) and ((is_child and (Slingshot or Boomerang)) or (is_adult and (Bow or Hookshot)) or has_explosives or can_use(Dins_Fire))" ,
-            "Deku Tree Vines Upper Skullwalltula": "(has_soul(Skullwalltula)) and ((is_child and (Slingshot or Boomerang)) or (is_adult and (Bow or Hookshot)) or has_explosives or can_use(Dins_Fire))" ,
-            "Deku Tree Web Skulltula 1": "can_kill_skulltula",
-            "Deku Tree Web Skulltula 2": "can_kill_skulltula",
-            "Deku Tree Web Skulltula 3": "can_kill_skulltula",
-            "Deku Tree Compass Room Skulltula": "can_kill_skulltula"
+                has_soul(Deku_Baba) and
+                (is_adult or Slingshot or Sticks or has_explosives or Kokiri_Sword or can_use(Dins_Fire))"
         },
         "exits": {
             "KF Outside Deku Tree": "True",
-            "Deku Tree Slingshot Room": "here(has_shield) and (has_soul(Deku_Scrub))",
+            "Deku Tree Slingshot Room": "here(has_shield) and has_soul(Deku_Scrub)",
             "Deku Tree Basement": "deku_tree_shortcuts or here(is_adult or can_child_attack or Nuts)",
             "Farores Wind Warp": "can_use(Farores_Wind)"
         }
@@ -45,43 +55,49 @@
             "Deku Tree Basement Chest": "True",
             "Deku Tree GS Basement Gate": "is_adult or can_child_attack",
             "Deku Tree GS Basement Vines": "
-                can_use_projectile or can_use(Dins_Fire) or
-                (logic_deku_basement_gs and (is_adult or Sticks or Kokiri_Sword))"
+                can_use_projectile or can_use(Dins_Fire) or (logic_deku_basement_gs and can_jumpslash)"
         },
         "exits": {
             "Deku Tree Basement Ledge": "deku_tree_shortcuts or here(is_adult) or logic_deku_b1_skip",
-            "Deku Tree Basement Rotating Spike Room": "here(has_fire_source_with_torch or can_use(Bow)) and
-            here(can_use(Slingshot) or can_use(Bow))"
+            "Deku Tree Basement Water Room": "
+               here(has_fire_source_with_torch or can_use(Bow)) and
+               here(can_use(Slingshot) or can_use(Bow))"
         }
     },
     {
-        "region_name": "Deku Tree Basement Rotating Spike Room",
+        "region_name": "Deku Tree Basement Water Room",
         "dungeon": "Deku Tree",
         "locations": {
-            "Deku Tree Rotating Spike Skulltula": "can_kill_skulltula"
+            "Deku Tree Spinning Log Skulltula": "has_soul(Skulltula)"
         },
         "exits":
         {
-            "Deku Tree Basement Back Room" : "True"
+            "Deku Tree Basement Back Room": "True"
         }
     },
     {
         "region_name": "Deku Tree Basement Back Room",
         "dungeon": "Deku Tree",
         "locations": {
-            "Deku Tree GS Basement Back Room": "
-                here(has_fire_source_with_torch or can_use(Bow)) and
-                here(can_blast_or_smash) and
-                (can_use(Boomerang) or can_use(Hookshot))",
             "Deku Tree Basement Back Room Skulltula": "can_kill_skulltula",
             "Deku Tree Basement Back Room Gohma Larva 1": "can_kill_gohma_larva",
             "Deku Tree Basement Back Room Gohma Larva 2": "can_kill_gohma_larva",
-            "Deku Tree Basement Back Room Gohma Larva 3": "can_kill_gohma_larva",
-            "Deku Tree Basement Back Room Near GS Skulltula": "here(has_fire_source_with_torch or can_use(Bow)) and (has_soul(Skulltula) and (is_adult or can_child_attack))"
+            "Deku Tree Basement Back Room Gohma Larva 3": "can_kill_gohma_larva"
         },
         "exits": {
+            "Deku Tree Basement Back Side Room": "
+                here(has_fire_source_with_torch or can_use(Bow)) and
+                here(can_blast_or_smash)",
             "Deku Tree Basement Ledge": "is_child",
-            "Deku Tree Basement Rotating Spike Room" : "has_fire_source_with_torch or can_use(Bow)"
+            "Deku Tree Basement Water Room": "has_fire_source_with_torch"
+        }
+    },
+    {
+        "region_name": "Deku Tree Basement Back Side Room",
+        "dungeon": "Deku Tree",
+        "locations": {
+            "Deku Tree Basement Back Room Near GS Skulltula": "has_soul(Skulltula)",
+            "Deku Tree GS Basement Back Room": "can_use(Boomerang) or can_use(Hookshot)"
         }
     },
     {
@@ -106,7 +122,7 @@
         },
         "exits": {
             "Deku Tree Basement Ledge": "deku_tree_shortcuts or logic_visible_collisions",
-            "Queen Gohma Boss Room": "deku_tree_shortcuts or (here(has_shield) and (has_soul(Deku_Scrub)))"
+            "Queen Gohma Boss Room": "deku_tree_shortcuts or (here(has_shield) and has_soul(Deku_Scrub))"
         }
     }
 ]

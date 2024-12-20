@@ -2,10 +2,16 @@
     {
         "region_name": "Water Temple Lobby",
         "dungeon": "Water Temple",
+        "events": {
+            # Use for cases where child assists after the water is lowered.
+            "Child Water Temple": "is_child",
+            # Check to ensure the water level can be changed, if routes require highest or lowest water.
+            "Reset Water Level": "can_use(Hookshot) or can_use(Hover_Boots)"
+        },
         "exits": {
             "Lake Hylia": "True",
             "Water Temple Dive": "is_adult and (Zora_Tunic or logic_fewer_tunic_requirements) and Iron_Boots",
-            "Water Temple Dark Link Region": "
+            "Water Temple After Waterfall Room": "
                 Small_Key_Water_Temple and is_adult and
                 (Longshot or (logic_water_mq_dark_link and Hover_Boots and Hookshot))",
             "Water Temple Before Boss Lower": "can_use(Longshot)",
@@ -39,14 +45,14 @@
         "region_name": "Water Temple Dive",
         "dungeon": "Water Temple",
         "locations": {
-            "Water Temple MQ Map Chest": "has_fire_source and Hookshot and has_soul(Stalfos)",
-            "Water Temple MQ L1 Torch Pot 1": "Hookshot or can_play(Zeldas_Lullaby)",
-            "Water Temple MQ L1 Torch Pot 2": "Hookshot or can_play(Zeldas_Lullaby)",
+            "Water Temple MQ Map Chest": "has_fire_source and Hookshot",
+            "Water Temple MQ L1 Torch Pot 1": "Hookshot or (can_play(Zeldas_Lullaby) and Reset_Water_Level)",
+            "Water Temple MQ L1 Torch Pot 2": "Hookshot or (can_play(Zeldas_Lullaby) and Reset_Water_Level)",
             "Water Temple MQ Lizalfos Hallway Pot 1": "Hookshot or can_play(Zeldas_Lullaby)",
             "Water Temple MQ Lizalfos Hallway Pot 2": "Hookshot or can_play(Zeldas_Lullaby)",
             "Water Temple MQ Lizalfos Hallway Pot 3": "Hookshot or can_play(Zeldas_Lullaby)",
-            "Water Temple MQ Central Pillar Upper Crate 1": "can_break_crate",
-            "Water Temple MQ Central Pillar Upper Crate 2": "can_break_crate",
+            "Water Temple MQ Central Pillar Upper Crate 1": "can_break_crate and Reset_Water_Level",
+            "Water Temple MQ Central Pillar Upper Crate 2": "can_break_crate and Reset_Water_Level",
             "Water Temple MQ Lizalfos Hallway Hall Crate 1": "
                 can_bonk or (can_play(Zeldas_Lullaby) and can_blast_or_smash)",
             "Water Temple MQ Lizalfos Hallway Hall Crate 2": "
@@ -66,16 +72,17 @@
             "Water Temple MQ Map Chest Hookshot Wonderitem": "has_fire_source and Hookshot",
             "Water Temple MQ Lizalfos Hallway Hookshot Wonderitem": "Hookshot",
             "Water Temple MQ Longshot Chest Hookshot Wonderitem": "Hookshot",
-            "Water Temple MQ Map Chest Stalfos 1": "has_fire_source and Hookshot and has_soul(Stalfos)",
-            "Water Temple MQ Map Chest Stalfos 2": "has_fire_source and Hookshot and has_soul(Stalfos)",
-            "Water Temple MQ Map Chest Stalfos 3": "has_fire_source and Hookshot and has_soul(Stalfos)",
-            "Water Temple MQ Lizalfos Hallway Lizalfos 1": "at('Water Temple Lowered Water Levels', has_soul(Lizalfos_and_Dinalfos))",
-            "Water Temple MQ Lizalfos Hallway Lizalfos 2": "at('Water Temple Lowered Water Levels', has_soul(Lizalfos_and_Dinalfos))"
+            "Water Temple MQ Map Chest Stalfos 1": "
+                has_fire_source and has_soul(Stalfos) and Reset_Water_Level",
+            "Water Temple MQ Map Chest Stalfos 2": "
+                has_fire_source and has_soul(Stalfos) and Reset_Water_Level",
+            "Water Temple MQ Map Chest Stalfos 3": "
+                has_fire_source and has_soul(Stalfos) and Reset_Water_Level"
         },
         "exits": {
             "Water Temple Below Central Pillar": "
                 Zora_Tunic and ((logic_water_mq_central_pillar and can_use(Fire_Arrows)) or
-                    (can_use(Dins_Fire) and can_play(Song_of_Time)))",
+                    (can_use(Dins_Fire) and can_play(Song_of_Time) and Reset_Water_Level))",
             "Water Temple Storage Room": "Hookshot",
             "Water Temple Lowered Water Levels": "can_play(Zeldas_Lullaby)"
         }
@@ -128,20 +135,26 @@
         "dungeon": "Water Temple",
         "locations": {
             "Water Temple MQ Compass Chest": "
-                has_soul(Spike_Enemy) and has_soul(Lizalfos_and_Dinalfos) and (Bow or can_use(Dins_Fire) or at('Water Temple Lobby', can_use(Sticks)))",
+                has_soul(Spike_Enemy) and has_soul(Lizalfos_and_Dinalfos) and Reset_Water_Level and
+                (Bow or can_use(Dins_Fire) or (Child_Water_Temple and Sticks))",
             "Water Temple MQ Longshot Chest": "Hookshot",
             "Water Temple MQ Lizalfos Hallway Gate Pot 1": "can_use(Dins_Fire)",
             "Water Temple MQ Lizalfos Hallway Gate Pot 2": "can_use(Dins_Fire)",
             "Water Temple MQ Lizalfos Hallway Gate Crate 1": "can_use(Dins_Fire) and can_break_crate",
             "Water Temple MQ Lizalfos Hallway Gate Crate 2": "can_use(Dins_Fire) and can_break_crate",
-            "Water Temple MQ GS Lizalfos Hallway": "can_use(Dins_Fire)",
             "Water Temple MQ Compass Chest Hookshot Wonderitem": "(Bow or can_use(Dins_Fire)) and Hookshot",
+            "Water Temple MQ Lizalfos Hallway Lizalfos 1": "has_soul(Lizalfos_and_Dinalfos)",
+            "Water Temple MQ Lizalfos Hallway Lizalfos 2": "has_soul(Lizalfos_and_Dinalfos)",
             "Water Temple MQ Compass Chest Spike": "
-                has_soul(Spike_Enemy) and (Bow or can_use(Dins_Fire) or at('Water Temple Lobby', can_use(Sticks)))",
+                has_soul(Spike_Enemy) and Reset_Water_Level and
+                (Bow or can_use(Dins_Fire) or (Child_Water_Temple and Sticks))",
             "Water Temple MQ Compass Chest Lizalfos 1": "
-                has_soul(Lizalfos_and_Dinalfos) and (Bow or can_use(Dins_Fire) or at('Water Temple Lobby', can_use(Sticks)))",
+                has_soul(Lizalfos_and_Dinalfos) and Reset_Water_Level and
+                (Bow or can_use(Dins_Fire) or (Child_Water_Temple and Sticks))",
             "Water Temple MQ Compass Chest Lizalfos 2": "
-                has_soul(Lizalfos_and_Dinalfos) and (Bow or can_use(Dins_Fire) or at('Water Temple Lobby', can_use(Sticks)))"
+                has_soul(Lizalfos_and_Dinalfos) and Reset_Water_Level and
+                (Bow or can_use(Dins_Fire) or (Child_Water_Temple and Sticks))",
+            "Water Temple MQ GS Lizalfos Hallway": "can_use(Dins_Fire)"
         },
         "exits": {
             "Water Temple Before Upper Water Switch": "Hookshot"
@@ -170,41 +183,57 @@
         }
     },
     {
-        "region_name": "Water Temple Dark Link Region",
+        "region_name": "Water Temple After Waterfall Room",
         "dungeon": "Water Temple",
         "locations": {
-            "Water Temple MQ Before Dark Link Lower Pot 1": "has_soul(Stalfos)",
-            "Water Temple MQ Before Dark Link Lower Pot 2": "has_soul(Stalfos)",
-            "Water Temple MQ Before Dark Link Lower Pot 3": "has_soul(Stalfos)",
-            "Water Temple MQ Before Dark Link Top Pot 1": "has_soul(Stalfos)",
-            "Water Temple MQ Before Dark Link Top Pot 2": "has_soul(Stalfos)",
+            "Water Temple MQ Before Dark Link Lower Pot 1": "True",
+            "Water Temple MQ Before Dark Link Lower Pot 2": "True",
+            "Water Temple MQ Before Dark Link Lower Pot 3": "True",
             "Water Temple MQ Hookshot Waterfall Left Hookshot Wonderitem 1": "True",
             "Water Temple MQ Hookshot Waterfall Left Hookshot Wonderitem 2": "True",
             "Water Temple MQ Hookshot Waterfall Left Hookshot Wonderitem 3": "True",
             "Water Temple MQ Hookshot Waterfall Right Hookshot Wonderitem 1": "True",
             "Water Temple MQ Hookshot Waterfall Right Hookshot Wonderitem 2": "True",
             "Water Temple MQ Hookshot Waterfall Right Hookshot Wonderitem 3": "True",
-            "Water Temple MQ After Dark Link Hookshot Wonderitem": "has_soul(Stalfos) and has_soul(Dark_Link)",
-            "Water Temple MQ Dragon Statue Eyes Hookshot Wonderitem 1": "(Zora_Tunic or logic_fewer_tunic_requirements) and Iron_Boots and has_soul(Stalfos) and has_soul(Dark_Link)",
-            "Water Temple MQ Dragon Statue Eyes Hookshot Wonderitem 2": "(Zora_Tunic or logic_fewer_tunic_requirements) and Iron_Boots and has_soul(Stalfos) and has_soul(Dark_Link)",
-            "Water Temple MQ Before Dark Link Stalfos 1": "has_soul(Stalfos)",
-            "Water Temple MQ Before Dark Link Stalfos 2": "has_soul(Stalfos)",
-            "Water Temple MQ Before Dark Link Stalfos 3": "has_soul(Stalfos)",
-            "Water Temple MQ Room After Dark Link Pot 1": "has_soul(Stalfos) and has_soul(Dark_Link)",
-            "Water Temple MQ Room After Dark Link Pot 2": "has_soul(Stalfos) and has_soul(Dark_Link)",
-            "Water Temple MQ Dark Link": "has_soul(Stalfos) and has_soul(Dark_Link)",
-            "Water Temple MQ River Pot 1": "has_soul(Stalfos) and has_soul(Dark_Link)",
-            "Water Temple MQ River Pot 2": "has_soul(Stalfos) and has_soul(Dark_Link)",
-            "Water Temple MQ Dragon Statue Near Door Crate 1": "has_soul(Stalfos) and has_soul(Dark_Link) and can_break_crate",
-            "Water Temple MQ Dragon Statue Near Door Crate 2": "has_soul(Stalfos) and has_soul(Dark_Link) and can_break_crate",
-            "Water Temple MQ GS River": "has_soul(Stalfos) and has_soul(Dark_Link)",
-            "Fairy Pot": "has_soul(Stalfos) and has_soul(Dark_Link) and has_bottle",
-            "Nut Pot": "has_soul(Stalfos) and has_soul(Dark_Link)"
+            "Fairy Pot": "has_bottle",
+            "Nut Pot": "True"
+        },
+        "exits": {
+            "Water Temple Before Dark Link": "has_soul(Stalfos)"
+        }
+    },
+    {
+        "region_name": "Water Temple Before Dark Link",
+        "dungeon": "Water Temple",
+        "locations": {
+            "Water Temple MQ Before Dark Link Top Pot 1": "True",
+            "Water Temple MQ Before Dark Link Top Pot 2": "True",
+            "Water Temple MQ Before Dark Link Stalfos 1": "True",
+            "Water Temple MQ Before Dark Link Stalfos 2": "True",
+            "Water Temple MQ Before Dark Link Stalfos 3": "True"
+        },
+        "exits": {
+            "Water Temple River": "has_soul(Dark_Link)"
+        }
+    },
+    {
+        "region_name": "Water Temple River",
+        "dungeon": "Water Temple",
+        "locations": {
+            "Water Temple MQ Room After Dark Link Pot 1": "True",
+            "Water Temple MQ Room After Dark Link Pot 2": "True",
+            "Water Temple MQ River Pot 1": "True",
+            "Water Temple MQ River Pot 2": "True",
+            "Water Temple MQ Dragon Statue Near Door Crate 1": "can_break_crate",
+            "Water Temple MQ Dragon Statue Near Door Crate 2": "can_break_crate",
+            "Water Temple MQ After Dark Link Hookshot Wonderitem": "True",
+            "Water Temple MQ Dark Link": "True",
+            "Water Temple MQ GS River": "True"
         },
         "exits": {
             "Water Temple Dragon Statue": "
-                (has_soul(Stalfos) and has_soul(Dark_Link)) and ((Zora_Tunic or logic_fewer_tunic_requirements) and
-                (logic_water_dragon_jump_dive or can_dive or Iron_Boots))"
+                (Zora_Tunic or logic_fewer_tunic_requirements) and
+                (logic_water_dragon_jump_dive or can_dive or Iron_Boots)"
         }
     },
     {
@@ -224,7 +253,9 @@
                 (Iron_Boots and can_bonk) or (has_bombchus and (can_dive or Iron_Boots))",
             "Water Temple MQ Dragon Statue Submerged Crate 4": "
                 (Iron_Boots and can_bonk) or (has_bombchus and (can_dive or Iron_Boots))",
-            "Water Temple MQ Dragon Statue Crates Hookshot Wonderitem": "True"
+            "Water Temple MQ Dragon Statue Crates Hookshot Wonderitem": "True",
+            "Water Temple MQ Dragon Statue Eyes Hookshot Wonderitem 1": "Iron_Boots",
+            "Water Temple MQ Dragon Statue Eyes Hookshot Wonderitem 2": "Iron_Boots"
         },
         "exits": {
             "Water Temple Boss Key Chest Room": "has_fire_source"
@@ -255,17 +286,26 @@
             "Water Temple MQ Triple Wall Torch Submerged Crate 3": "can_bonk or has_bombchus",
             "Water Temple MQ Triple Wall Torch Submerged Crate 4": "can_bonk or has_bombchus",
             "Water Temple MQ Triple Wall Torch Submerged Crate 5": "can_bonk or has_bombchus",
-            "Water Temple MQ Triple Wall Torch Submerged Crate 6": "can_bonk or has_bombchus",
-            "Water Temple MQ Triple Wall Torch Stalfos 1": "has_soul(Stalfos)",
-            "Water Temple MQ Triple Wall Torch Stalfos 2": "has_soul(Stalfos)"
+            "Water Temple MQ Triple Wall Torch Submerged Crate 6": "can_bonk or has_bombchus"
         },
         "exits": {
-            "Water Temple Triple Wall Torch": "can_use(Fire_Arrows) and (Hover_Boots or can_use(Scarecrow))",
+            "Water Temple Triple Wall Torch": "Hover_Boots or can_use(Scarecrow)",
             "Water Temple North Basement": "Longshot or (logic_water_north_basement and Hover_Boots)"
         }
     },
     {
         "region_name": "Water Temple Triple Wall Torch",
+        "dungeon": "Water Temple",
+        "locations": {
+            "Water Temple MQ Triple Wall Torch Stalfos 1": "True",
+            "Water Temple MQ Triple Wall Torch Stalfos 2": "True"
+        },
+        "exits": {
+            "Water Temple Triple Wall Torch Gate": "can_use(Fire_Arrows)"
+        }
+    },
+    {
+        "region_name": "Water Temple Triple Wall Torch Gate",
         "dungeon": "Water Temple",
         "locations": {
             "Water Temple MQ Triple Wall Torch Pot 1": "True",
@@ -275,8 +315,8 @@
             "Water Temple MQ Triple Wall Torch Behind Gate Crate 1": "can_break_crate",
             "Water Temple MQ Triple Wall Torch Behind Gate Crate 2": "can_break_crate",
             "Water Temple MQ Triple Wall Torch Behind Gate Crate 3": "can_break_crate",
-            "Water Temple MQ GS Triple Wall Torch": "True",
-            "Water Temple MQ Triple Wall Torch Hookshot/Bow Wonderitem": "True"
+            "Water Temple MQ Triple Wall Torch Hookshot/Bow Wonderitem": "True",
+            "Water Temple MQ GS Triple Wall Torch": "True"
         }
     },
     {
@@ -311,10 +351,46 @@
             "Water Temple MQ Freestanding Key Room Crate 4": "can_break_crate",
             "Water Temple MQ Freestanding Key Room Crate 5": "can_break_crate",
             "Water Temple MQ Freestanding Key Hookshot Wonderitem": "True",
-            "Water Temple MQ Freestanding Key Stalfos": "has_soul(Stalfos)"
+            "Water Temple MQ Freestanding Key Stalfos": "True"
         },
         "exits": {
-            "Water Temple Dodongo Room": "(Small_Key_Water_Temple, 2)"
+            "Water Temple 3 Water Spouts Room": "(Small_Key_Water_Temple, 2)"
+        }
+    },
+    {
+        "region_name": "Water Temple 3 Water Spouts Room",
+        "dungeon": "Water Temple",
+        "locations": {
+            "Water Temple MQ 3 Water Spouts Proximity Wonderitem 1": "True",
+            "Water Temple MQ 3 Water Spouts Proximity Wonderitem 2": "True"
+        },
+        "exits": {
+            "Water Temple Dodongo Room": "True",
+            "Water Temple Freestanding Key Room": "(Small_Key_Water_Temple, 2)"
+        }
+    },
+    {
+        "region_name": "Water Temple Dodongo Room",
+        "dungeon": "Water Temple",
+        "locations": {
+            "Water Temple MQ Dodongo Room Pot 1": "True",
+            "Water Temple MQ Dodongo Room Pot 2": "True",
+            "Water Temple MQ Dodongo Room Lower Crate 1": "can_break_crate",
+            "Water Temple MQ Dodongo Room Lower Crate 2": "can_break_crate",
+            "Water Temple MQ Dodongo Room Lower Crate 3": "can_break_crate",
+            "Water Temple MQ Dodongo Room Upper Crate": "can_break_crate",
+            "Water Temple MQ Dodongo Room Hall Crate": "can_break_crate",
+            "Water Temple MQ Dodongo Room Dodongo 1": "has_soul(Dodongo)",
+            "Water Temple MQ Dodongo Room Dodongo 2": "has_soul(Dodongo)",
+            "Water Temple MQ Dodongo Room Dodongo 3": "has_soul(Dodongo)",
+            "Water Temple MQ Dodongo Room Dodongo 4": "has_soul(Dodongo)",
+            "Water Temple MQ Dodongo Room Dodongo 5": "has_soul(Dodongo)",
+            "Water Temple MQ Dodongo Room Dodongo 6": "has_soul(Dodongo)",
+            "Water Temple MQ Dodongo Room Dodongo 7": "has_soul(Dodongo)"
+        },
+        "exits": {
+            "Water Temple Freestanding Key Area Behind Gate": "has_soul(Dodongo)",
+            "Water Temple 3 Water Spouts Room": "has_soul(Dodongo)"
         }
     },
     {
@@ -329,32 +405,6 @@
         },
         "exits" : {
             "Water Temple Dodongo Room": "True"
-        }
-    },
-    {
-        "region_name": "Water Temple Dodongo Room",
-        "dungeon": "Water Temple",
-        "locations": {
-            "Water Temple MQ Dodongo Room Pot 1": "True",
-            "Water Temple MQ Dodongo Room Pot 2": "True",
-            "Water Temple MQ Dodongo Room Lower Crate 1": "can_break_crate",
-            "Water Temple MQ Dodongo Room Lower Crate 2": "can_break_crate",
-            "Water Temple MQ Dodongo Room Lower Crate 3": "can_break_crate",
-            "Water Temple MQ Dodongo Room Upper Crate": "can_break_crate",
-            "Water Temple MQ Dodongo Room Hall Crate": "can_break_crate",
-            "Water Temple MQ 3 Water Spouts Proximity Wonderitem 1": "True",
-            "Water Temple MQ 3 Water Spouts Proximity Wonderitem 2": "True",
-            "Water Temple MQ Dodongo Room Dodongo 1": "has_soul(Dodongo)",
-            "Water Temple MQ Dodongo Room Dodongo 2": "has_soul(Dodongo)",
-            "Water Temple MQ Dodongo Room Dodongo 3": "has_soul(Dodongo)",
-            "Water Temple MQ Dodongo Room Dodongo 4": "has_soul(Dodongo)",
-            "Water Temple MQ Dodongo Room Dodongo 5": "has_soul(Dodongo)",
-            "Water Temple MQ Dodongo Room Dodongo 6": "has_soul(Dodongo)",
-            "Water Temple MQ Dodongo Room Dodongo 7": "has_soul(Dodongo)"
-        },
-        "exits": {
-            "Water Temple Freestanding Key Room": "(Small_Key_Water_Temple, 2) and has_soul(Dodongo)",
-            "Water Temple Freestanding Key Area Behind Gate": "has_soul(Dodongo)"
         }
     }
 ]
