@@ -577,8 +577,17 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                         current_menu_indexes.specific_actor_index = 0;
                     }
                     if (current_menu_indexes.sub_menu_index == 2) {
+                        uint8_t nbActors = 0;
+                        z64_actor_t* actor = z64_game.actor_list[current_menu_indexes.actor_index].first;
+                        while (actor != NULL) {
+                            nbActors++;
+                            actor = actor->next;
+                        }
                         if (z64_game.common.input[0].pad_pressed.dr) {
                             current_menu_indexes.specific_actor_index++;
+                            if (current_menu_indexes.specific_actor_index > nbActors - 1) {
+                                current_menu_indexes.specific_actor_index = 0;
+                            }
                         }
                         if (z64_game.common.input[0].pad_pressed.dl) {
                             current_menu_indexes.specific_actor_index--;
@@ -593,8 +602,19 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                     break;
                 case 8: // Overlay
                     if (current_menu_indexes.sub_menu_index == 1) {
+                        uint8_t nbOverlays, currentOverlayTabIndex = 0;
+                        for (int overlay_id = 0; overlay_id < 0x0192; overlay_id++) {
+                            ActorOverlay overlay = gActorOverlayTable[overlay_id];
+                             if (overlay.loadedRamAddr) {
+                                nbOverlays++;
+                            }
+                        }
+
                         if (z64_game.common.input[0].pad_pressed.dr) {
                             current_menu_indexes.overlay_index++;
+                            if (current_menu_indexes.overlay_index > nbOverlays - 1) {
+                                current_menu_indexes.overlay_index = 0;
+                            }
                         }
                         if (z64_game.common.input[0].pad_pressed.dl) {
                             current_menu_indexes.overlay_index--;
@@ -893,7 +913,7 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                         text_print_size(db, d->name, left + 5, top + 5, font_width, font_height);
                     }
                     else {
-                        int8_t nbActors = 0;
+                        uint8_t nbActors = 0;
                         z64_actor_t* actor = z64_game.actor_list[current_menu_indexes.actor_index].first;
                         uint8_t currentActorPage = current_menu_indexes.specific_actor_index / 10;
                         // Display actor list in 10 by 10 pages.
