@@ -547,9 +547,9 @@ def _patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str):
                     # Check for direct_bank mapped
                     if "direct_bank" in voice_map.keys():
                         for bank_str in voice_map["direct_bank"].keys():
-                            bank = int(bank_str)
+                            bank = int(bank_str, 16)
                             for index_str in voice_map["direct_bank"][bank_str].keys():
-                                index = int(index_str)
+                                index = int(index_str, 16)
                                 sample_file = voice_map["direct_bank"][bank_str][index_str]
                                 with zf.open(sample_file) as f:
                                     # Read and process the file
@@ -624,6 +624,8 @@ def process_sound_file(file_name: str, file, trim: bool = False) -> tuple[bytear
         soundData, numSampleFrames, sampleRate = process_soundfile_file(file, trim)
     elif ext == ".aifc":
         soundData, numSampleFrames, sampleRate = process_aifc_file(file)
+    elif ext == ".bin":
+        soundData, numSampleFrames, sampleRate = process_bin_file(file)
     else:
         raise Exception("Unsupported file format")        
     
@@ -648,6 +650,15 @@ def process_soundfile_file(f, trim=False):
         numSampleFrames = len(data)
         soundData = adpcm_encode(frames, len(data)) # Encode the raw samples
         return soundData, numSampleFrames, sampleRate
+
+# Used for patching SFX that have already been stripped into raw binary ready to patch into the ROM
+def process_bin_file(f):
+    
+    soundData = f.read()
+    numSampleFrames = int(len(soundData) * 3 / 2)
+    sampleRate = 20000
+    return (soundData, numSampleFrames, sampleRate)
+
 
 # Pretty basic aifc file parser. Extracts the already encoded .aifc data metadata from the file
 def process_aifc_file(f):
