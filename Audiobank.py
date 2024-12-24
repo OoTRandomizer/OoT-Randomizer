@@ -232,6 +232,7 @@ class SFX:
 class Instrument:
     def __init__(self, inst_id: int, bankdata: bytearray, audiotable_file: bytearray, audiotable_index: bytearray, instr_offset: int, audiotable_id: int) -> None:
         self.inst_id = inst_id
+        self.instrument_offset = instr_offset
         self.normalRangeLo = bankdata[instr_offset + 1]
         self.normalRangeHi = bankdata[instr_offset + 2]
         self.releaseRate = bankdata[instr_offset + 3]

@@ -435,12 +435,12 @@ def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age) -> tuple
                     _file = io.BytesIO(decompressed)
                     soundData, numSampleFrames, sampleRate = process_sound_file(name, _file, trim=True)
                     _file.close()
-                    to_add.append((name, rom_targets[i], soundData, numSampleFrames, sampleRate, None))
+                    to_add.append((name, 0, rom_targets[i], soundData, numSampleFrames, sampleRate, None))
                     i += 1
                 # Randomly pick from the ones we've already added and duplicate them
                 for j in range(i, len(rom_targets)):
                     added = to_add[random.randint(0, i-1)]
-                    to_add.append((added[0], rom_targets[j], added[2], added[3], added[4], None))
+                    to_add.append((added[0], 0, rom_targets[j], added[2], added[3], added[4], None))
             else:
                 # We have more than what the game expects, just take the first ones based on the length we expect
                 for i in range(0, len(rom_targets)):
@@ -448,7 +448,7 @@ def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age) -> tuple
                     _file = io.BytesIO(decompressed)
                     soundData, numSampleFrames, sampleRate = process_sound_file(name, _file, trim=True)
                     _file.close()
-                    to_add.append((name, rom_targets[i], soundData, numSampleFrames, sampleRate, None))
+                    to_add.append((name, 0, rom_targets[i], soundData, numSampleFrames, sampleRate, None))
                 pass
         elif sfx_type == SFX_TYPE_PLAY_ORDERED:
             rom_targets = mapping['sounds']
@@ -482,6 +482,7 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
     files : list[str] = os.listdir(voice_pack_dir)
 
     sfxs = []
+    inst_patch = []
     for filename in files:
         # ML64 .pak file
         # ML64 packs use SFX ID. SFX ID's are processed by the SFX sequence player so the mapping to the bank index isn't straightfoward
@@ -552,9 +553,60 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
                                     # Read and process the file
                                     soundData, numSampleFrames, sampleRate = process_sound_file(sample_file, f)
                                     sfxs.append((sample_file, bank, index, soundData, numSampleFrames, sampleRate, None))
+                    if "direct_bank_inst" in voice_map.keys():
+                        for bank_str in voice_map["direct_bank_inst"].keys():
+                            bank = int(bank_str, 16)
+                            for index_str in voice_map["direct_bank_inst"][bank_str].keys():
+                                index = int(index_str, 16)
+                                sample_file = voice_map["direct_bank_inst"][bank_str][index_str]
+                                with zf.open(sample_file) as f:
+                                    # Read the .aifc file
+                                    # Need to get the loop predictors out of it
+                                    soundData, numSampleFrames, sampleRate = process_aifc_file(f)
+                                    inst_patch.append((sample_file,bank, index, soundData, numSampleFrames, sampleRate, None))
             zf.close()
 
     sfx_data_start = len(rom.audiotable)
+
+    for _, bank_index, inst_id, soundData, numSampleFrames, sampleRate, patch in inst_patch:
+        # Calculate the tuning as sampling rate / 32000.
+        tuning = sampleRate / 32000
+
+        # Pad the data to 16 bytes
+        soundData += bytearray((16 - (len(soundData)%16))%16)
+
+        bank = rom.audiobanks[bank_index]
+
+        inst: Instrument = bank.instruments[inst_id]
+
+        # Compare sound data to existing to see if it fits
+        if len(soundData) > inst.normalNoteSample.size:
+            # Put the data in audiotable
+            rom.audiotable += soundData
+            inst.normalNoteSample.addr = sfx_data_start
+            sfx_data_start += len(soundData)
+        else:
+            # Put the data in the existing location. Pad with 0s
+            pad_len = inst.normalNoteSample.size - len(soundData)
+            soundData += bytearray(pad_len)
+            rom.audiotable[inst.normalNoteSample.addr:inst.normalNoteSample.addr + len(soundData)] = soundData
+
+        # Update the sfx tuning
+        inst.normalNoteTuning = float(tuning)
+
+        # Update loop end as numSampleFrames
+        inst.normalNoteSample.loop.end = numSampleFrames
+        # Update sample data length = length
+        inst.normalNoteSample.size = len(soundData)
+        sampleBytes = inst.normalNoteSample.get_bytes()
+        #instBytes = inst.get_bytes()
+        loopBytes = inst.normalNoteSample.loop.get_bytes()
+
+        # Write the new sample into the bank
+        bank.bank_data[inst.normalNoteSampleOffset:inst.normalNoteSampleOffset+0x10] = inst.normalNoteSample.get_bytes()
+        #bank.bank_data[sfx.sfx_offset:sfx.sfx_offset+0x08] = sfx.get_bytes()
+        bank.bank_data[inst.instrument_offset + 20: inst.instrument_offset + 24] = struct.pack(">f", inst.normalNoteTuning)
+        bank.bank_data[inst.normalNoteSample.loop_addr:inst.normalNoteSample.loop_addr+len(loopBytes)] = loopBytes
 
     # Patch each sfx that we have
     for _, bank_index, sfx_id, soundData, numSampleFrames, sampleRate, patch in sfxs:
