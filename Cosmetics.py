@@ -16,7 +16,7 @@ from JSONDump import dump_obj, CollapseList, CollapseDict, AlignedDict
 from Plandomizer import InvalidFileException
 from Utils import data_path
 from version import __version__
-from Voices import VOICE_PACK_AGE, _patch_voice_pack, child_link_sfx, adult_link_sfx
+from Voices import VOICE_PACK_AGE, patch_voice_pack, child_link_sfx, adult_link_sfx
 
 if TYPE_CHECKING:
     from Rom import Rom
@@ -937,16 +937,16 @@ def patch_voices(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[
         # Write the setting to the log
         log.sfx[log_key] = voice_setting
 
-def patch_voice_pack(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]):
+def patch_voice_packs(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]):
     if settings.sfx_link_adult == 'Silent':
         patch_silent_voice(rom, VOICE_PACK_AGE.ADULT, log)
     elif settings.sfx_link_adult != 'Default':
-        _patch_voice_pack(rom, VOICE_PACK_AGE.ADULT, settings.sfx_link_adult, settings)
+        patch_voice_pack(rom, VOICE_PACK_AGE.ADULT, settings.sfx_link_adult, settings)
 
     if settings.sfx_link_child == 'Silent':
         patch_silent_voice(rom, VOICE_PACK_AGE.ADULT, log)
     elif settings.sfx_link_child != 'Default':
-        _patch_voice_pack(rom, VOICE_PACK_AGE.CHILD, settings.sfx_link_child, settings)
+        patch_voice_pack(rom, VOICE_PACK_AGE.CHILD, settings.sfx_link_child, settings)
 
 def patch_music_changes(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]) -> None:
     # Music tempo changes
@@ -1234,7 +1234,7 @@ patch_sets[0x1F073FE2] = {
 # 8.2.22
 patch_sets[0x1F073FE3] = {
     "patches": patch_sets[0x1F073FE2]["patches"] + [
-        patch_voice_pack,
+        patch_voice_packs,
     ],
     "symbols": {
         **patch_sets[0x1F073FE2]["symbols"]

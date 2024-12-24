@@ -3,6 +3,7 @@ from enum import Enum
 from math import ceil
 import random
 import sys
+from typing import BinaryIO
 from Audiobank import *
 from Rom import Rom
 from Settings import Settings
@@ -30,21 +31,28 @@ SFX_TYPE_PLAY_ONE = 0x01
 SFX_TYPE_CHOOSE_RAND = 0x02
 SFX_TYPE_PLAY_ORDERED = 0x03
 
-
-def calculate_ticks(numFrames, sampleRate):
+# Calculate the ticks variable to be used when overwriting
+# SFX sequences
+def calculate_ticks(numFrames, sampleRate) -> int:
     duration = float(numFrames) / float(sampleRate)
     # seconds = ticks / (120 * 48) * 60
     numTicks = int(duration * (120 * 48) / 60) + 1
     numTicks |= 0x8000 # for aseq VAR format
     return numTicks
 
-def adult_sfx_patch_death(rom: Rom, numFrames: int, sampleRate: int):
+# SFX patch functions
+# Used to patch SFX that use multiple sequenced samples with a single audio file
+# Return a list of tuples of the form (address, [patch_data])
+# Where address is the offset into the SEQ0 file
+# and patch_data is a list of bytes to patch at that address
+
+def adult_sfx_patch_death(rom: Rom, numFrames: int, sampleRate: int) -> tuple[int, list[int]]:
     # increase length. Patch out the last 2 notes w/ 0xFF
     numTicks = calculate_ticks(numFrames, sampleRate)
     tick_bytes = numTicks.to_bytes(2, 'big')
     return [(0x6265, [0x4D] + list(tick_bytes) + [0x64] + [0xFF]*5)]
 
-def adult_sfx_patch_sneeze(rom: Rom, numFrames: int, sampleRate: int):
+def adult_sfx_patch_sneeze(rom: Rom, numFrames: int, sampleRate: int) -> tuple[int, list[int]]:
     # Increase duration of first note and make it 100 volume. Patch out the last 2 notes
     numTicks = calculate_ticks(numFrames, sampleRate)
     tick_bytes = numTicks.to_bytes(2, 'big')
@@ -52,7 +60,7 @@ def adult_sfx_patch_sneeze(rom: Rom, numFrames: int, sampleRate: int):
         (0x628D, [0x50] + list(tick_bytes) + [0x64] + [0xFF]*7)
     ]
 
-def adult_sfx_patch_sweat(rom: Rom, numFrames: int, sampleRate: int):
+def adult_sfx_patch_sweat(rom: Rom, numFrames: int, sampleRate: int) -> tuple[int, list[int]]:
     numTicks = calculate_ticks(numFrames, sampleRate)
     tick_bytes = numTicks.to_bytes(2, 'big')
     return [
@@ -60,7 +68,7 @@ def adult_sfx_patch_sweat(rom: Rom, numFrames: int, sampleRate: int):
         [0xFF]*7)
     ]
 
-def adult_sfx_patch_stretch(rom: Rom, numFrames: int, sampleRate: int):
+def adult_sfx_patch_stretch(rom: Rom, numFrames: int, sampleRate: int) -> tuple[int, list[int]]:
     numTicks = calculate_ticks(numFrames, sampleRate)
     tick_bytes = numTicks.to_bytes(2, 'big')
     return [
@@ -209,8 +217,6 @@ def child_sfx_patch_stretch(rom: Rom, numFrames: int, sampleRate: int):
     return [
         (0x6488, [0x4A] + list(tick_bytes) + [0x64] + [0xFF]*6)
     ]
-# Replace the first 
-    
 
 child_sfx_id_map = {
     0x6820: { # Child Link Attacks
@@ -405,15 +411,10 @@ class VOICE_PACK_AGE(Enum):
 # sfx_id_map - the sfx_id -> bank map to use selected by age
 # pak_sounds - a dictionary mapping for the entire voice pack - sfx_id to a list of tuples containing the file's name and the raw data from the file
 # age that this pak is for
-def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age):
+def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age) -> tuple[str, int, list[int], bytearray, int, int, function]:
     to_add = []
-    # Try adult and child SFX ID
-#    age_shift = -0x20 if age == VOICE_PACK_AGE.ADULT else 0x20 # For a pak we're using as adult, also try using child SFX IDs and vice-versa
-    
-    # Check if the sfx_id is in the mapping for this age. If not try to shift it to the other age
-    # This should allow a pack designed for a single age to work for another age
-    # And if a pack has both ages in it, will only patch the current age on this pass
-#    sfx_id = pak_sfx_id if pak_sfx_id in sfx_id_map.keys() else pak_sfx_id + age_shift
+
+    # Check if the sfx_id is in the mapping for this age. 
     sfx_id = pak_sfx_id   
     if sfx_id in sfx_id_map.keys():
         pak_opts = pak_sounds[pak_sfx_id] # Options provided in the pack
@@ -466,13 +467,7 @@ def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age):
             raise Exception("Unsupported sfx type")
     return to_add
 
-def get_sfx_id(sfx_list: list[tuple[str,int]], sfx_name: str):
-    for name, sfx_id in sfx_list:
-        if sfx_name == name:
-            return sfx_id
-    return -1
-
-def _patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: Settings):
+def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: Settings) -> None:
     # Don't allow custom voice packs when generating patch files
     if settings.generating_patch_file:
         return
@@ -507,7 +502,6 @@ def _patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: 
             pak_sounds = pak.read_all_sounds()
             for pak_sfx_id in pak_sounds.keys():
                 sfxs.extend(process_pak_sfx_by_id(pak_sfx_id, sfx_id_map, pak_sounds, age))
-                    
 
         # New ZOOTR voice pack file
         # Support mapping sounds either via SFX_ID like ML64 does
@@ -605,7 +599,6 @@ def _patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: 
         bank.bank_data[sfx.sfx_offset:sfx.sfx_offset+0x08] = sfx.get_bytes()
         bank.bank_data[sfx.sample.loop_addr:sfx.sample.loop_addr+len(loopBytes)] = loopBytes
 
-
         dma_entry = rom.dma[AUDIOSEQ_DMADATA_INDEX]
         # Need to read the Audioseq table to find the start of sequence 0
         seq0_table_entry = rom.read_bytes(0xB89AE0, 0x10)
@@ -615,14 +608,13 @@ def _patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: 
             patches = patch(rom, numSampleFrames, sampleRate)
             for addr, patch_bytes in patches:
                 rom.write_bytes(dma_entry.start + seq0_offset + addr, patch_bytes)
-
     return
 
 # Processes a single sound file into ADPCM data ready to be patched into the ROM
 # file_name: the name of the file, used to determine how to process it
 # file: a file-like object that will be read to process the file
 # returns: tuple of the form (soundData, numSampleFrames, sampleRate)
-def process_sound_file(file_name: str, file, trim: bool = False) -> tuple[bytearray, int, int]:
+def process_sound_file(file_name: str, file: BinaryIO, trim: bool = False) -> tuple[bytearray, int, int]:
     # Check if this is a file format that sf supports
     filename, ext = os.path.splitext(file_name)
     if ext.strip('.').upper() in sf.available_formats():
@@ -633,12 +625,12 @@ def process_sound_file(file_name: str, file, trim: bool = False) -> tuple[bytear
         soundData, numSampleFrames, sampleRate = process_bin_file(file)
     else:
         raise Exception(f"Unsupported file format {ext} in custom voice pack.")
-    
+
     return soundData, numSampleFrames, sampleRate
 
 
 # Read an audio file using the soundfile python library
-def process_soundfile_file(f, trim=False):
+def process_soundfile_file(f: BinaryIO, trim=False) -> tuple[bytes, int, int]:
         data, sampleRate = sf.read(f)
         if data.ndim == 2 and data.shape[1] == 2:
             # Convert stereo to mono by averaging the two channels
@@ -656,17 +648,16 @@ def process_soundfile_file(f, trim=False):
         soundData = adpcm_encode(frames, len(data)) # Encode the raw samples
         return soundData, numSampleFrames, sampleRate
 
-# Used for patching SFX that have already been stripped into raw binary ready to patch into the ROM
-def process_bin_file(f):
-    
+# Used for patching SFX AIFC files that have already been stripped into raw binary ready to patch into the ROM
+# Assume a vanilla sampling rate of 20000
+def process_bin_file(f: BinaryIO) -> tuple[bytes, int, int]:
     soundData = f.read()
-    numSampleFrames = int(len(soundData) * 3 / 2)
+    numSampleFrames = int(len(soundData) * 16 / 9)
     sampleRate = 20000
     return (soundData, numSampleFrames, sampleRate)
 
-
 # Pretty basic aifc file parser. Extracts the already encoded .aifc data metadata from the file
-def process_aifc_file(f):
+def process_aifc_file(f: BinaryIO) -> tuple[bytes, int, int]:
     # Open the .aifc file
     index = 0
     # Read data from the .aifc file
@@ -742,30 +733,4 @@ def process_aifc_file(f):
     soundData = data[8:8 + dataLen]
     return soundData, numSampleFrames, sampleRate
 
-def rename_old_files(dir: str, age: VOICE_PACK_AGE):
-    # list the contents of the directory
-
-    files : list[str] = os.listdir(dir)
-    sfxlist = adult_link_sfx if age == VOICE_PACK_AGE.ADULT else child_link_sfx
-    for file in files:
-        if file.startswith("00-") and (file.endswith(".aifc")):
-            # Rename this file
-            split = file.split("_")
-            split = split[0].split("-")
-            bank = split[0]
-            oldsfxid = int(split[1],16)
-            # Get the name from the table
-            for sfxname, sfxid in sfxlist:
-                # Rename the file to sfxname
-                if oldsfxid == sfxid:
-                    old_path = os.path.join(dir,file)
-                    new_path = os.path.join(dir,sfxname+ ".aifc")
-                    print("Renaming " + old_path)
-                    os.rename(old_path, new_path)
-                    break
-
-if __name__ == "__main__":
-    rom = Rom("ZOOTDEC.z64")
-    rename_old_files("data/Voices/Child/Feminine_New", VOICE_PACK_AGE.CHILD)
-    #_patch_voice_pack(rom, "Mario", VOICE_PACK_AGE.ADULT)
 
