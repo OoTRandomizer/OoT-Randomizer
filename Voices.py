@@ -460,7 +460,7 @@ def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age):
             name, decompressed = pak_opts[0]
             _file = io.BytesIO(decompressed)
             soundData, numSampleFrames, sampleRate = process_sound_file(name, _file, trim=True)
-            to_add.append((name, rom_targets[0], soundData, numSampleFrames, sampleRate, patch))
+            to_add.append((name, 0, rom_targets[0], soundData, numSampleFrames, sampleRate, patch))
             _file.close()
         else:
             raise Exception("Unsupported sfx type")
@@ -477,7 +477,6 @@ def _patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: 
     if settings.generating_patch_file:
         return
     
-    bank0 = rom.audiobanks[0]
     # Build voice pack path
     voice_pack_dir = os.path.join(data_path(), "Voices", "Child" if age == VOICE_PACK_AGE.CHILD else "Adult", voice_pack)
 
@@ -558,23 +557,25 @@ def _patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: 
                                 with zf.open(sample_file) as f:
                                     # Read and process the file
                                     soundData, numSampleFrames, sampleRate = process_sound_file(sample_file, f)
-                                    sfxs.append((sample_file, index, soundData, numSampleFrames, sampleRate, None))
+                                    sfxs.append((sample_file, bank, index, soundData, numSampleFrames, sampleRate, None))
             zf.close()
 
     sfx_data_start = len(rom.audiotable)
 
     # Patch each sfx that we have
-    for _, sfx_id, soundData, numSampleFrames, sampleRate, patch in sfxs:
+    for _, bank_index, sfx_id, soundData, numSampleFrames, sampleRate, patch in sfxs:
         # Calculate the tuning as sampling rate / 32000.
         tuning = sampleRate / 32000
 
         # Pad the data to 16 bytes
         soundData += bytearray((16 - (len(soundData)%16))%16)
 
+        bank = rom.audiobanks[bank_index]
+
         # Sort-of problem. We need to update audiotable in multiple different spots. 
         # So instead of making the new file, maybe just add a new variable to Rom called new_audiotable_data and write it all at the end.
         # Update sample address to point to new data in audiotable.
-        sfx: SFX = bank0.SFX[sfx_id]
+        sfx: SFX = bank.SFX[sfx_id]
 
         # Compare sound data to existing to see if it fits
         if len(soundData) > sfx.sample.size:
@@ -600,9 +601,9 @@ def _patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: 
         loopBytes = sfx.sample.loop.get_bytes()
 
         # Write the new sample into the bank
-        bank0.bank_data[sfx.sampleOffset:sfx.sampleOffset+0x10] = sfx.sample.get_bytes()
-        bank0.bank_data[sfx.sfx_offset:sfx.sfx_offset+0x08] = sfx.get_bytes()
-        bank0.bank_data[sfx.sample.loop_addr:sfx.sample.loop_addr+len(loopBytes)] = loopBytes
+        bank.bank_data[sfx.sampleOffset:sfx.sampleOffset+0x10] = sfx.sample.get_bytes()
+        bank.bank_data[sfx.sfx_offset:sfx.sfx_offset+0x08] = sfx.get_bytes()
+        bank.bank_data[sfx.sample.loop_addr:sfx.sample.loop_addr+len(loopBytes)] = loopBytes
 
 
         dma_entry = rom.dma[AUDIOSEQ_DMADATA_INDEX]
@@ -631,7 +632,7 @@ def process_sound_file(file_name: str, file, trim: bool = False) -> tuple[bytear
     elif ext == ".bin":
         soundData, numSampleFrames, sampleRate = process_bin_file(file)
     else:
-        raise Exception("Unsupported file format")        
+        raise Exception(f"Unsupported file format {ext} in custom voice pack.")
     
     return soundData, numSampleFrames, sampleRate
 
