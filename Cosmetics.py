@@ -941,12 +941,12 @@ def patch_voice_pack(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: d
     if settings.sfx_link_adult == 'Silent':
         patch_silent_voice(rom, VOICE_PACK_AGE.ADULT, log)
     elif settings.sfx_link_adult != 'Default':
-        _patch_voice_pack(rom, VOICE_PACK_AGE.ADULT, settings.sfx_link_adult)
+        _patch_voice_pack(rom, VOICE_PACK_AGE.ADULT, settings.sfx_link_adult, settings)
 
     if settings.sfx_link_child == 'Silent':
         patch_silent_voice(rom, VOICE_PACK_AGE.ADULT, log)
     elif settings.sfx_link_child != 'Default':
-        _patch_voice_pack(rom, VOICE_PACK_AGE.CHILD, settings.sfx_link_child)
+        _patch_voice_pack(rom, VOICE_PACK_AGE.CHILD, settings.sfx_link_child, settings)
 
 def patch_music_changes(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]) -> None:
     # Music tempo changes
@@ -1285,6 +1285,15 @@ def patch_cosmetics(settings: Settings, rom: Rom) -> CosmeticsLog:
 
         for patch_func in versioned_patch_set['patches']:
             patch_func(rom, settings, log, cosmetic_context_symbols)
+
+        if not settings.generating_patch_file:
+            if "CFG_AUDIOBANK_TABLE_EXTENDED_ADDR" in cosmetic_context_symbols.keys():
+                bank_index_base = (rom.read_int32(cosmetic_context_symbols['CFG_AUDIOBANK_TABLE_EXTENDED_ADDR']) - 0x80400000) + 0x3480000
+                rom.write_audiobanks(bank_index_base)
+
+            audiotable_start = rom.write_audiotable()
+            log.symbols = cosmetic_context_symbols
+            log.symbols['audiotable_start'] = audiotable_start
     else:
         # patch cosmetics that use vanilla oot data, and always compatible
         for patch_func in global_patch_sets:
@@ -1293,12 +1302,6 @@ def patch_cosmetics(settings: Settings, rom: Rom) -> CosmeticsLog:
         # Unknown patch format
         log.errors.append("Unable to patch some cosmetics. ROM uses unknown cosmetic patch format.")
 
-    audiotable_start = rom.write_audiotable()
-    log.symbols = cosmetic_context_symbols
-    log.symbols['audiotable_start'] = audiotable_start
-    if "CFG_AUDIOBANK_TABLE_EXTENDED_ADDR" in cosmetic_context_symbols.keys():
-        bank_index_base = (rom.read_int32(cosmetic_context_symbols['CFG_AUDIOBANK_TABLE_EXTENDED_ADDR']) - 0x80400000) + 0x3480000
-        rom.write_audiobanks(bank_index_base)
 
     return log
 

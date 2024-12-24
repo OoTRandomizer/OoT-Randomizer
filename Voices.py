@@ -472,7 +472,11 @@ def get_sfx_id(sfx_list: list[tuple[str,int]], sfx_name: str):
             return sfx_id
     return -1
 
-def _patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str):
+def _patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: Settings):
+    # Don't allow custom voice packs when generating patch files
+    if settings.generating_patch_file:
+        return
+    
     bank0 = rom.audiobanks[0]
     # Build voice pack path
     voice_pack_dir = os.path.join(data_path(), "Voices", "Child" if age == VOICE_PACK_AGE.CHILD else "Adult", voice_pack)
