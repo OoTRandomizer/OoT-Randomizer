@@ -175,7 +175,7 @@ item_draw_table_entry_t item_draw_table[] = {
     [0x9D] = { draw_gi_fairy,               { 0x06000EF0 } }, // Fairy (not in a bottle but uses the fairy from the bottle)
     [0x9E] = { draw_gi_nothing,             {} },
     // [0x9F] = { draw_gi_magic_meter,      { 0x06000000, 0x06000670, 0x00CE00FF, 0xFFFFFFFF, 0x000000FF  } },  // Magic Meter
-    [0x9F] = { draw_gi_magic_meter,         { 0x06000000, 0x06000568, 0x06000708, 0xFFFFFFFF, 0x000000FF } },  // Magic Meter Scroll
+    [0x9F] = { draw_gi_magic_meter,         { 0x06000000, 0x06000780, 0x06000950, 0x06000F30, 0xFFFFFF80, 0x000000FF } },  // Magic Meter Scroll
     };
 
 void base_draw_gi_model(z64_game_t* game, uint32_t draw_id) {
