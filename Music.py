@@ -457,9 +457,8 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                 offset = 0x10 + j.instrument_set*0x10
                 bank_entry = audiobin.Audiobank_index[offset:offset+0x10]
                 # Get the bank
-                vanilla_mm_bank = AudioBank(bank_entry, audiobin.Audiobank, audiobin.Audiotable, audiobin.Audiotable_index)
-                vanilla_mm_bank.table_entry[0x0A] = 1
-                bankdata = vanilla_mm_bank.bank_data
+                vanilla_mm_bank = AudioBank.from_rom_data(bank_entry, audiobin.Audiobank, audiobin.Audiotable, audiobin.Audiotable_index)
+                bankdata = vanilla_mm_bank.original_data
             else: # MMRS or OOTRs with custom banks
                 with zipfile.ZipFile(j.name) as zip:
                     # Check if we have a zbank file because MMR sequences might not.
@@ -471,9 +470,8 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                         offset = 0x10 + j.instrument_set*0x10
                         bank_entry = audiobin.Audiobank_index[offset:offset+0x10]
                         # Get the bank
-                        vanilla_mm_bank = AudioBank(bank_entry, audiobin.Audiobank, audiobin.Audiotable, audiobin.Audiotable_index)
-                        vanilla_mm_bank.table_entry[0x0A] = 1
-                        bankdata = vanilla_mm_bank.bank_data
+                        vanilla_mm_bank = AudioBank.from_rom_data(bank_entry, audiobin.Audiobank, audiobin.Audiotable, audiobin.Audiotable_index)
+                        bankdata = vanilla_mm_bank.original_data
                     else: # Probably should never get here
                         raise Exception("No bank data available for custom music: " + j.cosmetic_name)
 
@@ -507,7 +505,6 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                 # For MM tracks, force Audiotable index to 0 in the bank's table entry
                 if j.game == SequenceGame.MM:
                     newbank.audiotable_id = 0
-                    newbank.table_entry[10] = 0
                 newbank.bank_index = new_bank_index
 
                 zsound_samples: list[Sample] = []
@@ -556,53 +553,6 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                                 sample.data = curr_sample_data
                                 sample.addr = -1 # Set the sample address to -1 so that we know it's from a zsound
                                 zsound_samples.append(sample)
-
-                # For MM, update the bank's samples with OOT addresses if they exist:
-                mm_samples_to_add: list[Sample] = []
-                # Cross reference MM instrument data against OOT and update accordingly
-                if j.game == SequenceGame.MM:
-                    all_samples = newbank.get_all_samples()
-                    all_samples = [sample for sample in all_samples if sample.addr != -1] # Skip samples that are new ZSOUNDS because we'll handle them later
-                    for sample in all_samples:
-                        match = oot_audiobin.find_sample_in_audiobanks(sample.data)
-                        if match: # Found a matching sample in OOT. Just update the bank with the corresponding sample address
-                            # Update the sample's offset in the new bank
-                            newbank.bank_data[sample.original_offset+4:sample.original_offset+8] = match.audiotable_addr.to_bytes(4, 'big')
-                        else: # Didn't find a matching sample, Will have to add it later
-                            mm_samples_to_add.append(sample)
-                    i = 0
-                    while i < len(zsound_samples):
-                        match = oot_audiobin.find_sample_in_audiobanks(zsound_samples[i].data)
-                        if match: # Found a matching sample in OOT. Just update the bank with the corresponding sample address and remove if from zsound list
-                            # Update the sample's offset in the new bank
-                            newbank.bank_data[zsound_samples[i].original_offset+4:zsound_samples[i].original_offset+8] = match.audiotable_addr.to_bytes(4, 'big')
-                            zsound_samples.pop(i)
-                            continue
-                        i += 1
-
-                # Create a list of all samples that need to be added.
-                # This includes new samples, and samples from MM that don't exist in OOT
-                for sample_to_add in zsound_samples + mm_samples_to_add:
-                    # Check if we've already added this sample's data
-                    already_added = False
-                    for added_sample in added_samples:
-                        if sample_to_add.data == added_sample.data:
-                            # Already added this sample, just update the bank
-                            newbank.bank_data[sample_to_add.original_offset+4:sample_to_add.original_offset+8] = added_sample.audiotable_addr.to_bytes(4, 'big')
-                            already_added = True
-                            break
-                    if not already_added:
-                        instr_data += sample_to_add.data
-                         # Pad instrument data to 0x10
-                        sample_to_add.audiotable_addr = instr_offset_in_file
-                        instr_offset_in_file += len(sample_to_add.data)
-                        if len(instr_data) % 0x10 != 0:
-                            padding_length = 0x10 - (len(instr_data) % 0x10)
-                            instr_data += (bytearray(padding_length))
-                            instr_offset_in_file += padding_length
-                        # Update the sample address in the bank data
-                        newbank.bank_data[sample_to_add.original_offset+4:sample_to_add.original_offset+8] = sample_to_add.audiotable_addr.to_bytes(4, 'big')
-                        added_samples.append(sample_to_add)
 
                 added_banks.append(newbank)
                 new_bank_index += 1

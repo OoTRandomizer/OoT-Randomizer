@@ -230,6 +230,8 @@ class AudioBank:
         self.audiotable_id: int = 0
         self.placed_address: int = -1
         self.placed_data: bytearray = None
+        self.original_data: bytearray = None
+        self.original_table_entry: bytearray = None
 
     def __str__(self):
         return "Offset: " + hex(self.bank_offset) + ", " + "Len:" + hex(self.size)
@@ -260,6 +262,7 @@ class AudioBank:
     def from_rom_data(table_entry: bytearray, audiobank_file: bytearray, audiotable_file: bytearray, audiotable_index: bytearray) -> AudioBank:
         # Process bank entry
         bank: AudioBank = AudioBank()
+        bank.original_table_entry = table_entry
         bank_offset: int = int.from_bytes(table_entry[0:4], 'big') # Offset of the bank in the Audiobank file
         size: int = int.from_bytes(table_entry[4:8], 'big') # Size of the bank, in bytes
         bank.medium = table_entry[8] # ROM/RAM/DISK
@@ -270,6 +273,7 @@ class AudioBank:
         num_drums: int = table_entry[13]
         num_sfx: int = int.from_bytes(table_entry[14:16], 'big')
         bank_data = audiobank_file[bank_offset:bank_offset + size]
+        bank.original_data = bank_data
         # Process the bank
 
         # Keep track of the sample offsets that we load from so we can actually point to the same Sample object
