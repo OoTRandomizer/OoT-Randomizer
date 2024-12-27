@@ -946,6 +946,11 @@ def patch_voice_packs(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: 
     elif settings.sfx_link_child != 'Default':
         patch_voice_pack(rom, VOICE_PACK_AGE.CHILD, settings.sfx_link_child, settings)
 
+def patch_voice_volume(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]):
+    rom.write_f32(symbols["CFG_ADULT_VOLUME"], settings.sfx_link_adult_volume / 100.0)
+    rom.write_f32(symbols["CFG_CHILD_VOLUME"], settings.sfx_link_child_volume / 100.0)
+
+
 def patch_music_changes(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]) -> None:
     # Music tempo changes
     if settings.speedup_music_for_last_triforce_piece:
@@ -1233,9 +1238,12 @@ patch_sets[0x1F073FE2] = {
 patch_sets[0x1F073FE3] = {
     "patches": patch_sets[0x1F073FE2]["patches"] + [
         patch_voice_packs,
+        patch_voice_volume
     ],
     "symbols": {
-        **patch_sets[0x1F073FE2]["symbols"]
+        **patch_sets[0x1F073FE2]["symbols"],
+        "CFG_ADULT_VOLUME": 0x0AC8,
+        "CFG_CHILD_VOLUME": 0x0ACC,
     }
 }
 

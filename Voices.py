@@ -411,7 +411,7 @@ class VOICE_PACK_AGE(Enum):
 # sfx_id_map - the sfx_id -> bank map to use selected by age
 # pak_sounds - a dictionary mapping for the entire voice pack - sfx_id to a list of tuples containing the file's name and the raw data from the file
 # age that this pak is for
-def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age) -> tuple[str, int, list[int], bytearray, int, int, function]:
+def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age, settings: Settings) -> tuple[str, int, list[int], bytearray, int, int, function]:
     to_add = []
 
     # Check if the sfx_id is in the mapping for this age. 
@@ -433,7 +433,7 @@ def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age) -> tuple
                 # Add the ones we have
                 for name, decompressed in pak_opts:
                     _file = io.BytesIO(decompressed)
-                    soundData, numSampleFrames, sampleRate = process_sound_file(name, _file, trim=True)
+                    soundData, numSampleFrames, sampleRate = process_sound_file(name, _file, age, settings, trim=True)
                     _file.close()
                     to_add.append((name, 0, rom_targets[i], soundData, numSampleFrames, sampleRate, None))
                     i += 1
@@ -446,7 +446,7 @@ def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age) -> tuple
                 for i in range(0, len(rom_targets)):
                     name, decompressed = pak_opts[i]
                     _file = io.BytesIO(decompressed)
-                    soundData, numSampleFrames, sampleRate = process_sound_file(name, _file, trim=True)
+                    soundData, numSampleFrames, sampleRate = process_sound_file(name, _file, age, settings, trim=True)
                     _file.close()
                     to_add.append((name, 0, rom_targets[i], soundData, numSampleFrames, sampleRate, None))
                 pass
@@ -460,7 +460,7 @@ def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age) -> tuple
             patch = mapping['patch']
             name, decompressed = pak_opts[0]
             _file = io.BytesIO(decompressed)
-            soundData, numSampleFrames, sampleRate = process_sound_file(name, _file, trim=True)
+            soundData, numSampleFrames, sampleRate = process_sound_file(name, _file, age, settings, trim=True)
             to_add.append((name, 0, rom_targets[0], soundData, numSampleFrames, sampleRate, patch))
             _file.close()
         else:
@@ -502,7 +502,7 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
             pak = ML64Unpack.ML64Pak(pak_bytes)
             pak_sounds = pak.read_all_sounds()
             for pak_sfx_id in pak_sounds.keys():
-                sfxs.extend(process_pak_sfx_by_id(pak_sfx_id, sfx_id_map, pak_sounds, age))
+                sfxs.extend(process_pak_sfx_by_id(pak_sfx_id, sfx_id_map, pak_sounds, age, settings))
 
         # New ZOOTR voice pack file
         # Support mapping sounds either via SFX_ID like ML64 does
@@ -540,7 +540,7 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
                                 # read the file data
                                 sample_bytes = zf.read(sample_file)
                                 pak_sounds[sfx_id].append((sample_file, sample_bytes))
-                            sfxs.extend(process_pak_sfx_by_id(sfx_id, sfx_id_map, pak_sounds, age))
+                            sfxs.extend(process_pak_sfx_by_id(sfx_id, sfx_id_map, pak_sounds, age, settings))
                             
                     # Check for direct_bank mapped
                     if "direct_bank" in voice_map.keys():
@@ -551,7 +551,7 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
                                 sample_file = voice_map["direct_bank"][bank_str][index_str]
                                 with zf.open(sample_file) as f:
                                     # Read and process the file
-                                    soundData, numSampleFrames, sampleRate = process_sound_file(sample_file, f)
+                                    soundData, numSampleFrames, sampleRate = process_sound_file(sample_file, f, age, settings)
                                     sfxs.append((sample_file, bank, index, soundData, numSampleFrames, sampleRate, None))
                     if "direct_bank_inst" in voice_map.keys():
                         for bank_str in voice_map["direct_bank_inst"].keys():
@@ -629,11 +629,11 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
 # file_name: the name of the file, used to determine how to process it
 # file: a file-like object that will be read to process the file
 # returns: tuple of the form (soundData, numSampleFrames, sampleRate)
-def process_sound_file(file_name: str, file: BinaryIO, trim: bool = False) -> tuple[bytearray, int, int]:
+def process_sound_file(file_name: str, file: BinaryIO, age: VOICE_PACK_AGE, settings: Settings, trim: bool = False) -> tuple[bytearray, int, int]:
     # Check if this is a file format that sf supports
     filename, ext = os.path.splitext(file_name)
     if ext.strip('.').upper() in sf.available_formats():
-        soundData, numSampleFrames, sampleRate = process_soundfile_file(file, trim)
+        soundData, numSampleFrames, sampleRate = process_soundfile_file(file, age, settings, trim)
     elif ext == ".aifc":
         soundData, numSampleFrames, sampleRate, book, loop = process_aifc_file(file)
     elif ext == ".bin":
@@ -645,7 +645,7 @@ def process_sound_file(file_name: str, file: BinaryIO, trim: bool = False) -> tu
 
 
 # Read an audio file using the soundfile python library
-def process_soundfile_file(f: BinaryIO, trim=False) -> tuple[bytes, int, int]:
+def process_soundfile_file(f: BinaryIO, age: VOICE_PACK_AGE, settings: Settings, trim=False) -> tuple[bytes, int, int]:
         data, sampleRate = sf.read(f)
         if data.ndim == 2 and data.shape[1] == 2:
             # Convert stereo to mono by averaging the two channels

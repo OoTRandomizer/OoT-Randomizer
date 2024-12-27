@@ -592,7 +592,9 @@
           "row_span": [5,5,5],
           "settings": [
             "sfx_link_adult",
+            "sfx_link_adult_volume",
             "sfx_link_child",
+            "sfx_link_child_volume",
             "sfx_link_unavailable_msg",
             "sfx_navi_overworld",
             "sfx_navi_enemy",
