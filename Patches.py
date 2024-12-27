@@ -1328,8 +1328,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
                                                shop_item_vram_start,
                                                shop_item_vram_start + (shop_item_file.end - shop_item_file.start)])
 
-    # Relocate Audiobank_table
-    move_audiobank_table(rom, 0xB896A0, rom.sym('AUDIOBANK_TABLE_EXTENDED'))
 
     # Update DMA Table
     update_dmadata(rom, shop_item_file)

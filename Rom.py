@@ -12,7 +12,7 @@ from Utils import is_bundled, subprocess_args, local_path, data_path, get_versio
 from crc import calculate_crc
 from ntype import BigStream
 from version import base_version, branch_identifier, supplementary_version
-from Audiobank import AudioBank
+from Audiobank import AudioBank, Envelope, Sample
 
 DMADATA_START: int = 0x7430  # NTSC 1.0/1.1: 0x7430, NTSC 1.2: 0x7960, Debug: 0x012F70
 AUDIOTABLE_DMADATA_INDEX: int = 5
@@ -89,11 +89,180 @@ class Rom(BigStream):
         self.audiobanks = []
         # Read audio banks
         for i in range(0, bank_index_length):
-            bank_entry = self.read_bytes(AUDIOBANK_INDEX_ADDR + 0x10 + i*0x10, 0x10)    
-            bank = AudioBank(bank_entry, audiobank, self.audiotable, audiotable_index)
+            bank_entry = self.read_bytes(AUDIOBANK_INDEX_ADDR + 0x10 + i*0x10, 0x10)
+            bank = AudioBank.from_rom_data(bank_entry, audiobank, self.audiotable, audiotable_index)
             bank.bank_index = i
             self.audiobanks.append(bank)
 
+    def rebuild_audio_data(self, audiobank_index_addr: int):
+        added_samples: list[Sample] = [] # Keep track of every sample that we add to prevent adding duplicates
+        added_banks: list[AudioBank] = [] # Keep track of every bank we've added
+        Audiotable: bytearray = bytearray(0) # Audiotable file contains the raw sample data
+        Audiobank: bytearray = bytearray(0) # Audiobank file contains the audio bank binary data
+
+        for bank in self.audiobanks:
+            bank_bytes = bytearray(0)
+            # Build the bank bytes
+            # First - skip the amount of bytes that we need for the drum offset list pointer, sfx list pointer, and instrument offsets, drum offsets. 
+            # SFX don't have separate pointers and instead are just in a list, each is 8 bytes
+            # The drum list and sfx are normally towards the end of the bank but who cares
+            bank_bytes += bytearray([0] * (8 + 4*(len(bank.instruments) + len(bank.drums))))
+
+            # Pad
+            if len(bank_bytes) % 16 != 0:
+                bank_bytes += bytearray(16 - (len(bank_bytes)%16))
+
+            samples_to_add: list[Sample] = []
+            envelopes_to_add: list[Envelope] = []
+            # Add samples for the bank. Instruments then drums then SFX
+            for instrument in bank.instruments:
+                if instrument:
+                    envelopes_to_add.append(instrument.envelope)
+                    if instrument.lowNoteSample:
+                        samples_to_add.append(instrument.lowNoteSample)
+                    if instrument.normalNoteSample:
+                        samples_to_add.append(instrument.normalNoteSample)
+                    if instrument.highNoteSample:
+                        samples_to_add.append(instrument.highNoteSample)
+            
+            for drum in bank.drums:
+                if drum and drum.sample:
+                    envelopes_to_add.append(drum.envelope)
+                    samples_to_add.append(drum.sample)
+            
+            for sfx in bank.SFX:
+                if sfx and sfx.sample:
+                    samples_to_add.append(sfx.sample)
+
+            for sample in samples_to_add:
+                # Check if we've already added this sample
+                if sample.bank_offset == -1:
+                    sample.bank_offset = len(bank_bytes)
+
+                    found_matching_sample: bool = False
+                    # Check if we've already added a sample with the same data
+                    for added_sample in added_samples:
+                        if sample.data == added_sample.data:
+                            # Found a matching sample so just update this sample to point to that sample's data
+                            sample.placed_address = added_sample.placed_address
+                            found_matching_sample = True
+
+                    # If we didn't find a matching sample, then add this data to Audiotable
+                    if not found_matching_sample:
+                        sample.placed_address = len(Audiotable)
+                        Audiotable += sample.data
+                        # Pad sample data to 16 bytes
+                        if len(Audiotable) % 16 != 0:
+                            Audiotable += bytearray(16 - (len(Audiotable) % 16))
+
+                        # Remember that we added this sample
+                        added_samples.append(sample)
+
+                    # Check if we have already added this sample's book
+                    if sample.book.bank_offset == -1:
+                        # Haven't so need to add it directly after the sample
+                        sample.book.bank_offset = 0x10 + sample.bank_offset
+                        adpcm_book_bytes = sample.book.get_bytes()
+                        sample.loop.bank_offset = 0x10 + sample.bank_offset + len(adpcm_book_bytes)
+                        bank_bytes += sample.get_bytes() + adpcm_book_bytes + sample.loop.get_bytes()
+                    else:
+                        # We have already added it so only add the loop
+                        sample.loop.bank_offset = 0x10 + sample.bank_offset
+                        bank_bytes += sample.get_bytes() + sample.loop.get_bytes()
+            
+            # Add the envelopes
+            for envelope in envelopes_to_add:
+                # Check if we've already added this envelope
+                if envelope.bank_offset == -1:
+                    envelope.bank_offset = len(bank_bytes)
+                    bank_bytes += envelope.get_bytes()
+            
+            # Pad
+            if len(bank_bytes) % 16 != 0:
+                bank_bytes += bytearray(16 - (len(bank_bytes)%16))
+            
+            # Add the Instrument, Drum, and SFX objects to the bank and add their offsets to the list
+            i = 0
+            for instrument in bank.instruments:
+                instrument_list_offset = 8 + 4*i
+                if instrument:
+                    instrument_offset = len(bank_bytes)
+                    bank_bytes += instrument.get_bytes()
+                    bank_bytes[instrument_list_offset:instrument_list_offset+4] = instrument_offset.to_bytes(4, 'big') # Write the offset to the bank
+                else:
+                    # Empty instrument, just add zeros to list
+                    bank_bytes[instrument_list_offset:instrument_list_offset+4] = (0x00).to_bytes(4, 'big')
+                i += 1
+            
+            i = 0
+            # Update the Drum list pointer
+            bank_bytes[0:4] = (8 + 4*len(bank.instruments)).to_bytes(4, 'big')
+            for drum in bank.drums:
+                drum_list_offset = 8 + 4*len(bank.instruments) + 4*i
+                if drum:
+                    drum_offset = len(bank_bytes)
+                    bank_bytes += drum.get_bytes()
+                    bank_bytes[drum_list_offset:drum_list_offset + 4] = drum_offset.to_bytes(4, 'big') # Write the offset to the bank
+                else:
+                    # Empty drum, just add zeros to list
+                    bank_bytes[drum_list_offset:drum_list_offset + 4] = (0x00).to_bytes(4, 'big')
+                i += 1
+
+            # Update the SFX list pointer
+            bank_bytes[4:8] = len(bank_bytes).to_bytes(4, 'big')
+            for sfx in bank.SFX:
+                if sfx:
+                    bank_bytes += sfx.get_bytes()
+                else:
+                    bank_bytes += bytearray(8)
+
+            # Force every bank to use audiotable 0
+            bank.audiotable_id = 0
+            
+            # Pad bank to 16 bytes
+            if len(bank_bytes) % 16 != 0:
+                bank_bytes += bytearray(16 - (len(bank_bytes)%16))
+
+            # Finally, add the bank to the Audiobank file
+            bank.placed_address = len(Audiobank)
+            bank.placed_data = bank_bytes
+            Audiobank += bank_bytes
+            added_banks.append(bank)
+
+
+        # Write the audiobank table
+
+        # Figure out the address to write the new table
+        # Write the number of banks in the table header
+        self.write_int16(audiobank_index_addr, len(added_banks))
+        # Write the bank entries
+        i = 0
+        for bank in added_banks:
+            self.write_bytes(audiobank_index_addr + 0x10 + 0x10*i, bank.build_entry(bank.placed_address, len(bank.placed_data)))
+            i += 1
+
+        # Write the Audiobank file
+        self.write_audiobank(Audiobank)
+        self.write_audiotable(Audiotable)
+
+        # Read audio banks back out and see if they match
+        test = []
+        
+        # Read Audiotable index
+        audiotable_index_header: bytearray = self.read_bytes(AUDIOTABLE_INDEX_ADDR, 0x10)
+        audiotable_index_length = int.from_bytes(audiotable_index_header[0:2], 'big')
+        audiotable_index = self.read_bytes(AUDIOTABLE_INDEX_ADDR, 0x10*audiotable_index_length + 0x10)
+        for i in range(0, 0x26):
+            bank_entry = self.read_bytes(audiobank_index_addr + 0x10 + i*0x10, 0x10)
+            bank = AudioBank.from_rom_data(bank_entry, Audiobank, Audiotable, audiotable_index)
+            bank.bank_index = i
+            test.append(bank)
+            for inst_id in range(0, len(self.audiobanks[i].instruments)):
+                if self.audiobanks[i].instruments[inst_id] is not None:
+                    match = self.audiobanks[i].instruments[inst_id].equals(bank.instruments[inst_id])
+                    #if not match:
+                    #    raise Exception("Instrument doesn't match")
+                
 
     def copy(self) -> Rom:
         new_rom: Rom = Rom()
@@ -298,40 +467,25 @@ class Rom(BigStream):
         if size < original_size:
             self.changed_address.update(zip(range(size, original_size-1), [0]*(original_size-size)))
 
-    def write_audiotable(self) -> int:
+    def write_audiotable(self, audiotable_bytes: bytearray) -> int:
         new_audiotable_start = -1
         audiotable_start, audiotable_end, audiotable_size = self.audiotable_dma_entry.as_tuple()
         new_audiotable_start = audiotable_start
-        if len(self.audiotable) > audiotable_size: # Data was added to audiotable so it needs to be relocated
+        if len(audiotable_bytes) > audiotable_size: # Data was added to audiotable so it needs to be relocated
             # Zeroize original file
             self.write_bytes(audiotable_start, [0] * audiotable_size)
             # Get new address for the file
-            new_audiotable_start = self.dma.free_space(len(self.audiotable))
+            new_audiotable_start = self.dma.free_space(len(audiotable_bytes))
         # Write the file to the new address
-        self.write_bytes(new_audiotable_start, self.audiotable)
+        self.write_bytes(new_audiotable_start, audiotable_bytes)
         # Update DMA
         if new_audiotable_start > 0:
-            self.audiotable_dma_entry.update(new_audiotable_start, new_audiotable_start + len(self.audiotable))
+            self.audiotable_dma_entry.update(new_audiotable_start, new_audiotable_start + len(audiotable_bytes))
         return new_audiotable_start
 
-    def write_audiobanks(self, audiobank_index_addr: int) -> int:
+    def write_audiobank(self, audiobank_bytes: bytearray) -> int:
         audiobank_start, audiobank_end, audiobank_size = self.audiobank_dma_entry.as_tuple()
         # Loop through all of the banks and compile the data, build the index
-        audiobank_bytes: bytearray = bytearray(0)
-        bank_data_offset = len(audiobank_bytes)
-        i: int = 0
-        for bank in self.audiobanks:
-            audiobank_bytes.extend(bank.bank_data)
-            bank.bank_offset = bank_data_offset
-            entry = bank.build_entry()
-            self.write_bytes(audiobank_index_addr + 0x10 + bank.bank_index * 0x10, entry)
-            i += 1
-            for dupe_bank in bank.duplicate_banks:
-                entry = bytearray(dupe_bank.build_entry(bank_data_offset))
-                entry[4:8] = bank.size.to_bytes(4, 'big')
-                self.write_bytes(audiobank_index_addr + 0x10 + bank.bank_index * 0x10, entry)
-                i += 1
-            bank_data_offset += len(bank.bank_data)
 
         new_audiobank_start = audiobank_start
         if len(audiobank_bytes) > self.audiobank_dma_entry.size:
@@ -343,10 +497,6 @@ class Rom(BigStream):
         # Write the file to the new address
         self.write_bytes(new_audiobank_start, audiobank_bytes)
         self.audiobank_dma_entry.update(new_audiobank_start, new_audiobank_start + len(audiobank_bytes))
-
-        # Update size of bank table in the Audiobank table header.
-        self.write_bytes(audiobank_index_addr, len(self.audiobanks).to_bytes(2, 'big'))
-        return i
 
 class DMAEntry:
     def __init__(self, rom: Rom, index: int) -> None:

@@ -562,13 +562,13 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
                                 with zf.open(sample_file) as f:
                                     # Read the .aifc file
                                     # Need to get the loop predictors out of it
-                                    soundData, numSampleFrames, sampleRate = process_aifc_file(f)
-                                    inst_patch.append((sample_file,bank, index, soundData, numSampleFrames, sampleRate, None))
+                                    soundData, numSampleFrames, sampleRate, book = process_aifc_file(f)
+                                    inst_patch.append((sample_file,bank, index, soundData, numSampleFrames, sampleRate, book))
             zf.close()
 
     sfx_data_start = len(rom.audiotable)
 
-    for _, bank_index, inst_id, soundData, numSampleFrames, sampleRate, patch in inst_patch:
+    for _, bank_index, inst_id, soundData, numSampleFrames, sampleRate, book in inst_patch:
         # Calculate the tuning as sampling rate / 32000.
         tuning = sampleRate / 32000
 
@@ -578,35 +578,19 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
         bank = rom.audiobanks[bank_index]
 
         inst: Instrument = bank.instruments[inst_id]
-
-        # Compare sound data to existing to see if it fits
-        if len(soundData) > inst.normalNoteSample.size:
-            # Put the data in audiotable
-            rom.audiotable += soundData
-            inst.normalNoteSample.addr = sfx_data_start
-            sfx_data_start += len(soundData)
-        else:
-            # Put the data in the existing location. Pad with 0s
-            pad_len = inst.normalNoteSample.size - len(soundData)
-            soundData += bytearray(pad_len)
-            rom.audiotable[inst.normalNoteSample.addr:inst.normalNoteSample.addr + len(soundData)] = soundData
-
+        
         # Update the sfx tuning
         inst.normalNoteTuning = float(tuning)
 
         # Update loop end as numSampleFrames
         inst.normalNoteSample.loop.end = numSampleFrames
+        inst.normalNoteSample.data = soundData
         # Update sample data length = length
         inst.normalNoteSample.size = len(soundData)
-        sampleBytes = inst.normalNoteSample.get_bytes()
         #instBytes = inst.get_bytes()
         loopBytes = inst.normalNoteSample.loop.get_bytes()
 
-        # Write the new sample into the bank
-        bank.bank_data[inst.normalNoteSampleOffset:inst.normalNoteSampleOffset+0x10] = inst.normalNoteSample.get_bytes()
-        #bank.bank_data[sfx.sfx_offset:sfx.sfx_offset+0x08] = sfx.get_bytes()
-        bank.bank_data[inst.instrument_offset + 20: inst.instrument_offset + 24] = struct.pack(">f", inst.normalNoteTuning)
-        bank.bank_data[inst.normalNoteSample.loop_addr:inst.normalNoteSample.loop_addr+len(loopBytes)] = loopBytes
+        inst.normalNoteSample.book = book
 
     # Patch each sfx that we have
     for _, bank_index, sfx_id, soundData, numSampleFrames, sampleRate, patch in sfxs:
@@ -623,18 +607,8 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
         # Update sample address to point to new data in audiotable.
         sfx: SFX = bank.SFX[sfx_id]
 
-        # Compare sound data to existing to see if it fits
-        if len(soundData) > sfx.sample.size:
-            # Put the data in audiotable
-            rom.audiotable += soundData
-            sfx.sample.addr = sfx_data_start
-            sfx_data_start += len(soundData)
-        else:
-            # Put the data in the existing location. Pad with 0s
-            pad_len = sfx.sample.size - len(soundData)
-            soundData += bytearray(pad_len)
-            rom.audiotable[sfx.sample.addr:sfx.sample.addr + len(soundData)] = soundData
 
+        sfx.sample.data = soundData
         # Update the sfx tuning
         sfx.sampleTuning = float(tuning)
 
@@ -642,14 +616,6 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
         sfx.sample.loop.end = numSampleFrames
         # Update sample data length = length
         sfx.sample.size = len(soundData)
-        sampleBytes = sfx.sample.get_bytes()
-        sfxBytes = sfx.get_bytes()
-        loopBytes = sfx.sample.loop.get_bytes()
-
-        # Write the new sample into the bank
-        bank.bank_data[sfx.sampleOffset:sfx.sampleOffset+0x10] = sfx.sample.get_bytes()
-        bank.bank_data[sfx.sfx_offset:sfx.sfx_offset+0x08] = sfx.get_bytes()
-        bank.bank_data[sfx.sample.loop_addr:sfx.sample.loop_addr+len(loopBytes)] = loopBytes
 
         dma_entry = rom.dma[AUDIOSEQ_DMADATA_INDEX]
         # Need to read the Audioseq table to find the start of sequence 0
@@ -672,7 +638,7 @@ def process_sound_file(file_name: str, file: BinaryIO, trim: bool = False) -> tu
     if ext.strip('.').upper() in sf.available_formats():
         soundData, numSampleFrames, sampleRate = process_soundfile_file(file, trim)
     elif ext == ".aifc":
-        soundData, numSampleFrames, sampleRate = process_aifc_file(file)
+        soundData, numSampleFrames, sampleRate, book = process_aifc_file(file)
     elif ext == ".bin":
         soundData, numSampleFrames, sampleRate = process_bin_file(file)
     else:
@@ -778,11 +744,26 @@ def process_aifc_file(f: BinaryIO) -> tuple[bytes, int, int]:
     ssndOffset = int.from_bytes(data[0:4], 'big')
     ssndBlockSize = int.from_bytes(data[4:8], 'big')
     
+    # Pull out the APDCM Code Book from the APPL chunk
+    appl = chunks['APPL']['data']
+    # stoc + 0x0B + VADPCMCODES
+    appl = appl[0x10:]
+    version = int.from_bytes(appl[0:2], 'big')
+    order = int.from_bytes(appl[2:4], 'big')
+    nEntries = int.from_bytes(appl[4:6], 'big')
+    tableData: list[int] = []
+    for i in range(0, 16 * nEntries):
+        index = 6 + order*i
+        tableData.append(int.from_bytes(appl[index:index+order], 'big', signed=True))
+    tableBytes = bytearray(0)
+    for bookPoint in tableData:
+        tableBytes += bookPoint.to_bytes(2, 'big', signed = True)
+
     if ssndOffset != 0 or ssndBlockSize != 0:
         raise Exception("Unsupported SSND offset/block size")
     # Read the sample data. it's numSampleFrames * 9 / 8 / 2
     dataLen = int(ceil(numSampleFrames * 9 / 8 / 2))
     soundData = data[8:8 + dataLen]
-    return soundData, numSampleFrames, sampleRate
+    return soundData, numSampleFrames, sampleRate, AdpcmBook(order, nEntries, tableBytes)
 
 
