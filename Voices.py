@@ -440,7 +440,7 @@ def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age, settings
                 # Randomly pick from the ones we've already added and duplicate them
                 for j in range(i, len(rom_targets)):
                     added = to_add[random.randint(0, i-1)]
-                    to_add.append((added[0], 0, rom_targets[j], added[2], added[3], added[4], None))
+                    to_add.append((added[0], 0, rom_targets[j], added[3], added[4], added[5], None))
             else:
                 # We have more than what the game expects, just take the first ones based on the length we expect
                 for i in range(0, len(rom_targets)):
