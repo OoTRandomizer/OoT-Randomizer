@@ -687,6 +687,7 @@ def process_aifc_file(f: BinaryIO) -> tuple[bytes, int, int]:
     done = False
     chunks = {}
     chkID = "FORM"
+    chunks["APPL"] = []
     while chkID != '':
         chkID = str(f.read(4), encoding='utf-8')
         size = int.from_bytes(f.read(4), 'big')
@@ -762,21 +763,24 @@ def process_aifc_file(f: BinaryIO) -> tuple[bytes, int, int]:
         tableBytes += bookPoint.to_bytes(2, 'big', signed = True)
 
     # Pull out the loop crap from the other appl chunk
-    appl = chunks['APPL'][1]['data']
-    # stoc + 0x0B + VADPCMLOOPS
-    appl = appl[0x14:]
-    loop_start = int.from_bytes(appl[0:4], 'big')
-    loop_end = int.from_bytes(appl[4:8], 'big')
-    loop_count = int.from_bytes(appl[8:12], 'big')
-    loop_state = []
-    for i in range(0, 16):
-        index = 12 + 2*i
-        loop_state.append(int.from_bytes(appl[index:index+2], 'big'))
+    loop = None
+    if len(chunks['APPL']) > 1:
+        appl = chunks['APPL'][1]['data']
+        # stoc + 0x0B + VADPCMLOOPS
+        appl = appl[0x14:]
+        loop_start = int.from_bytes(appl[0:4], 'big')
+        loop_end = int.from_bytes(appl[4:8], 'big')
+        loop_count = int.from_bytes(appl[8:12], 'big')
+        loop_state = []
+        for i in range(0, 16):
+            index = 12 + 2*i
+            loop_state.append(int.from_bytes(appl[index:index+2], 'big'))
+        loop = AdpcmLoop(loop_start, loop_end, loop_count, 0, loop_state)
     if ssndOffset != 0 or ssndBlockSize != 0:
         raise Exception("Unsupported SSND offset/block size")
     # Read the sample data. it's numSampleFrames * 9 / 8 / 2
     dataLen = int(ceil(numSampleFrames * 9 / 8 / 2))
     soundData = data[8:8 + dataLen]
-    return soundData, numSampleFrames, sampleRate, AdpcmBook(order, nEntries, tableBytes), AdpcmLoop(loop_start, loop_end, loop_count, 0, loop_state)
+    return soundData, numSampleFrames, sampleRate, AdpcmBook(order, nEntries, tableBytes), loop
 
 
