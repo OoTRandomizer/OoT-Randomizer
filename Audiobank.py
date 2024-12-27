@@ -40,17 +40,24 @@ class Audiobin:
         return None
 
 class AdpcmLoop:
-    def __init__(self, bankdata: bytearray, loop_addr: int):
-        self.bank_offset = -1
-        self.start = int.from_bytes(bankdata[loop_addr:loop_addr+4], 'big')
-        self.end = int.from_bytes(bankdata[loop_addr+4:loop_addr+8], 'big')
-        self.count = int.from_bytes(bankdata[loop_addr+8:loop_addr+12], 'big')
-        self.origSpls = int.from_bytes(bankdata[loop_addr+12:loop_addr+16], 'big')
-        self.state: list[int] = []
-        if self.count :
+    def __init__(self, start: int, end: int, count: int, origSpls: int, state: list[int]):
+        self.start: int = start
+        self.end: int = end
+        self.count: int = count
+        self.origSpls: int = origSpls
+        self.state: list[int] = state
+
+    def from_rom_data(bankdata: bytearray, loop_addr: int):
+        start = int.from_bytes(bankdata[loop_addr:loop_addr+4], 'big')
+        end = int.from_bytes(bankdata[loop_addr+4:loop_addr+8], 'big')
+        count = int.from_bytes(bankdata[loop_addr+8:loop_addr+12], 'big')
+        origSpls = int.from_bytes(bankdata[loop_addr+12:loop_addr+16], 'big')
+        state: list[int] = []
+        if count :
             for i in range(0,16):
                 index = loop_addr + 0x10 + 2*i
-                self.state.append(int.from_bytes(bankdata[index:index+2],'big'))
+                state.append(int.from_bytes(bankdata[index:index+2],'big'))
+        return AdpcmLoop(start, end, count, origSpls, state)
 
     def get_bytes(self):
         bytes = bytearray(0)
@@ -168,7 +175,7 @@ class Sample:
         if(sample_offset != 0):
             sample.loop_addr = int.from_bytes(sample.sample_header[8:12], 'big')
             sample.book_addr = int.from_bytes(sample.sample_header[12:16], 'big')
-            sample.loop = AdpcmLoop(bankdata, sample.loop_addr)
+            sample.loop = AdpcmLoop.from_rom_data(bankdata, sample.loop_addr)
             sample.book = AdpcmBook.from_rom_data(bankdata, sample.book_addr, adpcmbookCache)
 
         if sample.addr == -1 : # If the offset is set to 0xFFFFFFFF then we need to get the sample data from ZSOUND files in the archive.

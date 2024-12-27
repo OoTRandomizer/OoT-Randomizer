@@ -562,13 +562,13 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
                                 with zf.open(sample_file) as f:
                                     # Read the .aifc file
                                     # Need to get the loop predictors out of it
-                                    soundData, numSampleFrames, sampleRate, book = process_aifc_file(f)
-                                    inst_patch.append((sample_file,bank, index, soundData, numSampleFrames, sampleRate, book))
+                                    soundData, numSampleFrames, sampleRate, book, loop = process_aifc_file(f)
+                                    inst_patch.append((sample_file,bank, index, soundData, numSampleFrames, sampleRate, book, loop))
             zf.close()
 
     sfx_data_start = len(rom.audiotable)
 
-    for _, bank_index, inst_id, soundData, numSampleFrames, sampleRate, book in inst_patch:
+    for _, bank_index, inst_id, soundData, numSampleFrames, sampleRate, book, loop in inst_patch:
         # Calculate the tuning as sampling rate / 32000.
         tuning = sampleRate / 32000
 
@@ -583,14 +583,11 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
         inst.normalNoteTuning = float(tuning)
 
         # Update loop end as numSampleFrames
-        inst.normalNoteSample.loop.end = numSampleFrames
+        inst.normalNoteSample.loop = loop
+        inst.normalNoteSample.book = book
         inst.normalNoteSample.data = soundData
         # Update sample data length = length
         inst.normalNoteSample.size = len(soundData)
-        #instBytes = inst.get_bytes()
-        loopBytes = inst.normalNoteSample.loop.get_bytes()
-
-        inst.normalNoteSample.book = book
 
     # Patch each sfx that we have
     for _, bank_index, sfx_id, soundData, numSampleFrames, sampleRate, patch in sfxs:
@@ -638,7 +635,7 @@ def process_sound_file(file_name: str, file: BinaryIO, trim: bool = False) -> tu
     if ext.strip('.').upper() in sf.available_formats():
         soundData, numSampleFrames, sampleRate = process_soundfile_file(file, trim)
     elif ext == ".aifc":
-        soundData, numSampleFrames, sampleRate, book = process_aifc_file(file)
+        soundData, numSampleFrames, sampleRate, book, loop = process_aifc_file(file)
     elif ext == ".bin":
         soundData, numSampleFrames, sampleRate = process_bin_file(file)
     else:
@@ -698,7 +695,12 @@ def process_aifc_file(f: BinaryIO) -> tuple[bytes, int, int]:
             'size': size,
             'data': data
         }
-        chunks[chkID] = chunk
+        if chkID in chunks.keys():
+            if type(chunks[chkID]) != list:
+                chunks[chkID] = [chunks[chkID]]
+            chunks[chkID].append(chunk)
+        else:
+            chunks[chkID] = chunk
     
     # Process the chunks
     
@@ -731,8 +733,8 @@ def process_aifc_file(f: BinaryIO) -> tuple[bytes, int, int]:
     compressionName = str(data[23:23 + compressionNameLen], encoding='utf-8')
     
     # Make sure it's the correct compression type
-    if compressionType != "ADP9":
-        raise Exception("Unknown compression format. Must be 'ADP9'. Did you use vadpcm_enc?")
+    #if compressionType != "ADP9":
+    #    raise Exception("Unknown compression format. Must be 'ADP9'. Did you use vadpcm_enc?")
 
     # Make sure it's the correct sample size
     if sampleSize != 16:
@@ -744,8 +746,8 @@ def process_aifc_file(f: BinaryIO) -> tuple[bytes, int, int]:
     ssndOffset = int.from_bytes(data[0:4], 'big')
     ssndBlockSize = int.from_bytes(data[4:8], 'big')
     
-    # Pull out the APDCM Code Book from the APPL chunk
-    appl = chunks['APPL']['data']
+    # Pull out the APDCM Code Book from the first APPL chunk
+    appl = chunks['APPL'][0]['data']
     # stoc + 0x0B + VADPCMCODES
     appl = appl[0x10:]
     version = int.from_bytes(appl[0:2], 'big')
@@ -759,11 +761,22 @@ def process_aifc_file(f: BinaryIO) -> tuple[bytes, int, int]:
     for bookPoint in tableData:
         tableBytes += bookPoint.to_bytes(2, 'big', signed = True)
 
+    # Pull out the loop crap from the other appl chunk
+    appl = chunks['APPL'][1]['data']
+    # stoc + 0x0B + VADPCMLOOPS
+    appl = appl[0x14:]
+    loop_start = int.from_bytes(appl[0:4], 'big')
+    loop_end = int.from_bytes(appl[4:8], 'big')
+    loop_count = int.from_bytes(appl[8:12], 'big')
+    loop_state = []
+    for i in range(0, 16):
+        index = 12 + 2*i
+        loop_state.append(int.from_bytes(appl[index:index+2], 'big'))
     if ssndOffset != 0 or ssndBlockSize != 0:
         raise Exception("Unsupported SSND offset/block size")
     # Read the sample data. it's numSampleFrames * 9 / 8 / 2
     dataLen = int(ceil(numSampleFrames * 9 / 8 / 2))
     soundData = data[8:8 + dataLen]
-    return soundData, numSampleFrames, sampleRate, AdpcmBook(order, nEntries, tableBytes)
+    return soundData, numSampleFrames, sampleRate, AdpcmBook(order, nEntries, tableBytes), AdpcmLoop(loop_start, loop_end, loop_count, 0, loop_state)
 
 
