@@ -869,9 +869,7 @@ def patch_silent_voice(rom: Rom, age: VOICE_PACK_AGE, log: CosmeticsLog) -> None
     for _, sfxid in sfxlist:
         sfx: SFX = rom.audiobanks[0].SFX[sfxid]
         injectme = binsfx.ljust(sfx.sample.size)
-        # Write the binary sfx to the rom
-        rom.audiotable[sfx.sample.audiotable_addr:sfx.sample.audiotable_addr + len(injectme)] = injectme
-
+        sfx.sample.data = injectme
 
 def apply_voice_patch(rom: Rom, voice_path: str, soundbank_entries: dict[str, dict[str, int]]) -> None:
     if not os.path.exists(voice_path):
