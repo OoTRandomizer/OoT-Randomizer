@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Optional, Any
 
 from Item import Item, ItemInfo
 from RulesCommon import escape_name
+from Location import Location
 
 if TYPE_CHECKING:
     from Goals import GoalCategory, Goal
@@ -11,6 +12,8 @@ if TYPE_CHECKING:
     from Search import Search
     from World import World
     from RulesCommon import AccessRule
+
+from Scene import get_scene_group, scene_groups, scene_list
 
 Triforce_Piece: int = ItemInfo.solver_ids['Triforce_Piece']
 Triforce: int = ItemInfo.solver_ids['Triforce']
@@ -89,47 +92,46 @@ class State:
         # Extra Ruto's Letter are automatically emptied
         return self.has_any_of(ItemInfo.bottle_ids) or self.has(Rutos_Letter, 2)
 
-    def has_hearts(self, count: int) -> bool:
+    def has_hearts(self, count: int, **kwargs) -> bool:
         # Warning: This is limited by World.max_progressions so it currently only works if hearts are required for LACS, bridge, or Ganon bk
         return self.heart_count() >= count
 
-    def heart_count(self) -> int:
+    def heart_count(self, **kwargs) -> int:
         # Warning: This is limited by World.max_progressions so it currently only works if hearts are required for LACS, bridge, or Ganon bk
         return (
             self.item_count(Piece_of_Heart) // 4 # aliases ensure Heart Container and Piece of Heart (Treasure Chest Game) are included in this
             + 3 # starting hearts
         )
 
-    def has_medallions(self, count: int) -> bool:
+    def has_medallions(self, count: int, **kwargs) -> bool:
         return self.count_distinct(ItemInfo.medallion_ids) >= count
 
-    def has_stones(self, count: int) -> bool:
+    def has_stones(self, count: int, **kwargs) -> bool:
         return self.count_distinct(ItemInfo.stone_ids) >= count
 
+    def has_dungeon_rewards(self, count: int, **kwargs) -> bool:
+        return (self.count_distinct(ItemInfo.medallion_ids) + self.count_distinct(ItemInfo.stone_ids)) >= count
 
-    def has_dungeon_rewards(self, count: int) -> bool:
-        return self.count_distinct(ItemInfo.medallion_ids) + self.count_distinct(ItemInfo.stone_ids) >= count
-
-    def has_ocarina_buttons(self, count: int) -> bool:
-        return self.count_distinct(ItemInfo.ocarina_buttons_ids) >= count
+    def has_ocarina_buttons(self, count: int, **kwargs) -> bool:
+        return (self.count_distinct(ItemInfo.ocarina_buttons_ids)) >= count
 
     # TODO: Store the item's solver id in the goal
-    def has_item_goal(self, item_goal: dict[str, Any]) -> bool:
+    def has_item_goal(self, item_goal: dict[str, Any], **kwargs) -> bool:
         return self.solv_items[ItemInfo.solver_ids[escape_name(item_goal['name'])]] >= item_goal['minimum']
 
-    def has_full_item_goal(self, category: GoalCategory, goal: Goal, item_goal: dict[str, Any]) -> bool:
+    def has_full_item_goal(self, category: GoalCategory, goal: Goal, item_goal: dict[str, Any], **kwargs) -> bool:
         local_goal = self.world.goal_categories[category.name].get_goal(goal.name)
         per_world_max_quantity = local_goal.get_item(item_goal['name'])['quantity']
         return self.solv_items[ItemInfo.solver_ids[escape_name(item_goal['name'])]] >= per_world_max_quantity
 
-    def has_all_item_goals(self) -> bool:
+    def has_all_item_goals(self, **kwargs) -> bool:
         for category in self.world.goal_categories.values():
             for goal in category.goals:
                 if not all(map(lambda i: self.has_full_item_goal(category, goal, i), goal.items)):
                     return False
         return True
 
-    def had_night_start(self) -> bool:
+    def had_night_start(self, **kwargs) -> bool:
         stod = self.world.settings.starting_tod
         # These are all not between 6:30 and 18:00
         if (stod == 'sunset' or         # 18
@@ -197,12 +199,33 @@ class State:
     def region_has_shortcuts(self, region_name: str) -> bool:
         return self.world.region_has_shortcuts(region_name)
 
-    # Glitch logic makes liberal use of this function as it was built with enemy souls in mind
-    # To avoid having to change logic, insert this pass function to be implemented properly later
     def has_soul(self, enemy: str, **kwargs) -> bool:
-        return True
+        # Get the spot (this can be a location, an entrance (region transition), or an Event)
+        spot = kwargs['spot']
+        
+        if self.world.settings.shuffle_enemy_spawns == 'regional': # Regional soul shuffle so determine the region soul from the spot's parent region's scene
+            scene = None
+            # Other types of locations we need to be a bit creative
+            # All regions should be marked with either a scene or a dungeon
+            # We can resolve the scene id from those hopefully
+            if type(spot) is Location and spot.scene == 62: # Grotto locations
+                scene = "Grottos"
+            elif spot.parent_region.dungeon:
+                scene = spot.parent_region.dungeon.name
+            elif type(spot) is Location and spot.scene and spot.scene != 0xFF and spot.scene != 62: # For actual item locations we can get the scene from the location directly
+                scene = scene_list[spot.scene]
+            elif spot.parent_region.scene:
+                scene = spot.parent_region.scene
+            if scene is not None:
+                # We have a scene name so loop through our scene groups
+                group = get_scene_group(scene)
+            soul_str = group + " Souls"
+            return self.has(ItemInfo.solver_ids[escape_name(soul_str)])
+        else:
+            soul_str = enemy + " Soul"
+        return (not self.world.shuffle_enemy_spawns or self.has(ItemInfo.solver_ids[escape_name(soul_str)]))
 
-    def has_all_notes_for_song(self, song: str) -> bool:
+    def has_all_notes_for_song(self, song: str, **kwargs) -> bool:
         # Scarecrow needs 2 different notes
         if song == 'Scarecrow Song':
             return self.world.settings.scarecrow_behavior == 'free' or self.has_ocarina_buttons(2)

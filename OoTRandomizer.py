@@ -57,6 +57,7 @@ def start() -> None:
             main(settings)
     except Exception as ex:
         logger.exception(ex)
+        raise
         sys.exit(1)
 
 

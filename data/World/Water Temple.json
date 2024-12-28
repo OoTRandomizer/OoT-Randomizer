@@ -21,7 +21,11 @@
                 at('Water Temple Lowered Water Levels', True) or can_use(Boomerang) or
                 ((can_use(Iron_Boots) or (Progressive_Scale, 2)) and
                     (can_use(Bow) or can_use(Hookshot) or can_use(Slingshot)) and
-                    (can_use(Zora_Tunic) or logic_fewer_tunic_requirements))"
+                    (can_use(Zora_Tunic) or logic_fewer_tunic_requirements))",
+            "Water Temple Lobby Spike 1": "(has_soul(Spike_Enemy)) and (at('Water Temple Lowered Water Levels', True) or (can_use(Iron_Boots) and can_use(Zora_Tunic)))",
+            "Water Temple Lobby Spike 2": "(has_soul(Spike_Enemy)) and (at('Water Temple Lowered Water Levels', True) or (can_use(Iron_Boots) and can_use(Zora_Tunic)))",
+            "Water Temple Lobby Tektite 1": "can_kill_tektite",
+            "Water Temple Lobby Tektite 2": "can_kill_tektite"
         },
         "exits": {
             "Lake Hylia": "True",
@@ -50,13 +54,21 @@
         "region_name": "Water Temple Dive",
         "dungeon": "Water Temple",
         "locations": {
-            "Water Temple Map Chest": "Raise_Water_Level",
+            "Water Temple Map Chest": "Raise_Water_Level and (has_soul(Spike_Enemy))",
             "Water Temple Compass Chest": "(can_play(Zeldas_Lullaby) or Iron_Boots) and Hookshot",
-            "Water Temple L1 Torch Pot 1": "(Iron_Boots and Hookshot) or can_play(Zeldas_Lullaby)",
-            "Water Temple L1 Torch Pot 2": "(Iron_Boots and Hookshot) or can_play(Zeldas_Lullaby)",
-            "Water Temple Near Compass Pot 1": "(can_play(Zeldas_Lullaby) or Iron_Boots) and Hookshot",
-            "Water Temple Near Compass Pot 2": "(can_play(Zeldas_Lullaby) or Iron_Boots) and Hookshot",
-            "Water Temple Near Compass Pot 3": "(can_play(Zeldas_Lullaby) or Iron_Boots) and Hookshot"
+            "Water Temple L1 Torch Pot 1" : "(Iron_Boots and Hookshot) or can_play(Zeldas_Lullaby)",
+            "Water Temple L1 Torch Pot 2" : "(Iron_Boots and Hookshot) or can_play(Zeldas_Lullaby)",
+            "Water Temple Near Compass Pot 1" : "(can_play(Zeldas_Lullaby) or Iron_Boots) and Hookshot",
+            "Water Temple Near Compass Pot 2" : "(can_play(Zeldas_Lullaby) or Iron_Boots) and Hookshot",
+            "Water Temple Near Compass Pot 3" : "(can_play(Zeldas_Lullaby) or Iron_Boots) and Hookshot",
+            "Water Temple Before Compass Chest Stingray 1": "has_soul(Stinger) and (Iron_Boots and Hookshot)",
+            "Water Temple Before Compass Chest Stingray 2": "has_soul(Stinger) and (Iron_Boots and Hookshot)",
+            "Water Temple Before Compass Chest Stingray 3": "has_soul(Stinger) and (Iron_Boots and Hookshot)",
+            "Water Temple Before Compass Chest Stingray 4": "has_soul(Stinger) and (Iron_Boots and Hookshot)",
+            "Water Temple Map Chest Spike 1": "(has_soul(Spike_Enemy)) and Raise_Water_Level",
+            "Water Temple Map Chest Spike 2": "(has_soul(Spike_Enemy)) and Raise_Water_Level",
+            "Water Temple Map Chest Spike 3": "(has_soul(Spike_Enemy)) and Raise_Water_Level",
+            "Water Temple Map Chest Spike 4": "(has_soul(Spike_Enemy)) and Raise_Water_Level"
         },
         "exits": {
             "Water Temple Lowered Water Levels": "can_play(Zeldas_Lullaby)",
@@ -71,8 +83,21 @@
         "dungeon": "Water Temple",
         "locations": {
             "Water Temple Torches Chest": "
-                Bow or can_use(Dins_Fire) or
-                (Child_Water_Temple and Sticks and Kokiri_Sword and Magic_Meter)",
+                (has_soul(Shell_Blade)) and
+                    (Bow or can_use(Dins_Fire) or
+                    (Child_Water_Temple and Sticks and Kokiri_Sword and Magic_Meter))",
+            "Water Temple Torches Chest Shell Blade 1": "
+                (has_soul(Shell_Blade)) and
+                    (Bow or can_use(Dins_Fire) or
+                    (Child_Water_Temple and Sticks and Kokiri_Sword and Magic_Meter))",
+            "Water Temple Torches Chest Shell Blade 2": "
+                (has_soul(Shell_Blade)) and
+                    (Bow or can_use(Dins_Fire) or
+                    (Child_Water_Temple and Sticks and Kokiri_Sword and Magic_Meter))",
+            "Water Temple Torches Chest Shell Blade 3": "
+                (has_soul(Shell_Blade)) and
+                    (Bow or can_use(Dins_Fire) or
+                    (Child_Water_Temple and Sticks and Kokiri_Sword and Magic_Meter))",
             "Water Temple GS Central Pillar": "
                 ((Longshot or (logic_water_central_gs_fw and Hookshot and can_use(Farores_Wind))) and
                     ((Small_Key_Water_Temple, 5) or Bow or can_use(Dins_Fire))) or
@@ -110,7 +135,10 @@
             "Water Temple Behind Gate Pot 2": "True",
             "Water Temple Behind Gate Pot 3": "True",
             "Water Temple Behind Gate Pot 4": "True",
-            "Water Temple GS Behind Gate": "True"
+            "Water Temple GS Behind Gate": "True",
+            "Water Temple South Basement Shell Blade": "has_soul(Shell_Blade) and Iron_Boots and Hookshot",
+            "Water Temple South Basement Tektite 1": "has_soul(Tektite)",
+            "Water Temple South Basement Tektite 2": "has_soul(Tektite)"
         }
     },
     {
@@ -119,7 +147,15 @@
         "locations": {
             "Water Temple Central Pillar Chest": "
                 ((Small_Key_Water_Temple, 5) or Bow or can_use(Dins_Fire)) and
-                Iron_Boots and Zora_Tunic and Hookshot"
+                Iron_Boots and Zora_Tunic and Hookshot and (has_soul(Spike_Enemy) and has_soul(Shell_Blade))",
+            "Water Temple Central Pillar Shell Blade 1": "Iron_Boots and Zora_Tunic and Hookshot and (has_soul(Shell_Blade))",
+            "Water Temple Central Pillar Shell Blade 2": "Iron_Boots and Zora_Tunic and Hookshot and (has_soul(Shell_Blade))",
+            "Water Temple Central Pillar Spike 1": "Iron_Boots and Zora_Tunic and Hookshot and (has_soul(Spike_Enemy))",
+            "Water Temple Central Pillar Spike 2": "Iron_Boots and Zora_Tunic and Hookshot and (has_soul(Spike_Enemy))",
+            "Water Temple Central Pillar Spike 3": "Iron_Boots and Zora_Tunic and Hookshot and (has_soul(Spike_Enemy))",
+            "Water Temple Central Pillar Spike 4": "Iron_Boots and Zora_Tunic and Hookshot and (has_soul(Spike_Enemy))",
+            "Water Temple Central Pillar Spike 5": "Iron_Boots and Zora_Tunic and Hookshot and (has_soul(Spike_Enemy))",
+            "Water Temple Raise The Water Tektite": "has_soul(Tektite)"
         },
         "exits": {
             "Water Temple Cracked Wall": "True",
@@ -150,9 +186,29 @@
         "locations": {
             "Water Temple North Basement Block Puzzle Pot 1": "True",
             "Water Temple North Basement Block Puzzle Pot 2": "True",
-            # Longshot reaches without the need to actually go near
-            # Otherwise you have Hovers and can you hover over and collect with a jumpslash
-            "Water Temple GS Near Boss Key Chest": "True"
+            "Water Temple GS Near Boss Key Chest": "True",
+                # Longshot reaches without the need to actually go near
+                # Otherwise you have Hovers and can you hover over and collect with a jumpslash
+            "Water Temple Before BK Shell Blade": "has_soul(Shell_Blade) and Iron_Boots and Hookshot",
+            "Water Temple Whirlpool Room Tektite 1": "has_soul(Tektite)",
+            "Water Temple Whirlpool Room Tektite 2": "has_soul(Tektite)",
+            "Water Temple Whirlpool Room Tektite 3": "has_soul(Tektite)",
+            "Water Temple Whirlpool Room Tektite 4": "has_soul(Tektite)",
+            "Water Temple Whirlpool Room Tektite 5": "has_soul(Tektite)",
+            "Water Temple Whirlpool Room Tektite 6": "has_soul(Tektite)",
+            "Water Temple North Basement Block Puzzle Stingray 1": "has_soul(Stinger)",
+            "Water Temple North Basement Block Puzzle Stingray 2": "has_soul(Stinger)",
+            "Water Temple North Basement Block Puzzle Stingray 3": "has_soul(Stinger)",
+            "Water Temple North Basement Block Puzzle Stingray 4": "has_soul(Stinger)",
+            "Water Temple North Basement Block Puzzle Stingray 5": "has_soul(Stinger)",
+            "Water Temple Triple Water Spout Tektite 1": "
+                (has_soul(Tektite)) and
+                (logic_water_north_basement_ledge_jump or Hover_Boots or
+                    (has_explosives and Progressive_Strength_Upgrade))",
+            "Water Temple Triple Water Spout Tektite 2": "
+                (has_soul(Tektite)) and
+                (logic_water_north_basement_ledge_jump or Hover_Boots or
+                    (has_explosives and Progressive_Strength_Upgrade))"
         },
         "exits": {
             "Water Temple Boss Key Chest Room": "
@@ -179,7 +235,9 @@
             "Water Temple GS Falling Platform Room": "
                 can_use(Longshot) or
                 (logic_water_falling_platform_gs_hookshot and can_use(Hookshot)) or
-                (logic_water_falling_platform_gs_boomerang and can_use(Boomerang))"
+                (logic_water_falling_platform_gs_boomerang and can_use(Boomerang))",
+            "Water Temple Falling Platform Room Keese 1": "can_kill_keese",
+            "Water Temple Falling Platform Room Keese 2": "can_kill_keese"
         },
         "exits": {
             "Water Temple Dark Link Region": "can_use(Hookshot) and (Small_Key_Water_Temple, 5)"
@@ -189,12 +247,19 @@
         "region_name": "Water Temple Dark Link Region",
         "dungeon": "Water Temple",
         "locations": {
-            "Water Temple Longshot Chest": "True",
+            "Water Temple Longshot Chest": "has_soul(Dark_Link)",
             "Water Temple Like Like Pot 1": "True",
-            "Water Temple Like Like Pot 2": "True"
+            "Water Temple Like Like Pot 2": "True",
+            "Water Temple Statue Puzzle Tektite 1": "can_kill_tektite",
+            "Water Temple Statue Puzzle Tektite 2": "can_kill_tektite",
+            "Water Temple Statue Puzzle Tektite 3": "can_kill_tektite",
+            "Water Temple Statue Puzzle Tektite 4": "can_kill_tektite",
+            "Water Temple Statue Puzzle Tektite 5": "can_kill_tektite",
+            "Water Temple Statue Puzzle Like Like": "can_kill_likelike",
+            "Water Temple Dark Link" : "has_soul(Dark_Link)"
         },
         "exits": {
-            "Water Temple River": "can_play(Song_of_Time)"
+            "Water Temple River": "(has_soul(Dark_Link)) and can_play(Song_of_Time)"
         }
     },
     {
@@ -223,7 +288,10 @@
         "region_name": "Water Temple Dragon Statue",
         "dungeon": "Water Temple",
         "locations": {
-            "Water Temple Dragon Chest": "True"
+            "Water Temple Dragon Chest": "True",
+            "Water Temple Dragon Statue Shell Blade 1": "has_soul(Shell_Blade) and Iron_Boots and Hookshot",
+            "Water Temple Dragon Statue Shell Blade 2": "has_soul(Shell_Blade) and Iron_Boots and Hookshot",
+            "Water Temple Water Spout Tektite": "can_kill_tektite"
         }
     }
 ]

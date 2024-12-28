@@ -4,12 +4,14 @@
 #include "z64.h"
 #include "get_items.h"
 #include <stdbool.h>
+#include <stdint.h>
 
 // New data added to the end of every actor.
 // Make sure the size of this struct is equal to the amount of space added added in Actor_Spawn_Malloc_Hack from actor.asm
 typedef struct {
     /* 0x00 */ uint16_t actor_id;
     /* 0x02 */ xflag_t flag;
+    /* 0x04 */ uint8_t minimap_draw_flags;
 } ActorAdditionalData;
 
 void Actor_After_UpdateAll_Hack(z64_actor_t* actor, z64_game_t* game);

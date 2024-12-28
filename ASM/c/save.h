@@ -7,8 +7,11 @@
 typedef struct {
     uint8_t silver_rupee_counts[0x16];
     bool collected_dungeon_rewards[8];
-    override_t incoming_queue[3];
+    uint8_t enemy_spawn_flags[8];
+    uint8_t soul_enable_flags[8];
     uint8_t password[6];
+    override_t incoming_queue[3]; // Keep these at the end so it doesn't screw up anything which we defined in SaveContext.py
+
 } extended_savecontext_static_t __attribute__ ((aligned (8)));
 
 

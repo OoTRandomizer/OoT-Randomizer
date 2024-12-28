@@ -13,7 +13,7 @@ def build_xflags_from_world(world: World) ->  tuple[dict[int, dict[tuple[int, in
     for i in range(0, 101):
         scene_flags[i] = {}
         for location in world.get_locations():
-            if location.scene == i and location.type in ["Freestanding", "Pot", "FlyingPot", "Crate", "SmallCrate", "Beehive", "RupeeTower", "SilverRupee", "Wonderitem"]:
+            if location.scene == i and location.type in ["Freestanding", "Pot", "FlyingPot", "Crate", "SmallCrate", "Beehive", "RupeeTower", "SilverRupee", "Wonderitem", "EnemyDrop"]:
                 default = location.default
                 if isinstance(default, list):  # List of alternative room/setup/flag to use
                     primary_tuple = default[0]

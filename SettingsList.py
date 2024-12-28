@@ -1567,6 +1567,48 @@ class SettingInfos:
         },
     )
 
+    shuffle_enemy_drops = Checkbutton(
+        gui_text       = 'Shuffle Enemy Drops',
+        gui_tooltip    = '''\
+            Enabling will allow every unique non-boss enemy that normally drops a random item to drop a shuffled item.
+            The item will be automatically awarded when killing the enemy.
+
+            There are a handful of exceptions:
+                Poes
+                Big Octo
+                Stahlchild
+                Leevers
+                And maybe some others :)
+
+            Some important tidbits:
+
+            In the vanilla game, Adult Kokiri Forest no longer has enemies after completing Forest Temple.
+            Enabling this setting will force the enemies to always spawn.
+
+            Individual Guays respawn themselves 10 times after you kill them and then spawn a large Guay.
+            Only the first guay will drop an item. Child Night Lon-Lon has 15 unique Guays. Good luck :)
+
+            Enemies that spawn additional enemies when you kill them will drop items but with some caveats:
+                Bari (the large jellyfish things in Jabu) will only drop an item from the large jelly.
+                    The 3 smaller ones won't
+                Floormasters - After killing the floormaster, it will split in 3.
+                    One of the children will drop an item.
+
+            Deku Babas are the ultimate enemy so they will only drop
+            their shuffled item if you hit them with Elemental Arrows.
+        The Deku Babas in Deku Tree and Bottom of the Well don't have additional drops.
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+        disable        =
+        {
+            False : { 'settings': ['prevent_guay_respawns', 'minimap_enemy_tracker']},
+        }
+    )
+
     empty_dungeons_mode = Combobox(
         gui_text       = 'Pre-completed Dungeons Mode',
         default        = 'none',
@@ -2613,6 +2655,32 @@ class SettingInfos:
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
+        },
+    )
+
+    shuffle_enemy_spawns = Combobox(
+        gui_text       = 'Shuffle Enemy Souls',
+        gui_tooltip    = '''\
+            Enabling this will prevent enemies from
+            spawning into the world until their "Soul"
+            has been collected. Each enemy type will
+            have a soul added into the item pool
+        ''',
+        default        = 'off',
+        choices        = {
+            'off': 'Off',
+            'all': 'All',
+            'bosses': 'Bosses',
+            'regional': 'Regional'
+        },
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+            'distribution': [
+                ('off',      1),
+                ('all',      1),
+                ('bosses',   1)
+            ],
         },
     )
 
@@ -4225,6 +4293,38 @@ class SettingInfos:
             fail to generate, consider turning this option off.
         ''',
         shared         = True,
+    )
+
+    prevent_guay_respawns = Checkbutton(
+        gui_text       = 'Prevent guays from respawning',
+        gui_tooltip    = '''\
+            Enabling this prevents guays from respawning in enemy drop shuffle.
+            ''',
+        gui_params     = {
+            'hide_when_disabled' : True,
+        }
+    )
+
+    minimap_enemy_tracker = Checkbutton(
+        gui_text       = 'Enable enemy tracker (BETA)',
+        gui_tooltip    = '''\
+            In enemy drop shuffle, display enemies that have not been
+            checked on the minimap.
+
+            Only displays the enemies that are currently spawned.
+
+            Doesn't work perfectly for scenes like Kokiri Forest where
+            a single minimap is used across multiple rooms.
+
+            Will display in dungeons even if the Dungeon Map has
+            not been collected.
+
+            In scenes that don't have a minimap, it tends to draw
+            somewhere towards the bottom-middle of the screen.
+            ''',
+        gui_params     = {
+            'hide_when_disabled' : True,
+        }
     )
 
     item_pool_value = Combobox(

@@ -209,6 +209,7 @@
             "shuffle_cows",
             "shuffle_beehives",
             "shuffle_wonderitems",
+            "shuffle_enemy_drops",
             "shuffle_kokiri_sword",
             "shuffle_ocarinas",
             "shuffle_gerudo_card",
@@ -217,7 +218,8 @@
             "shuffle_frog_song_rupees",
             "shuffle_100_skulltula_rupee",
             "shuffle_loach_reward",
-            "shuffle_individual_ocarina_notes"
+            "shuffle_individual_ocarina_notes",
+            "shuffle_enemy_spawns"
           ]
         },
         {
@@ -402,7 +404,9 @@
             "fix_broken_drops",
             "tcg_requires_lens",
             "no_collectible_hearts",
-            "one_item_per_dungeon"
+            "one_item_per_dungeon",
+            "prevent_guay_respawns",
+            "minimap_enemy_tracker"
           ]
         },
         {

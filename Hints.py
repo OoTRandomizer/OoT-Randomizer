@@ -423,10 +423,8 @@ def color_text(gossip_text: GossipText, lang: Language) -> str:
             text = ''.join(split_text)
     return text
 
-
 class HintAreaNotFound(RuntimeError):
     pass
-
 
 class HintArea(Enum):
     # internal name          ID      color         internal dungeon name
@@ -611,7 +609,8 @@ class CheckedKind(Enum):
     ALWAYS = auto()
     OTHER = auto()
 
-def get_woth_hint(spoiler: Spoiler, world: World, checked: dict[HintArea | str, set[CheckedKind]]) -> HintReturn:
+#def get_woth_hint(spoiler: Spoiler, world: World, checked: set[str]) -> HintReturn:
+def get_woth_hint(spoiler: Spoiler, world: World, checked: dict[HintArea | str, set[CheckedKind]]) -> HintReturn: 
     locations = spoiler.required_locations[world.id]
     locations = list(filter(lambda location:
         location.name not in checked

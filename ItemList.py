@@ -320,6 +320,76 @@ class GetItemId(IntEnum):
     GI_SHADOW_MEDALLION = 0x012E
     GI_SPIRIT_MEDALLION = 0x012F
 
+    GI_SOUL_STALFOS = 0x0200
+    GI_SOUL_OCTOROK = 0x0201
+    GI_SOUL_WALLMASTER = 0x0202
+    GI_SOUL_DODONGO = 0x0203
+    GI_SOUL_KEESE = 0x0204
+    GI_SOUL_TEKTITE = 0x0205
+    GI_SOUL_PEAHAT = 0x0206
+    GI_SOUL_LIZALFOS_AND_DINALFOS = 0x0207
+    GI_SOUL_GOHMA_LARVAE = 0x0208
+    GI_SOUL_SHABOM = 0x0209
+    GI_SOUL_BABY_DODONGO = 0x020A
+    GI_SOUL_BIRI_AND_BARI = 0x020B
+    GI_SOUL_TAILPASARAN = 0x020C
+    GI_SOUL_SKULLTULA = 0x020D
+    GI_SOUL_TORCH_SLUG = 0x020E
+    GI_SOUL_MOBLIN = 0x020F
+    GI_SOUL_ARMOS = 0x0210
+    GI_SOUL_DEKU_BABA = 0x0211
+    GI_SOUL_DEKU_SCRUB = 0x0212
+    GI_SOUL_BUBBLE = 0x0213
+    GI_SOUL_BEAMOS = 0x0214
+    GI_SOUL_FLOORMASTER = 0x0215
+    GI_SOUL_REDEAD_AND_GIBDO = 0x0216
+    GI_SOUL_SKULLWALLTULA = 0x0217
+    GI_SOUL_FLARE_DANCER = 0x0218
+    GI_SOUL_DEAD_HAND = 0x0219
+    GI_SOUL_SHELL_BLADE = 0x021A
+    GI_SOUL_LIKE_LIKE = 0x021B
+    GI_SOUL_SPIKE_ENEMY = 0x021C
+    GI_SOUL_ANUBIS = 0x021D
+    GI_SOUL_IRON_KNUCKLE = 0x021E
+    GI_SOUL_SKULL_KID = 0x021F
+    GI_SOUL_FLYING_POT = 0x0220
+    GI_SOUL_FREEZARD = 0x0221
+    GI_SOUL_STINGER = 0x0222
+    GI_SOUL_WOLFOS = 0x0223
+    GI_SOUL_GUAY = 0x0224
+    GI_SOUL_QUEEN_GOHMA = 0x0225
+    GI_SOUL_KING_DODONGO = 0x0226
+    GI_SOUL_BARINADE = 0x0227
+    GI_SOUL_PHANTOM_GANON = 0x0228
+    GI_SOUL_VOLVAGIA = 0x0229
+    GI_SOUL_MORPHA = 0x022A
+    GI_SOUL_BONGO_BONGO = 0x022B
+    GI_SOUL_TWINROVA = 0x022C
+    GI_SOUL_JABU_JABU_TENTACLE = 0x022D
+    GI_SOUL_DARK_LINK = 0x022E
+    GI_SOUL_REGIONAL_DEKU_TREE = 0x022F
+    GI_SOUL_REGIONAL_DODONGOS_CAVERN = 0x0230
+    GI_SOUL_REGIONAL_JABU = 0x0231
+    GI_SOUL_REGIONAL_FOREST_TEMPLE = 0x0232
+    GI_SOUL_REGIONAL_FIRE_TEMPLE = 0x0233
+    GI_SOUL_REGIONAL_WATER_TEMPLE = 0x0234
+    GI_SOUL_REGIONAL_SHADOW_TEMPLE = 0x0235
+    GI_SOUL_REGIONAL_SPIRIT_TEMPLE = 0x0236
+    GI_SOUL_REGIONAL_BOTW = 0x0237
+    GI_SOUL_REGIONAL_ICE_CAVERN = 0x0238
+    GI_SOUL_REGIONAL_GTG = 0x0239
+    GI_SOUL_REGIONAL_GANONS_CASTLE = 0x023A
+    GI_SOUL_REGIONAL_FOREST_AREA = 0x023B
+    GI_SOUL_REGIONAL_HYRULE_FIELD = 0x023C
+    GI_SOUL_REGIONAL_LAKE_HYLIA = 0x023D
+    GI_SOUL_REGIONAL_GERUDO_AREA = 0x023E
+    GI_SOUL_REGIONAL_MARKET_AREA = 0x023F
+    GI_SOUL_REGIONAL_KAKARIKO_AREA = 0x0240
+    GI_SOUL_REGIONAL_GORON_AREA = 0x0241
+    GI_SOUL_REGIONAL_ZORA_AREA = 0x0242
+    GI_SOUL_REGIONAL_LLR = 0x0243
+    GI_SOUL_REGIONAL_GROTTOS = 0x0244
+
     GI_RANDO_MAX = 0x0130
 
 # Progressive: True  -> Advancement
@@ -546,6 +616,78 @@ item_table: dict[str, tuple[str, Optional[bool], Optional[int], Optional[dict[st
     'Ocarina C right Button':                          ('Item',     True,  GetItemId.GI_OCARINA_BUTTON_C_RIGHT, {'ocarina_button': True}),
     'Fairy Drop':                                      ('Item',     None,  GetItemId.GI_FAIRY, {'market_price': 50}),
     'Nothing':                                         ('Item',     None,  GetItemId.GI_NOTHING, None),
+
+    'Stalfos Soul':                                    ('Soul',     True,  GetItemId.GI_SOUL_STALFOS, None),
+    'Octorok Soul':                                    ('Soul',     True,  GetItemId.GI_SOUL_OCTOROK, None),
+    'Wallmaster Soul':                                 ('Soul',     True,  GetItemId.GI_SOUL_WALLMASTER, None),
+    'Dodongo Soul':                                    ('Soul',     True,  GetItemId.GI_SOUL_DODONGO, None),
+    'Keese Soul':                                      ('Soul',     True,  GetItemId.GI_SOUL_KEESE, None),
+    'Tektite Soul':                                    ('Soul',     True,  GetItemId.GI_SOUL_TEKTITE, None),
+    'Peahat Soul':                                     ('Soul',     True,  GetItemId.GI_SOUL_PEAHAT, None),
+    'Lizalfos and Dinalfos Soul':                      ('Soul',     True,  GetItemId.GI_SOUL_LIZALFOS_AND_DINALFOS, None),
+    'Gohma Larvae Soul':                               ('Soul',     True,  GetItemId.GI_SOUL_GOHMA_LARVAE, None),
+    'Shabom Soul':                                     ('Soul',     True,  GetItemId.GI_SOUL_SHABOM, None),
+    'Baby Dodongo Soul':                               ('Soul',     True,  GetItemId.GI_SOUL_BABY_DODONGO, None),
+    'Biri and Bari Soul':                              ('Soul',     True,  GetItemId.GI_SOUL_BIRI_AND_BARI, None),
+    'Tailpasaran Soul':                                ('Soul',     True,  GetItemId.GI_SOUL_TAILPASARAN, None),
+    'Skulltula Soul':                                  ('Soul',     True,  GetItemId.GI_SOUL_SKULLTULA, None),
+    'Torch Slug Soul':                                 ('Soul',     True,  GetItemId.GI_SOUL_TORCH_SLUG, None),
+    'Moblin Soul':                                     ('Soul',     True,  GetItemId.GI_SOUL_MOBLIN, None),
+    'Armos Soul':                                      ('Soul',     True,  GetItemId.GI_SOUL_ARMOS, None),
+    'Deku Baba Soul':                                  ('Soul',     True,  GetItemId.GI_SOUL_DEKU_BABA, None),
+    'Deku Scrub Soul':                                 ('Soul',     True,  GetItemId.GI_SOUL_DEKU_SCRUB, None),
+    'Bubble Soul':                                     ('Soul',     True,  GetItemId.GI_SOUL_BUBBLE, None),
+    'Beamos Soul':                                     ('Soul',     True,  GetItemId.GI_SOUL_BEAMOS, None),
+    'Floormaster Soul':                                ('Soul',     True,  GetItemId.GI_SOUL_FLOORMASTER, None),
+    'Redead and Gibdo Soul':                           ('Soul',     True,  GetItemId.GI_SOUL_REDEAD_AND_GIBDO, None),
+    'Skullwalltula Soul':                              ('Soul',     True,  GetItemId.GI_SOUL_SKULLWALLTULA, None),
+    'Flare Dancer Soul':                               ('Soul',     True,  GetItemId.GI_SOUL_FLARE_DANCER, None),
+    'Dead hand Soul':                                  ('Soul',     True,  GetItemId.GI_SOUL_DEAD_HAND, None),
+    'Shell Blade Soul':                                ('Soul',     True,  GetItemId.GI_SOUL_SHELL_BLADE, None),
+    'Like-like Soul':                                  ('Soul',     True,  GetItemId.GI_SOUL_LIKE_LIKE, None),
+    'Spike Enemy Soul':                                ('Soul',     True,  GetItemId.GI_SOUL_SPIKE_ENEMY, None),
+    'Anubis Soul':                                     ('Soul',     True,  GetItemId.GI_SOUL_ANUBIS, None),
+    'Iron Knuckle Soul':                               ('Soul',     True,  GetItemId.GI_SOUL_IRON_KNUCKLE, None),
+    'Skull Kid Soul':                                  ('Soul',     True,  GetItemId.GI_SOUL_SKULL_KID, None),
+    'Flying Pot Soul':                                 ('Soul',     True,  GetItemId.GI_SOUL_FLYING_POT, None),
+    'Freezard Soul':                                   ('Soul',     True,  GetItemId.GI_SOUL_FREEZARD, None),
+    'Stinger Soul':                                    ('Soul',     True,  GetItemId.GI_SOUL_STINGER, None),
+    'Wolfos Soul':                                     ('Soul',     True,  GetItemId.GI_SOUL_WOLFOS, None),
+    'Guay Soul':                                       ('Soul',     True,  GetItemId.GI_SOUL_GUAY, None),
+    'Queen Gohma Soul':                                ('Soul',     True,  GetItemId.GI_SOUL_QUEEN_GOHMA, None),
+    'King Dodongo Soul':                               ('Soul',     True,  GetItemId.GI_SOUL_KING_DODONGO, None),
+    'Barinade Soul':                                   ('Soul',     True,  GetItemId.GI_SOUL_BARINADE, None),
+    'Phantom Ganon Soul':                              ('Soul',     True,  GetItemId.GI_SOUL_PHANTOM_GANON, None),
+    'Volvagia Soul':                                   ('Soul',     True,  GetItemId.GI_SOUL_VOLVAGIA, None),
+    'Morpha Soul':                                     ('Soul',     True,  GetItemId.GI_SOUL_MORPHA, None),
+    'Bongo Bongo Soul':                                ('Soul',     True,  GetItemId.GI_SOUL_BONGO_BONGO, None),
+    'Twinrova Soul':                                   ('Soul',     True,  GetItemId.GI_SOUL_TWINROVA, None),
+    'Jabu Jabu Tentacle Soul':                         ('Soul',     True,  GetItemId.GI_SOUL_JABU_JABU_TENTACLE, None),
+    'Dark Link Soul':                                  ('Soul',     True,  GetItemId.GI_SOUL_DARK_LINK, None),
+
+    # Regional souls
+    'Deku Tree Souls':                                 ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_DEKU_TREE, None),
+    'Dodongos Cavern Souls':                           ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_DODONGOS_CAVERN, None),
+    'Jabu Jabus Belly Souls':                          ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_JABU, None),
+    'Forest Temple Souls':                             ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_FOREST_TEMPLE, None),
+    'Fire Temple Souls':                               ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_FIRE_TEMPLE, None),
+    'Water Temple Souls':                              ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_WATER_TEMPLE, None),
+    'Shadow Temple Souls':                             ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_SHADOW_TEMPLE, None),
+    'Spirit Temple Souls':                             ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_SPIRIT_TEMPLE, None),
+    'Bottom of the Well Souls':                        ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_BOTW, None),
+    'Ice Cavern Souls':                                ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_ICE_CAVERN, None),
+    'Gerudo Training Ground Souls':                    ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_GTG, None),
+    'Ganons Castle Souls':                             ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_GANONS_CASTLE, None),
+    'Forest Area Souls':                               ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_FOREST_AREA, None),
+    'Hyrule Field Souls':                              ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_HYRULE_FIELD, None),
+    'Lake Hylia Souls':                                ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_LAKE_HYLIA, None),
+    'Gerudo Area Souls':                               ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_GERUDO_AREA, None),
+    'Market Area Souls':                               ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_MARKET_AREA, None),
+    'Kakariko Area Souls':                             ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_KAKARIKO_AREA, None),
+    'Goron Area Souls':                                ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_GORON_AREA, None),
+    'Zora Area Souls':                                 ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_ZORA_AREA, None),
+    'Lon Lon Ranch Souls':                             ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_LLR, None),
+    'Grottos Souls':                                   ('Soul',     True,  GetItemId.GI_SOUL_REGIONAL_GROTTOS, None),
 
     # Event items otherwise generated by generic event logic
     # can be defined here to enforce their appearance in playthroughs.

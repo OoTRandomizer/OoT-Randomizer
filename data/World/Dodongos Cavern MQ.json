@@ -32,33 +32,8 @@
     {
         "region_name": "Dodongos Cavern Elevator",
         "dungeon": "Dodongos Cavern",
-        "locations": {
-            # Regardless of how you destroy the boulder on the elevator switch,
-            # you will always be able to access the upper staircase in some way.
-            "Dodongos Cavern MQ Deku Scrub Staircase": "can_stun_deku",
-            "Dodongos Cavern MQ Staircase Pot 1": "True",
-            "Dodongos Cavern MQ Staircase Pot 2": "True",
-            "Dodongos Cavern MQ Staircase Pot 3": "True",
-            "Dodongos Cavern MQ Staircase Pot 4": "True",
-            # Entering the staircase room requires strength, hammer, or explosives.
-            # Strength can be used for the bottom crates near the staircase bomb flowers.
-            # The other crates above the staircase require another way to destroy with one bonk ko.
-            "Dodongos Cavern MQ Staircase Crate Bottom Left": "True",
-            "Dodongos Cavern MQ Staircase Crate Bottom Right": "True",
-            "Dodongos Cavern MQ Staircase Crate Mid Left": "can_break_crate",
-            "Dodongos Cavern MQ Staircase Crate Mid Right": "can_break_crate",
-            "Dodongos Cavern MQ Staircase Crate Top Left": "can_break_crate",
-            "Dodongos Cavern MQ Staircase Crate Top Right": "can_break_crate",
-            "Dodongos Cavern MQ Staircase Silver Rupee Beamos": "True",
-            "Dodongos Cavern MQ Staircase Silver Rupee Lower Crate": "True",
-            "Dodongos Cavern MQ Staircase Silver Rupee Mid Left Crate": "can_break_crate",
-            "Dodongos Cavern MQ Staircase Silver Rupee Top Right Crate": "can_break_crate",
-            "Dodongos Cavern MQ GS Song of Time Block Room": "
-                can_play(Song_of_Time) and (can_child_attack or is_adult)",
-            "Deku Baba Sticks": "is_adult or Kokiri_Sword or Boomerang"
-        },
         "exits": {
-            "Dodongos Cavern Above Staircase": "is_adult or can_child_attack or Nuts",
+            "Dodongos Cavern Lower Staircase": "True",
             "Dodongos Cavern Torch Puzzle Upper": "
                 here(can_blast_or_smash or can_use(Dins_Fire)) or
                 at('Dodongos Cavern Torch Puzzle Upper', Progressive_Strength_Upgrade)",
@@ -68,26 +43,92 @@
         }
     },
     {
+        "region_name": "Dodongos Cavern Song of Time Block Room",
+        "dungeon": "Dodongos Cavern",
+        "locations": {
+            "Dodongos Cavern MQ GS Song of Time Block Room": "
+                can_play(Song_of_Time) and (can_child_attack or is_adult)",
+            "Dodongos Cavern MQ Song of Time Block Room Skullwalltula": "has_soul(Skullwalltula) and (is_adult or (is_child and can_play(Song_of_Time) and can_child_attack))",
+            "Dodongos Cavern MQ Song of Time Block Room Skulltula 1": "has_soul(Skulltula) and (is_adult or (is_child and can_play(Song_of_Time) and can_child_attack))",
+            "Dodongos Cavern MQ Song of Time Block Room Skulltula 2": "has_soul(Skulltula) and (is_adult or (is_child and can_play(Song_of_Time) and can_child_attack))",
+            "Dodongos Cavern MQ Song of Time Block Room Skulltula 3": "has_soul(Skulltula) and (is_adult or (is_child and can_play(Song_of_Time) and can_child_attack))"
+        }
+    },
+    {
+        "region_name": "Dodongos Cavern Lower Staircase",
+        "dungeon": "Dodongos Cavern",
+        "locations": {
+            "Dodongos Cavern MQ Deku Scrub Staircase": "can_stun_deku",
+            "Dodongos Cavern MQ Staircase Crate Bottom Left": "can_break_crate or Progressive_Strength_Upgrade",
+            "Dodongos Cavern MQ Staircase Crate Bottom Right": "can_break_crate or Progressive_Strength_Upgrade",
+            "Dodongos Cavern MQ Staircase Pot 1": "True",
+            "Dodongos Cavern MQ Staircase Pot 2": "True",
+            "Dodongos Cavern MQ Staircase Pot 3": "True",
+            "Dodongos Cavern MQ Staircase Pot 4": "True",
+            "Dodongos Cavern MQ Staircase Beamos 1": "can_kill_beamos",
+            "Dodongos Cavern MQ Staircase Beamos 2": "can_kill_beamos",
+            "Dodongos Cavern MQ Staircase Silver Rupee Beamos": "True",
+            "Dodongos Cavern MQ Staircase Silver Rupee Lower Crate": "can_break_crate or Progressive_Strength_Upgrade",
+            "Deku Baba Sticks": "has_soul(Deku_Baba) and (is_adult or Kokiri_Sword or Boomerang)"
+        },
+        "exits": {
+            "Dodongos Cavern Song of Time Block Room": "True",
+            "Dodongos Cavern Upper Staircase": "Progressive_Strength_Upgrade or has_explosives or can_use(Dins_Fire)"
+        }
+    },
+    {
+        "region_name": "Dodongos Cavern Upper Staircase",
+        "dungeon": "Dodongos Cavern",
+        "locations": {
+            "Dodongos Cavern MQ Staircase Crate Mid Left": "can_break_crate",
+            "Dodongos Cavern MQ Staircase Crate Mid Right": "can_break_crate",
+            "Dodongos Cavern MQ Staircase Crate Top Left": "can_break_crate",
+            "Dodongos Cavern MQ Staircase Crate Top Right": "can_break_crate",
+            "Dodongos Cavern MQ Staircase Silver Rupee Mid Left Crate": "can_break_crate",
+            "Dodongos Cavern MQ Staircase Silver Rupee Top Right Crate": "can_break_crate",
+            "Dodongos Cavern MQ Staircase Skulltula 1": "can_kill_skulltula",
+            "Dodongos Cavern MQ Staircase Skulltula 2": "can_kill_skulltula"
+        },
+        "exits": {
+            "Dodongos Cavern Above Staircase":"is_adult or can_child_attack or Nuts"
+        }
+    },
+    {
         "region_name": "Dodongos Cavern Above Staircase",
         "dungeon": "Dodongos Cavern",
         "locations": {
             "Dodongos Cavern MQ Staircase Silver Rupee Vines": "True"
         },
         "exits": {
-            "Dodongos Cavern Torch Puzzle Lower": "(Silver_Rupee_Dodongos_Cavern_Staircase, 5)"
+            "Dodongos Cavern Lower Staircase": "True",
+            "Dodongos Cavern Upper Staircase": "is_adult or can_child_attack or Nuts",
+            "Dodongos Cavern Compass Chest Room": "(Silver_Rupee_Dodongos_Cavern_Staircase, 5)"
+        }
+    },
+    {
+        "region_name": "Dodongos Cavern Compass Chest Room",
+        "dungeon": "Dodongos Cavern",
+        "locations": {
+            "Dodongos Cavern MQ Compass Chest": "can_kill_dodongo",
+            "Dodongos Cavern MQ Compass Room Dodongo 1": "can_kill_dodongo",
+            "Dodongos Cavern MQ Compass Room Dodongo 2": "can_kill_dodongo",
+            "Dodongos Cavern MQ Compass Room Dodongo 3": "can_kill_dodongo"
+        },
+        "exits": {
+            "Dodongos Cavern Torch Puzzle Lower": "can_kill_dodongo",
+            "Dodongos Cavern Above Staircase": "True" # The door towards the staircase doesnt get barred shut regardless of how you enter the room
         }
     },
     {
         "region_name": "Dodongos Cavern Torch Puzzle Lower",
         "dungeon": "Dodongos Cavern",
         "locations": {
-            "Dodongos Cavern MQ Compass Chest": "True",
             "Dodongos Cavern MQ Torch Puzzle Room Recovery Heart": "True",
             "Dodongos Cavern MQ Torch Puzzle Room Pot Pillar": "
                 can_use(Boomerang) or at('Dodongos Cavern Torch Puzzle Upper', True)"
         },
         "exits": {
-            "Dodongos Cavern Above Staircase": "True",
+            "Dodongos Cavern Compass Chest Room": "True",
             "Dodongos Cavern Larvae Room": "has_fire_source_with_torch",
             "Dodongos Cavern Before Upper Lizalfos": "has_fire_source_with_torch",
             "Dodongos Cavern Torch Puzzle Upper": "
@@ -98,14 +139,19 @@
         "region_name": "Dodongos Cavern Larvae Room",
         "dungeon": "Dodongos Cavern",
         "locations": {
-            "Dodongos Cavern MQ Larvae Room Chest": "True",
+            "Dodongos Cavern MQ Larvae Room Chest": "has_soul(Gohma_Larvae)",
             "Dodongos Cavern MQ Larvae Room Crate 1": "can_break_crate",
             "Dodongos Cavern MQ Larvae Room Crate 2": "can_break_crate",
             "Dodongos Cavern MQ Larvae Room Crate 3": "can_break_crate",
             "Dodongos Cavern MQ Larvae Room Crate 4": "can_break_crate",
             "Dodongos Cavern MQ Larvae Room Crate 5": "can_break_crate",
             "Dodongos Cavern MQ Larvae Room Crate 6": "can_break_crate",
-            "Dodongos Cavern MQ GS Larvae Room": "True"
+            "Dodongos Cavern MQ GS Larvae Room": "can_break_crate",
+            "Dodongos Cavern MQ Larvae Room Gohma Larva 1": "has_soul(Gohma_Larvae)",
+            "Dodongos Cavern MQ Larvae Room Gohma Larva 2": "has_soul(Gohma_Larvae)",
+            "Dodongos Cavern MQ Larvae Room Gohma Larva 3": "has_soul(Gohma_Larvae)",
+            "Dodongos Cavern MQ Larvae Room Gohma Larva 4": "has_soul(Gohma_Larvae)",
+            "Dodongos Cavern MQ Larvae Room Gohma Larva 5": "has_soul(Gohma_Larvae)"
         }
     },
     {
@@ -113,10 +159,35 @@
         "dungeon": "Dodongos Cavern",
         "locations": {
             "Dodongos Cavern MQ Before Upper Lizalfos Pot 1": "True",
-            "Dodongos Cavern MQ Before Upper Lizalfos Pot 2": "True"
+            "Dodongos Cavern MQ Before Upper Lizalfos Pot 2": "True",
+            "Dodongos Cavern MQ Single Pillar Keese 1": "has_soul(Keese)",
+            "Dodongos Cavern MQ Single Pillar Keese 2": "has_soul(Keese)",
+            "Dodongos Cavern MQ Single Pillar Keese 3": "has_soul(Keese)",
+            "Dodongos Cavern MQ Single Pillar Skulltula 1": "has_soul(Skulltula)",
+            "Dodongos Cavern MQ Single Pillar Skulltula 2": "has_soul(Skulltula)",
+            "Dodongos Cavern MQ Single Pillar Skulltula 3": "has_soul(Skulltula)",
+            "Dodongos Cavern MQ Single Pillar Baby Dodongo 1": "has_soul(Baby_Dodongo)",
+            "Dodongos Cavern MQ Single Pillar Baby Dodongo 2": "has_soul(Baby_Dodongo)",
+            "Dodongos Cavern MQ Single Pillar Baby Dodongo 3": "has_soul(Baby_Dodongo)"
         },
         "exits": {
             "Dodongos Cavern Torch Puzzle Upper": "can_use(Sticks)"
+        }
+    },
+    {
+        "region_name": "Dodongos Cavern Upper Lizalfos",
+        "dungeon": "Dodongos Cavern",
+        "locations": {
+            "Dodongos Cavern MQ Upper Lizalfos Pot 1": "True",
+            "Dodongos Cavern MQ Upper Lizalfos Pot 2": "True",
+            "Dodongos Cavern MQ Upper Lizalfos Pot 3": "True",
+            "Dodongos Cavern MQ Upper Lizalfos Pot 4": "True",
+            "Dodongos Cavern MQ Upper Lizalfos 1": "can_kill_lizalfos",
+            "Dodongos Cavern MQ Upper Lizalfos 2": "can_kill_lizalfos"
+        },
+        "exits": {
+            "Dodongos Cavern Before Upper Lizalfos": "can_kill_lizalfos",
+            "Dodongos Cavern Torch Puzzle Upper": "can_kill_lizalfos"
         }
     },
     {
@@ -124,20 +195,19 @@
         "dungeon": "Dodongos Cavern",
         "locations": {
             "Dodongos Cavern MQ Torch Puzzle Room Chest": "True",
-            "Dodongos Cavern MQ Upper Lizalfos Pot 1": "True",
-            "Dodongos Cavern MQ Upper Lizalfos Pot 2": "True",
-            "Dodongos Cavern MQ Upper Lizalfos Pot 3": "True",
-            "Dodongos Cavern MQ Upper Lizalfos Pot 4": "True",
+
             "Dodongos Cavern MQ After Upper Lizalfos Pot 1": "True",
             "Dodongos Cavern MQ After Upper Lizalfos Pot 2": "True",
             "Dodongos Cavern MQ Torch Puzzle Room Pot Corner": "True",
             "Dodongos Cavern MQ After Upper Lizalfos Crate 1": "True",
             "Dodongos Cavern MQ After Upper Lizalfos Crate 2": "True",
-            "Dodongos Cavern MQ GS Lizalfos Room": "can_blast_or_smash"
+            "Dodongos Cavern MQ GS Lizalfos Room": "can_blast_or_smash",
+            "Dodongos Cavern MQ Double Pillar Keese 1": "has_soul(Keese)",
+            "Dodongos Cavern MQ Double Pillar Keese 2": "has_soul(Keese)"
         },
         "exits": {
             "Dodongos Cavern Torch Puzzle Lower": "True",
-            "Dodongos Cavern Before Upper Lizalfos": "is_adult or Slingshot or Bombs or Kokiri_Sword",
+            "Dodongos Cavern Upper Lizalfos": "True",
             "Dodongos Cavern Lower Right Side": "Progressive_Strength_Upgrade and can_take_damage",
             "Dodongos Cavern Lower Lizalfos": "has_explosives",
             "Dodongos Cavern Mouth": "
@@ -154,25 +224,46 @@
             "Dodongos Cavern MQ Right Side Pot 1": "True",
             "Dodongos Cavern MQ Right Side Pot 2": "True",
             "Dodongos Cavern MQ Right Side Pot 3": "True",
-            "Dodongos Cavern MQ Right Side Pot 4": "True"
+            "Dodongos Cavern MQ Right Side Pot 4": "True",
+            "Dodongos Cavern MQ Right Side Skulltula": "can_kill_skulltula",
+            "Dodongos Cavern MQ Right Side Keese": "can_kill_keese"
         },
         "exits": {
+            # Logic for child only access to the poes room. Adult has access directly from the lobby
             "Dodongos Cavern Poes Room": "
-                (here(can_use(Bow)) or Progressive_Strength_Upgrade or
+                 has_soul(Lizalfos_and_Dinalfos) and ((here(can_use(Bow)) or Progressive_Strength_Upgrade or
+                    can_use(Dins_Fire) or has_explosives) and
+                can_use(Slingshot))",
+            # Need to have access to the lower lizalfos room to access the recovery heart, baby dodongos
+            "Dodongos Cavern Hall Before Lower Lizalfos": "(here(can_use(Bow)) or Progressive_Strength_Upgrade or
                     can_use(Dins_Fire) or has_explosives) and
                 can_use(Slingshot)"
+        }
+    },
+    {
+        "region_name": "Dodongos Cavern Hall Before Lower Lizalfos",
+        "dungeon": "Dodongos Cavern",
+        "locations": {
+            "Dodongos Cavern MQ Right Side Baby Dodongo 1": "has_soul(Baby_Dodongo) and (is_adult or (Kokiri_Sword or Sticks or Slingshot or Boomerang or has_explosives))",
+            "Dodongos Cavern MQ Right Side Baby Dodongo 2": "has_soul(Baby_Dodongo) and (is_adult or (Kokiri_Sword or Sticks or Slingshot or Boomerang or has_explosives))"
+        },
+        "exits": {
+            "Dodongos Cavern Lower Lizalfos" : "True",
+            "Dodongos Cavern Lower Right Side": "True"
         }
     },
     {
         "region_name": "Dodongos Cavern Lower Lizalfos",
         "dungeon": "Dodongos Cavern",
         "locations": {
-            "Dodongos Cavern Lower Lizalfos Hidden Recovery Heart": "True"
+            "Dodongos Cavern Lower Lizalfos Hidden Recovery Heart": "True",
+            "Dodongos Cavern MQ Lower Lizalfos 1": "can_kill_lizalfos",
+            "Dodongos Cavern MQ Lower Lizalfos 2": "can_kill_lizalfos"
         },
         "exits": {
             # Child can fall down from above to reach Poes room, but Adult must defeat the
             # lower Lizalfos here first, since they don't spawn when jumping down from above.
-            "Dodongos Cavern Poes Room": "here(is_adult)"
+            "Dodongos Cavern Poes Room": "has_soul(Lizalfos_and_Dinalfos) and here(is_adult)"
         }
     },
     {
@@ -199,8 +290,18 @@
                 (can_use(Hookshot) or can_use(Boomerang))"
         },
         "exits": {
-            "Dodongos Cavern Lower Right Side": "True",
-            "Dodongos Cavern Lower Lizalfos": "True"
+            "Dodongos Cavern Hall Before Lower Lizalfos": "has_soul(Lizalfos_and_Dinalfos)", # Reverse access to the lower right side
+            "Dodongos Cavern Lower Lizalfos": "True",
+            "Dodongos Cavern Lower Scrubs Room": "can_use(Bow) or has_explosives or Progressive_Strength_Upgrade or can_use(Dins_Fire)"
+        }
+    },
+    {
+        "region_name": "Dodongos Cavern Lower Scrubs Room",
+        "dungeon": "Dodongos Cavern",
+        "locations": {
+            "Dodongos Cavern MQ Lower Scrub Room Scrub 1" : "can_kill_scrub",
+            "Dodongos Cavern MQ Lower Scrub Room Scrub 2" : "can_kill_scrub",
+            "Dodongos Cavern MQ Lower Scrub Room Keese": "can_kill_keese"
         }
     },
     {
@@ -218,7 +319,19 @@
             "Dodongos Cavern MQ GS Back Area": "
                 can_use(Boomerang) or
                 at('Dodongos Cavern Before Boss', is_adult or can_child_attack or
-                    Progressive_Strength_Upgrade)"
+                    Progressive_Strength_Upgrade)",
+            "Dodongos Cavern MQ Before Boss Baby Dodongo 1": "has_soul(Baby_Dodongo)",
+            "Dodongos Cavern MQ Before Boss Baby Dodongo 2": "has_soul(Baby_Dodongo)",
+            "Dodongos Cavern MQ Armos Army Armos 1": "can_kill_armos",
+            "Dodongos Cavern MQ Armos Army Armos 2": "can_kill_armos",
+            "Dodongos Cavern MQ Armos Army Armos 3": "can_kill_armos",
+            "Dodongos Cavern MQ Armos Army Armos 4": "can_kill_armos",
+            "Dodongos Cavern MQ Armos Army Armos 5": "can_kill_armos",
+            "Dodongos Cavern MQ Armos Army Armos 6": "can_kill_armos",
+            "Dodongos Cavern MQ Armos Army Armos 7": "can_kill_armos",
+            "Dodongos Cavern MQ Armos Army Baby Dodongo 1": "has_soul(Baby_Dodongo)",
+            "Dodongos Cavern MQ Armos Army Baby Dodongo 2": "has_soul(Baby_Dodongo)",
+            "Dodongos Cavern MQ Armos Army Lizalfos": "can_kill_lizalfos"
         },
         "exits": {
             "Dodongos Cavern Lobby": "True",

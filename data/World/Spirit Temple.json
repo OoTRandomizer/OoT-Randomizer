@@ -2,39 +2,85 @@
     {
         "region_name": "Spirit Temple Lobby",
         "dungeon": "Spirit Temple",
-        "locations": {
+        "locations" : {
             "Spirit Temple Lobby Pot 1": "True",
             "Spirit Temple Lobby Pot 2": "True",
-            "Spirit Temple Lobby Flying Pot 1": "True",
-            "Spirit Temple Lobby Flying Pot 2": "True"
+            "Spirit Temple Lobby Flying Pot 1": "has_soul(Flying_Pot)",
+            "Spirit Temple Lobby Flying Pot 2": "has_soul(Flying_Pot)",
+            "Spirit Temple Lobby Armos Left": "can_kill_armos",
+            "Spirit Temple Lobby Armos Right": "can_kill_armos"
         },
         "exits": {
             "Desert Colossus From Spirit Lobby": "True",
-            "Child Spirit Temple Beyond Metal Bridges": "
-                is_child and
-                (Sticks or has_explosives or
-                    ((Nuts or Boomerang) and (Kokiri_Sword or Slingshot))) and
-                (Boomerang or Slingshot or
-                    (has_bombchus and logic_spirit_child_bombchu) or
-                    (Silver_Rupee_Spirit_Temple_Child_Early_Torches, 5))",
-            "Child Spirit Before Locked Door": "is_child",
+            "Early Child Spirit Temple": "is_child",
             "Early Adult Spirit Temple": "can_use(Silver_Gauntlets)",
             "Spirit Temple Central Chamber": "is_adult and spirit_temple_shortcuts",
             "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {
-        "region_name": "Child Spirit Temple Beyond Metal Bridges",
+        "region_name": "Early Child Spirit Temple",
+        "dungeon": "Spirit Temple",
+        "locations": {
+            "Spirit Temple Child Side Armos": "can_kill_armos",
+            "Spirit Temple Child Side Keese 1": "can_kill_keese",
+            "Spirit Temple Child Side Keese 2": "can_kill_keese",
+            "Spirit Temple Child Side Keese 3": "can_kill_keese",
+            "Spirit Temple Child Side Keese 4": "can_kill_keese"
+        },
+        "exits": {
+            "Child Spirit Temple Before Left Bridge": "can_kill_keese and can_kill_armos",
+            "Child Spirit Temple Beyond Right Bridge": "
+                can_kill_keese and can_kill_armos and
+                    ( (Silver_Rupee_Spirit_Temple_Child_Early_Torches, 5))",
+            "Child Spirit Before Locked Door": "True"
+        }
+    },
+    {
+        "region_name": "Child Spirit Temple Before Left Bridge",
+        "dungeon": "Spirit Temple",
+        "locations": {
+            "Spirit Temple Child Bridge Stalfos": "can_kill_keese and can_kill_armos and can_kill_stalfos",
+            "Spirit Temple Child Bridge Bubble": "has_soul(Bubble) and ((Sticks or has_explosives or
+            ((Nuts or Boomerang) and (Kokiri_Sword or Slingshot))) and (Boomerang or Slingshot))"
+        },
+        "exits": {
+            "Child Spirit Temple Beyond Left Bridge": "
+                (Boomerang or Slingshot or (has_bombchus and logic_spirit_child_bombchu))"
+        }
+    },
+    {
+        "region_name": "Child Spirit Temple Beyond Left Bridge",
         "dungeon": "Spirit Temple",
         "locations": {
             "Spirit Temple Child Bridge Chest": "True",
-            "Spirit Temple Child Early Torches Chest": "Sticks or can_use(Dins_Fire)",
-            "Spirit Temple Child Bridge Flying Pot 1": "True",
-            "Spirit Temple Child Bridge Flying Pot 2": "True",
+            "Spirit Temple Child Bridge Flying Pot 1": "has_soul(Flying_Pot)",
+            "Spirit Temple Child Bridge Flying Pot 2": "has_soul(Flying_Pot)"
+        },
+        "exits": {
+           "Child Spirit Temple Anubis Room": "True"
+        }
+    },
+    {
+        "region_name": "Child Spirit Temple Anubis Room",
+        "dungeon": "Spirit Temple",
+        "locations": {
+            "Deku Shield Pot": "fix_broken_drops",
             "Spirit Temple Child Anubis Pot 1": "True",
             "Spirit Temple Child Anubis Pot 2": "True",
             "Spirit Temple Child Anubis Pot 3": "True",
             "Spirit Temple Child Anubis Pot 4": "True",
+            "Spirit Temple Child Anubis": "has_soul(Anubis)"
+        },
+        "exits": {
+            "Child Spirit Temple Beyond Right Bridge": "has_soul(Anubis)"
+        }
+    },
+    {
+        "region_name": "Child Spirit Temple Beyond Right Bridge",
+        "dungeon": "Spirit Temple",
+        "locations": {
+            "Spirit Temple Child Early Torches Chest": "Sticks or can_use(Dins_Fire)",
             "Spirit Temple Child Early Torches Silver Rupee Top Right": "True",
             "Spirit Temple Child Early Torches Silver Rupee Bottom Right": "True",
             "Spirit Temple Child Early Torches Silver Rupee Bottom Left": "True",
@@ -44,7 +90,15 @@
                 Boomerang or (logic_spirit_fence_gs and Kokiri_Sword) or
                 (((Silver_Rupee_Spirit_Temple_Child_Early_Torches, 5) or logic_spirit_fence_gs) and
                     (Sticks or has_explosives or Slingshot or can_use(Dins_Fire)))",
-            "Deku Shield Pot": "fix_broken_drops"
+            "Spirit Temple Child Early Torches Keese 1": "can_kill_keese",
+            "Spirit Temple Child Early Torches Keese 2": "can_kill_keese",
+            "Spirit Temple Child Early Torches Keese 3": "can_kill_keese",
+            "Spirit Temple Child Early Torches Keese 4": "can_kill_keese",
+            "Spirit Temple Child Early Torches Keese 5": "can_kill_keese",
+            "Spirit Temple Child Early Torches Wallmaster": "can_kill_wallmaster"
+        },
+        "exits" : {
+            "Child Spirit Temple Anubis Room": "True"
         }
     },
     {
@@ -54,6 +108,7 @@
             "Spirit Temple Before Child Climb Small Wooden Crate 1": "True",
             "Spirit Temple Before Child Climb Small Wooden Crate 2": "True",
             "Nut Crate": "True"
+
         },
         "exits": {
             "Child Spirit Temple Climb": "(Small_Key_Spirit_Temple, 1)"
@@ -63,7 +118,10 @@
         "region_name": "Early Adult Spirit Temple",
         "dungeon": "Spirit Temple",
         "locations": {
-            "Spirit Temple Compass Chest": "Hookshot and can_play(Zeldas_Lullaby)"
+            "Spirit Temple Compass Chest": "Hookshot and can_play(Zeldas_Lullaby)",
+            "Spirit Temple Early Adult Beamos": "can_kill_beamos",
+            "Spirit Temple Early Adult Wolfos": "
+                (has_soul(Wolfos)) and (Bow or Hookshot or has_bombchus or (Bombs and logic_spirit_lower_adult_switch))"
         },
         "exits": {
             "Spirit Temple Boulder Room": "
@@ -82,7 +140,8 @@
             "Spirit Temple Adult Boulder Silver Rupee Front Right": "True",
             "Spirit Temple Adult Boulder Silver Rupee Back Right": "True",
             "Spirit Temple Adult Boulder Silver Rupee Back Left": "True",
-            "Spirit Temple GS Boulder Room": "can_play(Song_of_Time)"
+            "Spirit Temple GS Boulder Room": "can_play(Song_of_Time)",
+            "Spirit Temple Early Adult Like Like": "(has_soul(Likelike)) and (Silver_Rupee_Spirit_Temple_Adult_Boulders, 5)"
         }
     },
     # In the following two regions, child and adult reachability actually means age-unknown, but with
@@ -122,7 +181,41 @@
                     ((Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
                     ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops))) or
                 has_projectile(both) or can_use(Dins_Fire) or
-                (can_take_damage and (Sticks or Kokiri_Sword or has_projectile(child)))"
+                (can_take_damage and (Sticks or Kokiri_Sword or has_projectile(child)))",
+            "Spirit Temple Child Climb Skullwalltula 1": "
+                (has_soul(Skullwalltula)) and
+                ((is_child and has_projectile(child) and
+                    (Small_Key_Spirit_Temple, 5)) or
+                (is_adult and has_projectile(adult) and
+                    ((Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
+                    ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops and not entrance_shuffle))) or
+                has_projectile(both) or can_use(Dins_Fire))",
+            "Spirit Temple Child Climb Skullwalltula 2": "
+                (has_soul(Skullwalltula)) and
+                ((is_child and has_projectile(child) and
+                    (Small_Key_Spirit_Temple, 5)) or
+                (is_adult and has_projectile(adult) and
+                    ((Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
+                    ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops and not entrance_shuffle))) or
+                has_projectile(both) or can_use(Dins_Fire))",
+            "Spirit Temple Child Climb Skullwalltula 3": "
+                (has_soul(Skullwalltula)) and
+                ((is_child and has_projectile(child) and
+                    (Small_Key_Spirit_Temple, 5)) or
+                (is_adult and has_projectile(adult) and
+                    ((Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
+                    ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops and not entrance_shuffle))) or
+                has_projectile(both) or can_use(Dins_Fire))",
+            "Spirit Temple Child Climb Skullwalltula 4": "
+                (has_soul(Skullwalltula)) and
+                ((is_child and has_projectile(child) and
+                    (Small_Key_Spirit_Temple, 5)) or
+                (is_adult and has_projectile(adult) and
+                    ((Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
+                    ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops and not entrance_shuffle))) or
+                has_projectile(both) or can_use(Dins_Fire))",
+            "Spirit Temple Child Climb Lizalfos 1": "(has_soul(Lizalfos_and_Dinalfos)) and ((is_child and (Sticks or Kokiri_Sword or Slingshot or has_explosives) and (Small_Key_Spirit_Temple, 5)) or is_adult)",
+            "Spirit Temple Child Climb Lizalfos 2": "(has_soul(Lizalfos_and_Dinalfos)) and ((is_child and (Sticks or Kokiri_Sword or Slingshot or has_explosives) and (Small_Key_Spirit_Temple, 5)) or is_adult)"
         },
         "exits": {
             "Spirit Temple Central Chamber": "has_explosives",
@@ -154,8 +247,9 @@
             # expected to reach it as long as adult cannot enter. Because we cannot truly know
             # whether adult can enter, child must still possess the items that adult would use.
             "Spirit Temple Silver Gauntlets Chest": "
-                (Small_Key_Spirit_Temple, 5) or
-                (has_explosives and Longshot and (Small_Key_Spirit_Temple, 3))",
+                (has_soul(Iron_Knuckle)) and
+                ((Small_Key_Spirit_Temple, 5) or
+                (has_explosives and Longshot and (Small_Key_Spirit_Temple, 3) and (has_soul(Beamos) and has_soul(Anubis) and has_soul(Armos))))",
             "Spirit Temple Central Chamber Pot 1": "
                 (Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
                 has_explosives or ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops)",
@@ -175,11 +269,11 @@
                 (Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
                 has_explosives or ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops)",
             "Spirit Temple Central Chamber Flying Pot 1": "
-                (Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
-                has_explosives or ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops)",
+                (has_soul(Flying_Pot)) and ((Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
+                has_explosives or ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops))",
             "Spirit Temple Central Chamber Flying Pot 2": "
-                (Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
-                has_explosives or ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops)",
+                (has_soul(Flying_Pot)) and ((Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
+                has_explosives or ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops))",
             "Spirit Temple Hall After Sun Block Room Pot 1": "
                 (Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
                 has_explosives or ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops)",
@@ -214,7 +308,14 @@
                 (is_adult and Hookshot and
                     ((Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts)) or
                 (Boomerang and Hookshot and
-                    (has_explosives or ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops)))"
+                    (has_explosives or ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops)))",
+            "Spirit Temple Sun Block Room Beamos 1": "can_kill_beamos",
+            "Spirit Temple Sun Block Room Beamos 2": "can_kill_beamos",
+            "Spirit Temple Sun Block Room Beamos 3": "can_kill_beamos",
+            "Spirit Temple Child Side Iron Knuckle": "
+                (has_soul(Iron_Knuckle)) and
+                ((Small_Key_Spirit_Temple, 5) or
+                (has_explosives and Longshot and (Small_Key_Spirit_Temple, 3)))"
         },
         "exits": {
             "Child Spirit Temple Climb": "True",
@@ -227,8 +328,9 @@
             # Age-unknown logic is incompatible with the rest of the world.
             # Because adult might unlock all doors, child must require all 5 keys to pass.
             "Desert Colossus Hands": "
-                (Small_Key_Spirit_Temple, 5) or
-                (is_adult and has_explosives and (Small_Key_Spirit_Temple, 3))"
+                (has_soul(Iron_Knuckle)) and
+                    ((Small_Key_Spirit_Temple, 5) or
+                    (is_adult and has_explosives and (Small_Key_Spirit_Temple, 3)))"
         }
     },
     {
@@ -241,8 +343,12 @@
             "Spirit Temple Statue Room Northeast Chest": "
                 can_play(Zeldas_Lullaby) and
                 (Hookshot or Hover_Boots or logic_spirit_lobby_jump)",
-            "Spirit Temple Adult Climb Flying Pot 1": "True",
-            "Spirit Temple Adult Climb Flying Pot 2": "True"
+            "Spirit Temple Adult Climb Flying Pot 1": "has_soul(Flying_Pot)",
+            "Spirit Temple Adult Climb Flying Pot 2": "has_soul(Flying_Pot)",
+            "Spirit Temple Statue Room Adult Side Armos": "can_kill_armos",
+            "Spirit Temple Adult Climb Like Like": "can_kill_likelike",
+            "Spirit Temple Adult Climb Wallmaster": "can_kill_wallmaster",
+            "Spirit Temple Adult Climb Floormaster": "can_kill_floormaster"
         },
         "exits": {
             "Early Adult Spirit Temple": "(Small_Key_Spirit_Temple, 5)",
@@ -253,10 +359,15 @@
         "region_name": "Spirit Temple Anubis Room",
         "dungeon": "Spirit Temple",
         "locations": {
-            "Spirit Temple Beamos Hall Pot": "True"
+            "Spirit Temple Beamos Hall Pot": "True",
+            "Spirit Temple Adult Hallway Beamos": "can_kill_beamos",
+            "Spirit Temple Adult Anubis 1": "has_soul(Anubis)",
+            "Spirit Temple Adult Anubis 2": "has_soul(Anubis)",
+            "Spirit Temple Adult Anubis 3": "has_soul(Anubis)",
+            "Spirit Temple Adult Anubis Room Beamos": "can_kill_beamos"
         },
         "exits": {
-            "Spirit Temple Beyond Anubis Room": "has_explosives",
+            "Spirit Temple Beyond Anubis Room": "has_explosives and (has_soul(Beamos) and has_soul(Anubis))",
             "Spirit Temple Big Mirror Room": "
                 (Small_Key_Spirit_Temple, 5) and
                 (logic_spirit_wall or Longshot or has_bombchus or
@@ -270,10 +381,15 @@
         "locations": {
             "Spirit Temple Near Four Armos Chest": "Mirror_Shield",
             "Spirit Temple Hallway Left Invisible Chest": "
-                logic_lens_spirit or can_use(Lens_of_Truth)",
+                (has_soul(Armos)) and (logic_lens_spirit or can_use(Lens_of_Truth))",
             "Spirit Temple Hallway Right Invisible Chest": "
-                logic_lens_spirit or can_use(Lens_of_Truth)",
-            "Spirit Temple Mirror Shield Chest": "True"
+                (has_soul(Armos)) and (logic_lens_spirit or can_use(Lens_of_Truth))",
+            "Spirit Temple Mirror Shield Chest": "has_soul(Armos) and has_soul(Iron_Knuckle)",
+            "Spirit Temple 4 Armos Room Armos 1": "can_kill_armos",
+            "Spirit Temple 4 Armos Room Armos 2": "can_kill_armos",
+            "Spirit Temple 4 Armos Room Armos 3": "can_kill_armos",
+            "Spirit Temple 4 Armos Room Armos 4": "can_kill_armos",
+            "Spirit Temple Adult Iron Knuckle": "has_soul(Armos) and has_soul(Iron_Knuckle)"
         }
     },
     {
@@ -285,12 +401,26 @@
             "Spirit Temple Topmost Chest": "Mirror_Shield",
             "Spirit Temple Shifting Wall Recovery Heart 1": "Hookshot",
             "Spirit Temple Shifting Wall Recovery Heart 2": "Hookshot",
-            "Spirit Temple Big Mirror Flying Pot 1": "True",
-            "Spirit Temple Big Mirror Flying Pot 2": "True",
-            "Spirit Temple Big Mirror Flying Pot 3": "True",
-            "Spirit Temple Big Mirror Flying Pot 4": "True",
-            "Spirit Temple Big Mirror Flying Pot 5": "True",
-            "Spirit Temple Big Mirror Flying Pot 6": "True"
+            "Spirit Temple Big Mirror Flying Pot 1": "has_soul(Flying_Pot)",
+            "Spirit Temple Big Mirror Flying Pot 2": "has_soul(Flying_Pot)",
+            "Spirit Temple Big Mirror Flying Pot 3": "has_soul(Flying_Pot)",
+            "Spirit Temple Big Mirror Flying Pot 4": "has_soul(Flying_Pot)",
+            "Spirit Temple Big Mirror Flying Pot 5": "has_soul(Flying_Pot)",
+            "Spirit Temple Big Mirror Flying Pot 6": "has_soul(Flying_Pot)",
+            "Spirit Temple Boss Key Room Torch Slug 1": "can_play(Zeldas_Lullaby) and (has_soul(Torch_Slug))",
+            "Spirit Temple Boss Key Room Torch Slug 2": "can_play(Zeldas_Lullaby) and (has_soul(Torch_Slug))",
+            "Spirit Temple Boss Key Room Torch Slug 3": "can_play(Zeldas_Lullaby) and (has_soul(Torch_Slug))",
+            "Spirit Temple Boss Key Room Torch Slug 4": "can_play(Zeldas_Lullaby) and (has_soul(Torch_Slug))",
+            "Spirit Temple Shifting Wall Lower Beamos Left": "can_kill_beamos",
+            "Spirit Temple Shifting Wall Lower Beamos Right": "can_kill_beamos",
+            "Spirit Temple Shifting Wall Upper Beamos Left": "can_kill_beamos",
+            "Spirit Temple Shifting Wall Upper Beamos Right": "can_kill_beamos",
+            "Spirit Temple Shifting Wall Skullwalltula": "(has_soul(Skullwalltula)) and (Bow or Hookshot)",
+            "Spirit Temple Big Mirror Bubble 1": "can_kill_bubble",
+            "Spirit Temple Big Mirror Bubble 2": "can_kill_bubble",
+            "Spirit Temple Big Mirror Bubble 3": "can_kill_bubble",
+            "Spirit Temple Big Mirror Lizalfos 1": "has_soul(Lizalfos_and_Dinalfos)",
+            "Spirit Temple Big Mirror Lizalfos 2": "has_soul(Lizalfos_and_Dinalfos)"
         },
         "exits": {
             "Spirit Temple Before Boss": "

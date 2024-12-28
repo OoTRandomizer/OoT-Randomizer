@@ -117,3 +117,8 @@ Actor_Spawn_Continue:
     addiu   sp, sp, -0x58
     j       Actor_Spawn_Continue_Jump_Point
     sw      a2, 0x0060(sp)
+
+Actor_SpawnAsChild:
+    addiu   sp, sp, -0x30
+    j       Actor_SpawnAsChild_Continue_Jump_Point
+    sw      ra, 0x2c(sp)

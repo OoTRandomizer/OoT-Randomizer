@@ -29,7 +29,6 @@ from State import State
 from Utils import data_path, read_logic_file
 from Language import Language
 
-
 class World:
     def __init__(self, world_id: int, settings: Settings, resolve_randomized_settings: bool = True) -> None:
         self.id: int = world_id
@@ -71,6 +70,7 @@ class World:
         # rename a few attributes...
         self.keysanity: bool = settings.shuffle_smallkeys in ('keysanity', 'remove', 'any_dungeon', 'overworld', 'regional')
         self.shuffle_silver_rupees = settings.shuffle_silver_rupees != 'vanilla'
+        self.shuffle_enemy_spawns = settings.shuffle_enemy_spawns != 'off'
         self.check_beatable_only: bool = settings.reachable_locations != 'all'
 
         self.shuffle_special_interior_entrances: bool = settings.shuffle_interior_entrances == 'all'
@@ -572,6 +572,8 @@ class World:
         savewarps_to_connect = []
 
         for region in region_json:
+            if 'scene' not in region and 'dungeon' not in region:
+                print(region['region_name'])
             new_region = Region(self, region['region_name'])
             if 'scene' in region:
                 new_region.scene = region['scene']

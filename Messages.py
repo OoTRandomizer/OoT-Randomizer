@@ -263,7 +263,6 @@ IMPORTANT_ITEM_MESSAGES_IDS = [
 
 new_messages = [] # Used to keep track of new/updated messages to prevent duplicates. Clear it at the start of patches
 
-
 COLOR_MAP: dict[str, list[str, str]] = {
     'White':      ['\x40', "00"],
     'Red':        ['\x41', "01"],

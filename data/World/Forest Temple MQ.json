@@ -6,7 +6,18 @@
             "Forest Temple MQ First Room Chest": "
                 is_adult or Bombs or can_use(Sticks) or Nuts or can_use(Boomerang) or
                 can_use(Dins_Fire) or Kokiri_Sword or can_use(Slingshot)",
-            "Forest Temple MQ GS First Hallway": "can_use(Hookshot) or can_use(Boomerang)"
+            "Forest Temple MQ GS First Hallway": "can_use(Hookshot) or can_use(Boomerang)",
+            "Forest Temple MQ Entrance Skullwalltula 1":"has_soul(Skullwalltula) and (can_use(Hookshot) or can_use(Boomerang) or can_use(Bow) or can_use(Slingshot) or can_use(Dins_Fire) or has_bombchus)",
+            "Forest Temple MQ Entrance Skullwalltula 2":"has_soul(Skullwalltula) and (can_use(Hookshot) or can_use(Boomerang) or can_use(Bow) or can_use(Slingshot) or can_use(Dins_Fire) or has_bombchus)",
+            "Forest Temple MQ Entrance Skullwalltula 3":"has_soul(Skullwalltula) and (can_use(Hookshot) or can_use(Boomerang) or can_use(Bow) or can_use(Slingshot) or has_bombchus)",
+            "Forest Temple MQ Entrance Skullwalltula 4":"has_soul(Skullwalltula) and (can_use(Hookshot) or can_use(Boomerang) or can_use(Bow) or can_use(Slingshot) or can_use(Dins_Fire) or has_bombchus)",
+            "Forest Temple MQ Entrance Skullwalltula 5":"has_soul(Skullwalltula) and (can_use(Hookshot) or can_use(Boomerang) or can_use(Bow) or can_use(Slingshot) or can_use(Dins_Fire) or has_bombchus)",
+            "Forest Temple MQ Entrance Skulltula": "
+                has_soul(Skulltula) and (is_adult or Bombs or can_use(Sticks) or
+                can_use(Dins_Fire) or Kokiri_Sword or can_use(Slingshot))", #Sorta tough jump slash but I assume that's the same logic behind the First Room Chest
+            "Forest Temple MQ First Hallway Skulltula 1": "can_kill_skulltula",
+            "Forest Temple MQ First Hallway Skulltula 2": "can_kill_skulltula",
+            "Forest Temple MQ First Hallway Skulltula 3": "can_kill_skulltula"
         },
         "exits": {
             "SFM Forest Temple Entrance Ledge": "True",
@@ -18,8 +29,16 @@
     {
         "region_name": "Forest Temple Central Area",
         "dungeon": "Forest Temple",
+        "events": {
+            "Forest Temple MQ Wolfos Clear": "
+                has_soul(Wolfos) and
+                (can_play(Song_of_Time) or is_child) and
+                (is_adult or can_use(Dins_Fire) or
+                    can_use(Sticks) or can_use(Slingshot) or Kokiri_Sword)"
+        },
         "locations": {
             "Forest Temple MQ Wolfos Chest": "
+                has_soul(Wolfos) and
                 (can_play(Song_of_Time) or is_child) and
                 (is_adult or can_use(Dins_Fire) or
                     can_use(Sticks) or can_use(Slingshot) or Kokiri_Sword)",
@@ -31,12 +50,23 @@
             "Forest Temple MQ Center Room Left Pot 3": "True",
             "Forest Temple MQ Wolfos Room Pot 1": "(can_play(Song_of_Time) or is_child)",
             "Forest Temple MQ Wolfos Room Pot 2": "(can_play(Song_of_Time) or is_child)",
+            "Forest Temple MQ Hallway Stalfos": "has_soul(Stalfos) and (is_adult or Kokiri_Sword)",
+            "Forest Temple MQ Wolfos Chest Wolfos 1": "
+                has_soul(Wolfos) and
+                (can_play(Song_of_Time) or is_child) and
+                (is_adult or can_use(Dins_Fire) or
+                    can_use(Sticks) or can_use(Slingshot) or Kokiri_Sword)",
+            "Forest Temple MQ Wolfos Chest Wolfos 2": "
+                has_soul(Wolfos) and
+                (can_play(Song_of_Time) or is_child) and
+                (is_adult or can_use(Dins_Fire) or
+                    can_use(Sticks) or can_use(Slingshot) or Kokiri_Sword)",
             "Fairy Pot": "has_bottle and (can_play(Song_of_Time) or is_child)"
         },
         "exits": {
             "Forest Temple NW Outdoors": "can_use(Bow) or can_use(Slingshot)",
             "Forest Temple NE Outdoors": "can_use(Bow) or can_use(Slingshot)",
-            "Forest Temple Before Block Puzzle": "here(is_adult or Kokiri_Sword)",
+            "Forest Temple Before Block Puzzle": "here((is_adult or Kokiri_Sword) and has_soul(Stalfos))",
             "Forest Temple Basement": "
                 (Forest_Temple_Jo_and_Beth and Forest_Temple_Amy_and_Meg) or forest_temple_shortcuts"
         }
@@ -69,6 +99,10 @@
     {
         "region_name": "Forest Temple After Block Puzzle",
         "dungeon": "Forest Temple",
+        "locations":{
+            "Forest Temple MQ Block Push Bubble 1": "can_kill_bubble",
+            "Forest Temple MQ Block Push Bubble 2": "can_kill_bubble"
+        },
         "exits": {
             "Forest Temple Straightened Hall": "(Small_Key_Forest_Temple, 3)",
             "Forest Temple NW Outdoors": "(Small_Key_Forest_Temple, 2)"
@@ -80,10 +114,12 @@
         "region_name": "Forest Temple Straightened Hall",
         "dungeon": "Forest Temple",
         "locations": {
-            "Forest Temple MQ Boss Key Chest": "True"
+            "Forest Temple MQ Boss Key Chest": "True",
+            "Forest Temple MQ First Twisted Hallway Wallmaster": "has_soul(Wallmaster)",
+            "Forest Temple MQ Balcony Floormaster": "can_kill_floormaster"
         },
         "exits": {
-            "Forest Temple Outside Upper Ledge": "True",
+            "Forest Temple Outside Upper Ledge": "can_kill_floormaster",
             "Forest Temple Bow Region": "(Small_Key_Forest_Temple, 4)"
         }
     },
@@ -91,7 +127,8 @@
         "region_name": "Forest Temple Outside Upper Ledge",
         "dungeon": "Forest Temple",
         "locations": {
-            "Forest Temple MQ Redead Chest": "True"
+            "Forest Temple MQ Redead Chest": "has_soul(Redead_and_Gibdo)",
+            "Forest Temple MQ Redead Room Redead": "has_soul(Redead_and_Gibdo)"
         },
         "exits": {
             "Forest Temple NW Outdoors": "True",
@@ -102,7 +139,14 @@
         "region_name": "Forest Temple NW Outdoors",
         "dungeon": "Forest Temple",
         "locations": {
-            "Forest Temple MQ GS Level Island Courtyard": "True"
+            "Forest Temple MQ GS Level Island Courtyard": "True",
+            "Forest Temple MQ Octorok Courtyard Octorok 1": "can_kill_octorok_with_explosives",
+            "Forest Temple MQ Octorok Courtyard Octorok 2": "can_kill_octorok_with_explosives",
+            "Forest Temple MQ Octorok Courtyard Octorok 3": "can_kill_octorok_with_explosives",
+            "Forest Temple MQ Octorok Courtyard Vines Skullwalltula 1": "has_soul(Skullwalltula) and (can_use(Slingshot) or can_use(Bow))",
+            "Forest Temple MQ Octorok Courtyard Vines Skullwalltula 2": "has_soul(Skullwalltula) and (can_use(Slingshot) or can_use(Bow))",
+            "Forest Temple MQ Octorok Courtyard Vines Skullwalltula 3": "has_soul(Skullwalltula) and (can_use(Slingshot) or can_use(Bow))",
+            "Forest Temple MQ Octorok Courtyard Vines Skulltula": "can_kill_skulltula"
         },
         "exits": {
             "Forest Temple NE Outdoors": "
@@ -135,10 +179,19 @@
                     (can_play(Song_of_Time) or (can_use(Hover_Boots) and logic_forest_door_frame)))",
             "Forest Temple MQ GS Well": "
                 (can_use(Iron_Boots) and can_use(Hookshot)) or can_use(Bow) or can_use(Slingshot)",
-            "Deku Baba Sticks": "is_adult or Kokiri_Sword or Boomerang",
+            "Forest Temple MQ Raised Island Courtyard Vines Skullwalltula": "
+                has_soul(Skullwalltula) and (
+                    can_use(Bow) or can_use(Slingshot) or can_use(Longshot) or
+                    (logic_forest_vines and can_use(Hookshot)) or
+                    at('Forest Temple Outdoors High Balconies', can_use(Hookshot))
+                )",
+            "Forest Temple MQ Raised Island Courtyard Deku Baba 2": "can_kill_deku_baba",
+            "Forest Temple MQ Raised Island Courtyard Deku Baba 3": "can_kill_deku_baba",
+            "Deku Baba Sticks": "has_soul(Deku_Baba) and (is_adult or Kokiri_Sword or Boomerang)",
             "Deku Baba Nuts": "
-                is_adult or Slingshot or Sticks or
-                has_explosives or Kokiri_Sword or can_use(Dins_Fire)"
+                has_soul(Deku_Baba) and
+                (is_adult or Slingshot or Sticks or
+                has_explosives or Kokiri_Sword or can_use(Dins_Fire))"
         },
         "exits": {
             "Forest Temple Outdoors High Balconies": "
@@ -152,7 +205,8 @@
         "region_name": "Forest Temple Outdoors High Balconies",
         "dungeon": "Forest Temple",
         "locations": {
-            "Forest Temple MQ Raised Island Courtyard Upper Chest": "True"
+            "Forest Temple MQ Raised Island Courtyard Upper Chest": "True",
+            "Forest Temple MQ Between Courtyards Skulltula": "can_kill_skulltula"
         },
         "exits": {
             "Forest Temple NE Outdoors": "True",
@@ -163,7 +217,8 @@
         "region_name": "Forest Temple NE Outdoors Ledge",
         "dungeon": "Forest Temple",
         "locations": {
-            "Forest Temple MQ Raised Island Courtyard Lower Chest": "True"
+            "Forest Temple MQ Raised Island Courtyard Lower Chest": "True",
+            "Forest Temple MQ Raised Island Courtyard Deku Baba 1": "can_kill_deku_baba"
         },
         "exits": {
             "Forest Temple NE Outdoors": "True",
@@ -174,26 +229,32 @@
         "region_name": "Forest Temple Bow Region",
         "dungeon": "Forest Temple",
         "events": {
-            "Forest Temple Jo and Beth": "can_use(Bow)"
+            "Forest Temple Jo and Beth": "can_use(Bow) and Forest_Temple_MQ_Wolfos_Clear and has_soul(Stalfos)"
         },
         "locations": {
-            "Forest Temple MQ Bow Chest": "True",
+            "Forest Temple MQ Bow Chest": "Forest_Temple_MQ_Wolfos_Clear and has_soul(Stalfos)",
             "Forest Temple MQ Map Chest": "can_use(Bow)",
             "Forest Temple MQ Compass Chest": "can_use(Bow)",
             "Forest Temple MQ Upper Stalfos Pot 1": "True",
             "Forest Temple MQ Upper Stalfos Pot 2": "True",
             "Forest Temple MQ Upper Stalfos Pot 3": "True",
             "Forest Temple MQ Upper Stalfos Pot 4": "True",
-            "Forest Temple MQ Blue Poe Room Pot 1": "True",
-            "Forest Temple MQ Blue Poe Room Pot 2": "True",
-            "Forest Temple MQ Blue Poe Room Pot 3": "True",
-            "Forest Temple MQ Frozen Eye Switch Room Small Wooden Crate 1": "(Small_Key_Forest_Temple, 6)",
-            "Forest Temple MQ Frozen Eye Switch Room Small Wooden Crate 2": "(Small_Key_Forest_Temple, 6)",
-            "Forest Temple MQ Frozen Eye Switch Room Small Wooden Crate 3": "(Small_Key_Forest_Temple, 6)"
+            "Forest Temple MQ Blue Poe Room Pot 1": "Forest_Temple_MQ_Wolfos_Clear and has_soul(Stalfos)",
+            "Forest Temple MQ Blue Poe Room Pot 2": "Forest_Temple_MQ_Wolfos_Clear and has_soul(Stalfos)",
+            "Forest Temple MQ Blue Poe Room Pot 3": "Forest_Temple_MQ_Wolfos_Clear and has_soul(Stalfos)",
+            "Forest Temple MQ Frozen Eye Switch Room Small Wooden Crate 1": "Forest_Temple_MQ_Wolfos_Clear and has_soul(Stalfos) and (Small_Key_Forest_Temple, 6)",
+            "Forest Temple MQ Frozen Eye Switch Room Small Wooden Crate 2": "Forest_Temple_MQ_Wolfos_Clear and has_soul(Stalfos) and (Small_Key_Forest_Temple, 6)",
+            "Forest Temple MQ Frozen Eye Switch Room Small Wooden Crate 3": "Forest_Temple_MQ_Wolfos_Clear and has_soul(Stalfos) and (Small_Key_Forest_Temple, 6)",
+            "Forest Temple MQ Second Twisted Hallway Wallmaster": "Forest_Temple_MQ_Wolfos_Clear and has_soul(Stalfos) and has_soul(Wallmaster) and (Small_Key_Forest_Temple, 5)",
+            "Forest Temple MQ Second Twisted Hallway Bubble 1": "Forest_Temple_MQ_Wolfos_Clear and has_soul(Stalfos) and has_soul(Bubble) and (Small_Key_Forest_Temple, 5)",
+            "Forest Temple MQ Second Twisted Hallway Bubble 2": "Forest_Temple_MQ_Wolfos_Clear and has_soul(Stalfos) and has_soul(Bubble) and (Small_Key_Forest_Temple, 5)",
+            "Forest Temple MQ Upper Stalfos 1": "Forest_Temple_MQ_Wolfos_Clear and has_soul(Stalfos)",
+            "Forest Temple MQ Upper Stalfos Pair 1": "Forest_Temple_MQ_Wolfos_Clear and has_soul(Stalfos)",
+            "Forest Temple MQ Upper Stalfos Pair 2": "Forest_Temple_MQ_Wolfos_Clear and has_soul(Stalfos)"
         },
         "exits": {
             "Forest Temple Falling Room": "
-                (Small_Key_Forest_Temple, 5) and (can_use(Bow) or can_use(Dins_Fire))"
+                (Small_Key_Forest_Temple, 5) and (can_use(Bow) or can_use(Dins_Fire)) and Forest_Temple_MQ_Wolfos_Clear and has_soul(Stalfos)"
             # Only 5 keys because you must have had access to falling ceiling room to have wasted a key there
         }
     },
@@ -206,7 +267,14 @@
         "locations": {
             "Forest Temple MQ Falling Ceiling Room Chest": "True",
             "Forest Temple MQ Green Poe Room Pot 1": "(Small_Key_Forest_Temple, 6)",
-            "Forest Temple MQ Green Poe Room Pot 2": "(Small_Key_Forest_Temple, 6)"
+            "Forest Temple MQ Green Poe Room Pot 2": "(Small_Key_Forest_Temple, 6)",
+            "Forest Temple MQ Falling Ceiling Skulltula 1": "can_kill_skulltula",
+            "Forest Temple MQ Falling Ceiling Skulltula 2": "can_kill_skulltula",
+            "Forest Temple MQ Falling Ceiling Skulltula 3": "can_kill_skulltula",
+            "Forest Temple MQ Falling Ceiling Skulltula 4": "can_kill_skulltula",
+            "Forest Temple MQ Falling Ceiling Skulltula 5": "can_kill_skulltula",
+            "Forest Temple MQ Falling Ceiling Skulltula 6": "can_kill_skulltula",
+            "Forest Temple MQ Falling Ceiling Skulltula 7": "can_kill_skulltula"
         },
         "exits": {
             "Forest Temple NE Outdoors Ledge": "True"
@@ -220,7 +288,9 @@
             "Forest Temple MQ Basement Pot 1": "True",
             "Forest Temple MQ Basement Pot 2": "True",
             "Forest Temple MQ Basement Pot 3": "True",
-            "Forest Temple MQ Basement Pot 4": "True"
+            "Forest Temple MQ Basement Pot 4": "True",
+            "Forest Temple MQ Basement Skulltula 1": "can_kill_skulltula",
+            "Forest Temple MQ Basement Skulltula 2": "can_kill_skulltula"
         },
         "exits": {
             "Forest Temple Before Boss": "True"

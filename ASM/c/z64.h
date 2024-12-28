@@ -50,8 +50,36 @@
 #define REGS_PER_GROUP (REG_PAGES * REGS_PER_PAGE)
 #define REG_EDITOR_DATA ((int16_t*)0x801C6EA4)
 #define BASE_REG(n, r) REG_EDITOR_DATA[(n)*REGS_PER_GROUP + (r)]
-#define REG(r) BASE_REG(0, (r))
+
+#define  REG(r) BASE_REG(0, (r))
 #define SREG(r) BASE_REG(1, (r))
+#define OREG(r) BASE_REG(2, (r))
+#define PREG(r) BASE_REG(3, (r))
+#define QREG(r) BASE_REG(4, (r))
+#define MREG(r) BASE_REG(5, (r))
+#define YREG(r) BASE_REG(6, (r))
+#define DREG(r) BASE_REG(7, (r))
+#define UREG(r) BASE_REG(8, (r))
+#define IREG(r) BASE_REG(9, (r))
+#define ZREG(r) BASE_REG(10, (r))
+#define CREG(r) BASE_REG(11, (r))
+#define NREG(r) BASE_REG(12, (r))
+#define KREG(r) BASE_REG(13, (r))
+#define XREG(r) BASE_REG(14, (r))
+#define cREG(r) BASE_REG(15, (r))
+#define sREG(r) BASE_REG(16, (r))
+#define iREG(r) BASE_REG(17, (r))
+#define WREG(r) BASE_REG(18, (r))
+#define AREG(r) BASE_REG(19, (r))
+#define VREG(r) BASE_REG(20, (r))
+#define HREG(r) BASE_REG(21, (r))
+#define GREG(r) BASE_REG(22, (r))
+#define mREG(r) BASE_REG(23, (r))
+#define nREG(r) BASE_REG(24, (r))
+#define BREG(r) BASE_REG(25, (r))
+#define dREG(r) BASE_REG(26, (r))
+#define kREG(r) BASE_REG(27, (r))
+#define bREG(r) BASE_REG(28, (r))
 #define R_PAUSE_BG_PRERENDER_STATE SREG(94)
 
 #define ITEM_ICON_WIDTH 32
@@ -1950,6 +1978,7 @@ typedef struct SkelAnime {
 #define z64_Flags_GetClear_addr                 0x80020640
 #define z64_Flags_SetSwitch_addr                0x800204D0
 #define z64_Flags_GetSwitch_addr                0x8002049C
+#define z64_Flags_SetTempClear_addr             0x800206AC
 #define z64_Audio_PlaySoundGeneral_addr         0x800C806C
 #define z64_PlaySFXID_addr                      0x800646F0
 #define z64_Audio_PlayFanFare_addr              0x800C69A0
@@ -2058,6 +2087,7 @@ typedef void(*z64_Flags_SetCollectibleFunc)(z64_game_t* game, uint32_t flag);
 typedef int32_t (*z64_Flags_GetCollectibleFunc)(z64_game_t* game, uint32_t flag);
 typedef void(*z64_Audio_PlaySoundGeneralFunc)(uint16_t sfxId, void* pos, uint8_t token, float* freqScale, float* a4, uint8_t* reverbAdd);
 typedef int32_t (*z64_Flags_GetClearFunc)(z64_game_t* game, int32_t flag);
+typedef void(*z64_Flags_SetTempClearFunc)(z64_game_t *game, uint32_t flag);
 typedef void (*z64_Flags_SetSwitchFunc)(z64_game_t* game, int32_t flag);
 typedef int32_t (*z64_Flags_GetSwitchFunc)(z64_game_t* game, int32_t flag);
 typedef void(*z64_PlaySFXIDFunc)(int16_t sfxId);
@@ -2154,6 +2184,7 @@ typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawn
 #define z64_Flags_GetClear          ((z64_Flags_GetClearFunc)z64_Flags_GetClear_addr)
 #define z64_Flags_SetSwitch         ((z64_Flags_SetSwitchFunc)z64_Flags_SetSwitch_addr)
 #define z64_Flags_GetSwitch         ((z64_Flags_GetSwitchFunc)z64_Flags_GetSwitch_addr)
+#define z64_Flags_SetTempClear      ((z64_Flags_SetTempClearFunc)z64_Flags_SetTempClear_addr)
 #define z64_Audio_PlaySoundGeneral  ((z64_Audio_PlaySoundGeneralFunc)z64_Audio_PlaySoundGeneral_addr)
 #define z64_Audio_PlayFanFare       ((z64_Audio_PlayFanFareFunc)z64_Audio_PlayFanFare_addr)
 #define z64_PlaySFXID               ((z64_PlaySFXIDFunc)z64_PlaySFXID_addr)
@@ -2216,6 +2247,7 @@ typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawn
 #define Font_LoadChar ((Font_LoadChar_proc)Font_LoadChar_addr)
 #define Font_LoadCharWide ((Font_LoadCharWide_proc)Font_LoadCharWide_addr)
 #define GetItem_Draw            ((GetItem_Draw_proc)GetItem_Draw_addr)
+#define z64_EffectSsKiraKira_SpawnSmall ((z64_EffectSsKiraKira_SpawnSmall_proc)z64_EffectSsKiraKira_SpawnSmall_addr)
 
 /* macros */
 #define GET_ITEMGETINF(flag) (z64_file.item_get_inf[(flag) >> 4] & (1 << ((flag) & 0xF)))
@@ -2485,5 +2517,6 @@ extern void Fault_AddHungupAndCrashImpl(const char* msg1, const char* msg2);
 extern int32_t sprintf(char* dst, char* fmt, ...);
 extern int32_t CutsceneFlags_Get(void* play, int16_t flag);
 extern int32_t DemoKankyo_CutsceneFlags_Get_Hook(void* play, int16_t flag);
+extern z64_actor_t* z64_ActorFind(void* actorCtx, int32_t actorId, int32_t actorCategory);
 
 #endif

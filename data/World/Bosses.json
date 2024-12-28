@@ -7,7 +7,9 @@
         "scene": "Deku Tree Boss",
         "is_boss_room": true,
         "events": {
-            "Defeat Queen Gohma": "(Nuts or can_use(Slingshot)) and can_jumpslash"
+            "Defeat Queen Gohma": "
+                has_soul(Queen_Gohma) and
+                    ((Nuts or can_use(Slingshot)) and can_jumpslash)"
         },
         "locations": {
             "Deku Tree Queen Gohma Heart": "'Defeat Queen Gohma'",
@@ -32,9 +34,10 @@
         "is_boss_room": true,
         "events": {
             "Defeat King Dodongo": "
-                ((can_use(Megaton_Hammer) and logic_dc_hammer_floor) or
-                    has_explosives or king_dodongo_shortcuts) and
-                (((Bombs or Progressive_Strength_Upgrade) and can_jumpslash) or deadly_bonks == 'ohko')"
+                has_soul(King_Dodongo) and
+                    (((can_use(Megaton_Hammer) and logic_dc_hammer_floor) or
+                        has_explosives or king_dodongo_shortcuts) and
+                    (((Bombs or Progressive_Strength_Upgrade) and can_jumpslash) or deadly_bonks == 'ohko'))"
         },
         "locations": {
             "Dodongos Cavern Boss Room Chest": "True",
@@ -59,7 +62,8 @@
         "scene": "Jabu Jabus Belly Boss",
         "is_boss_room": true,
         "events": {
-            "Defeat Barinade": "can_use(Boomerang) and (Sticks or Kokiri_Sword)"
+            "Defeat Barinade": "has_soul(Barinade) and
+                (can_use(Boomerang) and (Sticks or Kokiri_Sword))"
         },
         "locations": {
             "Jabu Jabus Belly Barinade Heart": "'Defeat Barinade'",
@@ -90,7 +94,8 @@
         "is_boss_room": true,
         "events": {
             "Defeat Phantom Ganon": "
-                can_use(Hookshot) or can_use(Bow) or (can_use(Slingshot) and Kokiri_Sword)"
+                has_soul(Phantom_Ganon) and
+                    (can_use(Hookshot) or can_use(Bow) or (can_use(Slingshot) and Kokiri_Sword))"
         },
         "locations": {
             "Forest Temple Phantom Ganon Heart": "'Defeat Phantom Ganon'",
@@ -114,7 +119,9 @@
         "scene": "Fire Temple Boss",
         "is_boss_room": true,
         "events": {
-            "Defeat Volvagia": "can_use(Goron_Tunic) and can_use(Megaton_Hammer)"
+            "Defeat Volvagia": "
+                has_soul(Volvagia) and
+                    (can_use(Goron_Tunic) and can_use(Megaton_Hammer))"
         },
         "locations": {
             "Fire Temple Volvagia Heart": "'Defeat Volvagia'",
@@ -139,7 +146,8 @@
         "is_boss_room": true,
         "events": {
             "Defeat Morpha": "
-                can_use(Hookshot) or (logic_water_morpha and (is_adult or Kokiri_Sword))",
+                has_soul(Morpha) and
+                    (can_use(Hookshot) or (logic_water_morpha and (is_adult or Kokiri_Sword)))",
             "Water Temple Clear": "'Defeat Morpha'"
         },
         "locations": {
@@ -165,9 +173,10 @@
         "is_boss_room": true,
         "events": {
             "Defeat Bongo Bongo": "
-                (Kokiri_Sword or is_adult) and
-                (can_use(Hookshot) or can_use(Bow) or can_use(Slingshot) or logic_shadow_bongo) and
-                (can_use(Lens_of_Truth) or logic_lens_bongo)"
+                has_soul(Bongo_Bongo) and
+                    ((Kokiri_Sword or is_adult) and
+                    (can_use(Hookshot) or can_use(Bow) or can_use(Slingshot) or logic_shadow_bongo) and
+                    (can_use(Lens_of_Truth) or logic_lens_bongo))"
         },
         "locations": {
             "Shadow Temple Bongo Bongo Heart": "'Defeat Bongo Bongo'",
@@ -191,7 +200,7 @@
         "scene": "Spirit Temple Boss",
         "is_boss_room": true,
         "events": {
-            "Defeat Twinrova": "can_use(Mirror_Shield)"
+            "Defeat Twinrova": "has_soul(Twinrova) and has_soul(Iron_Knuckle) and can_use(Mirror_Shield)"
         },
         "locations": {
             "Spirit Temple Twinrova Heart": "'Defeat Twinrova'",
@@ -219,14 +228,27 @@
             "Ganons Tower Access": "is_adult"
         },
         "locations": {
-            "Ganons Tower Boss Key Chest": "is_adult or Kokiri_Sword"
+            "Ganons Tower Boss Key Chest": "can_kill_lizalfos and can_kill_stalfos",
+            "Ganons Tower Lizalfos 1": "can_kill_lizalfos",
+            "Ganons Tower Lizalfos 2": "can_kill_lizalfos",
+            "Ganons Tower Stalfos 1": "can_kill_lizalfos and can_kill_stalfos",
+            "Ganons Tower Stalfos 2": "can_kill_lizalfos and can_kill_stalfos",
+            "Ganons Tower White Knuckle": "can_kill_lizalfos and can_kill_stalfos and can_kill_iron_knuckle",
+            "Ganons Tower Black Knuckle": "can_kill_lizalfos and can_kill_stalfos and can_kill_iron_knuckle",
+            "Ganons Tower Keese 1": "can_kill_keese",
+            "Ganons Tower Keese 2": "can_kill_keese",
+            "Ganons Tower Keese 3": "can_kill_keese",
+            "Ganons Tower Keese 4": "can_kill_keese",
+            "Ganons Tower Keese 5": "can_kill_keese",
+            "Ganons Tower Keese 6": "can_kill_keese",
+            "Ganons Tower Keese 7": "can_kill_keese"
         },
         "exits": {
             "Ganons Castle Main": "True",
             "Ganons Castle Tower Below Boss": "
                 (is_adult or Kokiri_Sword) and
-                (Boss_Key_Ganons_Castle or (shuffle_pots != 'off'))",
-            "Farores Wind Warp": "can_use(Farores_Wind)"
+                (has_soul(Lizalfos_and_Dinalfos) and has_soul(Stalfos) and has_soul(Iron_Knuckle)) and
+                (Boss_Key_Ganons_Castle or (shuffle_pots != 'off'))"
         }
     },
     {

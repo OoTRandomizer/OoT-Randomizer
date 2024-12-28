@@ -653,6 +653,283 @@ ITEM_MESSAGES = [
         "id": 0x90B5,
         "text": "\x08You found \x05\x43literally nothing\x05\x40!",
     },
+    # Enemy souls
+    {
+        "id": 0x9300, 
+        "text": "\x08You found the \x05\x41Stalfos Souls\x05\x40!"
+    },
+    {
+        "id": 0x9301, 
+        "text": "\x08You found the \x05\x41Octorok Souls\x05\x40!"
+    },
+    {
+        "id": 0x9302, 
+        "text": "\x08You found the \x05\x41Wallmaster Souls\x05\x40!"
+    },
+    {
+        "id": 0x9303, 
+        "text": "\x08You found the \x05\x41Dodongo Souls\x05\x40!"
+    },
+    {
+        "id": 0x9304, 
+        "text": "\x08You found the \x05\x41Keese Souls\x05\x40!"
+    },
+    {
+        "id": 0x9305, 
+        "text": "\x08You found the \x05\x41Tektite Souls\x05\x40!"
+    },
+    {
+        "id": 0x9306, 
+        "text": "\x08You found the \x05\x41Peahat Souls\x05\x40!"
+    },
+    {
+        "id": 0x9307, 
+        "text": "\x08You found the \x05\x41Lizalfos and Dinalfos Souls\x05\x40!"
+    },
+    {
+        "id": 0x9308, 
+        "text": "\x08You found the \x05\x41Gohma Larvae Souls\x05\x40!"
+    },
+    {
+        "id": 0x9309, 
+        "text": "\x08You found the \x05\x41Shabom Souls\x05\x40!"
+    },
+    {
+        "id": 0x930A, 
+        "text": "\x08You found the \x05\x41Baby Dodongo Souls\x05\x40!"
+    },
+    {
+        "id": 0x930B, 
+        "text": "\x08You found the \x05\x41Biri and Bari Souls\x05\x40!"
+    },
+    {
+        "id": 0x930C, 
+        "text": "\x08You found the \x05\x41Tailpasaran Souls\x05\x40!"
+    },
+    {
+        "id": 0x930D, 
+        "text": "\x08You found the \x05\x41Skulltula Souls\x05\x40!"
+    },
+    {
+        "id": 0x930E, 
+        "text": "\x08You found the \x05\x41Torch Slug Souls\x05\x40!"
+    },
+    {
+        "id": 0x930F, 
+        "text": "\x08You found the \x05\x41Moblin Souls\x05\x40!"
+    },
+    {
+        "id": 0x9310, 
+        "text": "\x08You found the \x05\x41Armos Souls\x05\x40!"
+    },
+    {
+        "id": 0x9311, 
+        "text": "\x08You found the \x05\x41Deku Baba Souls\x05\x40!"
+    },
+    {
+        "id": 0x9312, 
+        "text": "\x08You found the \x05\x41Deku Scrub Souls\x05\x40!"
+    },
+    {
+        "id": 0x9313, 
+        "text": "\x08You found the \x05\x41Bubble Souls\x05\x40!"
+    },
+    {
+        "id": 0x9314, 
+        "text": "\x08You found the \x05\x41Beamos Souls\x05\x40!"
+    },
+    {
+        "id": 0x9315, 
+        "text": "\x08You found the \x05\x41Floormaster Souls\x05\x40!"
+    },
+    {
+        "id": 0x9316, 
+        "text": "\x08You found the \x05\x41Redead and Gibdo Souls\x05\x40!"
+    },
+    {
+        "id": 0x9317, 
+        "text": "\x08You found the \x05\x41Skullwalltula Souls\x05\x40!"
+    },
+    {
+        "id": 0x9318, 
+        "text": "\x08You found the \x05\x41Flare Dancer Souls\x05\x40!"
+    },
+    {
+        "id": 0x9319, 
+        "text": "\x08You found the \x05\x41Dead hand Souls\x05\x40!"
+    },
+    {
+        "id": 0x931A, 
+        "text": "\x08You found the \x05\x41Shell Blade Souls\x05\x40!"
+    },
+    {
+        "id": 0x931B, 
+        "text": "\x08You found the \x05\x41Like-like Souls\x05\x40!"
+    },
+    {
+        "id": 0x931C, 
+        "text": "\x08You found the \x05\x41Spike Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x931D, 
+        "text": "\x08You found the \x05\x41Anubis Souls\x05\x40!"
+    },
+    {
+        "id": 0x931E, 
+        "text": "\x08You found the \x05\x41Iron Knuckle Souls\x05\x40!"
+    },
+    {
+        "id": 0x931F, 
+        "text": "\x08You found the \x05\x41Skull Kid Souls\x05\x40!"
+    },
+    {
+        "id": 0x9320, 
+        "text": "\x08You found the \x05\x41Flying Pot Souls\x05\x40!"
+    },
+    {
+        "id": 0x9321, 
+        "text": "\x08You found the \x05\x41Freezard Souls\x05\x40!"
+    },
+    {
+        "id": 0x9322, 
+        "text": "\x08You found the \x05\x41Stinger Souls\x05\x40!"
+    },
+    {
+        "id": 0x9323, 
+        "text": "\x08You found the \x05\x41Wolfos Souls\x05\x40!"
+    },
+    {
+        "id": 0x9324, 
+        "text": "\x08You found the \x05\x41Guay Souls\x05\x40!"
+    },
+    {
+        "id": 0x9325, 
+        "text": "\x08You found the \x05\x41Soul of Queen Gohma\x05\x40!"
+    },
+    {
+        "id": 0x9326, 
+        "text": "\x08You found the \x05\x41Soul of King Dodongo\x05\x40!"
+    },
+    {
+        "id": 0x9327, 
+        "text": "\x08You found the \x05\x41Soul of Barinade\x05\x40!"
+    },
+    {
+        "id": 0x9328, 
+        "text": "\x08You found the \x05\x41Soul of Phantom Ganon\x05\x40!"
+    },
+    {
+        "id": 0x9329, 
+        "text": "\x08You found the \x05\x41Soul of Volvagia\x05\x40!"
+    },
+    {
+        "id": 0x932A, 
+        "text": "\x08You found the \x05\x41Soul of Morpha\x05\x40!"
+    },
+    {
+        "id": 0x932B, 
+        "text": "\x08You found the \x05\x41Soul of Bongo Bongo\x05\x40!"
+    },
+    {
+        "id": 0x932C, 
+        "text": "\x08You found the \x05\x41Soul of Twinrova\x05\x40!"
+    },
+    {
+        "id": 0x932D, 
+        "text": "\x08You found the \x05\x41Jabu Jabu Tentacle Souls\x05\x40!"
+    },
+    {
+        "id": 0x932E, 
+        "text": "\x08You found \x05\x41Dark Link's Soul\x05\x40!"
+    },
+    {
+        "id": 0x932F, 
+        "text": "\x08You found the \x05\x41Deku Tree Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9330, 
+        "text": "\x08You found the \x05\x41Dodongos Cavern Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9331, 
+        "text": "\x08You found the \x05\x41Jabu Jabu's Belly Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9332, 
+        "text": "\x08You found the \x05\x41Forest Temple Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9333, 
+        "text": "\x08You found the \x05\x41Fire Temple Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9334, 
+        "text": "\x08You found the \x05\x41Water Temple Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9335, 
+        "text": "\x08You found the \x05\x41Shadow Temple Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9336, 
+        "text": "\x08You found the \x05\x41Spirit Temple Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9337, 
+        "text": "\x08You found the \x05\x41Bottom of the Well Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9338, 
+        "text": "\x08You found the \x05\x41Ice Cavern Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9339, 
+        "text": "\x08You found the \x05\x41Gerudo Training Ground Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x933A, 
+        "text": "\x08You found the \x05\x41Ganons Castle Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x933B, 
+        "text": "\x08You found the \x05\x41Forest Region Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x933C, 
+        "text": "\x08You found the \x05\x41Hyrule Field Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x933D, 
+        "text": "\x08You found the \x05\x41Lake Hylia Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x933E, 
+        "text": "\x08You found the \x05\x41Gerudo Region Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x933F, 
+        "text": "\x08You found the \x05\x41Market Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9340, 
+        "text": "\x08You found the \x05\x41Kakariko Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9341, 
+        "text": "\x08You found the \x05\x41Goron Region Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9342, 
+        "text": "\x08You found the \x05\x41Zora Region Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9343, 
+        "text": "\x08You found the \x05\x41Lon Lon Ranch Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9344, 
+        "text": "\x08You found the \x05\x41Grotto Enemy Souls\x05\x40!"
+    },
 ]
 
 # Item texts when you use keysanity

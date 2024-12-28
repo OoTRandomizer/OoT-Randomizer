@@ -15,7 +15,7 @@ from EntranceShuffle import EntranceShuffleError, change_connections, confirm_re
 from Fill import FillError
 from Hints import HintArea, gossipLocations, GossipText
 from Item import ItemFactory, ItemInfo, ItemIterator, is_item, Item
-from ItemPool import item_groups, get_junk_item, song_list, trade_items, child_trade_items, ocarina_buttons
+from ItemPool import item_groups, get_junk_item, song_list, trade_items, child_trade_items, ocarina_buttons, enemy_souls_core
 from JSONDump import dump_obj, CollapseList, CollapseDict, AlignedDict, SortedDict
 from Location import Location, LocationIterator, LocationFactory
 from LocationList import location_groups, location_table
@@ -1292,6 +1292,12 @@ class Distribution:
                 # removing an extra 4 pieces in case of an odd number since there's 9*4 of them but only 8 containers
                 data['Piece of Heart'].count += 4 * math.ceil(num_hearts_to_collect / 2)
                 data['Heart Container'].count += math.floor(num_hearts_to_collect / 2)
+
+        # Add enemy souls
+        if self.settings.shuffle_enemy_spawns == 'bosses':
+            for enemysoul in enemy_souls_core:
+                data[enemysoul] = StarterRecord(1)
+
         self.settings.starting_items = data
 
     def to_json(self, include_output: bool = True, spoiler: bool = True) -> dict[str, Any]:

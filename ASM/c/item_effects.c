@@ -3,6 +3,7 @@
 #include "trade_quests.h"
 #include "bg_gate_shutter.h"
 #include "save.h"
+#include "enemy_spawn_shuffle.h"
 
 #define rupee_cap ((uint16_t*)0x800F8CEC)
 volatile uint8_t MAX_RUPEES = 0;
@@ -282,4 +283,12 @@ void unlock_ocarina_note(z64_file_t* save, int16_t arg1, int16_t arg2) {
             save->scene_flags[0x50].unk_00_ |= 1 << 4;
             break;
     }
+}
+
+void give_enemy_soul(z64_file_t *save, int16_t arg1, int16_t arg2) {
+    flags_setsoul(arg1);
+}
+
+void give_regional_enemy_soul(z64_file_t *save, int16_t arg1, int16_t arg2) {
+    flags_setsoul(arg1);
 }

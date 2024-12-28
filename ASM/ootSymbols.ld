@@ -1,6 +1,5 @@
 /* Addresses should be listed in order */
 z64_EquippedItemOutlineTex = 0x2000E00;
-DmaMgr_RequestSync = 0x80000df0;
 Flags_GetSwitch = 0x8002049C;
 Flags_SetSwitch = 0x800204D0;
 Flags_UnsetSwitch = 0x80020510;

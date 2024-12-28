@@ -127,6 +127,12 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             (0x05CC, [0xFF, 0xFF, 0xFF]), # Outer Primary Color?
             (0x05D4, [0xFF, 0xFF, 0xFF]), # Outer Env Color?
         )),
+        ('object_gi_sutaru', 0x01858000, 0x01858650, 0x1B6, ( # Gold Skulltula Token -> Red)
+             (0x034C, [0xFF, 0x00, 0x00]), # Token primary color
+             (0x0354, [0x96, 0x00, 0x00]),
+             (0x0514, [0xFF, 0x00, 0x00]),
+             (0x051C, [0x96, 0x00, 0x00])
+         )),
     )
 
     # Add the new models to the extended object file.
@@ -1294,6 +1300,20 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
         if world.dungeon_mq['Spirit Temple']: # Patch Spirit MQ Lobby front right chest to use permanent switch flag 0x1F
             rom.write_byte(0x2b08ce4 + 13, 0x1F)
+    # Patches for enemy shuffle
+    if world.settings.shuffle_enemy_drops:
+        # Write the setting byte
+        rom.write_byte(rom.sym('ENEMY_DROP_SHUFFLE'), 0x01)
+        #Patch Kokiri Forest Adult scene setup to always use setup 2 regardless of age.
+        rom.write_byte(0xB10A6B, 0x02)
+        #Patch Hyrule Field Child scene setup to always use setup 1 regardless of spiritual stones. This shouldn't be necessary anymore because it was required before the alt_override system was implemented.
+        #rom.write_bytes(0xB109E4, [0x10, 0x00, 0x00, 0x0A]) #b      0x8009AAB0
+        #rom.write_bytes(0xB109E8, [0x24, 0x0E, 0x00, 0x01]) #addiu  T6, R0, 0x0001
+
+        if world.settings.prevent_guay_respawns:
+            rom.write_byte(rom.sym('CFG_PREVENT_GUAY_RESPAWNS'), 0x01)
+        if world.settings.minimap_enemy_tracker:
+            rom.write_byte(rom.sym('CFG_MINIMAP_ENEMY_TRACKER'), 0x01)
 
     # Write flag table data
     xflags_tables, alt_list = build_xflags_from_world(world)
@@ -1952,6 +1972,23 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             song_layout_in_byte_form |= 1 << 4
         rom.write_byte(rom.sym('EPONAS_SONG_NOTES'), song_layout_in_byte_form)
 
+    # Enemy soul shuffle
+    if world.settings.shuffle_enemy_spawns != 'off':
+        SPAWN_SHUFFLE_DICT = {
+            'all': 1,
+            'bosses': 1,
+            'regional': 2
+        }
+        rom.write_byte(rom.sym('CFG_ENEMY_SPAWN_SHUFFLE'), SPAWN_SHUFFLE_DICT[world.settings.shuffle_enemy_spawns])
+
+        # There are two keese in MQ spirit temple that don't spawn because their object isn't loaded
+        # This causes the room clear check hacks to break because soul shuffle will normally see the actor when spawning, and inhibit it
+        # if the soul hasn't been collected.
+        # Patch out those keese by writing 0xFFFF to their ID
+        if world.dungeon_mq['Spirit Temple']:
+            rom.write_int16(0x2B12334, 0xFFFF)
+            rom.write_int16(0x2B12344, 0xFFFF)
+
     # Sets the torch count to open the entrance to Shadow Temple
     if world.settings.easier_fire_arrow_entry:
         torch_count = world.settings.fae_torch_count
@@ -2120,7 +2157,7 @@ def get_override_entry(location: Location) -> Optional[OverrideEntry]:
         return None
 
     # Don't add freestanding items, pots/crates, beehives to the override table if they're locked (unshuffled). We use this check to determine how to draw and interact with them
-    if location.type in ('ActorOverride', 'Freestanding', 'RupeeTower', 'Pot', 'Crate', 'FlyingPot', 'SmallCrate', 'Beehive', 'Wonderitem') and location.locked:
+    if location.type in ('ActorOverride', 'Freestanding', 'RupeeTower', 'Pot', 'Crate', 'FlyingPot', 'SmallCrate', 'Beehive', 'Wonderitem', 'EnemyDrop') and location.locked:
         return None
 
     player_id = location.item.world.id + 1
@@ -2134,7 +2171,7 @@ def get_override_entry(location: Location) -> Optional[OverrideEntry]:
     elif location.type == 'Chest':
         type = 1
         default &= 0x1F
-    elif location.type in ('Freestanding', 'Pot', 'Crate', 'FlyingPot', 'SmallCrate', 'RupeeTower', 'Beehive', 'SilverRupee', 'Wonderitem'):
+    elif location.type in ['Freestanding', 'Pot', 'Crate', 'FlyingPot', 'SmallCrate', 'RupeeTower', 'Beehive', 'SilverRupee', 'Wonderitem', 'EnemyDrop']:
         type = 6
         if not (isinstance(location.default, list) or isinstance(location.default, tuple)):
             raise Exception("Not right")
