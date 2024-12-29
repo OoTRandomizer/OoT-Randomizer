@@ -234,7 +234,7 @@
         },
         "exits": {
             "Ganons Castle Main": "True",
-            "Ganons Castle Dinolfos": "True",
+            "Ganons Castle Dinolfos": "can_kill_dinolfos",
             "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
@@ -242,8 +242,8 @@
         "region_name": "Ganons Castle Dinolfos",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Tower Dinolfos 1": "can_kill_dinolfos",
-            "Ganons Tower Dinolfos 2": "can_kill_dinolfos"
+            "Ganons Tower Dinolfos 1": "True",
+            "Ganons Tower Dinolfos 2": "True"
         },
         "exits": {
             "Ganons Castle Stalfos": "can_kill_stalfos"
@@ -253,23 +253,23 @@
         "region_name": "Ganons Castle Stalfos",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Tower Boss Key Chest": "can_kill_stalfos",
-            "Ganons Tower Stalfos 1": "can_kill_stalfos",
-            "Ganons Tower Stalfos 2": "can_kill_stalfos"
+            "Ganons Tower Boss Key Chest": "True",
+            "Ganons Tower Stalfos 1": "True",
+            "Ganons Tower Stalfos 2": "True"
         },
         "exits": {
-            "Ganons Castle Iron Knuckles": "can_kill_stalfos"
+            "Ganons Castle Iron Knuckles": "has_soul(Iron_Knuckle)"
         }
     },
     {
         "region_name": "Ganons Castle Iron Knuckles",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Tower White Knuckle": "has_soul(Iron_Knuckle)",
-            "Ganons Tower Black Knuckle": "has_soul(Iron_Knuckle)"
+            "Ganons Tower White Knuckle": "True",
+            "Ganons Tower Black Knuckle": "True"
         },
         "exits": {
-            "Ganons Castle Tower Below Boss": "has_soul(Iron_Knuckle) and Boss_Key_Ganons_Castle or (shuffle_pots != 'off')"
+            "Ganons Castle Tower Below Boss": "Boss_Key_Ganons_Castle or (shuffle_pots != 'off')"
         }
     },
     {
