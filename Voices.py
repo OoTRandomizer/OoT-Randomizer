@@ -433,7 +433,7 @@ def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age, settings
                 # Add the ones we have
                 for name, decompressed in pak_opts:
                     _file = io.BytesIO(decompressed)
-                    soundData, numSampleFrames, sampleRate = process_sound_file(name, _file, age, settings, trim=True)
+                    soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(name, _file, age, settings, trim=True)
                     _file.close()
                     to_add.append((name, 0, rom_targets[i], soundData, numSampleFrames, sampleRate, None))
                     i += 1
@@ -446,7 +446,7 @@ def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age, settings
                 for i in range(0, len(rom_targets)):
                     name, decompressed = pak_opts[i]
                     _file = io.BytesIO(decompressed)
-                    soundData, numSampleFrames, sampleRate = process_sound_file(name, _file, age, settings, trim=True)
+                    soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(name, _file, age, settings, trim=True)
                     _file.close()
                     to_add.append((name, 0, rom_targets[i], soundData, numSampleFrames, sampleRate, None))
                 pass
@@ -460,7 +460,7 @@ def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age, settings
             patch = mapping['patch']
             name, decompressed = pak_opts[0]
             _file = io.BytesIO(decompressed)
-            soundData, numSampleFrames, sampleRate = process_sound_file(name, _file, age, settings, trim=True)
+            soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(name, _file, age, settings, trim=True)
             to_add.append((name, 0, rom_targets[0], soundData, numSampleFrames, sampleRate, patch))
             _file.close()
         else:
@@ -551,43 +551,70 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
                                 sample_file = voice_map["direct_bank"][bank_str][index_str]
                                 with zf.open(sample_file) as f:
                                     # Read and process the file
-                                    soundData, numSampleFrames, sampleRate = process_sound_file(sample_file, f, age, settings)
+                                    soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(sample_file, f, age, settings)
                                     sfxs.append((sample_file, bank, index, soundData, numSampleFrames, sampleRate, None))
                     if "direct_bank_inst" in voice_map.keys():
                         for bank_str in voice_map["direct_bank_inst"].keys():
-                            bank = int(bank_str, 16)
+                            bank_index = int(bank_str, 16)
+                            bank = rom.audiobanks[bank_index]
                             for index_str in voice_map["direct_bank_inst"][bank_str].keys():
                                 index = int(index_str, 16)
-                                sample_file = voice_map["direct_bank_inst"][bank_str][index_str]
-                                with zf.open(sample_file) as f:
-                                    # Read the .aifc file
-                                    # Need to get the loop predictors out of it
-                                    soundData, numSampleFrames, sampleRate, book, loop = process_aifc_file(f)
-                                    inst_patch.append((sample_file,bank, index, soundData, numSampleFrames, sampleRate, book, loop))
+                                instrument = bank.instruments[index]
+                                instrument.tag = True
+                                instrument_json: dict = voice_map["direct_bank_inst"][bank_str][index_str]
+                                if "lowNote" in instrument_json.keys():
+                                    with zf.open(instrument_json["lowNote"]) as f:
+                                        soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(f.name, f, age, settings)
+                                        # Pad the data to 16 bytes
+                                        soundData += bytearray((16 - (len(soundData)%16))%16)
+                                        tuning = sampleRate / 32000
+                                        tuning = tuning * instrument_json["lowTuning"]
+                                        lowSample = Sample()
+                                        lowSample.tag = True
+                                        instrument.lowNoteTuning = float(tuning)
+                                        lowSample.loop = loop
+                                        lowSample.book = book
+                                        lowSample.data = soundData
+                                        # Update sample data length = length
+                                        lowSample.size = len(soundData)
+                                        instrument.lowNoteSample = lowSample
+                                if "normalNote" in instrument_json.keys():
+                                    with zf.open(instrument_json["normalNote"]) as f:
+                                        soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(f.name, f, age, settings)
+                                        # Pad the data to 16 bytes
+                                        soundData += bytearray((16 - (len(soundData)%16))%16)
+                                        tuning = sampleRate / 32000
+                                        tuning = tuning * instrument_json["normalTuning"]
+                                        normalSample = Sample()
+                                        normalSample.tag = True
+                                        instrument.normalNoteTuning = float(tuning)
+                                        normalSample.loop = loop
+                                        normalSample.book = book
+                                        normalSample.data = soundData
+                                        # Update sample data length = length
+                                        normalSample.size = len(soundData)
+                                        instrument.normalNoteSample = normalSample
+                                if "highNote" in instrument_json.keys():
+                                    with zf.open(instrument_json["normalNote"]) as f:
+                                        soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(f.name, f, age, settings)
+                                        # Pad the data to 16 bytes
+                                        soundData += bytearray((16 - (len(soundData)%16))%16)
+                                        tuning = sampleRate / 32000
+                                        tuning = tuning * instrument_json["highTuning"]
+                                        highSample = Sample()
+                                        highSample.tag = True
+                                        instrument.highNoteSampleTuning = float(tuning)
+                                        highSample.loop = loop
+                                        highSample.book = book
+                                        highSample.data = soundData
+                                        # Update sample data length = length
+                                        highSample.size = len(soundData)
+                                        instrument.highNoteSample = highSample
+                                if "normalRangeLow" in instrument_json.keys():
+                                    instrument.normalRangeLo = instrument_json["normalRangeLow"]
+                                if "normalRangeHigh" in instrument_json.keys():
+                                    instrument.normalRangeHi = instrument_json["normalRangeHigh"]
             zf.close()
-
-    sfx_data_start = len(rom.audiotable)
-
-    for _, bank_index, inst_id, soundData, numSampleFrames, sampleRate, book, loop in inst_patch:
-        # Calculate the tuning as sampling rate / 32000.
-        tuning = sampleRate / 32000
-
-        # Pad the data to 16 bytes
-        soundData += bytearray((16 - (len(soundData)%16))%16)
-
-        bank = rom.audiobanks[bank_index]
-
-        inst: Instrument = bank.instruments[inst_id]
-        
-        # Update the sfx tuning
-        inst.normalNoteTuning = float(tuning)
-
-        # Update loop end as numSampleFrames
-        inst.normalNoteSample.loop = loop
-        inst.normalNoteSample.book = book
-        inst.normalNoteSample.data = soundData
-        # Update sample data length = length
-        inst.normalNoteSample.size = len(soundData)
 
     # Patch each sfx that we have
     for _, bank_index, sfx_id, soundData, numSampleFrames, sampleRate, patch in sfxs:
@@ -633,19 +660,19 @@ def process_sound_file(file_name: str, file: BinaryIO, age: VOICE_PACK_AGE, sett
     # Check if this is a file format that sf supports
     filename, ext = os.path.splitext(file_name)
     if ext.strip('.').upper() in sf.available_formats():
-        soundData, numSampleFrames, sampleRate = process_soundfile_file(file, age, settings, trim)
+        soundData, numSampleFrames, sampleRate, book, loop = process_soundfile_file(file, age, settings, trim)
     elif ext == ".aifc":
         soundData, numSampleFrames, sampleRate, book, loop = process_aifc_file(file)
     elif ext == ".bin":
-        soundData, numSampleFrames, sampleRate = process_bin_file(file)
+        soundData, numSampleFrames, sampleRate, book, loop = process_bin_file(file)
     else:
         raise Exception(f"Unsupported file format {ext} in custom voice pack.")
 
-    return soundData, numSampleFrames, sampleRate
+    return soundData, numSampleFrames, sampleRate, book, loop
 
 
 # Read an audio file using the soundfile python library
-def process_soundfile_file(f: BinaryIO, age: VOICE_PACK_AGE, settings: Settings, trim=False) -> tuple[bytes, int, int]:
+def process_soundfile_file(f: BinaryIO, age: VOICE_PACK_AGE, settings: Settings, trim=False) -> tuple[bytes, int, int, AdpcmBook, AdpcmLoop]:
         data, sampleRate = sf.read(f)
         if data.ndim == 2 and data.shape[1] == 2:
             # Convert stereo to mono by averaging the two channels
@@ -661,15 +688,15 @@ def process_soundfile_file(f: BinaryIO, age: VOICE_PACK_AGE, settings: Settings,
         frames = data.tobytes()
         numSampleFrames = len(data)
         soundData = adpcm_encode(frames, len(data)) # Encode the raw samples
-        return soundData, numSampleFrames, sampleRate
+        return soundData, numSampleFrames, sampleRate, None, None
 
 # Used for patching SFX AIFC files that have already been stripped into raw binary ready to patch into the ROM
 # Assume a vanilla sampling rate of 20000
-def process_bin_file(f: BinaryIO) -> tuple[bytes, int, int]:
+def process_bin_file(f: BinaryIO) -> tuple[bytes, int, int, AdpcmBook, AdpcmLoop]:
     soundData = f.read()
     numSampleFrames = int(len(soundData) * 16 / 9)
     sampleRate = 20000
-    return (soundData, numSampleFrames, sampleRate)
+    return (soundData, numSampleFrames, sampleRate, None, None)
 
 # Pretty basic aifc file parser. Extracts the already encoded .aifc data metadata from the file
 def process_aifc_file(f: BinaryIO) -> tuple[bytes, int, int]:

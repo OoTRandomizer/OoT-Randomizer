@@ -248,6 +248,18 @@ class Rom(BigStream):
         # Read audio banks back out and see if they match
         test = []
         
+        # Update the size of bank 0 if necessary
+        # Read the sizes from the ROM
+        # 8010a1b8 and 8010a1bc contain uint32_t with the size of the init pool and the size of the permanent pool. The init pool contains the permanent pool so need to increase them both
+        initPoolAddress = 0x8010a1b8 - 0x800110A0 + 0xA87000
+        permanentPoolAddress = initPoolAddress + 4
+        initPoolSize = self.read_int32(initPoolAddress)
+        permanentPoolSize = self.read_int32(permanentPoolAddress)
+        initPoolSize = initPoolSize - 0x3AA0 + len(self.audiobanks[0].placed_data)
+        permanentPoolSize = permanentPoolSize - 0x3AA0 + len(self.audiobanks[0].placed_data)
+        self.write_int32(initPoolAddress, initPoolSize)
+        self.write_int32(permanentPoolAddress, permanentPoolSize)
+
         # Read Audiotable index
         audiotable_index_header: bytearray = self.read_bytes(AUDIOTABLE_INDEX_ADDR, 0x10)
         audiotable_index_length = int.from_bytes(audiotable_index_header[0:2], 'big')

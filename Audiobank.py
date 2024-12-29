@@ -148,6 +148,9 @@ class Sample:
         self.parents: list = []
         self.bank_offset = -1 # offset of the sample within the bank. -1 indicates the sample hasn't been placed yet
         self.original_offset = -1 
+        self.codec: int = 0 # ADPCM is the only codec that seems to work
+        self.medium: int = 0
+        self.tag: bool = False
         self.book: AdpcmBook = None
         self.loop: AdpcmLoop = None
         self.data: bytearray = None
@@ -443,6 +446,7 @@ class Instrument:
         self.lowNoteSample: Sample = Sample.from_rom_data(bankdata, audiotable_file, audiotable_index, self.lowNoteSampleOffset, audiotable_id, self, sampleCache, adpcmbookCache) if self.lowNoteSampleOffset != 0 else None
         self.normalNoteSample: Sample = Sample.from_rom_data(bankdata, audiotable_file, audiotable_index, self.normalNoteSampleOffset, audiotable_id, self, sampleCache, adpcmbookCache) if self.normalNoteSampleOffset != 0 else None
         self.highNoteSample: Sample = Sample.from_rom_data(bankdata, audiotable_file, audiotable_index, self.highNoteSampleOffset, audiotable_id, self, sampleCache, adpcmbookCache) if self.highNoteSampleOffset != 0 else None
+        self.tag: bool = False
 
     def get_bytes(self):
         bytes = bytearray(1)

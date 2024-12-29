@@ -43,7 +43,7 @@ Gameplay_InitSkybox:
 .area 0x1C
     lui     at, hi(AUDIO_THREAD_INFO_MEM_START)
     lw      a0, lo(AUDIO_THREAD_INFO_MEM_START)(at)
-    jal     0x800B8654
+    jal     0x800B8654 ; AudioLoad_Init
     lw      a1, lo(AUDIO_THREAD_INFO_MEM_SIZE)(at)
     lw      ra, 0x0014(sp)
     jr      ra
