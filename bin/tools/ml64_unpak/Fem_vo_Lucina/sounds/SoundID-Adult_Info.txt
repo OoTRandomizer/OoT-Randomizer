@@ -1,0 +1,28 @@
+Adult:
+
+680A - Breath after Drink / Surfacing from Water
+680B - Death Grunts
+680C - Falling into Lava / Taken by Wallmaster
+680D - Grabbed by Redead / Grabbed by Wallmaster
+680E - Shiver and Sneeze in Cold Places
+680F - Sweating in Hot Places
+681A - Cringing from Fall Damage
+681C - Casting Din's Fire / Long Yell
+6010 - Drinking from Bottle
+6800 - Attack Yell / Rolling
+6801 - Long Attack Yell
+6802 - Whips Epona
+6803 - Grab Ledge
+6804 - Climb Ledge / Bonk into Wall
+6805 - Hurt by Enemy
+6806 - Frozen in Ice
+6807 - Short Fall Scream
+6808 - Long Fall Scream / General Screams
+6809 - Low HP
+6811 - Yawning
+6813 - Shivering in Bed during Intro (UNUSED in normal Gameplay)
+6814 - Jumping
+6815 - Casting Nayru's Love / Short Yell
+6816 - Surprised Gasp / Shocked Gasp
+6817 - Casting Farore's Wind / Short Shout
+6818 - Pushing Block

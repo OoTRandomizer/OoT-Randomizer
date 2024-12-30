@@ -25,4 +25,8 @@ typedef struct
   z64_angle_t z;
 } z64_rot_t;
 
+typedef struct {
+    float x, y, z;
+} Vec3f; // move this if needed elsewhere
+
 #endif

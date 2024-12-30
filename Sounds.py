@@ -257,7 +257,8 @@ def get_voice_sfx_choices(age: int, include_random: bool = True) -> list[str]:
     names = ['Default', 'Silent']
     voices_path = os.path.join(data_path('Voices'), ('Child' if age == 0 else 'Adult'))
     if os.path.isdir(voices_path):
-        names += [f for f in os.listdir(voices_path) if os.path.isdir(os.path.join(voices_path, f))]
+        # Look for .pak files first
+        names += [f for f in os.listdir(voices_path) if os.path.isdir(os.path.join(voices_path, f)) or f.endswith(".pak")]
 
     # Add a random if multiple options are available
     if len(names) > 2 and include_random:

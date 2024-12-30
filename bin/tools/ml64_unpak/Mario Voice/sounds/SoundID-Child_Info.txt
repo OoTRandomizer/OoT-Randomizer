@@ -1,0 +1,27 @@
+Child:
+
+6820 - Attack Yell / Rolling
+6821 - Long Attack Yell
+6823 - Grab Ledge
+6824 - Climb Ledge / Bonk into Wall
+6825 - Hurt by Enemy
+6826 - Frozen in Ice
+6827 - Short Fall Scream
+6828 - Long Fall Scream / General Screams
+6829 - Low HP
+682A - Breath after Drink / Surfacing from Water
+682B - Death Grunts
+682C - Falling into Lava / Taken by Wallmaster
+682D - Grabbed by Redead / Grabbed by Wallmaster
+682E - Shiver and Sneeze in Cold Places
+682F - Sweating in Hot Places
+6030 - Drinking from Bottle
+6831 - Yawning
+6833 - Shivering in Bed during Intro
+6834 - Jumping
+6835 - Casting Nayru's Love / Short Yell
+6836 - Surprised Gasp / Shocked Gasp
+6837 - Casting Farore's Wind / Short Shout
+6838 - Pushing Block
+683A - Cringing from Fall Damage
+683C - Casting Din's Fire / Long Yell

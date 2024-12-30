@@ -1005,7 +1005,9 @@ struct z64_actor_s
   z64_rot_t       rot_2;            /* 0x00B4 */
   int16_t         face;             /* 0x00BA */
   float           yOffset;          /* 0x00BC */
-  char            unk_0F_[0x0040];  /* 0x00C0 */
+  char            unk_0F_[0x0024];  /* 0x00C0 */
+  Vec3f           projectedPos;     /* 0x00E4 */
+  char            unk_0F_2[0x0010]; /* 0x00F0 */
   z64_xyzf_t      pos_4;            /* 0x0100 */
   uint16_t        unk_10_;          /* 0x010C */
   uint16_t        text_id;          /* 0x010E */

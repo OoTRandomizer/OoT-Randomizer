@@ -1,0 +1,13 @@
+{
+  "name": "HatsuneMikuVoicePAK",
+  "version": "1.0.0",
+  "description": "",
+  "main": "OotO_SoundTemplate.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "JanexLane",
+  "license": "ISC",
+  "core": "OcarinaofTime"
+}

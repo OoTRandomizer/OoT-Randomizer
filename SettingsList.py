@@ -5253,6 +5253,17 @@ class SettingInfos:
         },
     )
 
+    sfx_link_adult_volume = Scale(
+        gui_text       = 'Adult Voice Volume',
+        shared         = False,
+        cosmetic       = True,
+        minimum        = 0,
+        maximum        = 100,
+        step           = 1,
+        default        = 100,
+        gui_tooltip    = 'Sets the volume for the voice SFX'
+    )
+
     sfx_link_child = Combobox(
         gui_text       = 'Child Voice',
         shared         = False,
@@ -5266,6 +5277,17 @@ class SettingInfos:
             "hide_when_disabled": True,
             "dynamic": True,
         },
+    )
+
+    sfx_link_child_volume = Scale(
+        gui_text       = 'Child Voice Volume',
+        shared         = False,
+        cosmetic       = True,
+        minimum        = 0,
+        maximum        = 100,
+        step           = 1,
+        default        = 100,
+        gui_tooltip    = 'Sets the volume for the voice SFX'
     )
 
     sfx_navi_overworld = Combobox(

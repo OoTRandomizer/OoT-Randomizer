@@ -1,0 +1,66 @@
+# This template may be used as a starting point for developing
+# new custom voice packs for OOTR
+# All comments (anything after # on a line) will be stripped out by the patcher
+{
+    # Items in the "direct_bank" dictionary are patched into the game directly by their SFX Index
+    # in the SFX audio bank (bank 0) 
+    # This should only be used if you know what you're doing
+    # Entries in this dictionary should be in the following format
+    # Keys - string representation of the bank ID (base 16)
+    # Values - Another dictionary of the following format:
+    #   Keys - SFX ID within the bank (base 16)
+    #   Values - file name within the pack
+    "direct_bank": {
+        "00": {
+            "0000": "00-0000.bin",
+            "0001": "00-0001.bin",
+            "0002": "00-0002.bin",
+            "0003": "00-0003.bin",
+            "0004": "00-0004.bin",
+            "0005": "00-0005.bin",
+            "0006": "00-0006.bin",
+            "0007": "00-0007.bin",
+            "0008": "00-0008.bin",
+            "0009": "00-0009.bin",
+            "000A": "00-000A.bin",
+            "000B": "00-000B.bin",
+            "000C": "00-000C.bin",
+            "000D": "00-000D.bin",
+            "000E": "00-000E.bin",
+            "000F": "00-000F.bin",
+            "0010": "00-0010.bin",
+            "0011": "00-0011.bin",
+            "0012": "00-0012.bin",
+            "0013": "00-0013.bin",
+            "0015": "00-0015.bin",
+            "0016": "00-0016.bin",
+            "0017": "00-0017.bin",
+            "0018": "00-0018.bin",
+            "0019": "00-0019.bin",
+            "001A": "00-001A.bin",
+            "001B": "00-001B.bin",
+            "0037": "00-0037.bin",
+            "0038": "00-0038.bin",
+            "003C": "00-003C.bin",
+            "003D": "00-003D.bin",
+            "004D": "00-004D.bin",
+            "004E": "00-004E.bin",
+            "004F": "00-004F.bin",
+            "0050": "00-0050.bin",
+            "0051": "00-0051.bin",
+            "0052": "00-0052.bin",
+            "0053": "00-0053.bin",
+            "0054": "00-0054.bin",
+            "0055": "00-0055.bin",
+            "0056": "00-0056.bin",
+            "0057": "00-0057.bin",
+            "0058": "00-0058.bin",
+            "0086": "00-0086.bin"
+        }
+    },
+    "direct_bank_inst": {
+        "00": {
+            
+        }
+    }
+}

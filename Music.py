@@ -20,8 +20,6 @@ if TYPE_CHECKING:
     from Settings import Settings
 
 AUDIOSEQ_DMADATA_INDEX: int = 4
-AUDIOBANK_DMADATA_INDEX: int = 3
-AUDIOTABLE_DMADATA_INDEX: int = 5
 
 # Format: (Title, Sequence ID)
 bgm_sequence_ids: tuple[tuple[str, int], ...] = (
@@ -352,7 +350,8 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
 
     # If custom banks are supported, we're going to make copies of the banks to be used for fanfares
     # In that case, need to update the fanfare sequence's bank to point to the new one
-    fanfare_bank_shift = 0x26 if CUSTOM_BANKS_SUPPORTED else 0
+    #fanfare_bank_shift = 0x26 if CUSTOM_BANKS_SUPPORTED else 0
+    fanfare_bank_shift = 0
 
     # Update pointer table
     for i in range(0x6E):
@@ -399,23 +398,18 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
     # Builds new audio bank entrys for fanfares to prevent fanfares killing bgm in areas like Goron City
     bank_index_base = (rom.read_int32(symbols['CFG_AUDIOBANK_TABLE_EXTENDED_ADDR']) - 0x80400000) + 0x3480000
     # Build new fanfare banks by copying each entry in audiobank_index
-    for i in range(0, 0x26):
-        bank_entry = rom.read_bytes(bank_index_base + 0x10 + 0x10 * i, 0x10) # Get the vanilla entry
-        bank_entry[9] = 1 # Update the cache type to 1
-        rom.write_bytes(bank_index_base + 0x270 + 0x10 * i, bank_entry) # Write the new entry at the end of the bank table.
-    rom.write_byte(bank_index_base + 0x01, 0x4C) # Updates AudioBank Index Header if no custom banks are present as this would be 0x26 which would crash the game if a fanfare was played
+    #for i in range(0, 0x26):
+    #    bank_entry = rom.read_bytes(bank_index_base + 0x10 + (0x10*i), 0x10) # Get the vanilla entry
+    #    bank_entry[9] = 1 # Update the cache type to 1
+    #    rom.write_bytes(bank_index_base + 0x270 + 0x10*i, bank_entry) # Write the new entry at the end of the bank table.
+    #rom.write_byte(bank_index_base + 0x01, 0x4C) # Updates AudioBank Index Header if no custom banks are present as this would be 0x26 which would crash the game if a fanfare was played
 
     added_banks: list[AudioBank] = [] # Store copies of all the banks we've added
     added_samples: list[Sample] = []  # Store copies of all the samples we've added
-    new_bank_index = 0x4C
+    new_bank_index = 0x26
     instr_data = bytearray(0)  # Store all the new instrument data that will be added to the end of audiotable
 
-    audiobank_dma_entry = rom.dma[AUDIOBANK_DMADATA_INDEX]
-    audiotable_dma_entry = rom.dma[AUDIOTABLE_DMADATA_INDEX]
-    audiobank_start, audiobank_end, audiobank_size = audiobank_dma_entry.as_tuple()
-    audiotable_start, audiotable_end, audiotable_size = audiotable_dma_entry.as_tuple()
-
-    instr_offset_in_file = audiotable_size
+    instr_offset_in_file = len(rom.audiotable)
     bank_table_base = 0
 
     # Load OOT Audiobin
@@ -444,6 +438,7 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                 mm_audiobin = Audiobin(mm_audiobank, mm_audiobank_index, mm_audiotable, mm_audiotable_index)
             break
 
+    # Loop through each sequence and patch custom banks
     for i in range(0x6E):
         bank_table_base = (rom.read_int32(symbols['CFG_AUDIOBANK_TABLE_EXTENDED_ADDR']) - 0x80400000) + 0x3480000
         seq_bank_base = 0xB89911 + 0xDD + (i * 2)
@@ -462,9 +457,8 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                 offset = 0x10 + j.instrument_set*0x10
                 bank_entry = audiobin.Audiobank_index[offset:offset+0x10]
                 # Get the bank
-                vanilla_mm_bank = AudioBank(bank_entry, audiobin.Audiobank, audiobin.Audiotable, audiobin.Audiotable_index)
-                vanilla_mm_bank.table_entry[0x0A] = 1
-                bankdata = vanilla_mm_bank.bank_data
+                vanilla_mm_bank = AudioBank.from_rom_data(bank_entry, audiobin.Audiobank, audiobin.Audiotable, audiobin.Audiotable_index)
+                bankdata = vanilla_mm_bank.original_data
             else: # MMRS or OOTRs with custom banks
                 with zipfile.ZipFile(j.name) as zip:
                     # Check if we have a zbank file because MMR sequences might not.
@@ -476,9 +470,8 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                         offset = 0x10 + j.instrument_set*0x10
                         bank_entry = audiobin.Audiobank_index[offset:offset+0x10]
                         # Get the bank
-                        vanilla_mm_bank = AudioBank(bank_entry, audiobin.Audiobank, audiobin.Audiotable, audiobin.Audiotable_index)
-                        vanilla_mm_bank.table_entry[0x0A] = 1
-                        bankdata = vanilla_mm_bank.bank_data
+                        vanilla_mm_bank = AudioBank.from_rom_data(bank_entry, audiobin.Audiobank, audiobin.Audiotable, audiobin.Audiotable_index)
+                        bankdata = vanilla_mm_bank.original_data
                     else: # Probably should never get here
                         raise Exception("No bank data available for custom music: " + j.cosmetic_name)
 
@@ -488,18 +481,19 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
             for added_bank in added_banks:
                 if added_bank.original_data == bankdata:
                     newbank = added_bank
-                    if added_bank.table_entry[8:16] != bank_entry[8:16]: # We've already added this bank but it has different metadata
+                    if added_bank.original_table_entry[8:16] != bank_entry[8:16]: # We've already added this bank but it has different metadata
                         found: bool = False
                         for bank in added_bank.duplicate_banks:
-                            if bank.table_entry[8:16] == bank_entry[8:16]:
+                            if bank.original_table_entry[8:16] == bank_entry[8:16]:
                                 found = True
                                 newbank = bank
                                 break
                         if not found:
+                            # Make a new bank with just the meta and add it as a duplicate so it can be added separately but point to the same data.
                             dupe_bank = AudioBank(bank_entry, bytearray(0), None, None)
                             dupe_bank.bank_index = new_bank_index
                             new_bank_index += 1
-                            newbank.duplicate_banks.append(dupe_bank) # Make a new bank with just the meta and add it as a duplicate so it can be added separately but point to the same data.
+                            newbank.duplicate_banks.append(dupe_bank)
                             newbank = dupe_bank
                     break
 
@@ -507,30 +501,33 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                 if vanilla_mm_bank:
                     newbank = vanilla_mm_bank
                 else:
-                    newbank = AudioBank(bank_entry, bankdata, audiobin.Audiotable, audiobin.Audiotable_index)
+                    newbank = AudioBank.from_rom_data(bank_entry, bankdata, audiobin.Audiotable, audiobin.Audiotable_index)
+                # For MM tracks, force Audiotable index to 0 in the bank's table entry
+                if j.game == SequenceGame.MM:
+                    newbank.audiotable_id = 0
                 newbank.bank_index = new_bank_index
 
                 zsound_samples: list[Sample] = []
                 # Handle new zsounds
-                tempbank = AudioBank(bank_entry, bankdata, None, None)
+                #tempbank = AudioBank.from_rom_data(bank_entry, bankdata, None, None)
                 if j.name.lower().endswith('.ootrs') or j.name.lower().endswith('.mmrs'):
                     with zipfile.ZipFile(j.name) as zip:
                         for zsound in j.zsounds:
                             if zsound['tempaddr']: # Old style/MMR zsound that uses the stupid temp address thing
-                                for sample in tempbank.get_all_samples():
+                                for sample in newbank.get_all_samples():
                                     if sample.addr == zsound['tempaddr']:
-                                        parent = sample.parent
-                                        if type(parent) == Instrument:
-                                            if parent.highNoteSample and parent.highNoteSample.addr == sample.addr:
-                                                sample = newbank.instruments[parent.inst_id].highNoteSample
-                                            elif parent.normalNoteSample and parent.normalNoteSample.addr == sample.addr:
-                                                sample = newbank.instruments[parent.inst_id].normalNoteSample
-                                            elif parent.lowNoteSample and parent.lowNoteSample.addr == sample.addr:
-                                                sample = newbank.instruments[parent.inst_id].lowNoteSample
-                                        if type(parent) == Drum:
-                                            sample = newbank.drums[parent.drum_id].sample
-                                        if type(parent) == SFX:
-                                            sample = newbank.SFX[parent.sfx_id].sample
+                                        #parent = sample.parent
+                                        #if type(parent) == Instrument:
+                                        #    if parent.highNoteSample and parent.highNoteSample.addr == sample.addr:
+                                        #        sample = newbank.instruments[parent.inst_id].highNoteSample
+                                        #    elif parent.normalNoteSample and parent.normalNoteSample.addr == sample.addr:
+                                        #        sample = newbank.instruments[parent.inst_id].normalNoteSample
+                                        #    elif parent.lowNoteSample and parent.lowNoteSample.addr == sample.addr:
+                                        #        sample = newbank.instruments[parent.inst_id].lowNoteSample
+                                        #if type(parent) == Drum:
+                                        #    sample = newbank.drums[parent.drum_id].sample
+                                        #if type(parent) == SFX:
+                                        #    sample = newbank.SFX[parent.sfx_id].sample
                                         sample.data = zip.read(zsound['file'])
                                         sample.addr = -1 # Set the sample address to -1 so that we know it's from a zsound
                                         zsound_samples.append(sample)
@@ -557,53 +554,6 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                                 sample.addr = -1 # Set the sample address to -1 so that we know it's from a zsound
                                 zsound_samples.append(sample)
 
-                # For MM, update the bank's samples with OOT addresses if they exist:
-                mm_samples_to_add: list[Sample] = []
-                # Cross reference MM instrument data against OOT and update accordingly
-                if j.game == SequenceGame.MM:
-                    all_samples = newbank.get_all_samples()
-                    all_samples = [sample for sample in all_samples if sample.addr != -1] # Skip samples that are new ZSOUNDS because we'll handle them later
-                    for sample in all_samples:
-                        match = oot_audiobin.find_sample_in_audiobanks(sample.data)
-                        if match: # Found a matching sample in OOT. Just update the bank with the corresponding sample address
-                            # Update the sample's offset in the new bank
-                            newbank.bank_data[sample.bank_offset+4:sample.bank_offset+8] = match.audiotable_addr.to_bytes(4, 'big')
-                        else: # Didn't find a matching sample, Will have to add it later
-                            mm_samples_to_add.append(sample)
-                    i = 0
-                    while i < len(zsound_samples):
-                        match = oot_audiobin.find_sample_in_audiobanks(zsound_samples[i].data)
-                        if match: # Found a matching sample in OOT. Just update the bank with the corresponding sample address and remove if from zsound list
-                            # Update the sample's offset in the new bank
-                            newbank.bank_data[zsound_samples[i].bank_offset+4:zsound_samples[i].bank_offset+8] = match.audiotable_addr.to_bytes(4, 'big')
-                            zsound_samples.pop(i)
-                            continue
-                        i += 1
-
-                # Create a list of all samples that need to be added.
-                # This includes new samples, and samples from MM that don't exist in OOT
-                for sample_to_add in zsound_samples + mm_samples_to_add:
-                    # Check if we've already added this sample's data
-                    already_added = False
-                    for added_sample in added_samples:
-                        if sample_to_add.data == added_sample.data:
-                            # Already added this sample, just update the bank
-                            newbank.bank_data[sample_to_add.bank_offset+4:sample_to_add.bank_offset+8] = added_sample.audiotable_addr.to_bytes(4, 'big')
-                            already_added = True
-                            break
-                    if not already_added:
-                        instr_data += sample_to_add.data
-                         # Pad instrument data to 0x10
-                        sample_to_add.audiotable_addr = instr_offset_in_file
-                        instr_offset_in_file += len(sample_to_add.data)
-                        if len(instr_data) % 0x10 != 0:
-                            padding_length = 0x10 - (len(instr_data) % 0x10)
-                            instr_data += (bytearray(padding_length))
-                            instr_offset_in_file += padding_length
-                        # Update the sample address in the bank data
-                        newbank.bank_data[sample_to_add.bank_offset+4:sample_to_add.bank_offset+8] = sample_to_add.audiotable_addr.to_bytes(4, 'big')
-                        added_samples.append(sample_to_add)
-
                 added_banks.append(newbank)
                 new_bank_index += 1
 
@@ -614,54 +564,10 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
     # Patch the new instrument data into the ROM in a new file.
     # If there is any instrument data to add, move the entire audiotable file to a new location in the ROM.
     if len(instr_data) > 0:
-        # Read the original audiotable data
-        audiotable_data = rom.read_bytes(audiotable_start, audiotable_size)
-        # Zeroize existing file
-        rom.write_bytes(audiotable_start, [0] * audiotable_size)
         # Add the new data
-        audiotable_data += instr_data
-        # Get new address for the file
-        new_audiotable_start = rom.dma.free_space(len(audiotable_data))
-        # Write the file to the new address
-        rom.write_bytes(new_audiotable_start, audiotable_data)
-        # Update DMA
-        audiotable_dma_entry.update(new_audiotable_start, new_audiotable_start + len(audiotable_data))
-        log.instr_dma_index = audiotable_dma_entry.index
+        rom.audiotable += instr_data
 
-    # Add new audio banks
-    new_bank_data = bytearray(0)
-    # Read the original audiobank data
-    audiobank_data = rom.read_bytes(audiobank_start, audiobank_size)
-    new_bank_offset = len(audiobank_data)
-    for bank in added_banks:
-        # Sample pointers should already be correct now
-        # bank.update_zsound_pointers()
-        bank.offset = new_bank_offset
-        #absolute_offset = new_audio_banks_addr + new_bank_offset
-        bank_entry = bank.build_entry(new_bank_offset)
-        rom.write_bytes(bank_table_base + 0x10 + bank.bank_index * 0x10, bank_entry)
-        for dupe_bank in bank.duplicate_banks:
-            bank_entry = bytearray(dupe_bank.build_entry(new_bank_offset))
-            bank_entry[4:8] = bank.size.to_bytes(4, 'big')
-            rom.write_bytes(bank_table_base + 0x10 + dupe_bank.bank_index * 0x10, bank_entry)
-        new_bank_data += bank.bank_data
-        new_bank_offset += len(bank.bank_data)
-
-    # If there is any audiobank data to add, move the entire audiobank file to a new place in ROM. Update the existing dmadata record
-    if len(new_bank_data) > 0:
-        # Zeroize existing file
-        rom.write_bytes(audiobank_start, [0] * audiobank_size)
-        # Add the new data
-        audiobank_data += new_bank_data
-        # Get new address for the file
-        new_audio_banks_addr = rom.dma.free_space(len(audiobank_data))
-        # Write the file to the new address
-        rom.write_bytes(new_audio_banks_addr, audiobank_data)
-        # Update DMA
-        audiobank_dma_entry.update(new_audio_banks_addr, new_audio_banks_addr + len(audiobank_data))
-        log.bank_dma_index = audiobank_dma_entry.index
-        # Update size of bank table in the Audiobank table header.
-        rom.write_bytes(bank_table_base, new_bank_index.to_bytes(2, 'big'))
+    rom.audiobanks.extend(added_banks)
 
     # Update the init heap size. This size is normally hardcoded based on the number of audio banks.
     init_heap_size = rom.read_int32(0xB80118)

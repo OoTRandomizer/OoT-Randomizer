@@ -1,3 +1,5 @@
 **/*.seq
 **/*.meta
 **/*.ootrs
+**/*.zseq
+**/*.mmrs

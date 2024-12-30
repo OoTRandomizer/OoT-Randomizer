@@ -2,6 +2,7 @@
 z64_EquippedItemOutlineTex = 0x2000E00;
 z64_Gfx_SetupDL_42Opa = 0x8007E868;
 Audio_StopCurrentMusic = 0x800C7684;
+Audio_PlaySfxGeneral = 0x800C806C;
 sprintf = 0x800CE7b4;
 Fault_AddHungupAndCrashImpl = 0x800AF564;
 z64_ItemIcons = 0x800F8D2C;

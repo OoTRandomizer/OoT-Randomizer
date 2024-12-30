@@ -13,7 +13,7 @@
 COSMETIC_CONTEXT:
 
 COSMETIC_FORMAT_VERSION:
-.word 0x1F073FE2
+.word 0x1F073FE3
 CFG_MAGIC_COLOR:
 .halfword 0x0000, 0x00C8, 0x0000
 CFG_HEART_COLOR:
@@ -102,6 +102,16 @@ CFG_SONG_NAME_STATE:
 .area 0xA5A, 0
 CFG_SONG_NAMES:
 .endarea
+
+.align 4
+
+CFG_ADULT_VOLUME:
+.word 0
+CFG_CHILD_VOLUME:
+.word 0
+
+; End Cosmetics Context
+
 CFG_SHOW_SETTING_INFO:
 .byte 0x00
 
@@ -111,7 +121,6 @@ CFG_CUSTOM_MESSAGE_1:
 .area 0x20, 0
 CFG_CUSTOM_MESSAGE_2:
 .endarea
-
 .align 4
 
 ; Version string
