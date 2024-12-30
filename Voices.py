@@ -578,6 +578,14 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
                                         # Update sample data length = length
                                         lowSample.size = len(soundData)
                                         instrument.lowNoteSample = lowSample
+                                        points = [
+                                            EnvelopePoint(1, 32700),
+                                            EnvelopePoint(10000, 0),
+                                            EnvelopePoint(-1, 0)
+                                        ]
+                                        
+                                        envelope = Envelope(points)
+                                        instrument.envelope = envelope
                                 if "normalNote" in instrument_json.keys():
                                     with zf.open(instrument_json["normalNote"]) as f:
                                         soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(f.name, f, age, settings)
@@ -594,8 +602,16 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
                                         # Update sample data length = length
                                         normalSample.size = len(soundData)
                                         instrument.normalNoteSample = normalSample
+                                        points = [
+                                            EnvelopePoint(1, 32700),
+                                            EnvelopePoint(10000, 0),
+                                            EnvelopePoint(-1, 0)
+                                        ]
+                                        
+                                        envelope = Envelope(points)
+                                        instrument.envelope = envelope
                                 if "highNote" in instrument_json.keys():
-                                    with zf.open(instrument_json["normalNote"]) as f:
+                                    with zf.open(instrument_json["highNote"]) as f:
                                         soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(f.name, f, age, settings)
                                         # Pad the data to 16 bytes
                                         soundData += bytearray((16 - (len(soundData)%16))%16)
@@ -610,6 +626,14 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
                                         # Update sample data length = length
                                         highSample.size = len(soundData)
                                         instrument.highNoteSample = highSample
+                                        points = [
+                                            EnvelopePoint(1, 32700),
+                                            EnvelopePoint(10000, 0),
+                                            EnvelopePoint(-1, 0)
+                                        ]
+                                        
+                                        envelope = Envelope(points)
+                                        instrument.envelope = envelope
                                 if "normalRangeLow" in instrument_json.keys():
                                     instrument.normalRangeLo = instrument_json["normalRangeLow"]
                                 if "normalRangeHigh" in instrument_json.keys():
