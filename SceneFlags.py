@@ -110,24 +110,6 @@ def encode_room_xflags(xflags):
 
     return xflags, rlc_flags
 
-# Create a byte array from the scene flag table created by get_collectible_flag_table
-def get_collectible_flag_table_bytes(scene_flag_table: dict[int, dict[int, int]]) -> tuple[bytearray, int]:
-    num_flag_bytes = 0
-    bytes = bytearray()
-    bytes.append(len(scene_flag_table.keys()))
-    for scene_id in scene_flag_table.keys():
-        rooms = scene_flag_table[scene_id]
-        room_count = len(rooms.keys())
-        bytes.append(scene_id)
-        bytes.append(room_count)
-        for room in rooms:
-            bytes.append(room)
-            bytes.append((num_flag_bytes & 0xFF00) >> 8)
-            bytes.append(num_flag_bytes & 0x00FF )
-            num_flag_bytes += ceil((rooms[room] + 1) / 8)
-
-    return bytes, num_flag_bytes
-
 # Build a list of alternative overrides for alternate scene setups
 def get_alt_list_bytes(alt_list: list[tuple[Location, tuple[int, int, int], tuple[int, int, int]]]) -> bytearray:
     bytes = bytearray()
