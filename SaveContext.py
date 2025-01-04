@@ -924,6 +924,7 @@ class SaveContext:
                 'trials_water': Address(extended=True, size=1),
                 'trials_forest': Address(extended=True, size=1),
             },
+            'collected_dungeon_rewards': Address(extended=True, size=8),
             'enemy_spawn_flags': {
                 'stalfos': Address(extended=True, size=1, mask=0x01, pass_addr=True),
                 'octorok': Address(extended=True, size=1, mask=0x02, pass_addr=True),
