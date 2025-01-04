@@ -120,8 +120,9 @@ scene_groups: dict[str, list[str]] = {
     'Water Temple': ['Water Temple', 'Water Temple Boss'],
     'Spirit Temple': ['Spirit Temple', 'Spirit Temple Boss'],
     'Shadow Temple': ['Shadow Temple', 'Shadow Temple Boss'],
-    'Ganons Castle': ['Ganons Castle', 'Ganons Tower'],
+    'Ganons Castle': ['Ganons Castle', 'Ganons Tower', 'Ganons Castle Tower'],
     'Market Area': [
+        'Market',
         'Market Treasure Chest Game',
         'Market Entrance (Child Day)',
         'Market Entrance (Child Night)',
