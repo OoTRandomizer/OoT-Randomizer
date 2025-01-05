@@ -394,7 +394,7 @@ class Settings(SettingInfos):
 
 
 # gets the randomizer settings, whether to open the gui, and the logger level from command line arguments
-def get_settings_from_command_line_args() -> tuple[Settings, bool, str, bool, str]:
+def get_settings_from_command_line_args() -> tuple[Settings, bool, str, bool, Optional[str]]:
     parser = argparse.ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
 
     parser.add_argument('--gui', help='Launch the GUI', action='store_true')
