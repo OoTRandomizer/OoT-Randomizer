@@ -169,7 +169,7 @@ def subprocess_args(include_stdout: bool = True) -> dict[str, Any]:
     ret: dict[str, Any]
 
     # The following is true only on Windows.
-    if hasattr(subprocess, 'STARTUPINFO'):
+    if sys.platform == 'win32':
         # On Windows, subprocess calls will pop up a command window by default
         # when run from Pyinstaller with the ``--noconsole`` option. Avoid this
         # distraction.
