@@ -63,7 +63,7 @@ void MiniMap_Draw_Hack(z64_game_t* globalCtx)
                                             G_TX_NOMIRROR | G_TX_WRAP, G_TX_NOMASK, G_TX_NOMASK, G_TX_NOLOD, G_TX_NOLOD);
                 rectLeft = minimap_center_x + ((R_COMPASS_OFFSET_X + tempX) / 10.0);
                 rectTop =  minimap_center_z + ((tempZ - R_COMPASS_OFFSET_Y) / 10.0);
-                gSPTextureRectangle(db->p++, rectLeft << 2, rectTop << 2, (rectLeft + 1) << 2,
+                gSPTextureRectangle(db->p++, (rectLeft-1) << 2, (rectTop-1) << 2, (rectLeft + 1) << 2,
                                             (rectTop + 1) << 2, G_TX_RENDERTILE, 0, 0, 0,
                                             0);
             }
