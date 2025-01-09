@@ -172,13 +172,13 @@
         "region_name": "Gerudo Training Ground Like Like Room",
         "dungeon": "Gerudo Training Ground",
         "locations": {
-            "Gerudo Training Ground Heavy Block First Chest": "has_soul(Likelike)",
-            "Gerudo Training Ground Heavy Block Second Chest": "has_soul(Likelike)",
+            "Gerudo Training Ground Heavy Block First Chest": "has_soul(Like_Like)",
+            "Gerudo Training Ground Heavy Block Second Chest": "has_soul(Like_Like)",
             "Gerudo Training Ground Heavy Block Third Chest": "True",
             "Gerudo Training Ground Heavy Block Fourth Chest": "True",
-            "Gerudo Training Ground Heavy Block Like Like 1": "has_soul(Likelike)",
-            "Gerudo Training Ground Heavy Block Like Like 2": "has_soul(Likelike)",
-            "Gerudo Training Ground Heavy Block Like Like 3": "has_soul(Likelike)"
+            "Gerudo Training Ground Heavy Block Like Like 1": "has_soul(Like_Like)",
+            "Gerudo Training Ground Heavy Block Like Like 2": "has_soul(Like_Like)",
+            "Gerudo Training Ground Heavy Block Like Like 3": "has_soul(Like_Like)"
         }
     },
     {

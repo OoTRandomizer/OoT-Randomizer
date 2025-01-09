@@ -644,7 +644,7 @@ item_table: dict[str, tuple[str, Optional[bool], Optional[int], Optional[dict[st
     'Flare Dancer Soul':                               ('Soul',     True,  GetItemId.GI_SOUL_FLARE_DANCER, None),
     'Dead hand Soul':                                  ('Soul',     True,  GetItemId.GI_SOUL_DEAD_HAND, None),
     'Shell Blade Soul':                                ('Soul',     True,  GetItemId.GI_SOUL_SHELL_BLADE, None),
-    'Like-like Soul':                                  ('Soul',     True,  GetItemId.GI_SOUL_LIKE_LIKE, None),
+    'Like Like Soul':                                  ('Soul',     True,  GetItemId.GI_SOUL_LIKE_LIKE, None),
     'Spike Enemy Soul':                                ('Soul',     True,  GetItemId.GI_SOUL_SPIKE_ENEMY, None),
     'Anubis Soul':                                     ('Soul',     True,  GetItemId.GI_SOUL_ANUBIS, None),
     'Iron Knuckle Soul':                               ('Soul',     True,  GetItemId.GI_SOUL_IRON_KNUCKLE, None),

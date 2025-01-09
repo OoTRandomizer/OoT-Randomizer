@@ -85,8 +85,8 @@
         "region_name": "Shadow Temple Huge Pit",
         "dungeon": "Shadow Temple",
         "locations": {
-            "Shadow Temple Invisible Blades Visible Chest": "has_soul(Likelike) and has_soul(Keese)",
-            "Shadow Temple Invisible Blades Invisible Chest": "has_soul(Likelike) and has_soul(Keese)",
+            "Shadow Temple Invisible Blades Visible Chest": "has_soul(Like_Like) and has_soul(Keese)",
+            "Shadow Temple Invisible Blades Invisible Chest": "has_soul(Like_Like) and has_soul(Keese)",
             "Shadow Temple Invisible Blades Recovery Heart 1": "can_play(Song_of_Time)",
             "Shadow Temple Invisible Blades Recovery Heart 2": "can_play(Song_of_Time)",
             "Shadow Temple Huge Pit Silver Rupee Right": "True",
@@ -99,8 +99,8 @@
             "Shadow Temple Invisible Blades Keese 1": "has_soul(Keese)",
             "Shadow Temple Invisible Blades Keese 2": "has_soul(Keese)",
             "Shadow Temple Invisible Blades Keese 3": "has_soul(Keese)",
-            "Shadow Temple Invisible Blades Like Like": "has_soul(Likelike)",
-            "Shadow Temple GS Invisible Blades Room": "has_soul(Likelike) and has_soul(Keese)"
+            "Shadow Temple Invisible Blades Like Like": "has_soul(Like_Like)",
+            "Shadow Temple GS Invisible Blades Room": "has_soul(Like_Like) and has_soul(Keese)"
         },
         "exits": {
             "Shadow Temple Falling Spikes": "(Silver_Rupee_Shadow_Temple_Huge_Pit, 5)",

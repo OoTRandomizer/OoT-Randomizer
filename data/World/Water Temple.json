@@ -296,7 +296,7 @@
             "Water Temple Statue Puzzle Tektite 3": "has_soul(Tektite)",
             "Water Temple Statue Puzzle Tektite 4": "has_soul(Tektite)",
             "Water Temple Statue Puzzle Tektite 5": "has_soul(Tektite)",
-            "Water Temple Statue Puzzle Like Like": "has_soul(Likelike)"
+            "Water Temple Statue Puzzle Like Like": "has_soul(Like_Like)"
         },
         "exits": {
             "Water Temple Dark Link Room": "has_soul(Dark_Link)"

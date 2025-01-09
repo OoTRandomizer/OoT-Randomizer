@@ -126,7 +126,7 @@
         "locations": {
             "Spirit Temple MQ Child Climb North Chest": "
                 (Small_Key_Spirit_Temple, 6) and can_kill_beamos and
-                has_soul(Likelike) and has_soul(Baby_Dodongo)",
+                has_soul(Like_Like) and has_soul(Baby_Dodongo)",
             "Spirit Temple MQ Compass Chest": "
                 (can_use(Slingshot) and (Small_Key_Spirit_Temple, 7)) or
                 can_use(Bow) or
@@ -166,7 +166,7 @@
             "Spirit Temple MQ Child Climb Baby Dodongo 2": "(Small_Key_Spirit_Temple, 6) and has_soul(Baby_Dodongo)",
             "Spirit Temple MQ Child Climb Baby Dodongo 3": "(Small_Key_Spirit_Temple, 6) and has_soul(Baby_Dodongo)",
             "Spirit Temple MQ Child Climb Baby Dodongo 4": "(Small_Key_Spirit_Temple, 6) and has_soul(Baby_Dodongo)",
-            "Spirit Temple MQ Child Climb Like Like": "(Small_Key_Spirit_Temple, 6) and has_soul(Likelike)",
+            "Spirit Temple MQ Child Climb Like Like": "(Small_Key_Spirit_Temple, 6) and has_soul(Like_Like)",
             "Spirit Temple MQ Child Climb Beamos": "(Small_Key_Spirit_Temple, 6) and can_kill_beamos",
             "Spirit Temple MQ Central Chamber Wallmaster": "has_soul(Wallmaster)",
             "Spirit Temple MQ Central Chamber Floormaster": "has_soul(Floormaster)",

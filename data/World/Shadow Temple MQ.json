@@ -136,7 +136,7 @@
             "Shadow Temple MQ Invisible Blades Keese 1": "has_soul(Keese)",
             "Shadow Temple MQ Invisible Blades Keese 2": "has_soul(Keese)",
             "Shadow Temple MQ Invisible Blades Keese 3": "has_soul(Keese)",
-            "Shadow Temple MQ Invisible Blades Like Like": "has_soul(Likelike)"
+            "Shadow Temple MQ Invisible Blades Like Like": "has_soul(Like_Like)"
         },
         "exits": {
             "Shadow Temple Close Proximity to Invisible Blades": "
@@ -144,7 +144,7 @@
                 can_use(Nayrus_Love)",
             "Shadow Temple Invisible Blades Song of Time Blocks": "
                 can_play(Song_of_Time) or
-                (logic_shadow_mq_invisible_blades and damage_multiplier != 'ohko' and has_soul(Likelike))"
+                (logic_shadow_mq_invisible_blades and damage_multiplier != 'ohko' and has_soul(Like_Like))"
         }
     },
     {
@@ -349,7 +349,7 @@
             "Shadow Temple MQ 3 Spinning Pots Wonderitem": "True",
             "Shadow Temple MQ Invisible Walls Blue Bubble 1": "has_soul(Bubble)",
             "Shadow Temple MQ Invisible Walls Blue Bubble 2": "has_soul(Bubble)",
-            "Shadow Temple MQ Invisible Walls Like Like": "has_soul(Likelike)",
+            "Shadow Temple MQ Invisible Walls Like Like": "has_soul(Like_Like)",
             "Shadow Temple MQ Bomb Flower Dead Hand": "
                 has_soul(Dead_hand) and (logic_lens_shadow_mq_dead_hand or can_use(Lens_of_Truth))"
         },

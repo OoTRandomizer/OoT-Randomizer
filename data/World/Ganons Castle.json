@@ -116,11 +116,11 @@
             "Ganons Castle Shadow Trial Green Bubble": "
                 has_soul(Bubble) and (can_use(Bow) or can_use(Slingshot))",
             "Ganons Castle Shadow Trial Like Like": "
-                has_soul(Likelike) and (can_use(Longshot) or can_use(Bow) or can_use(Slingshot))"
+                has_soul(Like_Like) and (can_use(Longshot) or can_use(Bow) or can_use(Slingshot))"
         },
         "exits": {
             "Ganons Castle Shadow Trial First Gap": "
-                (can_use(Longshot) and has_soul(Likelike)) or can_use(Fire_Arrows)"
+                (can_use(Longshot) and has_soul(Like_Like)) or can_use(Fire_Arrows)"
         }
     },
     {

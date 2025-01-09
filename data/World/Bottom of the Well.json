@@ -41,7 +41,7 @@
             "Bottom of the Well Left Side Skulltula": "has_soul(Skulltula)",
             "Bottom of the Well Patrolling Green Bubble": "has_soul(Bubble)",
             "Bottom of the Well Like Like": "
-                has_soul(Likelike) and
+                has_soul(Like_Like) and
                 (Kokiri_Sword or Sticks or Bombs or can_use(Dins_Fire) or
                     at('Bottom of the Well Behind Locked Doors', Slingshot))",
             "Bottom of the Well Basement ReDead Near Water": "has_soul(Redead_and_Gibdo)",

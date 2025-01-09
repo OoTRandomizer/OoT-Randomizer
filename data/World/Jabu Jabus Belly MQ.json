@@ -61,7 +61,7 @@
             "Jabu Jabus Belly MQ Basement Near Switches Chest": "can_use(Slingshot)",
             "Jabu Jabus Belly MQ Boomerang Room Small Chest": "True",
             "Jabu Jabus Belly MQ Boomerang Chest": "
-                can_kill_lizalfos_with_bombs and has_soul(Stinger) and has_soul(Likelike)",
+                can_kill_lizalfos_with_bombs and has_soul(Stinger) and has_soul(Like_Like)",
             "Jabu Jabus Belly MQ Boomerang Room Pot 1": "True",
             "Jabu Jabus Belly MQ Boomerang Room Pot 2": "True",
             "Jabu Jabus Belly MQ Basement Right Cow Wonderitem 1": "can_use(Slingshot)",
@@ -124,7 +124,7 @@
             "Jabu Jabus Belly Center Tentacle Cleared": "has_soul(Jabu_Jabu_Tentacle)"
         },
         "locations": {
-            "Jabu Jabus Belly MQ Falling Like Like Room Chest": "has_soul(Likelike)",
+            "Jabu Jabus Belly MQ Falling Like Like Room Chest": "has_soul(Like_Like)",
             "Jabu Jabus Belly MQ Falling Like Like Room Pot 1": "True",
             "Jabu Jabus Belly MQ Falling Like Like Room Pot 2": "True",
             "Jabu Jabus Belly MQ Falling Like Like Room Right Cow Wonderitem 1": "True",
@@ -139,13 +139,13 @@
             "Jabu Jabus Belly MQ Hallway Small Crate 1": "True",
             "Jabu Jabus Belly MQ Hallway Small Crate 2": "True",
             "Jabu Jabus Belly MQ Hallway Lizalfos": "has_soul(Lizalfos_and_Dinalfos)",
-            "Jabu Jabus Belly MQ Falling Like Like Room Like Like 1": "has_soul(Likelike)",
-            "Jabu Jabus Belly MQ Falling Like Like Room Like Like 2": "has_soul(Likelike)",
+            "Jabu Jabus Belly MQ Falling Like Like Room Like Like 1": "has_soul(Like_Like)",
+            "Jabu Jabus Belly MQ Falling Like Like Room Like Like 2": "has_soul(Like_Like)",
             "Bombable Fairy": "has_bottle"
         },
         "exits": {
             "Jabu Jabus After Right Tentacle": "
-                has_soul(Jabu_Jabu_Tentacle) and ((Sticks and has_soul(Likelike)) or can_use(Dins_Fire))"
+                has_soul(Jabu_Jabu_Tentacle) and ((Sticks and has_soul(Like_Like)) or can_use(Dins_Fire))"
         }
     },
     {

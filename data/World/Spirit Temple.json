@@ -169,7 +169,7 @@
         "dungeon": "Spirit Temple",
         "locations": {
             "Spirit Temple Early Adult Right Chest": "True",
-            "Spirit Temple Early Adult Like Like": "has_soul(Likelike)"
+            "Spirit Temple Early Adult Like Like": "has_soul(Like_Like)"
         }
     },
     # In the following two regions, child and adult reachability actually means age-unknown, but with
@@ -382,7 +382,7 @@
                 (Hookshot or Hover_Boots or logic_spirit_lobby_jump)",
             "Spirit Temple Adult Climb Flying Pot 1": "has_soul(Flying_Pot)",
             "Spirit Temple Adult Climb Flying Pot 2": "has_soul(Flying_Pot)",
-            "Spirit Temple Adult Climb Like Like": "has_soul(Likelike)",
+            "Spirit Temple Adult Climb Like Like": "has_soul(Like_Like)",
             "Spirit Temple Adult Climb Wallmaster": "has_soul(Wallmaster)",
             "Spirit Temple Adult Climb Invisible Floormaster": "
                 has_soul(Floormaster) and (logic_lens_spirit or can_use(Lens_of_Truth))"

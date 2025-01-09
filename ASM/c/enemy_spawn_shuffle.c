@@ -27,7 +27,7 @@ soul_menu_info SOUL_MENU_NAMES[] = {
     {SOUL_ID_IRON_KNUCKLE, "Iron Knuckle"},
     {SOUL_ID_JABU_JABU_TENTACLE, "Jabu Jabu Tentacle"},
     {SOUL_ID_KEESE, "Keese"},
-    {SOUL_ID_LIKE_LIKE, "Like-like"},
+    {SOUL_ID_LIKE_LIKE, "Like Like"},
     {SOUL_ID_LIZALFOS_AND_DINALFOS, "Lizalfos and Dinalfos"},
     {SOUL_ID_MOBLIN, "Moblin"},
     {SOUL_ID_OCTOROK, "Octorok"},
@@ -162,7 +162,7 @@ enemy_spawn_table_entry enemy_spawn_table[] = {
     ENEMY_SPAWN_TABLE_ENTRY(0x0099, 24,  SPAWN_FLAGS_SPAWNENTRY, NULL), //En_Fd (Flare Dancer)
     ENEMY_SPAWN_TABLE_ENTRY(0x00A4, 25,  SPAWN_FLAGS_SPAWNENTRY, NULL), //En_Dh (Dead hand)
     ENEMY_SPAWN_TABLE_ENTRY(0x00C5, 26,  SPAWN_FLAGS_SPAWNENTRY, NULL), //En_Sb (Shell blade)
-    ENEMY_SPAWN_TABLE_ENTRY(0x00DD, 27,  SPAWN_FLAGS_SPAWNENTRY, NULL), //En_Rr (Like-like)
+    ENEMY_SPAWN_TABLE_ENTRY(0x00DD, 27,  SPAWN_FLAGS_SPAWNENTRY, NULL), //En_Rr (Like Like)
     ENEMY_SPAWN_TABLE_ENTRY(0x00EC, 28,  SPAWN_FLAGS_SPAWNENTRY, NULL), //En_Ny (spike)
     ENEMY_SPAWN_TABLE_ENTRY(0x00F6, 29,  SPAWN_FLAGS_SPAWNENTRY, NULL), //En_Anubice_Tag, En_Anubice (Anubis (spawner))
     ENEMY_SPAWN_TABLE_ENTRY(0x0113, 30,  SPAWN_FLAGS_SPAWNENTRY, NULL), //En_Ik (Iron Knuckle)

@@ -53,7 +53,7 @@
         "region_name": "Fire Temple Lower Spinning Tiles",
         "dungeon": "Fire Temple",
         "locations": {
-            "Fire Temple Before Lower Flare Dancer Like Like": "has_soul(Likelike)",
+            "Fire Temple Before Lower Flare Dancer Like Like": "has_soul(Like_Like)",
             "Fire Temple GS Boss Key Loop": "True"
         },
         "exits": {
@@ -112,7 +112,7 @@
         "region_name": "Fire Temple Song of Time Room",
         "dungeon": "Fire Temple",
         "locations" : {
-            "Fire Temple Song of Time Room Like Like": "has_soul(Likelike)",
+            "Fire Temple Song of Time Room Like Like": "has_soul(Like_Like)",
             "Fire Temple GS Song of Time Room": "True"
         }
     },

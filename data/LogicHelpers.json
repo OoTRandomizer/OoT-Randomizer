@@ -186,7 +186,7 @@
     "can_kill_green_bubble": "has_soul(Bubble) and (is_adult or Bombs or Sticks or Kokiri_Sword or Slingshot)",
     "can_kill_floormaster": "has_soul(Floormaster) and (is_adult or Slingshot or Sticks or Kokiri_Sword or (Bombs and Nuts) or has_bombchus or can_use(Dins_Fire))",
     "can_kill_wallmaster": "has_soul(Wallmaster) and (is_adult or can_child_damage)",
-    "can_kill_like_like": "has_soul(Likelike) and (is_adult or Kokiri_Sword or Sticks or Slingshot or Bombs or can_use(Dins_Fire))",
+    "can_kill_like_like": "has_soul(Like_Like) and (is_adult or Kokiri_Sword or Sticks or Slingshot or Bombs or can_use(Dins_Fire))",
     "can_kill_lizalfos": "has_soul(Lizalfos_and_Dinalfos) and (is_adult or Kokiri_Sword or Sticks or Slingshot or (Bombs and Nuts))",
     "can_kill_lizalfos_with_bombs": "has_soul(Lizalfos_and_Dinalfos) and (is_adult or Kokiri_Sword or Sticks or Slingshot or Bombs)",
     "can_kill_dinolfos": "has_soul(Lizalfos_and_Dinalfos) and (is_adult or Kokiri_Sword or Sticks or (Slingshot and Nuts))",
