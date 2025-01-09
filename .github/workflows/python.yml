@@ -73,4 +73,4 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Run checks
-        run: python CI.py --no_unit_tests
+        run: python CI.py --no_type_checks --no_unit_tests

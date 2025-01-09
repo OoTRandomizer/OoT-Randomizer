@@ -1,5 +1,5 @@
 # This script is called by GitHub Actions, see .github/workflows/python.yml
-# To fix code style errors, run: python3 ./CI.py --fix --no_unit_tests
+# To fix code style errors, run: python3 ./CI.py --fix --no_type_checks --no_unit_tests
 
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from io import StringIO
 import json
 import os.path
 import pathlib
+import subprocess
 import sys
 from typing import Any, NoReturn
 import unittest
@@ -37,6 +38,14 @@ def error(msg: str, can_fix: bool) -> None:
         ANY_FIXABLE_ERRORS = True
     else:
         ANY_UNFIXABLE_ERRORS = True
+
+
+def run_type_checks() -> None:
+    # Run static type checks using mypy
+    completed_process = subprocess.run(['mypy'], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, encoding='utf-8')
+    if completed_process.returncode != 0:
+        print(f'Mypy output:\n{completed_process.stdout}')
+        error('Mypy found type errors, see output above.', False)
 
 
 def run_unit_tests() -> None:
@@ -251,11 +260,15 @@ def check_table_sizes() -> None:
 
 def run_ci_checks() -> NoReturn:
     parser = argparse.ArgumentParser()
+    parser.add_argument('--no_type_checks', help="Skip type checks", action='store_true')
     parser.add_argument('--no_unit_tests', help="Skip unit tests", action='store_true')
     parser.add_argument('--only_unit_tests', help="Only run unit tests", action='store_true')
     parser.add_argument('--release', help="Include checks for release branch", action='store_true')
     parser.add_argument('--fix', help='Automatically apply fixes where possible', action='store_true')
     args = parser.parse_args()
+
+    if not args.no_type_checks and not args.only_unit_tests:
+        run_type_checks()
 
     if not args.no_unit_tests:
         run_unit_tests()
@@ -290,7 +303,7 @@ def exit_ci(fix_errors: bool = False) -> NoReturn:
                     which_errors = 'some of these errors'
                 else:
                     which_errors = 'these errors'
-                print(f'Run `CI.py --fix --no_unit_tests{release_arg}` to automatically fix {which_errors}.', file=sys.stderr)
+                print(f'Run `CI.py --fix --no_type_checks --no_unit_tests{release_arg}` to automatically fix {which_errors}.', file=sys.stderr)
             sys.exit(1)
     else:
         print(f'CI checks successful.')
