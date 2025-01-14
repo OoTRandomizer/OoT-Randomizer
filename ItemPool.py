@@ -483,7 +483,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
 
     if world.settings.item_pool_value == 'plentiful':
         pending_junk_pool.extend(plentiful_items)
-        if world.settings.require_gohma and world.settings.world_count > 1:
+        if world.settings.open_forest == 'closed' and world.settings.world_count > 1:
             pending_junk_pool.append('Deku Seed Bag')
         else:
             pending_junk_pool.append('Slingshot')
