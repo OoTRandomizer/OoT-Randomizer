@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Optional
 from urllib.error import URLError, HTTPError
 
 from HintList import Hint, get_hint, get_multi, get_hint_group, get_upgrade_hint_list, hint_exclusions, \
-    misc_item_hint_table, misc_location_hint_table
+    misc_item_hint_table, misc_location_hint_table, unique_merchant_hint_table
 from Item import Item, make_event_item
 from ItemList import REWARD_COLORS
 from Messages import Message, COLOR_MAP, update_message_by_id
@@ -1318,9 +1318,16 @@ def build_gossip_hints(spoiler: Spoiler, worlds: list[World]) -> None:
                 if item_world.id not in checked_locations:
                     checked_locations[item_world.id] = set()
                 checked_locations[item_world.id].add(location.name)
-        for hint_type in world.misc_hint_location_items.keys():
+        for hint_type in world.misc_hint_location_items:
             location = world.get_location(misc_location_hint_table[hint_type]['item_location'])
-            if hint_type in world.settings.misc_hints and can_reach_hint(worlds, world.get_location(misc_location_hint_table[hint_type]['hint_location']), location):
+            if hint_type in world.settings.misc_hints and can_reach_hint(worlds, world.get_location(misc_location_hint_table[hint_type]['item_location'] + ' Hint'), location):
+                item_world = location.world
+                if item_world.id not in checked_locations:
+                    checked_locations[item_world.id] = set()
+                checked_locations[item_world.id].add(location.name)
+        for hint_type in world.unique_merchant_items:
+            location = world.get_location(unique_merchant_hint_table[hint_type]['item_location'])
+            if 'unique_merchants' in world.settings.misc_hints and can_reach_hint(worlds, world.get_location(unique_merchant_hint_table[hint_type]['item_location'] + ' Hint'), location):
                 item_world = location.world
                 if item_world.id not in checked_locations:
                     checked_locations[item_world.id] = set()
@@ -1353,7 +1360,7 @@ def build_world_gossip_hints(spoiler: Spoiler, world: World, checked_locations: 
         checked_locations = set()
     checked_always_locations = set()
 
-    stone_ids = list(gossipLocations.keys())
+    stone_ids = list(gossipLocations)
 
     world.distribution.configure_gossip(spoiler, stone_ids)
 
@@ -1825,8 +1832,10 @@ def build_misc_location_hints(world: World, messages: list[Message]) -> None:
             item = world.misc_hint_location_items[hint_type]
             poe_points = world.settings.big_poe_count * 100
             if hint_type in world.settings.misc_hints:
-                text = data['location_text'].format(item=get_hint(get_item_generic_name(item),
-                                                                    world.settings.clearer_hints).text, poe_points=poe_points)
+                text = data['location_text'].format(
+                    item=get_hint(get_item_generic_name(item), world.settings.clearer_hints).text,
+                    poe_points=poe_points,
+                )
             else:
                 text = data['location_fallback'].format(poe_points=poe_points)
             update_message_by_id(messages, data['id'], text)
@@ -1835,10 +1844,33 @@ def build_misc_location_hints(world: World, messages: list[Message]) -> None:
             if hint_type in world.settings.misc_hints:
                 if hint_type in world.misc_hint_location_items:
                     item = world.misc_hint_location_items[hint_type]
-                    text = data['location_text'].format(item=get_hint(get_item_generic_name(item),
-                                                                        world.settings.clearer_hints).text)
+                    text = data['location_text'].format(
+                        item=get_hint(get_item_generic_name(item), world.settings.clearer_hints).text,
+                    )
 
         update_message_by_id(messages, data['id'], str(GossipText(text, ['Green'], prefix='')), 0x23)
+
+
+def build_unique_merchants_hints(world: World, messages: list[Message]) -> None:
+    unique_merchants = {
+        'bean_salesman': world.settings.shuffle_beans,
+        'carpet_salesman': world.settings.shuffle_expensive_merchants,
+        'medigoron': world.settings.shuffle_expensive_merchants,
+        'granny': world.settings.shuffle_expensive_merchants,
+        'chest_game': world.settings.shuffle_tcgkeys != 'vanilla',
+    }
+
+    for hint_type, data in unique_merchant_hint_table.items():
+        if unique_merchants[hint_type]:
+            if 'unique_merchants' in world.settings.misc_hints and hint_type in world.misc_hint_unique_merchant_locations:
+                item = world.misc_hint_unique_merchant_locations[hint_type].item
+                text = data['location_text'].format(
+                    item=get_hint(get_item_generic_name(item), world.settings.clearer_hints).text,
+                )
+            else:
+                text = data['location_fallback']
+
+            update_message_by_id(messages, data['id'], text)
 
 
 def get_raw_text(string: str) -> str:

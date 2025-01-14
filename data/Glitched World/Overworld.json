@@ -361,6 +361,7 @@
         "locations": {
             "Wasteland Chest": "has_fire_source",
             "Wasteland Bombchu Salesman": "Progressive_Wallet and can_jumpslash",
+            "Wasteland Bombchu Salesman Hint": "can_jumpslash",
             "Wasteland GS": "can_use(Boomerang) or (is_adult and (Progressive_Hookshot or (Bombs and can_shield)))"
         },
         "exits": {
@@ -620,6 +621,7 @@
         "region_name": "Market Treasure Chest Game",
         "locations": {
             "Market Treasure Chest Game Salesman": "True",
+            "Market Treasure Chest Game Salesman Hint": "True",
             "Market Treasure Chest Game Room 1 Bottom": "(Small_Key_Treasure_Chest_Game, 1) and (shuffle_tcgkeys != 'vanilla' or can_use(Lens_of_Truth))",
             "Market Treasure Chest Game Room 1 Top": "(Small_Key_Treasure_Chest_Game, 1) and (shuffle_tcgkeys != 'vanilla' or can_use(Lens_of_Truth))",
             "Market Treasure Chest Game Room 2 Bottom": "(Small_Key_Treasure_Chest_Game, 2) and (shuffle_tcgkeys != 'vanilla' or can_use(Lens_of_Truth))",
@@ -712,15 +714,15 @@
         "region_name": "Kak House of Skulltula",
         "locations": {
             "Kak 10 Gold Skulltula Reward": "(Gold_Skulltula_Token, 10)",
+            "Kak 10 Gold Skulltula Reward Hint": "True",
             "Kak 20 Gold Skulltula Reward": "(Gold_Skulltula_Token, 20)",
+            "Kak 20 Gold Skulltula Reward Hint": "True",
             "Kak 30 Gold Skulltula Reward": "(Gold_Skulltula_Token, 30)",
+            "Kak 30 Gold Skulltula Reward Hint": "True",
             "Kak 40 Gold Skulltula Reward": "(Gold_Skulltula_Token, 40)",
+            "Kak 40 Gold Skulltula Reward Hint": "True",
             "Kak 50 Gold Skulltula Reward": "(Gold_Skulltula_Token, 50)",
-            "10 Skulltulas Reward Hint": "True",
-            "20 Skulltulas Reward Hint": "True",
-            "30 Skulltulas Reward Hint": "True",
-            "40 Skulltulas Reward Hint": "True",
-            "50 Skulltulas Reward Hint": "True"
+            "Kak 50 Gold Skulltula Reward Hint": "True"
         }
     },
     {
@@ -789,6 +791,9 @@
             # allow any of the later sequence items to satisfy logic. The patcher
             # sets the flag needed for her to sell stuff if odd mushroom can't be obtained.
             "Kak Granny Buy Blue Potion": "Progressive_Wallet and is_adult and
+                (Odd_Mushroom or ((Odd_Potion or Poachers_Saw or Broken_Sword or
+                Prescription or Eyeball_Frog or Eyedrops or Claim_Check) and not adult_trade_shuffle))",
+            "Kak Granny Buy Blue Potion Hint": "is_adult and
                 (Odd_Mushroom or ((Odd_Potion or Poachers_Saw or Broken_Sword or
                 Prescription or Eyeball_Frog or Eyedrops or Claim_Check) and not adult_trade_shuffle))"
         }
@@ -947,6 +952,9 @@
             "GC Medigoron": "
                 is_adult and Progressive_Wallet and
                 (can_blast_or_smash or Progressive_Strength_Upgrade or Blue_Fire)",
+            "GC Medigoron Hint": "
+                is_adult and
+                (can_blast_or_smash or Progressive_Strength_Upgrade or Blue_Fire)",
             "GC GS Boulder Maze": "is_child and has_explosives",
             "GC GS Center Platform": "is_adult",
             "GC Maze Gossip Stone": "
@@ -1091,10 +1099,12 @@
         "time_passes": true,
         "locations": {
             "ZR Magic Bean Salesman": "is_child",
+            "ZR Magic Bean Salesman Hint": "is_child",
             "ZR Frogs Ocarina Game": "
                 is_child and can_play(Zeldas_Lullaby) and can_play(Sarias_Song) and
                 can_play(Suns_Song) and can_play(Eponas_Song) and
                 can_play(Song_of_Time) and can_play(Song_of_Storms)",
+            "ZR Frogs Ocarina Game Hint": "is_child",
             "ZR Frogs Zeldas Lullaby": "is_child and can_play(Zeldas_Lullaby)",
             "ZR Frogs Eponas Song": "is_child and can_play(Eponas_Song)",
             "ZR Frogs Sarias Song": "is_child and can_play(Sarias_Song)",
@@ -1107,8 +1117,7 @@
             "ZR GS Near Raised Grottos": "is_adult and (Progressive_Hookshot or can_hover) and at_night",
             "ZR GS Above Bridge": "can_use(Hookshot) and at_night",
             "ZR Near Grottos Gossip Stone": "True",
-            "ZR Near Domain Gossip Stone": "True",
-            "ZR Frogs Ocarina Minigame Hint": "True"
+            "ZR Near Domain Gossip Stone": "True"
         },
         "exits": {
             "ZR Front": "True",
