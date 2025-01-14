@@ -1433,8 +1433,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     # build misc. location hints
     build_misc_location_hints(world, messages)
-
-    # build misc. unique merchants hints
     build_unique_merchants_hints(world, messages)
 
     if 'mask_shop' in world.settings.misc_hints:
