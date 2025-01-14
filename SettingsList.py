@@ -1235,21 +1235,24 @@ class SettingInfos:
             Deku Tree, requiring Kokiri Sword and Deku Shield to access
             the Deku Tree.
 
-            'Closed Forest': Beating Deku Tree is logically required
-            to leave the forest area (Kokiri Forest/Lost Woods/Sacred Forest
-            Meadow/Deku Tree), while the Kokiri Sword and a Deku Shield are
-            required to access the Deku Tree. Items needed for this will be
-            guaranteed inside the forest area. This setting is incompatible
-            with starting as adult, and so Starting Age will be locked to Child.
-            With either "Shuffle Interior Entrances" set to "All", "Shuffle
-            Overworld Entrances" on, "Randomize Warp Song Destinations" on
-            or "Randomize Overworld Spawns" on, Closed Forest will instead
-            be treated as Closed Deku with starting age Child and WILL NOT
-            guarantee that these items are available in the forest area.
+            'Closed Forest': Defeating Queen Gohma is required to leave
+            the forest area (Kokiri Forest/Lost Woods/Sacred Forest
+            Meadow/Deku Tree). Items needed for this will be guaranteed
+            inside the forest area, and items that could be used to
+            escape the forest without defeating Queen Gohma (such as
+            explosives to enter Goron City) will be prevented from
+            appearing inside the forest area. This setting is
+            incompatible with starting as adult, and so Starting Age will
+            be locked to Child. If entrances are shuffled, entrances
+            inside and outside the forest area will be shuffled
+            separately. For example, "Shuffle Dungeon Entrances" and
+            "Shuffle Boss Entrances" don't affect the Deku Tree. As an
+            exception, grottos are not shuffled separately, and neither
+            are interiors if only simple interiors are shuffled.
         ''',
         shared         = True,
         disable        = {
-            'closed': {'settings': ['starting_age']}
+            'closed': {'settings': ['starting_age']},
         },
         gui_params     = {
             'randomize_key': 'randomize_settings',

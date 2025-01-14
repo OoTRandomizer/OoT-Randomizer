@@ -99,11 +99,6 @@ class World:
                 self.selected_adult_trade_item = plando_adult_trade[0][1].item # ugly but functional, see the loop in Plandomizer.WorldDistribution.fill for how this is indexed
         self.adult_trade_starting_inventory: str = ''
 
-        if (settings.open_forest == 'closed'
-            and (self.shuffle_special_interior_entrances or settings.shuffle_hideout_entrances or settings.shuffle_overworld_entrances
-                 or settings.warp_songs or settings.spawn_positions)):
-            self.settings.open_forest = 'closed_deku'
-
         if settings.triforce_goal_per_world > settings.triforce_count_per_world:
             raise ValueError("Triforces required cannot be more than the triforce count.")
         self.triforce_goal: int = settings.triforce_goal_per_world * settings.world_count

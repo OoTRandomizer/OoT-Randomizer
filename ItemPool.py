@@ -13,6 +13,21 @@ if TYPE_CHECKING:
     from World import World
 
 
+closed_forest_restricted_items: tuple[str, ...] = (
+    'Bomb Bag',
+    'Bombchus (5)',
+    'Bombchus (10)',
+    'Bombchus (20)',
+    'Bombchus',
+    'Dins Fire',
+    'Progressive Scale',
+    'Bolero of Fire',
+    'Serenade of Water',
+    'Nocturne of Shadow',
+    'Requiem of Spirit',
+    'Prelude of Light',
+)
+
 plentiful_items: list[str] = [
     'Biggoron Sword',
     'Boomerang',
@@ -34,7 +49,6 @@ plentiful_items: list[str] = [
     'Deku Stick Capacity',
     'Deku Nut Capacity',
     'Bow',
-    'Slingshot',
     'Bomb Bag',
     'Double Defense',
 ]
@@ -64,7 +78,6 @@ ludicrous_items_base: list[str] = [
     'Progressive Wallet',
     'Magic Meter',
     'Bow',
-    'Slingshot',
     'Bomb Bag',
     'Bombchus (10)',
     'Lens of Truth',
@@ -103,6 +116,7 @@ ludicrous_items_extended: list[str] = [
     'Requiem of Spirit',
     'Ocarina',
     'Kokiri Sword',
+    'Deku Seed Bag',
     'Boss Key (Ganons Castle)',
     'Boss Key (Forest Temple)',
     'Boss Key (Fire Temple)',
@@ -226,6 +240,7 @@ item_difficulty_max: dict[str, dict[str, int]] = {
         'Deku Nut Capacity': 1,
         'Bow': 2,
         'Slingshot': 2,
+        'Deku Seed Bag': 1,
         'Bomb Bag': 2,
         'Heart Container': 0,
     },
@@ -240,6 +255,7 @@ item_difficulty_max: dict[str, dict[str, int]] = {
         'Deku Nut Capacity': 0,
         'Bow': 1,
         'Slingshot': 1,
+        'Deku Seed Bag': 0,
         'Bomb Bag': 1,
         'Heart Container': 0,
         'Piece of Heart': 0,
@@ -467,6 +483,10 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
 
     if world.settings.item_pool_value == 'plentiful':
         pending_junk_pool.extend(plentiful_items)
+        if world.settings.require_gohma and world.settings.world_count > 1:
+            pending_junk_pool.append('Deku Seed Bag')
+        else:
+            pending_junk_pool.append('Slingshot')
         if world.settings.shuffle_child_trade:
             pending_junk_pool.extend(world.settings.shuffle_child_trade)
             # Weird Egg is always chosen if both Egg and Chicken are selected to be shuffled.
@@ -821,6 +841,17 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
             else:
                 dungeon = [dungeon for dungeon in world.dungeons if dungeon.name == 'Ganons Castle'][0]
                 dungeon.boss_key.append(ItemFactory(item, world))
+
+        # Slingshots
+        elif location.vanilla_item == 'Deku Seed Bag':
+            # In multiworld with closed forest, one slingshot for each player is forced to be placed in the forest area,
+            # to reduce the likelihood that players are locked inside the forest area for a long time.
+            # We call the slingshots that can be placed freely “Deku seed bags” to allow the fill algorithm to distinguish between them.
+            # However, in other settings, this distinction is not necessary, so to make spoiler logs easier to, we call all slingshots slingshots.
+            # (To simplify the ludicrous implementation, we always use the Deku seed bag name there as well.)
+            if world.settings.item_pool_value != 'ludicrous' and (world.settings.open_forest != 'closed' or world.settings.world_count == 1):
+                item = 'Slingshot'
+            shuffle_item = True
 
         # Dungeon Items
         elif location.dungeon is not None:

@@ -31,7 +31,9 @@
         "region_name": "Deku Tree Boss Room",
         "dungeon": "Deku Tree",
         "events": {
-            "Deku Tree Clear": "Deku_Shield and (Kokiri_Sword or Sticks)"
+            "Defeat Queen Gohma": "Deku_Shield and (Kokiri_Sword or Sticks)",
+            # separate event which appears in the playthrough only if it's required to open the forest exit
+            "Deku Tree Clear": "'Defeat Queen Gohma'"
         },
         "locations": {
             "Deku Tree MQ Before Spinning Log Chest": "True",
@@ -39,8 +41,8 @@
             "Deku Tree MQ GS Basement Graves Room": "Boomerang and can_play(Song_of_Time)",
             "Deku Tree MQ GS Basement Back Room": "Boomerang",
             "Deku Tree MQ Deku Scrub": "True",
-            "Deku Tree Queen Gohma Heart": "Deku_Shield and (Kokiri_Sword or Sticks)",
-            "Queen Gohma": "Deku_Shield and (Kokiri_Sword or Sticks)"
+            "Deku Tree Queen Gohma Heart": "'Defeat Queen Gohma'",
+            "Queen Gohma": "'Defeat Queen Gohma'"
         },
         "exits": {
             "Deku Tree Lobby": "True"
