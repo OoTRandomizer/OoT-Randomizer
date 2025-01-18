@@ -2597,7 +2597,7 @@
             "DMC Child Blue Rupee 5": "is_child",
             "DMC Child Blue Rupee 6": "is_child",
             "DMC Red Bubble Below Bridge To Fire Temple": "
-               has_soul(Bubble) and is_adult and
+               has_soul(Bubble) and is_adult and Longshot and
                ((Goron_Tunic and Bow) or ((logic_fewer_tunic_requirements or Goron_Tunic) and Magic_Meter))",
             "DMC First Plank Red Bubble": "has_soul(Bubble) and is_adult and Goron_Tunic and Bombs and Hover_Boots",
             "DMC Second Plank Red Bubble 1": "
