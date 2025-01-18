@@ -4164,14 +4164,3 @@ DemoEffect_DrawJewel_AfterHook:
 .org 0x800DA34C
     j       Message_Decode_reset_msgCtx.textPosX
     nop
-
-.include "hacks/en_item00.asm"
-.include "hacks/ovl_bg_gate_shutter.asm"
-.include "hacks/ovl_bg_haka_tubo.asm"
-.include "hacks/ovl_bg_spot18_basket.asm"
-.include "hacks/ovl_en_dns.asm"
-.include "hacks/ovl_en_kz.asm"
-.include "hacks/ovl_obj_mure3.asm"
-.include "hacks/z_parameter.asm"
-.include "hacks/z_title.asm"
-.include "hacks/z_file_choose.asm"

@@ -1,3 +1,10 @@
+;==================================================================================================
+; Item restriction table
+;==================================================================================================
+
+; TODO: correct headersize
+.headersize 0
+
 ;sRestrictionFlags from z_parameter.c
 ;Each word is this struct
 ;typedef struct {
