@@ -1,3 +1,11 @@
+;==================================================================================================
+; Mido
+;==================================================================================================
+
+.headersize(0x80AE2870 - 0xE61B50)
+; TODO: remove
+.headersize(0x80803880 - 0x00BA12C0)
+
 ; ==================================================================================================
 ; Change flags used to spawn Mido outside Deku and inside his house as child.
 ; Now requires the flags for showing Mido a sword/shield, Mido talking to you after Deku Tree's death,

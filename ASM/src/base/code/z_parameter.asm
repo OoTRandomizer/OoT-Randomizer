@@ -1,3 +1,5 @@
+.include "item_restriction_flags.asm"
+
 .headersize(0x8006D8E0 - 0x00AE3840)
 
 ;=============================================================
