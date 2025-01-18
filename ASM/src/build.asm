@@ -34,7 +34,7 @@
 .include "base/overlays/actors/ovl_Bg_Spot18_Basket.asm"
 .include "base/overlays/actors/ovl_En_Dns.asm"
 .include "base/overlays/actors/ovl_En_Kz.asm"
-.include "base/overlays/actors/ovl_obj_Mure3.asm"
+.include "base/overlays/actors/ovl_Obj_Mure3.asm"
 .include "base/overlays/actors/ovl_En_Ma1.asm"
 .include "base/overlays/actors/ovl_En_Md.asm"
 .include "base/overlays/actors/ovl_En_Weather_Tag.asm"
