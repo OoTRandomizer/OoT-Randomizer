@@ -8,6 +8,9 @@
             "Deku Tree Compass Room Side Chest": "True",
             "Deku Tree Lower Lobby Recovery Heart": "True",
             "Deku Tree Upper Lobby Recovery Heart": "is_adult or can_child_attack or Nuts",
+            "Deku Tree Lobby Deku Baba 1": "can_kill_deku_baba",
+            "Deku Tree Lobby Deku Baba 2": "can_kill_deku_baba",
+            "Deku Tree Lobby Deku Baba 3": "can_kill_deku_baba",
             "Deku Tree Lobby Vines Lowest Skullwalltula": "
                 has_soul(Skullwalltula) and
                 (is_adult or Sticks or has_explosives or Slingshot or Boomerang or can_use(Dins_Fire) or
@@ -27,6 +30,7 @@
             "Deku Tree Lobby Skulltula 2": "can_kill_skulltula",
             "Deku Tree Lobby Skulltula 3": "can_kill_skulltula",
             "Deku Tree Compass Room Skulltula": "can_kill_skulltula",
+            "Deku Tree Compass Room Deku Baba": "can_kill_deku_baba",
             "Deku Tree GS Compass Room": "is_adult or can_child_attack",
             "Deku Baba Sticks": "has_soul(Deku_Baba) and (is_adult or Kokiri_Sword or Boomerang)",
             "Deku Baba Nuts": "
@@ -53,6 +57,7 @@
         "dungeon": "Deku Tree",
         "locations": {
             "Deku Tree Basement Chest": "True",
+            "Deku Tree Basement Lower Deku Baba": "can_kill_deku_baba",
             "Deku Tree GS Basement Gate": "is_adult or can_child_attack",
             "Deku Tree GS Basement Vines": "
                 can_use_projectile or can_use(Dins_Fire) or (logic_deku_basement_gs and can_jumpslash)"
@@ -72,7 +77,21 @@
         },
         "exits":
         {
-            "Deku Tree Basement Back Room": "True"
+            "Deku Tree Basement Torch Room": "True"
+        }
+    },
+    {
+        "region_name": "Deku Tree Basement Torch Room",
+        "dungeon": "Deku Tree",
+        "locations": {
+            "Deku Tree Basement Torch Room Withered Deku Baba 1": "can_kill_deku_baba",
+            "Deku Tree Basement Torch Room Withered Deku Baba 2": "can_kill_deku_baba",
+            "Deku Tree Basement Torch Room Deku Baba 3": "can_kill_deku_baba"
+        },
+        "exits":
+        {
+            "Deku Tree Basement Back Room": "has_fire_source_with_torch",
+            "Deku Tree Basement Water Room": "has_fire_source_with_torch"
         }
     },
     {
@@ -82,14 +101,16 @@
             "Deku Tree Basement Back Room Skulltula": "can_kill_skulltula",
             "Deku Tree Basement Back Room Gohma Larva 1": "can_kill_gohma_larva",
             "Deku Tree Basement Back Room Gohma Larva 2": "can_kill_gohma_larva",
-            "Deku Tree Basement Back Room Gohma Larva 3": "can_kill_gohma_larva"
+            "Deku Tree Basement Back Room Gohma Larva 3": "can_kill_gohma_larva",
+            "Deku Tree Back Room Deku Baba 1": "can_kill_deku_baba",
+            "Deku Tree Back Room Deku Baba 2": "can_kill_deku_baba"
         },
         "exits": {
             "Deku Tree Basement Back Side Room": "
                 here(has_fire_source_with_torch or can_use(Bow)) and
                 here(can_blast_or_smash)",
             "Deku Tree Basement Ledge": "is_child",
-            "Deku Tree Basement Water Room": "has_fire_source_with_torch"
+            "Deku Tree Basement Torch Room": "True"
         }
     },
     {
@@ -103,6 +124,11 @@
     {
         "region_name": "Deku Tree Basement Ledge",
         "dungeon": "Deku Tree",
+        "locations": {
+            "Deku Tree Basement Upper Ledge Withered Deku Baba": "can_kill_deku_baba",
+            "Deku Tree Basement Upper Ledge Deku Baba 1": "can_kill_deku_baba",
+            "Deku Tree Basement Upper Ledge Deku Baba 2": "can_kill_deku_baba"
+        },
         "exits": {
             "Deku Tree Basement": "True",
             "Deku Tree Basement Back Room": "is_child",
