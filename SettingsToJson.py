@@ -3,11 +3,21 @@ from __future__ import annotations
 import copy
 import json
 import sys
-from typing import Any, Optional
+from typing import TYPE_CHECKING, Any, Optional
 
 from Hints import hint_dist_files
 from SettingsList import SettingInfos, get_settings_from_section, get_settings_from_tab
 from Utils import data_path
+
+if TYPE_CHECKING:
+    from typing import TypedDict
+
+    class SettingsListJson(TypedDict):
+        settingsObj: dict[str, Any]
+        settingsArray: list[Any]
+        cosmeticsObj: dict[str, Any]
+        cosmeticsArray: list[Any]
+        distroArray: list[Any]
 
 
 tab_keys: list[str] = ['text', 'app_type', 'footer']
@@ -69,7 +79,7 @@ def get_setting_json(setting: str, web_version: bool, as_array: bool = False) ->
         'options':       [],
         'default':       setting_info.default,
         'text':          setting_info.gui_text,
-        'tooltip': remove_trailing_lines('<br>'.join(line.strip() for line in setting_info.gui_tooltip.split('\n'))),
+        'tooltip': remove_trailing_lines('<br>'.join(line.strip() for line in (setting_info.gui_tooltip or '').split('\n'))),
         'type':          setting_info.gui_type,
         'shared':        setting_info.shared,
     }
@@ -105,6 +115,7 @@ def get_setting_json(setting: str, web_version: bool, as_array: bool = False) ->
         if key in setting_keys and (key not in version_specific_keys or version_specific):
             setting_json[key] = value
         if key == 'disable':
+            assert isinstance(value, dict)
             for option, types in value.items():
                 for s in types.get('settings', []):
                     if SettingInfos.setting_infos[s].shared:
@@ -144,12 +155,12 @@ def get_setting_json(setting: str, web_version: bool, as_array: bool = False) ->
             if option_name in setting_disable:
                 add_disable_option_to_json(setting_disable[option_name], option_json)
 
-            option_tooltip = setting_info.gui_params.get('choice_tooltip', {}).get(option_name, None)
+            option_tooltip = setting_info.gui_params.get('choice_tooltip', {}).get(option_name, None) # type: ignore # mypy doesn't know about dict.get???
             if option_tooltip is not None:
                 option_json['tooltip'] = remove_trailing_lines(
                     '<br>'.join(line.strip() for line in option_tooltip.split('\n')))
 
-            option_filter = setting_info.gui_params.get('filterdata', {}).get(option_name, None)
+            option_filter = setting_info.gui_params.get('filterdata', {}).get(option_name, None) # type: ignore # mypy doesn't know about dict.get???
             if option_filter is not None:
                 option_json['tags'] = option_filter
                 for tag in option_filter:
@@ -237,7 +248,7 @@ def get_tab_json(tab: dict[str, Any], web_version: bool, as_array: bool = False)
 
 
 def create_settings_list_json(path: str, web_version: bool = False) -> None:
-    output_json = {
+    output_json: SettingsListJson = {
         'settingsObj'   : {},
         'settingsArray' : [],
         'cosmeticsObj'  : {},

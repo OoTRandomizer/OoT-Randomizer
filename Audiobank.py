@@ -4,7 +4,7 @@ from Rom import Rom
 
 # Container for storing Audiotable, Audiobank, Audiotable_index, Audiobank_index
 class Audiobin:
-    def __init__(self, _Audiobank: bytearray, _Audiobank_index: bytearray, _Audiotable: bytearray, _Audiotable_index: bytearray):
+    def __init__(self, _Audiobank: bytearray, _Audiobank_index: bytearray, _Audiotable: bytearray, _Audiotable_index: bytearray) -> None:
         self.Audiobank: bytearray = _Audiobank
         self.Audiobank_index: bytearray = _Audiobank_index
         self.Audiotable: bytearray = _Audiotable
@@ -39,7 +39,7 @@ class Audiobin:
         return None
 
 class Sample:
-    def __init__(self, bankdata: bytearray, audiotable_file: bytearray, audiotable_index: bytearray, sample_offset: int, audiotable_id: int, parent):
+    def __init__(self, bankdata: bytearray, audiotable_file: bytearray, audiotable_index: bytearray, sample_offset: int, audiotable_id: int, parent) -> None:
         # Process the sample
         self.parent = parent
         self.bank_offset = sample_offset

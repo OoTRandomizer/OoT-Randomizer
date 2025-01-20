@@ -23,7 +23,7 @@ if TYPE_CHECKING:
 
 # Old/New name of a setting
 class Setting_Info_Versioning:
-    def __init__(self, old_name, new_name):
+    def __init__(self, old_name, new_name) -> None:
         self.old_name = old_name # old name of the setting
         self.new_name = new_name # new name of the setting
 
@@ -5491,12 +5491,14 @@ def is_mapped(setting_name: str) -> bool:
 # When a string isn't found in the source list, attempt to get the closest match from the list
 # ex. Given "Recovery Hart" returns "Did you mean 'Recovery Heart'?"
 def build_close_match(name: str, value_type: str, source_list: Optional[list[str] | dict[str, list[Entrance]]] = None) -> str:
-    source = []
+    source: Iterable[str] = []
     if value_type == 'item':
         source = ItemInfo.items.keys()
     elif value_type == 'location':
         source = location_table.keys()
     elif value_type == 'entrance':
+        assert isinstance(source_list, dict)
+        assert isinstance(source, list)
         for pool in source_list.values():
             for entrance in pool:
                 source.append(entrance.name)
@@ -5505,6 +5507,7 @@ def build_close_match(name: str, value_type: str, source_list: Optional[list[str
     elif value_type == 'setting':
         source = SettingInfos.setting_infos.keys()
     elif value_type == 'choice':
+        assert source_list is not None
         source = source_list
     # Ensure name and source are type string to prevent errors
     close_match = difflib.get_close_matches(str(name), map(str, source), 1)
@@ -5534,6 +5537,7 @@ def validate_settings(settings_dict: dict[str, Any], *, check_conflicts: bool = 
             continue
         # Ensure that the given choice is a valid choice for the setting
         elif info.choice_list and choice not in info.choice_list:
+            assert isinstance(choice, str)
             raise ValueError('%r is not a valid choice for setting %r. %s' % (choice, setting, build_close_match(choice, 'choice', info.choice_list)))
         # Ensure no conflicting settings are specified
         if check_conflicts and info.disable is not None:

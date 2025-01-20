@@ -1,19 +1,27 @@
 from __future__ import annotations
+import sys
 from math import ceil
 from typing import TYPE_CHECKING
+
+if sys.version_info >= (3, 10):
+    from typing import TypeAlias
+else:
+    TypeAlias = str
 
 if TYPE_CHECKING:
     from Location import Location
     from World import World
 
+XFlags: TypeAlias = "dict[int, dict[tuple[int, int], list[tuple[int, int]]]]"
+
 # Loop through all of the locations in the world. Extract ones that use our flag system to start building our xflag tables
-def build_xflags_from_world(world: World) ->  tuple[dict[int, dict[tuple[int, int], list[tuple[int, int]]]], list[tuple[Location, tuple[int, int, int, int], tuple[int, int, int, int]]]]:
-    scene_flags = {}
+def build_xflags_from_world(world: World) ->  tuple[XFlags, list[tuple[Location, tuple[int, int, int, int], tuple[int, int, int, int]]]]:
+    scene_flags: XFlags = {}
     alt_list = []
     for i in range(0, 101):
         scene_flags[i] = {}
         for location in world.get_locations():
-            if location.scene == i and location.type in ["Freestanding", "Pot", "FlyingPot", "Crate", "SmallCrate", "Beehive", "RupeeTower", "SilverRupee", "Wonderitem"]:
+            if location.scene == i and location.type in ("Freestanding", "Pot", "FlyingPot", "Crate", "SmallCrate", "Beehive", "RupeeTower", "SilverRupee", "Wonderitem"):
                 default = location.default
                 if isinstance(default, list):  # List of alternative room/setup/flag to use
                     primary_tuple = default[0]
@@ -21,12 +29,14 @@ def build_xflags_from_world(world: World) ->  tuple[dict[int, dict[tuple[int, in
                         room, setup, flag = primary_tuple
                         subflag = 0
                         primary_tuple = (room, setup, flag, subflag)
+                    assert len(primary_tuple) == 4
                     for c in range(1, len(default)):
                         alt = default[c]
                         if len(alt) == 3:
                             room, setup, flag = alt
                             subflag = 0
                             alt = (room, setup, flag, subflag)
+                        assert len(alt) == 4
                         alt_list.append((location, alt, primary_tuple))
                     default = primary_tuple  # Use the first tuple as the primary tuple
                 if isinstance(default, tuple):
@@ -36,7 +46,7 @@ def build_xflags_from_world(world: World) ->  tuple[dict[int, dict[tuple[int, in
                     elif len(default) == 4:
                         room, setup, flag, subflag = default
                     room_setup = (setup, room)
-                    if not room_setup in scene_flags[i].keys():
+                    if room_setup not in scene_flags[i].keys():
                         scene_flags[i][room_setup] = []
                     scene_flags[i][room_setup].append((flag, subflag))
 
@@ -45,7 +55,7 @@ def build_xflags_from_world(world: World) ->  tuple[dict[int, dict[tuple[int, in
     return scene_flags, alt_list
 
 # Take the data from build_xflags_from_world and create the actual tables that will be stored in the ROM
-def build_xflag_tables(xflags: dict[int, dict[tuple[int,int], list[tuple[int,int]]]]) -> tuple[bytearray, bytearray, bytearray, int]:
+def build_xflag_tables(xflags: XFlags) -> tuple[bytearray, bytearray, bytearray, int]:
     scene_table = bytearray([0xFF] * 202)
     room_table = bytearray(0)
     room_blob = bytearray(0)
@@ -129,7 +139,7 @@ def get_collectible_flag_table_bytes(scene_flag_table: dict[int, dict[int, int]]
     return bytes, num_flag_bytes
 
 # Build a list of alternative overrides for alternate scene setups
-def get_alt_list_bytes(alt_list: list[tuple[Location, tuple[int, int, int], tuple[int, int, int]]]) -> bytearray:
+def get_alt_list_bytes(alt_list: list[tuple[Location, tuple[int, int, int, int], tuple[int, int, int, int]]]) -> bytearray:
     bytes = bytearray()
     for entry in alt_list:
         location, alt, primary = entry

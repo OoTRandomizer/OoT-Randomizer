@@ -41,10 +41,12 @@ class Dungeon:
         return new_dungeon
 
     @staticmethod
-    def from_vanilla_reward(item: Item) -> Dungeon:
+    def from_vanilla_reward(item: Item) -> Optional[Dungeon]:
+        assert item.world is not None
         dungeons = [dungeon for dungeon in item.world.dungeons if dungeon.vanilla_reward == item.name]
         if dungeons:
             return dungeons[0]
+        return None
 
     @property
     def shuffle_mapcompass(self) -> str:
@@ -96,6 +98,7 @@ class Dungeon:
     def vanilla_reward(self) -> Optional[str]:
         if self.vanilla_boss_name is not None:
             return self.world.get_location(self.vanilla_boss_name).vanilla_item
+        return None
 
     def item_name(self, text: str) -> str:
         return f"{text} ({self.name})"

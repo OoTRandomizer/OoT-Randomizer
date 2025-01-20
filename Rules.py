@@ -25,13 +25,15 @@ def set_rules(world: World) -> None:
     is_child = world.parser.parse_rule('is_child')
 
     for location in world.get_locations():
+        assert location.world is not None
         if world.settings.shuffle_song_items == 'song':
             if location.type == 'Song':
                 # allow junk items, but songs must still have matching world
-                add_item_rule(location, lambda location, item:
+                add_item_rule(location, lambda location, item: location.world is not None and (
                     ((location.world.distribution.songs_as_items or any(name in song_list and record.count for name, record in world.settings.starting_items.items()))
                         and item.type != 'Song')
-                    or (item.type == 'Song' and item.world.id == location.world.id))
+                    or (item.type == 'Song' and item.world is not None and item.world.id == location.world.id)
+                ))
             else:
                 add_item_rule(location, lambda location, item: item.type != 'Song')
 
@@ -40,20 +42,20 @@ def set_rules(world: World) -> None:
                 add_item_rule(location, lambda location, item: item.type != 'Shop')
                 location.price = world.shop_prices[location.name]
                 # If price was specified in plando, use it here so access rule is set correctly.
-                if location.name in world.distribution.locations and world.distribution.locations[location.name].price is not None:
-                    price = world.distribution.locations[location.name].price
-                    if price > 999: # Cap positive values above 999 so that they're not impossible.
-                        world.distribution.locations[location.name].price = 999
-                        price = 999
-                    elif price < -32768: # Prices below this will error on patching.
-                        world.distribution.locations[location.name].price = -32768
-                        price = -32768
-                    location.price = price
-                    world.shop_prices[location.name] = price
+                if world.distribution.locations is not None and location.name in world.distribution.locations:
+                    dist_location = world.distribution.locations[location.name]
+                    assert not isinstance(dist_location, list)
+                    if dist_location.price is not None:
+                        if dist_location.price > 999: # Cap positive values above 999 so that they're not impossible.
+                            dist_location.price = 999
+                        elif dist_location.price < -32768: # Prices below this will error on patching.
+                            dist_location.price = -32768
+                        location.price = dist_location.price
+                        world.shop_prices[location.name] = dist_location.price
                 location.add_rule(create_shop_rule(location))
             else:
-                add_item_rule(location, lambda location, item: item.type == 'Shop' and item.world.id == location.world.id)
-        elif location.type in ['Scrub', 'GrottoScrub']:
+                add_item_rule(location, lambda location, item: item.type == 'Shop' and item.world is not None and location.world is not None and item.world.id == location.world.id)
+        elif location.type in ('Scrub', 'GrottoScrub'):
             location.add_rule(create_shop_rule(location))
         else:
             add_item_rule(location, lambda location, item: item.type != 'Shop')
@@ -97,6 +99,8 @@ def create_shop_rule(location: Location) -> AccessRule:
         if price > 99:
             return 1
         return 0
+
+    assert location.world is not None
     return location.world.parser.parse_rule('(Progressive_Wallet, %d)' % required_wallets(location.price))
 
 
@@ -138,6 +142,7 @@ def set_shop_rules(world: World):
     wallet2 = world.parser.parse_rule('(Progressive_Wallet, 2)')
     is_adult = world.parser.parse_rule('is_adult')
     for location in world.get_filled_locations():
+        assert location.item is not None
         if location.item.type == 'Shop':
             # Add wallet requirements
             if location.item.name in ['Buy Fish', 'Buy Goron Tunic', 'Buy Bombchu (20)', 'Buy Bombs (30)']:
@@ -160,7 +165,7 @@ def set_shop_rules(world: World):
                                       'Buy Red Potion for 40 Rupees',
                                       'Buy Red Potion for 50 Rupees',
                                       "Buy Fairy's Spirit"]:
-                location.add_rule(State.has_bottle)
+                location.add_rule(State.has_bottle) # type: ignore #TODO figure out why mypy doesn't accept this
             if location.item.name in ['Buy Bombchu (10)', 'Buy Bombchu (20)', 'Buy Bombchu (5)']:
                 location.add_rule(found_bombchus)
 
@@ -179,6 +184,7 @@ def set_entrances_based_rules(worlds: Collection[World]) -> None:
             if location.type == 'Shop':
                 # If All Locations Reachable is on, prevent shops only ever reachable as child from containing Buy Goron Tunic and Buy Zora Tunic items
                 if not world.check_beatable_only:
+                    assert location.parent_region is not None
                     if not search.can_reach(location.parent_region, age='adult'):
                         forbid_item(location, 'Buy Goron Tunic')
                         forbid_item(location, 'Buy Zora Tunic')

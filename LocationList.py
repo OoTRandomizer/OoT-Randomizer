@@ -59,8 +59,6 @@ def shop_address(shop_id: int, shelf_id: int) -> int:
 
 # For cutscene/song/boss locations, the Scene is set to 0xFF. This matches the behavior of the push_delayed_item C function.
 
-# Note: for ActorOverride locations, the "Addresses" variable is in the form ([addresses], [bytes]) where addresses is a list of memory locations in ROM to be updated, and bytes is the data that will be written to that location
-
 #   Location:                                                        Type             Scene  Default Addresses                      Vanilla Item                             Categories
 location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAddresses, Optional[str], LocationFilterTags]] = OrderedDict([
     ## Dungeon Rewards
@@ -2635,11 +2633,10 @@ location_groups: dict[str, list[str]] = {
     'Chest': [name for (name, data) in location_table.items() if data[0] == 'Chest'],
     'Collectable': [name for (name, data) in location_table.items() if data[0] == 'Collectable'],
     'Boss': [name for (name, data) in location_table.items() if data[0] == 'Boss'],
-    'ActorOverride': [name for (name, data) in location_table.items() if data[0] == 'ActorOverride'],
     'BossHeart': [name for (name, data) in location_table.items() if data[0] == 'BossHeart'],
     'CollectableLike': [name for (name, data) in location_table.items() if data[0] in ('Collectable', 'BossHeart', 'GS Token', 'SilverRupee')],
     'CanSee': [name for (name, data) in location_table.items()
-               if data[0] in ('Collectable', 'BossHeart', 'GS Token', 'Shop', 'MaskShop', 'Freestanding', 'ActorOverride', 'RupeeTower', 'Pot', 'Crate', 'FlyingPot', 'SmallCrate', 'Beehive', 'SilverRupee')
+               if data[0] in ('Collectable', 'BossHeart', 'GS Token', 'Shop', 'MaskShop', 'Freestanding', 'RupeeTower', 'Pot', 'Crate', 'FlyingPot', 'SmallCrate', 'Beehive', 'SilverRupee')
                # Treasure Box Shop, Bombchu Bowling, Hyrule Field (OoT), Lake Hylia (RL/FA)
                or data[0:2] in [('Chest', 0x10), ('NPC', 0x4B), ('NPC', 0x51), ('NPC', 0x57)]],
     'Dungeon': [name for (name, data) in location_table.items() if data[5] is not None and any(dungeon in data[5] for dungeon in dungeons)],
@@ -2647,8 +2644,12 @@ location_groups: dict[str, list[str]] = {
 
 
 def location_is_viewable(loc_name: str, correct_chest_appearances: str, fast_chests: bool, *, world: Optional[World] = None) -> bool:
-    return (
-        ((correct_chest_appearances in ('textures', 'both', 'classic') or not fast_chests) and loc_name in location_groups['Chest'])
-        or loc_name in location_groups['CanSee']
-        or (world is not None and world.bigocto_location() is not None and world.bigocto_location().name == loc_name)
-    )
+    if (correct_chest_appearances in ('textures', 'both', 'classic') or not fast_chests) and loc_name in location_groups['Chest']:
+        return True
+    if loc_name in location_groups['CanSee']:
+        return True
+    if world is not None:
+        bigocto_location = world.bigocto_location()
+        if bigocto_location is not None and bigocto_location.name == loc_name:
+            return True
+    return False

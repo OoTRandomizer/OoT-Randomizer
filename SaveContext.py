@@ -13,7 +13,7 @@ if TYPE_CHECKING:
     from Rom import Rom
     from World import World
 
-AddressesDict: TypeAlias = "dict[str, Address | dict[str, Address | dict[str, Address]]]"
+AddressesDict: TypeAlias = "Any" #dict[str, Address | dict[str, Address | dict[str, Address]]]
 
 
 class Scenes(IntEnum):
@@ -55,12 +55,12 @@ class Address:
     prev_address: int = 0
     EXTENDED_CONTEXT_START = 0x1450
 
-    def __init__(self, address: Optional[int] = None, extended: bool = False, size: int = 4, mask: int = 0xFFFFFFFF, max: Optional[int] = None,
-                 choices: Optional[dict[str, int]] = None, value: Optional[str] = None) -> None:
+    def __init__(self, address: Optional[int] = None, *, extended: bool = False, size: int = 4, mask: int = 0xFFFFFFFF, max: Optional[int] = None,
+                 choices: Optional[dict[str, int]] = None) -> None:
         self.address: int = Address.prev_address if address is None else address
         if extended and address is not None:
             self.address += Address.EXTENDED_CONTEXT_START
-        self.value: Optional[str | int] = value
+        self.value: Optional[int | str] = None
         self.size: int = size
         self.choices: Optional[dict[str, int]] = choices
         self.mask: int = mask
@@ -85,6 +85,7 @@ class Address:
 
         value = self.value
         if self.choices is not None:
+            assert isinstance(value, str)
             value = self.choices[value]
         if not isinstance(value, int):
             raise ValueError("Invalid value type '%s'" % str(value))
@@ -112,8 +113,8 @@ class Address:
         if self.choices is not None:
             for choice_name, choice_value in self.choices.items():
                 if choice_value == value:
-                    value = choice_name
-                    break
+                    self.value = choice_name
+                    return
 
         self.value = value
 
@@ -138,7 +139,7 @@ class Address:
 
     @staticmethod
     def to_bytes(value: int, size: int) -> list[int]:
-        ret = []
+        ret: list[int] = []
         for _ in range(size):
             ret.insert(0, value & 0xFF)
             value = value >> 8
@@ -146,7 +147,7 @@ class Address:
 
 
 class SaveContext:
-    def __init__(self):
+    def __init__(self) -> None:
         self.save_bits: dict[int, int] = {}
         self.save_bytes: dict[int, int] = {}
         self.addresses: AddressesDict = self.get_save_context_addresses()
@@ -238,8 +239,8 @@ class SaveContext:
         for name, address in self.addresses.items():
             self.write_save_entry(address)
 
-        save_table = []
-        extended_table = []
+        save_table: list[int] = []
+        extended_table: list[int] = []
         for address, value in self.save_bits.items():
             table = save_table
             if address >= Address.EXTENDED_CONTEXT_START:
@@ -409,7 +410,7 @@ class SaveContext:
                         "Spirit Temple": 'dungeon_items.spirit.boss_key',
                         "Shadow Temple": 'dungeon_items.shadow.boss_key',
                     }
-                    save_writes[dungeon][bk_names[dungeon]] = True
+                    save_writes[dungeon][bk_names[dungeon]] = True # type: ignore #TODO
             else:
                 save_writes = SaveContext.save_writes_table[item]
             for address, value in save_writes.items():
@@ -422,21 +423,24 @@ class SaveContext:
 
                 address_value = self.addresses
                 prev_sub_address = 'Save Context'
-                sub_address = None
+                sub_address: Any = None
                 for sub_address in address.split('.'):
                     if sub_address not in address_value:
                         raise ValueError('Unknown key %s in %s of SaveContext' % (sub_address, prev_sub_address))
 
                     if isinstance(address_value, list):
-                        sub_address =  int(sub_address)
+                        sub_address = int(sub_address)
 
                     address_value = address_value[sub_address]
                     prev_sub_address = sub_address
                 if not isinstance(address_value, Address):
                     raise ValueError('%s does not resolve to an Address in SaveContext' % sub_address)
 
-                if isinstance(value, int) and value < address_value.get_value():
-                    continue
+                if isinstance(value, int):
+                    found_value = address_value.get_value()
+                    assert isinstance(found_value, int)
+                    if value < found_value:
+                        continue
 
                 address_value.value = value
         else:

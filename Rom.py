@@ -28,7 +28,7 @@ class Rom(BigStream):
 
         with open(data_path('generated/symbols.json'), 'r') as stream:
             symbols = json.load(stream)
-            self.symbols: dict[str, int] = {name: {'address': int(sym['address'], 16), 'length': sym['length']} for name, sym in symbols.items()}
+            self.symbols: dict[str, dict[str, int]] = {name: {'address': int(sym['address'], 16), 'length': sym['length']} for name, sym in symbols.items()}
 
         if file is None:
             return
@@ -129,7 +129,7 @@ class Rom(BigStream):
         subprocess.check_call(subcall, **subprocess_args())
         self.read_rom(output_file, verify_crc=verify_crc)
 
-    def write_byte(self, address: int, value: int) -> None:
+    def write_byte(self, address: int | None, value: int) -> None:
         super().write_byte(address, value)
         self.changed_address[self.last_address-1] = value
 
@@ -145,7 +145,9 @@ class Rom(BigStream):
             if should_write:
                 self.write_byte(address, values[i])
 
-    def write_bytes(self, address: int, values: Sequence[int]) -> None:
+    def write_bytes(self, address: Optional[int], values: Sequence[int]) -> None:
+        if address is None:
+            address = self.last_address
         super().write_bytes(address, values)
         self.changed_address.update(zip(range(address, address + len(values)), values))
 
