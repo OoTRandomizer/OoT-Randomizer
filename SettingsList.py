@@ -1605,6 +1605,7 @@ class SettingInfos:
         },
         disable        =
         {
+            True: {'settings': ['fast_shadow_boat']},
             False : { 'settings': ['prevent_guay_respawns', 'minimap_enemy_tracker']},
         }
     )
@@ -3685,9 +3686,14 @@ class SettingInfos:
             The boat sequence in Shadow Temple will be massively sped up.
             The two Stalfos will still fall on the boat, but you
             won't have time to fight them.
+            For this reason, this setting cannot be enabled if Shuffle
+            Enemy Drops is on.
         ''',
         default        = False,
         shared         = True,
+        gui_params     = {
+            "hide_when_disabled": True,
+        },
     )
 
     chicken_count_random = Checkbutton(
