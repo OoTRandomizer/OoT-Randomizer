@@ -131,7 +131,7 @@ regional_enemy_spawn_table_entry regional_enemy_spawn_table[] = {
 };
 
 enemy_spawn_table_entry enemy_spawn_table[] = {
-    ENEMY_SPAWN_TABLE_ENTRY(0x0002, 0,   SPAWN_FLAGS_SPAWNENTRY, NULL), //En_Test (Stalfos)
+    ENEMY_SPAWN_TABLE_ENTRY(0x0002, 0,   SPAWN_FLAGS_SPAWNENTRY | SPAWN_FLAGS_ACTORSPAWN, NULL), //En_Test (Stalfos)
     ENEMY_SPAWN_TABLE_ENTRY(0x000E, 1,   SPAWN_FLAGS_SPAWNENTRY, NULL), //En_Okuta (Octorok (and big octo))
     ENEMY_SPAWN_TABLE_ENTRY(0x00C8, 1,   SPAWN_FLAGS_SPAWNENTRY, spawn_check_big_octo), //Jabu objects Big Octo Platform
     ENEMY_SPAWN_TABLE_ENTRY(0x0011, 2,   SPAWN_FLAGS_SPAWNENTRY, NULL), //En_Wallmas (Wallmaster)
@@ -283,5 +283,5 @@ void Actor_RemoveFromCategory_SetTempClear_Hack(z64_game_t *globalCtx, int32_t f
     if(curr_room_enemies_inhibited) {
         return;
     }
-    z64_Flags_SetTempClear(globalCtx, flag);
+    Flags_SetTempClear(globalCtx, flag);
 }

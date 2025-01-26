@@ -95,8 +95,8 @@ bool get_soul_enabled(int table_index);
 bool toggle_soul_enabled(int table_index);
 
 typedef enum SPAWN_FLAGS {
-    SPAWN_FLAGS_SPAWNENTRY =  1,
-    SPAWN_FLAGS_ACTORSPAWN = 2
+    SPAWN_FLAGS_SPAWNENTRY = 1 << 0,
+    SPAWN_FLAGS_ACTORSPAWN = 1 << 1
 } SPAWN_FLAGS;
 
 typedef struct enemy_spawn_table_entry {

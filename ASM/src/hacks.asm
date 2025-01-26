@@ -4325,3 +4325,4 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/z_scene.asm"
 .include "hacks/ovl/ovl_kaleido_scope.asm"
 .include "hacks/ovl_bg_mori_bigst.asm"
+.include "hacks/code.asm"

@@ -68,7 +68,7 @@ void EnWonderItem_DropCollectible_Hack(EnWonderItem* this, z64_game_t* globalCtx
         }
         z64_bzero(&drop_collectible_override_flag, sizeof(drop_collectible_override_flag));
         if (this->switchFlag >= 0) {
-            z64_Flags_SetSwitch(globalCtx, this->switchFlag);
+            Flags_SetSwitch(globalCtx, this->switchFlag);
         }
         z64_ActorKill(&this->actor);
         return;
@@ -95,7 +95,7 @@ void EnWonderItem_DropCollectible_Hack(EnWonderItem* this, z64_game_t* globalCtx
         }
     }
     if (this->switchFlag >= 0) {
-        z64_Flags_SetSwitch(globalCtx, this->switchFlag);
+        Flags_SetSwitch(globalCtx, this->switchFlag);
     }
     z64_ActorKill(&this->actor);
 }
@@ -137,6 +137,6 @@ uint32_t EnWonderItem_Kill_Hack(EnWonderItem* this) {
     override_t override = lookup_override_by_newflag(&flag);
 
     if (override.key.all != 0 && !Get_NewFlag(&flag)) return 0;
-    if ((this->switchFlag >= 0) && z64_Flags_GetSwitch(&z64_game, this->switchFlag)) return 1;
+    if ((this->switchFlag >= 0) && Flags_GetSwitch(&z64_game, this->switchFlag)) return 1;
     return 0;
 }

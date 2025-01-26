@@ -14,6 +14,44 @@ typedef struct {
     /* 0x04 */ uint8_t minimap_draw_flags;
 } ActorAdditionalData;
 
+
+// Converts a number of bits to a bitmask, helper for params macros
+// e.g. 3 becomes 0b111 (7)
+#define NBITS_TO_MASK(n) \
+    ((1 << (n)) - 1)
+
+// Extracts the `n`-bit value at position `s` in `p`, shifts then masks
+// Unsigned variant, no possibility of sign extension
+#define PARAMS_GET_U(p, s, n) \
+    (((p) >> (s)) & NBITS_TO_MASK(n))
+
+// Extracts the `n`-bit value at position `s` in `p`, masks then shifts
+// Signed variant, possibility of sign extension
+#define PARAMS_GET_S(p, s, n) \
+    (((p) & (NBITS_TO_MASK(n) << (s))) >> (s))
+
+// Extracts all bits past position `s` in `p`
+#define PARAMS_GET_NOMASK(p, s) \
+    ((p) >> (s))
+
+// Extracts the `n`-bit value at position `s` in `p` without shifting it from its current position
+#define PARAMS_GET_NOSHIFT(p, s, n) \
+    ((p) & (NBITS_TO_MASK(n) << (s)))
+
+// Moves the `n`-bit value `p` to bit position `s` for building actor parameters by OR-ing these together
+#define PARAMS_PACK(p, s, n) \
+    (((p) & NBITS_TO_MASK(n)) << (s))
+
+// Moves the value `p` to bit position `s` for building actor parameters by OR-ing these together.
+#define PARAMS_PACK_NOMASK(p, s) \
+    ((p) << (s))
+
+// Generates a bitmask for bit position `s` of length `n`
+#define PARAMS_MAKE_MASK(s, n) PARAMS_GET_NOSHIFT(~0, s, n)
+
+#define TRANSITION_ACTOR_PARAMS_INDEX_SHIFT 10
+#define GET_TRANSITION_ACTOR_INDEX(actor) PARAMS_GET_NOMASK((u16)(actor)->params, 10)
+
 void Actor_After_UpdateAll_Hack(z64_actor_t* actor, z64_game_t* game);
 void Actor_StoreFlagByIndex(z64_actor_t* actor, z64_game_t* game, uint16_t actor_index);
 void Actor_StoreFlag(z64_actor_t* actor, z64_game_t* game, xflag_t flag);
