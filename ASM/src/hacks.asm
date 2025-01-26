@@ -717,16 +717,6 @@ nop
 nop
 nop
 
-.headersize (0x800110A0 - 0xA87000)
-; Hack Actor_SpawnAsChild so we can set a flag that this is the function being called. Used during our clear check hack to get the parent.
-.org 0x800253f0
-; Replaces:
-;   addiu   sp, sp, -0x30
-;   sw      ra, 0x2c(sp)
-j   Actor_SpawnAsChild_Hook
-nop
-Actor_SpawnAsChild_Continue_Jump_Point:
-
 ; Hack Dark Link room En_Blkobj for enemy soul shuffle
 ; At call to Actor_Find
 .orga 0xE1156C ; VRAM 0x80A8EC2C

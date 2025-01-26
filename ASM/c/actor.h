@@ -60,6 +60,7 @@ z64_actor_t *Actor_SpawnEntry_Hack(void* actorCtx, ActorEntry* actorEntry, z64_g
 bool spawn_override_silver_rupee(ActorEntry* actorEntry, z64_game_t* globalCtx, bool* overridden);
 void after_spawn_override_silver_rupee(z64_actor_t* actor, bool overridden);
 void Actor_BuildFlag(z64_actor_t* actor, xflag_t* flag, uint16_t actor_index, uint8_t subflag);
+z64_actor_t * Actor_SpawnAsChild_Hook(void* actorCtx, z64_actor_t* parent, z64_game_t* globalCtx, int16_t actorId, float posX, float posY, float posZ, int16_t rotX, int16_t rotY, int16_t rotZ, int16_t params);
 ActorAdditionalData* Actor_GetAdditionalData(z64_actor_t* actor);
 override_t get_newflag_override(xflag_t* flag);
 extern ActorOverlay gActorOverlayTable[];

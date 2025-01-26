@@ -372,7 +372,7 @@ z64_actor_t * Actor_SpawnAsChildWithSubflag(void* actorCtx, z64_actor_t* parent,
     xflag_t flag = { 0 };
     Actor_BuildFlag(parent, &flag, Actor_GetAdditionalData(parent)->actor_id, subflag);
     spawn_actor_with_flag = &flag;
-    z64_actor_t* spawned = Actor_SpawnAsChild(actorCtx, parent, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params);
+    z64_actor_t* spawned = Actor_SpawnAsChild_Hook(actorCtx, parent, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params);
     spawn_actor_with_flag = NULL;
     return spawned;
 }
