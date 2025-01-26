@@ -13,18 +13,25 @@
             "Deku Tree MQ Lobby Crate": "can_break_crate",
             "Deku Tree MQ Slingshot Room Crate 1": "can_break_crate",
             "Deku Tree MQ Slingshot Room Crate 2": "can_break_crate",
+            "Deku Tree MQ Lobby Lower Withered Deku Baba": "can_kill_withered_deku_baba",
+            "Deku Tree MQ Lobby Upper Withered Deku Baba": "can_kill_withered_deku_baba",
             "Deku Tree MQ Lobby Lower Keese": "can_kill_keese_stationary",
             "Deku Tree MQ Lobby Upper Keese": "can_kill_keese_stationary",
             "Deku Tree MQ Lobby Vines Skullwalltula": "
                 has_soul(Skullwalltula) and (is_adult or can_child_attack)",
             "Deku Tree MQ Lobby Gohma Larva 1": "can_kill_gohma_larva",
             "Deku Tree MQ Lobby Gohma Larva 2": "can_kill_gohma_larva",
+            "Deku Tree MQ Slingshot Room Deku Baba": "can_kill_deku_baba",
             "Deku Tree MQ Slingshot Room Gohma Larva 1": "can_kill_gohma_larva",
             "Deku Tree MQ Slingshot Room Gohma Larva 2": "can_kill_gohma_larva",
             "Deku Tree MQ Slingshot Room Gohma Larva 3": "can_kill_gohma_larva",
             "Deku Tree MQ Slingshot Room Gohma Larva 4": "can_kill_gohma_larva",
             "Deku Tree MQ Slingshot Room Gohma Larva 5": "can_kill_gohma_larva",
             "Deku Tree MQ Slingshot Room Gohma Larva 6": "can_kill_gohma_larva",
+            "Deku Tree MQ Basement Withered Deku Baba": "can_kill_withered_deku_baba",
+            "Deku Tree MQ Basement Lower Deku Baba 1": "can_kill_deku_baba",
+            "Deku Tree MQ Basement Lower Deku Baba 2": "can_kill_deku_baba",
+            "Deku Tree MQ Basement Ledge Deku Baba": "can_kill_deku_baba",
             "Deku Tree MQ GS Lobby": "
                 is_adult or Sticks or Kokiri_Sword or has_explosives or can_use(Dins_Fire) or
                 ((Slingshot or Boomerang) and can_break_crate)",
@@ -47,6 +54,7 @@
         "dungeon": "Deku Tree",
         "locations": {
             "Deku Tree MQ Near Compass Room Recovery Heart": "True",
+            "Deku Tree MQ Before Compass Deku Baba": "can_kill_deku_baba",
             "Deku Tree MQ Before Compass Gohma Larva 1": "can_kill_gohma_larva",
             "Deku Tree MQ Before Compass Gohma Larva 2": "can_kill_gohma_larva"
         },
