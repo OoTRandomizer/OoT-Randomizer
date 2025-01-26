@@ -1033,6 +1033,7 @@ global_patch_sets: list[Callable[[Rom, Settings, CosmeticsLog, dict[str, int]], 
     patch_shield_frame_colors,
     patch_sfx,
     patch_instrument,
+    patch_voice_packs
 ]
 
 # 3.14.1
@@ -1237,7 +1238,6 @@ patch_sets[0x1F073FE2] = {
 # 8.2.22
 patch_sets[0x1F073FE3] = {
     "patches": patch_sets[0x1F073FE2]["patches"] + [
-        patch_voice_packs,
         patch_voice_volume
     ],
     "symbols": {
