@@ -25,12 +25,12 @@ void ObjKibako2_SpawnCollectible_Hack(ObjKibako2* this, z64_game_t* globalCtx) {
     xflag_t* flag = &(Actor_GetAdditionalData((z64_actor_t*)this)->flag);
     if (flag->all && !Get_NewFlag(flag)) {
         drop_collectible_override_flag = *flag;
-        EnItem00* spawned = z64_Item_DropCollectible(globalCtx, &this->dyna.actor.pos_world, 0);
+        EnItem00* spawned = Item_DropCollectible(globalCtx, &this->dyna.actor.pos_world, 0);
         z64_bzero(&drop_collectible_override_flag, sizeof(drop_collectible_override_flag));
         return;
     }
     if (itemDropped >= 0 && itemDropped < 0x1A) {
-        EnItem00* spawned = z64_Item_DropCollectible(globalCtx, &this->dyna.actor.pos_world, itemDropped | (collectibleFlagTemp << 8));
+        EnItem00* spawned = Item_DropCollectible(globalCtx, &this->dyna.actor.pos_world, itemDropped | (collectibleFlagTemp << 8));
     }
 }
 

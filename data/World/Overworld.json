@@ -224,11 +224,11 @@
             "Showed Mido Sword & Shield": "is_child and Kokiri_Sword and Deku_Shield"
         },
         "locations": {
-            "KF Child Deku Tree Deku Baba 1": "is_child and can_kill_deku_baba",
-            "KF Child Deku Tree Deku Baba 2": "is_child and can_kill_deku_baba",
-            "KF Child Deku Tree Deku Baba 3": "is_child and can_kill_deku_baba",
-            "KF Child Deku Tree Deku Baba 4": "is_child and can_kill_deku_baba",
-            "KF Child Deku Tree Deku Baba 5": "is_child and can_kill_deku_baba",
+            "KF Child Deku Tree Withered Deku Baba 1": "is_child and can_kill_withered_deku_baba",
+            "KF Child Deku Tree Withered Deku Baba 2": "is_child and can_kill_withered_deku_baba",
+            "KF Child Deku Tree Withered Deku Baba 3": "is_child and can_kill_withered_deku_baba",
+            "KF Child Deku Tree Withered Deku Baba 4": "is_child and can_kill_withered_deku_baba",
+            "KF Child Deku Tree Withered Deku Baba 5": "is_child and can_kill_withered_deku_baba",
             "KF Adult Path To Deku Skulltula": "is_adult and can_kill_skulltula",
             "KF Adult Near Path To Deku Tree Deku Baba": "can_kill_deku_baba",
             "KF Adult Deku Tree Deku Baba 1": "can_kill_deku_baba",

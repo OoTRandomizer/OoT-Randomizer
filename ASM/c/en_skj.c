@@ -7,10 +7,10 @@ void en_skj_drop_collectible_hack(z64_actor_t* actor, z64_game_t* game) {
     if(flag->all && !Get_NewFlag(flag))
     {
         drop_collectible_override_flag = *flag;
-        EnItem00* spawned = z64_Item_DropCollectible(game, &actor->pos_world, 0);
+        EnItem00* spawned = Item_DropCollectible(game, &actor->pos_world, 0);
         z64_bzero(&drop_collectible_override_flag, sizeof(drop_collectible_override_flag));
         return;
     }
 
-    EnItem00* spawned = z64_Item_DropCollectible(game, &actor->pos_world, ITEM00_RUPEE_ORANGE);
+    EnItem00* spawned = Item_DropCollectible(game, &actor->pos_world, ITEM00_RUPEE_ORANGE);
 }

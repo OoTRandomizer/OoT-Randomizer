@@ -4,6 +4,7 @@
 #include "get_items.h"
 #include "actor.h"
 #include "scene.h"
+#include "en_item00.h"
 
 static colorRGBA8_t sEffectPrimColorRed = { 255, 0, 0, 0 };
 static colorRGBA8_t sEffectPrimColorGreen = { 0, 255, 0, 0 };
@@ -62,9 +63,9 @@ void EnWonderItem_DropCollectible_Hack(EnWonderItem* this, z64_game_t* globalCtx
         xflag_t* flag = &(Actor_GetAdditionalData(&this->actor)->flag);
         drop_collectible_override_flag = *flag;
         if(autoCollect) {
-            z64_Item_DropCollectible2(globalCtx, &(z64_link.common.pos_world), 0);
+            Item_DropCollectible2(globalCtx, &(z64_link.common.pos_world), 0);
         } else {
-            z64_Item_DropCollectible(globalCtx, &this->actor.pos_world, 0);
+            Item_DropCollectible(globalCtx, &this->actor.pos_world, 0);
         }
         z64_bzero(&drop_collectible_override_flag, sizeof(drop_collectible_override_flag));
         if (this->switchFlag >= 0) {
@@ -81,16 +82,16 @@ void EnWonderItem_DropCollectible_Hack(EnWonderItem* this, z64_game_t* globalCtx
     for (i = this->dropCount; i > 0; i--) {
         if (this->itemDrop < WONDERITEM_DROP_RANDOM) {
             if ((this->itemDrop == WONDERITEM_DROP_FLEXIBLE) || !autoCollect) {
-                z64_Item_DropCollectible(globalCtx, &this->actor.pos_world, dropTable[this->itemDrop]);
+                Item_DropCollectible(globalCtx, &this->actor.pos_world, dropTable[this->itemDrop]);
             } else {
-                z64_Item_DropCollectible(globalCtx, &this->actor.pos_world, dropTable[this->itemDrop] | 0x8000);
+                Item_DropCollectible(globalCtx, &this->actor.pos_world, dropTable[this->itemDrop] | 0x8000);
             }
         } else {
             randomDrop = this->itemDrop - WONDERITEM_DROP_RANDOM;
             if (!autoCollect) {
-                z64_Item_DropCollectibleRandom(globalCtx, NULL, &this->actor.pos_world, randomDrop);
+                Item_DropCollectibleRandom(globalCtx, NULL, &this->actor.pos_world, randomDrop);
             } else {
-                z64_Item_DropCollectibleRandom(globalCtx, NULL, &this->actor.pos_world, randomDrop | 0x8000);
+                Item_DropCollectibleRandom(globalCtx, NULL, &this->actor.pos_world, randomDrop | 0x8000);
             }
         }
     }

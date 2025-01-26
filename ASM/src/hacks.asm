@@ -4321,3 +4321,4 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/ovl_bg_mori_bigst.asm"
 .include "hacks/code.asm"
 .include "hacks/ovl_en_anubice_tag.asm"
+.include "hacks/ovl_en_karebaba.asm"

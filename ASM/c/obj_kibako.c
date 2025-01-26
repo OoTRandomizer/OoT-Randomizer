@@ -79,13 +79,13 @@ void ObjKibako_SpawnCollectible_Hack(z64_actor_t* this, z64_game_t* globalCtx) {
     xflag_t* flag = &Actor_GetAdditionalData(this)->flag;
     if (flag->all && !Get_NewFlag(flag)) {
         drop_collectible_override_flag = *flag;
-        EnItem00* spawned = z64_Item_DropCollectible(globalCtx, &this->pos_world, 0);
+        EnItem00* spawned = Item_DropCollectible(globalCtx, &this->pos_world, 0);
         z64_bzero(&drop_collectible_override_flag, sizeof(drop_collectible_override_flag));
         return;
     }
 
     if ((collectible >= 0) && (collectible <= 0x19)) {
-        EnItem00* spawned = z64_Item_DropCollectible(globalCtx, &this->pos_world,
+        EnItem00* spawned = Item_DropCollectible(globalCtx, &this->pos_world,
                              collectible | (((this->variable >> 8) & 0x3F) << 8));
     }
 }

@@ -18,6 +18,9 @@ Flags_GetCollectible = 0x800206E8;
 Flags_SetCollectible = 0x8002071C;
 Actor_SetColorFilter = 0x80027090;
 CutsceneFlags_Get = 0x8005991C;
+Item_DropCollectible = 0x80013678;
+Item_DropCollectible2 = 0x800138B0;
+Item_DropCollectibleRandom = 0x80013A84;
 OnePointCutscene_Init = 0x8006b6fc;
 Player_InCsMode = 0x8007943c;
 z64_Gfx_SetupDL_42Opa = 0x8007E868;
@@ -25,7 +28,6 @@ func_800982FC = 0x80081740;
 Matrix_Push = 0x800aa6ec;
 Matrix_Pop = 0x800aa724;
 Audio_StopCurrentMusic = 0x800C7684;
-
 sprintf = 0x800CE7b4;
 Message_OpenText = 0x800DC838;
 Fault_AddHungupAndCrashImpl = 0x800AF564;
@@ -53,3 +55,5 @@ OVL_EnOkarinaTag_Action2 = 0x80a872d0;
 OVL_EnOkarinaTag_Action1 = 0x80a87088;
 OVL_BgMoriBigst_SetupFall = 0x809273d4;
 OVL_BgMoriBigst_SetupDone = 0x809276c0;
+
+OVL_EnKarebaba_SetupDeadItemDrop = 0x809ba560;
