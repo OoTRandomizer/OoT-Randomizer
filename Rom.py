@@ -149,14 +149,17 @@ class Rom(BigStream):
 
                     # If we didn't find a matching sample, then add this data to Audiotable
                     if not found_matching_sample:
-                        sample.placed_address = len(Audiotable)
-                        Audiotable += sample.data
-                        # Pad sample data to 16 bytes
-                        if len(Audiotable) % 16 != 0:
-                            Audiotable += bytearray(16 - (len(Audiotable) % 16))
+                        if sample.data: # Make sure we actually have data because there's some crappy banks out there
+                            sample.placed_address = len(Audiotable)
+                            Audiotable += sample.data
+                            # Pad sample data to 16 bytes
+                            if len(Audiotable) % 16 != 0:
+                                Audiotable += bytearray(16 - (len(Audiotable) % 16))
 
-                        # Remember that we added this sample
-                        added_samples.append(sample)
+                            # Remember that we added this sample
+                            added_samples.append(sample)
+                        else:
+                            sample.placed_address = 0xFFFFFFFF
 
                     # Check if we have already added this sample's book
                     if sample.book.bank_offset == -1:

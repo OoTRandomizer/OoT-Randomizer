@@ -174,7 +174,7 @@ class Sample:
         sample.codec = (sample.sample_header[0] & 0xF0) >> 4
         sample.medium = (sample.sample_header[0] & 0x0C) >> 2
         sample.size = int.from_bytes(sample.sample_header[1:4], 'big')
-        sample.addr = int.from_bytes(sample.sample_header[4:8], 'big', signed=True)
+        sample.addr = int.from_bytes(sample.sample_header[4:8], 'big', signed=True) # Apparently can use negative audiotable offsets so treat this as signed
         if(sample_offset != 0):
             sample.loop_addr = int.from_bytes(sample.sample_header[8:12], 'big')
             sample.book_addr = int.from_bytes(sample.sample_header[12:16], 'big')
@@ -191,14 +191,15 @@ class Sample:
             audiotable_entry = audiotable_index[audiotable_index_offset:audiotable_index_offset + 0x10]
             audiotable_offset = int.from_bytes(audiotable_entry[0:4], 'big')
             sample_address = audiotable_offset + sample.addr
-            if sample_address < 0 or sample_address > len(audiotable_file): # If the calculated address falls outside of audiotable then we probably need to get the sample data from ZSOUND files in the archive
+            if sample_address < 0 or sample_address > len(audiotable_file): # If the calculated address falls outside of audiotable then this is probably a tempaddress ZSOUND and we need to get the sample data from ZSOUND files in the archive
                 sample.data = None
+                sample.addr = int.from_bytes(sample.addr.to_bytes(4, 'big', signed=True), 'big', signed=False) # Convert back to unsigned int
                 #sample.addr = -1
-            else:
+            else: # This is a sample in audiotable so read the sample
                 sample.audiotable_addr = sample_address
                 # Read the sample data
                 sample.data = audiotable_file[sample_address:sample_address+sample.size]
-        else:
+        else: # Should probably never get to this case
             sample.audiotable_addr = -1
             sample.data = None
         

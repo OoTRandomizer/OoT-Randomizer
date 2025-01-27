@@ -514,6 +514,7 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                     with zipfile.ZipFile(j.name) as zip:
                         for zsound in j.zsounds:
                             if zsound['tempaddr']: # Old style/MMR zsound that uses the stupid temp address thing
+                                found_tempaddr = False
                                 for sample in newbank.get_all_samples():
                                     if sample.addr == zsound['tempaddr']:
                                         #parent = sample.parent
@@ -531,7 +532,10 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                                         sample.data = zip.read(zsound['file'])
                                         sample.addr = -1 # Set the sample address to -1 so that we know it's from a zsound
                                         zsound_samples.append(sample)
+                                        found_tempaddr = True
                                         break
+                                if not found_tempaddr:
+                                    raise log.errors.append(f"{j.name} - Could not find zsound file matching temp address {hex(zsound['tempaddr'])}")
                                 pass
                             else:
                                 curr_sample_data = zip.read(zsound['file'])
@@ -554,6 +558,10 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                                 sample.addr = -1 # Set the sample address to -1 so that we know it's from a zsound
                                 zsound_samples.append(sample)
 
+                # Sanity check that all samples in the bank have data now
+                for sample in newbank.get_all_samples():
+                    if not sample.data:
+                        log.errors.append(f"{j.name} - Missing sample data: {hex(sample.addr)}")
                 added_banks.append(newbank)
                 new_bank_index += 1
 
@@ -758,7 +766,8 @@ def randomize_music(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: di
         shuffled_sequences = shuffle_music(log, sequences, target_sequences, music_mapping)
     if fanfare_sequences and target_fanfare_sequences:
         shuffled_fanfare_sequences = shuffle_music(log, fanfare_sequences, target_fanfare_sequences, music_mapping, "fanfares")
-
+    log.ffs = shuffled_fanfare_sequences
+    log.bgms = shuffled_sequences
     # Ensure disabled sequences are flagged in cosmetics log
     for name in disabled_target_sequences:
         log.bgm[name] = "None"
