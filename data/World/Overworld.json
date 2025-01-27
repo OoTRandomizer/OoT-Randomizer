@@ -349,7 +349,7 @@
                     selected_adult_trade_item == 'Odd Potion' or selected_adult_trade_item == 'Poachers Saw' or
                     selected_adult_trade_item == 'Broken Sword' or selected_adult_trade_item == 'Prescription' or
                     selected_adult_trade_item == 'Eyeball Frog' or selected_adult_trade_item == 'Eyedrops' or
-                    selected_adult_trade_item == 'Claim Check')"
+                    selected_adult_trade_item == 'Claim Check' or not selected_adult_trade_item)"
         },
         "locations": {
             "LW Skull Kid": "is_child and can_play(Sarias_Song)",
