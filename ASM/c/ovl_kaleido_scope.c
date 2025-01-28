@@ -10,6 +10,10 @@
 
 #define MAX_LINES 13
 
+void soul_menu_handler(menu_ctx* menu, z64_game_t* globalCtx, z64_disp_buf_t* dl);
+void update_soul_menu(menu_ctx* menu, z64_game_t* globalCtx);
+void draw_soul_menu(menu_ctx* menu, z64_game_t* globalCtx, z64_disp_buf_t* dl);
+
 menu_ctx soul_menu_ctx = {0, NUM_ENEMY_SOULS, 0, 0, soul_menu_handler, SOUL_MENU_NAMES};
 menu_ctx regional_soul_menu_ctx = {0, NUM_REGIONAL_ENEMY_SOULS, 0,0, soul_menu_handler, REGIONAL_SOUL_MENU_NAMES};
 
@@ -24,7 +28,7 @@ uint8_t menu_dl_index;
 
 void init_new_menus() {
     menu_dl_index = 0;
-    menu_dl.buf = &menu_dl_buffer[0];
+    menu_dl.buf = &menu_dl_buffer[0][0];
     menu_dl.p = &menu_dl.buf[0];
     menu_dl.size = 0x1000;
     // Add menus here
@@ -82,9 +86,9 @@ void draw_map_background(z64_game_t* globalCtx, z64_gfx_t* gfx, float x, float y
     CLOSE_DISPS();
 }
 
-void soul_menu_handler(menu_ctx* menu, z64_game_t* globalCtx, z64_gfx_t* gfx) {
+void soul_menu_handler(menu_ctx* menu, z64_game_t* globalCtx, z64_disp_buf_t* dl) {
     update_soul_menu(menu, globalCtx);
-    draw_soul_menu(menu, globalCtx, gfx);
+    draw_soul_menu(menu, globalCtx, dl);
 }
 
 void update_soul_menu(menu_ctx* menu, z64_game_t* globalCtx) {
@@ -191,8 +195,8 @@ void draw_new_menus(z64_game_t* globalCtx, z64_gfx_t* gfx) {
     draw_map_background(globalCtx, gfx, -110.f, 59.f, 217.f, 128.f);
 
     menu_dl_index++;
-    menu_dl.buf = &menu_dl_buffer[menu_dl_index & 1];
-    menu_dl.p = &menu_dl_buffer[menu_dl_index & 1];
+    menu_dl.buf = &menu_dl_buffer[menu_dl_index & 1][0];
+    menu_dl.p = &menu_dl_buffer[menu_dl_index & 1][0];
 
     if(globalCtx->pause_ctxt.state == 6 && globalCtx->pause_ctxt.changing == 0 && globalCtx->pause_ctxt.screen_idx == 1) {
         globalCtx->pause_ctxt.cursor_special_pos = 0;
@@ -218,15 +222,15 @@ void KaleidoScope_DrawNewMap(z64_game_t* globalCtx, z64_gfx_t* gfx, kaleido_base
 }
 
 void KaleidoScope_DrawWorldMap_Callhook(z64_game_t* globalCtx, z64_gfx_t* gfx) {
-    KaleidoScope_DrawNewMap(globalCtx, gfx, KaleidoScope_DrawWorldMap);
+    KaleidoScope_DrawNewMap(globalCtx, gfx, (kaleido_base_handler)KaleidoScope_DrawWorldMap);
 }
 
 void KaleidoScope_DrawDungeonMap_Callhook(z64_game_t* globalCtx, z64_gfx_t* gfx) {
-    KaleidoScope_DrawNewMap(globalCtx, gfx, KaleidoScope_DrawDungeonMap);
+    KaleidoScope_DrawNewMap(globalCtx, gfx, (kaleido_base_handler)KaleidoScope_DrawDungeonMap);
 }
 
 void PauseMapMark_Draw_CallHook(z64_game_t* globalCtx) {
-    pause_mapmark_draw_func handler = KaleidoManager_GetRamAddr(PauseMapMark_Draw);
+    pause_mapmark_draw_func handler = KaleidoManager_GetRamAddr((void*)PauseMapMark_Draw);
     if(menu_page == 0)
         handler(globalCtx);
 }

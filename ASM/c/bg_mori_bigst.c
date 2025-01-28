@@ -7,7 +7,7 @@ extern xflag_t* spawn_actor_with_flag;
 extern BgMoriBigstActionFunc OVL_BgMoriBigst_SetupFall;
 extern BgMoriBigstActionFunc OVL_BgMoriBigst_SetupDone;
 extern int16_t OnePointCutscene_Init(z64_game_t* play, int16_t csId, int16_t timer, z64_actor_t* actor, int16_t parentCamId);
-extern Player_InCsMode(z64_game_t* globalCtx);
+extern int Player_InCsMode(z64_game_t* globalCtx);
 
 extern bool curr_room_enemies_inhibited;
 
