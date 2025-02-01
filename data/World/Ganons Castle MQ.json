@@ -15,8 +15,7 @@
                 has_soul(Armos) and has_soul(Bubble) and has_soul(Iron_Knuckle) and
                 here(is_adult or
                     (Kokiri_Sword and (Sticks or has_explosives or Nuts or Boomerang)) or
-                    (has_explosives and (Sticks or ((Nuts or Boomerang) and Slingshot)))
-                    (Sticks and Slingshot and (Nuts or Boomerang)))",
+                    (has_explosives and (Sticks or ((Nuts or Boomerang) and Slingshot))))",
             "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
