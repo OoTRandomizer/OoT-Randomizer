@@ -1,6 +1,5 @@
 from ctypes import *
 import wave
-import aifc
 import numpy
 import soundfile as sf
 import os

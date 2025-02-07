@@ -12,7 +12,6 @@ from bin.tools.adpcm.adpcm_encode import adpcm_encode
 from bin.tools.ml64_unpak import ML64Unpack
 import soundfile as sf
 import os
-import aifc
 import numpy as np
 import json
 import zipfile
