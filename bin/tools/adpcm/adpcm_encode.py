@@ -1,7 +1,4 @@
 from ctypes import *
-import wave
-import numpy
-import soundfile as sf
 import os
 from binascii import hexlify
 
