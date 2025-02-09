@@ -23,6 +23,23 @@ console.log("Platform:", platform);
 
 var pythonPath = commander.python ? '"' + commander.python + '"' : platform == "win32" ? "py" : "python3";
 var pythonSourcePath = path.normalize(remote.app.isPackaged ? remote.app.getAppPath() + "/python/" : remote.app.getAppPath() + "/../");
+var localWritePath: string;
+try {
+  fs.accessSync(pythonSourcePath, fs.constants.W_OK)
+  localWritePath = pythonSourcePath;
+} catch (err) {
+  // Cannot write to application directory. Either sandboxed or installed for all users.
+  if (platform === 'linux') {
+    const xdgConfig = fs.existsSync(process.env.XDG_CONFIG_HOME) ? process.env.XDG_CONFIG_HOME : path.join(os.homedir(), '.config');
+    localWritePath = path.join(xdgConfig, 'ootr-electron-gui');
+    if (!fs.existsSync(localWritePath)) {
+      fs.mkdirSync(localWritePath, {recursive: true, mode: 0o700});
+    }
+    fs.accessSync(localWritePath, fs.constants.W_OK);
+  } else {
+    throw err;
+  }
+}
 var pythonGeneratorPath = pythonSourcePath + "OoTRandomizer.py";
 var pythonSettingsToJsonPath = pythonSourcePath + "SettingsToJson.py";
 
@@ -59,11 +76,12 @@ remote.getCurrentWindow().on('leave-html-full-screen', () => {
 //FUNCTIONS
 function dumpSettingsToFile(settingsObj) {
   settingsObj["check_version"] = true;
-  fs.writeFileSync(pythonSourcePath + "settings.sav", JSON.stringify(settingsObj, null, 4));
+
+  fs.writeFileSync(path.join(localWritePath, "settings.sav"), JSON.stringify(settingsObj, null, 4));
 }
 
 function dumpPresetsToFile(presetsString: string) {
-  fs.writeFileSync(pythonSourcePath + "presets.sav", presetsString);
+  fs.writeFileSync(path.join(localWritePath, "presets.sav"), presetsString);
 }
 
 function displayPythonErrorAndExit(notPython3: boolean = false) {
@@ -81,10 +99,10 @@ function displayPythonErrorAndExit(notPython3: boolean = false) {
 
 function readSettingsFromFile() {
 
-  let path = pythonSourcePath + "settings.sav";
+  let settings = path.join(localWritePath, "settings.sav");
 
-  if (fs.existsSync(path))
-    return fs.readFileSync(path, 'utf8');
+  if (fs.existsSync(settings))
+    return fs.readFileSync(settings, 'utf8');
   else
     return false;
 }
