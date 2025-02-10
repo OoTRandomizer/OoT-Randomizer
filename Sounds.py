@@ -257,8 +257,7 @@ def get_voice_sfx_choices(age: int, include_random: bool = True) -> list[str]:
     names = ['Default', 'Silent']
     randomizer_voices_path = os.path.join(readonly_data_path('Voices'), ('Child' if age == 0 else 'Adult'))
     user_voices_path = os.path.join(user_data_path('Voices'), ('Child' if age == 0 else 'Adult'))
-    if not os.path.isdir(user_voices_path):
-        os.mkdir(user_voices_path, mode=0o700)
+    os.makedirs(user_voices_path, mode=0o700, exist_ok=True)
     for voices_path in [randomizer_voices_path, user_voices_path]:
         if os.path.isdir(voices_path):
             names += [f for f in os.listdir(voices_path) if os.path.isdir(os.path.join(voices_path, f))]

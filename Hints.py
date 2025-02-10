@@ -1874,8 +1874,7 @@ def natjoin(elements: Iterable[str], conjunction: str = 'and') -> Optional[str]:
 
 def hint_dist_files() -> list[str]:
     user_hints_dir = user_data_path('Hints/')
-    if not os.path.isdir(user_hints_dir):
-        os.mkdir(user_hints_dir, mode=0o700)
+    os.makedirs(user_hints_dir, mode=0o700, exist_ok=True)
     return [os.path.join(readonly_data_path('Hints/'), d) for d in defaultHintDists] + [
             os.path.join(user_hints_dir, d)
             for d in sorted(os.listdir(user_hints_dir))

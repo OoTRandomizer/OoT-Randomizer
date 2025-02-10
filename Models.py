@@ -22,7 +22,7 @@ def get_model_choices(age: int) -> list[str]:
             if file.endswith(".zobj"):
                 names.append(file[:-5])
     else:
-        os.mkdir(path, mode=0o700)
+        os.makedirs(path, mode=0o700)
     if len(names) > 2:
         # If more than 2 non-default model choices, add random option
         names.insert(1, "Random")
