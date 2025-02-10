@@ -13,7 +13,7 @@ import Music
 import Sounds
 from JSONDump import dump_obj, CollapseList, CollapseDict, AlignedDict
 from Plandomizer import InvalidFileException
-from Utils import readonly_data_path
+from Utils import readonly_data_path, user_data_path
 from version import __version__
 
 if TYPE_CHECKING:
@@ -913,15 +913,19 @@ def patch_voices(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[
         if voice_setting == 'Silent':
             patch_silent_voice(rom, silence_sfx_ids, soundbank_entries, log)
         elif voice_setting != 'Default':
-            age_path = os.path.join(readonly_data_path('Voices'), name)
-            voice_path = os.path.join(age_path, voice_setting) if os.path.isdir(os.path.join(age_path, voice_setting)) else None
+            randomizer_age_path = readonly_data_path(os.path.join('Voices', name))
+            user_age_path = user_data_path(os.path.join('Voices', name))
+            for age_path in [randomizer_age_path, user_age_path]:
+                voice_path = os.path.join(age_path, voice_setting) if os.path.isdir(os.path.join(age_path, voice_setting)) else None
 
-            # If we don't have a confirmed directory for this voice, do a case-insensitive directory search.
-            if voice_path is None:
-                voice_dirs = [f for f in os.listdir(age_path) if os.path.isdir(os.path.join(age_path, f))] if os.path.isdir(age_path) else []
-                for directory in voice_dirs:
-                    if directory.casefold() == voice_setting.casefold():
-                        voice_path = os.path.join(age_path, directory)
+                # If we don't have a confirmed directory for this voice, do a case-insensitive directory search.
+                if voice_path is None:
+                    voice_dirs = [f for f in os.listdir(age_path) if os.path.isdir(os.path.join(age_path, f))] if os.path.isdir(age_path) else []
+                    for directory in voice_dirs:
+                        if directory.casefold() == voice_setting.casefold():
+                            voice_path = os.path.join(age_path, directory)
+                            break
+                    if voice_path is not None:
                         break
 
             if voice_path is None:

@@ -4,7 +4,7 @@ import random
 from enum import IntEnum
 from typing import TYPE_CHECKING
 
-from Utils import readonly_data_path
+from Utils import readonly_data_path, user_data_path
 
 if TYPE_CHECKING:
     from Cosmetics import CosmeticsLog
@@ -14,13 +14,15 @@ if TYPE_CHECKING:
 
 def get_model_choices(age: int) -> list[str]:
     names = ["Default"]
-    path = readonly_data_path("Models/Adult")
+    path = user_data_path("Models/Adult")
     if age == 1:
-        path = readonly_data_path("Models/Child")
+        path = user_data_path("Models/Child")
     if os.path.exists(path):
         for file in os.listdir(path):
             if file.endswith(".zobj"):
                 names.append(file[:-5])
+    else:
+        os.mkdir(path, mode=0o700)
     if len(names) > 2:
         # If more than 2 non-default model choices, add random option
         names.insert(1, "Random")
@@ -615,7 +617,7 @@ def patch_model_adult(rom: Rom, settings: Settings, log: CosmeticsLog) -> None:
             choices.remove("Default")
             choices.remove("Random")
             model = random.choice(choices)
-        model = readonly_data_path(f'Models/Adult/{model}.zobj')
+        model = user_data_path(f'Models/Adult/{model}.zobj')
     pathsplit = os.path.basename(model)
     log.settings.model_adult = pathsplit.split('.')[0]
 
@@ -787,7 +789,7 @@ def patch_model_child(rom: Rom, settings: Settings, log: CosmeticsLog) -> None:
             choices.remove("Default")
             choices.remove("Random")
             model = random.choice(choices)
-        model = readonly_data_path(f'Models/Child/{model}.zobj')
+        model = user_data_path(f'Models/Child/{model}.zobj')
     pathsplit = os.path.basename(model)
     log.settings.model_child = pathsplit.split('.')[0]
 

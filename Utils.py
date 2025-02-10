@@ -134,7 +134,7 @@ def readonly_data_path(path: str = '') -> str:
 
 def default_output_path(path: str) -> str:
     if path == '':
-        path = readonly_local_path('Output')
+        path = user_data_path('Output')
 
     if not os.path.exists(path):
         os.mkdir(path)

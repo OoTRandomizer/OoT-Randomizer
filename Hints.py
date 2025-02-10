@@ -20,7 +20,7 @@ from Messages import Message, COLOR_MAP, update_message_by_id
 from Region import Region
 from Search import Search
 from TextBox import line_wrap
-from Utils import readonly_data_path
+from Utils import readonly_data_path, user_data_path
 
 if sys.version_info >= (3, 10):
     from typing import TypeAlias
@@ -1873,9 +1873,12 @@ def natjoin(elements: Iterable[str], conjunction: str = 'and') -> Optional[str]:
 
 
 def hint_dist_files() -> list[str]:
+    user_hints_dir = user_data_path('Hints/')
+    if not os.path.isdir(user_hints_dir):
+        os.mkdir(user_hints_dir, mode=0o700)
     return [os.path.join(readonly_data_path('Hints/'), d) for d in defaultHintDists] + [
-            os.path.join(readonly_data_path('Hints/'), d)
-            for d in sorted(os.listdir(readonly_data_path('Hints/')))
+            os.path.join(user_hints_dir, d)
+            for d in sorted(os.listdir(user_hints_dir))
             if d.endswith('.json') and d not in defaultHintDists]
 
 

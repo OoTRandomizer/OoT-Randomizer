@@ -291,6 +291,7 @@ def main() -> None:
             raise Exception("Usage: SettingsToJson.py --setting <setting_key>")
         return get_setting_details(args[arg_index], web_version)
 
+    # Don't use user_cache_path because this is pre-generated for releases
     create_settings_list_json(readonly_data_path('generated/settings_list.json'), web_version)
 
 

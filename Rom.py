@@ -8,7 +8,8 @@ from collections.abc import Iterator, Sequence
 from typing import Optional
 
 from Models import restrictiveBytes
-from Utils import is_bundled, subprocess_args, readonly_local_path, readonly_data_path, get_version_bytes
+from Utils import is_bundled, subprocess_args, readonly_local_path, readonly_data_path, get_version_bytes, \
+    user_cache_path
 from crc import calculate_crc
 from ntype import BigStream
 from version import base_version, branch_identifier, supplementary_version
@@ -44,7 +45,7 @@ class Rom(BigStream):
         if file is None:
             return
 
-        decompressed_file: str = readonly_local_path('ZOOTDEC.z64')
+        decompressed_file: str = user_cache_path('ZOOTDEC.z64')
 
         os.chdir(readonly_local_path())
 

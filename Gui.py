@@ -29,6 +29,7 @@ def gui_main() -> None:
 
     web_version = '--web' in sys.argv
     if '--skip-settingslist' not in sys.argv:
+        # Don't use user_cache_path because this is pre-generated for releases
         create_settings_list_json(readonly_data_path('generated/settings_list.json'), web_version)
 
     if web_version:
