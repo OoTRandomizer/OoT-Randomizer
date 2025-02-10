@@ -15,7 +15,7 @@ from typing import Any, Optional
 
 import StartingItems
 from version import __version__
-from Utils import readonly_data_path, user_data_path
+from Utils import readonly_data_path, user_data_path, user_config_path
 from SettingsList import SettingInfos, validate_settings, settings_versioning
 from Plandomizer import Distribution
 
@@ -437,7 +437,7 @@ def get_settings_from_command_line_args() -> tuple[Settings, bool, str, bool, st
     if args.settings == '-':
         settings_base.update(json.loads(sys.stdin.read()))
     elif args.settings or not settings_base:  # avoid implicitly using settings.sav with presets
-        settingsFile = user_data_path(args.settings or 'settings.sav')
+        settingsFile = user_config_path(args.settings or 'settings.sav')
 
         try:
             with open(settingsFile, encoding='utf-8') as f:

@@ -31,7 +31,7 @@ def user_config_path(path: str = '') -> str:
     if not os.access(user_config_path.cached_path, os.W_OK):
         # Cannot write to application directory. Either sandboxed or installed for all users
         if platform.system() == 'Linux':
-            user_config_path.cached_path = os.path.join(os.environ.get('XDG_CONFIG_HOME', os.path.expanduser('~')), '.config', 'ootr-electron-gui')
+            user_config_path.cached_path = os.path.join(os.environ.get('XDG_CONFIG_HOME', os.path.join(os.path.expanduser('~'), '.config')), 'ootr-electron-gui')
             os.makedirs(user_config_path.cached_path, mode=0o700, exist_ok=True)
         if not platform.system() == 'Linux' or not os.path.exists(user_config_path.cached_path) or not os.access(user_config_path.cached_path, os.W_OK):
             raise RuntimeError(f"No permissions to write to the user config directory. Platform: {platform.system()}, Directory: {user_config_path.cached_path}")
@@ -50,7 +50,7 @@ def user_cache_path(path: str = '') -> str:
     if not os.access(user_cache_path.cached_path, os.W_OK):
         # Cannot write to application directory. Either sandboxed or installed for all users
         if platform.system() == 'Linux':
-            user_cache_path.cached_path = os.path.join(os.environ.get('XDG_CACHE_HOME', os.path.expanduser('~')), '.config', 'ootr-electron-gui')
+            user_cache_path.cached_path = os.path.join(os.environ.get('XDG_CACHE_HOME', os.path.join(os.path.expanduser('~'), '.cache')), 'ootr-electron-gui')
             os.makedirs(user_cache_path.cached_path, mode=0o700, exist_ok=True)
         if not platform.system() == 'Linux' or not os.path.exists(user_cache_path.cached_path) or not os.access(user_cache_path.cached_path, os.W_OK):
             raise RuntimeError(f"No permissions to write to the user cache directory. Platform: {platform.system()}, Directory: {user_cache_path.cached_path}")
@@ -69,7 +69,7 @@ def user_data_path(path: str = '') -> str:
     if not os.access(user_data_path.cached_path, os.W_OK):
         # Cannot write to application directory. Either sandboxed or installed for all users
         if platform.system() == 'Linux':
-            user_data_path.cached_path = os.path.join(os.environ.get('XDG_DATA_HOME', os.path.expanduser('~')), '.local', 'share', 'ootr-electron-gui')
+            user_data_path.cached_path = os.path.join(os.environ.get('XDG_DATA_HOME', os.path.join(os.path.expanduser('~'), '.local', 'share')), 'ootr-electron-gui')
             os.makedirs(user_data_path.cached_path, mode=0o700, exist_ok=True)
         if not platform.system() == 'Linux' or not os.path.exists(user_data_path.cached_path) or not os.access(user_data_path.cached_path, os.W_OK):
             raise RuntimeError(f"No permissions to write to the user data directory. Platform: {platform.system()}, Directory: {user_data_path.cached_path}")
@@ -88,7 +88,7 @@ def user_state_path(path: str = '') -> str:
     if not os.access(user_state_path.cached_path, os.W_OK):
         # Cannot write to application directory. Either sandboxed or installed for all users
         if platform.system() == 'Linux':
-            user_state_path.cached_path = os.path.join(os.environ.get('XDG_STATE_HOME', os.path.expanduser('~')), '.local', 'state', 'ootr-electron-gui')
+            user_state_path.cached_path = os.path.join(os.environ.get('XDG_STATE_HOME', os.path.join(os.path.expanduser('~'), '.local', 'state')), 'ootr-electron-gui')
             os.makedirs(user_state_path.cached_path, mode=0o700, exist_ok=True)
         if not platform.system() == 'Linux' or not os.path.exists(user_state_path.cached_path) or not os.access(user_state_path.cached_path, os.W_OK):
             raise RuntimeError(f"No permissions to write to the user state directory. Platform: {platform.system()}, Directory: {user_state_path.cached_path}")
