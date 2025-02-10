@@ -27,7 +27,7 @@ from Rules import set_rules, set_shop_rules
 from Settings import Settings
 from SettingsList import logic_tricks
 from Spoiler import Spoiler
-from Utils import default_output_path, is_bundled, run_process, data_path
+from Utils import default_output_path, is_bundled, run_process, readonly_data_path
 from World import World
 from version import __version__
 
@@ -136,7 +136,7 @@ def build_world_graphs(settings: Settings) -> list[World]:
             path = 'Glitched World'
         else:
             path = 'World'
-        path = data_path(path)
+        path = readonly_data_path(path)
 
         for filename in ('Overworld.json', 'Bosses.json'):
             savewarps_to_connect += world.load_regions_from_json(os.path.join(path, filename))

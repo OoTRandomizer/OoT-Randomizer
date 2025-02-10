@@ -11,7 +11,7 @@ from Location import Location
 from Region import TimeOfDay
 from RulesCommon import AccessRule, allowed_globals, escape_name
 from State import State
-from Utils import data_path, read_logic_file
+from Utils import readonly_data_path, read_logic_file
 
 if TYPE_CHECKING:
     from World import World
@@ -39,7 +39,7 @@ nonaliases: set[str] = set()
 
 
 def load_aliases() -> None:
-    j = read_logic_file(data_path('LogicHelpers.json'))
+    j = read_logic_file(readonly_data_path('LogicHelpers.json'))
     for s, repl in j.items():
         if '(' in s:
             rule, args = s[:-1].split('(', 1)

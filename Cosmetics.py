@@ -13,7 +13,7 @@ import Music
 import Sounds
 from JSONDump import dump_obj, CollapseList, CollapseDict, AlignedDict
 from Plandomizer import InvalidFileException
-from Utils import data_path
+from Utils import readonly_data_path
 from version import __version__
 
 if TYPE_CHECKING:
@@ -637,8 +637,8 @@ def patch_magic_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols:
         rom.write_int16s(symbol, color)
         if magic_option != 'Green' and settings.correct_model_colors:
             patch_model_colors(rom, color, model_addresses)
-            IconManip.patch_overworld_icon(rom, color, 0xF45650, data_path('icons/magicSmallExtras.raw'))  # Overworld Small Pot
-            IconManip.patch_overworld_icon(rom, color, 0xF47650, data_path('icons/magicLargeExtras.raw'))  # Overworld Big Pot
+            IconManip.patch_overworld_icon(rom, color, 0xF45650, readonly_data_path('icons/magicSmallExtras.raw'))  # Overworld Small Pot
+            IconManip.patch_overworld_icon(rom, color, 0xF47650, readonly_data_path('icons/magicLargeExtras.raw'))  # Overworld Big Pot
         else:
             patch_model_colors(rom, None, model_addresses)
             IconManip.patch_overworld_icon(rom, None, 0xF45650)
@@ -852,7 +852,7 @@ def read_default_voice_data(rom: Rom) -> dict[str, dict[str, int]]:
 
 
 def patch_silent_voice(rom: Rom, sfxidlist: Iterable[int], soundbank_entries: dict[str, dict[str, int]], log: CosmeticsLog) -> None:
-    binsfxfilename = os.path.join(data_path('Voices'), 'SilentVoiceSFX.bin')
+    binsfxfilename = os.path.join(readonly_data_path('Voices'), 'SilentVoiceSFX.bin')
     if not os.path.isfile(binsfxfilename):
         log.errors.append(f"Could not find silent voice sfx at {binsfxfilename}. Skipping voice patching")
         return
@@ -913,7 +913,7 @@ def patch_voices(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[
         if voice_setting == 'Silent':
             patch_silent_voice(rom, silence_sfx_ids, soundbank_entries, log)
         elif voice_setting != 'Default':
-            age_path = os.path.join(data_path('Voices'), name)
+            age_path = os.path.join(readonly_data_path('Voices'), name)
             voice_path = os.path.join(age_path, voice_setting) if os.path.isdir(os.path.join(age_path, voice_setting)) else None
 
             # If we don't have a confirmed directory for this voice, do a case-insensitive directory search.

@@ -3,7 +3,7 @@ import sys
 from collections.abc import Sequence, MutableSequence
 from typing import TYPE_CHECKING, Optional
 
-from Utils import data_path
+from Utils import readonly_data_path
 
 if sys.version_info >= (3, 10):
     from typing import TypeAlias
@@ -67,14 +67,14 @@ def add_belt(tunic: MutableSequence[int], belt: MutableSequence[int], tiff: bool
 
 # Function for putting tunic colors together
 def generate_tunic_icon(color: Sequence[int]) -> MutableSequence[int]:
-    with open(data_path('icons/grey.tiff'), 'rb') as grey_fil, open(data_path('icons/belt.tiff'), 'rb') as belt_fil:
+    with open(readonly_data_path('icons/grey.tiff'), 'rb') as grey_fil, open(readonly_data_path('icons/belt.tiff'), 'rb') as belt_fil:
         grey = list(grey_fil.read())
         belt = list(belt_fil.read())
         return add_belt(add_hue(grey, color, True), belt, True)[154:]
 
 
 def generate_rainbow_tunic_icon() -> MutableSequence[int]:
-    with open(data_path('icons/grey.tiff'), 'rb') as grey_fil, open(data_path('icons/belt.tiff'), 'rb') as belt_fil:
+    with open(readonly_data_path('icons/grey.tiff'), 'rb') as grey_fil, open(readonly_data_path('icons/belt.tiff'), 'rb') as belt_fil:
         grey = list(grey_fil.read())
         belt = list(belt_fil.read())
         return add_belt(add_rainbow(grey, 32, True), belt, True)[154:]

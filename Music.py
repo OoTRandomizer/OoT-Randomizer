@@ -13,7 +13,7 @@ from MusicHelpers import process_sequence_mmr_zseq, process_sequence_mmrs, proce
 
 from Rom import Rom
 from Sequence import Sequence, SequenceGame
-from Utils import compare_version, data_path
+from Utils import compare_version, readonly_data_path
 
 if TYPE_CHECKING:
     from Cosmetics import CosmeticsLog
@@ -164,7 +164,7 @@ def process_sequences(rom: Rom, ids: Iterable[tuple[str, int]], seq_type: str = 
 
     # If present, load the file containing custom music to exclude
     try:
-        with open(os.path.join(data_path(), u'custom_music_exclusion.txt')) as excl_in:
+        with open(os.path.join(readonly_data_path(), u'custom_music_exclusion.txt')) as excl_in:
             seq_exclusion_list = excl_in.readlines()
         seq_exclusion_list = [seq.rstrip() for seq in seq_exclusion_list if seq[0] != '#']
         seq_exclusion_list = [seq for seq in seq_exclusion_list if seq.endswith('.ootrs')]
@@ -178,7 +178,7 @@ def process_sequences(rom: Rom, ids: Iterable[tuple[str, int]], seq_type: str = 
     #   .meta metadata file
     # And optionally .zbank, .bankmeta, and .zsound files
 
-    for dirpath, _, filenames in os.walk(os.path.join(data_path(), 'Music'), followlinks=True):
+    for dirpath, _, filenames in os.walk(os.path.join(readonly_data_path(), 'Music'), followlinks=True):
         for fname in filenames:
             # Skip if included in exclusion file
             if fname in seq_exclusion_list:
@@ -436,7 +436,7 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
     for i in range(0x6E): # Loop through all the replacement sequences
         j = replacement_dict.get(i if new_sequences[i].size else new_sequences[i].address, None)
         if j and j.game == SequenceGame.MM: # we have at least one MM sequence so load the audiobin
-            with zipfile.ZipFile(os.path.join(data_path(), 'Music', 'MM.audiobin')) as mm_audiobin_zip:
+            with zipfile.ZipFile(os.path.join(readonly_data_path(), 'Music', 'MM.audiobin')) as mm_audiobin_zip:
                 mm_audiobank = bytearray(mm_audiobin_zip.read("Audiobank"))
                 mm_audiobank_index = bytearray(mm_audiobin_zip.read("Audiobank_index"))
                 mm_audiotable = bytearray(mm_audiobin_zip.read("Audiotable"))

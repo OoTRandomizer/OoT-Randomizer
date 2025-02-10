@@ -15,7 +15,7 @@ from typing import Any, Optional
 
 import StartingItems
 from version import __version__
-from Utils import local_path, data_path
+from Utils import readonly_local_path, readonly_data_path
 from SettingsList import SettingInfos, validate_settings, settings_versioning
 from Plandomizer import Distribution
 
@@ -64,9 +64,9 @@ def text_to_bit_string(text: str) -> list[int]:
 
 
 def get_preset_files() -> list[str]:
-    return [data_path('presets_default.json')] + sorted(
-            os.path.join(data_path('Presets'), fn)
-            for fn in os.listdir(data_path('Presets'))
+    return [readonly_data_path('presets_default.json')] + sorted(
+            os.path.join(readonly_data_path('Presets'), fn)
+            for fn in os.listdir(readonly_data_path('Presets'))
             if fn.endswith('.json'))
 
 
@@ -435,7 +435,7 @@ def get_settings_from_command_line_args() -> tuple[Settings, bool, str, bool, st
     if args.settings == '-':
         settings_base.update(json.loads(sys.stdin.read()))
     elif args.settings or not settings_base:  # avoid implicitly using settings.sav with presets
-        settingsFile = local_path(args.settings or 'settings.sav')
+        settingsFile = readonly_local_path(args.settings or 'settings.sav')
 
         try:
             with open(settingsFile, encoding='utf-8') as f:

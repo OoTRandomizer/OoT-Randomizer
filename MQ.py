@@ -49,7 +49,7 @@ from struct import pack, unpack
 from typing import Optional, Any
 
 from Rom import Rom
-from Utils import data_path
+from Utils import readonly_data_path
 
 SCENE_TABLE: int = 0xB71440
 
@@ -428,7 +428,7 @@ def patch_files(rom: Rom, mq_scenes: list[int]) -> None:
 
 
 def get_json() -> Any:
-    with open(data_path('mqu.json'), 'r') as stream:
+    with open(readonly_data_path('mqu.json'), 'r') as stream:
         data = json.load(stream)
     return data
 

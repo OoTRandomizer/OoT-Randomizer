@@ -4,7 +4,7 @@ import random
 from enum import IntEnum
 from typing import TYPE_CHECKING
 
-from Utils import data_path
+from Utils import readonly_data_path
 
 if TYPE_CHECKING:
     from Cosmetics import CosmeticsLog
@@ -14,9 +14,9 @@ if TYPE_CHECKING:
 
 def get_model_choices(age: int) -> list[str]:
     names = ["Default"]
-    path = data_path("Models/Adult")
+    path = readonly_data_path("Models/Adult")
     if age == 1:
-        path = data_path("Models/Child")
+        path = readonly_data_path("Models/Child")
     if os.path.exists(path):
         for file in os.listdir(path):
             if file.endswith(".zobj"):
@@ -491,7 +491,7 @@ def LoadModel(rom: Rom, model: str, age: int) -> int:
     hierarchy = ADULT_HIERARCHY
     postconstantstart = ADULT_POST_START
     pieces = AdultPieces
-    path = data_path('Models/Adult')
+    path = readonly_data_path('Models/Adult')
     skips = adultSkips
     skeleton = adultSkeleton
     agestr = "adult" # Just used for error messages
@@ -501,7 +501,7 @@ def LoadModel(rom: Rom, model: str, age: int) -> int:
         hierarchy = CHILD_HIERARCHY
         postconstantstart = CHILD_POST_START
         pieces = ChildPieces
-        path = data_path('Models/Child')
+        path = readonly_data_path('Models/Child')
         skips = childSkips
         skeleton = childSkeleton
         agestr = "child"
@@ -615,7 +615,7 @@ def patch_model_adult(rom: Rom, settings: Settings, log: CosmeticsLog) -> None:
             choices.remove("Default")
             choices.remove("Random")
             model = random.choice(choices)
-        model = data_path(f'Models/Adult/{model}.zobj')
+        model = readonly_data_path(f'Models/Adult/{model}.zobj')
     pathsplit = os.path.basename(model)
     log.settings.model_adult = pathsplit.split('.')[0]
 
@@ -787,7 +787,7 @@ def patch_model_child(rom: Rom, settings: Settings, log: CosmeticsLog) -> None:
             choices.remove("Default")
             choices.remove("Random")
             model = random.choice(choices)
-        model = data_path(f'Models/Child/{model}.zobj')
+        model = readonly_data_path(f'Models/Child/{model}.zobj')
     pathsplit = os.path.basename(model)
     log.settings.model_child = pathsplit.split('.')[0]
 

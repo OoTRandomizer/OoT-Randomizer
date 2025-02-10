@@ -20,7 +20,7 @@ from Messages import Message, COLOR_MAP, update_message_by_id
 from Region import Region
 from Search import Search
 from TextBox import line_wrap
-from Utils import data_path
+from Utils import readonly_data_path
 
 if sys.version_info >= (3, 10):
     from typing import TypeAlias
@@ -1226,14 +1226,14 @@ def build_bingo_hint_list(board_url: str) -> list[str]:
     except (URLError, HTTPError) as e:
         logger = logging.getLogger('')
         logger.info(f"Could not retrieve board info. Using default bingo hints instead: {e}")
-        with open(data_path('Bingo/generic_bingo_hints.json'), 'r') as bingoFile:
+        with open(readonly_data_path('Bingo/generic_bingo_hints.json'), 'r') as bingoFile:
             generic_bingo = json.load(bingoFile)
         return generic_bingo['settings']['item_hints']
 
     # Goal list returned from Bingosync is a sequential list of all of the goals on the bingo board, starting at top-left and moving to the right.
     # Each goal is a dictionary with attributes for name, slot, and colours. The only one we use is the name
     goal_list = [goal['name'] for goal in json.loads(goal_list)]
-    with open(data_path('Bingo/bingo_goals.json'), 'r') as bingoFile:
+    with open(readonly_data_path('Bingo/bingo_goals.json'), 'r') as bingoFile:
         goal_hint_requirements = json.load(bingoFile)
 
     hints_to_add = {}
@@ -1394,7 +1394,7 @@ def build_world_gossip_hints(spoiler: Spoiler, world: World, checked_locations: 
     # Create list of items for which we want hints. If Bingosync URL is supplied, include items specific to that bingo.
     # If not (or if the URL is invalid), use generic bingo hints
     if world.settings.hint_dist == "bingo":
-        with open(data_path('Bingo/generic_bingo_hints.json'), 'r') as bingoFile:
+        with open(readonly_data_path('Bingo/generic_bingo_hints.json'), 'r') as bingoFile:
             bingo_defaults = json.load(bingoFile)
         if world.settings.bingosync_url and world.settings.bingosync_url.startswith("https://bingosync.com/"): # Verify that user actually entered a bingosync URL
             logger = logging.getLogger('')
@@ -1873,9 +1873,9 @@ def natjoin(elements: Iterable[str], conjunction: str = 'and') -> Optional[str]:
 
 
 def hint_dist_files() -> list[str]:
-    return [os.path.join(data_path('Hints/'), d) for d in defaultHintDists] + [
-            os.path.join(data_path('Hints/'), d)
-            for d in sorted(os.listdir(data_path('Hints/')))
+    return [os.path.join(readonly_data_path('Hints/'), d) for d in defaultHintDists] + [
+            os.path.join(readonly_data_path('Hints/'), d)
+            for d in sorted(os.listdir(readonly_data_path('Hints/')))
             if d.endswith('.json') and d not in defaultHintDists]
 
 

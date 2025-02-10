@@ -31,7 +31,7 @@ from SceneFlags import build_xflag_tables, build_xflags_from_world, get_alt_list
 from Sounds import move_audiobank_table
 from Spoiler import Spoiler
 from TextBox import line_wrap
-from Utils import data_path
+from Utils import readonly_data_path
 from World import World
 from ntype import BigStream
 from texture_util import ci4_rgba16patch_to_ci8, rgba16_patch
@@ -46,7 +46,7 @@ OverrideEntry: TypeAlias = "tuple[int, int, int, int, int, int]"
 
 
 def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
-    with open(data_path('generated/rom_patch.txt'), 'r') as stream:
+    with open(readonly_data_path('generated/rom_patch.txt'), 'r') as stream:
         for line in stream:
             address, value = [int(x, 16) for x in line.split(',')]
             rom.write_int32(address, value)
@@ -54,8 +54,8 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     # Binary patches of certain assets.
     bin_patches = [
-        (data_path('title.bin'),  0x01795300),  # Randomizer title screen logo
-        (data_path('keaton.bin'), 0x8A7C00),    # Fixes the typo of "Keatan Mask" in the item select screen
+        (readonly_data_path('title.bin'), 0x01795300),  # Randomizer title screen logo
+        (readonly_data_path('keaton.bin'), 0x8A7C00),    # Fixes the typo of "Keatan Mask" in the item select screen
     ]
 
     for (bin_path, write_address) in bin_patches:
@@ -68,29 +68,29 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     # Load models into the extended object table.
     zobj_imports = (
-        ('object_gi_triforce',    data_path('items/Triforce.zobj'),            0x193),  # Triforce Piece
-        ('object_gi_keyring',     data_path('items/KeyRing.zobj'),             0x195),  # Key Rings
-        ('object_gi_warpsong',    data_path('items/Note.zobj'),                0x196),  # Inverted Music Note
-        ('object_gi_chubag',      data_path('items/ChuBag.zobj'),              0x197),  # Bombchu Bag
-        ('object_gi_skeyforest',  data_path('items/SmallForest.zobj'),         0x199),  # Small Key (Forest)
-        ('object_gi_skeyfire',    data_path('items/SmallFire.zobj'),           0x19A),  # Small Key (Fire)
-        ('object_gi_skeywater',   data_path('items/SmallWater.zobj'),          0x19B),  # Small Key (Water)
-        ('object_gi_skeyspirit',  data_path('items/SmallSpirit.zobj'),         0x19C),  # Small Key (Spirit)
-        ('object_gi_skeyshadow',  data_path('items/SmallShadow.zobj'),         0x19D),  # Small Key (Shadow)
-        ('object_gi_skeywell',    data_path('items/SmallWell.zobj'),           0x19E),  # Small Key (Well)
-        ('object_gi_skeygtg',     data_path('items/SmallGTG.zobj'),            0x19F),  # Small Key (GTG)
-        ('object_gi_skeythieves', data_path('items/SmallThieves.zobj'),        0x1A0),  # Small Key (Thieves)
-        ('object_gi_skeyganon',   data_path('items/SmallGanon.zobj'),          0x1A1),  # Small Key (Ganon)
-        ('object_gi_skeyTCG',     data_path('items/SmallTCG.zobj'),            0x1A2),  # Small Key (Chest Game)
-        ('object_gi_bkforest',    data_path('items/BossForest.zobj'),          0x1A3),  # Boss Key (Forest)
-        ('object_gi_bkfire',      data_path('items/BossFire.zobj'),            0x1A4),  # Boss Key (Fire)
-        ('object_gi_bkwater',     data_path('items/BossWater.zobj'),           0x1A5),  # Boss Key (Water)
-        ('object_gi_bkspirit',    data_path('items/BossSpirit.zobj'),          0x1A6),  # Boss Key (Spirit)
-        ('object_gi_bkshadow',    data_path('items/BossShadow.zobj'),          0x1A7),  # Boss Key (Shadow)
-        ('object_gi_abutton',     data_path('items/A_Button.zobj'),            0x1A8),  # A button
-        ('object_gi_cbutton',     data_path('items/C_Button_Horizontal.zobj'), 0x1A9),  # C button Horizontal
-        ('object_gi_cbutton',     data_path('items/C_Button_Vertical.zobj'),   0x1AA),  # C button Vertical
-        ('object_gi_magic_meter', data_path('items/MagicScroll.zobj'),         0x1B4),  # Magic Scroll
+        ('object_gi_triforce', readonly_data_path('items/Triforce.zobj'), 0x193),  # Triforce Piece
+        ('object_gi_keyring', readonly_data_path('items/KeyRing.zobj'), 0x195),  # Key Rings
+        ('object_gi_warpsong', readonly_data_path('items/Note.zobj'), 0x196),  # Inverted Music Note
+        ('object_gi_chubag', readonly_data_path('items/ChuBag.zobj'), 0x197),  # Bombchu Bag
+        ('object_gi_skeyforest', readonly_data_path('items/SmallForest.zobj'), 0x199),  # Small Key (Forest)
+        ('object_gi_skeyfire', readonly_data_path('items/SmallFire.zobj'), 0x19A),  # Small Key (Fire)
+        ('object_gi_skeywater', readonly_data_path('items/SmallWater.zobj'), 0x19B),  # Small Key (Water)
+        ('object_gi_skeyspirit', readonly_data_path('items/SmallSpirit.zobj'), 0x19C),  # Small Key (Spirit)
+        ('object_gi_skeyshadow', readonly_data_path('items/SmallShadow.zobj'), 0x19D),  # Small Key (Shadow)
+        ('object_gi_skeywell', readonly_data_path('items/SmallWell.zobj'), 0x19E),  # Small Key (Well)
+        ('object_gi_skeygtg', readonly_data_path('items/SmallGTG.zobj'), 0x19F),  # Small Key (GTG)
+        ('object_gi_skeythieves', readonly_data_path('items/SmallThieves.zobj'), 0x1A0),  # Small Key (Thieves)
+        ('object_gi_skeyganon', readonly_data_path('items/SmallGanon.zobj'), 0x1A1),  # Small Key (Ganon)
+        ('object_gi_skeyTCG', readonly_data_path('items/SmallTCG.zobj'), 0x1A2),  # Small Key (Chest Game)
+        ('object_gi_bkforest', readonly_data_path('items/BossForest.zobj'), 0x1A3),  # Boss Key (Forest)
+        ('object_gi_bkfire', readonly_data_path('items/BossFire.zobj'), 0x1A4),  # Boss Key (Fire)
+        ('object_gi_bkwater', readonly_data_path('items/BossWater.zobj'), 0x1A5),  # Boss Key (Water)
+        ('object_gi_bkspirit', readonly_data_path('items/BossSpirit.zobj'), 0x1A6),  # Boss Key (Spirit)
+        ('object_gi_bkshadow', readonly_data_path('items/BossShadow.zobj'), 0x1A7),  # Boss Key (Shadow)
+        ('object_gi_abutton', readonly_data_path('items/A_Button.zobj'), 0x1A8),  # A button
+        ('object_gi_cbutton', readonly_data_path('items/C_Button_Horizontal.zobj'), 0x1A9),  # C button Horizontal
+        ('object_gi_cbutton', readonly_data_path('items/C_Button_Vertical.zobj'), 0x1AA),  # C button Vertical
+        ('object_gi_magic_meter', readonly_data_path('items/MagicScroll.zobj'), 0x1B4),  # Magic Scroll
     )
 
     if world.settings.key_appearance_match_dungeon:
@@ -266,7 +266,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     extended_textures_start = start_address = rom.dma.free_space()
     for texture_id, texture_name, rom_address_base, rom_address_palette, size, func, patch_file in crate_textures:
         # Apply the texture patch. Resulting texture will be stored in texture_data as a bytearray
-        texture_data = func(rom, rom_address_base, rom_address_palette, size, data_path(patch_file) if patch_file else None)
+        texture_data = func(rom, rom_address_base, rom_address_palette, size, readonly_data_path(patch_file) if patch_file else None)
         rom.write_bytes(start_address, texture_data)  # write the bytes to our new file
         end_address = ((start_address + len(texture_data) + 0x0F) >> 4) << 4
 
@@ -2089,7 +2089,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             bfa_message = make_player_message(bfa_message)
         update_message_by_id(messages, 0x0071, bfa_message, 0x23, allow_duplicates=True)
 
-        with open(data_path('blue_fire_arrow_item_name_eng.ia4'), 'rb') as stream:
+        with open(readonly_data_path('blue_fire_arrow_item_name_eng.ia4'), 'rb') as stream:
             bfa_name_bytes = stream.read()
             rom.write_bytes(0x8a1c00, bfa_name_bytes)
 

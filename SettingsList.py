@@ -16,7 +16,7 @@ from SettingTypes import SettingInfo, SettingInfoStr, SettingInfoList, SettingIn
     SearchBox
 import Sounds
 import StartingItems
-from Utils import data_path
+from Utils import readonly_data_path
 
 if TYPE_CHECKING:
     from Entrance import Entrance
@@ -5565,7 +5565,7 @@ class UnmappedSettingError(Exception):
 
 
 SettingInfos.setting_infos = {n: s for n, s in SettingInfos.__dict__.items() if isinstance(s, SettingInfo)}
-with open(data_path('settings_mapping.json')) as f:
+with open(readonly_data_path('settings_mapping.json')) as f:
     SettingInfos.setting_map = json.load(f)
 
 for info in SettingInfos.setting_infos.values():

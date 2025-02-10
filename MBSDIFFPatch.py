@@ -7,7 +7,7 @@ import shutil
 from typing import Optional
 
 from Rom import Rom
-from Utils import default_output_path, is_bundled, local_path, run_process
+from Utils import default_output_path, is_bundled, readonly_local_path, run_process
 from ntype import BigStream
 
 
@@ -57,7 +57,7 @@ def apply_ootr_3_web_patch(settings, rom: Rom) -> None:
 
         # Patch the base ROM.
         decompressed_patched_rom_file = output_path + "_patched.z64"
-        run_process(logger, [minibsdiff_path, "app", local_path('ZOOTDEC.z64'), decompressed_patch_file, decompressed_patched_rom_file])
+        run_process(logger, [minibsdiff_path, "app", readonly_local_path('ZOOTDEC.z64'), decompressed_patch_file, decompressed_patched_rom_file])
         os.remove(decompressed_patch_file)
 
         # Read the ROM back in and check for changes.

@@ -13,7 +13,7 @@ import time
 def start() -> None:
     from Main import main, from_patch_file, cosmetic_patch, diff_roms
     from Settings import get_settings_from_command_line_args
-    from Utils import check_version, VersionError, local_path
+    from Utils import check_version, VersionError, readonly_local_path
     settings, gui, args_loglevel, no_log_file, diff_rom = get_settings_from_command_line_args()
 
     # set up logger
@@ -25,7 +25,7 @@ def start() -> None:
     if not no_log_file:
         ts = time.time()
         st = datetime.datetime.fromtimestamp(ts).strftime('%Y-%m-%d %H-%M-%S')
-        log_dir = local_path('Logs')
+        log_dir = readonly_local_path('Logs')
         os.makedirs(log_dir, exist_ok=True)
         log_path = os.path.join(log_dir, '%s.log' % st)
         log_file = logging.FileHandler(log_path)

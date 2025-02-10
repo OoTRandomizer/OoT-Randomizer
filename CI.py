@@ -18,7 +18,7 @@ import Unittest as Tests
 from Messages import ITEM_MESSAGES, KEYSANITY_MESSAGES, MISC_MESSAGES
 from SettingsList import SettingInfos, logic_tricks, validate_settings
 import Unittest as Tests
-from Utils import data_path
+from Utils import readonly_data_path
 
 
 def error(msg: str, can_fix: bool) -> None:
@@ -47,7 +47,7 @@ def run_unit_tests() -> None:
 
 def check_presets_formatting(fix_errors: bool = False) -> None:
     # Check the code style of presets_default.json
-    with open(data_path('presets_default.json'), encoding='utf-8') as f:
+    with open(readonly_data_path('presets_default.json'), encoding='utf-8') as f:
         presets = json.load(f)
 
     any_errors = False
@@ -63,13 +63,13 @@ def check_presets_formatting(fix_errors: bool = False) -> None:
     if any_errors:
         return
 
-    with open(data_path('presets_default.json'), encoding='utf-8') as f:
+    with open(readonly_data_path('presets_default.json'), encoding='utf-8') as f:
         presets_str = f.read()
 
     if presets_str != json.dumps(presets, indent=4) + '\n':
         error('presets not formatted correctly', True)
         if fix_errors:
-            with open(data_path('presets_default.json'), 'w', encoding='utf-8', newline='') as file:
+            with open(readonly_data_path('presets_default.json'), 'w', encoding='utf-8', newline='') as file:
                 json.dump(presets, file, indent=4)
                 print(file=file)
         else:
@@ -88,14 +88,14 @@ def check_presets_formatting(fix_errors: bool = False) -> None:
     if presets_str != json.dumps(presets, indent=4) + '\n':
         error('presets not sorted correctly', True)
         if fix_errors:
-            with open(data_path('presets_default.json'), 'w', encoding='utf-8', newline='') as file:
+            with open(readonly_data_path('presets_default.json'), 'w', encoding='utf-8', newline='') as file:
                 json.dump(presets, file, indent=4)
                 print(file=file)
 
 
 def check_hell_mode_tricks(fix_errors: bool = False) -> None:
     # Check for tricks missing from Hell Mode preset.
-    with open(data_path('presets_default.json'), encoding='utf-8') as f:
+    with open(readonly_data_path('presets_default.json'), encoding='utf-8') as f:
         presets = json.load(f)
 
     for trick in logic_tricks.values():
@@ -108,14 +108,14 @@ def check_hell_mode_tricks(fix_errors: bool = False) -> None:
 
     if fix_errors:
         presets['Hell Mode']['allowed_tricks'] = [trick['name'] for trick in logic_tricks.values()]
-        with open(data_path('presets_default.json'), 'w', encoding='utf-8', newline='') as file:
+        with open(readonly_data_path('presets_default.json'), 'w', encoding='utf-8', newline='') as file:
             json.dump(presets, file, indent=4)
             print(file=file)
 
 
 def check_preset_spoilers(fix_errors: bool = False) -> None:
     # Check to make sure spoiler logs are enabled for all presets.
-    with open(data_path('presets_default.json'), encoding='utf-8') as f:
+    with open(readonly_data_path('presets_default.json'), encoding='utf-8') as f:
         presets = json.load(f)
 
     for preset_name, preset in presets.items():
@@ -124,7 +124,7 @@ def check_preset_spoilers(fix_errors: bool = False) -> None:
             preset['create_spoiler'] = True
 
     if fix_errors:
-        with open(data_path('presets_default.json'), 'w', encoding='utf-8', newline='') as file:
+        with open(readonly_data_path('presets_default.json'), 'w', encoding='utf-8', newline='') as file:
             json.dump(presets, file, indent=4)
             print(file=file)
 
@@ -223,7 +223,7 @@ def check_table_sizes() -> None:
     resolve_settings(settings)
     world = World(0,settings)
     for filename in ('Overworld.json', 'Bosses.json'):
-        world.load_regions_from_json(os.path.join(data_path('World'), filename))
+        world.load_regions_from_json(os.path.join(readonly_data_path('World'), filename))
     world.create_dungeons()
 
     xflags_tables, alt_list = build_xflags_from_world(world)

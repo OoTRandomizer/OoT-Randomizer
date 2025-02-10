@@ -30,7 +30,7 @@ from dataclasses import dataclass
 from enum import Enum
 
 from Rom import Rom
-from Utils import data_path
+from Utils import readonly_data_path
 
 
 class Tags(Enum):
@@ -255,7 +255,7 @@ def get_voice_sfx_choices(age: int, include_random: bool = True) -> list[str]:
     # Dynamically populate the SettingsList entry for the voice effects
     # Voice packs should be a folder of .bin files in the Voices/{age} directory
     names = ['Default', 'Silent']
-    voices_path = os.path.join(data_path('Voices'), ('Child' if age == 0 else 'Adult'))
+    voices_path = os.path.join(readonly_data_path('Voices'), ('Child' if age == 0 else 'Adult'))
     if os.path.isdir(voices_path):
         names += [f for f in os.listdir(voices_path) if os.path.isdir(os.path.join(voices_path, f))]
 

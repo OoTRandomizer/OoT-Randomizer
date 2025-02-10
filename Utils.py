@@ -27,7 +27,7 @@ def user_config_path(path: str = '') -> str:
     if user_config_path.cached_path is not None:
         return os.path.join(user_config_path.cached_path, path)
 
-    user_config_path.cached_path = local_path('')
+    user_config_path.cached_path = readonly_local_path('')
     if not os.access(user_config_path.cached_path, os.W_OK):
         # Cannot write to application directory. Either sandboxed or installed for all users
         if platform.system() == 'Linux':
@@ -47,7 +47,7 @@ def user_cache_path(path: str = '') -> str:
     if user_cache_path.cached_path is not None:
         return os.path.join(user_cache_path.cached_path, path)
 
-    user_cache_path.cached_path = local_path('')
+    user_cache_path.cached_path = readonly_local_path('')
     if not os.access(user_cache_path.cached_path, os.W_OK):
         # Cannot write to application directory. Either sandboxed or installed for all users
         if platform.system() == 'Linux':
@@ -67,7 +67,7 @@ def user_data_path(path: str = '') -> str:
     if user_data_path.cached_path is not None:
         return os.path.join(user_data_path.cached_path, path)
 
-    user_data_path.cached_path = local_path('')
+    user_data_path.cached_path = readonly_local_path('')
     if not os.access(user_data_path.cached_path, os.W_OK):
         # Cannot write to application directory. Either sandboxed or installed for all users
         if platform.system() == 'Linux':
@@ -87,7 +87,7 @@ def user_state_path(path: str = '') -> str:
     if user_state_path.cached_path is not None:
         return os.path.join(user_state_path.cached_path, path)
 
-    user_state_path.cached_path = local_path('')
+    user_state_path.cached_path = readonly_local_path('')
     if not os.access(user_state_path.cached_path, os.W_OK):
         # Cannot write to application directory. Either sandboxed or installed for all users
         if platform.system() == 'Linux':
@@ -100,41 +100,41 @@ def user_state_path(path: str = '') -> str:
     return os.path.join(user_state_path.cached_path, path)
 
 
-def local_path(path: str = '') -> str:
-    if not hasattr(local_path, "cached_path"):
-        local_path.cached_path = None
+def readonly_local_path(path: str = '') -> str:
+    if not hasattr(readonly_local_path, "cached_path"):
+        readonly_local_path.cached_path = None
 
-    if local_path.cached_path is not None:
-        return os.path.join(local_path.cached_path, path)
+    if readonly_local_path.cached_path is not None:
+        return os.path.join(readonly_local_path.cached_path, path)
 
     if is_bundled():
         # we are running in a bundle
-        local_path.cached_path = os.path.dirname(os.path.realpath(sys.executable))
+        readonly_local_path.cached_path = os.path.dirname(os.path.realpath(sys.executable))
     else:
         # we are running in a normal Python environment
-        local_path.cached_path = os.path.dirname(os.path.realpath(__file__))
+        readonly_local_path.cached_path = os.path.dirname(os.path.realpath(__file__))
 
-    return os.path.join(local_path.cached_path, path)
+    return os.path.join(readonly_local_path.cached_path, path)
 
 
-def data_path(path: str = '') -> str:
-    if not hasattr(data_path, "cached_path"):
-        data_path.cached_path = None
+def readonly_data_path(path: str = '') -> str:
+    if not hasattr(readonly_data_path, "cached_path"):
+        readonly_data_path.cached_path = None
 
-    if data_path.cached_path is not None:
-        return os.path.join(data_path.cached_path, path)
+    if readonly_data_path.cached_path is not None:
+        return os.path.join(readonly_data_path.cached_path, path)
 
     # Even if it's bundled we use __file__
     # if it's not bundled, then we want to use the source.py dir + Data
     # if it's bundled, then we want to use the extraction dir + Data
-    data_path.cached_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
+    readonly_data_path.cached_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
 
-    return os.path.join(data_path.cached_path, path)
+    return os.path.join(readonly_data_path.cached_path, path)
 
 
 def default_output_path(path: str) -> str:
     if path == '':
-        path = local_path('Output')
+        path = readonly_local_path('Output')
 
     if not os.path.exists(path):
         os.mkdir(path)
