@@ -139,6 +139,7 @@ issue. You should always Hard Reset to avoid this issue entirely.
 * Fix the items in the “Haunted Wasteland Checks” Dual hint being listed reverse.
 * Fix a crash that could occur on Wii VC when entering the Skull Kid room in Lost Woods as adult.
 * Fix `Pre-completed Dungeons Mode` set to `Specific Rewards` not accounting for boss entrance randomizer.
+* Fix the “VC Crash” bug.
 
 #### New Speedups
 * The first text box from each carpenter in the Thieves' Hideout is skipped.

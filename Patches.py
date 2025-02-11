@@ -68,29 +68,29 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     # Load models into the extended object table.
     zobj_imports = (
-        ('object_gi_triforce', readonly_data_path('items/Triforce.zobj'), 0x193),  # Triforce Piece
-        ('object_gi_keyring', readonly_data_path('items/KeyRing.zobj'), 0x195),  # Key Rings
-        ('object_gi_warpsong', readonly_data_path('items/Note.zobj'), 0x196),  # Inverted Music Note
-        ('object_gi_chubag', readonly_data_path('items/ChuBag.zobj'), 0x197),  # Bombchu Bag
-        ('object_gi_skeyforest', readonly_data_path('items/SmallForest.zobj'), 0x199),  # Small Key (Forest)
-        ('object_gi_skeyfire', readonly_data_path('items/SmallFire.zobj'), 0x19A),  # Small Key (Fire)
-        ('object_gi_skeywater', readonly_data_path('items/SmallWater.zobj'), 0x19B),  # Small Key (Water)
-        ('object_gi_skeyspirit', readonly_data_path('items/SmallSpirit.zobj'), 0x19C),  # Small Key (Spirit)
-        ('object_gi_skeyshadow', readonly_data_path('items/SmallShadow.zobj'), 0x19D),  # Small Key (Shadow)
-        ('object_gi_skeywell', readonly_data_path('items/SmallWell.zobj'), 0x19E),  # Small Key (Well)
-        ('object_gi_skeygtg', readonly_data_path('items/SmallGTG.zobj'), 0x19F),  # Small Key (GTG)
+        ('object_gi_triforce',    readonly_data_path('items/Triforce.zobj'), 0x193),  # Triforce Piece
+        ('object_gi_keyring',     readonly_data_path('items/KeyRing.zobj'), 0x195),  # Key Rings
+        ('object_gi_warpsong',    readonly_data_path('items/Note.zobj'), 0x196),  # Inverted Music Note
+        ('object_gi_chubag',      readonly_data_path('items/ChuBag.zobj'), 0x197),  # Bombchu Bag
+        ('object_gi_skeyforest',  readonly_data_path('items/SmallForest.zobj'), 0x199),  # Small Key (Forest)
+        ('object_gi_skeyfire',    readonly_data_path('items/SmallFire.zobj'), 0x19A),  # Small Key (Fire)
+        ('object_gi_skeywater',   readonly_data_path('items/SmallWater.zobj'), 0x19B),  # Small Key (Water)
+        ('object_gi_skeyspirit',  readonly_data_path('items/SmallSpirit.zobj'), 0x19C),  # Small Key (Spirit)
+        ('object_gi_skeyshadow',  readonly_data_path('items/SmallShadow.zobj'), 0x19D),  # Small Key (Shadow)
+        ('object_gi_skeywell',    readonly_data_path('items/SmallWell.zobj'), 0x19E),  # Small Key (Well)
+        ('object_gi_skeygtg',     readonly_data_path('items/SmallGTG.zobj'), 0x19F),  # Small Key (GTG)
         ('object_gi_skeythieves', readonly_data_path('items/SmallThieves.zobj'), 0x1A0),  # Small Key (Thieves)
-        ('object_gi_skeyganon', readonly_data_path('items/SmallGanon.zobj'), 0x1A1),  # Small Key (Ganon)
-        ('object_gi_skeyTCG', readonly_data_path('items/SmallTCG.zobj'), 0x1A2),  # Small Key (Chest Game)
-        ('object_gi_bkforest', readonly_data_path('items/BossForest.zobj'), 0x1A3),  # Boss Key (Forest)
-        ('object_gi_bkfire', readonly_data_path('items/BossFire.zobj'), 0x1A4),  # Boss Key (Fire)
-        ('object_gi_bkwater', readonly_data_path('items/BossWater.zobj'), 0x1A5),  # Boss Key (Water)
-        ('object_gi_bkspirit', readonly_data_path('items/BossSpirit.zobj'), 0x1A6),  # Boss Key (Spirit)
-        ('object_gi_bkshadow', readonly_data_path('items/BossShadow.zobj'), 0x1A7),  # Boss Key (Shadow)
-        ('object_gi_abutton', readonly_data_path('items/A_Button.zobj'), 0x1A8),  # A button
-        ('object_gi_cbutton', readonly_data_path('items/C_Button_Horizontal.zobj'), 0x1A9),  # C button Horizontal
-        ('object_gi_cbutton', readonly_data_path('items/C_Button_Vertical.zobj'), 0x1AA),  # C button Vertical
-        ('object_gi_magic_meter', readonly_data_path('items/MagicScroll.zobj'), 0x1B4),  # Magic Scroll
+        ('object_gi_skeyganon',   readonly_data_path('items/SmallGanon.zobj'), 0x1A1),  # Small Key (Ganon)
+        ('object_gi_skeyTCG',     readonly_data_path('items/SmallTCG.zobj'), 0x1A2),  # Small Key (Chest Game)
+        ('object_gi_bkforest',    readonly_data_path('items/BossForest.zobj'), 0x1A3),  # Boss Key (Forest)
+        ('object_gi_bkfire',      readonly_data_path('items/BossFire.zobj'), 0x1A4),  # Boss Key (Fire)
+        ('object_gi_bkwater',     readonly_data_path('items/BossWater.zobj'), 0x1A5),  # Boss Key (Water)
+        ('object_gi_bkspirit',    readonly_data_path('items/BossSpirit.zobj'), 0x1A6),  # Boss Key (Spirit)
+        ('object_gi_bkshadow',    readonly_data_path('items/BossShadow.zobj'), 0x1A7),  # Boss Key (Shadow)
+        ('object_gi_abutton',     readonly_data_path('items/A_Button.zobj'), 0x1A8),  # A button
+        ('object_gi_cbutton',     readonly_data_path('items/C_Button_Horizontal.zobj'), 0x1A9),  # C button Horizontal
+        ('object_gi_cbutton',     readonly_data_path('items/C_Button_Vertical.zobj'), 0x1AA),  # C button Vertical
+        ('object_gi_magic_meter', readonly_data_path('items/MagicMeter.zobj'), 0x1B4),  # Magic Scroll
     )
 
     if world.settings.key_appearance_match_dungeon:

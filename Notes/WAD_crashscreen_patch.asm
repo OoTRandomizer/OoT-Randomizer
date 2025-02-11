@@ -25,8 +25,8 @@
 #0x1BF8 - 0xC8 xxxx
 #0x1CF8 - 0x4C8 xx-- strings
 #0x21F8 - 0xC8 xxx- pollController
-#0x22F8 - 0xC8 ----
-#0x23F8 - 0xC8 xx-- hooks
+#0x22F8 - 0xC8 x--- hooks
+#0x23F8 - 0xC8 xxx- hooks
 #
 #=======================================================================
 
@@ -100,6 +100,7 @@
 .set OSGetTime, 0x00093674
 .set OSGetTick, 0x0009368C
 .set GXAbortFrame, 0x0009FAC8
+.set GXSetCullMode, 0x000A0614
 
 .set __save_gpr, 0x000152E30   #(r14)-0x48
 .set __restore_gpr, 0x00152E7C #(r14)-0x48
@@ -150,6 +151,7 @@
 #.set OSGetTime, 0x00093668
 #.set OSGetTick, 0x00093680
 #.set GXAbortFrame, 0x0009FABC
+#.set GXSetCullMode, 0x000A0608
 #
 #.set __save_gpr, 0x00152E24   #(r14)-0x48
 #.set __restore_gpr, 0x00152E70 #(r14)-0x48
@@ -1584,10 +1586,10 @@ strMiscInfoBroke: .string "VC Misc info unavailable"
 strLoadInROM: .string "%ld MB"
 
 strPatchDate: .string "
-OoTR US Patch 2024-11-25 Test"
+OoTR US Patch 2025-01-27"
 
 #strPatchDate: .string "
-#OoTR JP Patch 2024-11-25 Test"
+#OoTR JP Patch 2025-01-27"
 
 .align 2
 #=====================================
@@ -1641,6 +1643,18 @@ lwz r0, 0x14(sp)
 mtlr r0
 addi sp, sp, 0x10
 blr
+#=======================================
+.org 0x61F8 - chunk0offset     #0x22F8
+extCallPatch:
+mr r3, r28
+mr r5, r29
+addi r4, sp, 0x20
+bl cpuExecuteUpdate - chunk0offset - $
+stw r3, 0x24(sp)
+li r4, 0
+lwz r3, 0x0C(sp)
+b cpuEChookend - chunk0offset + chunk1offset - $
+nop
 #============================
 .org 0x62F8 - chunk0offset     #0x23F8
 FindFuncFailHook:
@@ -1676,6 +1690,10 @@ stwu sp, -0x10(sp)
 mflr r0
 stw r0, 0x14(sp)
 
+lhz r5, 0x02(r3)
+cmpi 0, r5, loadUpStrCompare
+bne supContinue
+
 lis r5, 0x8000
 lwz r4, chunk0offset + StartupTimer@l(r5)
 addi r4, r4, 1
@@ -1684,34 +1702,20 @@ stw r4, chunk0offset + StartupTimer@l(r5)
 
 ble supContinue
 
-lhz r5, 0x02(r3)
-cmpi 0, r5, loadUpStrCompare
-bne supContinue
-
 li r3, 0x0B
 bl errorDisplayShow - chunk0offset - $
 b supFinish
 
-
 supContinue:
 bl errorDisplayPrint - chunk0offset - $
+li r3, 0
+bl GXSetCullMode - chunk0offset - $
 
 supFinish:
 lwz r0, 0x14(sp)
 mtlr r0
 addi sp, sp, 0x10
 blr
-#=======================================
-extCallPatch:
-mr r3, r28
-mr r5, r29
-addi r4, sp, 0x20
-bl cpuExecuteUpdate - chunk0offset - $
-stw r3, 0x24(sp)
-li r4, 0
-lwz r3, 0x0C(sp)
-b cpuEChookend - chunk0offset + chunk1offset - $
-nop
 #=======================================
 # Hooks
 #

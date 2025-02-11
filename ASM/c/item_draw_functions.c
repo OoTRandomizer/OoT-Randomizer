@@ -17,6 +17,8 @@ typedef Gfx* (*gen_double_tile_fn)(z64_gfx_t* gfx, int32_t tile1, uint32_t x1, u
 #define append_setup_dl_25_to_xlu ((append_setup_dl_25_to_xlu_fn)0x8007E2C0)
 #define gen_double_tile ((gen_double_tile_fn)0x8007EB84)
 
+extern z64_actor_t* curr_drawn_actor;
+
 void draw_gi_bombchu_and_masks(z64_game_t* game, uint32_t draw_id) {
     z64_gfx_t* gfx = game->common.gfx;
 
@@ -719,28 +721,35 @@ void draw_gi_magic_meter(z64_game_t* game, uint32_t draw_id) {
     z64_gfx_t *gfx = game->common.gfx;
 
     // Magic
-    colorRGBA8_t prim_color = item_draw_table[draw_id].args[3].color;
+    colorRGBA8_t prim_color = item_draw_table[draw_id].args[5].color;
     if (CFG_CORRECT_MODEL_COLORS) {
-        prim_color.r = CFG_MAGIC_COLOR .r;
-        prim_color.g = CFG_MAGIC_COLOR .g;
-        prim_color.b = CFG_MAGIC_COLOR .b;
+        prim_color.r = CFG_MAGIC_COLOR.r;
+        prim_color.g = CFG_MAGIC_COLOR.g;
+        prim_color.b = CFG_MAGIC_COLOR.b;
     }
-    colorRGBA8_t env_color = item_draw_table[draw_id].args[4].color;
+    colorRGBA8_t env_color = item_draw_table[draw_id].args[6].color;
 
-    //Writing
+    uint8_t alpha = 0x80;
+    if (curr_drawn_actor != NULL && curr_drawn_actor->actor_id == 21) {// En_Item00
+        if (curr_drawn_actor->distsq_from_link > 2.5e5) {
+            alpha = 0xFF;
+        }
+    }
+
+    // Writing
     append_setup_dl_25_to_xlu(gfx);
     gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[4].dlist);
-   // Shine
+    // Shine
     append_setup_dl_25_to_xlu(gfx);
     gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
-    gDPSetPrimColor(gfx->poly_xlu.p++, 0, 0x80, prim_color.r, prim_color.g, prim_color.b, 0x40);
+    gDPSetPrimColor(gfx->poly_xlu.p++, 0, 0x80, prim_color.r, prim_color.g, prim_color.b, alpha);
     gDPSetEnvColor(gfx->poly_xlu.p++, env_color.r, env_color.g, env_color.b, env_color.a);
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[2].dlist);
-   // Jar
+    // Jar
     append_setup_dl_25_to_xlu(gfx);
     gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
-    gDPSetPrimColor(gfx->poly_xlu.p++, 0, 0x80, prim_color.r, prim_color.g, prim_color.b, 0x40);
+    gDPSetPrimColor(gfx->poly_xlu.p++, 0, 0x80, prim_color.r, prim_color.g, prim_color.b, alpha);
     gDPSetEnvColor(gfx->poly_xlu.p++, env_color.r, env_color.g, env_color.b, env_color.a);
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[0].dlist);
     // Label
