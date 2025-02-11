@@ -32,31 +32,6 @@ console.log("Python Source Path:", pythonGeneratorPath);
 var localConfigWritePath: string;
 var localDataWritePath: string;
 
-try {
-  fs.accessSync(pythonSourcePath, fs.constants.W_OK)
-  localConfigWritePath = localDataWritePath = pythonSourcePath;
-} catch (err) {
-  // Cannot write to application directory. Either sandboxed or installed for all users.
-  if (platform === 'linux') {
-    const xdgConfig = fs.existsSync(process.env.XDG_CONFIG_HOME) ? process.env.XDG_CONFIG_HOME : path.join(os.homedir(), '.config', 'ootr-electron-gui');
-    const xdgData = fs.existsSync(process.env.XDG_DATA_HOME) ? process.env.XDG_DATA_HOME : path.join(os.homedir(), '.local', 'share', 'ootr-electron-gui');
-    [xdgConfig, xdgData].forEach((xdgPath: string) => {
-      if (!fs.existsSync(xdgPath)) {
-        fs.mkdirSync(xdgPath, {recursive: true, mode: 0o700});
-      }
-      fs.accessSync(xdgPath, fs.constants.W_OK);
-    });
-
-    localConfigWritePath = xdgConfig;
-    localDataWritePath = xdgData;
-  } else {
-    throw err;
-  }
-}
-
-console.log("Configuration Write Path:", localConfigWritePath);
-console.log("Data Write Path:", localDataWritePath);
-
 //Enable API in client window
 electron.webFrame.executeJavaScript('window.electronAvailable = true;');
 electron.webFrame.executeJavaScript('window.apiTestMode = ' + testMode + ';');
@@ -414,3 +389,30 @@ generator.testPythonPath(pythonPath).then(() => {
   console.error(err);
   displayPythonErrorAndExit();
 });
+
+// Test if source path is writable. If not, use user-specified locations, or if not specified sane defaults
+try {
+  fs.accessSync(pythonSourcePath, fs.constants.W_OK)
+  localConfigWritePath = localDataWritePath = pythonSourcePath;
+} catch (err) {
+  // Cannot write to application directory. Either sandboxed or installed for all users.
+  if (platform === 'linux') {
+    const xdgConfig = path.join(fs.existsSync(process.env.XDG_CONFIG_HOME) ? process.env.XDG_CONFIG_HOME : path.join(os.homedir(), '.config'), 'ootr-electron-gui');
+    const xdgData = path.join(fs.existsSync(process.env.XDG_DATA_HOME) ? process.env.XDG_DATA_HOME : path.join(os.homedir(), '.local', 'share'), 'ootr-electron-gui');
+    [xdgConfig, xdgData].forEach((xdgPath: string) => {
+      if (!fs.existsSync(xdgPath)) {
+        fs.mkdirSync(xdgPath, {recursive: true, mode: 0o700});
+      }
+      fs.accessSync(xdgPath, fs.constants.W_OK);
+    });
+
+    localConfigWritePath = xdgConfig;
+    localDataWritePath = xdgData;
+  } else {
+    alert("Read-only paths are not supported on this platform.");
+    remote.app.quit();
+  }
+}
+
+console.log("Configuration Write Path:", localConfigWritePath);
+console.log("Data Write Path:", localDataWritePath);
