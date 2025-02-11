@@ -23,28 +23,39 @@ console.log("Platform:", platform);
 
 var pythonPath = commander.python ? '"' + commander.python + '"' : platform == "win32" ? "py" : "python3";
 var pythonSourcePath = path.normalize(remote.app.isPackaged ? remote.app.getAppPath() + "/python/" : remote.app.getAppPath() + "/../");
-var localWritePath: string;
-try {
-  fs.accessSync(pythonSourcePath, fs.constants.W_OK)
-  localWritePath = pythonSourcePath;
-} catch (err) {
-  // Cannot write to application directory. Either sandboxed or installed for all users.
-  if (platform === 'linux') {
-    const xdgConfig = fs.existsSync(process.env.XDG_CONFIG_HOME) ? process.env.XDG_CONFIG_HOME : path.join(os.homedir(), '.config');
-    localWritePath = path.join(xdgConfig, 'ootr-electron-gui');
-    if (!fs.existsSync(localWritePath)) {
-      fs.mkdirSync(localWritePath, {recursive: true, mode: 0o700});
-    }
-    fs.accessSync(localWritePath, fs.constants.W_OK);
-  } else {
-    throw err;
-  }
-}
 var pythonGeneratorPath = pythonSourcePath + "OoTRandomizer.py";
 var pythonSettingsToJsonPath = pythonSourcePath + "SettingsToJson.py";
 
 console.log("Python Executable Path:", pythonPath);
 console.log("Python Source Path:", pythonGeneratorPath);
+
+var localConfigWritePath: string;
+var localDataWritePath: string;
+
+try {
+  fs.accessSync(pythonSourcePath, fs.constants.W_OK)
+  localConfigWritePath = localDataWritePath = pythonSourcePath;
+} catch (err) {
+  // Cannot write to application directory. Either sandboxed or installed for all users.
+  if (platform === 'linux') {
+    const xdgConfig = fs.existsSync(process.env.XDG_CONFIG_HOME) ? process.env.XDG_CONFIG_HOME : path.join(os.homedir(), '.config', 'ootr-electron-gui');
+    const xdgData = fs.existsSync(process.env.XDG_DATA_HOME) ? process.env.XDG_DATA_HOME : path.join(os.homedir(), '.local', 'share', 'ootr-electron-gui');
+    [xdgConfig, xdgData].forEach((xdgPath: string) => {
+      if (!fs.existsSync(xdgPath)) {
+        fs.mkdirSync(xdgPath, {recursive: true, mode: 0o700});
+      }
+      fs.accessSync(xdgPath, fs.constants.W_OK);
+    });
+
+    localConfigWritePath = xdgConfig;
+    localDataWritePath = xdgData;
+  } else {
+    throw err;
+  }
+}
+
+console.log("Configuration Write Path:", localConfigWritePath);
+console.log("Data Write Path:", localDataWritePath);
 
 //Enable API in client window
 electron.webFrame.executeJavaScript('window.electronAvailable = true;');
@@ -77,11 +88,11 @@ remote.getCurrentWindow().on('leave-html-full-screen', () => {
 function dumpSettingsToFile(settingsObj) {
   settingsObj["check_version"] = true;
 
-  fs.writeFileSync(path.join(localWritePath, "settings.sav"), JSON.stringify(settingsObj, null, 4));
+  fs.writeFileSync(path.join(localConfigWritePath, "settings.sav"), JSON.stringify(settingsObj, null, 4));
 }
 
 function dumpPresetsToFile(presetsString: string) {
-  fs.writeFileSync(path.join(localWritePath, "presets.sav"), presetsString);
+  fs.writeFileSync(path.join(localConfigWritePath, "presets.sav"), presetsString);
 }
 
 function displayPythonErrorAndExit(notPython3: boolean = false) {
@@ -99,7 +110,7 @@ function displayPythonErrorAndExit(notPython3: boolean = false) {
 
 function readSettingsFromFile() {
 
-  let settings = path.join(localWritePath, "settings.sav");
+  let settings = path.join(localConfigWritePath, "settings.sav");
 
   if (fs.existsSync(settings))
     return fs.readFileSync(settings, 'utf8');
@@ -185,11 +196,11 @@ post.on('createAndOpenPath', function (event) {
 
   //Use python dir if not specified otherwise
   if (!data || typeof (data) != "string" || data.length < 1) {
-    data = pythonSourcePath;
+    data = localDataWritePath;
   }
   else {
     if (!path.isAbsolute(data))
-      data = pythonSourcePath + data;
+      data = path.join(localDataWritePath, data);
   }
 
   if (fs.existsSync(data)) {
