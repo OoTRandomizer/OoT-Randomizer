@@ -1,5 +1,7 @@
 # Much of this is heavily inspired from and/or based on az64's / Deathbasket's MM randomizer
 from __future__ import annotations
+
+import shutil
 from enum import Enum
 import io
 import itertools
@@ -178,7 +180,15 @@ def process_sequences(rom: Rom, ids: Iterable[tuple[str, int]], seq_type: str = 
     #   .meta metadata file
     # And optionally .zbank, .bankmeta, and .zsound files
 
-    for dirpath, _, filenames in os.walk(os.path.join(user_data_path(), 'Music'), followlinks=True):
+    music_dir = user_data_path('Music')
+    if not os.path.isdir(music_dir):
+        # Music path doesn't exist, or is on read-only filesystem. Create Music folder in writable location and try to
+        # copy default contents from read-only files to writable files
+        os.makedirs(music_dir, mode=0o700, exist_ok=True)
+        default_files = os.listdir(readonly_data_path('Music'))
+        for file in default_files:
+            shutil.copy(readonly_data_path(os.path.join('Music', file)), os.path.join(music_dir, file))
+    for dirpath, _, filenames in os.walk(music_dir, followlinks=True):
         for fname in filenames:
             # Skip if included in exclusion file
             if fname in seq_exclusion_list:
