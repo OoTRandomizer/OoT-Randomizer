@@ -27,7 +27,7 @@ from Rules import set_rules, set_shop_rules
 from Settings import Settings
 from SettingsList import logic_tricks
 from Spoiler import Spoiler
-from Utils import default_output_path, is_bundled, run_process, readonly_data_path
+from Utils import default_output_path, is_bundled, run_process, readonly_data_path, user_state_path, readonly_local_path
 from World import World
 from version import __version__
 
@@ -296,8 +296,9 @@ def generate_wad(wad_file: str, rom_file: str, output_file: str, channel_title: 
     else:
         raise RuntimeError('Base WAD file is not a valid OoT USA or JPN wad.')
 
-    gzinject_path = "./" if is_bundled() else "bin/gzinject/"
+    gzinject_path = readonly_local_path() if is_bundled() else readonly_local_path("bin/gzinject/")
     gzinject_patch_path = gzinject_path + wad_patch_name
+    common_key_path = user_state_path()
     if platform.system() == 'Windows':
         if platform.machine() == 'AMD64':
             gzinject_path += "gzinject.exe"
@@ -306,6 +307,7 @@ def generate_wad(wad_file: str, rom_file: str, output_file: str, channel_title: 
         else:
             gzinject_path += "gzinject32.exe"
     elif platform.system() == 'Linux':
+        os.makedirs(common_key_path, mode=0o700, exist_ok=True)
         if platform.machine() in ('arm64', 'aarch64', 'aarch64_be', 'armv8b', 'armv8l'):
             gzinject_path += "gzinject_ARM64"
         elif platform.machine() in ('arm', 'armv7l', 'armhf'):
@@ -321,11 +323,11 @@ def generate_wad(wad_file: str, rom_file: str, output_file: str, channel_title: 
         logger.info("OS not supported for WAD generation.")
         raise Exception("This operating system does not support outputting .wad files.")
 
-    run_process(logger, [gzinject_path, "-a", "genkey"], b'45e')
+    run_process(logger, [gzinject_path, "-a", "genkey"], b'45e', cwd=common_key_path)
     run_process(logger, [gzinject_path, "-a", "inject", "--rom", rom_file, "--wad", wad_file,
                          "-o", output_file, "-i", channel_id, "-t", channel_title,
-                         "-p", gzinject_patch_path, "--cleanup"])
-    os.remove("common-key.bin")
+                         "-p", gzinject_patch_path, "--cleanup"], cwd=common_key_path)
+    os.remove(user_state_path("common-key.bin"))
     if delete_input:
         os.remove(rom_file)
 

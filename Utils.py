@@ -284,8 +284,8 @@ def subprocess_args(include_stdout: bool = True) -> dict[str, Any]:
     return ret
 
 
-def run_process(logger: logging.Logger, args: Sequence[str], stdin: Optional[AnyStr] = None, *, check: bool = False) -> None:
-    process = subprocess.Popen(args, bufsize=1, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+def run_process(logger: logging.Logger, args: Sequence[str], stdin: Optional[AnyStr] = None, *, check: bool = False, cwd: str = readonly_local_path()) -> None:
+    process = subprocess.Popen(args, bufsize=1, stdout=subprocess.PIPE, stdin=subprocess.PIPE, cwd=cwd)
     if stdin is not None:
         process.communicate(input=stdin)
     else:
