@@ -790,7 +790,7 @@ def disable_music(rom: Rom, log: CosmeticsLog, ids: Iterable[tuple[str, int]]) -
     for bgm in ids:
         rom.write_bytes(0xB89AE0 + (bgm[1] * 0x10), blank_track)
 
-
+# Restore all original music in the ROM to default
 def restore_music(rom: Rom) -> None:
     # Restore all music from original
     for bgm in bgm_sequence_ids + fanfare_sequence_ids + ocarina_sequence_ids:
@@ -803,11 +803,11 @@ def restore_music(rom: Rom) -> None:
     bgm_instrument = rom.original.read_int16(0xB89910 + 0xDD + (0x57 * 2))
     rom.write_int16(0xB89910 + 0xDD + (0x57 * 2), bgm_instrument)
 
-    # Rebuild audioseq
+    # Write original audioseq
     orig_start, orig_end, orig_size = rom.original.dma[AUDIOSEQ_DMADATA_INDEX].as_tuple()
     rom.write_bytes(orig_start, rom.original.read_bytes(orig_start, orig_size))
 
-    # If Audioseq was relocated
+    # If Audioseq was relocated, set the DMA entry back to the original
     dma_entry = rom.dma[AUDIOSEQ_DMADATA_INDEX]
     start, end, size = dma_entry.as_tuple()
     if start != orig_start:

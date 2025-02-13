@@ -12,15 +12,17 @@ from Utils import is_bundled, subprocess_args, local_path, data_path, get_versio
 from crc import calculate_crc
 from ntype import BigStream
 from version import base_version, branch_identifier, supplementary_version
-from Audiobank import AudioBank, Envelope, Sample
+from Audiobank import AudioBank, Envelope, Sample, RomSequence
 
 DMADATA_START: int = 0x7430  # NTSC 1.0/1.1: 0x7430, NTSC 1.2: 0x7960, Debug: 0x012F70
 AUDIOTABLE_DMADATA_INDEX: int = 5
+AUDIOSEQ_DMADATA_INDEX: int = 4
 AUDIOBANK_DMADATA_INDEX: int = 3
-AUDIOTABLE_DMADATA_INDEX: int = 5
 
 AUDIOBANK_INDEX_ADDR = 0x00B896A0
 AUDIOTABLE_INDEX_ADDR = 0x00B8A1C0
+AUDIOSEQ_INDEX_ADDR = 0x00B89AD0
+AUDIOSEQ_FONT_INDEX_ADDR = 0x00B89910
 
 class Rom(BigStream):
     def __init__(self, file: Optional[str] = None) -> None:
@@ -69,11 +71,11 @@ class Rom(BigStream):
         bank_index_header: bytearray = self.read_bytes(AUDIOBANK_INDEX_ADDR, 0x10)
         bank_index_length = int.from_bytes(bank_index_header[0:2], 'big')
 
-
         # Read original audiotable
         self.audiotable_dma_entry = self.dma[AUDIOTABLE_DMADATA_INDEX]
         self.audiobank_dma_entry = self.dma[AUDIOBANK_DMADATA_INDEX]
-        
+        self.audioseq_dma_entry = self.dma[AUDIOSEQ_DMADATA_INDEX]
+
         audiobank_start, audiobank_end, audiobank_size = self.audiobank_dma_entry.as_tuple()
         audiotable_start, audiotable_end, audiotable_size = self.audiotable_dma_entry.as_tuple()
         self.audiotable = self.read_bytes(audiotable_start, audiotable_size)
@@ -93,6 +95,36 @@ class Rom(BigStream):
             bank = AudioBank.from_rom_data(bank_entry, audiobank, self.audiotable, audiotable_index)
             bank.bank_index = i
             self.audiobanks.append(bank)
+        
+        # Read original Audioseq file
+        audioseq_start, audioseq_end, audioseq_size = self.audioseq_dma_entry.as_tuple()
+        self.audioseq = self.read_bytes(audioseq_start, audioseq_size)
+
+        # Read original sequence data from audioseq table
+        num_sequences = self.read_int16(AUDIOSEQ_INDEX_ADDR)
+        self.sequences = []
+        for i in range(0, num_sequences):
+            # Read start/length from the main sequence table
+            seq_entry = self.read_bytes(AUDIOSEQ_INDEX_ADDR + 0x10*(i+1), 0x10)
+            seq_start = int.from_bytes(seq_entry[0:4], 'big')
+            seq_len = int.from_bytes(seq_entry[4:8], 'big')
+
+            # Read the instrument set from that table
+            # Read the offset first
+            seqfont_offset = self.read_int16(AUDIOSEQ_FONT_INDEX_ADDR + 2*i)
+            # Index into the table. First byte is the number of fonts, followed by bytes that correspond to the fonts associated with this sequence
+            font_list: list[int] = []
+            num_fonts = self.read_byte(AUDIOSEQ_FONT_INDEX_ADDR + seqfont_offset)
+            seqfont_offset += 1
+            while num_fonts > 0:
+                font = self.read_byte(AUDIOSEQ_FONT_INDEX_ADDR + seqfont_offset)
+                font_list.append(font)
+                seqfont_offset += 1
+                num_fonts -= 1
+            seqdata = None
+            if seq_len > 0:
+                seqdata = self.audioseq[seq_start:seq_start+seq_len]
+            self.sequences.append(RomSequence(i,seq_start, seqdata, font_list))
 
     def rebuild_audio_data(self, audiobank_index_addr: int):
         added_samples: list[Sample] = [] # Keep track of every sample that we add to prevent adding duplicates

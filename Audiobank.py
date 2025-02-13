@@ -491,3 +491,15 @@ class Instrument:
             match = match and self.highNoteSample.loop.state == other.highNoteSample.loop.state
         
         return match
+
+class RomSequence:
+    def __init__(self, index: int, start: int, data: bytearray, banks:list[int]):
+        self.index: int = index
+        self.start: int = start
+        self.data: int = data
+        self.banks = banks
+        self.alt_seq: int = -1
+        if data is None:
+            self.alt_seq = self.start
+            self.start = -1
+            

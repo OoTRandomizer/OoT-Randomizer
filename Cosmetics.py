@@ -17,7 +17,7 @@ from Plandomizer import InvalidFileException
 from Utils import data_path
 from version import __version__
 from Voices import VOICE_PACK_AGE, patch_voice_pack, child_link_sfx, adult_link_sfx
-
+from Rom import AUDIOBANK_INDEX_ADDR
 if TYPE_CHECKING:
     from Rom import Rom
     from Settings import Settings
@@ -46,14 +46,11 @@ def patch_dpad_info(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: di
     else:
         rom.write_byte(symbols['CFG_DPAD_DUNGEON_INFO_ENABLE'], 0x00)
 
-
 def patch_music(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]) -> None:
     # patch music
     if settings.background_music != 'normal' or settings.fanfares != 'normal' or log.src_dict.get('bgm', {}):
-        Music.restore_music(rom)
         Music.randomize_music(rom, settings, log, symbols)
-    else:
-        Music.restore_music(rom)
+
     # Remove battle music
     if settings.disable_battle_music:
         rom.write_byte(0xBE447F, 0x00)
@@ -1273,6 +1270,9 @@ def patch_cosmetics(settings: Settings, rom: Rom) -> CosmeticsLog:
                 versioned_patch_set = patch_sets[cosmetic_version]
                 break
 
+    # Restore vanilla audio sequence data
+    Music.restore_music(rom)
+
     # patch version specific patches
     if versioned_patch_set:
         # offset the cosmetic_context struct for absolute addressing
@@ -1293,10 +1293,11 @@ def patch_cosmetics(settings: Settings, rom: Rom) -> CosmeticsLog:
             patch_func(rom, settings, log, cosmetic_context_symbols)
 
         if not settings.generating_patch_file:
+            bank_index_base = AUDIOBANK_INDEX_ADDR
             if "CFG_AUDIOBANK_TABLE_EXTENDED_ADDR" in cosmetic_context_symbols.keys():
                 bank_index_base = (rom.read_int32(cosmetic_context_symbols['CFG_AUDIOBANK_TABLE_EXTENDED_ADDR']) - 0x80400000) + 0x3480000
-                
             rom.rebuild_audio_data(bank_index_base)
+            
             log.symbols = cosmetic_context_symbols
     else:
         # patch cosmetics that use vanilla oot data, and always compatible
