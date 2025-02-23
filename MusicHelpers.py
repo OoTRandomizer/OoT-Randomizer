@@ -33,14 +33,14 @@ def process_sequence_mmr_zseq(filepath: str, file_name: str, seq_type: str, incl
 
     type_match = False
     mmrs_categories = categories.split('-')
-    check_categories = [category.lower() in mmr_fanfare_categories for category in mmrs_categories] # create a boolean list to compare against
+    mmrs_categories_check = [category.lower() in mmr_fanfare_categories for category in mmrs_categories] # create a boolean list to compare against
 
     # Check for any matching categories
-    if seq_type.lower() == 'fanfare' and all(check_categories):
+    if seq_type.lower() == 'fanfare' and all(mmrs_categories_check):
         type_match = True
-    elif any(boolean == False for boolean in check_categories) and any(boolean == True for boolean in check_categories): # check if a creator mixed bgm and fanfare categories...
+    elif any(boolean == False for boolean in mmrs_categories_check) and any(boolean == True for boolean in mmrs_categories_check): # check if a creator mixed bgm and fanfare categories...
         raise Exception("mismatched bgm and fanfare categories in sequence categories")
-    elif seq_type.lower() == 'bgm' and not all(check_categories):
+    elif seq_type.lower() == 'bgm' and not all(mmrs_categories_check):
         type_match = True
 
     if not type_match:
