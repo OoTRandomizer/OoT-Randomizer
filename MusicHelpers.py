@@ -8,6 +8,17 @@ import zipfile
 from Sequence import Sequence, SequenceGame
 from Utils import data_path
 
+# There's no way to avoid including a list of fanfare categories unless MMR changes the MMRS format (fingers crossed...)
+mmr_fanfare_categories: list[str] = [
+    # Group categories
+    '8', '9', '10',
+    # Individual categories
+    '108', '109', '119', '120', '121', '122',
+    '124', '137', '139', '13d', '13f', '141',
+    '152', '155', '177', '178', '179', '17c',
+    '17e',
+]
+
 def process_sequence_mmr_zseq(filepath: str, file_name: str, seq_type: str, include_custom_audiobanks: bool, groups) -> Sequence:
     split = file_name.split('.zseq')
     base = split[0]
@@ -22,9 +33,14 @@ def process_sequence_mmr_zseq(filepath: str, file_name: str, seq_type: str, incl
 
     type_match = False
     mmrs_categories = categories.split('-')
-    if seq_type.lower() == 'fanfare' and ('8' in mmrs_categories or '9' in mmrs_categories or '10' in mmrs_categories):
+    check_categories = [category.lower() in mmr_fanfare_categories for category in mmrs_categories] # create a boolean list to compare against
+
+    # Check for any matching categories
+    if seq_type.lower() == 'fanfare' and all(check_categories):
         type_match = True
-    elif seq_type.lower() == 'bgm' and not ('8' in mmrs_categories or '9' in mmrs_categories or '10' in mmrs_categories):
+    elif any(boolean == False for boolean in check_categories) and any(boolean == True for boolean in check_categories): # check if a creator mixed bgm and fanfare categories...
+        raise Exception("mismatched bgm and fanfare categories in sequence categories")
+    elif seq_type.lower() == 'bgm' and not all(check_categories):
         type_match = True
 
     if not type_match:
@@ -63,6 +79,7 @@ def process_sequence_mmrs(filepath: str, file_name: str, seq_type: str, include_
             raise FileNotFoundError(f'No .seq file in: "{file_name}". This should never happen')
         if zbank_file and not bankmeta_file:
             raise FileNotFoundError(f'Custom track "{file_name}" contains .zbank but no .bankmeta')
+
         type_match = False
         if 'categories.txt' in zip.namelist():
             mmrs_categories_txt = zip.read('categories.txt').decode()
@@ -72,12 +89,17 @@ def process_sequence_mmrs(filepath: str, file_name: str, seq_type: str, include_
             elif '\n' in mmrs_categories_txt:
                 delimitingChar = '\n'
             mmrs_categories = mmrs_categories_txt.split(delimitingChar)
-            if seq_type.lower() == 'fanfare' and ('8' in mmrs_categories or '9' in mmrs_categories or '10' in mmrs_categories):
+            mmrs_categories_check = [category.lower() in mmr_fanfare_categories for category in mmrs_categories] # create a boolean list to compare against
+
+            # Check for matching categories
+            if seq_type.lower() == 'fanfare' and all(mmrs_categories_check):
                 type_match = True
-            elif seq_type.lower() == 'bgm' and not ('8' in mmrs_categories or '9' in mmrs_categories or '10' in mmrs_categories):
+            elif any(boolean == False for boolean in mmrs_categories_check) and any(boolean == True for boolean in mmrs_categories_check): # check if a creator mixed bgm and fanfare categories...
+                raise Exception("mismatched bgm and fanfare categories in categories.txt")
+            elif seq_type.lower() == 'bgm' and not all(mmrs_categories_check):
                 type_match = True
         else:
-            raise Exception("OWL LIED TO ME")
+            raise Exception("no categories.txt file found in .MMRS file")
 
         if type_match:
             if zbank_file:
