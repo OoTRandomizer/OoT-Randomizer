@@ -1,5 +1,4 @@
 #include "message.h"
-#include "z64.h"
 #include "stdbool.h"
 #include "save.h"
 #include "dungeon_info.h"
@@ -242,6 +241,150 @@ void treasure_chest_game_message() {
     }
 }
 
+extern uint8_t EQUIPMENT_TEXTBOX;
+uint8_t kokiri_sword_message = 0;
+uint8_t biggoron_sword_message = 0;
+uint8_t deku_shield_message = 0;
+uint8_t hylian_shield_message = 0;
+uint8_t mirror_shield_message = 0;
+uint8_t goron_tunic_message = 0;
+uint8_t zora_tunic_message = 0;
+
+void manage_kokiri_sword_message() {
+    if (kokiri_sword_message == 1 &&
+        z64_MessageGetState(((uint8_t *)(&z64_game)) + 0x20D8) == 0) {
+        z64_DisplayTextbox(&z64_game, 0x045E, 0);
+        kokiri_sword_message = 2;
+    }
+    if (kokiri_sword_message == 2) {
+        MessageContext *msgCtx = &(z64_game.msgContext);
+        z64_link.common.frozen = 10;
+        if (Message_ShouldAdvance(&z64_game)) {
+            if (msgCtx->choiceIndex == 0) {
+                z64_file.button_items[0] = Z64_ITEM_KOKIRI_SWORD;
+                Interface_LoadItemIcon1(&z64_game, 0);
+                Inventory_ChangeEquipment(EQUIP_TYPE_SWORD, EQUIP_VALUE_SWORD_KOKIRI);
+            }
+            kokiri_sword_message = 0;
+        }
+    }
+}
+
+void manage_biggoron_sword_message() {
+    if (biggoron_sword_message == 1 &&
+        z64_MessageGetState(((uint8_t *)(&z64_game)) + 0x20D8) == 0) {
+        z64_DisplayTextbox(&z64_game, 0x045E, 0);
+        biggoron_sword_message = 2;
+    }
+    if (biggoron_sword_message == 2) {
+        MessageContext *msgCtx = &(z64_game.msgContext);
+        z64_link.common.frozen = 10;
+        if (Message_ShouldAdvance(&z64_game)) {
+            if (msgCtx->choiceIndex == 0) {
+                z64_file.button_items[0] = Z64_ITEM_BIGGORON_SWORD;
+                Interface_LoadItemIcon1(&z64_game, 0);
+                Inventory_ChangeEquipment(EQUIP_TYPE_SWORD, EQUIP_VALUE_SWORD_BIGGORON);
+            }
+            biggoron_sword_message = 0;
+        }
+    }
+}
+
+void manage_deku_shield_message() {
+    if (deku_shield_message == 1 &&
+        z64_MessageGetState(((uint8_t *)(&z64_game)) + 0x20D8) == 0) {
+        z64_DisplayTextbox(&z64_game, 0x045E, 0);
+        deku_shield_message = 2;
+    }
+    if (deku_shield_message == 2) {
+        MessageContext *msgCtx = &(z64_game.msgContext);
+        z64_link.common.frozen = 10;
+        if (Message_ShouldAdvance(&z64_game)) {
+            if (msgCtx->choiceIndex == 0) {
+                Inventory_ChangeEquipment(EQUIP_TYPE_SHIELD, EQUIP_VALUE_SHIELD_DEKU);
+                Player_SetEquipmentData(&z64_game, &z64_link);
+            }
+            deku_shield_message = 0;
+        }
+    }
+}
+
+void manage_hylian_shield_message() {
+    if (hylian_shield_message == 1 &&
+        z64_MessageGetState(((uint8_t *)(&z64_game)) + 0x20D8) == 0) {
+        z64_DisplayTextbox(&z64_game, 0x045E, 0);
+        hylian_shield_message = 2;
+    }
+    if (hylian_shield_message == 2) {
+        MessageContext *msgCtx = &(z64_game.msgContext);
+        z64_link.common.frozen = 10;
+        if (Message_ShouldAdvance(&z64_game)) {
+            if (msgCtx->choiceIndex == 0) {
+                Inventory_ChangeEquipment(EQUIP_TYPE_SHIELD, EQUIP_VALUE_SHIELD_HYLIAN);
+                Player_SetEquipmentData(&z64_game, &z64_link);
+            }
+            hylian_shield_message = 0;
+        }
+    }
+}
+
+void manage_mirror_shield_message() {
+    if (mirror_shield_message == 1 &&
+        z64_MessageGetState(((uint8_t *)(&z64_game)) + 0x20D8) == 0) {
+        z64_DisplayTextbox(&z64_game, 0x045E, 0);
+        mirror_shield_message = 2;
+    }
+    if (mirror_shield_message == 2) {
+        MessageContext *msgCtx = &(z64_game.msgContext);
+        z64_link.common.frozen = 10;
+        if (Message_ShouldAdvance(&z64_game)) {
+            if (msgCtx->choiceIndex == 0) {
+                Inventory_ChangeEquipment(EQUIP_TYPE_SHIELD, EQUIP_VALUE_SHIELD_MIRROR);
+                Player_SetEquipmentData(&z64_game, &z64_link);
+            }
+            mirror_shield_message = 0;
+        }
+    }
+}
+
+void manage_goron_tunic_message() {
+    if (goron_tunic_message == 1 &&
+        z64_MessageGetState(((uint8_t *)(&z64_game)) + 0x20D8) == 0) {
+        z64_DisplayTextbox(&z64_game, 0x045E, 0);
+        goron_tunic_message = 2;
+    }
+    if (goron_tunic_message == 2) {
+        MessageContext *msgCtx = &(z64_game.msgContext);
+        z64_link.common.frozen = 10;
+        if (Message_ShouldAdvance(&z64_game)) {
+            if (msgCtx->choiceIndex == 0) {
+                Inventory_ChangeEquipment(EQUIP_TYPE_TUNIC, EQUIP_VALUE_TUNIC_GORON);
+                Player_SetEquipmentData(&z64_game, &z64_link);
+            }
+            goron_tunic_message = 0;
+        }
+    }
+}
+
+void manage_zora_tunic_message() {
+    if (zora_tunic_message == 1 &&
+        z64_MessageGetState(((uint8_t *)(&z64_game)) + 0x20D8) == 0) {
+        z64_DisplayTextbox(&z64_game, 0x045E, 0);
+        zora_tunic_message = 2;
+    }
+    if (zora_tunic_message == 2) {
+        MessageContext *msgCtx = &(z64_game.msgContext);
+        z64_link.common.frozen = 10;
+        if (Message_ShouldAdvance(&z64_game)) {
+            if (msgCtx->choiceIndex == 0) {
+                Inventory_ChangeEquipment(EQUIP_TYPE_TUNIC, EQUIP_VALUE_TUNIC_ZORA);
+                Player_SetEquipmentData(&z64_game, &z64_link);
+            }
+            zora_tunic_message = 0;
+        }
+    }
+}
+
 // Function to display custom textboxes ingame.
 void display_misc_messages() {
     if (z64_MessageGetState(((uint8_t *)(&z64_game)) + 0x20D8) == 0) {
@@ -257,4 +400,97 @@ void display_misc_messages() {
             treasure_chest_game_show_message = 0;
         }
     }
+    if (EQUIPMENT_TEXTBOX & 1 << 0) {
+        manage_deku_shield_message();
+        manage_hylian_shield_message();
+        manage_mirror_shield_message();
+    }
+    if (EQUIPMENT_TEXTBOX & 1 << 1) {
+        manage_kokiri_sword_message();
+        manage_biggoron_sword_message();
+    }
+    if (EQUIPMENT_TEXTBOX & 1 << 2) {
+        manage_goron_tunic_message();
+        manage_zora_tunic_message();
+    }
+}
+
+void equip_kokiri_sword_message(z64_file_t* save, int16_t arg1, int16_t arg2) {
+    if (LINK_IS_ADULT) {
+        return;
+    }
+    // If kokiri sword is already equipped.
+    if (z64_file.equip_sword == 1) {
+        return;
+    }
+    kokiri_sword_message = 1;
+}
+
+void equip_biggoron_sword_message(z64_file_t* save, int16_t arg1, int16_t arg2) {
+    if (!LINK_IS_ADULT) {
+        return;
+    }
+    // If biggoron sword is already equipped.
+    if (z64_file.equip_sword == 3) {
+        return;
+    }
+    biggoron_sword_message = 1;
+}
+
+void equip_deku_shield_message(z64_file_t* save, int16_t arg1, int16_t arg2) {
+    if (LINK_IS_ADULT) {
+        return;
+    }
+    // If a deku shield is already equipped.
+    if (z64_file.equip_shield == 1) {
+        return;
+    }
+    deku_shield_message = 1;
+}
+
+void equip_hylian_shield_message(z64_file_t* save, int16_t arg1, int16_t arg2) {
+    // Only ask for child if he has no shield equipped at all.
+    if (!LINK_IS_ADULT) {
+        if (z64_file.equip_shield == 1) {
+            return;
+        }
+    }
+    // If a hylian shield or mirror shield is already equipped.
+    if (z64_file.equip_shield > 1) {
+        return;
+    }
+    hylian_shield_message = 1;
+}
+
+void equip_mirror_shield_message(z64_file_t* save, int16_t arg1, int16_t arg2) {
+    if (!LINK_IS_ADULT) {
+        return;
+    }
+    // If mirror shield is already equipped.
+    if (z64_file.equip_shield == 3) {
+        return;
+    }
+    mirror_shield_message = 1;
+}
+
+void equip_goron_tunic_message(z64_file_t* save, int16_t arg1, int16_t arg2) {
+    if (!LINK_IS_ADULT) {
+        return;
+    }
+    // If a goron tunic is already equipped.
+    if (z64_file.equip_tunic == 2) {
+        return;
+    }
+    goron_tunic_message = 1;
+}
+
+void equip_zora_tunic_message(z64_file_t* save, int16_t arg1, int16_t arg2) {
+    if (!LINK_IS_ADULT) {
+        return;
+    }
+    // If a zora tunic is already equipped.
+    if (z64_file.equip_tunic == 3) {
+        return;
+    }
+    zora_tunic_message = 1;
 }

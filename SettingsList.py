@@ -3389,6 +3389,21 @@ class SettingInfos:
         shared         = True,
     )
 
+    equipment_textbox = MultipleSelect(
+        gui_text       = 'Equipment prompt',
+        default        = 'off',
+        choices        = {
+            'shields': 'Shields',
+            'swords': 'Swords',
+            'tunics':  'Tunics',
+        },
+        gui_tooltip    = '''\
+            Upon finding a new equipment, you will get a textbox prompt
+            asking if you want to equip it right now.
+            ''',
+        shared         = True,
+    )
+
     chicken_count_random = Checkbutton(
         gui_text       = 'Random Cucco Count',
         gui_tooltip    = '''\

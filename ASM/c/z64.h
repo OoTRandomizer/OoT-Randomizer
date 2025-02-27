@@ -577,6 +577,45 @@ typedef enum {
     /* 0x03 */ RESPAWN_MODE_MAX
 } RespawnMode;
 
+typedef enum EquipmentType {
+    /* 0 */ EQUIP_TYPE_SWORD,
+    /* 1 */ EQUIP_TYPE_SHIELD,
+    /* 2 */ EQUIP_TYPE_TUNIC,
+    /* 3 */ EQUIP_TYPE_BOOTS,
+    /* 4 */ EQUIP_TYPE_MAX
+} EquipmentType;
+
+typedef enum EquipValueSword {
+    /* 0 */ EQUIP_VALUE_SWORD_NONE,
+    /* 1 */ EQUIP_VALUE_SWORD_KOKIRI,
+    /* 2 */ EQUIP_VALUE_SWORD_MASTER,
+    /* 3 */ EQUIP_VALUE_SWORD_BIGGORON,
+    /* 4 */ EQUIP_VALUE_SWORD_MAX
+} EquipValueSword;
+
+typedef enum EquipValueShield {
+    /* 0 */ EQUIP_VALUE_SHIELD_NONE,
+    /* 1 */ EQUIP_VALUE_SHIELD_DEKU,
+    /* 2 */ EQUIP_VALUE_SHIELD_HYLIAN,
+    /* 3 */ EQUIP_VALUE_SHIELD_MIRROR,
+    /* 4 */ EQUIP_VALUE_SHIELD_MAX
+} EquipValueShield;
+
+typedef enum EquipValueTunic {
+    /* 0 */ EQUIP_VALUE_TUNIC_NONE,
+    /* 1 */ EQUIP_VALUE_TUNIC_KOKIRI,
+    /* 2 */ EQUIP_VALUE_TUNIC_GORON,
+    /* 3 */ EQUIP_VALUE_TUNIC_ZORA,
+    /* 4 */ EQUIP_VALUE_TUNIC_MAX
+} EquipValueTunic;
+
+typedef enum EquipValueBoots {
+    /* 0 */ EQUIP_VALUE_BOOTS_NONE,
+    /* 1 */ EQUIP_VALUE_BOOTS_KOKIRI,
+    /* 2 */ EQUIP_VALUE_BOOTS_IRON,
+    /* 3 */ EQUIP_VALUE_BOOTS_HOVER,
+    /* 4 */ EQUIP_VALUE_BOOTS_MAX
+} EquipValueBoots;
 typedef struct {
     /* 0x00 */ z64_xyzf_t pos;
     /* 0x0C */ int16_t yaw;

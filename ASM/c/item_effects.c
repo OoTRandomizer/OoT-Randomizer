@@ -3,6 +3,7 @@
 #include "trade_quests.h"
 #include "bg_gate_shutter.h"
 #include "save.h"
+#include "message.h"
 
 #define rupee_cap ((uint16_t*)0x800F8CEC)
 volatile uint8_t MAX_RUPEES = 0;
@@ -50,6 +51,7 @@ void give_tycoon_wallet(z64_file_t* save, int16_t arg1, int16_t arg2) {
 
 void give_biggoron_sword(z64_file_t* save, int16_t arg1, int16_t arg2) {
     save->bgs_flag = 1; // Set flag to make the sword durable
+    equip_biggoron_sword_message(save, arg1, arg2);
 }
 
 void give_bottle(z64_file_t* save, int16_t bottle_item_id, int16_t arg2) {
