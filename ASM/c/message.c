@@ -249,6 +249,7 @@ uint8_t hylian_shield_message = 0;
 uint8_t mirror_shield_message = 0;
 uint8_t goron_tunic_message = 0;
 uint8_t zora_tunic_message = 0;
+
 void manage_kokiri_sword_message() {
     if (kokiri_sword_message == 1 &&
         z64_MessageGetState(((uint8_t *)(&z64_game)) + 0x20D8) == 0) {
@@ -301,6 +302,7 @@ void manage_deku_shield_message() {
         if (Message_ShouldAdvance(&z64_game)) {
             if (msgCtx->choiceIndex == 0) {
                 Inventory_ChangeEquipment(EQUIP_TYPE_SHIELD, EQUIP_VALUE_SHIELD_DEKU);
+                Player_SetEquipmentData(&z64_game, &z64_link);
             }
             deku_shield_message = 0;
         }
@@ -319,6 +321,7 @@ void manage_hylian_shield_message() {
         if (Message_ShouldAdvance(&z64_game)) {
             if (msgCtx->choiceIndex == 0) {
                 Inventory_ChangeEquipment(EQUIP_TYPE_SHIELD, EQUIP_VALUE_SHIELD_HYLIAN);
+                Player_SetEquipmentData(&z64_game, &z64_link);
             }
             hylian_shield_message = 0;
         }
@@ -337,6 +340,7 @@ void manage_mirror_shield_message() {
         if (Message_ShouldAdvance(&z64_game)) {
             if (msgCtx->choiceIndex == 0) {
                 Inventory_ChangeEquipment(EQUIP_TYPE_SHIELD, EQUIP_VALUE_SHIELD_MIRROR);
+                Player_SetEquipmentData(&z64_game, &z64_link);
             }
             mirror_shield_message = 0;
         }
@@ -355,6 +359,7 @@ void manage_goron_tunic_message() {
         if (Message_ShouldAdvance(&z64_game)) {
             if (msgCtx->choiceIndex == 0) {
                 Inventory_ChangeEquipment(EQUIP_TYPE_TUNIC, EQUIP_VALUE_TUNIC_GORON);
+                Player_SetEquipmentData(&z64_game, &z64_link);
             }
             goron_tunic_message = 0;
         }
@@ -373,6 +378,7 @@ void manage_zora_tunic_message() {
         if (Message_ShouldAdvance(&z64_game)) {
             if (msgCtx->choiceIndex == 0) {
                 Inventory_ChangeEquipment(EQUIP_TYPE_TUNIC, EQUIP_VALUE_TUNIC_ZORA);
+                Player_SetEquipmentData(&z64_game, &z64_link);
             }
             zora_tunic_message = 0;
         }
@@ -483,7 +489,7 @@ void equip_zora_tunic_message(z64_file_t* save, int16_t arg1, int16_t arg2) {
         return;
     }
     // If a zora tunic is already equipped.
-    if (z64_file.equip_shield == 3) {
+    if (z64_file.equip_tunic == 3) {
         return;
     }
     zora_tunic_message = 1;

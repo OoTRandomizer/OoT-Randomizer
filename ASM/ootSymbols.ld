@@ -17,6 +17,7 @@ Flags_UnsetTempClear = 0x800206C8;
 Flags_GetCollectible = 0x800206E8;
 Flags_SetCollectible = 0x8002071C;
 Actor_SetColorFilter = 0x80027090;
+Player_SetEquipmentData = 0x80079764;
 z64_Gfx_SetupDL_42Opa = 0x8007E868;
 Inventory_ChangeEquipment = 0x80081130;
 Audio_StopCurrentMusic = 0x800C7684;
