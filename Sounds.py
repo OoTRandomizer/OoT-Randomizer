@@ -233,7 +233,7 @@ def get_patch_dict() -> dict[str, int]:
 
 def get_hook_pool(sound_hook: SoundHooks, earsafeonly: bool = False) -> list[Sounds]:
     if earsafeonly:
-        if sound_hook is Sounds.SoundHooks.RUPEE:
+        if sound_hook is SoundHooks.RUPEE_CHANGE:
             list = [s for s in sound_hook.value.pool if Tags.PAINFUL_RUPEE not in s.value.tags]
         else:
             list = [s for s in sound_hook.value.pool if Tags.PAINFUL not in s.value.tags]
