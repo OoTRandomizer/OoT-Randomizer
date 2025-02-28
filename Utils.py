@@ -141,7 +141,9 @@ def readonly_data_path(path: str = '') -> str:
 
 def default_output_path(path: str) -> str:
     if path == '':
-        path = user_data_path('Output')
+        path = readonly_local_path('Output')
+        if not os.access(path, os.W_OK):
+            path = user_data_path('Output')
 
     if not os.path.exists(path):
         os.makedirs(path, mode=0o700)
