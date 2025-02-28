@@ -77,7 +77,10 @@ def user_state_path(path: str = '') -> str:
 
 
 def find_user_path(path_type: PathType):
-    test_path = readonly_local_path('')
+    if path_type is PathType.DATA:
+        test_path = readonly_data_path('')
+    else:
+        test_path = readonly_local_path('')
     if not os.access(test_path, os.W_OK):
         # Cannot write to application directory. Either sandboxed or installed for all users
         if platform.system() == 'Linux':
