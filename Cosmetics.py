@@ -927,6 +927,8 @@ def patch_voices(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[
                             break
                     if voice_path is not None:
                         break
+                else:
+                    break
 
             if voice_path is None:
                 log.errors.append(f"{name} Voice not patched: Cannot find voice data directory: {os.path.join(age_path, voice_setting)}")
