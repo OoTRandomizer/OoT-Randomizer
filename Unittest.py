@@ -945,6 +945,7 @@ class TestSceneFiles(unittest.TestCase):
     # assets are correct. Bytes at the address are read and
     # compared to the corresponding segment address produced
     # by the parsed scene asset.
+    @unittest.skipUnless(os.path.isfile('ZOOTDEC.z64'), "requires the vanilla ROM to compare to")
     def test_vanilla_scene_file_pointers(self):
         from Scene import check_external_reference_locations
         uncompressed_rom = Rom('ZOOTDEC.z64')
