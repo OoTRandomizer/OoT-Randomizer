@@ -1,13 +1,13 @@
 {
   "settings": {
-    "shuffle_cows":                            true,
-    "shuffle_scrubs":                          "low",
-    "mq_dungeons_mode":                        "specific",
-    "mq_dungeons_specific":                    ["Jabu Jabus Belly"],
-    "free_scarecrow":                          true,
-    "zora_fountain":                           "open",
+    "trials_random":                           false,
+    "trials":                                  6,
+    "shuffle_smallkeys":                       "remove",
+    "shuffle_tcgkeys":                         "remove",
+    "shuffle_bosskeys":                        "remove",
+    "bridge":                                  "open",
     "spawn_positions":                         ["child", "adult"],
-    "starting_age":                            "child",
+    "starting_age":                            "adult",
     "starting_hearts":                         20,
     "start_with_rupees":                       true,
     "starting_items":                          {
@@ -19,7 +19,7 @@
         "Dins Fire":                    1,
         "Slingshot":                    3,
         "Ocarina":                      2,
-        "Bombchus":                    50,
+        "Bombchus":                     1,
         "Ice Arrows":                   1,
         "Farores Wind":                 1,
         "Boomerang":                    1,
@@ -29,7 +29,7 @@
         "Light Arrows":                 1,
         "Nayrus Love":                  1,
         "Bottle":                       2,
-        "Bottle with Fish":             1,
+        "Bottle with Blue Fire":        1,
         "Rutos Letter":                 1,
         "Kokiri Sword":                 1,
         "Giants Knife":                 1,
@@ -48,11 +48,13 @@
         "Double Defense":               1,
         "Progressive Hookshot":         2,
         "Progressive Strength Upgrade": 3,
-        "Eponas Song":                  1
+        "Zeldas Lullaby":               1,
+        "Song of Time":                 1
     }
   },
   "entrances": {
-    "Child Spawn -> KF Links House": {"region": "Zoras Fountain", "from": "ZD Behind King Zora"}
+    "Adult Spawn -> Temple of Time": {"region": "Castle Grounds", "from": "Market"},
+    "Child Spawn -> KF Links House": {"region": "Market", "from": "Market Bazaar"}
   },
   "locations": {
   }

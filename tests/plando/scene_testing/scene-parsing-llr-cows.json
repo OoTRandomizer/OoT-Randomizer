@@ -52,7 +52,7 @@
     }
   },
   "entrances": {
-    "Child Spawn -> KF Links House": {"region": "Zoras Fountain", "from": "ZD Behind King Zora"}
+    "Child Spawn -> KF Links House": {"region": "Lon Lon Ranch", "from": "LLR Talons House"}
   },
   "locations": {
   }

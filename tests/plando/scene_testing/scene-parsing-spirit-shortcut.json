@@ -2,6 +2,7 @@
   "settings": {
     "zora_fountain":                           "open",
     "dungeon_shortcuts_choice":                "all",
+    "shuffle_bosskeys":                        "remove",
     "spawn_positions":                         ["child", "adult"],
     "starting_age":                            "adult",
     "starting_hearts":                         20,

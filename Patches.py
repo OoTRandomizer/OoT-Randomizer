@@ -2715,14 +2715,14 @@ def set_cow_id_data(scenes: Scenes, world: World) -> None:
             last_scene = scene.id
             last_actor = actor
             if world.dungeon_mq['Jabu Jabus Belly'] and scene.id == SceneIDs.JABU_JABU:  # If it's an MQ jabu cow
-                cow_param = (1 if cow_count == 17 else 0) << 8
+                cow_param = (1 if cow_count == 9 else 0)
                 #rom.write_int16(actor + 0x8, 1 if cow_count == 17 else 0)  # Give all wall cows ID 0, and set cow 11's ID to 1
             else:
-                cow_param = (cow_count << 8)
+                cow_param = cow_count
                 #rom.write_int16(actor + 0x8, cow_count)
-            actor.rot.x = (actor.rot.x | cow_param) & (cow_param | 0x00FF)
+            actor.rot.x = cow_param
 
-    last_actor = -1
+    last_actor = ActorEntry(-1, Vec3s(0, 0, 0), Vec3s(0, 0, 0), 0)
     last_scene = -1
     cow_count = 1
 

@@ -694,29 +694,29 @@ Externally referenced cutscenes:
 # Rando Patches to Test with New System
 
 - [?] Cutscene Patching
-    - [?] Cutscenes
+    - [X] Cutscenes
       - [X] Lost Woods Bridge Saria's Gift
       - [X] Song cutscenes without songs as items
       - [X] Song cutscenes with songs as items
       - [X] Open Royal Family Tomb as both adult/child
-      - [ ] Darunia's Dance for Saria's Song
-      - [ ] Owl warps
+      - [X] Darunia's Dance for Saria's Song
+      - [X] Owl warps
       - [X] Zelda escaping from Hyrule Castle for OoT check
       - [X] Small cutscene after learning OoT song
-      - [ ] Epona race start
-      - [ ] Epona escapes to different Hyrule Field entrances
+      - [X] Epona race start
+      - [X] Epona escapes to different Hyrule Field entrances
       - [X] Burning Kak intro cutscene
       - [X] Well draining cutscene
-      - [ ] Nabooru knuckle defeat
-      - [ ] Rainbow bridge
-      - [ ] Trial completion cutscenes
-      - [ ] Ganon's Tower collapse
-      - [ ] Phantom Ganon blue warp Deku Sprout cutscene skip
+      - [X] Nabooru knuckle defeat
+      - [X] Rainbow bridge
+      - [X] Trial completion cutscenes
+      - [X] Ganon's Tower collapse
+      - [X] Phantom Ganon blue warp Deku Sprout cutscene skip
     - [ ] Cutscenes outside scene files
-      - [ ] Jabu Jabu swallowing Link
-      - [ ] Ruto pointing to dungeon reward in Big Octo room
+      - [X] Jabu Jabu swallowing Link
+      - [X] Ruto pointing to dungeon reward in Big Octo room
       - [ ] Opening Door of Time
-      - [ ] Master Sword pedestal cutscene
+      - [X] Master Sword pedestal cutscene
       - [ ] Well draining cutscene (Windmill)
     - [?] wondertalk2 actor moves
       - [ ] Shadow Temple whispering maze (8x)
@@ -757,10 +757,10 @@ Externally referenced cutscenes:
     - [X] Song shuffle cutscene text boxes
     - [X] Song shuffle location addresses
     - [X] Shopsanity shop item objects in room headers
-    - [?] Cow shuffle repositions
+    - [X] Cow shuffle repositions
         - [X] Stable
         - [X] Tower
-        - [?] Shuffled item actor params in set_cow_id_data
+        - [X] Shuffled item actor params in set_cow_id_data
     - [X] CSMC repositions
         - [X] Vanilla Ganons Castle Light Trial
         - [X] Vanilla Spirit Temple compass chest
@@ -790,7 +790,8 @@ Externally referenced cutscenes:
     - [ ] Spirit Temple MQ front right chest temp -> permanent flag for silver rupee shuffle
     - [ ] Key doors are correct
     - [ ] Check overrides work
-    - [ ] Scrub/cow actor patching works for respective shuffles
+    - [ ] Scrub actor patching works
+    - [X] Cow actor patching works
     - [ ] Keysy removes locks
 - [?] ASM/C patches
     - [?] 0x26c10e3 - generic grotto ACTOR_EN_GS actor params 0x3818 -> 0x38FF
