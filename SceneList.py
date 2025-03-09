@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import List, Dict, Tuple
 
 SCENE_TABLE_ADDRESS = 0x00B71440
 
@@ -241,7 +242,7 @@ SCENE_TEXTURE_LIST = 0xB71D4C
 #   data reference addresses,
 #   code reference addresses
 
-SCENE_EXTERNAL_REFERENCES: dict[str, list[tuple[RecordType, int, list[int], list[tuple[int, int]]]]] = {
+SCENE_EXTERNAL_REFERENCES: Dict[str, List[Tuple[RecordType, int, List[int], List[tuple[int, int]]]]] = {
     'bdan_scene': [
         ( RecordType.CutsceneData, 0x155E0, [
             ENTRANCE_CUTSCENE_TABLE_ADDRESS + (17 * 0x8) + 0x4,
