@@ -357,7 +357,7 @@ class FileDataRelocator(ABC):
     def get_existing_records_by_type(self, record_type: RecordType) -> list[DataRecord]:
         return list(filter(lambda r: r.type == record_type, self.data_records))
 
-    def encode(self) -> bytearray:
+    def encode(self, unit_test_alignment: bool = False) -> bytearray:
         # Resize data records. Assumes records are sorted by offset.
         # Don't build full encode at first as pointers may shift.
         offset: int = 0
@@ -379,7 +379,7 @@ class FileDataRelocator(ABC):
                     if i + 2 < num_records - 1:
                         padding_record = next_record
                         next_record = self.data_records[i + 2]
-                if next_record.align == 4:
+                if next_record.align == 4 or (next_record.type == RecordType.Unknown and unit_test_alignment):
                     record.length = align4(offset + record_length) - offset
                 elif next_record.align == 8:
                     record.length = align8(offset + record_length) - offset
