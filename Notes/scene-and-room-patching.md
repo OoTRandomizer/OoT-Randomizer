@@ -693,7 +693,7 @@ Externally referenced cutscenes:
 
 # Rando Patches to Test with New System
 
-- [?] Cutscene Patching
+- [X] Cutscene Patching
     - [X] Cutscenes
       - [X] Lost Woods Bridge Saria's Gift
       - [X] Song cutscenes without songs as items
@@ -712,27 +712,27 @@ Externally referenced cutscenes:
       - [X] Trial completion cutscenes
       - [X] Ganon's Tower collapse
       - [X] Phantom Ganon blue warp Deku Sprout cutscene skip
-    - [ ] Cutscenes outside scene files
+    - [X] Cutscenes outside scene files
       - [X] Jabu Jabu swallowing Link
       - [X] Ruto pointing to dungeon reward in Big Octo room
       - [X] Opening Door of Time
       - [X] Master Sword pedestal cutscene
       - [X] Well draining cutscene (Windmill)
-    - [?] wondertalk2 actor moves
-      - [ ] Shadow Temple whispering maze (8x)
-      - [ ] Shadow Temple Truthspinner (2x)
-      - [ ] GTG Entrance (3x)
-      - [ ] GTG Stalfos room (1x)
-      - [ ] GTG Flame Wall Maze/Slopes Room (1x)
-      - [ ] GTG Pushblock Room (2x)
-      - [ ] GTG Rotating Statue Room (1x)
-      - [ ] GTG Megaton Statue/Back Enemies Room (1x)
-      - [ ] GTG Lava Room (3x)
-      - [ ] GTG Dinolfos Room (1x)
-      - [ ] GTG Inner Maze (1x)
-      - [ ] GTG Shellblade Room/Toilet (1x)
-      - [ ] Death Mountain Crater (1x)
-      - [ ] Hideout Cells (1 per cell room)
+    - [X] wondertalk2 actor moves
+      - [X] Shadow Temple whispering maze (8x)
+      - [X] Shadow Temple Truthspinner (2x)
+      - [X] GTG Entrance (3x)
+      - [X] GTG Stalfos room (1x)
+      - [X] GTG Flame Wall Maze/Slopes Room (1x)
+      - [X] GTG Pushblock Room (2x)
+      - [X] GTG Rotating Statue Room (1x)
+      - [X] GTG Megaton Statue/Back Enemies Room (1x)
+      - [X] GTG Lava Room (3x)
+      - [X] GTG Dinolfos Room (1x)
+      - [X] GTG Inner Maze (1x)
+      - [X] GTG Shellblade Room/Toilet (1x)
+      - [X] Death Mountain Crater (1x)
+      - [X] Hideout Cells (1 per cell room)
 - [?] Other Patches
     - [X] Duplicate Bazaar room for Kakariko
     - [X] Move Sheik from pedastal in ToT
@@ -783,6 +783,18 @@ Externally referenced cutscenes:
     - [?] Grotto actor data changes in set_grotto_shuffle_data
 - [ ] MQ Patching
     - [ ] All rooms can be entered from all entrances
+      - [ ] Deku Tree
+      - [ ] Dodongo's Cavern
+      - [X] Jabu Jabu's Belly
+      - [ ] Forest Temple
+      - [ ] Fire Temple
+      - [ ] Water Temple
+      - [ ] Spirit Temple
+      - [X] Shadow Temple
+      - [X] Bottom of the Well
+      - [ ] Ice Cavern
+      - [ ] Gerudo Training Ground
+      - [ ] Ganon's Castle
     - [ ] Ice Cavern scene header patch from old system
     - [ ] MQ Spirit Temple room 6 new alternate header
     - [X] Shadow Temple MQ redead shared flags for silver rupee shuffle
