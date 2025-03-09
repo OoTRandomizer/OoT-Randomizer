@@ -273,7 +273,7 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     door_of_time_cutscene = Cutscene.decode(rom, 0xE0A170)
     patch_cutscene_length(door_of_time_cutscene, 2)
     # Set the "Opened Door of Time" flag at the first frame.
-    patch_cutscene_misc_command(door_of_time_cutscene, 510, 1, 2)
+    patch_cutscene_misc_command(door_of_time_cutscene, 620, 1, 2)
     door_of_time_cutscene.write(rom)
     #patch_cutscene_length(rom, 0xE0A170, 2)
     #patch_cutscene_misc_command(rom, 0xE0A358, 1, 2)
