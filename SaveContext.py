@@ -16,34 +16,112 @@ if TYPE_CHECKING:
 AddressesDict: TypeAlias = "dict[str, Address | dict[str, Address | dict[str, Address]]]"
 
 
-class Scenes(IntEnum):
+class SceneIDs(IntEnum):
     # Dungeons
     DEKU_TREE = 0x00
     DODONGOS_CAVERN = 0x01
-    KING_DODONGO_LOBBY = 0x12
     JABU_JABU = 0x02
     FOREST_TEMPLE = 0x03
     FIRE_TEMPLE = 0x04
     WATER_TEMPLE = 0x05
     SPIRIT_TEMPLE = 0x06
     SHADOW_TEMPLE = 0x07
+    BOTTOM_OF_THE_WELL = 0x08
+    ICE_CAVERN = 0x09
+    GANONS_TOWER = 0x0A
+    GERUDO_TRAINING_GROUND = 0x0B
     THIEVES_HIDEOUT = 0x0C
-    # Various overworld scenes
-    WINDMILL = 0x48
+    INSIDE_GANONS_CASTLE = 0x0D
+    # Other scenes
+    COLLAPSING_GANONS_TOWER = 0x0E
+    COLLAPSING_GANONS_CASTLE = 0x0F
+    TREASURE_BOX_SHOP = 0x10
+    GOHMA_BOSS_ROOM = 0x11
+    KING_DODONGO_LOBBY = 0x12
+    BARINADE_BOSS_ROOM = 0x13
+    PHANTOM_GANON_BOSS_ROOM = 0x14
+    VOLVAGIA_BOSS_ROOM = 0x15
+    MORPHA_BOSS_ROOM = 0x16
+    TWINROVA_BOSS_ROOM = 0x17
+    BONGO_BOSS_ROOM = 0x18
+    GANONDORF_BOSS_ROOM = 0x19
+    GANON_BOSS_ROOM = 0x1A
+    MARKET_ENTRANCE_CHILD_DAY = 0x1B
+    MARKET_ENTRANCE_CHILD_NIGHT = 0x1C
+    MARKET_ENTRANCE_ADULT = 0x1D
+    MARKET_BACK_ALLEY_DAY = 0x1E
+    MARKET_BACK_ALLEY_NIGHT = 0x1F
+    MARKET_CHILD_DAY = 0x20
+    MARKET_CHILD_NIGHT = 0x21
+    MARKET_ADULT = 0x22
+    TEMPLE_OF_TIME_EXTERIOR_CHILD_DAY = 0x23
+    TEMPLE_OF_TIME_EXTERIOR_CHILD_NIGHT = 0x24
+    TEMPLE_OF_TIME_EXTERIOR_ADULT = 0x25
+    KOKIRI_KNOW_IT_ALL_HOUSE = 0x26
+    KOKIRI_HOUSE_OF_TWINS = 0x27
+    KOKIRI_MIDOS_HOUSE = 0x28
+    KOKIRI_SARIAS_HOUSE = 0x29
+    KAKARIKO_CARPENTER_HOUSE = 0x2A
+    MARKET_BACK_ALLEY_HOUSE = 0x2B
+    MARKET_BAZAAR = 0x2C
+    KOKIRI_SHOP = 0x2D
+    GORON_SHOP = 0x2E
+    ZORA_SHOP = 0x2F
+    KAKARIKO_POTION_SHOP = 0x30
+    MARKET_POTION_SHOP = 0x31
+    MARKET_BOMBCHU_SHOP = 0x32
+    MARKET_MASK_SHOP = 0x33
+    KOKIRI_LINKS_HOUSE = 0x34
+    MARKET_DOG_LADY_HOUSE = 0x35
+    LON_LON_RANCH_STABLE = 0x36
+    KAKARIKO_IMPAS_HOUSE = 0x37
+    LAKE_HYLIA_LAB = 0x38
+    GERUDO_VALLEY_TENT = 0x39
+    GRAVEYARD_DAMPES_HUT = 0x3A
+    FAIRY_FOUNTAIN_UPGRADES = 0x3B
+    FAIRY_FOUNTAIN_HEALTH = 0x3C
+    FAIRY_FOUNTAIN_SPELLS = 0x3D
+    GROTTOS = 0x3E
+    GRAVEYARD_REDEAD_GRAVE = 0x3F
+    GRAVEYARD_SHIELD_GRAVE = 0x40
+    GRAVEYARD_ROYAL_FAMILY_TOMB = 0x41
+    SHOOTING_GALLERY = 0x42
+    TEMPLE_OF_TIME = 0x43
+    CHAMBER_OF_SAGES = 0x44
+    HYRULE_CASTLE_HEDGE_MAZE_DAY = 0x45
+    HYRULE_CASTLE_HEDGE_MAZE_NIGHT = 0x46
+    CUTSCENE_MAP = 0x47
+    WINDMILL_AND_DAMPES_GRAVE = 0x48
+    LAKE_HYLIA_FISHING_HOLE = 0x49
+    HYRULE_CASTLE_COURTYARD = 0x4A
+    MARKET_BOMBCHU_BOWLING_ALLEY = 0x4B
+    LON_LON_RANCH_TOWER_AND_TALON_HOUSE = 0x4C
+    MARKET_ENTRANCE_GUARD_HOUSE = 0x4D
+    KAKARIKO_GRANNY_POTION_SHOP = 0x4E
+    GANONS_TOWER_COLLAPSE_AND_ARENA = 0x4F
+    KAKARIKO_HOUSE_OF_SKULLTULA = 0x50
     HYRULE_FIELD = 0x51
+    KAKARIKO_VILLAGE = 0x52
+    # Bean patch scenes
     GRAVEYARD = 0x53
     ZORAS_RIVER = 0x54
     KOKIRI_FOREST = 0x55
-    SACRED_FOREST_MEADOW = 0x56
     LAKE_HYLIA = 0x57
     GERUDO_VALLEY = 0x5A
     LOST_WOODS = 0x5B
     DESERT_COLOSSUS = 0x5C
-    GERUDO_FORTRESS = 0x5D
-    HYRULE_CASTLE = 0x5F
     DEATH_MOUNTAIN_TRAIL = 0x60
     DEATH_MOUNTAIN_CRATER = 0x61
+    # Remaining overworld scenes
+    SACRED_FOREST_MEADOW = 0x56
+    ZORAS_DOMAIN = 0x58
+    ZORAS_FOUNTAIN = 0x59
+    GERUDO_FORTRESS = 0x5D
+    HAUNTED_WASTELAND = 0x5E
+    HYRULE_CASTLE = 0x5F
     GORON_CITY = 0x62
+    LON_LON_RANCH = 0x63
+    OUTSIDE_GANONS_CASTLE = 0x64
 
 
 class FlagType(IntEnum):
@@ -212,7 +290,7 @@ class SaveContext:
         self.write_bits(0x00D4 + scene * 0x1C + type * 0x04 + byte_offset, bit_values)
 
     # write all flags (int32) of a given type at once
-    def write_permanent_flags(self, scene: Scenes, flag_type: FlagType, value: int) -> None:
+    def write_permanent_flags(self, scene: SceneIDs, flag_type: FlagType, value: int) -> None:
         byte_value = value.to_bytes(4, byteorder='big', signed=False)
         self.write_bytes(0x00D4 + scene * 0x1C + flag_type * 0x04, byte_value)
 
@@ -1546,14 +1624,14 @@ class SaveContext:
     }
 
     def write_qol_save_context_flags(self) -> None:
-        self.write_permanent_flag(Scenes.WATER_TEMPLE, FlagType.SWITCH, 0x1, 0x01) # Water temple switch flag (Ruto)
-        self.write_permanent_flag(Scenes.HYRULE_FIELD, FlagType.SWITCH, 0x2, 0x08) # Hyrule Field switch flag (Owl)
-        self.write_permanent_flag(Scenes.KOKIRI_FOREST, FlagType.SWITCH, 0x0, 0x80) # Kokiri Forest switch flag (Owl)
-        self.write_permanent_flag(Scenes.SACRED_FOREST_MEADOW, FlagType.SWITCH, 0x2, 0x40) # Sacred Forest Meadow switch flag (Owl)
-        self.write_permanent_flag(Scenes.LOST_WOODS, FlagType.SWITCH, 0x2, 0x01) # Lost Woodsswitch flag (Owl)
-        self.write_permanent_flag(Scenes.LOST_WOODS, FlagType.SWITCH, 0x3, 0x80) # Lost Woods switch flag (Owl)
-        self.write_permanent_flag(Scenes.DESERT_COLOSSUS, FlagType.SWITCH, 0x0, 0x80) # Desert Colossus switch flag (Owl)
-        self.write_permanent_flag(Scenes.HYRULE_CASTLE, FlagType.SWITCH, 0x3, 0x20) # Hyrule Castle switch flag (Owl)
+        self.write_permanent_flag(SceneIDs.WATER_TEMPLE, FlagType.SWITCH, 0x1, 0x01) # Water temple switch flag (Ruto)
+        self.write_permanent_flag(SceneIDs.HYRULE_FIELD, FlagType.SWITCH, 0x2, 0x08) # Hyrule Field switch flag (Owl)
+        self.write_permanent_flag(SceneIDs.KOKIRI_FOREST, FlagType.SWITCH, 0x0, 0x80) # Kokiri Forest switch flag (Owl)
+        self.write_permanent_flag(SceneIDs.SACRED_FOREST_MEADOW, FlagType.SWITCH, 0x2, 0x40) # Sacred Forest Meadow switch flag (Owl)
+        self.write_permanent_flag(SceneIDs.LOST_WOODS, FlagType.SWITCH, 0x2, 0x01) # Lost Woodsswitch flag (Owl)
+        self.write_permanent_flag(SceneIDs.LOST_WOODS, FlagType.SWITCH, 0x3, 0x80) # Lost Woods switch flag (Owl)
+        self.write_permanent_flag(SceneIDs.DESERT_COLOSSUS, FlagType.SWITCH, 0x0, 0x80) # Desert Colossus switch flag (Owl)
+        self.write_permanent_flag(SceneIDs.HYRULE_CASTLE, FlagType.SWITCH, 0x3, 0x20) # Hyrule Castle switch flag (Owl)
         self.write_bits(0x0F2B, 0x20) # Spoke to Lake Hylia Owl once
 
         self.write_bits(0x0ED4, 0x10)  # "Met Deku Tree"
@@ -1616,83 +1694,83 @@ def write_settings_dependent_save_context_flags(save_context: SaveContext, world
     if not world.settings.useful_cutscenes:
         save_context.write_bits(0x0F1A, 0x04)  # "Met Darunia in Fire Temple"
         if 'Forest Temple' not in world.settings.dungeon_shortcuts:
-            save_context.write_permanent_flag(Scenes.FOREST_TEMPLE, FlagType.SWITCH, 0x0, 0x08)
+            save_context.write_permanent_flag(SceneIDs.FOREST_TEMPLE, FlagType.SWITCH, 0x0, 0x08)
 
     if 'Deku Tree' in world.settings.dungeon_shortcuts:
         # Deku Tree, flags are the same between vanilla/MQ
-        save_context.write_permanent_flag(Scenes.DEKU_TREE, FlagType.SWITCH, 0x1, 0x01)  # Deku Block down
-        save_context.write_permanent_flag(Scenes.DEKU_TREE, FlagType.CLEAR,  0x2, 0x02)  # Deku 231/312
-        save_context.write_permanent_flag(Scenes.DEKU_TREE, FlagType.SWITCH, 0x3, 0x20)  # Deku 1st Web
-        save_context.write_permanent_flag(Scenes.DEKU_TREE, FlagType.SWITCH, 0x3, 0x40)  # Deku 2nd Web
+        save_context.write_permanent_flag(SceneIDs.DEKU_TREE, FlagType.SWITCH, 0x1, 0x01)  # Deku Block down
+        save_context.write_permanent_flag(SceneIDs.DEKU_TREE, FlagType.CLEAR,  0x2, 0x02)  # Deku 231/312
+        save_context.write_permanent_flag(SceneIDs.DEKU_TREE, FlagType.SWITCH, 0x3, 0x20)  # Deku 1st Web
+        save_context.write_permanent_flag(SceneIDs.DEKU_TREE, FlagType.SWITCH, 0x3, 0x40)  # Deku 2nd Web
 
     if 'Dodongos Cavern' in world.settings.dungeon_shortcuts:
         # Dodongo's Cavern, flags are the same between vanilla/MQ
-        save_context.write_permanent_flag(Scenes.DODONGOS_CAVERN, FlagType.SWITCH, 0x3, 0x80)  # DC Entrance Mud Wall
-        save_context.write_permanent_flag(Scenes.DODONGOS_CAVERN, FlagType.SWITCH, 0x0, 0x04)  # DC Mouth
+        save_context.write_permanent_flag(SceneIDs.DODONGOS_CAVERN, FlagType.SWITCH, 0x3, 0x80)  # DC Entrance Mud Wall
+        save_context.write_permanent_flag(SceneIDs.DODONGOS_CAVERN, FlagType.SWITCH, 0x0, 0x04)  # DC Mouth
         # Extra permanent flag in MQ for the child route
         if world.dungeon_mq['Dodongos Cavern']:
-            save_context.write_permanent_flag(Scenes.DODONGOS_CAVERN, FlagType.SWITCH, 0x0, 0x02)  # Armos wall switch
+            save_context.write_permanent_flag(SceneIDs.DODONGOS_CAVERN, FlagType.SWITCH, 0x0, 0x02)  # Armos wall switch
 
     if 'Jabu Jabus Belly' in world.settings.dungeon_shortcuts:
         # Jabu
         if not world.dungeon_mq['Jabu Jabus Belly']:
-            save_context.write_permanent_flag(Scenes.JABU_JABU, FlagType.SWITCH, 0x0, 0x20)  # Jabu Pathway down
+            save_context.write_permanent_flag(SceneIDs.JABU_JABU, FlagType.SWITCH, 0x0, 0x20)  # Jabu Pathway down
         else:
-            save_context.write_permanent_flag(Scenes.JABU_JABU, FlagType.SWITCH, 0x1, 0x20)  # Jabu Lobby Slingshot Door open
-            save_context.write_permanent_flag(Scenes.JABU_JABU, FlagType.SWITCH, 0x0, 0x20)  # Jabu Pathway down
-            save_context.write_permanent_flag(Scenes.JABU_JABU, FlagType.CLEAR,  0x2, 0x01)  # Jabu Red Slimy Thing defeated
-            save_context.write_permanent_flag(Scenes.JABU_JABU, FlagType.SWITCH, 0x2, 0x08)  # Jabu Red Slimy Thing not in front of boss lobby
-            save_context.write_permanent_flag(Scenes.JABU_JABU, FlagType.SWITCH, 0x1, 0x10)  # Jabu Boss Door Switch Activated
+            save_context.write_permanent_flag(SceneIDs.JABU_JABU, FlagType.SWITCH, 0x1, 0x20)  # Jabu Lobby Slingshot Door open
+            save_context.write_permanent_flag(SceneIDs.JABU_JABU, FlagType.SWITCH, 0x0, 0x20)  # Jabu Pathway down
+            save_context.write_permanent_flag(SceneIDs.JABU_JABU, FlagType.CLEAR,  0x2, 0x01)  # Jabu Red Slimy Thing defeated
+            save_context.write_permanent_flag(SceneIDs.JABU_JABU, FlagType.SWITCH, 0x2, 0x08)  # Jabu Red Slimy Thing not in front of boss lobby
+            save_context.write_permanent_flag(SceneIDs.JABU_JABU, FlagType.SWITCH, 0x1, 0x10)  # Jabu Boss Door Switch Activated
 
     if 'Forest Temple' in world.settings.dungeon_shortcuts:
         # Forest, flags are the same between vanilla/MQ
-        save_context.write_permanent_flag(Scenes.FOREST_TEMPLE, FlagType.SWITCH, 0x0, 0x10)  # Forest Elevator up
-        save_context.write_permanent_flag(Scenes.FOREST_TEMPLE, FlagType.SWITCH, 0x1, 0x01 + 0x02 + 0x04)  # Forest Basement Puzzle Done
+        save_context.write_permanent_flag(SceneIDs.FOREST_TEMPLE, FlagType.SWITCH, 0x0, 0x10)  # Forest Elevator up
+        save_context.write_permanent_flag(SceneIDs.FOREST_TEMPLE, FlagType.SWITCH, 0x1, 0x01 + 0x02 + 0x04)  # Forest Basement Puzzle Done
 
     if 'Fire Temple' in world.settings.dungeon_shortcuts:
         # Fire, flags are the same between vanilla/MQ
-        save_context.write_permanent_flag(Scenes.FIRE_TEMPLE, FlagType.SWITCH, 0x2, 0x40)  # Fire Pillar down
+        save_context.write_permanent_flag(SceneIDs.FIRE_TEMPLE, FlagType.SWITCH, 0x2, 0x40)  # Fire Pillar down
 
     if 'Spirit Temple' in world.settings.dungeon_shortcuts:
         # Spirit
         if not world.dungeon_mq['Spirit Temple']:
-            save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x1, 0x80)  # Spirit Chains
-            save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x2, 0x02 + 0x08 + 0x10)  # Spirit main room elevator (N block, Rusted Switch, E block)
-            save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x3, 0x10)  # Spirit Face
+            save_context.write_permanent_flag(SceneIDs.SPIRIT_TEMPLE, FlagType.SWITCH, 0x1, 0x80)  # Spirit Chains
+            save_context.write_permanent_flag(SceneIDs.SPIRIT_TEMPLE, FlagType.SWITCH, 0x2, 0x02 + 0x08 + 0x10)  # Spirit main room elevator (N block, Rusted Switch, E block)
+            save_context.write_permanent_flag(SceneIDs.SPIRIT_TEMPLE, FlagType.SWITCH, 0x3, 0x10)  # Spirit Face
         else:
-            save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x2, 0x10)  # Spirit Bombchu Boulder
-            save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x2, 0x02)  # Spirit Silver Block
-            save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x1, 0x80)  # Spirit Chains
-            save_context.write_permanent_flag(Scenes.SPIRIT_TEMPLE, FlagType.SWITCH, 0x3, 0x10)  # Spirit Face
+            save_context.write_permanent_flag(SceneIDs.SPIRIT_TEMPLE, FlagType.SWITCH, 0x2, 0x10)  # Spirit Bombchu Boulder
+            save_context.write_permanent_flag(SceneIDs.SPIRIT_TEMPLE, FlagType.SWITCH, 0x2, 0x02)  # Spirit Silver Block
+            save_context.write_permanent_flag(SceneIDs.SPIRIT_TEMPLE, FlagType.SWITCH, 0x1, 0x80)  # Spirit Chains
+            save_context.write_permanent_flag(SceneIDs.SPIRIT_TEMPLE, FlagType.SWITCH, 0x3, 0x10)  # Spirit Face
 
     if 'Shadow Temple' in world.settings.dungeon_shortcuts:
         # Shadow
         if not world.dungeon_mq['Shadow Temple']:
-            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.SWITCH, 0x0, 0x08)  # Shadow Truthspinner
-            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.SWITCH, 0x0, 0x20)  # Shadow Boat Block
-            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.SWITCH, 0x1, 0x01)  # Shadow Bird Bridge
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.SWITCH, 0x0, 0x08)  # Shadow Truthspinner
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.SWITCH, 0x0, 0x20)  # Shadow Boat Block
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.SWITCH, 0x1, 0x01)  # Shadow Bird Bridge
         else:
-            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.SWITCH, 0x2, 0x08)  # Shadow Truthspinner
-            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.SWITCH, 0x3, 0x20)  # Shadow Fire Arrow Platform
-            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.SWITCH, 0x3, 0x80)  # Shadow Spinning Blades room Skulltulas defeated
-            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.CLEAR,  0x3, 0x40)  # Shadow Spinning Blades room Skulltulas defeated
-            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.SWITCH, 0x0, 0x20)  # Shadow Boat Block
-            save_context.write_permanent_flag(Scenes.SHADOW_TEMPLE, FlagType.SWITCH, 0x1, 0x01)  # Shadow Bird Bridge
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.SWITCH, 0x2, 0x08)  # Shadow Truthspinner
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.SWITCH, 0x3, 0x20)  # Shadow Fire Arrow Platform
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.SWITCH, 0x3, 0x80)  # Shadow Spinning Blades room Skulltulas defeated
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.CLEAR,  0x3, 0x40)  # Shadow Spinning Blades room Skulltulas defeated
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.SWITCH, 0x0, 0x20)  # Shadow Boat Block
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.SWITCH, 0x1, 0x01)  # Shadow Bird Bridge
 
     if world.region_has_shortcuts('King Dodongo Boss Room'):
-        save_context.write_permanent_flag(Scenes.KING_DODONGO_LOBBY, FlagType.SWITCH, 0x3, 0x02)  # DC Boss Floor
+        save_context.write_permanent_flag(SceneIDs.KING_DODONGO_LOBBY, FlagType.SWITCH, 0x3, 0x02)  # DC Boss Floor
 
     if world.settings.plant_beans:
-        save_context.write_permanent_flag(Scenes.GRAVEYARD, FlagType.SWITCH, 0x3, 0x08)  # Plant Graveyard bean
-        save_context.write_permanent_flag(Scenes.ZORAS_RIVER, FlagType.SWITCH, 0x3, 0x08)  # Plant Zora's River bean
-        save_context.write_permanent_flag(Scenes.KOKIRI_FOREST, FlagType.SWITCH, 0x2, 0x02)  # Plant Kokiri Forest bean
-        save_context.write_permanent_flag(Scenes.LAKE_HYLIA, FlagType.SWITCH, 0x3, 0x02)  # Plant Lake Hylia bean
-        save_context.write_permanent_flag(Scenes.GERUDO_VALLEY, FlagType.SWITCH, 0x3, 0x08)  # Plant Gerudo Valley bean
-        save_context.write_permanent_flag(Scenes.LOST_WOODS, FlagType.SWITCH, 0x3, 0x10)  # Plant Lost Woods bridge bean
-        save_context.write_permanent_flag(Scenes.LOST_WOODS, FlagType.SWITCH, 0x1, 0x04)  # Plant Lost Woods theater bean
-        save_context.write_permanent_flag(Scenes.DESERT_COLOSSUS, FlagType.SWITCH, 0x0, 0x1)  # Plant Desert Colossus bean
-        save_context.write_permanent_flag(Scenes.DEATH_MOUNTAIN_TRAIL, FlagType.SWITCH, 0x3, 0x40)  # Plant Death Mountain Trail bean
-        save_context.write_permanent_flag(Scenes.DEATH_MOUNTAIN_CRATER, FlagType.SWITCH, 0x3, 0x08)  # Plant Death Mountain Crater bean
+        save_context.write_permanent_flag(SceneIDs.GRAVEYARD, FlagType.SWITCH, 0x3, 0x08)  # Plant Graveyard bean
+        save_context.write_permanent_flag(SceneIDs.ZORAS_RIVER, FlagType.SWITCH, 0x3, 0x08)  # Plant Zora's River bean
+        save_context.write_permanent_flag(SceneIDs.KOKIRI_FOREST, FlagType.SWITCH, 0x2, 0x02)  # Plant Kokiri Forest bean
+        save_context.write_permanent_flag(SceneIDs.LAKE_HYLIA, FlagType.SWITCH, 0x3, 0x02)  # Plant Lake Hylia bean
+        save_context.write_permanent_flag(SceneIDs.GERUDO_VALLEY, FlagType.SWITCH, 0x3, 0x08)  # Plant Gerudo Valley bean
+        save_context.write_permanent_flag(SceneIDs.LOST_WOODS, FlagType.SWITCH, 0x3, 0x10)  # Plant Lost Woods bridge bean
+        save_context.write_permanent_flag(SceneIDs.LOST_WOODS, FlagType.SWITCH, 0x1, 0x04)  # Plant Lost Woods theater bean
+        save_context.write_permanent_flag(SceneIDs.DESERT_COLOSSUS, FlagType.SWITCH, 0x0, 0x1)  # Plant Desert Colossus bean
+        save_context.write_permanent_flag(SceneIDs.DEATH_MOUNTAIN_TRAIL, FlagType.SWITCH, 0x3, 0x40)  # Plant Death Mountain Trail bean
+        save_context.write_permanent_flag(SceneIDs.DEATH_MOUNTAIN_CRATER, FlagType.SWITCH, 0x3, 0x08)  # Plant Death Mountain Crater bean
 
     if world.settings.skip_reward_from_rauru in ('free', 'free_forced'):
         save_context.write_bits(0x0EDD, 0x20)  # "Pulled Master Sword from Pedestal"
@@ -1710,7 +1788,7 @@ def write_settings_dependent_save_context_flags(save_context: SaveContext, world
         save_context.write_bits(0x0ED7, 0x10) # "Talon has fled castle"
         save_context.write_bits(0x0EDD, 0x01) # "Obtained Zelda's Letter"
         save_context.write_bits(0x0EDE, 0x02) # "Learned Zelda's Lullaby"
-        save_context.write_permanent_flag(Scenes.HYRULE_CASTLE, FlagType.SWITCH, 0x3, 0x10) # "Moved crates to access the courtyard"
+        save_context.write_permanent_flag(SceneIDs.HYRULE_CASTLE, FlagType.SWITCH, 0x3, 0x10) # "Moved crates to access the courtyard"
     if 'Zeldas Letter' in world.distribution.starting_items:
         if world.settings.open_kakariko != 'closed':
             save_context.write_bits(0x0F07, 0x40)  # "Spoke to Gate Guard About Mask Shop"
@@ -1738,16 +1816,16 @@ def write_settings_dependent_save_context_flags(save_context: SaveContext, world
         if not world.settings.shuffle_gerudo_card:
             save_context.write_bits(0x00A5, 0x40)  # Give Gerudo Card
         save_context.write_bits(0x0EE7, 0x0F)  # Free all 4 carpenters
-        save_context.write_permanent_flag(Scenes.THIEVES_HIDEOUT, FlagType.SWITCH, 0x1, 0x0F)
-        save_context.write_permanent_flag(Scenes.THIEVES_HIDEOUT, FlagType.SWITCH, 0x2, 0x01)
-        save_context.write_permanent_flag(Scenes.THIEVES_HIDEOUT, FlagType.SWITCH, 0x3, 0xFE)
-        save_context.write_permanent_flag(Scenes.THIEVES_HIDEOUT, FlagType.COLLECT, 0x2, 0xD4)
+        save_context.write_permanent_flag(SceneIDs.THIEVES_HIDEOUT, FlagType.SWITCH, 0x1, 0x0F)
+        save_context.write_permanent_flag(SceneIDs.THIEVES_HIDEOUT, FlagType.SWITCH, 0x2, 0x01)
+        save_context.write_permanent_flag(SceneIDs.THIEVES_HIDEOUT, FlagType.SWITCH, 0x3, 0xFE)
+        save_context.write_permanent_flag(SceneIDs.THIEVES_HIDEOUT, FlagType.COLLECT, 0x2, 0xD4)
     elif world.settings.gerudo_fortress == 'fast':
         save_context.write_bits(0x0EE7, 0x0E)  # Free 3 carpenters
-        save_context.write_permanent_flag(Scenes.THIEVES_HIDEOUT, FlagType.SWITCH, 0x1, 0x0D)
-        save_context.write_permanent_flag(Scenes.THIEVES_HIDEOUT, FlagType.SWITCH, 0x2, 0x01)
-        save_context.write_permanent_flag(Scenes.THIEVES_HIDEOUT, FlagType.SWITCH, 0x3, 0xDC)
-        save_context.write_permanent_flag(Scenes.THIEVES_HIDEOUT, FlagType.COLLECT, 0x2, 0xC4)
+        save_context.write_permanent_flag(SceneIDs.THIEVES_HIDEOUT, FlagType.SWITCH, 0x1, 0x0D)
+        save_context.write_permanent_flag(SceneIDs.THIEVES_HIDEOUT, FlagType.SWITCH, 0x2, 0x01)
+        save_context.write_permanent_flag(SceneIDs.THIEVES_HIDEOUT, FlagType.SWITCH, 0x3, 0xDC)
+        save_context.write_permanent_flag(SceneIDs.THIEVES_HIDEOUT, FlagType.COLLECT, 0x2, 0xC4)
 
     if world.settings.open_forest == 'open':
         save_context.write_bits(0xED5, 0x10)  # "Showed Mido Sword & Shield"

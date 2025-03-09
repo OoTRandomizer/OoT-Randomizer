@@ -6,6 +6,8 @@ import platform
 import subprocess
 from collections.abc import Iterator, Sequence
 from typing import Optional
+import logging
+import struct
 
 from Models import restrictiveBytes
 from Utils import is_bundled, subprocess_args, local_path, data_path, get_version_bytes
@@ -140,11 +142,35 @@ class Rom(BigStream):
         subprocess.check_call(subcall, **subprocess_args())
         self.read_rom(output_file, verify_crc=verify_crc)
 
+    def read_s8(self, address: Optional[int] = None) -> int:
+        if address is None:
+            address = self.last_address
+        return int.from_bytes(self.read_bytes(address, 1), 'big', signed=True)
+
+    def read_s16(self, address: Optional[int] = None) -> int:
+        if address is None:
+            address = self.last_address
+        return int.from_bytes(self.read_bytes(address, 2), 'big', signed=True)
+
+    def read_s32(self, address: Optional[int] = None) -> int:
+        if address is None:
+            address = self.last_address
+        return int.from_bytes(self.read_bytes(address, 4), 'big', signed=True)
+
+    def read_float(self, address: Optional[int] = None) -> float:
+        if address is None:
+            address = self.last_address
+        return bytes_to_float(self.read_bytes(address, 4))
+
     def write_byte(self, address: int, value: int) -> None:
+        if address >= 0x1F12000 and address <= 0x3471000:
+            raise Exception(f'Attempted to write to forbidden region in vanilla scene/room files')
         super().write_byte(address, value)
         self.changed_address[self.last_address-1] = value
 
     def write_bytes_restrictive(self, start: int, size: int, values: Sequence[int]) -> None:
+        if (start >= 0x1F12000 or start + size >= 0x1F12000) and start <= 0x3471000:
+            raise Exception(f'Attempted to write to forbidden region in vanilla scene/room files')
         for i in range(size):
             address = start + i
             should_write = True
@@ -156,9 +182,21 @@ class Rom(BigStream):
             if should_write:
                 self.write_byte(address, values[i])
 
-    def write_bytes(self, address: int, values: Sequence[int]) -> None:
+    def write_bytes(self, address: int, values: Sequence[int], overwrite_scenes: bool = False) -> None:
+        if address >= 0x1F12000 and address <= 0x3471000 and not overwrite_scenes:
+            raise Exception(f'Attempted to write to forbidden region in vanilla scene/room files')
         super().write_bytes(address, values)
         self.changed_address.update(zip(range(address, address + len(values)), values))
+
+    def write_s16(self, address: int, value: int) -> None:
+        if address >= 0x1F12000 and address <= 0x3471000:
+            raise Exception(f'Attempted to write to forbidden region in vanilla scene/room files')
+        self.write_bytes(address, int.to_bytes(value, 2, 'big', signed=True))
+
+    def write_s32(self, address: int, value: int) -> None:
+        if address >= 0x1F12000 and address <= 0x3471000:
+            raise Exception(f'Attempted to write to forbidden region in vanilla scene/room files')
+        self.write_bytes(address, int.to_bytes(value, 4, 'big', signed=True))
 
     def revert_patch(self, patch_name: str) -> None:
         # Get the _START and _END symbols
@@ -243,7 +281,13 @@ class Rom(BigStream):
 
         if from_file is None:
             from_file = -1 if key is None else key
+        old_end = dma_entry.end
         dma_entry.update(start, end, from_file)
+        logger = logging.getLogger('')
+        if key is None:
+            logger.debug(f'Added DMA entry {dma_entry.index} with start 0x{start:08X}, end 0x{end:08X}, length 0x{end-start:08X}')
+        else:
+            logger.debug(f'Updated DMA entry {dma_entry.index} at {from_file:08X} (length 0x{old_end - key:08X}) to start 0x{start:08X}, end 0x{end:08X}, length 0x{end-start:08X}')
 
     # This will scan for any changes that have been made to the DMA table
     # By default, this assumes any changes here are new files, so this should only be called
@@ -387,7 +431,7 @@ class DMAIterator:
         for i in range(len(files)):
             end_current = ((files[i][1] + 0x0F) >> 4) << 4
             start_next = ((files[i+1][0] + 0x0F) >> 4) << 4 if i+1 < len(files) else len(self.rom.buffer)
-            if end_current < start_next:
+            if end_current < start_next and (start_next < 0x1F12000 or end_current > 0x3471000) :
                 free_space.append((start_next - end_current, end_current))
 
         free_space.sort()
@@ -430,3 +474,92 @@ class OverlayTable:
             if overlay_entry.vram_start <= vram_address and overlay_entry.vram_end > vram_address:
                 return vram_address - overlay_entry.vram_start + overlay_entry.vrom_start
         raise Exception("Overlay address not found in table")
+
+# halfword length coordinates
+class Vec3s:
+    def __init__(self, x: int = 0, y: int = 0, z: int = 0) -> None:
+        self.x: int = x
+        self.y: int = y
+        self.z: int = z
+
+    @staticmethod
+    def decode(rom: Rom, addr: int) -> Vec3s:
+        return Vec3s(
+            rom.read_s16(addr),
+            rom.read_s16(addr + 2),
+            rom.read_s16(addr + 4),
+        )
+
+    def encode(self) -> bytearray:
+        bytes: bytearray = bytearray()
+        bytes.extend(self.x.to_bytes(2, 'big', signed=True))
+        bytes.extend(self.y.to_bytes(2, 'big', signed=True))
+        bytes.extend(self.z.to_bytes(2, 'big', signed=True))
+        return bytes
+
+    def copy(self) -> Vec3s:
+        return Vec3s(
+            self.x,
+            self.y,
+            self.z
+        )
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Vec3s):
+            return NotImplemented
+        return self.x == other.x and self.y == other.y and self.z == other.z
+
+    def __str__(self) -> str:
+        return f'({self.x}, {self.y}, {self.z})'
+
+    def __repr__(self) -> str:
+        return f'({self.x}, {self.y}, {self.z})'
+
+
+# word length coordinates
+class Vec3i:
+    def __init__(self, x: int = 0, y: int = 0, z: int = 0) -> None:
+        self.x: int = x
+        self.y: int = y
+        self.z: int = z
+
+    @staticmethod
+    def decode(rom: Rom, addr: int) -> Vec3i:
+        return Vec3i(
+            rom.read_s32(addr),
+            rom.read_s32(addr + 4),
+            rom.read_s32(addr + 8),
+        )
+
+    def encode(self) -> bytearray:
+        bytes: bytearray = bytearray()
+        bytes.extend(self.x.to_bytes(4, 'big', signed=True))
+        bytes.extend(self.y.to_bytes(4, 'big', signed=True))
+        bytes.extend(self.z.to_bytes(4, 'big', signed=True))
+        return bytes
+
+    def copy(self) -> Vec3i:
+        return Vec3i(
+            self.x,
+            self.y,
+            self.z
+        )
+
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Vec3i):
+            return NotImplemented
+        return self.x == other.x and self.y == other.y and self.z == other.z
+
+    def __str__(self) -> str:
+        return f'({self.x}, {self.y}, {self.z})'
+
+    def __repr__(self) -> str:
+        return f'({self.x}, {self.y}, {self.z})'
+
+
+def bytes_to_float(b: bytearray) -> float:
+    return struct.unpack('!f', b)[0]
+
+
+def float_to_bytes(f: float) -> bytes:
+    return struct.pack('>f', f)
