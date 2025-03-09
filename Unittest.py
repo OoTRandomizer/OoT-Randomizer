@@ -934,6 +934,7 @@ class TestCustomAudio(unittest.TestCase):
 class TestSceneFiles(unittest.TestCase):
     # Compares byte-for-byte between parsed output
     # read from the rom and the original unparsed data.
+    @unittest.skipUnless(os.path.isfile('ZOOTDEC.z64'), "requires the vanilla ROM to compare to")
     def test_vanilla_scene_file_parsing(self):
         from Scene import compare_parsed_data_to_rom
         uncompressed_rom = Rom('ZOOTDEC.z64')
