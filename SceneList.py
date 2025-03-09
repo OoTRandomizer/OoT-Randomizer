@@ -242,7 +242,7 @@ SCENE_TEXTURE_LIST = 0xB71D4C
 #   data reference addresses,
 #   code reference addresses
 
-SCENE_EXTERNAL_REFERENCES: Dict[str, List[Tuple[RecordType, int, List[int], List[tuple[int, int]]]]] = {
+SCENE_EXTERNAL_REFERENCES: Dict[str, List[Tuple[RecordType, int, List[int], List[Tuple[int, int]]]]] = {
     'bdan_scene': [
         ( RecordType.CutsceneData, 0x155E0, [
             ENTRANCE_CUTSCENE_TABLE_ADDRESS + (17 * 0x8) + 0x4,
