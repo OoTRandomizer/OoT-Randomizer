@@ -1,0 +1,39 @@
+{
+  "settings": {
+    "shopsanity":                              "4",
+    "shopsanity_prices":                       "affordable",
+    "shuffle_song_items":                      "any",
+    "complete_mask_quest":                     true,
+    "shuffle_child_trade":                     [
+      "Keaton Mask",
+      "Skull Mask",
+      "Spooky Mask",
+      "Bunny Hood",
+      "Goron Mask",
+      "Zora Mask",
+      "Gerudo Mask",
+      "Mask of Truth"
+    ],
+    "spawn_positions":                         ["child", "adult"],
+    "starting_age":                            "child",
+    "starting_hearts":                         20,
+    "start_with_rupees":                       true,
+    "starting_items":                          {
+        "Ocarina":                      2,
+        "Progressive Wallet":           2,
+        "Suns Song":                    1,
+        "Zeldas Letter":                1,
+        "Bomb Bag":                     1
+    }
+  },
+  "entrances": {
+    "Adult Spawn -> Temple of Time": {"region": "Kakariko Village", "from": "Kak Bazaar"},
+    "Child Spawn -> KF Links House": {"region": "Zoras Domain", "from": "ZD Shop"}
+  },
+  "locations": {
+    "ZD Shop Item 5": "Progressive Strength Upgrade",
+    "ZD Shop Item 6": "Bomb Bag",
+    "ZD Shop Item 7": "Slingshot",
+    "ZD Shop Item 8": "Bow"
+  }
+}

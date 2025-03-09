@@ -1,0 +1,56 @@
+{
+  "settings": {
+    "zora_fountain":                           "open",
+    "spawn_positions":                         ["child", "adult"],
+    "starting_age":                            "adult",
+    "starting_hearts":                         20,
+    "start_with_rupees":                       true,
+    "starting_items":                          {
+        "Deku Stick Capacity":          2,
+        "Deku Nut Capacity":            2,
+        "Bomb Bag":                     3,
+        "Bow":                          3,
+        "Fire Arrows":                  1,
+        "Dins Fire":                    1,
+        "Slingshot":                    3,
+        "Ocarina":                      2,
+        "Bombchus":                     1,
+        "Ice Arrows":                   1,
+        "Farores Wind":                 1,
+        "Boomerang":                    1,
+        "Lens of Truth":                1,
+        "Magic Bean":                   1,
+        "Megaton Hammer":               1,
+        "Light Arrows":                 1,
+        "Nayrus Love":                  1,
+        "Bottle":                       2,
+        "Bottle with Fish":             1,
+        "Rutos Letter":                 1,
+        "Kokiri Sword":                 1,
+        "Giants Knife":                 1,
+        "Biggoron Sword":               1,
+        "Deku Shield":                  1,
+        "Hylian Shield":                1,
+        "Mirror Shield":                1,
+        "Goron Tunic":                  1,
+        "Zora Tunic":                   1,
+        "Iron Boots":                   1,
+        "Hover Boots":                  1,
+        "Magic Meter":                  2,
+        "Progressive Scale":            2,
+        "Progressive Wallet":           3,
+        "Stone of Agony":               1,
+        "Double Defense":               1,
+        "Progressive Hookshot":         2,
+        "Progressive Strength Upgrade": 3,
+        "Zeldas Lullaby":               1,
+        "Song of Storms":               1
+    }
+  },
+  "entrances": {
+    "Adult Spawn -> Temple of Time": {"region": "Death Mountain", "from": "Kak Behind Gate"},
+    "Child Spawn -> KF Links House": {"region": "Zoras Fountain", "from": "ZD Behind King Zora"}
+  },
+  "locations": {
+  }
+}

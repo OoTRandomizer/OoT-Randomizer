@@ -930,3 +930,21 @@ class TestCustomAudio(unittest.TestCase):
         self.assertEqual(num_banks, 0x26)
         self.assertEqual(audiobanks[0x25].bank_offset, 0x19110)
         self.assertEqual(audiobanks[0x25].size, 0x3940)
+
+class TestSceneFiles(unittest.TestCase):
+    # Compares byte-for-byte between parsed output
+    # read from the rom and the original unparsed data.
+    def test_vanilla_scene_file_parsing(self):
+        from Scene import compare_parsed_data_to_rom
+        uncompressed_rom = Rom('ZOOTDEC.z64')
+        compare_parsed_data_to_rom(uncompressed_rom)
+
+    # Verifies the hard-coded addresses defined for pointers
+    # located outside scene files that reference scene file
+    # assets are correct. Bytes at the address are read and
+    # compared to the corresponding segment address produced
+    # by the parsed scene asset.
+    def test_vanilla_scene_file_pointers(self):
+        from Scene import check_external_reference_locations
+        uncompressed_rom = Rom('ZOOTDEC.z64')
+        check_external_reference_locations(uncompressed_rom)

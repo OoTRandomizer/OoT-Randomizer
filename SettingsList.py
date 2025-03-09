@@ -3974,6 +3974,19 @@ class SettingInfos:
         },
     )
 
+    gold_skulls_ignore_daytime = Checkbutton(
+        gui_text       = "Nighttime Skulltulas in Daytime",
+        gui_tooltip    = '''\
+            GS Tokens that can only be obtained
+            during the night do not disappear when
+            it is day time.
+        ''',
+        shared         = True,
+        disable        = {
+            True:  {'settings': ['logic_no_night_tokens_without_suns_song']}
+        }
+    )
+
     item_pool_value = Combobox(
         gui_text       = 'Item Pool',
         default        = 'balanced',

@@ -392,7 +392,8 @@
             "fix_broken_drops",
             "tcg_requires_lens",
             "no_collectible_hearts",
-            "one_item_per_dungeon"
+            "one_item_per_dungeon",
+            "gold_skulls_ignore_daytime"
           ]
         },
         {
