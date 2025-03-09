@@ -2498,7 +2498,7 @@ def compare_parsed_data_to_rom(rom: Rom, save_files: bool = False):
     scene_list = parse_scene_data(rom)
     print('Done parsing')
     for scene in scene_list:
-        scene_bytes = scene.encode()
+        scene_bytes = scene.encode(True)
         if save_files:
             with open('scene_out', 'wb') as f:
                 f.write(scene_bytes)
@@ -2518,7 +2518,7 @@ def compare_parsed_data_to_rom(rom: Rom, save_files: bool = False):
             i += 1
         print(f'Bytes match for {scene.name}')
         for room in scene.rooms:
-            room_bytes = room.encode()
+            room_bytes = room.encode(True)
             if save_files:
                 with open('room_out', 'wb') as f:
                     f.write(room_bytes)
