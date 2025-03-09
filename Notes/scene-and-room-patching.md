@@ -695,11 +695,48 @@ Externally referenced cutscenes:
 
 - [?] Cutscene Patching
     - [?] Cutscenes
+      - [X] Lost Woods Bridge Saria's Gift
+      - [X] Song cutscenes without songs as items
+      - [X] Song cutscenes with songs as items
+      - [X] Open Royal Family Tomb as both adult/child
+      - [ ] Darunia's Dance for Saria's Song
+      - [ ] Owl warps
+      - [X] Zelda escaping from Hyrule Castle for OoT check
+      - [X] Small cutscene after learning OoT song
+      - [ ] Epona race start
+      - [ ] Epona escapes to different Hyrule Field entrances
+      - [X] Burning Kak intro cutscene
+      - [X] Well draining cutscene
+      - [ ] Nabooru knuckle defeat
+      - [ ] Rainbow bridge
+      - [ ] Trial completion cutscenes
+      - [ ] Ganon's Tower collapse
+      - [ ] Phantom Ganon blue warp Deku Sprout cutscene skip
+    - [ ] Cutscenes outside scene files
+      - [ ] Jabu Jabu swallowing Link
+      - [ ] Ruto pointing to dungeon reward in Big Octo room
+      - [ ] Opening Door of Time
+      - [ ] Master Sword pedestal cutscene
+      - [ ] Well draining cutscene (Windmill)
     - [?] wondertalk2 actor moves
+      - [ ] Shadow Temple whispering maze (8x)
+      - [ ] Shadow Temple Truthspinner (2x)
+      - [ ] GTG Entrance (3x)
+      - [ ] GTG Stalfos room (1x)
+      - [ ] GTG Flame Wall Maze/Slopes Room (1x)
+      - [ ] GTG Pushblock Room (2x)
+      - [ ] GTG Rotating Statue Room (1x)
+      - [ ] GTG Megaton Statue/Back Enemies Room (1x)
+      - [ ] GTG Lava Room (3x)
+      - [ ] GTG Dinolfos Room (1x)
+      - [ ] GTG Inner Maze (1x)
+      - [ ] GTG Shellblade Room/Toilet (1x)
+      - [ ] Death Mountain Crater (1x)
+      - [ ] Hideout Cells (1 per cell room)
 - [?] Other Patches
     - [X] Duplicate Bazaar room for Kakariko
     - [X] Move Sheik from pedastal in ToT
-    - [?] Ice Cavern alcove camera (duplicated in two spots in Patches.py)
+    - [X] Ice Cavern alcove camera (duplicated in two spots in Patches.py)
     - [X] Fire Temple boss loop unlocked door without keysanity
     - [X] Non-MQ Water Temple door always unlocked
     - [X] Graveyard ledge grabs
@@ -748,5 +785,12 @@ Externally referenced cutscenes:
     - [ ] All rooms can be entered from all entrances
     - [ ] Ice Cavern scene header patch from old system
     - [ ] MQ Spirit Temple room 6 new alternate header
+    - [X] Shadow Temple MQ redead shared flags for silver rupee shuffle
+    - [ ] DC MQ door flag move for silver rupee shuffle
+    - [ ] Spirit Temple MQ front right chest temp -> permanent flag for silver rupee shuffle
+    - [ ] Key doors are correct
+    - [ ] Check overrides work
+    - [ ] Scrub/cow actor patching works for respective shuffles
+    - [ ] Keysy removes locks
 - [?] ASM/C patches
     - [?] 0x26c10e3 - generic grotto ACTOR_EN_GS actor params 0x3818 -> 0x38FF

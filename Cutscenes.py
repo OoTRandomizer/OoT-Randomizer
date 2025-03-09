@@ -18,65 +18,24 @@ if TYPE_CHECKING:
 # This is the case for all cutscenes defined directly in their scenes, and some specific ones in their actor file.
 # However some cutscenes like all the ones tied to bosses are done "manually" in their actor files in a completely different format.
 
-def delete_cutscene(rom: Rom, address: int) -> None:
-    # Address is the start of the cutscene commands.
-    # Insert the CS END command at the start of the file.
-    rom.write_int32(address + 4, 0xFFFFFFFF)
-
-def delete_cutscene_cutscene(cutscene: Cutscene) -> None:
+def delete_cutscene(cutscene: Cutscene) -> None:
     # Instead of deleting the cutscene completely from the ROM,
     # set its frame count to a negative number to prematurely exit
     # in the game's cutscene parser in z_demo. This makes the written
     # ROM data look like CS_END, but it is not being interpreted as such.
     cutscene.frames = -1
 
-def patch_cutscene_length(rom: Rom, address: int, new_length: int) -> None:
-    # Address is the start of the cutscene commands.
-    # Syntax is number of cutscene commands, then number of frames.
-    rom.write_int32(address + 4, new_length)
-
-def patch_cutscene_length_cutscene(cutscene: Cutscene, new_length: int) -> None:
+def patch_cutscene_length(cutscene: Cutscene, new_length: int) -> None:
     cutscene.frames = new_length
 
 # Some cutscenes sends Link in a different location at the end. The command that sets the destination also sets the length of these cutscenes.
-def patch_cutscene_destination_and_length(rom: Rom, address: int, new_length: int, new_destination: Optional[int] = None) -> None:
-    # Address is the start of the arguments of the CS_CMD_DESTINATION (or CS_TERMINATOR) command to modify.
-    # The previous values should be respectively 0x000003E8 and 0x00000001.
-    cmd_destination_value = rom.read_int32(address - 8)
-    cmd_destination_constant = rom.read_int32(address - 4)
-
-    if cmd_destination_value != 0x03E8 or cmd_destination_constant != 0x01:
-        raise Exception("Wrong address to patch cutscene destination or length.")
-
-    if new_destination:
-        rom.write_int16(address, new_destination)
-    rom.write_int16(address + 2, new_length)
-
-def patch_cutscene_destination_and_length_cutscene(cutscene: Cutscene, old_length: int, new_length: int, new_destination: Optional[int] = None) -> None:
+def patch_cutscene_destination_and_length(cutscene: Cutscene, old_length: int, new_length: int, new_destination: Optional[int] = None) -> None:
     command = cutscene.find_command_by_start_frame(CutsceneCommandID.CS_CMD_DESTINATION, old_length)
     command.start_frame = new_length
     if new_destination:
         command.destination = new_destination
 
-def patch_textbox_during_cutscene(rom: Rom, address: int, textbox_id: int, start_frame: int, end_frame: int) -> None:
-    # Address is the start of the textboxes commands during cutscene.
-    # Put textbox_id at 0 to delete a textbox that would show up otherwise.
-    if textbox_id == 0:
-        rom.write_int16(address, 0xFFFF) # CS_TEXT_ID_NONE
-        rom.write_int16(address + 2, start_frame)
-        rom.write_int16(address + 4, end_frame)
-        rom.write_int16(address + 6, 0xFFFF) # constant 0xFFFF
-        rom.write_int16(address + 8, 0xFFFF) # CS_TEXT_ID_NONE
-        rom.write_int16(address + 10, 0xFFFF) # CS_TEXT_ID_NONE
-    else:
-        rom.write_int16(address, textbox_id)
-        rom.write_int16(address + 2, start_frame)
-        rom.write_int16(address + 4, end_frame)
-        rom.write_int16(address + 6, 0) # CutsceneTextType, always 0 unless we want to make a choice textbox.
-        rom.write_int16(address + 8, 0xFFFF) # First choice of a choice texbox
-        rom.write_int16(address + 10, 0xFFFF) # Second choice of a choice texbox
-
-def patch_textbox_during_cutscene_cutscene(cutscene: Cutscene, old_type: CutsceneCommandID, old_start_frame: int, textbox_id: int, new_start_frame: int, end_frame: int) -> None:
+def patch_textbox_during_cutscene(cutscene: Cutscene, old_type: CutsceneCommandID, old_start_frame: int, textbox_id: int, new_start_frame: int, end_frame: int) -> None:
     CS_TEXT_NORMAL = 0     # CutsceneTextType, always 0 unless we want to make a choice textbox.
     CS_TEXT_NONE = 0xFFFF  # constant 0xFFFF
     if textbox_id == 0:
@@ -85,41 +44,8 @@ def patch_textbox_during_cutscene_cutscene(cutscene: Cutscene, old_type: Cutscen
         text_command = CutsceneCommandText(textbox_id, new_start_frame, end_frame, CS_TEXT_NORMAL, 0xFFFF, 0xFFFF)
     cutscene.replace_command_at_start_frame(old_type, old_start_frame, text_command)
 
-# This is a special case of the function above, because ocarina textboxes are initialized differently.
-def patch_learn_song_textbox_during_cutscene(rom: Rom, address: int, ocarina_song_id: int, start_frame: int, end_frame: int) -> None:
-    # Address is the start of the textboxes commands during cutscene.
-    rom.write_int16(address, ocarina_song_id)
-    rom.write_int16(address + 2, start_frame)
-    rom.write_int16(address + 4, end_frame)
-    rom.write_int16(address + 6, 0x0002) # constant CS_TEXT_OCARINA_ACTION
-    rom.write_int16(address + 8, 0x088B) # id of the textbox used to replay a song on Ocarina, also constant
-    rom.write_int16(address + 10, 0xFFFF) # Unused
-
-def patch_learn_song_textbox_during_cutscene_new(cutscene: Cutscene, ocarina_song_id: int, start_frame: int, end_frame: int) -> None:
-    # Assumes the first textbox should be replaced with the replay textbox
-    cutscene.replace_first_sub_command(CutsceneCommandID.CS_CMD_TEXT,
-                                       CutsceneCommandTextOcarinaAction(ocarina_song_id, start_frame, end_frame, 0x088B))
-
-def patch_learn_song_textbox_during_scene_cutscene(scenes: Scenes, scene_id: int, header_id: int, ocarina_song_id: int, start_frame: int, end_frame: int) -> None:
-    cutscene = scenes[scene_id].headers[header_id].cutscene_data
-    patch_learn_song_textbox_during_cutscene_new(cutscene, ocarina_song_id, start_frame, end_frame)
-
-def patch_cutscene_scene_transition(rom: Rom, address: int, transition_type: int, start_frame: int, end_frame:int) -> None:
-    # Address is the start of the textboxes commands during cutscene.
-    rom.write_int16(address, transition_type) # CS_TEXT_ID_NONE
-    rom.write_int16(address + 2, start_frame)
-    rom.write_int16(address + 4, end_frame)
-    rom.write_int16(address + 6, end_frame)
-
 # This is mostly used to set flags during cutscenes.
-def patch_cutscene_misc_command(rom: Rom, address: int, start_frame:int, end_frame:int, new_misc_type: Optional[int] = None) -> None:
-    # Address should be the start of the CS_MISC command.
-    if new_misc_type:
-        rom.write_int16(address, new_misc_type)
-    rom.write_int16(address + 2, start_frame)
-    rom.write_int16(address + 4, end_frame)
-
-def patch_cutscene_misc_command_cutscene(cutscene: Cutscene, old_start_frame: int, start_frame: int, end_frame: int, new_misc_type: Optional[int] = None) -> None:
+def patch_cutscene_misc_command(cutscene: Cutscene, old_start_frame: int, start_frame: int, end_frame: int, new_misc_type: Optional[int] = None) -> None:
     command = cutscene.find_command_by_start_frame(CutsceneCommandID.CS_SUBCMD_MISC, old_start_frame)
     if new_misc_type:
         command.type_id = new_misc_type
@@ -127,10 +53,9 @@ def patch_cutscene_misc_command_cutscene(cutscene: Cutscene, old_start_frame: in
     command.end_frame = end_frame
 
 def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location], songs_as_items: bool, settings: Settings) -> None:
-
     # Speed obtaining Fairy Ocarina
     lw_bridge_cutscene = scenes[SceneIDs.LOST_WOODS].headers[4].cutscene_data
-    patch_cutscene_destination_and_length_cutscene(lw_bridge_cutscene, 1130, 60)
+    patch_cutscene_destination_and_length(lw_bridge_cutscene, 1130, 60)
     #patch_cutscene_destination_and_length(rom, 0x2151230, 60)
     # Make Link cross the whole bridge instead of stopping in the middle by moving the destination coordinate
     # of the second player cue in the cutscene.
@@ -162,12 +87,12 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     zl_cutscene = scenes[SceneIDs.HYRULE_CASTLE_COURTYARD].headers[5].cutscene_data
     if songs_as_items:
         #patch_cutscene_destination_and_length(rom, 0x2E8E914, 1, 0x73)
-        patch_cutscene_destination_and_length_cutscene(zl_cutscene, 875, 1, 0x73)
+        patch_cutscene_destination_and_length(zl_cutscene, 875, 1, 0x73)
         #patch_textbox_during_cutscene(rom, 0x02E8E924, 0, 0, 16)
-        patch_textbox_during_cutscene_cutscene(zl_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, 0, 0, 16)
+        patch_textbox_during_cutscene(zl_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, 0, 0, 16)
     else:
         #patch_cutscene_destination_and_length(rom, 0x2E8E914, 59, 0x73)
-        patch_cutscene_destination_and_length_cutscene(zl_cutscene, 875, 59, 0x73)
+        patch_cutscene_destination_and_length(zl_cutscene, 875, 59, 0x73)
         location = song_locations['Song from Impa']
         text_id = location.item.special['text_id']
         # Convert song ID from TEACH to PLAYBACK
@@ -180,25 +105,25 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
         # Display the textbox for learning the song between 17 and 32 frames.
         # Replaces the second text command.
         #patch_textbox_during_cutscene(rom, 0x2E8E930, text_id, 17, 32)
-        patch_textbox_during_cutscene_cutscene(zl_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 140, text_id, 17, 32)
+        patch_textbox_during_cutscene(zl_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 140, text_id, 17, 32)
 
     # Speed learning Epona's Song
     ep_cutscene = scenes[SceneIDs.LON_LON_RANCH].headers[5].cutscene_data
     if songs_as_items:
         #patch_cutscene_destination_and_length(rom, 0x029BEF68, 1)
-        patch_cutscene_destination_and_length_cutscene(ep_cutscene, 300, 1)
+        patch_cutscene_destination_and_length(ep_cutscene, 300, 1)
     else:
         #patch_cutscene_destination_and_length(rom, 0x029BEF68, 10)
-        patch_cutscene_destination_and_length_cutscene(ep_cutscene, 300, 10)
+        patch_cutscene_destination_and_length(ep_cutscene, 300, 10)
         location = song_locations['Song from Malon']
         text_id = location.item.special['text_id']
         # The cutscene actually happens after learning the song, so we don't need to change the learn song textbox.
         # Display the 0x00D2 textbox (You've learned Epona's Song!) at frame 0.
         #patch_textbox_during_cutscene(rom, 0x029BECB8, 0x00D6, 0, 9)
-        patch_textbox_during_cutscene_cutscene(ep_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, text_id, 0, 9)
+        patch_textbox_during_cutscene(ep_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, text_id, 0, 9)
         # Make sure no textbox shows at frame 10.
         #patch_textbox_during_cutscene(rom, 0x029BECC4, 0, 10, 11)
-        patch_textbox_during_cutscene_cutscene(ep_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 10, 0, 10, 11)
+        patch_textbox_during_cutscene(ep_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 10, 0, 10, 11)
 
     # Speed up opening the royal tomb for both child and adult.
     #patch_cutscene_length(rom, 0x2025020, 1)
@@ -207,8 +132,8 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     # Adult cutscene is triggered from the same place, but it is also referenced in the 5th header.
     adult_tomb_cutscene = scenes[SceneIDs.GRAVEYARD].headers[4].cutscene_data
     child_tomb_cutscene = scenes[SceneIDs.GRAVEYARD].get_existing_record_by_vanilla_offset(0x5020, RecordType.CutsceneData)
-    patch_cutscene_length_cutscene(adult_tomb_cutscene, 1)
-    patch_cutscene_length_cutscene(child_tomb_cutscene, 1)
+    patch_cutscene_length(adult_tomb_cutscene, 1)
+    patch_cutscene_length(child_tomb_cutscene, 1)
     # Change the first actor cue from type 1 to type 2.
     # This will make the grave explode on frame 0 instead of frame 392.
     #rom.write_byte(0x2025159, 0x02)
@@ -222,21 +147,21 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     suns_cutscene = scenes[SceneIDs.GRAVEYARD_ROYAL_FAMILY_TOMB].headers[4].cutscene_data
     if songs_as_items:
         #delete_cutscene(rom, 0x0332A4A0)
-        delete_cutscene_cutscene(suns_cutscene)
+        delete_cutscene(suns_cutscene)
     else:
         location = song_locations['Song from Royal Familys Tomb']
         text_id = location.item.special['text_id']
         # Convert song ID from TEACH to PLAYBACK
         playback_id = location.item.special['song_id'] + 0x0D
         #patch_cutscene_length(rom, 0x0332A4A0, 60)
-        patch_cutscene_length_cutscene(suns_cutscene, 60)
+        patch_cutscene_length(suns_cutscene, 60)
         # Display the Sun's song learn Ocarina textbox at frame 0.
         #atch_learn_song_textbox_during_cutscene(rom, 0x332A870, 24, 0, 16)
         playback_command = CutsceneCommandTextOcarinaAction(playback_id, 0, 16, LEARN_SONG_TEXT_ID)
         suns_cutscene.replace_command_at_start_frame(CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, playback_command)
         # Display the 0x00D3 textbox (You've learned Sun's Song!) between 17 and 32 frames.
         #patch_textbox_during_cutscene(rom, 0x332A87C, 0x00D3, 17, 32)
-        patch_textbox_during_cutscene_cutscene(suns_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 30, text_id, 17, 32)
+        patch_textbox_during_cutscene(suns_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 30, text_id, 17, 32)
 
     # Speed Deku Seed Upgrade Scrub Cutscene
     rom.write_bytes(0xECA900, [0x24, 0x03, 0xC0, 0x00])  # scrub angle
@@ -249,21 +174,21 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     saria_cutscene = scenes[SceneIDs.SACRED_FOREST_MEADOW].headers[5].cutscene_data
     if songs_as_items:
         #delete_cutscene(rom, 0x020B1730)
-        delete_cutscene_cutscene(saria_cutscene)
+        delete_cutscene(saria_cutscene)
     else:
         location = song_locations['Song from Saria']
         text_id = location.item.special['text_id']
         # Convert song ID from TEACH to PLAYBACK
         playback_id = location.item.special['song_id'] + 0x0D
         #patch_cutscene_length(rom, 0x020B1730, 60)
-        patch_cutscene_length_cutscene(saria_cutscene, 60)
+        patch_cutscene_length(saria_cutscene, 60)
         # Display the Saria's song learn Ocarina textbox at frame 0.
         #patch_learn_song_textbox_during_cutscene(rom, 0x20B1DB0, 21, 0, 16)
         playback_command = CutsceneCommandTextOcarinaAction(playback_id, 0, 16, LEARN_SONG_TEXT_ID)
         saria_cutscene.replace_command_at_start_frame(CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, playback_command)
         # Display the 0x00D1 textbox (You've learned Saria's Song!) between 17 and 32 frames.
         #patch_textbox_during_cutscene(rom, 0x20B1DBC, 0x00D1, 17, 32)
-        patch_textbox_during_cutscene_cutscene(saria_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 465, text_id, 17, 32)
+        patch_textbox_during_cutscene(saria_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 465, text_id, 17, 32)
         # Modify Link's actions so that he doesn't have the cutscene's behaviour.
         # Switch to player action 17 between frames 0 and 16.
         #rom.write_int16s(0x020B19C8, [0x0011, 0x0000, 0x0010])  # action, start, end
@@ -286,18 +211,24 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     # Play Sarias Song to Darunia
     darunia_cutscene = scenes[SceneIDs.GORON_CITY].get_existing_record_by_vanilla_offset(0x59E0, RecordType.CutsceneData)
     #delete_cutscene(rom, 0x22769E0)
-    delete_cutscene_cutscene(darunia_cutscene)
+    delete_cutscene(darunia_cutscene)
 
     # Speed up Death Mountain Trail Owl Flight
     dmt_owl_cutscene = scenes[SceneIDs.DEATH_MOUNTAIN_TRAIL].get_existing_record_by_vanilla_offset(0x1E6A0, RecordType.CutsceneData)
     #patch_cutscene_destination_and_length(rom, 0x223B6B0, 1)
-    patch_cutscene_destination_and_length_cutscene(dmt_owl_cutscene, 422, 1)
+    patch_cutscene_destination_and_length(dmt_owl_cutscene, 422, 1)
 
     # Jabu Jabu swallowing Link
-    patch_cutscene_destination_and_length(rom, 0xCA0784, 1)
+    jabu_swallow_cutscene = Cutscene.decode(rom, 0xC9FC84)
+    patch_cutscene_destination_and_length(jabu_swallow_cutscene, 345, 1)
+    jabu_swallow_cutscene.write(rom)
+    #patch_cutscene_destination_and_length(rom, 0xCA0784, 1)
 
     # Ruto pointing to the Zora Sapphire when you enter Big Octo's room.
-    delete_cutscene(rom, 0xD03BA8)
+    ruto_gives_reward_cutscene = Cutscene.decode(rom, 0xD03BA8)
+    delete_cutscene(ruto_gives_reward_cutscene)
+    ruto_gives_reward_cutscene.write(rom)
+    #delete_cutscene(rom, 0xD03BA8)
 
     # Speed scene after Jabu Jabu's Belly
     # Cut Ruto talking to Link when entering the blue warp.
@@ -306,46 +237,56 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     # Speed up Lake Hylia Owl Flight
     lh_owl_cutscene = scenes[SceneIDs.LAKE_HYLIA].get_existing_record_by_vanilla_offset(0x1B0C0, RecordType.CutsceneData)
     #patch_cutscene_destination_and_length(rom, 0x20E60D0, 1)
-    patch_cutscene_destination_and_length_cutscene(lh_owl_cutscene, 350, 1)
+    patch_cutscene_destination_and_length(lh_owl_cutscene, 350, 1)
 
     # Speed Zelda escaping from Hyrule Castle
     escape_cutscene = scenes[SceneIDs.HYRULE_FIELD].headers[5].cutscene_data
     #patch_cutscene_destination_and_length(rom, 0x1FC0CFC, 1)
-    patch_cutscene_destination_and_length_cutscene(escape_cutscene, 2259, 1)
+    patch_cutscene_destination_and_length(escape_cutscene, 2259, 1)
 
     # Speed learning Song of Time
     sot_cutscene = scenes[SceneIDs.TEMPLE_OF_TIME].headers[11].cutscene_data
     if songs_as_items:
         #patch_cutscene_destination_and_length(rom, 0x0252FBA0, 1)
-        patch_cutscene_destination_and_length_cutscene(sot_cutscene, 853, 1)
+        patch_cutscene_destination_and_length(sot_cutscene, 853, 1)
     else:
         location = song_locations['Song from Ocarina of Time']
         text_id = location.item.special['text_id']
         # Convert song ID from TEACH to PLAYBACK
         playback_id = location.item.special['song_id'] + 0x0D
         #patch_cutscene_destination_and_length(rom, 0x0252FBA0, 59)
-        patch_cutscene_destination_and_length_cutscene(sot_cutscene, 853, 59)
+        patch_cutscene_destination_and_length(sot_cutscene, 853, 59)
         # Display the Song of Time learn Ocarina textbox at frame 0.
         #patch_learn_song_textbox_during_cutscene(rom, 0x0252FC88, 25, 0, 16)
         playback_command = CutsceneCommandTextOcarinaAction(playback_id, 0, 16, LEARN_SONG_TEXT_ID)
         sot_cutscene.replace_command_at_start_frame(CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, playback_command)
         # Display the 0x00D5 textbox (You've learned Song of Time!) between 17 and 32 frames.
         #patch_textbox_during_cutscene(rom, 0x0252FC94, 0x00D5, 17, 32)
-        patch_textbox_during_cutscene_cutscene(sot_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 50, text_id, 17, 32)
+        patch_textbox_during_cutscene(sot_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 50, text_id, 17, 32)
 
     # Hyrule Field small cutscene after learning Song of Time.
     oot_cutscene = scenes[SceneIDs.HYRULE_FIELD].headers[8].cutscene_data
     #delete_cutscene(rom, 0x01FC3B80)
-    delete_cutscene_cutscene(oot_cutscene)
+    delete_cutscene(oot_cutscene)
 
     # Speed opening of Door of Time
-    patch_cutscene_length(rom, 0xE0A170, 2)
+    door_of_time_cutscene = Cutscene.decode(rom, 0xE0A170)
+    patch_cutscene_length(door_of_time_cutscene, 2)
     # Set the "Opened Door of Time" flag at the first frame.
-    patch_cutscene_misc_command(rom, 0xE0A358, 1, 2)
+    patch_cutscene_misc_command(door_of_time_cutscene, 510, 1, 2)
+    door_of_time_cutscene.write(rom)
+    #patch_cutscene_length(rom, 0xE0A170, 2)
+    #patch_cutscene_misc_command(rom, 0xE0A358, 1, 2)
 
     # Master Sword pedestal cutscene
-    patch_cutscene_destination_and_length(rom, 0xCB6BE8, 20) # Child => Adult
-    patch_cutscene_destination_and_length(rom, 0xCB75B8, 20) # Adult => Child
+    child_pull_sword_cutscene = Cutscene.decode(rom, 0xCB6B30)
+    patch_cutscene_destination_and_length(child_pull_sword_cutscene, 230, 20)
+    child_pull_sword_cutscene.write(rom)
+    adult_place_sword_cutscene = Cutscene.decode(rom, 0xCB6FE0)
+    patch_cutscene_destination_and_length(adult_place_sword_cutscene, 210, 20)
+    adult_place_sword_cutscene.write(rom)
+    #patch_cutscene_destination_and_length(rom, 0xCB6BE8, 20) # Child => Adult
+    #patch_cutscene_destination_and_length(rom, 0xCB75B8, 20) # Adult => Child
 
     # Speed learning Song of Storms
     # The cutscene actually happens after learning the song, so we don't need to change the Ocarina texboxes.
@@ -353,20 +294,20 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     sos_cutscene = scenes[SceneIDs.WINDMILL_AND_DAMPES_GRAVE].get_existing_record_by_vanilla_offset(0xE080, RecordType.CutsceneData)
     if songs_as_items:
         #delete_cutscene(rom, 0x03041080)
-        delete_cutscene_cutscene(sos_cutscene)
+        delete_cutscene(sos_cutscene)
     else:
         location = song_locations['Song from Windmill']
         text_id = location.item.special['text_id']
         #patch_cutscene_length(rom, 0x03041080, 10)
-        patch_cutscene_length_cutscene(sos_cutscene, 10)
+        patch_cutscene_length(sos_cutscene, 10)
         # Display the 0x00D6 textbox (You've learned Song of Storms!) at frame 0.
         #patch_textbox_during_cutscene(rom, 0x03041090, 0x00D6, 0, 9)
-        patch_textbox_during_cutscene_cutscene(sos_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, text_id, 0, 9)
+        patch_textbox_during_cutscene(sos_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, text_id, 0, 9)
 
     # Speed up Epona race start
     llr_race_cutscene = scenes[SceneIDs.LON_LON_RANCH].headers[4].cutscene_data
     #patch_cutscene_length(rom, 0x29BE980, 2)
-    patch_cutscene_length_cutscene(llr_race_cutscene, 2)
+    patch_cutscene_length(llr_race_cutscene, 2)
     # Make the race music start on frame 1.
     #rom.write_byte(0x29BE9CB, 0x01)
     llr_seq_commmand = llr_race_cutscene.find_command(CutsceneCommandID.CS_SUBCMD_START_SEQ)
@@ -382,30 +323,30 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     east_epona_cutscene = scenes[SceneIDs.HYRULE_FIELD].get_existing_record_by_vanilla_offset(0xFF00, RecordType.CutsceneData)
     west_epona_cutscene = scenes[SceneIDs.HYRULE_FIELD].get_existing_record_by_vanilla_offset(0x10550, RecordType.CutsceneData)
     gate_epona_cutscene = scenes[SceneIDs.HYRULE_FIELD].get_existing_record_by_vanilla_offset(0x10B30, RecordType.CutsceneData)
-    patch_cutscene_length_cutscene(south_epona_cutscene, 84)
-    patch_cutscene_length_cutscene(east_epona_cutscene, 84)
-    patch_cutscene_length_cutscene(west_epona_cutscene, 84)
-    patch_cutscene_length_cutscene(gate_epona_cutscene, 42)
+    patch_cutscene_length(south_epona_cutscene, 84)
+    patch_cutscene_length(east_epona_cutscene, 84)
+    patch_cutscene_length(west_epona_cutscene, 84)
+    patch_cutscene_length(gate_epona_cutscene, 42)
 
     # Speed learning Minuet of Forest
     minuet_cutscene = scenes[SceneIDs.SACRED_FOREST_MEADOW].headers[4].cutscene_data
     if songs_as_items:
         #delete_cutscene(rom, 0x020AFF80)
-        delete_cutscene_cutscene(minuet_cutscene)
+        delete_cutscene(minuet_cutscene)
     else:
         location = song_locations['Sheik in Forest']
         text_id = location.item.special['text_id']
         # Convert song ID from TEACH to PLAYBACK
         playback_id = location.item.special['song_id'] + 0x0D
         #patch_cutscene_length(rom, 0x020AFF80, 60)
-        patch_cutscene_length_cutscene(minuet_cutscene, 60)
+        patch_cutscene_length(minuet_cutscene, 60)
         # Display the Minuet learn Ocarina textbox at frame 0.
         #patch_learn_song_textbox_during_cutscene(rom, 0x020B0808, 5, 0, 16)
         playback_command = CutsceneCommandTextOcarinaAction(playback_id, 0, 16, LEARN_SONG_TEXT_ID)
         minuet_cutscene.replace_command_at_start_frame(CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, playback_command)
         # Display the 0x0073 textbox (You have learned the Minuet of Forest!) between 17 and 32 frames.
         #patch_textbox_during_cutscene(rom, 0x020B0814, 0x0073, 17, 32)
-        patch_textbox_during_cutscene_cutscene(minuet_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 500, text_id, 17, 32)
+        patch_textbox_during_cutscene(minuet_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 500, text_id, 17, 32)
         # Restart Lost woods music on frame 33.
         #rom.write_int16s(0x020B0492, [0x0021, 0x0022])
         minuet_seq_command = minuet_cutscene.find_command_by_start_frame(CutsceneCommandID.CS_SUBCMD_START_SEQ, 1580)
@@ -442,27 +383,27 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     # Blue warp brings us to right before Deku Sprout cutscene number 3.
     #delete_cutscene(rom, 0x207B9D0)
     deku_sprout_cutscene = scenes[SceneIDs.KOKIRI_FOREST].headers[13].cutscene_data
-    delete_cutscene_cutscene(deku_sprout_cutscene)
+    delete_cutscene(deku_sprout_cutscene)
 
     # Speed learning Prelude of Light
     prelude_cutscene = scenes[SceneIDs.TEMPLE_OF_TIME].headers[6].cutscene_data
     if songs_as_items:
         #delete_cutscene(rom, 0x0252FD20)
-        delete_cutscene_cutscene(prelude_cutscene)
+        delete_cutscene(prelude_cutscene)
     else:
         location = song_locations['Sheik at Temple']
         text_id = location.item.special['text_id']
         # Convert song ID from TEACH to PLAYBACK
         playback_id = location.item.special['song_id'] + 0x0D
         #patch_cutscene_length(rom, 0x0252FD20, 74)
-        patch_cutscene_length_cutscene(prelude_cutscene, 74)
+        patch_cutscene_length(prelude_cutscene, 74)
         # Display the Minuet learn Ocarina textbox at frame 0.
         #patch_learn_song_textbox_during_cutscene(rom, 0x02531328, 20, 0, 16)
         playback_command = CutsceneCommandTextOcarinaAction(playback_id, 0, 16, LEARN_SONG_TEXT_ID)
         prelude_cutscene.replace_command_at_start_frame(CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, playback_command)
         # Display the 0x0078 textbox (You have learned the Prelude of Light!) between 17 and 32 frames.
         #patch_textbox_during_cutscene(rom, 0x02531334, 0x0078, 17, 32)
-        patch_textbox_during_cutscene_cutscene(prelude_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 125, text_id, 17, 32)
+        patch_textbox_during_cutscene(prelude_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 125, text_id, 17, 32)
         # Make the first action on Sheik's action list end immediately.
         #rom.write_int16(0x0252FF1C, 0x0000)
         sheik_prelude_command = prelude_cutscene.find_actor_cue_by_start_frame_and_type(0, CutsceneCommandID.CS_CMD_ACTOR_CUE_4_3)
@@ -477,21 +418,21 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     bolero_cutscene = scenes[SceneIDs.DEATH_MOUNTAIN_CRATER].headers[4].cutscene_data
     if songs_as_items:
         #delete_cutscene(rom, 0x0224B5D0)
-        delete_cutscene_cutscene(bolero_cutscene)
+        delete_cutscene(bolero_cutscene)
     else:
         location = song_locations['Sheik in Crater']
         text_id = location.item.special['text_id']
         # Convert song ID from TEACH to PLAYBACK
         playback_id = location.item.special['song_id'] + 0x0D
         #patch_cutscene_length(rom, 0x0224B5D0, 60)
-        patch_cutscene_length_cutscene(bolero_cutscene, 60)
+        patch_cutscene_length(bolero_cutscene, 60)
         # Display the Bolero learn Ocarina textbox at frame 0.
         #patch_learn_song_textbox_during_cutscene(rom, 0x0224D7F0, 16, 0, 16)
         playback_command = CutsceneCommandTextOcarinaAction(playback_id, 0, 16, LEARN_SONG_TEXT_ID)
         bolero_cutscene.replace_command_at_start_frame(CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, playback_command)
         # Display the 0x0073 textbox (You have learned the Bolero of Fire!) between 17 and 32 frames.
         #patch_textbox_during_cutscene(rom, 0x0224D7FC, 0x0073, 17, 32)
-        patch_textbox_during_cutscene_cutscene(bolero_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 120, text_id, 17, 32)
+        patch_textbox_during_cutscene(bolero_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 120, text_id, 17, 32)
         # Modify Link's actions so that he doesn't have the cutscene's behaviour.
         # Switch to player action 17 between frames 0 and 16.
         #rom.write_int16s(0x0224B5E0, [0x0011, 0x0000, 0x0010])  # action, start, end
@@ -520,21 +461,21 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     serenade_cutscene = scenes[SceneIDs.ICE_CAVERN].headers[4].cutscene_data
     if songs_as_items:
         #delete_cutscene(rom, 0x02BEB250)
-        delete_cutscene_cutscene(serenade_cutscene)
+        delete_cutscene(serenade_cutscene)
     else:
         location = song_locations['Sheik in Ice Cavern']
         text_id = location.item.special['text_id']
         # Convert song ID from TEACH to PLAYBACK
         playback_id = location.item.special['song_id'] + 0x0D
         #patch_cutscene_length(rom, 0x02BEB250, 60)
-        patch_cutscene_length_cutscene(serenade_cutscene, 60)
+        patch_cutscene_length(serenade_cutscene, 60)
         # Display the Serenade learn Ocarina textbox at frame 0.
         #patch_learn_song_textbox_during_cutscene(rom, 0x02BEC888, 17, 0, 16)
         playback_command = CutsceneCommandTextOcarinaAction(playback_id, 0, 16, LEARN_SONG_TEXT_ID)
         serenade_cutscene.replace_command_at_start_frame(CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, playback_command)
         # Display the 0x0075 textbox (You have learned the Serenade of Water!) between 17 and 32 frames.
         #patch_textbox_during_cutscene(rom, 0x02BEC894, 0x0075, 17, 32)
-        patch_textbox_during_cutscene_cutscene(serenade_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 130, text_id, 17, 32)
+        patch_textbox_during_cutscene(serenade_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 130, text_id, 17, 32)
         # Modify Link's actions so that he doesn't have the cutscene's behaviour.
         # Switch to player action 17 between frames 0 and 16.
         #rom.write_int16s(0x02BEB260, [0x0011, 0x0000, 0x0010])  # action, start, end
@@ -575,39 +516,41 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     # Burning Kak cutscene
     #patch_cutscene_destination_and_length(rom, 0x01FFE460, 1)
     burning_kak_cutscene = scenes[SceneIDs.KAKARIKO_VILLAGE].headers[4].cutscene_data
-    patch_cutscene_destination_and_length_cutscene(burning_kak_cutscene, 1585, 1)
+    patch_cutscene_destination_and_length(burning_kak_cutscene, 1585, 1)
     # Nocturne of Shadow cutscene
     nocturne_cutscene = scenes[SceneIDs.KAKARIKO_VILLAGE].headers[5].cutscene_data
     if songs_as_items:
         #patch_cutscene_destination_and_length(rom, 0x2000130, 1)
-        patch_cutscene_destination_and_length_cutscene(nocturne_cutscene, 1048, 1)
+        patch_cutscene_destination_and_length(nocturne_cutscene, 1048, 1)
         #patch_textbox_during_cutscene(rom, 0x02000FE0, 0, 0, 16)
-        patch_textbox_during_cutscene_cutscene(nocturne_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, 0, 0, 16)
+        patch_textbox_during_cutscene(nocturne_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, 0, 0, 16)
     else:
         location = song_locations['Sheik in Kakariko']
         text_id = location.item.special['text_id']
         # Convert song ID from TEACH to PLAYBACK
         playback_id = location.item.special['song_id'] + 0x0D
         #patch_cutscene_destination_and_length(rom, 0x2000130, 58)
-        patch_cutscene_destination_and_length_cutscene(nocturne_cutscene, 1048, 50)
+        patch_cutscene_destination_and_length(nocturne_cutscene, 1048, 50)
         # Display the Nocturne learn Ocarina textbox at frame 0.
         #patch_learn_song_textbox_during_cutscene(rom, 0x2000FE0, 19, 0, 16)
         playback_command = CutsceneCommandTextOcarinaAction(playback_id, 0, 16, LEARN_SONG_TEXT_ID)
         nocturne_cutscene.replace_command_at_start_frame(CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, playback_command)
         # Display the 0x0077 textbox (You have learned the Nocturne of Shadow!) between 17 and 32 frames.
         #patch_textbox_during_cutscene(rom, 0x02000FEC, 0x0077, 17, 32)
-        patch_textbox_during_cutscene_cutscene(nocturne_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 191, text_id, 17, 32)
+        patch_textbox_during_cutscene(nocturne_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 191, text_id, 17, 32)
 
     # Speed up draining the well
     # Cutscene in windmill.
-    patch_cutscene_destination_and_length(rom, 0xE0A010, 1)
+    well_windmill_cutscene = Cutscene.decode(rom, 0xE0A000)
+    patch_cutscene_destination_and_length(well_windmill_cutscene, 200, 1)
+    #patch_cutscene_destination_and_length(rom, 0xE0A010, 1)
     # Drain well in Kakariko cutscene.
     #patch_cutscene_destination_and_length(rom, 0x2001110, 3)
     well_cutscene = scenes[SceneIDs.KAKARIKO_VILLAGE].headers[6].cutscene_data
-    patch_cutscene_destination_and_length_cutscene(well_cutscene, 320, 3)
+    patch_cutscene_destination_and_length(well_cutscene, 320, 3)
     # Set the "Drain Well" flag at the second frame (first frame is used by the "Fast Windmill" flag).
     #patch_cutscene_misc_command(rom, 0x20010D8, 2, 3)
-    patch_cutscene_misc_command_cutscene(well_cutscene, 180, 2, 3)
+    patch_cutscene_misc_command(well_cutscene, 180, 2, 3)
 
     # This cutscene is not written in the shadow temple scene or in the boat actor, but directly in z_onepointdemo.c instead.
     # So not compatible with our functions.
@@ -633,22 +576,22 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     if songs_as_items:
         #patch_cutscene_destination_and_length(rom, 0x0218B480, 1)
         #patch_textbox_during_cutscene(rom, 0x0218C57C, 0, 0, 16)
-        patch_cutscene_destination_and_length_cutscene(requiem_cutscene, 1480, 1)
-        patch_textbox_during_cutscene_cutscene(requiem_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, 0, 0, 16)
+        patch_cutscene_destination_and_length(requiem_cutscene, 1480, 1)
+        patch_textbox_during_cutscene(requiem_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, 0, 0, 16)
     else:
         location = song_locations['Sheik at Colossus']
         text_id = location.item.special['text_id']
         # Convert song ID from TEACH to PLAYBACK
         playback_id = location.item.special['song_id'] + 0x0D
         #patch_cutscene_destination_and_length(rom, 0x0218B480, 58)
-        patch_cutscene_destination_and_length_cutscene(requiem_cutscene, 1480, 58)
+        patch_cutscene_destination_and_length(requiem_cutscene, 1480, 58)
         # Display the Requiem learn Ocarina textbox at frame 0.
         #patch_learn_song_textbox_during_cutscene(rom, 0x0218C57C, 18, 0, 16)
         playback_command = CutsceneCommandTextOcarinaAction(playback_id, 0, 16, LEARN_SONG_TEXT_ID)
         requiem_cutscene.replace_command_at_start_frame(CutsceneCommandID.CS_SUBCMD_TEXT_NONE, 0, playback_command)
         # Display the 0x0076 textbox (You have learned the Requiem of Spirit!) between 17 and 32 frames.
         #patch_textbox_during_cutscene(rom, 0x0218C588, 0x0076, 17, 32)
-        patch_textbox_during_cutscene_cutscene(requiem_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 295, text_id, 17, 32)
+        patch_textbox_during_cutscene(requiem_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 295, text_id, 17, 32)
         # Modify Link's actions so that he doesn't have the cutscene's behaviour.
         # Switch to player action 17 between frames 0 and 16.
         #rom.write_int16s(0x0218AF20, [0x0011, 0x0000, 0x0010])  # action, start, end
@@ -671,7 +614,7 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     # Speed Nabooru defeat scene
     knuckle_cutscene = scenes[SceneIDs.TWINROVA_BOSS_ROOM].headers[5].cutscene_data
     #patch_cutscene_length(rom, 0x2F5AF80, 5)
-    patch_cutscene_length_cutscene(knuckle_cutscene, 5)
+    patch_cutscene_length(knuckle_cutscene, 5)
     # Make the current miniboss music end on second frame.
     #rom.write_bytes(0x2F5C7DA, [0x00, 0x01, 0x00, 0x02])
     knuckle_seq_command = knuckle_cutscene.find_command_by_start_frame(CutsceneCommandID.CS_SUBCMD_FADEOUT_SEQ, 250)
@@ -725,7 +668,7 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     # Speed Bridge of Light cutscene
     #patch_cutscene_length(rom, 0x292D640, 160)
     rainbow_cutscene = scenes[SceneIDs.OUTSIDE_GANONS_CASTLE].headers[4].cutscene_data
-    patch_cutscene_length_cutscene(rainbow_cutscene, 160)
+    patch_cutscene_length(rainbow_cutscene, 160)
     # Make the rainbow particles fall down between frames 1 and 108.
     #rom.write_bytes(0x292D682, [0x00, 0x01, 0x00, 0x6C])
     rainbow_cue = rainbow_cutscene.find_actor_cue_by_start_frame_and_type(160, CutsceneCommandID.CS_CMD_ACTOR_CUE_1_8)
@@ -745,7 +688,7 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     rainbow_cue.start_frame = 60
     # Remove the first textbox that shows up at frame 20.
     #patch_textbox_during_cutscene(rom, 0x292D924, 0, 20, 150)
-    patch_textbox_during_cutscene_cutscene(rainbow_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 20, 0, 20, 150)
+    patch_textbox_during_cutscene(rainbow_cutscene, CutsceneCommandID.CS_SUBCMD_TEXT, 20, 0, 20, 150)
 
     # Speed completion of the trials in Ganon's Castle
     #patch_cutscene_destination_and_length(rom, 0x31A8090, 1)  # Forest
@@ -760,12 +703,12 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     fire_sage_cutscene = scenes[SceneIDs.INSIDE_GANONS_CASTLE].get_existing_record_by_vanilla_offset(0x1BC70, RecordType.CutsceneData)
     light_sage_cutscene = scenes[SceneIDs.INSIDE_GANONS_CASTLE].get_existing_record_by_vanilla_offset(0x1C6A0, RecordType.CutsceneData)
     spirit_sage_cutscene = scenes[SceneIDs.INSIDE_GANONS_CASTLE].get_existing_record_by_vanilla_offset(0x1D070, RecordType.CutsceneData)
-    patch_cutscene_destination_and_length_cutscene(forest_sage_cutscene, 325, 1)
-    patch_cutscene_destination_and_length_cutscene(fire_sage_cutscene, 325, 1)
-    patch_cutscene_destination_and_length_cutscene(water_sage_cutscene, 325, 1)
-    patch_cutscene_destination_and_length_cutscene(spirit_sage_cutscene, 325, 1)
-    patch_cutscene_destination_and_length_cutscene(shadow_sage_cutscene, 325, 1)
-    patch_cutscene_destination_and_length_cutscene(light_sage_cutscene, 315, 1)
+    patch_cutscene_destination_and_length(forest_sage_cutscene, 325, 1)
+    patch_cutscene_destination_and_length(fire_sage_cutscene, 325, 1)
+    patch_cutscene_destination_and_length(water_sage_cutscene, 325, 1)
+    patch_cutscene_destination_and_length(spirit_sage_cutscene, 325, 1)
+    patch_cutscene_destination_and_length(shadow_sage_cutscene, 325, 1)
+    patch_cutscene_destination_and_length(light_sage_cutscene, 315, 1)
 
     # Speed scenes during final battle
     # Ganondorf battle end
@@ -793,7 +736,7 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     # Speed collapse of Ganon's Tower
     #patch_cutscene_destination_and_length(rom, 0x33FB328, 1)
     ganon_cutscene = scenes[SceneIDs.GANONS_TOWER_COLLAPSE_AND_ARENA].headers[4].cutscene_data
-    patch_cutscene_destination_and_length_cutscene(ganon_cutscene, 1120, 1)
+    patch_cutscene_destination_and_length(ganon_cutscene, 1120, 1)
 
     # After tower collapse
     # Delete a bunch of camera instructions to avoid sudden movement when getting control back.
