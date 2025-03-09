@@ -5,15 +5,15 @@ FileDataRelocator is the main class for shifting and extending scene and room fi
 File data is stored using two concepts:
 
 1. DataRecord - Raw byte data.
-2. PointerRecord - Address of a pointer (NOT the pointer value) with its associated DataRecord. PointerRecords can be located in different files than the DataRecord they reference.
+2. Pointer Records - A DataRecord stored as a property of a parent DataRecord. Pointer Records can be located in different files than the DataRecord they reference. There is no "PointerRecord" class as all data types encountered in scene and room files are explicitly defined.
 
-Parsing starts with creating a DataRecord for the current scene header. Everytime a pointer is encountered in a scene/room header, a PointerRecord is created linking the pointer location relative to the start of the file with the DataRecord the pointer is referencing. The PointerRecord is also added as a reference to the DataRecord according to the type of DataRecord in order to keep track of it when writing to back to the rom. PointerRecords are created recursively as needed, such as scene headers referencing alternate headers referencing scene collision headers referencing vertex/polygon/surface/camera/waterbox lists.
+Parsing starts with creating a DataRecord for the current scene header. Everytime a segment address is encountered in a scene/room header, a new DataRecord is created linked to that header. This occurs recursively for subsequent segment addresses encountered while parsing these DataRecords, such as scene headers referencing alternate headers referencing scene collision headers referencing vertex/polygon/surface/camera/waterbox lists.
 
 Unreferenced data in any file is added as an Unknown record type of fixed length after all other records have been identified and parsed. Unknown records should not be modified, moved, or removed.
 
-DataRecords with a known type are deduplicated after parsing in order to save space. This may affect glitches.
+DataRecords with a known type are merged after parsing to simplify patching in randomizer hacks.
 
-DataRecords are subclassed into classes specific to a given scene command, such as SceneTransitionActorList. Class properties without a "_" prefix can be freely modified. When writing back to the rom during patching, attritbutes are automatically converted to whatever byte format they use. Record offsets are shifted as needed along with any related pointers. Finally, the scene table is rewritten to use the new file start and end addresses.
+DataRecords are subclassed into classes specific to a given scene command, such as SceneTransitionActorList. Private class properties use the standard "_" prefix. All other properties can be freely modified. When writing back to the rom during patching, attritbutes are automatically converted to whatever byte format they use. Record offsets are shifted as needed along with any related pointers. References to scene/room resources outside of the files (mostly cutscenes) are manually defined based on a search of decomp ntsc-1.0 and updated when writing to ROM. Finally, the scene table is rewritten to use the new file start and end addresses.
 
 Note that MQ dungeon support changes the following record types:
 
@@ -25,10 +25,15 @@ Note that MQ dungeon support changes the following record types:
 
 Make sure to perform scene/room changes after MQ patching to avoid conflicts.
 
+To prevent conflicts between this system and directly writing to the ROM, an exception will be thrown if any writes are attempted between VROM 0x01F12000 - 0x03470F20.
+
 # References
 
 Formatting info: https://wiki.cloudmodding.com/oot/Scenes_and_Rooms
 As of 2024, scenes and rooms are not included in the decomp repo, but they can be extracted to human-readable C code and PNG texture files by building one of the supported versions. Scene and room files get placed in `extracted/<VERSION>/assets/scenes`, sorted in subfolders by area type and scene name. Rooms are placed in the same subfolder as their parent scene. See https://wiki.cloudmodding.com/oot/File_List/NTSC_1.0#File_1007_to_1495_.28Scenes_.26_Rooms.29 for a list of all the scene and room files relevant to rando.
+
+VROM start of scenes/rooms: 0x01F12000
+VROM end of scenes/rooms:   0x03470F20
 
 # Scenes
 
@@ -316,9 +321,6 @@ mr (0x01) Read actor list
 Param `0xA000` makes them spawn at night, `0x8000` will always spawn.
 Always set for overworld scenes with changing time.
 Night-only room setups may also have this set for en_sw instances.
-
-01F12000
-03470F20
 
 # Cutscenes
 
@@ -688,331 +690,6 @@ Externally referenced cutscenes:
       3,10:         <Cutscene Name="gLonLonRanchIntroCs" Offset="0x5B70"/>
 
 
-Addresses:
-```python
-# z_demo tables
-ENTRANCE_CUTSCENE_TABLE_ADDRESS = 0xB65C64
-UNKNOWN_LIST_CUTSCENES = 0xB65D74 # does not include NULL first entry
-
-# z_demo_kekkai list
-SAGE_CUTSCENES = 0xECF8EC
-
-external_cutscene_pointer_locations = {
-    # z_demo
-    'bdan': [
-        (1, [ # gJabuJabuIntroCs
-            ENTRANCE_CUTSCENE_TABLE_ADDRESS + (17 * 0x8) + 0x4,
-            UNKNOWN_LIST_CUTSCENES + 1 * 0x4,
-        ], [], []),
-    ],
-    # z_demo, z_bg_breakwall
-    'ddan': [
-        (0, [ # gDcOpeningCs
-            UNKNOWN_LIST_CUTSCENES + 2 * 0x4,
-        ], [
-            0xC9EDAE # lui     a1, 0x0201
-        ], [
-            0xC9EDB2 # addiu   a1, a1, 0x4F80
-        ]),
-    ],
-    # z_demo, z_demo_kekkai
-    'ganontika': [
-        (0, [SAGE_CUTSCENES + 6 * 0x4], [], []), # gForestTrialSageCs
-        (1, [SAGE_CUTSCENES + 1 * 0x4], [], []), # gWaterTrialSageCs
-        (2, [SAGE_CUTSCENES + 4 * 0x4], [], []), # gShadowTrialSageCs
-        (3, [SAGE_CUTSCENES + 3 * 0x4], [], []), # gFireTrialSageCs
-        (4, [SAGE_CUTSCENES + 2 * 0x4], [], []), # gLightTrialSageCs
-        (5, [SAGE_CUTSCENES + 5 * 0x4], [], []), # gSpiritTrialSageCs
-        (6, [ # gTowerBarrierCs
-            UNKNOWN_LIST_CUTSCENES + 5 * 0x4,
-        ], [
-            0xACA97E # lui     v0, 0x0202
-        ], [
-            0xACA982 # addiu   v0, v0, 0xDA40
-        ]),
-        (7, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (28 * 0x8) + 0x4], [], []), # gLightBarrierCs
-        (8, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (27 * 0x8) + 0x4], [], []), # gFireBarrierCs
-        (9, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (24 * 0x8) + 0x4], [], []), # gForestBarrierCs
-        (10, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (29 * 0x8) + 0x4], [], []), # gSpiritBarrierCs
-        (11, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (25 * 0x8) + 0x4], [], []), # gWaterBarrierCs
-        (12, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (26 * 0x8) + 0x4], [], []), # gShadowBarrierCs
-    ],
-    # z_demo, z_en_xc
-    'ice_doukutu': [
-        (0, [ # gIceCavernSerenadeCs
-            UNKNOWN_LIST_CUTSCENES + 4 * 0x4,
-        ], [
-            0xC7BD46 # lui     a1, 0x0200
-        ], [
-            0xC7BD4E # addiu   a1, a1, 0x0250
-        ]),
-    ],
-    # z_demo, z_en_ik
-    'jyasinboss': [
-        (0, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (30 * 0x8) + 0x4], [], []), # gSpiritBossNabooruKnuckleIntroCs
-        (1, [ # gSpiritBossNabooruKnuckleDefeatCs
-            UNKNOWN_LIST_CUTSCENES + 3 * 0x4,
-        ], [
-            0xDED5C2 # lui     a1, 0x0200
-        ], [
-            0xDED5D6 # addiu   a1, a1, 0x3F80
-        ]),
-    ],
-    # z_demo, z_bg_breakwall
-    'ydan': [
-        (1, [ # gDekuTreeIntroCs
-            ENTRANCE_CUTSCENE_TABLE_ADDRESS + (7 * 0x8) + 0x4,
-            UNKNOWN_LIST_CUTSCENES + 0 * 0x4,
-        ], [], []),
-    ],
-    # z_bg_dy_yoseizo
-    'daiyousei_izumi': [
-        (0, [], [ # gGreatFairyMagicCs
-            0xC89A0A # lui     v0, 0x0200
-        ], [
-            0xC89A0E # addiu   v0, v0, 0x0130
-        ]),
-        (1, [], [ # gGreatFairyDoubleMagicCs
-            0xC89A4E # lui     v0, 0x0200
-        ], [
-            0xC89A52 # addiu   v0, v0, 0x13E0
-        ]),
-        (2, [], [ # gGreatFairyDoubleDefenseCs
-            0xC89A92 # lui     v0, 0x0200
-        ], [
-            0xC89A96 # addiu   v0, v0, 0x25D0
-        ]),
-    ],
-    # z_en_fu
-    'hakasitarelay': [
-        (0, [], [ # gSongOfStormsCs
-            0xE42A4E # lui     v0, 0x0201
-        ], [
-            0xE42A5A # addiu   v0, v0, 0xE080
-        ]),
-    ],
-    # z_en_zl4, z_demo_im
-    'nakaniwa': [
-        (0, [], [ # gZeldasCourtyardGanonCs
-            0xEFE0FA # lui     v0, 0x0200
-        ], [
-            0xEFE0FE # addiu   v0, v0, 0x0104
-        ]),
-        (1, [], [ # gZeldasCourtyardWindowCs
-            0xEFE09A # lui     v0, 0x0200
-        ], [
-            0xEFE09E # addiu   v0, v0, 0x0444
-        ]),
-        (3, [], [ # gZeldasCourtyardLullabyCs
-            0xD12E72 # lui     v0, 0x0200
-        ], [
-            0xD12E76 # addiu   v0, v0, 0x2524
-        ]),
-        (5, [], [ # gZeldasCourtyardMeetCs
-            0xEFCEF2 # lui     v0, 0x0200
-        ], [
-            0xEFCEF6 # addiu   v0, v0, 0x3994
-        ]),
-    ],
-    # z_demo, z_en_xc
-    'tokinoma': [
-        (4, [], [ # gTempleOfTimeFirstAdultCs
-            0xC8056E # lui     v0, 0x0200
-        ], [
-            0xC80572 # addiu   v0, v0, 0x46F0
-        ]),
-        (6, [], [ # gTempleOfTimePreludeCs
-            0xC8060E # lui     v0, 0x0200
-        ], [
-            0xC80612 # addiu   v0, v0, 0x13E0
-        ]),
-        (11, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (6 * 0x8) + 0x4], [], []), # gTempleOfTimeIntroCs
-    ],
-    # z_bg_dy_yoseizo
-    'yousei_izumi_yoko': [
-        (0, [], [ # gGreatFairyFaroresWindCs
-            0xC8991A # lui     v0, 0x0200
-        ], [
-            0xC8991E # addiu   v0, v0, 0x0160
-        ]),
-        (1, [], [ # gGreatFairyDinsFireCs
-            0xC8995E # lui     v0, 0x0200
-        ], [
-            0xC89962 # addiu   v0, v0, 0x1020
-        ]),
-        (2, [], [ # gGreatFairyNayrusLoveCs
-            0xC899A2 # lui     v0, 0x0200
-        ], [
-            0xC899A6 # addiu   v0, v0, 0x1F40
-        ]),
-    ],
-    # z_demo, z_en_okarina_tag
-    'hakaana_ouke': [
-        (0, [], [ # gSunSongGraveSunSongTeachCs
-            0xE09F6E # lui     v0, 0x0200
-        ], [
-            0xE09F72 # addiu   v0, v0, 0x24A0
-        ]),
-        (1, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (23 * 0x8) + 0x4], [], []), # gSunSongGraveSunSongTeachPart2Cs
-    ],
-    # z_demo, z_bg_giyo_bridge
-    'ganon_tou': [
-        (0, [], [ # gRainbowBridgeCs
-            0xE2B502 # lui     v0, 0x0200
-        ], [
-            0xE2B506 # addiu   v0, v0, 0x2640
-        ]),
-        (1, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (22 * 0x8) + 0x4], [], []), # gGanonsCastleIntroCs
-    ],
-    # z_demo, z_item_ocarina
-    'spot00': [
-        (3, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (12 * 0x8) + 0x4], [], []), # gHyruleFieldGetOoTCs
-        (9, [], [ # gHyruleFieldZeldaSongOfTimeCs
-            0xDB529A # lui     v0, 0x0201
-        ], [
-            0xDB529E # addiu   v0, v0, 0xF870
-        ]),
-        (11, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (9 * 0x8) + 0x4], [], []), # gHyruleFieldEastEponaJumpCs
-        (15, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (0 * 0x8) + 0x4], [], []), # gHyruleFieldIntroCs
-        (10, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (8 * 0x8) + 0x4], [], []), # gHyruleFieldSouthEponaJumpCs
-        (12, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (10 * 0x8) + 0x4], [], []), # gHyruleFieldWestEponaJumpCs
-        (13, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (11 * 0x8) + 0x4], [], []), # gHyruleFieldGateEponaJumpCs
-    ],
-    # z_demo
-    'spot01': [
-        (5, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (2 * 0x8) + 0x4], [], []), # gKakarikoVillageIntroCs
-    ],
-    # z_demo, z_en_okarina_tag
-    'spot02': [
-        (0, [], [ # spot02_scene_Cs_003C80
-            0xE09D42 # lui     v0, 0x0200
-        ], [
-            0xE09D46 # addiu   v0, v0, 0x3C80
-        ]),
-        (2, [], [ # spot02_scene_Cs_005020
-            0xE09D32 # lui     v0, 0x0200
-        ], [
-            0xE09D36 # addiu   v0, v0, 0x5020
-        ]),
-        (3, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (18 * 0x8) + 0x4], [], []), # gGraveyardIntroCs
-    ],
-    # z_demo, z_en_sa
-    'spot04': [
-        (9, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (33 * 0x8) + 0x4], [], []), # gKokiriForestDekuSproutCs
-        (10, [], [ # gSpot04Cs_10E20
-            0xE297AE # lui     v0, 0x0201
-        ], [
-            0xE297B6 # addiu   v0, v0, 0x0E20
-        ]),
-    ],
-    # z_en_xc, z_en_sa
-    'spot05': [
-        (0, [], [ # gMinuetCs
-            0xC7BA4A # lui     v0, 0x0200
-        ], [
-            0xC7BA4E # addiu   v0, v0, 0x3F80
-        ]),
-        (1, [], [ # spot05_scene_Cs_005730
-            0xE29D5E # lui     v0, 0x0200
-        ], [
-            0xE29D62 # addiu   v0, v0, 0x5730
-        ]),
-    ],
-    # z_demo, z_shot_sun, z_en_owl
-    'spot06': [
-        (2, [], [ # gLakeHyliaFireArrowsCS
-            0xE9E222 # lui     v1, 0x0200
-        ], [
-            0xE9E226 # addiu   v1, v1, 0x7020
-        ]),
-        (3, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (13 * 0x8) + 0x4], [], []), # gLakeHyliaIntroCs
-        (4, [], [ # gLakeHyliaOwlCs
-            0xE31302 # lui     v0, 0x0202
-        ], [
-            0xE31306 # addiu   v0, v0, 0xB0C0
-        ]),
-    ],
-    # z_demo
-    'spot07': [
-        (1, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (3 * 0x8) + 0x4], [], []), # gZorasDomainIntroCs
-    ],
-    # z_demo
-    'spot08': [
-        (3, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (19 * 0x8) + 0x4], [], []), # gZorasFountainIntroCs
-    ],
-    # z_demo, z_en_horse
-    'spot09': [
-        (4, [], [ # gGerudoValleyBridgeJumpFieldFortressCs
-            0xC1CCC6 # lui     v0, 0x0200
-        ], [
-            0xC1CCCA # addiu   v0, v0, 0x2AC0
-        ]),
-        (0, [], [ # gGerudoValleyBridgeJumpFortressToFieldCs
-            0xC1CD12 # lui     v0, 0x0200
-        ], [
-            0xC1CD16 # addiu   v0, v0, 0x0230
-        ]),
-        (5, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (14 * 0x8) + 0x4], [], []), # gGerudoValleyIntroCs
-    ],
-    # z_demo
-    'spot11': [
-        (2, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (20 * 0x8) + 0x4], [], []), # gDesertColossusIntroCs
-    ],
-    # z_demo
-    'spot12': [
-        (2, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (31 * 0x8) + 0x4], [], []), # gGerudoFortressFirstCaptureCs
-        (3, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (15 * 0x8) + 0x4], [], []), # gGerudoFortressIntroCs
-    ],
-    # z_demo
-    'spot15': [
-        (0, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (4 * 0x8) + 0x4], [], []), # gHyruleCastleIntroCs
-    ],
-    # z_demo, z_en_owl
-    'spot16': [
-        (6, [], [ # gDMTOwlCs
-            0xE31342 # lui     v0, 0x0202
-        ], [
-            0xE31346 # addiu   v0, v0, 0xE6A0
-        ]),
-        (5, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (1 * 0x8) + 0x4], [], []), # gDMTIntroCs
-    ],
-    # z_demo, z_en_xc
-    'spot17': [
-        (0, [], [ # gDeathMountainCraterBoleroCs
-            0xC7BBFE # lui     v0, 0x0200
-        ], [
-            0xC7BC02 # addiu   v0, v0, 0x45D0
-        ]),
-        (2, [ # gDeathMountainCraterIntroCs
-            ENTRANCE_CUTSCENE_TABLE_ADDRESS + (21 * 0x8) + 0x4,
-            ENTRANCE_CUTSCENE_TABLE_ADDRESS + (32 * 0x8) + 0x4,
-        ], [], []),
-    ],
-    # z_demo, z_en_du
-    'spot18': [
-        (0, [], [ # gGoronCityDaruniaCorrectCs
-            0xCF14DA # lui     v0, 0x0200
-        ], [
-            0xCF14DE # addiu   v0, v0, 0x59E0
-        ]),
-        (1, [], [ # gGoronCityDarunia01Cs
-            0xCF11C6 # lui     v0, 0x0200
-        ], [
-            0xCF11D6 # addiu   v0, v0, 0x6930
-        ]),
-        (3, [], [ # gGoronCityDaruniaWrongCs
-            0xCF1436 # lui     v0, 0x0200
-        ], [
-            0xCF143A # addiu   v0, v0, 0x7DE0
-        ]),
-        (4, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (21 * 0x8) + 0x4,], [], []), # gGoronCityIntroCs
-    ],
-    # z_demo
-    'spot20': [
-        (8, [ENTRANCE_CUTSCENE_TABLE_ADDRESS + (16 * 0x8) + 0x4], [], []), # gLonLonRanchIntroCs
-    ],
-}
-```
 
 # Rando Patches to Test with New System
 
