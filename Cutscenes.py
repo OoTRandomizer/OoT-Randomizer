@@ -543,6 +543,7 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     # Cutscene in windmill.
     well_windmill_cutscene = Cutscene.decode(rom, 0xE0A000)
     patch_cutscene_destination_and_length(well_windmill_cutscene, 200, 1)
+    well_windmill_cutscene.write(rom)
     #patch_cutscene_destination_and_length(rom, 0xE0A010, 1)
     # Drain well in Kakariko cutscene.
     #patch_cutscene_destination_and_length(rom, 0x2001110, 3)

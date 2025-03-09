@@ -715,9 +715,9 @@ Externally referenced cutscenes:
     - [ ] Cutscenes outside scene files
       - [X] Jabu Jabu swallowing Link
       - [X] Ruto pointing to dungeon reward in Big Octo room
-      - [ ] Opening Door of Time
+      - [X] Opening Door of Time
       - [X] Master Sword pedestal cutscene
-      - [ ] Well draining cutscene (Windmill)
+      - [X] Well draining cutscene (Windmill)
     - [?] wondertalk2 actor moves
       - [ ] Shadow Temple whispering maze (8x)
       - [ ] Shadow Temple Truthspinner (2x)
