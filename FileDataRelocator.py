@@ -358,6 +358,8 @@ class FileDataRelocator(ABC):
         return list(filter(lambda r: r.type == record_type, self.data_records))
 
     def encode(self, unit_test_alignment: bool = False) -> bytearray:
+        # Re-sort records to handle any insertions.
+        self.sort_records()
         # Resize data records. Assumes records are sorted by offset.
         # Don't build full encode at first as pointers may shift.
         offset: int = 0
