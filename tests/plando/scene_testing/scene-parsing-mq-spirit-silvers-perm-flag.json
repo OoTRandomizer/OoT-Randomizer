@@ -3,9 +3,9 @@
     "shuffle_silver_rupees":                   "anywhere",
     "silver_rupee_pouches_choice":             "all",
     "mq_dungeons_mode":                        "specific",
-    "mq_dungeons_specific":                    ["Dodongos Cavern"],
-    "free_scarecrow":                          true,
-    "zora_fountain":                           "open",
+    "mq_dungeons_specific":                    ["Spirit Temple"],
+    "shuffle_smallkeys":                       "keysanity",
+    "shuffle_bosskeys":                        "keysanity",
     "spawn_positions":                         ["child", "adult"],
     "starting_age":                            "adult",
     "starting_hearts":                         20,
@@ -19,7 +19,7 @@
         "Dins Fire":                    1,
         "Slingshot":                    3,
         "Ocarina":                      2,
-        "Bombchus":                    50,
+        "Bombchus":                     1,
         "Ice Arrows":                   1,
         "Farores Wind":                 1,
         "Boomerang":                    1,
@@ -47,14 +47,23 @@
         "Double Defense":               1,
         "Progressive Hookshot":         2,
         "Progressive Strength Upgrade": 3,
-        "Song of Time":                 1
+        "Zeldas Letter":                1,
+        "Zeldas Lullaby":               1,
+        "Eponas Song":                  1,
+        "Sarias Song":                  1,
+        "Suns Song":                    1,
+        "Song of Time":                 1,
+        "Song of Storms":               1,
+        "Small Key (Spirit Temple)":    9,
+        "Boss Key (Spirit Temple)":     1
     }
   },
   "entrances": {
-    "Adult Spawn -> Temple of Time": {"region": "Death Mountain", "from": "Kak Behind Gate"},
-    "Child Spawn -> KF Links House": {"region": "Zoras Fountain", "from": "ZD Behind King Zora"}
+    "Adult Spawn -> Temple of Time": {"region": "GF Outside Gate", "from": "Wasteland Near Fortress"},
+    "Child Spawn -> KF Links House": {"region": "Market", "from": "Market Bazaar"}
   },
   "locations": {
-    "Dodongos Cavern MQ Bomb Bag Chest": "Silver Rupee Pouch (Dodongos Cavern Staircase)"
+    "Song from Impa": "Requiem of Spirit",
+    "Spirit Temple MQ Entrance Front Left Chest": "Silver Rupee Pouch (Spirit Temple Lobby and Lower Adult)"
   }
 }

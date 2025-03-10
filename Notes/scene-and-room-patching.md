@@ -751,7 +751,7 @@ Externally referenced cutscenes:
     - [X] Spirit Shortcut actor tweaks
     - [X] Gerudo Fortress gate guard reposition
     - [X] Skip child stealth crawlspace exit
-    - [?] Silver rupee shuffle MQ DC/Spirit temp->permanent flags
+    - [X] Silver rupee shuffle MQ DC/Spirit temp->permanent flags
     - [X] Well ladder rupee reposition
     - [X] Shadow Temple redead shared flags for silver rupee shuffle
     - [X] Song shuffle cutscene text boxes
