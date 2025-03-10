@@ -77,11 +77,15 @@ class SceneDataRelocator(FileDataRelocator):
                 room: RoomHeader = self.rooms[room_data['Id']].headers[0]
                 if 'Objects' in room_data.keys():
                     if room.object_list == None:
-                        room.object_list = RoomObjectList(room.file, room.file.end + 1)
+                        new_object_list = RoomObjectList(room.file, room.file.end - room.file.start + 1)
+                        room.object_list = new_object_list
+                        room.file.data_records.append(new_object_list)
                     room.object_list.apply_patch(room_data['Objects'])
                 if 'Actors' in room_data.keys():
                     if room.actor_list == None:
-                        room.actor_list = RoomActorList(room.file, room.file.end + 2)
+                        new_actor_list = RoomActorList(room.file, room.file.end - room.file.start + 2)
+                        room.actor_list = new_actor_list
+                        room.file.data_records.append(new_actor_list)
                     room.actor_list.apply_patch(room_data['Actors'])
         if self.id == SceneIDs.ICE_CAVERN:
             # Delete alternate header command.
@@ -96,7 +100,9 @@ class SceneDataRelocator(FileDataRelocator):
             # hole to permit shooting the switch to drop the chest there.
             room6 = self.rooms[6]
             adult_header = room6.headers[0].copy()
-            room6.headers[0].alt_header_list = SceneAltHeaderList(room6, adult_header.offset + 1)
+            new_header_list = SceneAltHeaderList(room6, adult_header.offset + 1)
+            room6.headers[0].alt_header_list = new_header_list
+            room6.data_records.append(new_header_list)
             room6.headers[0].alt_header_list.headers.append(None)
             room6.headers[0].alt_header_list.headers.append(adult_header)
             room6.headers[0].alt_header_list.headers.append(None)
@@ -1153,12 +1159,13 @@ class ScenePathList(DataRecord):
     def from_json(file: FileDataRelocator, patch_data: list[dict[str, list[list[int]]]]) -> ScenePathList:
         # Don't attempt to replace any existing path records
         # in case MQ has more paths than the vanilla file.
-        record_offset = file.end
+        record_offset = file.end - file.start
         path_list = ScenePathList(file, record_offset)
         path_cursor = record_offset + 1
         for path_dict in patch_data:
             path_list.paths.append(ScenePathVtxList.from_json(file, path_cursor, path_dict['Points']))
             path_cursor += 1
+        file.data_records.append(path_list)
         return path_list
 
 
@@ -1194,6 +1201,7 @@ class ScenePathVtxList(DataRecord):
         path_vtx_list = ScenePathVtxList(file, offset)
         for vtx in patch_data:
             path_vtx_list.vertices.append(Vec3s(vtx[0], vtx[1], vtx[2]))
+        file.data_records.append(path_vtx_list)
         return path_vtx_list
 
     def encode(self) -> bytearray:

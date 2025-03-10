@@ -769,10 +769,10 @@ Externally referenced cutscenes:
     - [X] Broken drops vanilla Spirit deku shield in anubis room
     - [X] TCG shuffle temp flags to permanent/keysy
     - [X] Remove "entrance blockers"
-    - [?] Scrub shuffle actor params in set_deku_salesman_data
+    - [X] Scrub shuffle actor params in set_deku_salesman_data
     - [X] Jabu stone actor
     - [X] Keysy dungeon/boss doors
-    - [?] Ganons Tower first BK door unlock for pot shuffle
+    - [X] Ganons Tower first BK door unlock for pot shuffle
 - [?] Entrance Shuffle
     - [?] Generate/write exit list for each scene
     - [?] Jabu boss exit coordinates
@@ -783,8 +783,8 @@ Externally referenced cutscenes:
     - [?] Grotto actor data changes in set_grotto_shuffle_data
 - [ ] MQ Patching
     - [ ] All rooms can be entered from all entrances
-      - [ ] Deku Tree
-      - [ ] Dodongo's Cavern
+      - [X] Deku Tree
+      - [X] Dodongo's Cavern
       - [X] Jabu Jabu's Belly
       - [ ] Forest Temple
       - [ ] Fire Temple
@@ -802,8 +802,8 @@ Externally referenced cutscenes:
     - [ ] Spirit Temple MQ front right chest temp -> permanent flag for silver rupee shuffle
     - [ ] Key doors are correct
     - [ ] Check overrides work
-    - [ ] Scrub actor patching works
+    - [X] Scrub actor patching works
     - [X] Cow actor patching works
     - [ ] Keysy removes locks
-- [?] ASM/C patches
-    - [?] 0x26c10e3 - generic grotto ACTOR_EN_GS actor params 0x3818 -> 0x38FF
+- [X] ASM/C patches
+    - [X] 0x26c10e3 - generic grotto ACTOR_EN_GS actor params 0x3818 -> 0x38FF (use grotto ID for hint text ID)
