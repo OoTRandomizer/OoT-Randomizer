@@ -1,7 +1,7 @@
 {
   "settings": {
     "mq_dungeons_mode":                        "specific",
-    "mq_dungeons_specific":                    ["Shadow Temple"],
+    "mq_dungeons_specific":                    ["Ganons Castle"],
     "shuffle_smallkeys":                       "keysanity",
     "shuffle_bosskeys":                        "keysanity",
     "bridge":                                  "open",
