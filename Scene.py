@@ -103,6 +103,7 @@ class SceneDataRelocator(FileDataRelocator):
             new_header_list = SceneAltHeaderList(room6, adult_header.offset + 1)
             room6.headers[0].alt_header_list = new_header_list
             room6.data_records.append(new_header_list)
+            room6.data_records.append(adult_header)
             room6.headers[0].alt_header_list.headers.append(None)
             room6.headers[0].alt_header_list.headers.append(adult_header)
             room6.headers[0].alt_header_list.headers.append(None)
@@ -110,6 +111,9 @@ class SceneDataRelocator(FileDataRelocator):
             room6.headers[0].alt_header_list.headers.append(None)
             room6.headers[0].alt_header_list.headers.append(None)
             room6.headers.extend(room6.headers[0].alt_header_list.headers)
+            original_actor_list = room6.headers[0].actor_list.copy()
+            adult_header.actor_list = original_actor_list
+            room6.data_records.append(original_actor_list)
             room6.headers[0].actor_list.actors.pop(0)
 
 
@@ -1159,7 +1163,7 @@ class ScenePathList(DataRecord):
     def from_json(file: FileDataRelocator, patch_data: list[dict[str, list[list[int]]]]) -> ScenePathList:
         # Don't attempt to replace any existing path records
         # in case MQ has more paths than the vanilla file.
-        record_offset = file.end - file.start
+        record_offset = file.end - file.start + 1
         path_list = ScenePathList(file, record_offset)
         path_cursor = record_offset + 1
         for path_dict in patch_data:
@@ -2257,6 +2261,11 @@ class RoomActorList(DataRecord):
     def __init__(self, file: FileDataRelocator, offset: int, length: Optional[int] = -1) -> None:
         super().__init__(file, RecordType.ActorList, file.start, offset, length)
         self.actors: list[ActorEntry] = []
+
+    def copy(self) -> RoomActorList:
+        new_list = RoomActorList(self.file, self.offset + 1, self.length)
+        new_list.actors = [a for a in self.actors]
+        return new_list
 
     @staticmethod
     def decode(file: FileDataRelocator, offset: int, length: int) -> RoomActorList:

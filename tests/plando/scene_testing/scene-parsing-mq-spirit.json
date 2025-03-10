@@ -17,7 +17,7 @@
         "Dins Fire":                    1,
         "Slingshot":                    3,
         "Ocarina":                      2,
-        "Bombchus":                     1,
+        "Bombchus":                    50,
         "Ice Arrows":                   1,
         "Farores Wind":                 1,
         "Boomerang":                    1,
@@ -46,7 +46,6 @@
         "Progressive Hookshot":         2,
         "Progressive Strength Upgrade": 3,
         "Zeldas Letter":                1,
-        "Requiem of Spirit":            1,
         "Zeldas Lullaby":               1,
         "Eponas Song":                  1,
         "Sarias Song":                  1,
@@ -54,7 +53,13 @@
         "Song of Time":                 1,
         "Song of Storms":               1,
         "Small Key (Spirit Temple)":    9,
-        "Boss Key (Spirit Temple)":     1
+        "Boss Key (Spirit Temple)":     1,
+        "Minuet of Forest":             1,
+        "Bolero of Fire":               1,
+        "Serenade of Water":            1,
+        "Requiem of Spirit":            1,
+        "Nocturne of Shadow":           1,
+        "Prelude of Light":             1
     }
   },
   "entrances": {
@@ -62,6 +67,5 @@
     "Child Spawn -> KF Links House": {"region": "Market", "from": "Market Bazaar"}
   },
   "locations": {
-    "Song from Impa": "Requiem of Spirit"
   }
 }

@@ -789,7 +789,7 @@ Externally referenced cutscenes:
       - [ ] Forest Temple
       - [ ] Fire Temple
       - [ ] Water Temple
-      - [ ] Spirit Temple
+      - [X] Spirit Temple
       - [X] Shadow Temple
       - [X] Bottom of the Well
       - [ ] Ice Cavern
