@@ -1,8 +1,22 @@
 {
   "settings": {
+    "dungeon_shortcuts_choice":                "all",
+    "shuffle_overworld_entrances":             true,
+    "shuffle_gerudo_valley_river_exit":        true,
     "owl_drops":                               true,
-    "spawn_positions":                         ["child", "adult"],
-    "starting_age":                            "child",
+    "warp_songs":                              true,
+    "shuffle_bosses":                          "full",
+    "shuffle_ganon_tower":                     true,
+    "shuffle_dungeon_entrances":               "all",
+    "shuffle_grotto_entrances":                true,
+    "shuffle_interior_entrances":              "all",
+    "shuffle_hideout_entrances":               true,
+    "shuffle_gerudo_card":                     true,
+    "mq_dungeons_mode":                        "mq",
+    "shuffle_scrubs":                          "low",
+    "bridge":                                  "open",
+    "spawn_positions":                         ["adult"],
+    "starting_age":                            "adult",
     "starting_hearts":                         20,
     "start_with_rupees":                       true,
     "starting_items":                          {
@@ -23,7 +37,8 @@
         "Megaton Hammer":               1,
         "Light Arrows":                 1,
         "Nayrus Love":                  1,
-        "Bottle":                       3,
+        "Bottle":                       2,
+        "Bottle with Fish":             1,
         "Rutos Letter":                 1,
         "Kokiri Sword":                 1,
         "Giants Knife":                 1,
@@ -41,12 +56,25 @@
         "Stone of Agony":               1,
         "Double Defense":               1,
         "Progressive Hookshot":         2,
-        "Progressive Strength Upgrade": 3
+        "Progressive Strength Upgrade": 3,
+        "Zeldas Letter":                1,
+        "Zeldas Lullaby":               1,
+        "Eponas Song":                  1,
+        "Sarias Song":                  1,
+        "Suns Song":                    1,
+        "Song of Time":                 1,
+        "Song of Storms":               1,
+        "Minuet of Forest":             1,
+        "Bolero of Fire":               1,
+        "Serenade of Water":            1,
+        "Requiem of Spirit":            1,
+        "Nocturne of Shadow":           1,
+        "Prelude of Light":             1,
+        "Gerudo Membership Card":       1
     }
   },
   "entrances": {
-    "Adult Spawn -> Temple of Time": {"region": "Graveyard Warp Pad Region", "from": "Nocturne of Shadow Warp"},
-    "Child Spawn -> KF Links House": {"region": "Death Mountain Summit", "from": "DMT Great Fairy Fountain"}
+    "Adult Spawn -> Temple of Time": {"region": "GF Outside Gate", "from": "Wasteland Near Fortress"}
   },
   "locations": {
   }

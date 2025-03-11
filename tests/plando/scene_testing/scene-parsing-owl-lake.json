@@ -1,5 +1,6 @@
 {
   "settings": {
+    "owl_drops":                               true,
     "spawn_positions":                         ["child", "adult"],
     "starting_age":                            "child",
     "starting_hearts":                         20,

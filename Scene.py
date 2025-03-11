@@ -2360,6 +2360,8 @@ def scene_resource_factory(file: FileDataRelocator, offset: int, type: str, attr
         raise Exception(f'Unrecognized resource type when parsing scenes: {type}')
 
 
+TOTAL_SCENE_ROOM_FILES = 489
+
 # Convenience class to wrap scene parsing, writing, and in-process changes into one object.
 class Scenes:
     def __init__(self, rom: Rom) -> None:
@@ -2367,20 +2369,23 @@ class Scenes:
         self._index = 0
 
     def write_to_rom(self, rom: Rom) -> None:
+        logger = logging.getLogger('')
         file_start: int = 0x01F12000 # original start of scene/room files
         files = [scene for scene in self.scene_list]
         files.extend([room for scene in self.scene_list for room in scene.rooms])
         files.sort(key=lambda f: f.start)
         files_end: int = max([file.end for file in files])
-        for file in files:
+        for i, file in enumerate(files):
+            logger.info(f'Patching file {i} of {TOTAL_SCENE_ROOM_FILES}')
             file_start = file.update_start_and_end(file_start)
         new_files_end: int = max([file.end for file in files])
-        for file in files:
+        for i, file in enumerate(files):
+            logger.info(f'Writing file to buffer {i} of {TOTAL_SCENE_ROOM_FILES}')
             file.write(rom)
         if files_end > new_files_end:
-            print(f'Wrote scene files to rom. You saved 0x{files_end - new_files_end:x} bytes! Hooray! 🎉')
+            logger.debug(f'Wrote scene files to rom. You saved 0x{files_end - new_files_end:x} bytes! Hooray! 🎉')
         else:
-            print(f'Wrote scene files to rom. You used 0x{new_files_end - files_end:x} additional bytes! 🫤')
+            logger.debug(f'Wrote scene files to rom. You used 0x{new_files_end - files_end:x} additional bytes! 🫤')
 
     def append(self, scene: SceneDataRelocator) -> None:
         self.scene_list.append(scene)
@@ -2417,6 +2422,7 @@ def parse_scene_data(rom: Rom) -> list[SceneDataRelocator]:
     logger = logging.getLogger('')
     logger.debug('Reading scene files from ROM')
     xml_dir = data_path('scenes')
+    parsed_files = 0
     # XML files may not be read in the same order as the scene IDs
     scenes: list[Optional[SceneDataRelocator]] = [None for _ in range(0x00, 0x65)]
     for subdir, _, files in walk(xml_dir):
@@ -2425,6 +2431,7 @@ def parse_scene_data(rom: Rom) -> list[SceneDataRelocator]:
             tree = ET.parse(path.join(subdir, zapd_xml))
             root = tree.getroot()
             for file in root:
+                parsed_files += 1
                 filename = file.attrib['Name']
                 segment = int(file.attrib['Segment'])
                 current_file: FileDataRelocator = None
@@ -2446,7 +2453,8 @@ def parse_scene_data(rom: Rom) -> list[SceneDataRelocator]:
                     current_file = scene_file.rooms[room_num]
                 else:
                     raise Exception(f'Attempted to parse ZAPD XML file {filename} with type (segment {segment}) that is not a scene (segment 0x02) or room (segment 0x03)')
-                logger.debug(f'Parsing file {current_file.name}')
+                logger.info(f'Parsing file {parsed_files} of {TOTAL_SCENE_ROOM_FILES}')
+                logger.debug(f'File name: {current_file.name}')
                 for res in file:
                     offset = int(res.attrib['Offset'], 16)
                     res_type = res.tag
@@ -2552,55 +2560,6 @@ def compare_parsed_data_to_rom(rom: Rom, save_files: bool = False):
                 i += 1
             print(f'Bytes match for {room.name}')
     print('Done comparing')
-
-
-# Proof of concept functions to verify shifting functionality.
-# Kakariko gold skulltula initialization parameters are changed
-# to allow them to always spawn regardless of time of day, and
-# skulltula actor/object entries are added to the day alternate
-# scene headers, copied from the night headers.
-def copy_skulltulas_to_day(day_header: RoomHeader, night_header: RoomHeader) -> None:
-    ACTOR_EN_SW = 149
-    OBJECT_ST = 36
-    if OBJECT_ST not in day_header.object_list.objects:
-        day_header.object_list.objects.append(OBJECT_ST)
-    for actor in night_header.actor_list.actors:
-        if actor.id == ACTOR_EN_SW:
-            new_params = (actor.params & ~0xA000) | 0x8000
-            new_actor = ActorEntry(actor.id, actor.pos.copy(), actor.rot.copy(), new_params)
-            day_header.actor_list.actors.append(new_actor)
-
-
-def make_kak_skulltulas_ignore_tod(rom: Rom):
-    from Main import compress_rom
-
-    # Modify room files
-    scene_list = Scenes(rom)
-    kakariko_outside = scene_list[0x52].rooms[0]
-    child_day = kakariko_outside.headers[0]
-    child_night = kakariko_outside.headers[1]
-    adult_day = kakariko_outside.headers[2]
-    adult_night = kakariko_outside.headers[3]
-    copy_skulltulas_to_day(child_day, child_night)
-    copy_skulltulas_to_day(adult_day, adult_night)
-    scene_list.write_to_rom(rom)
-
-    # patch Pokey out of the way
-    rom.write_bytes(0xE5400A, [0x8C, 0x4C])
-    rom.write_bytes(0xE5400E, [0xB4, 0xA4])
-    rom.write_bytes(0xE5401C, [0x14, 0x0B])
-
-    output_dir = './Output'
-    uncompressed_filename = f"OOT_no_tod_skulls_uncompressed.z64"
-    uncompressed_path = path.join(output_dir, uncompressed_filename)
-    print(f"Saving Uncompressed ROM: {uncompressed_filename}")
-    rom.write_to_file(uncompressed_path)
-    print(f"Created uncompressed ROM at: {uncompressed_path}")
-    compressed_filename = f"OOT_no_tod_skulls.z64"
-    compressed_path = path.join(output_dir, compressed_filename)
-    print(f"Compressing ROM: {compressed_filename}")
-    compress_rom(uncompressed_path, compressed_path, False)
-    print(f"Created compressed ROM at: {compressed_path}")
 
 
 def extract_bytes_to_file(file: str, start: int, length: int, new_file: str) -> None:
