@@ -54,10 +54,12 @@ class FileType(Enum):
 
 
 class DataRecord:
-    def __init__(self, file: FileDataRelocator, type: RecordType, start: int, offset: int, length: int, delay_parsing: bool = False) -> None:
+    def __init__(self, file: FileDataRelocator, type: RecordType, start: int, offset: int, length: int, delay_parsing: bool = False, store_in_file: bool = True) -> None:
         assert offset >= 0
 
         self.file: FileDataRelocator = file
+        if store_in_file:
+            file.data_records.append(self)
         self.type: RecordType = type
         self.start: int = start
         self.offset: int = offset
@@ -165,8 +167,7 @@ class FileDataRelocator(ABC):
 
     def parse(self) -> None:
         # Parse file header
-        header_data_record = self.parse_file_header()
-        self.data_records.append(header_data_record)
+        self.parse_file_header()
 
     def finalize(self) -> None:
         # Sort records by offset
@@ -279,7 +280,6 @@ class FileDataRelocator(ABC):
             data_record = DataRecord(self, RecordType.Unknown, self.start,
                                      last_record_end_offset, self.end - last_record_end)
             data_record.align = 8
-            self.data_records.append(data_record)
 
     def check_for_overlapping_records(self) -> None:
         count = len(self.data_records)
@@ -299,7 +299,8 @@ class FileDataRelocator(ABC):
             previous_record_end = align4(previous_record.offset + previous_record.length)
             if record.offset > previous_record_end:
                 data_record = DataRecord(self, RecordType.Unknown, self.start,
-                                         previous_record_end, record.offset - previous_record_end)
+                                         previous_record_end, record.offset - previous_record_end,
+                                         store_in_file=False)
                 data_record.align = 8
                 self.data_records.insert(index, data_record)
             index -= 1

@@ -77,15 +77,11 @@ class SceneDataRelocator(FileDataRelocator):
                 room: RoomHeader = self.rooms[room_data['Id']].headers[0]
                 if 'Objects' in room_data.keys():
                     if room.object_list == None:
-                        new_object_list = RoomObjectList(room.file, room.file.end - room.file.start + 1)
-                        room.object_list = new_object_list
-                        room.file.data_records.append(new_object_list)
+                        room.object_list = RoomObjectList(room.file, room.file.end - room.file.start + 1)
                     room.object_list.apply_patch(room_data['Objects'])
                 if 'Actors' in room_data.keys():
                     if room.actor_list == None:
-                        new_actor_list = RoomActorList(room.file, room.file.end - room.file.start + 2)
-                        room.actor_list = new_actor_list
-                        room.file.data_records.append(new_actor_list)
+                        room.actor_list = RoomActorList(room.file, room.file.end - room.file.start + 2)
                     room.actor_list.apply_patch(room_data['Actors'])
         if self.id == SceneIDs.ICE_CAVERN:
             # Delete alternate header command.
@@ -100,20 +96,10 @@ class SceneDataRelocator(FileDataRelocator):
             # hole to permit shooting the switch to drop the chest there.
             room6 = self.rooms[6]
             adult_header = room6.headers[0].copy()
-            new_header_list = SceneAltHeaderList(room6, adult_header.offset + 1)
-            room6.headers[0].alt_header_list = new_header_list
-            room6.data_records.append(new_header_list)
-            room6.data_records.append(adult_header)
-            room6.headers[0].alt_header_list.headers.append(None)
-            room6.headers[0].alt_header_list.headers.append(adult_header)
-            room6.headers[0].alt_header_list.headers.append(None)
-            room6.headers[0].alt_header_list.headers.append(None)
-            room6.headers[0].alt_header_list.headers.append(None)
-            room6.headers[0].alt_header_list.headers.append(None)
+            room6.headers[0].alt_header_list = SceneAltHeaderList(room6, adult_header.offset + 1)
+            room6.headers[0].alt_header_list.headers.extend([None, adult_header, None, None, None, None])
             room6.headers.extend(room6.headers[0].alt_header_list.headers)
-            original_actor_list = room6.headers[0].actor_list.copy()
-            adult_header.actor_list = original_actor_list
-            room6.data_records.append(original_actor_list)
+            adult_header.actor_list = room6.headers[0].actor_list.copy()
             room6.headers[0].actor_list.actors.pop(0)
 
 
@@ -172,7 +158,6 @@ class SceneHeader(DataRecord):
                 if list_file is None:
                     raise SceneFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'alternate header list')
                 setup.alt_header_list = SceneAltHeaderList.decode(list_file, list_offset)
-                file.add_record(list_file.data_records, setup.alt_header_list)
             elif command == 0x15: # sound settings
                 setup.sound_settings = SceneSoundSettings.decode(file.rom, cursor)
             elif command == 0x04: # room list
@@ -181,14 +166,12 @@ class SceneHeader(DataRecord):
                     raise SceneFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'room list')
                 num_rooms = file.rom.read_byte(cursor + 0x01)
                 setup.room_list = SceneRoomList.decode(list_file, list_offset, num_rooms * 0x08)
-                file.add_record(list_file.data_records, setup.room_list)
             elif command == 0x0E: # Transition actor list
                 list_offset, list_file = file.get_offset(cursor + 0x04)
                 if list_file is None:
                     raise SceneFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'transition actor list')
                 num_actors = file.rom.read_byte(cursor + 0x01)
                 setup.transition_actor_list = SceneTransitionActorList.decode(list_file, list_offset, num_actors * 0x10)
-                file.add_record(list_file.data_records, setup.transition_actor_list)
             elif command == 0x19: # Misc settings
                 setup.misc_settings = SceneMiscSettings.decode(file.rom, cursor)
             elif command == 0x03: # Collision Header
@@ -196,7 +179,6 @@ class SceneHeader(DataRecord):
                 if header_file is None:
                     raise SceneFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'collision header list')
                 setup.collision_header = SceneCollisionHeader.decode(file, header_offset, 0x2C)
-                file.add_record(header_file.data_records, setup.collision_header)
             elif command == 0x06: # Entrance List
                 # Size of entrance list is undefined.
                 # ZAPD parses all data from the entrance
@@ -206,7 +188,6 @@ class SceneHeader(DataRecord):
                 if list_file is None:
                     raise SceneFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'entrance list')
                 setup.entrance_list = SceneEntranceList.decode(list_file, list_offset)
-                file.add_record(list_file.data_records, setup.entrance_list)
             elif command == 0x07: # Special object
                 setup.special_objects = SceneSpecialSettings.decode(file.rom, cursor)
             elif command == 0x0D: # Path list
@@ -220,14 +201,12 @@ class SceneHeader(DataRecord):
                 if list_file is None:
                     raise SceneFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'path list')
                 setup.path_list = ScenePathList.decode(list_file, list_offset)
-                file.add_record(list_file.data_records, setup.path_list)
             elif command == 0x00: # Spawn point list
                 list_offset, list_file = file.get_offset(cursor + 0x04)
                 num_actors = file.rom.read_byte(cursor + 0x01)
                 if list_file is None:
                     raise SceneFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'spawn point list')
                 setup.spawn_points = SceneSpawnPointList.decode(list_file, list_offset, num_actors * 0x10)
-                file.add_record(list_file.data_records, setup.spawn_points)
             elif command == 0x11: # Skybox settings
                 setup.skybox_settings = SceneSkyboxSettings.decode(file.rom, cursor)
             elif command == 0x13: # Exit List
@@ -236,14 +215,12 @@ class SceneHeader(DataRecord):
                 if list_file is None:
                     raise SceneFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'exit list')
                 setup.exit_list = SceneExitList.decode(list_file, list_offset)
-                file.add_record(list_file.data_records, setup.exit_list)
             elif command == 0x0F: # Lighting settings
                 list_offset, list_file = file.get_offset(cursor + 0x04)
                 num_lights = file.rom.read_byte(cursor + 0x01)
                 if list_file is None:
                     raise SceneFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'light settings list')
                 setup.light_settings = SceneLightSettingsList.decode(list_file, list_offset, num_lights * 0x16)
-                file.add_record(list_file.data_records, setup.light_settings)
             elif command == 0x17: # Cutscene List
                 # Not all cutscenes are listed in scene headers.
                 # Unreferenced cutscenes are defined in the XMLs
@@ -252,7 +229,6 @@ class SceneHeader(DataRecord):
                 if cutscene_file is None:
                     raise SceneFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'cutscene data')
                 setup.cutscene_data = SceneCutsceneData.decode(cutscene_file, cutscene_offset)
-                file.add_record(cutscene_file.data_records, setup.cutscene_data)
             elif command == 0x01: # actor list
                 # Scene files do not typically have actor lists,
                 # but the following do:
@@ -265,7 +241,6 @@ class SceneHeader(DataRecord):
                     raise SceneFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'actor list')
                 num_actors = file.rom.read_byte(cursor + 0x01)
                 setup.actor_list = RoomActorList.decode(list_file, list_offset, num_actors * 0x10)
-                file.add_record(list_file.data_records, setup.actor_list)
             elif command == 0x14: # end list
                 pass
             else:
@@ -382,7 +357,6 @@ class SceneAltHeaderList(DataRecord):
                     setup = RoomHeader.decode(header_file, header_offset)
                 else:
                     raise Exception(f'Unsupported file type {self.file.type} for alternate header list parsing in {self.file.name} at offset 0x{self.offset:0>6x}.')
-                self.file.add_record(header_file.data_records, setup)
                 self.headers.append(setup)
             cursor += 0x04
         if isinstance(self.file, SceneDataRelocator) or isinstance(self.file, RoomDataRelocator):
@@ -619,18 +593,15 @@ class SceneCollisionHeader(DataRecord):
         if vtx_list_file is None:
             raise SceneFileAddressException(file, file.rom.read_byte(cursor + 0x10), cursor + 0x10, 'vertex list')
         collision_header.vtxList = CollisionVtxList.decode(vtx_list_file, vtx_list_offset, collision_header.numVertices * 0x06)
-        file.add_record(vtx_list_file.data_records, collision_header.vtxList)
         collision_header.numPolygons = file.rom.read_int16(cursor + 0x14)
         poly_list_offset, poly_list_file = file.get_offset(cursor + 0x18)
         if poly_list_file is None:
             raise SceneFileAddressException(file, file.rom.read_byte(cursor + 0x18), cursor + 0x18, 'polygon list')
         collision_header.polyList = CollisionPolyList.decode(poly_list_file, poly_list_offset, collision_header.numPolygons * 0x10)
-        file.add_record(poly_list_file.data_records, collision_header.polyList)
         surface_list_offset, surface_list_file = file.get_offset(cursor + 0x1C)
         if surface_list_file is None:
             raise SceneFileAddressException(file, file.rom.read_byte(cursor + 0x1C), cursor + 0x1C, 'surface type')
         collision_header.surfaceTypeList = CollisionSurfaceTypeList.decode(surface_list_file, surface_list_offset, collision_header.polyList.numPolygonTypes * 0x08)
-        file.add_record(surface_list_file.data_records, collision_header.surfaceTypeList)
         # ZAPD heuristics to guess the bgCamList size.
         # See ZCollision.cpp line 93
         if camdata_list_address != 0:
@@ -659,14 +630,12 @@ class SceneCollisionHeader(DataRecord):
             if camdata_list_file is None:
                 raise SceneFileAddressException(file, file.rom.read_byte(cursor + 0x20), cursor + 0x20, 'camera definitions')
             collision_header.bgCamList = CollisionBgCamInfoList.decode(camdata_list_file, camdata_list_offset, camdata_list_length)
-            file.add_record(camdata_list_file.data_records, collision_header.bgCamList)
         collision_header.numWaterBoxes = file.rom.read_int16(cursor + 0x24)
         waterbox_list_offset, waterbox_list_file = file.get_offset(cursor + 0x28)
         if waterbox_list_file is None and waterbox_list_offset != 0:
             raise SceneFileAddressException(file, file.rom.read_byte(cursor + 0x28), cursor + 0x28, 'waterbox list')
         if waterbox_list_file is not None:
             collision_header.waterBoxes = CollisionWaterBoxList.decode(waterbox_list_file, waterbox_list_offset, collision_header.numWaterBoxes * 0x10)
-            file.add_record(waterbox_list_file.data_records, collision_header.waterBoxes)
         return collision_header
 
     def encode(self) -> bytearray:
@@ -912,7 +881,6 @@ class CollisionBgCamInfo:
             # stores the data after the settings. CollisionBgCamFuncData only supports
             # the vanilla scene file behavior of position data before camera settings.
             cam_info.bgCamFuncData = CollisionCamPosData.decode(file, cam_data_offset, cam_info_list_offset - cam_data_offset)
-            file.add_record(cam_data_file.data_records, cam_info.bgCamFuncData.record)
         return cam_info
 
     def encode(self) -> bytearray:
@@ -1156,7 +1124,6 @@ class ScenePathList(DataRecord):
                 raise SceneFileAddressException(self.file, self.file.rom.read_byte(cursor + i*0x08 + 0x04), cursor + i*0x08 + 0x04, 'path point list')
             path_vtx_record = ScenePathVtxList.decode(path_vtx_file, path_vtx_offset, num_points * 0x06)
             self.paths.append(path_vtx_record)
-            self.file.add_record(path_vtx_file.data_records, path_vtx_record)
         self.delay_parsing = False
 
     @staticmethod
@@ -1169,7 +1136,6 @@ class ScenePathList(DataRecord):
         for path_dict in patch_data:
             path_list.paths.append(ScenePathVtxList.from_json(file, path_cursor, path_dict['Points']))
             path_cursor += 1
-        file.data_records.append(path_list)
         return path_list
 
 
@@ -1205,7 +1171,6 @@ class ScenePathVtxList(DataRecord):
         path_vtx_list = ScenePathVtxList(file, offset)
         for vtx in patch_data:
             path_vtx_list.vertices.append(Vec3s(vtx[0], vtx[1], vtx[2]))
-        file.data_records.append(path_vtx_list)
         return path_vtx_list
 
     def encode(self) -> bytearray:
@@ -1526,7 +1491,6 @@ class RoomHeader(DataRecord):
                 if list_file is None:
                     raise RoomFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'alternate header list')
                 setup.alt_header_list = SceneAltHeaderList.decode(list_file, list_offset)
-                file.add_record(list_file.data_records, setup.alt_header_list)
             elif command == 0x16:
                 setup.echo_settings = RoomEchoSettings(file.rom.read_byte(cursor + 0x07))
             elif command == 0x08:
@@ -1559,21 +1523,18 @@ class RoomHeader(DataRecord):
                     setup.mesh_header = RoomMeshCullableHeader.decode(list_file, list_offset, 0x0C)
                 else:
                     raise Exception(f'Unsupported room mesh header type 0x{header_type:0>2x} in {list_file.name} at offset {list_offset}')
-                file.add_record(list_file.data_records, setup.mesh_header)
             elif command == 0x0B: # object list
                 list_offset, list_file = file.get_offset(cursor + 0x04)
                 if list_file is None:
                     raise RoomFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'object list')
                 num_objects = file.rom.read_byte(cursor + 0x01)
                 setup.object_list = RoomObjectList.decode(list_file, list_offset, num_objects * 0x02)
-                file.add_record(list_file.data_records, setup.object_list)
             elif command == 0x01: # actor list
                 list_offset, list_file = file.get_offset(cursor + 0x04)
                 if list_file is None:
                     raise RoomFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'actor list')
                 num_actors = file.rom.read_byte(cursor + 0x01)
                 setup.actor_list = RoomActorList.decode(list_file, list_offset, num_actors * 0x10)
-                file.add_record(list_file.data_records, setup.actor_list)
             elif command == 0x14: # end list
                 pass
             else:
@@ -1731,7 +1692,6 @@ class RoomMeshHeader(DataRecord):
         list_end = segment_address_offset(file.rom.read_int32(cursor + 0x08))
         display_list = RoomMeshDLEntries.decode(list_file, list_offset, list_end - list_offset)
         mesh.display_list_entries = display_list
-        file.add_record(list_file.data_records, display_list)
         return mesh
 
     def encode(self) -> bytearray:
@@ -1766,7 +1726,6 @@ class _RoomMeshImageHeader(DataRecord):
             raise RoomFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'display list')
         display_list = RoomMeshDLEntries.decode(list_file, list_offset, 0x08)
         mesh.display_list_entries = display_list
-        file.add_record(list_file.data_records, display_list)
         return mesh
 
 
@@ -1820,7 +1779,6 @@ class RoomMeshImageMultiHeader(_RoomMeshImageHeader):
         if bg_file is None:
             raise RoomFileAddressException(file, file.rom.read_byte(cursor + 0x0C), cursor + 0x0C, 'multi background list')
         mesh.background_list = RoomMeshImageMultiEntries.decode(file, bg_offset, num_backgrounds * 0x1C)
-        file.add_record(bg_file.data_records, mesh.background_list)
         return mesh
 
     def encode(self) -> bytearray:
@@ -1855,7 +1813,6 @@ class RoomMeshImage:
         if image_file is None:
             raise RoomFileAddressException(file, file.rom.read_byte(cursor), cursor, 'background image')
         image.source = RoomMeshRawImage.decode(image_file, image_offset)
-        file.add_record(image_file.data_records, image.source)
         # 0x04 == unk_0C (u32), always 0 in vanilla
         # 0x08 == tlut (pointer), not used in vanilla
         image.width = file.rom.read_int16(cursor + 0x0C)
@@ -1963,7 +1920,6 @@ class RoomMeshCullableHeader(DataRecord):
         list_end = segment_address_offset(file.rom.read_int32(cursor + 0x08))
         display_list = RoomMeshDLCullableEntries.decode(list_file, list_offset, list_end - list_offset)
         mesh.display_list_entries = display_list
-        file.add_record(list_file.data_records, display_list)
         return mesh
 
     def encode(self) -> bytearray:
@@ -2006,10 +1962,6 @@ class RoomMeshDLEntries(DataRecord):
             else:
                 xlu = RoomMeshDL.decode(xlu_file, xlu_offset)
             dl_entries.entries.append((opa, xlu))
-            if opa is not None:
-                file.add_record(opa_file.data_records, opa)
-            if xlu is not None:
-                file.add_record(xlu_file.data_records, xlu)
             cursor += 0x08
         return dl_entries
 
@@ -2085,10 +2037,6 @@ class RoomMeshDLCullableEntry:
             raise RoomFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'transparent mesh display list')
         else:
             xlu = RoomMeshDL.decode(xlu_file, xlu_offset)
-        if opa is not None:
-            file.add_record(opa_file.data_records, opa)
-        if xlu is not None:
-            file.add_record(xlu_file.data_records, xlu)
         return RoomMeshDLCullableEntry(
             Vec3s.decode(file.rom, cursor),
             file.rom.read_s16(cursor + 0x06),
@@ -2150,8 +2098,6 @@ class RoomMeshDL(DataRecord):
                 if not is_external_resource(file, pointer_offset):
                     record = SceneTexture.decode(op_file, op_offset, -1)
             if record is not None:
-                if record not in op_file.data_records:
-                    op_file.data_records.append(record)
                 dlist.external_references.append(DisplayListRecord(pointer_offset - dlist_start, record))
             cursor += 0x08
         dlist.length = cursor - dlist_start
@@ -2317,12 +2263,12 @@ def scene_resource_factory(file: FileDataRelocator, offset: int, type: str, attr
         if offset == 0:
             file.parse()
         else:
-            file.data_records.append(SceneHeader.decode(file, offset))
+            SceneHeader.decode(file, offset)
     elif type == 'Room':
         if offset == 0:
             file.parse()
         else:
-            file.data_records.append(RoomHeader.decode(file, offset))
+            RoomHeader.decode(file, offset)
     elif type == 'Texture':
         bytes_per_pixel = 0
         if attrib['Format'] == 'rgba32':
@@ -2347,15 +2293,15 @@ def scene_resource_factory(file: FileDataRelocator, offset: int, type: str, attr
         if int(size) != size:
             raise Exception(f'Non integer texture size in {file.name} at offset {offset:0>8x}')
         size = int(size)
-        file.data_records.append(SceneTexture.decode(file, offset, size))
+        SceneTexture.decode(file, offset, size)
     elif type == 'Cutscene':
-        file.data_records.append(SceneCutsceneData.decode(file, offset))
+        SceneCutsceneData.decode(file, offset)
     elif type == 'Path':
-        file.data_records.append(ScenePathList.decode(file, offset, int(attrib['NumPaths']) * 0x08))
+        ScenePathList.decode(file, offset, int(attrib['NumPaths']) * 0x08)
     elif type == 'DList':
-        file.data_records.append(RoomMeshDL.decode(file, offset))
+        RoomMeshDL.decode(file, offset)
     elif type == 'Blob':
-        file.data_records.append(DataRecord.decode(file, RecordType.Blob, offset, int(attrib['Size'], 16)))
+        DataRecord.decode(file, RecordType.Blob, offset, int(attrib['Size'], 16))
     else:
         raise Exception(f'Unrecognized resource type when parsing scenes: {type}')
 
@@ -2584,10 +2530,10 @@ def compare_file_bytes(original_file: str, new_file: str) -> None:
 
 
 if __name__ == '__main__':
-    #uncompressed_rom = Rom('ZOOTDEC.z64')
-    #compare_parsed_data_to_rom(uncompressed_rom, True)
+    uncompressed_rom = Rom('ZOOTDEC.z64')
+    compare_parsed_data_to_rom(uncompressed_rom, True)
     #check_external_reference_locations(uncompressed_rom)
     #make_kak_skulltulas_ignore_tod(uncompressed_rom)
-    extract_bytes_to_file('/home/mracsys/Downloads/OoT-Randomizer-8.1/Output/OoT_B30A4_U3W20VJA0O_uncompressed.z64', 0x253C080, 0x171E0, 'Output/stable_tokinoma_scene.bin')
-    extract_bytes_to_file('Output/OoT_D5F29_WKF8ODY7FJ_uncompressed.z64', 0x24F0FF0, 0x171E8, 'Output/new_tokinoma_scene.bin')
-    compare_file_bytes('Output/stable_tokinoma_scene.bin', 'Output/new_tokinoma_scene.bin')
+    #extract_bytes_to_file('/home/mracsys/Downloads/OoT-Randomizer-8.1/Output/OoT_B30A4_U3W20VJA0O_uncompressed.z64', 0x253C080, 0x171E0, 'Output/stable_tokinoma_scene.bin')
+    #extract_bytes_to_file('Output/OoT_D5F29_WKF8ODY7FJ_uncompressed.z64', 0x24F0FF0, 0x171E8, 'Output/new_tokinoma_scene.bin')
+    #compare_file_bytes('Output/stable_tokinoma_scene.bin', 'Output/new_tokinoma_scene.bin')
