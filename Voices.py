@@ -700,7 +700,7 @@ def process_soundfile_file(f: BinaryIO, age: VOICE_PACK_AGE, settings: Settings,
         if data.ndim == 2 and data.shape[1] == 2:
             # Convert stereo to mono by averaging the two channels
             data = np.mean(data, axis=1)
-        data = data / max(abs(data.max()), abs(data.min())) # Normalize track
+        #data = data / max(abs(data.max()), abs(data.min())) # Normalize track
         data = (data*32768).astype('>i2') # Convert to 16 bit big endian integers
         if trim: # Trim data - primarily used because ML64 sucks
             try:
