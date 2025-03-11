@@ -51,6 +51,18 @@ function romBuilding(pythonPath, randoPath, settings) {
     var currentGenerationPercentage = 0;
     var nextGenerationPercentage = 0;
 
+    var parsingTotalFiles = -1;
+    var parsingPercentagePerFileLocal = -1;
+    var parsingPercentagePerFileTotal = -1;
+
+    var encodingTotalFiles = -1;
+    var encodingPercentagePerFileLocal = -1;
+    var encodingPercentagePerFileTotal = -1;
+
+    var writingTotalFiles = -1;
+    var writingPercentagePerFileLocal = -1;
+    var writingPercentagePerFileTotal = -1;
+
     var compressionTotalFiles = -1;
     var compressionPercentagePerFileLocal = -1;
     var compressionPercentagePerFileTotal = -1;
@@ -89,7 +101,7 @@ function romBuilding(pythonPath, randoPath, settings) {
           currentWorld++;
       }
       else if (data.toString().includes("Fill the world")) {
-        module.exports.emit('patchJobProgress', { generationIndex: currentGeneration, progressCurrent: 33, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration / 3)), message: data.toString().split("\n")[0] });
+        module.exports.emit('patchJobProgress', { generationIndex: currentGeneration, progressCurrent: 30, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration * 0.3)), message: data.toString().split("\n")[0] });
 
         lockGenerationCounter = false;
         currentWorld = 1;
@@ -98,10 +110,10 @@ function romBuilding(pythonPath, randoPath, settings) {
         compressionPercentagePerFileTotal = -1;
       }
       else if (data.toString().includes("Unique dungeon items placed")) {
-        module.exports.emit('patchJobProgress', { generationIndex: currentGeneration, progressCurrent: 50, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration / 2)), message: data.toString().split("\n")[0] });
+        module.exports.emit('patchJobProgress', { generationIndex: currentGeneration, progressCurrent: 40, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration * 0.4)), message: data.toString().split("\n")[0] });
       }
       else if (data.toString().includes("Calculating playthrough")) {
-        module.exports.emit('patchJobProgress', { generationIndex: currentGeneration, progressCurrent: 66, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration / 1.5)), message: data.toString().split("\n")[0] });
+        module.exports.emit('patchJobProgress', { generationIndex: currentGeneration, progressCurrent: 50, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration * 0.5)), message: data.toString().split("\n")[0] });
 
         if (!lockGenerationCounter) {
           nextGenerationPercentage = percentagePerGeneration * currentGeneration;
@@ -111,7 +123,7 @@ function romBuilding(pythonPath, randoPath, settings) {
         lockGenerationCounter = true;
       }
       else if (data.toString().includes("Patching ROM")) {
-        module.exports.emit('patchJobProgress', { generationIndex: lockGenerationCounter ? currentGeneration - 1 : currentGeneration, progressCurrent: 80, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration / 1.25)), message: data.toString().split("\n")[0] });
+        module.exports.emit('patchJobProgress', { generationIndex: lockGenerationCounter ? currentGeneration - 1 : currentGeneration, progressCurrent: 60, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration * 0.6)), message: data.toString().split("\n")[0] });
 
         if (!lockGenerationCounter) {
           nextGenerationPercentage = percentagePerGeneration * currentGeneration;
@@ -119,6 +131,67 @@ function romBuilding(pythonPath, randoPath, settings) {
         }
 
         lockGenerationCounter = true;
+      }
+      else if (data.toString().includes("Parsing file")) {
+
+        let filesRemaining = parseInt(data.toString().substr(13, data.toString().indexOf(" of ")));
+
+        if (parsingTotalFiles == -1) {
+          parsingTotalFiles = 489;
+          parsingPercentagePerFileLocal = 8 / parsingTotalFiles;
+          parsingPercentagePerFileTotal = Math.floor(
+            (currentGenerationPercentage + (percentagePerGeneration / 1.37))
+          - (currentGenerationPercentage + (percentagePerGeneration / 1.54))
+          ) / parsingTotalFiles;
+        }
+
+        module.exports.emit('patchJobProgress', {
+          generationIndex: currentGeneration - 1,
+          progressCurrent: Math.floor(65 + (parsingPercentagePerFileLocal * filesRemaining)),
+          progressTotal: Math.floor(
+            (currentGenerationPercentage + (percentagePerGeneration / 1.54))
+          + (parsingPercentagePerFileTotal * filesRemaining)),
+          message: data.toString().split("\n")[0] });
+      }
+      else if (data.toString().includes("Patching file")) {
+
+        let filesRemaining = parseInt(data.toString().substr(14, data.toString().indexOf(" of ")));
+
+        if (encodingTotalFiles == -1) {
+          encodingTotalFiles = 489;
+          encodingPercentagePerFileLocal = 2 / encodingTotalFiles;
+          encodingPercentagePerFileTotal = Math.floor(
+            (currentGenerationPercentage + (percentagePerGeneration / 1.33))
+          - (currentGenerationPercentage + (percentagePerGeneration / 1.37))) / encodingTotalFiles;
+        }
+
+        module.exports.emit('patchJobProgress', {
+          generationIndex: currentGeneration - 1,
+          progressCurrent: Math.floor(73 + (encodingPercentagePerFileLocal * filesRemaining)),
+          progressTotal: Math.floor(
+            (currentGenerationPercentage + (percentagePerGeneration / 1.37))
+          + (encodingPercentagePerFileTotal * filesRemaining)),
+          message: data.toString().split("\n")[0] });
+      }
+      else if (data.toString().includes("Writing file to buffer")) {
+
+        let filesRemaining = parseInt(data.toString().substr(23, data.toString().indexOf(" of ")));
+
+        if (writingTotalFiles == -1) {
+          writingTotalFiles = 489;
+          writingPercentagePerFileLocal = 8 / writingTotalFiles;
+          writingPercentagePerFileTotal = Math.floor(
+            (currentGenerationPercentage + (percentagePerGeneration / 1.2))
+          - (currentGenerationPercentage + (percentagePerGeneration / 1.33))) / writingTotalFiles;
+        }
+
+        module.exports.emit('patchJobProgress', {
+          generationIndex: currentGeneration - 1,
+          progressCurrent: Math.floor(75 + (writingPercentagePerFileLocal * filesRemaining)),
+          progressTotal: Math.floor(
+            (currentGenerationPercentage + (percentagePerGeneration / 1.33))
+          + (writingPercentagePerFileTotal * filesRemaining)),
+          message: data.toString().split("\n")[0] });
       }
       else if (data.toString().includes("Starting compression")) {
         module.exports.emit('patchJobProgress', { generationIndex: currentGeneration - 1, progressCurrent: 83, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration / 1.2)), message: data.toString().split("\n")[0] });

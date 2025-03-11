@@ -733,7 +733,7 @@ Externally referenced cutscenes:
       - [X] GTG Shellblade Room/Toilet (1x)
       - [X] Death Mountain Crater (1x)
       - [X] Hideout Cells (1 per cell room)
-- [?] Other Patches
+- [X] Other Patches
     - [X] Duplicate Bazaar room for Kakariko
     - [X] Move Sheik from pedastal in ToT
     - [X] Ice Cavern alcove camera (duplicated in two spots in Patches.py)
@@ -773,37 +773,37 @@ Externally referenced cutscenes:
     - [X] Jabu stone actor
     - [X] Keysy dungeon/boss doors
     - [X] Ganons Tower first BK door unlock for pot shuffle
-- [?] Entrance Shuffle
-    - [?] Generate/write exit list for each scene
-    - [?] Jabu boss exit coordinates
-    - [?] Water Temple boss exit room number
-    - [?] Redirect LLR exits to main exit for OW shuffle
-    - [?] Redirect ZR<->Field exits to land from water
-    - [?] Spirit temp flag purge on entry through front door
-    - [?] Grotto actor data changes in set_grotto_shuffle_data
-- [ ] MQ Patching
-    - [ ] All rooms can be entered from all entrances
+- [ ] Entrance Shuffle
+    - [X] Generate/write exit list for each scene
+    - [ ] Jabu boss exit coordinates
+    - [ ] Water Temple boss exit room number
+    - [X] Redirect LLR exits to main exit for OW shuffle
+    - [X] Redirect ZR<->Field exits to land from water
+    - [X] Spirit temp flag purge on entry through front door
+    - [X] Grotto actor data changes in set_grotto_shuffle_data
+- [X] MQ Patching
+    - [X] All rooms can be entered from all entrances
       - [X] Deku Tree
       - [X] Dodongo's Cavern
       - [X] Jabu Jabu's Belly
-      - [ ] Forest Temple
-      - [ ] Fire Temple
-      - [ ] Water Temple
+      - [X] Forest Temple
+      - [X] Fire Temple
+      - [X] Water Temple
       - [X] Spirit Temple
       - [X] Shadow Temple
       - [X] Bottom of the Well
-      - [ ] Ice Cavern
-      - [ ] Gerudo Training Ground
-      - [ ] Ganon's Castle
-    - [ ] Ice Cavern scene header patch from old system
-    - [ ] MQ Spirit Temple room 6 new alternate header
+      - [X] Ice Cavern
+      - [X] Gerudo Training Ground
+      - [X] Ganon's Castle
+    - [X] Ice Cavern scene header patch from old system
+    - [X] MQ Spirit Temple room 6 new alternate header
     - [X] Shadow Temple MQ redead shared flags for silver rupee shuffle
-    - [ ] DC MQ door flag move for silver rupee shuffle
-    - [ ] Spirit Temple MQ front right chest temp -> permanent flag for silver rupee shuffle
-    - [ ] Key doors are correct
-    - [ ] Check overrides work
+    - [X] DC MQ door flag move for silver rupee shuffle
+    - [X] Spirit Temple MQ front right chest temp -> permanent flag for silver rupee shuffle
+    - [X] Key doors are correct
+    - [X] Check overrides work
     - [X] Scrub actor patching works
     - [X] Cow actor patching works
-    - [ ] Keysy removes locks
+    - [X] Keysy removes locks
 - [X] ASM/C patches
     - [X] 0x26c10e3 - generic grotto ACTOR_EN_GS actor params 0x3818 -> 0x38FF (use grotto ID for hint text ID)
