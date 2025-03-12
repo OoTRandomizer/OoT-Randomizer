@@ -10,6 +10,7 @@ import time
 import zipfile
 from typing import Optional
 
+import numpy
 
 from Cosmetics import CosmeticsLog, patch_cosmetics
 from EntranceShuffle import set_entrances
@@ -584,7 +585,7 @@ def cosmetic_patch(settings: Settings) -> None:
 
     # clear changes from the base patch file
     patched_base_rom = copy.copy(rom.buffer)
-    rom.changed_address = {}
+    rom.changed_address = numpy.full(134217728, 1000, numpy.uint16)
     rom.changed_dma = {}
     rom.force_patch = []
 

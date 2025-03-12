@@ -5,6 +5,8 @@ import zipfile
 import zlib
 from typing import TYPE_CHECKING, Optional
 
+import numpy
+
 from Rom import Rom
 from ntype import BigStream
 
@@ -120,8 +122,7 @@ def create_patch_file(rom: Rom, file: str, xor_range: tuple[int, int] = (0x00B8A
         # We don't trust files that have modified DMA to have their
         # changed addresses tracked correctly, so we invalidate the
         # entire file
-        for address in range(start, start + size):
-            rom.changed_address[address] = rom.buffer[address]
+        rom.changed_address[start:start+size] = numpy.frombuffer(rom.buffer[start:start+size], dtype=numpy.uint8)
 
         # Simulate moving the files to know which addresses have changed
         if from_file >= 0:
@@ -138,8 +139,8 @@ def create_patch_file(rom: Rom, file: str, xor_range: tuple[int, int] = (0x00B8A
 
     # filter down the addresses that will actually need to change.
     # Make sure to not include any of the DMA table addresses
-    changed_addresses = [address for address, value in rom.changed_address.items()
-                         if (address >= dma_end or address < dma_start) and
+    changed_addresses = [address for address, value in enumerate(rom.changed_address)
+                         if value != 1000 and (address >= dma_end or address < dma_start) and
                          (address in rom.force_patch or new_buffer[address] != value)]
     changed_addresses.sort()
 
