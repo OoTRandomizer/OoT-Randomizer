@@ -38,26 +38,26 @@ def start() -> None:
         except VersionError as e:
             logger.warning(str(e))
 
-    #try:
-    if gui:
-        from Gui import gui_main
-        gui_main()
-    elif diff_rom:
-        diff_roms(settings, diff_rom)
-    elif settings.cosmetics_only:
-        cosmetic_patch(settings)
-    elif settings.patch_file != '':
-        from_patch_file(settings)
-    elif settings.count is not None and settings.count > 1:
-        orig_seed = settings.seed
-        for i in range(settings.count):
-            settings.update_seed(orig_seed + '-' + str(i))
+    try:
+        if gui:
+            from Gui import gui_main
+            gui_main()
+        elif diff_rom:
+            diff_roms(settings, diff_rom)
+        elif settings.cosmetics_only:
+            cosmetic_patch(settings)
+        elif settings.patch_file != '':
+            from_patch_file(settings)
+        elif settings.count is not None and settings.count > 1:
+            orig_seed = settings.seed
+            for i in range(settings.count):
+                settings.update_seed(orig_seed + '-' + str(i))
+                main(settings)
+        else:
             main(settings)
-    else:
-        main(settings)
-    #except Exception as ex:
-    #    logger.exception(ex)
-    #    sys.exit(1)
+    except Exception as ex:
+        logger.exception(ex)
+        sys.exit(1)
 
 
 if __name__ == '__main__':
