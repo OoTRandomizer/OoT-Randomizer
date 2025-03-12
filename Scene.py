@@ -2527,13 +2527,3 @@ def compare_file_bytes(original_file: str, new_file: str) -> None:
         if original_bytes[i] != new_bytes[i]:
             raise Exception(f'Byte mismatch at offset 0x{i:0>8x}. Original: 0x{original_bytes[i]:0>2x} New: 0x{new_bytes[i]:0>2x}')
         i += 1
-
-
-if __name__ == '__main__':
-    uncompressed_rom = Rom('ZOOTDEC.z64')
-    compare_parsed_data_to_rom(uncompressed_rom, True)
-    #check_external_reference_locations(uncompressed_rom)
-    #make_kak_skulltulas_ignore_tod(uncompressed_rom)
-    #extract_bytes_to_file('/home/mracsys/Downloads/OoT-Randomizer-8.1/Output/OoT_B30A4_U3W20VJA0O_uncompressed.z64', 0x253C080, 0x171E0, 'Output/stable_tokinoma_scene.bin')
-    #extract_bytes_to_file('Output/OoT_D5F29_WKF8ODY7FJ_uncompressed.z64', 0x24F0FF0, 0x171E8, 'Output/new_tokinoma_scene.bin')
-    #compare_file_bytes('Output/stable_tokinoma_scene.bin', 'Output/new_tokinoma_scene.bin')
