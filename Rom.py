@@ -9,6 +9,8 @@ from typing import Optional
 import logging
 import struct
 
+import numpy
+
 from Models import restrictiveBytes
 from Utils import is_bundled, subprocess_args, local_path, data_path, get_version_bytes
 from crc import calculate_crc
@@ -31,7 +33,7 @@ class Rom(BigStream):
         super().__init__(bytearray())
 
         self.original: Rom = self
-        self.changed_address: dict[int, int] = {}
+        self.changed_address: numpy.ndarray = numpy.full(134217728, 1000, numpy.uint16)
         self.changed_dma: dict[int, tuple[int, int, int]] = {}
         self.force_patch: list[int] = []
         self.dma: DMAIterator = DMAIterator(self, DMADATA_START)
@@ -74,7 +76,7 @@ class Rom(BigStream):
     def copy(self) -> Rom:
         new_rom: Rom = Rom()
         new_rom.buffer = copy.copy(self.buffer)
-        new_rom.changed_address = copy.copy(self.changed_address)
+        new_rom.changed_address = self.changed_address.copy()
         new_rom.changed_dma = copy.copy(self.changed_dma)
         new_rom.force_patch = copy.copy(self.force_patch)
         return new_rom
@@ -186,7 +188,10 @@ class Rom(BigStream):
         if address >= 0x1F12000 and address <= 0x3471000 and not overwrite_scenes:
             raise Exception(f'Attempted to write to forbidden region in vanilla scene/room files')
         super().write_bytes(address, values)
-        self.changed_address.update(zip(range(address, address + len(values)), values))
+        if isinstance(values, (bytearray, bytes)):
+            self.changed_address[address:address + len(values)] = numpy.frombuffer(values, dtype=numpy.uint8)
+        else:
+            self.changed_address[address:address + len(values)] = values
 
     def write_s16(self, address: int, value: int) -> None:
         if address >= 0x1F12000 and address <= 0x3471000:
@@ -207,7 +212,7 @@ class Rom(BigStream):
 
     def restore(self) -> None:
         self.buffer = copy.copy(self.original.buffer)
-        self.changed_address = {}
+        self.changed_address = numpy.full(134217728, 1000, numpy.uint16)
         self.changed_dma = {}
         self.force_patch = []
         self.last_address = 0
@@ -310,7 +315,7 @@ class Rom(BigStream):
 
     # This will rescan the entire ROM, compare to original ROM, and repopulate changed_address.
     def rescan_changed_bytes(self) -> None:
-        self.changed_address = {}
+        self.changed_address = numpy.full(134217728, 1000, numpy.uint16)
         size = len(self.buffer)
         original_size = len(self.original.buffer)
         for i, byte in enumerate(self.buffer):
@@ -321,7 +326,7 @@ class Rom(BigStream):
             if byte != orig_byte:
                 self.changed_address[i] = byte
         if size < original_size:
-            self.changed_address.update(zip(range(size, original_size-1), [0]*(original_size-size)))
+            self.changed_address[size:original_size] = [0 for _ in range(original_size - size)]
 
 class DMAEntry:
     def __init__(self, rom: Rom, index: int) -> None:
