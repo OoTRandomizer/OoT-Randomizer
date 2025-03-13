@@ -185,7 +185,7 @@
             "KF Bean Platform Red Rupee": "is_adult and (here(can_plant_bean) or Hover_Boots)",
             "KF GS Know It All House": "
                 is_child and can_child_attack and (at_night or gold_skulls_ignore_daytime) and
-                (had_night_start or can_leave_forest or can_play(Suns_Song))",
+                (had_night_start or can_leave_forest or can_play(Suns_Song) or gold_skulls_ignore_daytime)",
             "KF GS Bean Patch": "
                 can_plant_bugs and can_child_attack",
             "KF GS House of Twins": "
