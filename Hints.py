@@ -43,7 +43,7 @@ BarrenFunc: TypeAlias = "Callable[[Spoiler, World, set[str], set[str]], HintRetu
 bingoBottlesForHints: set[str] = {
     "Bottle", "Bottle with Red Potion", "Bottle with Green Potion", "Bottle with Blue Potion",
     "Bottle with Fairy", "Bottle with Fish", "Bottle with Blue Fire", "Bottle with Bugs",
-    "Bottle with Big Poe", "Bottle with Poe",
+    "Bottle with Big Poe", "Bottle with Poe", "Bottle with Milk",
 }
 
 defaultHintDists: list[str] = [
