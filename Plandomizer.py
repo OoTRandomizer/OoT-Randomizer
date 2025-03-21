@@ -13,7 +13,7 @@ import StartingItems
 from Entrance import Entrance
 from EntranceShuffle import EntranceShuffleError, change_connections, confirm_replacement, validate_world, check_entrances_compatibility
 from Fill import FillError
-from Hints import HintArea, gossipLocations, GossipText
+from Hints import HintArea, gossipLocations, GossipText, hint_func
 from Item import ItemFactory, ItemInfo, ItemIterator, is_item, Item
 from ItemPool import item_groups, get_junk_item, song_list, trade_items, child_trade_items
 from JSONDump import dump_obj, CollapseList, CollapseDict, AlignedDict, SortedDict
@@ -1018,7 +1018,7 @@ class WorldDistribution:
             if can_cloak(location.item, model):
                 location.item.looks_like_item = model
 
-    def configure_gossip(self, spoiler: Spoiler, stone_ids: list[int]) -> None:
+    def configure_gossip(self, spoiler: Spoiler, world: World, stone_ids: list[int], checked_locations: set[str], checked_always_locations: set[str]) -> None:
         for (name, record) in self.pattern_dict_items(self.gossip_stones):
             matcher = self.pattern_matcher(name)
             stone_id = pull_random_element([stone_ids], lambda id: matcher(gossipLocations[id].name))
@@ -1029,7 +1029,21 @@ class WorldDistribution:
                     stone_id = int(match[1], base=16)
                 else:
                     raise RuntimeError('Gossip stone unknown or already assigned in world %d: %r. %s' % (self.id + 1, name, build_close_match(name, 'stone')))
-            spoiler.hints[self.id][stone_id] = GossipText(text=record.text, colors=record.colors, prefix='')
+            if record.text is not None:
+                spoiler.hints[self.id][stone_id] = GossipText(text=record.text, colors=record.colors, prefix='')
+            else:
+                all_checked_locations = checked_locations | checked_always_locations
+                if record.hint_type == 'barren':
+                    hint = hint_func[record.hint_type](spoiler, world, checked_locations, all_checked_locations)
+                else:
+                    hint = hint_func[record.hint_type](spoiler, world, all_checked_locations)
+                    checked_locations.update(all_checked_locations - checked_always_locations)
+                if hint is None:
+                    raise RuntimeError(f'Attempted to plando unavailable hint type {record.hint_type}')
+                gossip_text, _ = hint
+                gossip_text.hint_type = record.hint_type
+                spoiler.hints[self.id][stone_id] = gossip_text
+
 
     def give_items(self, world: World, save_context: SaveContext) -> None:
         # copy Triforce pieces to all worlds

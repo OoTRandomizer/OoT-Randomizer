@@ -1363,7 +1363,7 @@ def build_world_gossip_hints(spoiler: Spoiler, world: World, checked_locations: 
 
     stone_ids = list(gossipLocations.keys())
 
-    world.distribution.configure_gossip(spoiler, stone_ids)
+    world.distribution.configure_gossip(spoiler, world, stone_ids, checked_locations, checked_always_locations)
 
     # If all gossip stones already have plando'd hints, do not roll any more
     if len(stone_ids) == 0:
