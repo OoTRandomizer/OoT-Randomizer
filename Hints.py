@@ -1030,11 +1030,16 @@ def get_dungeon_hint(spoiler: Spoiler, world: World, checked: set[str]) -> HintR
 
 
 def get_random_multi_hint(spoiler: Spoiler, world: World, checked: set[str], hint_type: str) -> HintReturn:
+    def is_valid_hint(hint: Hint) -> bool:
+        locations = [world.get_location(location) for location in get_multi(hint.name).locations]
+        if not is_checked(locations, checked):
+            return False
+        if world.settings.empty_dungeons_mode != 'none' and any(location.world.precompleted_dungeons.get(HintArea.at(location).dungeon_name, False) for location in locations):
+            return False
+        return True
+
     hint_group = get_hint_group(hint_type, world)
-    multi_hints = list(filter(
-        lambda hint: not is_checked([world.get_location(location) for location in get_multi(hint.name).locations], checked),
-        hint_group,
-    ))
+    multi_hints = list(filter(is_valid_hint, hint_group))
 
     if not multi_hints:
         return None
