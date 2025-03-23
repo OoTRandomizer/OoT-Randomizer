@@ -1,4 +1,6 @@
+const os = require('os')
 const fs = require('fs');
+const { resolve } = require('path');
 const EventEmitter = require('events').EventEmitter;
 const spawn = require('child_process').spawn;
 const treeKill = require('tree-kill');
@@ -226,6 +228,29 @@ function cancelRomBuilding() {
   }
 }
 
+// Create a python virtual environment in the main python source directory
+function createPythonVirtualEnvironment(pythonPath, pythonSourceDirectory) {
+  return new Promise(function (resolve, reject) {
+      let venv_directory = pythonSourceDirectory + ".venv/";
+      let pythonExec = spawn(`${pythonPath} -m venv ${venv_directory}`, { shell: true}).on('error', err => {
+        reject(err);
+    }).on('exit', (code, signal) => {
+      if (code == 0) {
+        pip_path = "bin/pip";
+        if (os.platform() == "win32") {
+          pip_path = "Scripts/pip.exe"
+        }
+        let pip_exec = spawn(`${venv_directory}${pip_path} install -r ${pythonSourceDirectory}requirements.txt`, { shell: true }).on('exit', (code, signal) => {
+          resolve(venv_directory);
+        });
+      }
+      else {
+        reject(code);
+      }
+    });
+  });
+}
+
 function testPythonPath(pythonPath) {
 
   return new Promise(function (resolve, reject) {
@@ -398,3 +423,4 @@ module.exports.romBuilding = romBuilding;
 module.exports.cancelRomBuilding = cancelRomBuilding;
 module.exports.testPythonPath = testPythonPath;
 module.exports.getUpdatedDynamicSetting = getUpdatedDynamicSetting;
+module.exports.createPythonVirtualEnvironment = createPythonVirtualEnvironment;

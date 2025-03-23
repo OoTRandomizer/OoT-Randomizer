@@ -27,7 +27,8 @@ var pythonGeneratorPath = pythonSourcePath + "OoTRandomizer.py";
 var pythonSettingsToJsonPath = pythonSourcePath + "SettingsToJson.py";
 
 console.log("Python Executable Path:", pythonPath);
-console.log("Python Source Path:", pythonGeneratorPath);
+console.log("Python Source Path:", pythonSourcePath);
+console.log("Python Generator Path:", pythonGeneratorPath);
 
 //Enable API in client window
 electron.webFrame.executeJavaScript('window.electronAvailable = true;');
@@ -378,10 +379,25 @@ else {
   remote.app.quit();
 }
 
-//Test if python executable exists and can be called
-generator.testPythonPath(pythonPath).then(() => {
-  console.log("Python executable confirmed working");
-}).catch(err => {
-  console.error(err);
-  displayPythonErrorAndExit();
+
+// Try to create python virtual environment
+generator.createPythonVirtualEnvironment(pythonPath, pythonSourcePath).then( (result) => {
+  console.log(result);
+
+  var python_venv_exe_path = "bin/python3";
+  if (os.platform() == "win32") {
+    python_venv_exe_path = "Scripts/python.exe"
+  }
+  pythonPath = result + python_venv_exe_path;
+  console.log(pythonPath);
+
+  //Test if python executable exists and can be called
+  generator.testPythonPath(pythonPath).then(() => {
+    console.log("Python executable confirmed working");
+  }).catch(err => {
+    console.error(err);
+    displayPythonErrorAndExit();
+  });
+
 });
+

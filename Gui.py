@@ -28,30 +28,6 @@ def gui_main() -> None:
     # Get python virtual environment
     # Make it if it doesn't exist
 
-    print("Checking for python virtual environment")
-    try:
-        if os.path.exists(".venv"):
-            print("Found python virtual environment")
-            # Looks like venv exists so just set the python path
-            pass
-        else:
-            # Virtual environment doesn't exist so create it
-            print("No virtual environment found. Creating...")
-            venv.create(".venv", system_site_packages=False, clear=True, symlinks=False, with_pip=True)
-        if platform.system() == "Windows":
-            subdir = "Scripts"
-            exename = "python.exe"
-        else:
-            subdir = "bin"
-            exename = "python3"
-        args = [os.path.join(".venv", subdir, "pip"), "install", "-r", "requirements.txt"]
-        print("Installing any missing packages")
-        subprocess.run(args, check=True)
-        # Get platform dependent path to python
-        python_path = os.path.abspath(os.path.join(os.curdir, ".venv", subdir, exename))
-    except Exception as err:
-        print(f"Could not create python virtual environment, defaulting to global python interpreter {python_path}")
-
     try:
         version_check("Node", "14.15.0", "https://nodejs.org/en/download/")
         version_check("NPM", "6.12.0", "https://nodejs.org/en/download/")
