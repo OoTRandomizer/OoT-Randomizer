@@ -10,6 +10,7 @@
 /testlogs
 __pycache__
 ARCHIVE.bin
+/.venv
 
 **/.DS_Store
 
