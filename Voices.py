@@ -410,7 +410,8 @@ class VOICE_PACK_AGE(Enum):
 # sfx_id_map - the sfx_id -> bank map to use selected by age
 # pak_sounds - a dictionary mapping for the entire voice pack - sfx_id to a list of tuples containing the file's name and the raw data from the file
 # age that this pak is for
-def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age, settings: Settings) -> tuple[str, int, list[int], bytearray, int, int, function]:
+# normalize - set to True to automatically normalize the SFX. Used w/ modloader SFX because they are bad
+def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age, settings: Settings, normalize: bool = False) -> tuple[str, int, list[int], bytearray, int, int, function]:
     to_add = []
 
     # Check if the sfx_id is in the mapping for this age. 
@@ -432,7 +433,7 @@ def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age, settings
                 # Add the ones we have
                 for name, decompressed in pak_opts:
                     _file = io.BytesIO(decompressed)
-                    soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(name, _file, age, settings, trim=True)
+                    soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(name, _file, age, settings, trim=True, normalize=normalize)
                     _file.close()
                     to_add.append((name, 0, rom_targets[i], soundData, numSampleFrames, sampleRate, None))
                     i += 1
@@ -445,7 +446,7 @@ def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age, settings
                 for i in range(0, len(rom_targets)):
                     name, decompressed = pak_opts[i]
                     _file = io.BytesIO(decompressed)
-                    soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(name, _file, age, settings, trim=True)
+                    soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(name, _file, age, settings, trim=True, normalize=normalize)
                     _file.close()
                     to_add.append((name, 0, rom_targets[i], soundData, numSampleFrames, sampleRate, None))
                 pass
@@ -459,7 +460,7 @@ def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age, settings
             patch = mapping['patch']
             name, decompressed = pak_opts[0]
             _file = io.BytesIO(decompressed)
-            soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(name, _file, age, settings, trim=True)
+            soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(name, _file, age, settings, trim=True, normalize=normalize)
             to_add.append((name, 0, rom_targets[0], soundData, numSampleFrames, sampleRate, patch))
             _file.close()
         else:
@@ -501,7 +502,7 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
             pak = ML64Unpack.ML64Pak(pak_bytes)
             pak_sounds = pak.read_all_sounds()
             for pak_sfx_id in pak_sounds.keys():
-                sfxs.extend(process_pak_sfx_by_id(pak_sfx_id, sfx_id_map, pak_sounds, age, settings))
+                sfxs.extend(process_pak_sfx_by_id(pak_sfx_id, sfx_id_map, pak_sounds, age, settings, normalize=True))
 
         # New ZOOTR voice pack file
         # Support mapping sounds either via SFX_ID like ML64 does
@@ -679,11 +680,11 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
 # file_name: the name of the file, used to determine how to process it
 # file: a file-like object that will be read to process the file
 # returns: tuple of the form (soundData, numSampleFrames, sampleRate)
-def process_sound_file(file_name: str, file: BinaryIO, age: VOICE_PACK_AGE, settings: Settings, trim: bool = False) -> tuple[bytearray, int, int]:
+def process_sound_file(file_name: str, file: BinaryIO, age: VOICE_PACK_AGE, settings: Settings, trim: bool = False, normalize: bool = False) -> tuple[bytearray, int, int]:
     # Check if this is a file format that sf supports
     filename, ext = os.path.splitext(file_name)
     if ext.strip('.').upper() in sf.available_formats():
-        soundData, numSampleFrames, sampleRate, book, loop = process_soundfile_file(file, age, settings, trim)
+        soundData, numSampleFrames, sampleRate, book, loop = process_soundfile_file(file, age, settings, trim, normalize)
     elif ext == ".aifc":
         soundData, numSampleFrames, sampleRate, book, loop = process_aifc_file(file)
     elif ext == ".bin":
@@ -695,13 +696,14 @@ def process_sound_file(file_name: str, file: BinaryIO, age: VOICE_PACK_AGE, sett
 
 
 # Read an audio file using the soundfile python library
-def process_soundfile_file(f: BinaryIO, age: VOICE_PACK_AGE, settings: Settings, trim=False) -> tuple[bytes, int, int, AdpcmBook, AdpcmLoop]:
+def process_soundfile_file(f: BinaryIO, age: VOICE_PACK_AGE, settings: Settings, trim=False, normalize: bool = False) -> tuple[bytes, int, int, AdpcmBook, AdpcmLoop]:
         data, sampleRate = sf.read(f)
         if data.ndim == 2 and data.shape[1] == 2:
             # Convert stereo to mono by averaging the two channels
             data = np.mean(data, axis=1)
-        #data = data / max(abs(data.max()), abs(data.min())) # Normalize track
-        data = (data*32768).astype('>i2') # Convert to 16 bit big endian integers
+        if normalize:
+            data = data / max(abs(data.max()), abs(data.min())) # Normalize track
+        data = (data*32767).astype('>i2') # Convert to 16 bit big endian integers
         if trim: # Trim data - primarily used because ML64 sucks
             try:
                 trim_index = list(map(lambda i: i > 0, data)).index(True)
