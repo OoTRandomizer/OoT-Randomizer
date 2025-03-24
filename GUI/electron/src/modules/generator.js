@@ -232,7 +232,8 @@ function cancelRomBuilding() {
 function createPythonVirtualEnvironment(pythonPath, pythonSourceDirectory) {
   return new Promise(function (resolve, reject) {
       let venv_directory = pythonSourceDirectory + ".venv/";
-      let pythonExec = spawn(`${pythonPath} -m venv ${venv_directory}`, { shell: true}).on('error', err => {
+      
+      let pythonExec = spawn(pythonPath, ["-m", "venv", venv_directory], { shell: true }).on('error', err => {
         reject(err);
     }).on('exit', (code, signal) => {
       if (code == 0) {
@@ -240,7 +241,7 @@ function createPythonVirtualEnvironment(pythonPath, pythonSourceDirectory) {
         if (os.platform() == "win32") {
           pip_path = "Scripts/pip.exe"
         }
-        let pip_exec = spawn(`${venv_directory}${pip_path} install -r ${pythonSourceDirectory}requirements.txt`, { shell: true }).on('exit', (code, signal) => {
+        let pip_exec = spawn(`${venv_directory}${pip_path}`, ["install", "-r", `${pythonSourceDirectory}requirements.txt`], { shell: true }).on('exit', (code, signal) => {
           resolve(venv_directory);
         });
       }
