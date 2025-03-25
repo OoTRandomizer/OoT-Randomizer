@@ -1,10 +1,15 @@
 from ctypes import *
 import os
+import sys
 from binascii import hexlify
 
-# Import the shared library. Need to check for windows vs. linux
+# Import the shared library. Need to check for windows vs. linux vs. mac
+shared_lib = "vadpcm_enc_shared"
+if sys.platform == 'darwin':
+    shared_lib = "vadpcm_enc_shared_mac"
+
 try:
-    lib = CDLL(os.path.join(os.path.dirname(os.path.realpath(__file__)),"vadpcm_enc_shared"))
+    lib = CDLL(os.path.join(os.path.dirname(os.path.realpath(__file__)),shared_lib))
 except:
     raise Exception(os.path.curdir)
 # Converts raw 16-bit samples to ADPCM compressed bytes
