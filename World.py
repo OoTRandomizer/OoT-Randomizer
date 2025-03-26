@@ -11,7 +11,7 @@ from typing import Any, Optional
 from Dungeon import Dungeon
 from Entrance import Entrance
 from Goals import Goal, GoalCategory
-from HintList import get_required_hints, misc_item_hint_table, misc_location_hint_table
+from HintList import get_required_hints, misc_item_hint_table
 from Hints import HintArea, hint_dist_keys, hint_dist_files
 from Item import Item, ItemFactory, ItemInfo, make_event_item
 from ItemList import REWARD_COLORS
@@ -50,6 +50,7 @@ class World:
         }
         self.misc_hint_item_locations: dict[str, Location] = {}
         self.misc_hint_location_items: dict[str, Item] = {}
+        self.unique_merchant_items: dict[str, Item] = {}
         self.triforce_count: int = 0
         self.total_starting_triforce_count: int = 0
         self.empty_areas: dict[HintArea, dict[str, Any]] = {}
@@ -240,7 +241,6 @@ class World:
 
         self.dungeon_rewards_hinted: bool = settings.shuffle_mapcompass != 'remove' if settings.enhance_map_compass else 'altar' in settings.misc_hints
         self.misc_hint_items: dict[str, str] = {hint_type: self.hint_dist_user.get('misc_hint_items', {}).get(hint_type, data['default_item']) for hint_type, data in misc_item_hint_table.items()}
-        self.misc_hint_locations: dict[str, str] = {hint_type: self.hint_dist_user.get('misc_hint_locations', {}).get(hint_type, data['item_location']) for hint_type, data in misc_location_hint_table.items()}
 
         self.state: State = State(self)
 

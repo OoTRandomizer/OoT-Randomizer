@@ -1871,52 +1871,78 @@ misc_item_hint_table: dict[str, dict[str, Any]] = {
 misc_location_hint_table: dict[str, dict[str, Any]] = {
     '10_skulltulas': {
         'id': 0x9004,
-        'hint_location': '10 Skulltulas Reward Hint',
         'item_location': 'Kak 10 Gold Skulltula Reward',
         'location_text': "Yeaaarrgh! I'm cursed!! Please save me by destroying \x05\x4110 Spiders of the Curse\x05\x40 and I will give you \x05\x42{item}\x05\x40.",
         'location_fallback': "Yeaaarrgh! I'm cursed!!",
     },
     '20_skulltulas': {
         'id': 0x9005,
-        'hint_location': '20 Skulltulas Reward Hint',
         'item_location': 'Kak 20 Gold Skulltula Reward',
         'location_text': "Yeaaarrgh! I'm cursed!! Please save me by destroying \x05\x4120 Spiders of the Curse\x05\x40 and I will give you \x05\x42{item}\x05\x40.",
         'location_fallback': "Yeaaarrgh! I'm cursed!!",
     },
     '30_skulltulas': {
         'id': 0x9006,
-        'hint_location': '30 Skulltulas Reward Hint',
         'item_location': 'Kak 30 Gold Skulltula Reward',
         'location_text': "Yeaaarrgh! I'm cursed!! Please save me by destroying \x05\x4130 Spiders of the Curse\x05\x40 and I will give you \x05\x42{item}\x05\x40.",
         'location_fallback': "Yeaaarrgh! I'm cursed!!",
     },
     '40_skulltulas': {
         'id': 0x9007,
-        'hint_location': '40 Skulltulas Reward Hint',
         'item_location': 'Kak 40 Gold Skulltula Reward',
         'location_text': "Yeaaarrgh! I'm cursed!! Please save me by destroying \x05\x4140 Spiders of the Curse\x05\x40 and I will give you \x05\x42{item}\x05\x40.",
         'location_fallback': "Yeaaarrgh! I'm cursed!!",
     },
     '50_skulltulas': {
         'id': 0x9008,
-        'hint_location': '50 Skulltulas Reward Hint',
         'item_location': 'Kak 50 Gold Skulltula Reward',
         'location_text': "Yeaaarrgh! I'm cursed!! Please save me by destroying \x05\x4150 Spiders of the Curse\x05\x40 and I will give you \x05\x42{item}\x05\x40.",
         'location_fallback': "Yeaaarrgh! I'm cursed!!",
     },
     'frogs2': {
         'id': 0x022E,
-        'hint_location': 'ZR Frogs Ocarina Minigame Hint',
         'item_location': 'ZR Frogs Ocarina Game',
         'location_text': "Some frogs holding \x05\x42{item}\x05\x40 are looking at you from underwater...",
         'location_fallback': "Some frogs are looking at you from underwater...",
     },
     'big_poes': {
         'id': 0x70F5,
-        'hint_location': 'Market 10 Big Poes Hint',
         'item_location': 'Market 10 Big Poes',
         'location_text': "\x08Hey, young man. What's happening \x01today? Do you want\x01\x05\x41{item}\x05\x40?\x04\x1AIf you earn \x05\x41{poe_points} points\x05\x40, you'll\x01be a happy man! Heh heh.\x04\x08Your card now has \x05\x45\x1E\x01 \x05\x40points.\x01Come back again!\x01Heh heh heh!\x02",
         'location_fallback': "\x08Hey, young man. What's happening \x01today? If you have a \x05\x41Poe\x05\x40, I will \x01buy it.\x04\x1AIf you earn \x05\x41{poe_points} points\x05\x40, you'll\x01be a happy man! Heh heh.\x04\x08Your card now has \x05\x45\x1E\x01 \x05\x40points.\x01Come back again!\x01Heh heh heh!\x02",
+    },
+}
+
+unique_merchant_hint_table: dict[str, dict[str, Any]] = {
+    'bean_salesman': {
+        'id': 0x405E,
+        'item_location': 'ZR Magic Bean Salesman',
+        'location_text': '\x1AChomp chomp chomp...We have...\x01\x05\x41{item}\x05\x40!\x04\x05\x41\x0860 Rupees\x05\x40 and it\'s yours!\x01Keyahahah!\x01\x1B\x05\x42Yes\x01No\x05\x40\x02',
+        'location_fallback': '\x1AChomp chomp chomp...\x01We have... \x05\x41a mysterious item\x05\x40! \x01Do you want it...huh? Huh?\x04\x05\x41\x0860 Rupees\x05\x40 and it\'s yours!\x01Keyahahah!\x01\x1B\x05\x42Yes\x01No\x05\x40\x02',
+    },
+    'carpet_salesman': {
+        'id': 0x6077,
+        'item_location': 'Wasteland Bombchu Salesman',
+        'location_text': '\x06\x41Well Come!\x04I am selling stuff, strange and \x01rare. Today\'s special is...\x01\x05\x41{item}\x05\x40!\x04How about \x05\x41200 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02',
+        'location_fallback': '\x06\x41Well Come!\x04I am selling stuff, strange and \x01rare, from all over the world to \x01everybody.\x01Today\'s special is...\x04A mysterious item! \x01Intriguing! \x01I won\'t tell you what it is until \x01I see the money....\x04How about \x05\x41200 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02',
+    },
+    'medigoron': {
+        'id': 0x304F,
+        'item_location': 'GC Medigoron',
+        'location_text': 'For 200 Rupees, how about buying...\x04\x05\x41{item}\x05\x40?\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02',
+        'location_fallback': 'How about buying this cool item for \x01200 Rupees?\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02',
+    },
+    'granny': {
+        'id': 0x500C,
+        'item_location': 'Kak Granny Buy Blue Potion',
+        'location_text': 'How about \x05\x41100 Rupees\x05\x40 for...\x04\x05\x41{item}\x05\x40?\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02',
+        'location_fallback': 'Mysterious item! How about\x01\x05\x41100 Rupees\x05\x40?\x01\x1B\x05\x42Buy\x01Don\'t buy\x05\x40\x02',
+    },
+    'chest_game': {
+        'id': 0x006D,
+        'item_location': 'Market Treasure Chest Game Salesman',
+        'location_text': 'I seem to have misplaced my\x01keys, but I have a fun item to\x01sell instead.\x01How about \x05\x4110 Rupees\x05\x40 for...\x04\x05\x41{item}\x05\x40?\x01\x1B\x05\x42Buy\x01Don\'t Buy\x05\x40\x02',
+        'location_fallback': 'I seem to have misplaced my\x01keys, but I have a fun item to\x01sell instead.\x04How about \x05\x4110 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don\'t Buy\x05\x40\x02',
     },
 }
 
