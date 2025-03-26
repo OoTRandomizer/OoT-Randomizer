@@ -214,7 +214,8 @@ typedef enum GetItemID {
     /* 0x00B9 */ GI_MAGIC_METER, // Magic Meter
     /* 0x00BA */ GI_DOUBLE_MAGIC, // Double Magic
 
-    /* 0x00BB */ GI_MINUET_OF_FOREST, // Minuet of Forest
+    /* 0x00BB */ GI_SONG_MIN,
+    /* 0x00BB */ GI_MINUET_OF_FOREST = GI_SONG_MIN, // Minuet of Forest
     /* 0x00BC */ GI_BOLERO_OF_FIRE, // Bolero of Fire
     /* 0x00BD */ GI_SERENADE_OF_WATER, // Serenade of Water
     /* 0x00BE */ GI_REQUIEM_OF_SPIRIT, // Requiem of Spirit

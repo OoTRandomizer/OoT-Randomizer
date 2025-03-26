@@ -68,6 +68,7 @@ void after_game_state_update() {
     }
     close_rando_display_buffer();
     give_sage_gifts();
+    mw_send_own_songs();
 }
 
 void before_skybox_init(z64_game_t* game, int16_t skyboxId) {

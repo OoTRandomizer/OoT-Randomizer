@@ -99,7 +99,7 @@ return_from_the_other_function:
 
 .orga 0xD7E890
     nop                         ;bne     t1,at,@@not_hyrule  ; if scene is not Hyrule Castle
-    addiu   v0,v0,0xa5d0        ; v0 = 0x8012a5d0 # save context
+    addiu   v0,v0,0xa5d0        ; v0 = 0x8011a5d0 # save context
     lhu     t2,0x0ed6(v0)       ; this byte holds the two flags below
     andi    t3,t2,0x10          ; t3 = "Talon has fled castle"
     b       @@safe              ; skip code that may have reallocations

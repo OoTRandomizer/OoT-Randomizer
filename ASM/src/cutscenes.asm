@@ -103,7 +103,7 @@ override_epona_song:
     sw      ra, 0x18 (sp)
 
     lui     at, 0x8012
-    addiu   at, at, 0xA5D0 ; v1 = 0x8012A5D0 # save context (sav)
+    addiu   at, at, 0xA5D0 ; at = 0x8011A5D0 # save context (sav)
     lb      t0, 0x0EDE (at) ; check learned song from malon flag
     ori     t0, t0, 0x01 ; t9 = "Invited to Sing With Child Malon"
     sb      t0, 0x0EDE (at)
@@ -125,7 +125,7 @@ override_suns_song:
     sw      ra, 0x14 (sp)
 
     lui     at, 0x8012
-    addiu   at, at, 0xA5D0 ; v1 = 0x8012A5D0 # save context (sav)
+    addiu   at, at, 0xA5D0 ; at = 0x8011A5D0 # save context (sav)
     lb      t0, 0x0EDE (at) ; learned song from sun's song
     ori     t0, t0, 0x04
     sb      t0, 0x0EDE (at)

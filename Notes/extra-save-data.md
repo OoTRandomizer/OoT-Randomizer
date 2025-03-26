@@ -58,6 +58,8 @@ The unused field (offset 0x10) of the permanent scene flags (save context + 0xd4
     * 0x48 Dampe's Grave and Windmill
 * Pending ice traps: Scene 0x49
     * 0x49 Fishing Pond
+* Song locations reported for `MW_SEND_OWN_ITEMS`: Scene 0x4A
+    * 0x4A Castle Courtyard
 * Expensive Merchants (Granny's Potion Shop only): Scene 0x4E
     * 0x4E Granny's Potion Shop
 * Unlocked ocarina notes: Scene 0x50
@@ -79,7 +81,7 @@ With `shuffle_cows`, the flags representing which cows have been talked to are s
 * LLR Stables Right Cow: scene 0x36, bit 0200_0000
 * LLR Stables Left Cow: scene 0x36, bit 0100_0000
 * Kak Impas House Cow: scene 0x37, bit 0100_0000
-* HF Cow Grotto Cow: scene 0x37, bit 0200_0000
+* HF Cow Grotto Cow: scene 0x3e, bit 0200_0000
 * DMT Cow Grotto Cow: scene 0x3e, bit 0100_0000
 * LLR Tower Left Cow: scene 0x4c, bit 0200_0000
 * LLR Tower Right Cow: scene 0x4c, bit 0100_0000
