@@ -413,11 +413,7 @@ void try_pending_item() {
         call_effect_function(item_row);
         pop_pending_item();
         after_key_received(override.key);
-        clear_override();
-        return;
-    }
-
-    if (item_row->collectible >= 0 && override.key.flag == 0xFF) {
+    } else if (item_row->collectible >= 0 && override.key.flag == 0xFF) {
         // This is an incoming collectible junk item so speed it up by spawning a give immediate collectible
         EnItem00* collectible = (EnItem00*)z64_SpawnActor(&z64_game.actor_ctxt, &z64_game, 0x0015, z64_link.common.pos_world.x, z64_link.common.pos_world.y, z64_link.common.pos_world.z, 0, 0, 0, 0x8000 | item_row->collectible);
         collectible->override = override;
