@@ -49,6 +49,7 @@ export class GeneratorComponent implements OnInit {
   repatchCosmeticsCheckboxText: string = "Override Original Cosmetics";
   repatchCosmeticsCheckboxTooltipPatch: string = "Replaces the cosmetic and sound settings generated in the patch file<br>with those selected on this page.";
   repatchCosmeticsCheckboxTooltipSeedPageWeb: string = "Replaces the cosmetic and sound settings generated in the seed<br>with those selected on this page.";
+  spinner_text = "Checking python environment";
 
   constructor(private overlayContainer: OverlayContainer, private cd: ChangeDetectorRef, public global: GUIGlobal, private dialogService: NbDialogService) {
   }
@@ -66,7 +67,6 @@ export class GeneratorComponent implements OnInit {
     else {
 
       let eventSub = this.global.globalEmitter.subscribe(eventObj => {
-
         if (eventObj.name == "init_finished") {
           console.log("Init finished event");
           this.generatorReady();

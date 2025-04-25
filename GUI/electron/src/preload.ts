@@ -362,6 +362,22 @@ post.on('cancelGenerateSeed', function (event) {
   return false;
 });
 
+post.on('createPythonVirtualEnvironment', function (event) {
+  generator.createPythonVirtualEnvironment(pythonPath, pythonSourcePath).then((result) => {
+      console.log(result);
+    
+      var python_venv_exe_path = "bin/python3";
+      if (os.platform() == "win32") {
+        python_venv_exe_path = "Scripts/python.exe"
+      }
+      pythonPath = result + python_venv_exe_path;
+      console.log(pythonPath);
+      post.send(window, 'createPythonVirtualEnvironmentSuccess');
+    }).catch((err) => {
+      post.send(window, 'createPythonVirtualEnvironmentError', err);
+    });
+});
+
 //GENERATOR EVENTS
 generator.on("patchJobProgress", status => {
   //console.log("Patch job reports in at " + status.progress + "%! Message: " + status.message);
@@ -380,17 +396,6 @@ else {
 }
 
 
-// Try to create python virtual environment
-generator.createPythonVirtualEnvironment(pythonPath, pythonSourcePath).then( (result) => {
-  console.log(result);
-
-  var python_venv_exe_path = "bin/python3";
-  if (os.platform() == "win32") {
-    python_venv_exe_path = "Scripts/python.exe"
-  }
-  pythonPath = result + python_venv_exe_path;
-  console.log(pythonPath);
-
   //Test if python executable exists and can be called
   generator.testPythonPath(pythonPath).then(() => {
     console.log("Python executable confirmed working");
@@ -399,5 +404,4 @@ generator.createPythonVirtualEnvironment(pythonPath, pythonSourcePath).then( (re
     displayPythonErrorAndExit();
   });
 
-});
 

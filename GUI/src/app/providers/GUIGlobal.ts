@@ -18,7 +18,7 @@ export class GUIGlobal implements OnDestroy {
   public generator_customColorMap: Object = {};
 
   public generator_presets: Object = {};
-
+  
   globalVars: Map<string, any>;
   electronEvents: Array<any> = [];
 
@@ -169,13 +169,20 @@ export class GUIGlobal implements OnDestroy {
     });
   }
 
-  electronInit() {
-    this.electronLoadGeneratorGUISettings().then(() => {
+  async electronInit() {
+    try {
+      console.log("Creating python virtual environment");
+      await this.createPythonVenv();
+      console.log("Loading settings");
+      await this.electronLoadGeneratorGUISettings();
       this.setGlobalVar("appReady", true);
       this.globalEmitter.emit({ name: "init_finished" });
-    }).catch(err => {
+    }
+    catch(err)
+    {
       console.error("exit due error:", err);
-    });
+    }
+    
   }
 
   webInit() {
@@ -1197,6 +1204,21 @@ export class GUIGlobal implements OnDestroy {
           reject(err);
         });
       }
+    });
+  }
+
+  createPythonVenv() {
+    return new Promise(function (resolve, reject) {
+      post.send(window, 'createPythonVirtualEnvironment').then(res => {
+        var listenerSuccess = post.once('createPythonVirtualEnvironmentSuccess', function (event) {
+          listenerError.cancel();
+          resolve(true);
+        });
+        var listenerError = post.once('createPythonVirtualEnvironmentError', function (event) {
+          listenerSuccess.cancel();
+          reject(event);
+        })
+      });
     });
   }
 
