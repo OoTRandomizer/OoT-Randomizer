@@ -133,6 +133,12 @@ class Rom(BigStream):
         Audiobank: bytearray = bytearray(0) # Audiobank file contains the audio bank binary data
 
         for bank in self.audiobanks:
+            # Check if this bank is just a copy of another bank w/ a different table entry
+            if bank.parent_bank:
+                bank.placed_address = bank.parent_bank.placed_address
+                bank.placed_data = bank.parent_bank.placed_data
+                continue
+
             bank_bytes = bytearray(0)
             # Build the bank bytes
             # First - skip the amount of bytes that we need for the drum offset list pointer, sfx list pointer, and instrument offsets, drum offsets. 

@@ -243,6 +243,8 @@ class AudioBank:
         self.placed_data: bytearray = None
         self.original_data: bytearray = None
         self.original_table_entry: bytearray = None
+        self.duplicate_banks: list[AudioBank] = []
+        self.parent_bank: AudioBank = None
 
     def __str__(self):
         return "Offset: " + hex(self.bank_offset) + ", " + "Len:" + hex(self.size)

@@ -490,11 +490,13 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                                 break
                         if not found:
                             # Make a new bank with just the meta and add it as a duplicate so it can be added separately but point to the same data.
-                            dupe_bank = AudioBank(bank_entry, bytearray(0), None, None)
+                            dupe_bank: AudioBank = AudioBank.from_rom_data(bank_entry, bytearray(0), None, None)
                             dupe_bank.bank_index = new_bank_index
-                            new_bank_index += 1
+                            dupe_bank.parent_bank = newbank
                             newbank.duplicate_banks.append(dupe_bank)
+                            new_bank_index += 1
                             newbank = dupe_bank
+                            added_banks.append(newbank)
                     break
 
             if not newbank:
@@ -507,7 +509,6 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                     newbank.audiotable_id = 0
                 newbank.bank_index = new_bank_index
 
-                zsound_samples: list[Sample] = []
                 # Handle new zsounds
                 #tempbank = AudioBank.from_rom_data(bank_entry, bankdata, None, None)
                 if j.name.lower().endswith('.ootrs') or j.name.lower().endswith('.mmrs'):
@@ -531,15 +532,12 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                                         #    sample = newbank.SFX[parent.sfx_id].sample
                                         sample.data = zip.read(zsound['file'])
                                         sample.addr = -1 # Set the sample address to -1 so that we know it's from a zsound
-                                        zsound_samples.append(sample)
                                         found_tempaddr = True
                                         break
                                 if not found_tempaddr:
                                     raise log.errors.append(f"{j.name} - Could not find zsound file matching temp address {hex(zsound['tempaddr'])}")
-                                pass
                             else:
                                 curr_sample_data = zip.read(zsound['file'])
-                                already_added = False
                                 sample: Sample = None
 
                                 # Get the sample reference from the new bank
@@ -556,7 +554,6 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                                         sample = newbank.instruments[zsound['index']].highNoteSample
                                 sample.data = curr_sample_data
                                 sample.addr = -1 # Set the sample address to -1 so that we know it's from a zsound
-                                zsound_samples.append(sample)
 
                 # Sanity check that all samples in the bank have data now
                 for sample in newbank.get_all_samples():
@@ -567,13 +564,6 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
 
             # Update the sequence's bank (instrument set)
             rom.write_byte(seq_bank_base, newbank.bank_index)
-
-
-    # Patch the new instrument data into the ROM in a new file.
-    # If there is any instrument data to add, move the entire audiotable file to a new location in the ROM.
-    if len(instr_data) > 0:
-        # Add the new data
-        rom.audiotable += instr_data
 
     rom.audiobanks.extend(added_banks)
 
