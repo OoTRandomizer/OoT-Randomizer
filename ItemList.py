@@ -543,7 +543,7 @@ item_table: dict[str, tuple[str, Optional[bool], Optional[int], Optional[dict[st
     'Small Key (Gerudo Training Ground)':              ('SmallKey', True,  GetItemId.GI_SMALL_KEY_GERUDO_TRAINING, {'progressive': float('Inf')}),
     'Small Key (Thieves Hideout)':              ('HideoutSmallKey', True,  GetItemId.GI_SMALL_KEY_THIEVES_HIDEOUT, {'progressive': float('Inf')}),
     'Small Key (Ganons Castle)':                       ('SmallKey', True,  GetItemId.GI_SMALL_KEY_GANONS_CASTLE, {'progressive': float('Inf')}),
-    'Double Defense':                                  ('Item',     None,  GetItemId.GI_DOUBLE_DEFENSE, None),
+    'Double Defense':                                  ('Item',     True,  GetItemId.GI_DOUBLE_DEFENSE, None),
     'Buy Magic Bean':                                  ('Item',     True,  GetItemId.GI_MAGIC_BEAN, {'alias': ('Magic Bean', 10), 'progressive': 10}),
     'Magic Bean Pack':                                 ('Item',     True,  GetItemId.GI_MAGIC_BEAN_PACK, {'alias': ('Magic Bean', 10), 'progressive': 10}),
     'Triforce Piece':                                  ('Item',     True,  GetItemId.GI_TRIFORCE_PIECE, {'progressive': float('Inf')}),
