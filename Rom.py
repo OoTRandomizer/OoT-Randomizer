@@ -137,6 +137,7 @@ class Rom(BigStream):
             if bank.parent_bank:
                 bank.placed_address = bank.parent_bank.placed_address
                 bank.placed_data = bank.parent_bank.placed_data
+                added_banks.append(bank)
                 continue
 
             bank_bytes = bytearray(0)

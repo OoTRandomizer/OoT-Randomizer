@@ -492,9 +492,9 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                             # Make a new bank with just the meta and add it as a duplicate so it can be added separately but point to the same data.
                             dupe_bank: AudioBank = AudioBank.from_rom_data(bank_entry, bytearray(0), None, None)
                             dupe_bank.bank_index = new_bank_index
+                            new_bank_index += 1
                             dupe_bank.parent_bank = newbank
                             newbank.duplicate_banks.append(dupe_bank)
-                            new_bank_index += 1
                             newbank = dupe_bank
                             added_banks.append(newbank)
                     break
