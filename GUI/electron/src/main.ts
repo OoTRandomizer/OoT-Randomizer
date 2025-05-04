@@ -164,6 +164,7 @@ async function createApp() {
 
   win.once('ready-to-show', () => {
     win.show();
+    win.webContents.openDevTools();
     if (!isRelease && !win.isMaximized()) //Open dev tools automatically if dev mode and not maximized
       win.webContents.openDevTools();
   });
