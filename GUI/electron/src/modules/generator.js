@@ -4,6 +4,7 @@ const { resolve } = require('path');
 const EventEmitter = require('events').EventEmitter;
 const spawn = require('child_process').spawn;
 const treeKill = require('tree-kill');
+const path = require('node:path')
 
 //Rom Building global vars
 var romBuildingGenerator = null;
@@ -231,22 +232,29 @@ function cancelRomBuilding() {
 // Create a python virtual environment in the main python source directory
 function createPythonVirtualEnvironment(pythonPath, pythonSourceDirectory) {
   return new Promise(function (resolve, reject) {
-      let venv_directory = pythonSourceDirectory + ".venv/";
-      
-      let pythonExec = spawn(pythonPath, ["-m", "venv", venv_directory], { shell: true }).on('error', err => {
-        reject(err);
+      let venv_directory = path.join(pythonSourceDirectory, ".venv")
+      console.log(venv_directory)
+      let pythonExec = spawn(pythonPath, ["-m", "venv", `"${venv_directory}"` ], { shell: true }).on('error', err => {
+        reject({'error': err });
     }).on('exit', (code, signal) => {
       if (code == 0) {
         pip_path = "bin/pip";
         if (os.platform() == "win32") {
           pip_path = "Scripts/pip.exe"
         }
-        let pip_exec = spawn(`${venv_directory}${pip_path}`, ["install", "-r", `${pythonSourceDirectory}requirements.txt`], { shell: true }).on('exit', (code, signal) => {
-          resolve(venv_directory);
+        let pip_exec = spawn('"' + path.join(venv_directory, pip_path + '"'), ["install", "-r", `"${path.join(pythonSourceDirectory, "requirements.txt")}"`], { shell: true }).on('exit', (code, signal) => {
+          if (code == 0) {
+            resolve(venv_directory);
+          }
+          else {
+            pip_exec.stderr.setEncoding("utf8")
+            reject(pip_exec.stderr.read())
+          }
         });
       }
       else {
-        reject(code);
+        pythonExec.stderr.setEncoding("utf8")
+        reject(pythonExec.stderr.read());
       }
     });
   });

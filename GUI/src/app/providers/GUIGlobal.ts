@@ -1216,6 +1216,7 @@ export class GUIGlobal implements OnDestroy {
         });
         var listenerError = post.once('createPythonVirtualEnvironmentError', function (event) {
           listenerSuccess.cancel();
+          console.error("[createPythonVenv] Error: ", event)
           reject(event);
         })
       });

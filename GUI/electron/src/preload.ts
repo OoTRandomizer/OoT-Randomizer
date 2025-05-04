@@ -370,8 +370,8 @@ post.on('createPythonVirtualEnvironment', function (event) {
       if (os.platform() == "win32") {
         python_venv_exe_path = "Scripts/python.exe"
       }
-      pythonPath = result + python_venv_exe_path;
-      console.log(pythonPath);
+      pythonPath = '"' + path.join(result,python_venv_exe_path) + '"';
+      console.log("VENV Python Path: " + pythonPath);
       post.send(window, 'createPythonVirtualEnvironmentSuccess');
     }).catch((err) => {
       post.send(window, 'createPythonVirtualEnvironmentError', err);
