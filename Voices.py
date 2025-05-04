@@ -163,7 +163,7 @@ adult_sfx_id_map = {
 
 
 def child_sfx_patch_death(rom: Rom, numFrames: int, sampleRate: int):
-    
+
     # Switch the first note to use 0x41 and increase length. Patch out the last 2 notes w/ 0xFF
     numTicks = calculate_ticks(numFrames, sampleRate)
     tick_bytes = numTicks.to_bytes(2, 'big')
@@ -183,7 +183,7 @@ def child_sfx_patch_sweat(rom: Rom, numFrames: int, sampleRate: int):
     # .channel CHAN_6467
     # /* 0x6467 [0x88 0x64 0x6B          ] */ ldlayer     0, LAYER_646B
     # /* 0x646A [0xFF                    ] */ end
-# 
+#
     # .layer LAYER_646B
     # /* 0x646B [0xC2 0x01               ] */ transpose   1
     # /* 0x646D [0x47 0x80 0xD9 0x64     ] */ notedv      PITCH_E1, FRAMERATE_CONST(217, 260), 100
@@ -414,8 +414,8 @@ class VOICE_PACK_AGE(Enum):
 def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age, settings: Settings, normalize: bool = False) -> tuple[str, int, list[int], bytearray, int, int, function]:
     to_add = []
 
-    # Check if the sfx_id is in the mapping for this age. 
-    sfx_id = pak_sfx_id   
+    # Check if the sfx_id is in the mapping for this age.
+    sfx_id = pak_sfx_id
     if sfx_id in sfx_id_map.keys():
         pak_opts = pak_sounds[pak_sfx_id] # Options provided in the pack
         if not pak_opts:
@@ -471,7 +471,7 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
     # Don't allow custom voice packs when generating patch files
     if settings.generating_patch_file:
         return
-    
+
     # Build voice pack path
     voice_pack_dir = os.path.join(data_path(), "Voices", "Child" if age == VOICE_PACK_AGE.CHILD else "Adult", voice_pack)
 
@@ -492,7 +492,7 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
         # Let's try to come up with a clever way to patch these
         # 1) Figure out what sort of SFX this is
         # Generally falls into one of 3 categories based on how the SFX works in the vanilla SFX seqence
-        #     - Play 1 specific sound 
+        #     - Play 1 specific sound
         #     - Randomly select from multiple sounds
         #     - Plays multiple sounds
         if filename.endswith(".pak"):
@@ -541,7 +541,7 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
                                 sample_bytes = zf.read(sample_file)
                                 pak_sounds[sfx_id].append((sample_file, sample_bytes))
                             sfxs.extend(process_pak_sfx_by_id(sfx_id, sfx_id_map, pak_sounds, age, settings))
-                            
+
                     # Check for direct_bank mapped
                     if "direct_bank" in voice_map.keys():
                         for bank_str in voice_map["direct_bank"].keys():
@@ -583,7 +583,7 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
                                             EnvelopePoint(10000, 0),
                                             EnvelopePoint(-1, 0)
                                         ]
-                                        
+
                                         envelope = Envelope(points)
                                         instrument.envelope = envelope
                                 if "normalNote" in instrument_json.keys():
@@ -607,7 +607,7 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
                                             EnvelopePoint(10000, 0),
                                             EnvelopePoint(-1, 0)
                                         ]
-                                        
+
                                         envelope = Envelope(points)
                                         instrument.envelope = envelope
                                 if "highNote" in instrument_json.keys():
@@ -631,7 +631,7 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
                                             EnvelopePoint(10000, 0),
                                             EnvelopePoint(-1, 0)
                                         ]
-                                        
+
                                         envelope = Envelope(points)
                                         instrument.envelope = envelope
                                 if "normalRangeLow" in instrument_json.keys():
@@ -650,7 +650,7 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
 
         bank = rom.audiobanks[bank_index]
 
-        # Sort-of problem. We need to update audiotable in multiple different spots. 
+        # Sort-of problem. We need to update audiotable in multiple different spots.
         # So instead of making the new file, maybe just add a new variable to Rom called new_audiotable_data and write it all at the end.
         # Update sample address to point to new data in audiotable.
         sfx: SFX = bank.SFX[sfx_id]
@@ -728,7 +728,7 @@ def process_aifc_file(f: BinaryIO) -> tuple[bytes, int, int]:
     # Open the .aifc file
     index = 0
     # Read data from the .aifc file
-    
+
     # Read the "FORM" Chunk
     f.read(4) # "FORM"
     size = int.from_bytes(f.read(4), 'big')
@@ -754,9 +754,9 @@ def process_aifc_file(f: BinaryIO) -> tuple[bytes, int, int]:
             chunks[chkID].append(chunk)
         else:
             chunks[chkID] = chunk
-    
+
     # Process the chunks
-    
+
     # COMM Chunk: Sampling rate, compression type, number of channels
     #define CommonID 'COMM' /* ckID for Common Chunk */
     # typedef struct {
@@ -776,7 +776,7 @@ def process_aifc_file(f: BinaryIO) -> tuple[bytes, int, int]:
     sampleSize = int.from_bytes(data[6:8], 'big')
     sampleRateBytes = bytearray(data[8:18])
     sampleRateInt = int.from_bytes(sampleRateBytes, 'big')
-    
+
     # Need to process the sample rate. it's an 80-bit extended floating point value stored in 10 bytes which nothing natively supports
     exp_int = int.from_bytes(sampleRateBytes[0:2], 'big') - 16383
     frac_int = int.from_bytes(sampleRateBytes[2:10], 'big')
@@ -784,7 +784,7 @@ def process_aifc_file(f: BinaryIO) -> tuple[bytes, int, int]:
     compressionType = str(data[18:22],encoding='utf-8')
     compressionNameLen = data[22]
     compressionName = str(data[23:23 + compressionNameLen], encoding='utf-8')
-    
+
     # Make sure it's the correct compression type
     #if compressionType != "ADP9":
     #    raise Exception("Unknown compression format. Must be 'ADP9'. Did you use vadpcm_enc?")
@@ -798,7 +798,7 @@ def process_aifc_file(f: BinaryIO) -> tuple[bytes, int, int]:
     data = ssnd['data']
     ssndOffset = int.from_bytes(data[0:4], 'big')
     ssndBlockSize = int.from_bytes(data[4:8], 'big')
-    
+
     # Pull out the APDCM Code Book from the first APPL chunk
     appl = chunks['APPL'][0]['data']
     # stoc + 0x0B + VADPCMCODES
@@ -834,5 +834,3 @@ def process_aifc_file(f: BinaryIO) -> tuple[bytes, int, int]:
     dataLen = int(ceil(numSampleFrames * 9 / 8 / 2))
     soundData = data[8:8 + dataLen]
     return soundData, numSampleFrames, sampleRate, AdpcmBook(order, nEntries, tableBytes), loop
-
-

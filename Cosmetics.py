@@ -1256,8 +1256,9 @@ def patch_cosmetics(settings: Settings, rom: Rom) -> CosmeticsLog:
     cosmetic_version = None
     versioned_patch_set = None
     cosmetic_context = rom.read_int32(rom.sym('RANDO_CONTEXT') + 4)
+    ram_base = cosmetic_context & 0xFFFF0000
     if 0x80000000 <= cosmetic_context <= 0x80F7FFFC:
-        cosmetic_context = (cosmetic_context - 0x80400000) + 0x3480000 # convert from RAM to ROM address
+        cosmetic_context = (cosmetic_context - ram_base) + 0x3480000 # convert from RAM to ROM address
         cosmetic_version = rom.read_int32(cosmetic_context)
         versioned_patch_set = patch_sets.get(cosmetic_version)
     else:
@@ -1295,9 +1296,11 @@ def patch_cosmetics(settings: Settings, rom: Rom) -> CosmeticsLog:
         if not settings.generating_patch_file:
             bank_index_base = AUDIOBANK_INDEX_ADDR
             if "CFG_AUDIOBANK_TABLE_EXTENDED_ADDR" in cosmetic_context_symbols.keys():
-                bank_index_base = (rom.read_int32(cosmetic_context_symbols['CFG_AUDIOBANK_TABLE_EXTENDED_ADDR']) - 0x80400000) + 0x3480000
+                bank_index_base = rom.read_int32(cosmetic_context_symbols['CFG_AUDIOBANK_TABLE_EXTENDED_ADDR'])
+                ram_base = bank_index_base & 0xFFFF0000
+                bank_index_base = (bank_index_base - ram_base) + 0x3480000
             rom.rebuild_audio_data(bank_index_base)
-            
+
             log.symbols = cosmetic_context_symbols
     else:
         # patch cosmetics that use vanilla oot data, and always compatible

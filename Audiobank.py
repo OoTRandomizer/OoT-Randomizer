@@ -104,11 +104,11 @@ class Envelope:
         bytes = bytearray(0)
         for point in self.points:
             bytes += point.get_bytes()
-        
+
         # Extend to 16 bytes for alignment purposes
         if len(bytes) % 16 != 0:
             bytes += bytearray(16 - len(bytes)%16)
-        
+
         return bytes
 
 class EnvelopePoint:
@@ -116,7 +116,7 @@ class EnvelopePoint:
         self.delay: int = delay
         self.arg: int = arg
         self.bank_offset = -1
-    
+
     def get_bytes(self):
         bytes = bytearray(0)
         bytes += self.delay.to_bytes(2, 'big', signed=True)
@@ -143,11 +143,11 @@ class EnvelopePoint:
             envelopeCache[envelopepoint_offset] = envelope
         return envelope
 
-class Sample:    
+class Sample:
     def __init__(self):
         self.parents: list = []
         self.bank_offset = -1 # offset of the sample within the bank. -1 indicates the sample hasn't been placed yet
-        self.original_offset = -1 
+        self.original_offset = -1
         self.codec: int = 0 # ADPCM is the only codec that seems to work
         self.medium: int = 0
         self.tag: bool = False
@@ -184,7 +184,7 @@ class Sample:
         if sample.addr == -1 : # If the offset is set to 0xFFFFFFFF then we need to get the sample data from ZSOUND files in the archive.
             sample.data = None
             return sample
-        
+
         # Read the audiotable pointer table entry
         elif audiotable_file and audiotable_index:
             audiotable_index_offset = 0x10 + (audiotable_id * 0x10)
@@ -202,12 +202,12 @@ class Sample:
         else: # Should probably never get to this case
             sample.audiotable_addr = -1
             sample.data = None
-        
+
         # Add to the sample cache if one was provided
         if sampleCache is not None:
             sampleCache[sample_offset] = sample
         return sample
-    
+
     def get_bytes(self) -> bytearray:
         bytes = bytearray()
         bytes += (((self.codec & 0x0F) << 4) | ((self.medium & 0x03) << 2)).to_bytes(1, 'big')
@@ -237,7 +237,7 @@ class AudioBank:
         self.SFX: list[SFX] = []
         self.instruments: list[Instrument] = []
         self.medium: int = None # ROM/RAM/Disk
-        self.cachePolicy: AudioCacheLoadType = None # 
+        self.cachePolicy: AudioCacheLoadType = None #
         self.audiotable_id: int = 0
         self.placed_address: int = -1
         self.placed_data: bytearray = None
@@ -272,7 +272,7 @@ class AudioBank:
                     all_samples.append(sfx.sample)
         return all_samples
 
-    def from_rom_data(table_entry: bytearray, audiobank_file: bytearray, audiotable_file: bytearray, audiotable_index: bytearray) -> AudioBank:
+    def from_rom_data(table_entry: bytearray, audiobank_file: bytearray, audiotable_file: bytearray, audiotable_index: bytearray, header_only: bool = False) -> AudioBank:
         # Process bank entry
         bank: AudioBank = AudioBank()
         bank.original_table_entry = table_entry
@@ -287,6 +287,9 @@ class AudioBank:
         num_sfx: int = int.from_bytes(table_entry[14:16], 'big')
         bank_data = audiobank_file[bank_offset:bank_offset + size]
         bank.original_data = bank_data
+
+        if header_only:
+            return bank
         # Process the bank
 
         # Keep track of the sample offsets that we load from so we can actually point to the same Sample object
@@ -342,7 +345,7 @@ class AudioBank:
                     offsets[instrument.highNoteSampleOffset] = instrument.highNoteSample
                     offsets[instrument.highNoteSample.book_addr] = instrument.highNoteSample.book
                     offsets[instrument.highNoteSample.loop_addr] = instrument.highNoteSample.loop
-                
+
             i += 1
 
         i = 0
@@ -365,7 +368,7 @@ class AudioBank:
                     offsets[sfx.sample.book_addr] = sfx.sample.book
                     offsets[sfx.sample.loop_addr] = sfx.sample.loop
             i += 1
-        
+
         for offset in sorted(offsets.keys()):
             print(f"{hex(offset)}: {type(offsets[offset])}")
         return offsets
@@ -457,26 +460,26 @@ class Instrument:
         bytes += self.normalRangeHi.to_bytes(1, 'big')
         bytes += self.releaseRate.to_bytes(1, 'big')
         bytes += self.envelope.bank_offset.to_bytes(4, 'big')
-        
+
         if self.lowNoteSample:
             bytes += self.lowNoteSample.bank_offset.to_bytes(4, 'big')
             bytes += struct.pack(">f", self.lowNoteTuning)
         else:
             bytes += bytearray(8)
-        
+
         if self.normalNoteSample:
             bytes += self.normalNoteSample.bank_offset.to_bytes(4, 'big')
             bytes += struct.pack(">f", self.normalNoteTuning)
         else:
             bytes += bytearray(8)
-        
+
         if self.highNoteSample:
             bytes += self.highNoteSample.bank_offset.to_bytes(4, 'big')
             bytes += struct.pack(">f", self.highNoteSampleTuning)
         else:
             bytes += bytearray(8)
         return bytes
-    
+
     def equals(self, other: Instrument):
         match = True
         if self.lowNoteSample:
@@ -491,7 +494,7 @@ class Instrument:
             match = match and (self.highNoteSample.data == other.highNoteSample.data)
             match = match and self.highNoteSample.book.book == other.highNoteSample.book.book
             match = match and self.highNoteSample.loop.state == other.highNoteSample.loop.state
-        
+
         return match
 
 class RomSequence:
@@ -504,4 +507,3 @@ class RomSequence:
         if data is None:
             self.alt_seq = self.start
             self.start = -1
-            

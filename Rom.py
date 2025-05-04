@@ -79,9 +79,9 @@ class Rom(BigStream):
         audiobank_start, audiobank_end, audiobank_size = self.audiobank_dma_entry.as_tuple()
         audiotable_start, audiotable_end, audiotable_size = self.audiotable_dma_entry.as_tuple()
         self.audiotable = self.read_bytes(audiotable_start, audiotable_size)
-        
+
         # Read Audiobank file
-        audiobank = self.read_bytes(audiobank_start, audiobank_size)    
+        audiobank = self.read_bytes(audiobank_start, audiobank_size)
 
         # Read Audiotable index
         audiotable_index_header: bytearray = self.read_bytes(AUDIOTABLE_INDEX_ADDR, 0x10)
@@ -95,7 +95,7 @@ class Rom(BigStream):
             bank = AudioBank.from_rom_data(bank_entry, audiobank, self.audiotable, audiotable_index)
             bank.bank_index = i
             self.audiobanks.append(bank)
-        
+
         # Read original Audioseq file
         audioseq_start, audioseq_end, audioseq_size = self.audioseq_dma_entry.as_tuple()
         self.audioseq = self.read_bytes(audioseq_start, audioseq_size)
@@ -142,7 +142,7 @@ class Rom(BigStream):
 
             bank_bytes = bytearray(0)
             # Build the bank bytes
-            # First - skip the amount of bytes that we need for the drum offset list pointer, sfx list pointer, and instrument offsets, drum offsets. 
+            # First - skip the amount of bytes that we need for the drum offset list pointer, sfx list pointer, and instrument offsets, drum offsets.
             # SFX don't have separate pointers and instead are just in a list, each is 8 bytes
             # The drum list and sfx are normally towards the end of the bank but who cares
             bank_bytes += bytearray([0] * (8 + 4*(len(bank.instruments) + len(bank.drums))))
@@ -163,12 +163,12 @@ class Rom(BigStream):
                         samples_to_add.append(instrument.normalNoteSample)
                     if instrument.highNoteSample:
                         samples_to_add.append(instrument.highNoteSample)
-            
+
             for drum in bank.drums:
                 if drum and drum.sample:
                     envelopes_to_add.append(drum.envelope)
                     samples_to_add.append(drum.sample)
-            
+
             for sfx in bank.SFX:
                 if sfx and sfx.sample:
                     samples_to_add.append(sfx.sample)
@@ -211,18 +211,18 @@ class Rom(BigStream):
                         # We have already added it so only add the loop
                         sample.loop.bank_offset = 0x10 + sample.bank_offset
                         bank_bytes += sample.get_bytes() + sample.loop.get_bytes()
-            
+
             # Add the envelopes
             for envelope in envelopes_to_add:
                 # Check if we've already added this envelope
                 if envelope.bank_offset == -1:
                     envelope.bank_offset = len(bank_bytes)
                     bank_bytes += envelope.get_bytes()
-            
+
             # Pad
             if len(bank_bytes) % 16 != 0:
                 bank_bytes += bytearray(16 - (len(bank_bytes)%16))
-            
+
             # Add the Instrument, Drum, and SFX objects to the bank and add their offsets to the list
             i = 0
             for instrument in bank.instruments:
@@ -235,7 +235,7 @@ class Rom(BigStream):
                     # Empty instrument, just add zeros to list
                     bank_bytes[instrument_list_offset:instrument_list_offset+4] = (0x00).to_bytes(4, 'big')
                 i += 1
-            
+
             i = 0
             # Update the Drum list pointer
             bank_bytes[0:4] = (8 + 4*len(bank.instruments)).to_bytes(4, 'big')
@@ -260,7 +260,7 @@ class Rom(BigStream):
 
             # Force every bank to use audiotable 0
             bank.audiotable_id = 0
-            
+
             # Pad bank to 16 bytes
             if len(bank_bytes) % 16 != 0:
                 bank_bytes += bytearray(16 - (len(bank_bytes)%16))
@@ -289,7 +289,7 @@ class Rom(BigStream):
 
         # Read audio banks back out and see if they match
         test = []
-        
+
         # Update the size of bank 0 if necessary
         # Read the sizes from the ROM
         # 8010a1b8 and 8010a1bc contain uint32_t with the size of the init pool and the size of the permanent pool. The init pool contains the permanent pool so need to increase them both
@@ -316,7 +316,7 @@ class Rom(BigStream):
                     match = self.audiobanks[i].instruments[inst_id].equals(bank.instruments[inst_id])
                     #if not match:
                     #    raise Exception("Instrument doesn't match")
-                
+
 
     def copy(self) -> Rom:
         new_rom: Rom = Rom()
