@@ -12,6 +12,7 @@ remoteMain.initialize();
 
 var win: BrowserWindow;
 var isRelease: boolean = false;
+var debugConsole = false;
 
 function promiseFromChildProcess(child) {
   return new Promise(function (resolve, reject) {
@@ -45,6 +46,9 @@ async function createApp() {
     else if ((arg === "p" || arg === "python") && i < (process.argv.length - 1)) { //Path to the python executable
       programOpts["python"] = process.argv[++i];
     }
+    else if (arg === "d" || arg === "debug") { // Enable debug console in electron
+      programOpts["debug"] = true
+    }
   }
 
   if (!("python" in programOpts)) {
@@ -58,6 +62,7 @@ async function createApp() {
 
   global["commandLineArgs"] = programOpts;
   isRelease = programOpts.release || app.isPackaged;
+  debugConsole = programOpts.debug;
 
   //Load the previous window state with fallback to defaults
   let mainWindowState = windowStateKeeper({
@@ -164,8 +169,7 @@ async function createApp() {
 
   win.once('ready-to-show', () => {
     win.show();
-
-    if (!isRelease && !win.isMaximized()) //Open dev tools automatically if dev mode and not maximized
+    if (debugConsole || (!isRelease && !win.isMaximized())) //Open dev tools automatically if dev mode and not maximized
       win.webContents.openDevTools();
   });
 

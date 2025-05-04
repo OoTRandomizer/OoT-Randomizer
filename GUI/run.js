@@ -1,6 +1,7 @@
 //Static modules
 const os = require('os');
 const fs = require('fs');
+const { debug } = require('console');
 const spawn = require('child_process').spawn;
 
 //Helpers
@@ -13,6 +14,7 @@ var crc32 = null;
 //Command line args
 var forceRecompile = false;
 var releaseMode = false;
+var debugConsole = false;
 var webMode = false;
 var pythonPath = os.platform() == "win32" ? "py" : "python3";
 
@@ -281,7 +283,7 @@ async function runElectron() {
   }
 
     if (releaseMode)
-        await spawnDetachedSubProcess("node", ["node_modules/electron/cli.js", ".", "release", "python", pythonPath], false, true).catch(err => { throw Error("Failed to launch Electron"); }); //Spawn without a shell so the window is hidden on Windows
+        await spawnDetachedSubProcess("node", ["node_modules/electron/cli.js", ".", "release", debugConsole ? "debug" : "", "python", pythonPath], false, true).catch(err => { throw Error("Failed to launch Electron"); }); //Spawn without a shell so the window is hidden on Windows
     else
         await spawnDetachedSubProcess("npm run electron-dev", ["python", '"' + pythonPath + '"'], true, false).catch(err => { throw Error("Failed to launch Electron"); }); //Need to wrap pythonPath again since it gets passed to another batch file which removes one layer
 
@@ -376,6 +378,9 @@ async function main(commandLine) {
         else if (arg === "f" || arg === "force") { //Force an environment check and Angular/Electron re-compile
             programOpts["force"] = true;
         }
+        else if (arg === "d" || arg === "debug") { // Enable debug console in electron
+            programOpts["debug"] = true;
+        }
     }
 
     if (programOpts["python"] && typeof (programOpts["python"]) == "string" && programOpts["python"].trim().length > 0)
@@ -386,6 +391,9 @@ async function main(commandLine) {
     else
         if (programOpts["web"])
             webMode = true;
+
+    if (programOpts["debug"])
+        debugConsole = true;
 
     if (programOpts["force"])
         forceRecompile = true;
