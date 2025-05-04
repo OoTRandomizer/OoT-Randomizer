@@ -44,6 +44,8 @@ def gui_main() -> None:
         args = ["node", "run.js", "web"]
     else:
         args = ["node", "run.js", "release", "python", python_path]
+        if '--debug' in sys.argv:
+            args.append("debug")
     subprocess.run(args, shell=False, cwd=local_path("GUI"), check=True)
 
 def version_check(name: str, version: str, url: str) -> None:
