@@ -133,6 +133,9 @@ class Rom(BigStream):
         Audiobank: bytearray = bytearray(0) # Audiobank file contains the audio bank binary data
 
         for bank in self.audiobanks:
+            # Force every bank to use audiotable 0
+            bank.audiotable_id = 0
+
             # Check if this bank is just a copy of another bank w/ a different table entry
             if bank.parent_bank:
                 bank.placed_address = bank.parent_bank.placed_address
@@ -258,9 +261,6 @@ class Rom(BigStream):
                 else:
                     bank_bytes += bytearray(8)
 
-            # Force every bank to use audiotable 0
-            bank.audiotable_id = 0
-
             # Pad bank to 16 bytes
             if len(bank_bytes) % 16 != 0:
                 bank_bytes += bytearray(16 - (len(bank_bytes)%16))
@@ -280,6 +280,7 @@ class Rom(BigStream):
         # Write the bank entries
         i = 0
         for bank in added_banks:
+            assert(bank.bank_index == i)
             self.write_bytes(audiobank_index_addr + 0x10 + 0x10*i, bank.build_entry(bank.placed_address, len(bank.placed_data)))
             i += 1
 

@@ -1,5 +1,6 @@
 # Much of this is heavily inspired from and/or based on az64's / Deathbasket's MM randomizer
 from __future__ import annotations
+from copy import copy
 from enum import Enum
 import io
 import itertools
@@ -403,9 +404,8 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
     # Build new fanfare banks by copying each entry in audiobank_index
     for i in range(0, 0x26):
         # Make a new bank with just the meta and add it as a duplicate so it can be added separately but point to the same data.
-        bank_entry = rom.audiobanks[i].original_table_entry.copy()
-        bank_entry[9] = 1 # Update the cache type to 1
-        dupe_bank: AudioBank = AudioBank.from_rom_data(bank_entry, bytearray(0), None, None, True)
+        dupe_bank: AudioBank = copy(rom.audiobanks[i])
+        dupe_bank.cachePolicy = AudioCacheLoadType.CACHE_LOAD_PERSISTENT
         dupe_bank.bank_index = new_bank_index
         new_bank_index += 1
         dupe_bank.parent_bank = rom.audiobanks[i]
@@ -489,7 +489,8 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                                 break
                         if not found:
                             # Make a new bank with just the meta and add it as a duplicate so it can be added separately but point to the same data.
-                            dupe_bank: AudioBank = AudioBank.from_rom_data(bank_entry, bytearray(0), None, None, True)
+                            dupe_bank: AudioBank = copy(newbank)
+                            dupe_bank.update_from_table_entry(bank_entry)
                             dupe_bank.bank_index = new_bank_index
                             new_bank_index += 1
                             dupe_bank.parent_bank = newbank
@@ -503,9 +504,7 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                     newbank = vanilla_mm_bank
                 else:
                     newbank = AudioBank.from_rom_data(bank_entry, bankdata, audiobin.Audiotable, audiobin.Audiotable_index)
-                # For MM tracks, force Audiotable index to 0 in the bank's table entry
-                if j.game == SequenceGame.MM:
-                    newbank.audiotable_id = 0
+
                 newbank.bank_index = new_bank_index
 
                 # Handle new zsounds

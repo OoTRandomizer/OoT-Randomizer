@@ -272,6 +272,13 @@ class AudioBank:
                     all_samples.append(sfx.sample)
         return all_samples
 
+    def update_from_table_entry(self, table_entry: bytearray):
+        self.medium = table_entry[8] # ROM/RAM/DISK
+        self.cachePolicy = AudioCacheLoadType(table_entry[9])
+        self.audiotable_id = table_entry[10] # Read audiotable id from the table entry. Instrument data offsets are in relation to this
+        unk: int = table_entry[11] # 0xFF
+        self.original_table_entry = table_entry
+
     def from_rom_data(table_entry: bytearray, audiobank_file: bytearray, audiotable_file: bytearray, audiotable_index: bytearray, header_only: bool = False) -> AudioBank:
         # Process bank entry
         bank: AudioBank = AudioBank()
