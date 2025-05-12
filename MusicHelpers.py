@@ -83,7 +83,7 @@ def process_sequence_mmrs(filepath: str, file_name: str, seq_type: str, include_
             if zbank_file:
                 instrument_set = '-'
             else:
-                instrument_set = int(seq_file.split(".zseq")[0], 16) # Get the instrument set from the .zseq file name
+                instrument_set = int(os.path.splitext(seq_file)[0], 16) # Get the instrument set from the .zseq file name
             cosmetic_name, _ext = os.path.splitext(file_name)
             # Create new sequence
             seq = Sequence(filepath, cosmetic_name, seq_type=seq_type, seq_file = seq_file, instrument_set = instrument_set)
@@ -101,14 +101,14 @@ def process_sequence_mmrs(filepath: str, file_name: str, seq_type: str, include_
 
             for f in zip.namelist():
                 if f.lower().endswith(".zsound"):
-                    split: str = f.split('.zsound')
-                    split = split[0].split('_')
+                    split: str = os.path.splitext(f)[0]
+                    split = split.split('_')
                     zsound = {
                         'type': None,
                         'index': None,
                         'alt': None,
                         'file': f,
-                        'tempaddr': int(split[1], 16)
+                        'tempaddr': int(split[-1], 16)
                     }
                     seq.zsounds.append(zsound)
             return seq

@@ -533,7 +533,7 @@ def rebuild_sequences(rom: Rom, sequences: list[Sequence], log: CosmeticsLog, sy
                                         found_tempaddr = True
                                         break
                                 if not found_tempaddr:
-                                    raise log.errors.append(f"{j.name} - Could not find zsound file matching temp address {hex(zsound['tempaddr'])}")
+                                    log.errors.append(f"{j.name} - Could not find zsound file matching temp address {hex(zsound['tempaddr'])}")
                             else:
                                 curr_sample_data = zip.read(zsound['file'])
                                 sample: Sample = None
