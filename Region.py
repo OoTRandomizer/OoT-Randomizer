@@ -168,3 +168,9 @@ class Region:
 
     def __repr__(self) -> str:
         return f"{self.world.__repr__()} {self.name}"
+
+
+# Mapping of old region names to current ones for better plando backwards compatibility
+REGION_ALIASES: dict[str, str] = {
+    "KF Kokiri Shop": "KF Shop",
+}
