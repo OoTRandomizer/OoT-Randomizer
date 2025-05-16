@@ -1209,10 +1209,31 @@ class World:
         if not isinstance(location, Location):
             location = self.get_location(location)
 
+        price: Optional[int]
+        if location.price is not None: # special deal
+            if item.market_price is not None and location.price >= item.market_price:
+                # Reduce the frequency of obvious scams by rerolling the price once if it's too high, and taking the lower value.
+                # This affects logic so it should only be applied to refills that are logically irrelevant.
+                # Otherwise there could be seeds with e.g. a wallet that's hinted as logically required for a purchase even though the price was rerolled to no longer require the wallet.
+                if self.settings.shopsanity_prices == 'random':
+                    new_price = int(random.betavariate(1.5, 2) * 60) * 5
+                elif self.settings.shopsanity_prices == 'random_starting':
+                    new_price = random.randrange(0, 100, 5)
+                elif self.settings.shopsanity_prices == 'random_adult':
+                    new_price = random.randrange(0, 201, 5)
+                elif self.settings.shopsanity_prices == 'random_giant':
+                    new_price = random.randrange(0, 501, 5)
+                elif self.settings.shopsanity_prices == 'random_tycoon':
+                    new_price = random.randrange(0, 1000, 5)
+                elif self.settings.shopsanity_prices == 'affordable':
+                    new_price = 10
+                price = min(location.price, new_price)
+        else:
+            price = item.price
+
         location.item = item
         item.location = location
-        item.price = location.price if location.price is not None else item.price
-        location.price = item.price
+        item.price = location.price = price
 
         logging.getLogger('').debug('Placed %s [World %d] at %s [World %d]', item, item.world.id if hasattr(item, 'world') else -1, location, location.world.id if hasattr(location, 'world') else -1)
 
