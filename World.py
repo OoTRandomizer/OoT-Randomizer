@@ -1211,7 +1211,8 @@ class World:
 
         price: Optional[int]
         if location.price is not None: # special deal
-            if item.market_price is not None and location.price >= item.market_price:
+            price = location.price
+            if item.info.market_price is not None and location.price >= item.info.market_price:
                 # Reduce the frequency of obvious scams by rerolling the price once if it's too high, and taking the lower value.
                 # This affects logic so it should only be applied to refills that are logically irrelevant.
                 # Otherwise there could be seeds with e.g. a wallet that's hinted as logically required for a purchase even though the price was rerolled to no longer require the wallet.
