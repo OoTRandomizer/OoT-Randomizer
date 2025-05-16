@@ -87,7 +87,7 @@
   "Ganons Castle":          "vanilla"
 },
   "entrances": {
-    "Adult Spawn -> Temple of Time":                        {"region": "Kokiri Forest", "from": "KF Kokiri Shop"},
+    "Adult Spawn -> Temple of Time":                        {"region": "Kokiri Forest", "from": "KF Shop"},
     "KF Outside Deku Tree -> Deku Tree Lobby":                            {"region": "Forest Temple Lobby", "from": "SFM Forest Temple Entrance Ledge"}
   }
 }

@@ -20,7 +20,7 @@
   },
   "entrances": {
     "Kakariko Village -> Kak Bazaar": {
-      "region": "KF Kokiri Shop",
+      "region": "KF Shop",
       "from": "Kokiri Forest"
     }
   }

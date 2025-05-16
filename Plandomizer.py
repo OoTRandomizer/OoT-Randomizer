@@ -10,7 +10,7 @@ from functools import reduce
 from typing import TYPE_CHECKING, Any, Optional
 
 import StartingItems
-from Entrance import Entrance
+from Entrance import Entrance, resolve_entrance_alias
 from EntranceShuffle import EntranceShuffleError, change_connections, confirm_replacement, validate_world, check_entrances_compatibility
 from Fill import FillError
 from Hints import HintArea, gossipLocations, GossipText
@@ -18,7 +18,8 @@ from Item import ItemFactory, ItemInfo, ItemIterator, is_item, Item
 from ItemPool import item_groups, get_junk_item, song_list, trade_items, child_trade_items
 from JSONDump import dump_obj, CollapseList, CollapseDict, AlignedDict, SortedDict
 from Location import Location, LocationIterator, LocationFactory
-from LocationList import location_groups, location_table
+from LocationList import location_groups, location_table, LOCATION_ALIASES
+from Region import REGION_ALIASES
 from Search import Search
 from SettingsList import build_close_match, validate_settings, settings_versioning
 from Spoiler import Spoiler, HASH_ICONS, PASSWORD_NOTES
@@ -189,6 +190,10 @@ class EntranceRecord(Record):
         if 'from' in src_dict:
             src_dict['origin'] = src_dict['from']
             del src_dict['from']
+        if 'region' in src_dict:
+            src_dict['region'] = REGION_ALIASES.get(src_dict['region'], src_dict['region'])
+        if 'origin' in src_dict:
+            src_dict['origin'] = REGION_ALIASES.get(src_dict['origin'], src_dict['origin'])
         super().__init__({'region': None, 'origin': None}, src_dict)
 
     def to_json(self) -> str | CollapseDict:
@@ -294,8 +299,8 @@ class WorldDistribution:
             'trials': {name: TrialRecord(record) for (name, record) in src_dict.get('trials', {}).items()},
             'songs': {name: SongRecord(record) for (name, record) in src_dict.get('songs', {}).items()},
             'item_pool': {name: ItemPoolRecord(record) for (name, record) in src_dict.get('item_pool', {}).items()},
-            'entrances': {name: EntranceRecord(record) for (name, record) in src_dict.get('entrances', {}).items()},
-            'locations': {name: [LocationRecord(rec) for rec in record] if is_pattern(name) else LocationRecord(record) for (name, record) in src_dict.get('locations', {}).items() if not is_output_only(name)},
+            'entrances': {resolve_entrance_alias(name): EntranceRecord(record) for (name, record) in src_dict.get('entrances', {}).items()},
+            'locations': {LOCATION_ALIASES.get(name, name): [LocationRecord(rec) for rec in record] if is_pattern(name) else LocationRecord(record) for (name, record) in src_dict.get('locations', {}).items() if not is_output_only(name)},
             'woth_locations': None,
             'goal_locations': None,
             'barren_regions': None,

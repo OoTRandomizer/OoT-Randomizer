@@ -107,8 +107,8 @@
         "logic_no_night_tokens_without_suns_song": true,
         "disabled_locations": [
             "Deku Theater Mask of Truth",
-            "Kak 40 Gold Skulltula Reward",
-            "Kak 50 Gold Skulltula Reward",
+            "Kak House of Skulltula 40 Gold Skulltula Reward",
+            "Kak House of Skulltula 50 Gold Skulltula Reward",
             "GF HBA 1500 Points"
         ],
         "allowed_tricks": [],
@@ -507,8 +507,8 @@
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth",
-            "Kak 40 Gold Skulltula Reward",
-            "Kak 50 Gold Skulltula Reward"
+            "Kak House of Skulltula 40 Gold Skulltula Reward",
+            "Kak House of Skulltula 50 Gold Skulltula Reward"
         ],
         "allowed_tricks": [
             "logic_fewer_tunic_requirements",
@@ -939,8 +939,8 @@
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth",
-            "Kak 40 Gold Skulltula Reward",
-            "Kak 50 Gold Skulltula Reward",
+            "Kak House of Skulltula 40 Gold Skulltula Reward",
+            "Kak House of Skulltula 50 Gold Skulltula Reward",
             "GF HBA 1500 Points"
         ],
         "allowed_tricks": [
@@ -1148,8 +1148,8 @@
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth",
-            "Kak 40 Gold Skulltula Reward",
-            "Kak 50 Gold Skulltula Reward"
+            "Kak House of Skulltula 40 Gold Skulltula Reward",
+            "Kak House of Skulltula 50 Gold Skulltula Reward"
         ],
         "allowed_tricks": [
             "logic_fewer_tunic_requirements",
@@ -1750,8 +1750,8 @@
         "disabled_locations": [
             "Deku Theater Mask of Truth",
             "ZR Frogs Ocarina Game",
-            "Kak 40 Gold Skulltula Reward",
-            "Kak 50 Gold Skulltula Reward"
+            "Kak House of Skulltula 40 Gold Skulltula Reward",
+            "Kak House of Skulltula 50 Gold Skulltula Reward"
         ],
         "allowed_tricks": [
             "logic_grottos_without_agony",
@@ -2180,8 +2180,8 @@
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
             "Deku Theater Mask of Truth",
-            "Kak 40 Gold Skulltula Reward",
-            "Kak 50 Gold Skulltula Reward"
+            "Kak House of Skulltula 40 Gold Skulltula Reward",
+            "Kak House of Skulltula 50 Gold Skulltula Reward"
         ],
         "allowed_tricks": [
             "logic_fewer_tunic_requirements",

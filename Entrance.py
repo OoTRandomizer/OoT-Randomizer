@@ -1,6 +1,8 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING, Optional, Any
 
+from Region import REGION_ALIASES
+
 if TYPE_CHECKING:
     from Region import Region
     from RulesCommon import AccessRule
@@ -97,3 +99,8 @@ class Entrance:
 
     def __str__(self) -> str:
         return self.name
+
+
+def resolve_entrance_alias(alias: str) -> str:
+    source, target = alias.split(' -> ')
+    return f'{REGION_ALIASES.get(source, source)} -> {REGION_ALIASES.get(target, target)}'

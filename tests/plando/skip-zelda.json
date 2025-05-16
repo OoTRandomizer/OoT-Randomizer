@@ -4,8 +4,8 @@
     "tokensanity": "overworld",
     "hint_dist": "tournament",
     "disabled_locations": [
-        "HC Great Fairy Reward",
-        "HC GS Storms Grotto",
+        "HC Great Fairy Fountain Reward",
+        "HC Storms Grotto GS",
         "HC GS Tree"
     ],
     "starting_inventory": [
