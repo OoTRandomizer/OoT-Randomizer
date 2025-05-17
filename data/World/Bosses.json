@@ -150,6 +150,10 @@
         "region_name": "Ganons Castle Tower",
         "scene": "Ganons Castle Tower",
         "is_boss_room": true,
+        "events": {
+            # Used for the "path to the tower" goal
+            "Ganons Tower Access": "is_adult"
+        },
         "locations": {
             "Ganons Tower Boss Key Chest": "is_adult or Kokiri_Sword"
         },

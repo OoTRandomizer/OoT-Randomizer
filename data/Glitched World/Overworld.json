@@ -1234,6 +1234,10 @@
     {
         "region_name": "Ganons Castle Tower",
         "dungeon": "Ganons Castle",
+        "events": {
+            # Used for the "path to the tower" goal
+            "Ganons Tower Access": "is_adult"
+        },
         "locations": {
             "Ganons Tower Boss Key Chest": "True",
             "Ganondorf Hint": "Boss_Key_Ganons_Castle",

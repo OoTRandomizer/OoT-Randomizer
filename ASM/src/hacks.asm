@@ -2599,6 +2599,14 @@ skip_bombchu_bowling_prize_switch:
 ;==================================================================================================
 ; Trade Quest Shuffle Flag Hooks
 ;==================================================================================================
+; Handle custom flags for trade item revert on savewarp
+; Replaces
+;   lbu     t4, 0x0000(t9)
+;   addu    t5, s0, t4
+.orga 0xB064E0 ; VRAM 0x80090580
+    jal     update_shiftable_trade_item_save_hook
+    nop
+
 ; Control if Grog can spawn in Lost Woods
 .orga 0xE20BC8
     jal     check_grog_spawn_flags

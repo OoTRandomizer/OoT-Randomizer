@@ -86,15 +86,20 @@ chestgame_force_game_loss_left:
     lui     $t1, hi(SAVE_CONTEXT + 0x81)
     lb      $t2, lo(SAVE_CONTEXT + 0x81)($t1) ; lens item slot
     li      $t3, 15 ; lens item ID
-    beq     $t2, $t3, @@return
+    bne     $t2, $t3, @@force_loss
     nop
+    ; check if player has magic
+    lb      $t2, SAVE_CONTEXT + 0x3A ; magic_acquired
+    beqz    $t2, @@force_loss
+    nop
+@@return:
+    jr      $ra
+    nop
+
+@@force_loss:
     ; simulate lost game
     addiu   $t0, $zero, 0x0071
     j       chestgame_warn_player_of_rigged_game
-    nop
-
-@@return:
-    jr      $ra
     nop
 
 chestgame_force_game_loss_right:
@@ -113,15 +118,20 @@ chestgame_force_game_loss_right:
     lui     $t1, hi(SAVE_CONTEXT + 0x81)
     lb      $t2, lo(SAVE_CONTEXT + 0x81)($t1) ; lens item slot
     li      $t3, 15 ; lens item ID
-    beq     $t2, $t3, @@return
+    bne     $t2, $t3, @@force_loss
     nop
+    ; check if player has magic
+    lb      $t2, SAVE_CONTEXT + 0x3A ; magic_acquired
+    beqz    $t2, @@force_loss
+    nop
+@@return:
+    jr      $ra
+    nop
+
+@@force_loss:
     ; simulate lost game
     addiu   $v1, $zero, 0x0071
     j       chestgame_warn_player_of_rigged_game
-    nop
-
-@@return:
-    jr      $ra
     nop
 
 ; Add a helper message if the tcg_requires_lens

@@ -1023,32 +1023,39 @@ class World:
 
             # To avoid too many goals in the hint selection phase,
             # trials are reduced to one goal with six items to obtain.
-            if not self.skipped_trials['Forest']:
-                trial_goal.items.append({'name': 'Forest Trial Clear', 'quantity': 1, 'minimum': 1, 'hintable': True})
-                trials.goal_count += 1
-            if not self.skipped_trials['Fire']:
-                trial_goal.items.append({'name': 'Fire Trial Clear', 'quantity': 1, 'minimum': 1, 'hintable': True})
-                trials.goal_count += 1
-            if not self.skipped_trials['Water']:
-                trial_goal.items.append({'name': 'Water Trial Clear', 'quantity': 1, 'minimum': 1, 'hintable': True})
-                trials.goal_count += 1
-            if not self.skipped_trials['Shadow']:
-                trial_goal.items.append({'name': 'Shadow Trial Clear', 'quantity': 1, 'minimum': 1, 'hintable': True})
-                trials.goal_count += 1
-            if not self.skipped_trials['Spirit']:
-                trial_goal.items.append({'name': 'Spirit Trial Clear', 'quantity': 1, 'minimum': 1, 'hintable': True})
-                trials.goal_count += 1
-            if not self.skipped_trials['Light']:
-                trial_goal.items.append({'name': 'Light Trial Clear', 'quantity': 1, 'minimum': 1, 'hintable': True})
+            if self.settings.shuffle_ganon_tower:
+                trial_goal.items.append({'name': 'Ganons Tower Access', 'quantity': 1, 'minimum': 1, 'hintable': True})
                 trials.goal_count += 1
 
-            # Trials category is finalized and saved only if at least one trial is on
-            # If random trials are on and one world in multiworld gets 0 trials, still
-            # add the goal to prevent key errors. Since no items fulfill the goal, it
-            # will always be invalid for that world and not generate hints.
-            if self.settings.trials > 0 or self.settings.trials_random:
                 trials.add_goal(trial_goal)
                 self.goal_categories[trials.name] = trials
+            else:
+                if not self.skipped_trials['Forest']:
+                    trial_goal.items.append({'name': 'Forest Trial Clear', 'quantity': 1, 'minimum': 1, 'hintable': True})
+                    trials.goal_count += 1
+                if not self.skipped_trials['Fire']:
+                    trial_goal.items.append({'name': 'Fire Trial Clear', 'quantity': 1, 'minimum': 1, 'hintable': True})
+                    trials.goal_count += 1
+                if not self.skipped_trials['Water']:
+                    trial_goal.items.append({'name': 'Water Trial Clear', 'quantity': 1, 'minimum': 1, 'hintable': True})
+                    trials.goal_count += 1
+                if not self.skipped_trials['Shadow']:
+                    trial_goal.items.append({'name': 'Shadow Trial Clear', 'quantity': 1, 'minimum': 1, 'hintable': True})
+                    trials.goal_count += 1
+                if not self.skipped_trials['Spirit']:
+                    trial_goal.items.append({'name': 'Spirit Trial Clear', 'quantity': 1, 'minimum': 1, 'hintable': True})
+                    trials.goal_count += 1
+                if not self.skipped_trials['Light']:
+                    trial_goal.items.append({'name': 'Light Trial Clear', 'quantity': 1, 'minimum': 1, 'hintable': True})
+                    trials.goal_count += 1
+
+                # Trials category is finalized and saved only if at least one trial is on
+                # If random trials are on and one world in multiworld gets 0 trials, still
+                # add the goal to prevent key errors. Since no items fulfill the goal, it
+                # will always be invalid for that world and not generate hints.
+                if self.settings.trials > 0 or self.settings.trials_random:
+                    trials.add_goal(trial_goal)
+                    self.goal_categories[trials.name] = trials
 
             # In glitched logic or if trials are off, it's possible that some items required to beat the game
             # (such as bow, magic, light arrows, or anything required to reach Ganon's Castle)

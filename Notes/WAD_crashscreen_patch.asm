@@ -1583,13 +1583,13 @@ Right node start:%x"
 
 strMiscInfoBroke: .string "VC Misc info unavailable"
 
-strLoadInROM: .string "%ld MB"
+strLoadInROM: .string "Loading: %ld %"
 
 strPatchDate: .string "
-OoTR US Patch 2025-01-27"
+OoTR US VC Rev 1"
 
 #strPatchDate: .string "
-#OoTR JP Patch 2025-01-27"
+#OoTR JP VC Rev 1"
 
 .align 2
 #=====================================
@@ -1674,6 +1674,14 @@ lis r7, 0x80000000 + WVCLoadLogoStrVAarg@h
 
 srwi r5, r6, 20
 addi r4, r5, 1
+mulli r4, r4, 100       #multiply progress by 100 then devide by 32 (MB)
+li    r5, 32           
+divwu r4, r4, r5 
+cmpwi r4, 100           #cap at 100%
+ble updateProgress
+li r4, 100
+
+updateProgress:
 stw r4, WVCLoadLogoStrVAarg@l(r7)
 
 lis r5, 0x8000

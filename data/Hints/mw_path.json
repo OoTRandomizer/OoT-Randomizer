@@ -1,7 +1,7 @@
 {
     "name":                  "mw_path",
-    "gui_name":              "MW Season 4",
-    "description":           "Hints used for the Multiworld Tournament Season 4.",
+    "gui_name":              "MW Season 5",
+    "description":           "Hints used for the Multiworld Tournament Season 5.",
     "add_locations":         [
         { "location": "Sheik in Kakariko", "types": ["always"] },
         { "location": "Song from Ocarina of Time", "types": ["always"] },
@@ -22,14 +22,32 @@
     ],
     "add_items":             [],
     "remove_items":          [
-        { "item": "Zeldas Lullaby", "types": ["woth", "goal"] }
+        { "item": "Zeldas Lullaby", "types": ["woth", "goal"] },
+        { "item": "Boss Key (Forest Temple)", "types": ["woth", "goal"] },
+        { "item": "Boss Key (Fire Temple)", "types": ["woth", "goal"] },
+        { "item": "Boss Key (Water Temple)", "types": ["woth", "goal"] },
+        { "item": "Boss Key (Spirit Temple)", "types": ["woth", "goal"] },
+        { "item": "Boss Key (Shadow Temple)", "types": ["woth", "goal"] },
+        { "item": "Boss Key (Ganons Castle)", "types": ["woth", "goal"] },
+        { "item": "Small Key Ring (Forest Temple)", "types": ["woth", "goal"] },
+        { "item": "Small Key Ring (Fire Temple)", "types": ["woth", "goal"] },
+        { "item": "Small Key Ring (Water Temple)", "types": ["woth", "goal"] },
+        { "item": "Small Key Ring (Spirit Temple)", "types": ["woth", "goal"] },
+        { "item": "Small Key Ring (Shadow Temple)", "types": ["woth", "goal"] },
+        { "item": "Small Key Ring (Bottom of the Well)", "types": ["woth", "goal"] },
+        { "item": "Small Key Ring (Gerudo Training Ground)", "types": ["woth", "goal"] },
+        { "item": "Small Key Ring (Thieves Hideout)", "types": ["woth", "goal"] },
+        { "item": "Small Key Ring (Ganons Castle)", "types": ["woth", "goal"] },
+        { "item": "Small Key Ring (Treasure Chest Game)", "types": ["woth", "goal"] }
     ],
     "dungeons_woth_limit":   40,
     "dungeons_barren_limit": 40,
+    "one_hint_per_goal":     true,
     "named_items_required":  true,
     "vague_named_items":     false,
     "use_default_goals":     true,
     "upgrade_hints":         "on",
+    "combine_trial_hints":   true,
     "distribution":          {
         "trial":           {"order": 1, "weight": 0.0, "fixed":  0, "copies": 2},
         "always":          {"order": 2, "weight": 0.0, "fixed":  0, "copies": 2},

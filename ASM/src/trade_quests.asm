@@ -286,6 +286,47 @@ update_shiftable_trade_item_egg_hook:
 
 ;==================================================================================================
 
+update_shiftable_trade_item_save_hook:
+    addiu   sp, sp, -0x40
+    sw      ra, 0x10(sp)
+    sw      a0, 0x14(sp)
+    sw      a1, 0x18(sp)
+    sw      a2, 0x1C(sp)
+    sw      a3, 0x20(sp)
+    sw      t0, 0x24(sp)
+    sw      t1, 0x28(sp)
+    sw      t2, 0x2C(sp)
+    sw      t3, 0x30(sp)
+    sw      t9, 0x34(sp)
+    sw      s0, 0x38(sp)
+    sw      v1, 0x3C(sp)
+
+    ; a0/a1 conveniently already set to old/new item
+    jal     SaveFile_UpdateShiftableItem
+    nop
+
+    lw      ra, 0x10(sp)
+    lw      a0, 0x14(sp)
+    lw      a1, 0x18(sp)
+    lw      a2, 0x1C(sp)
+    lw      a3, 0x20(sp)
+    lw      t0, 0x24(sp)
+    lw      t1, 0x28(sp)
+    lw      t2, 0x2C(sp)
+    lw      t3, 0x30(sp)
+    lw      t9, 0x34(sp)
+    lw      s0, 0x38(sp)
+    lw      v1, 0x3C(sp)
+
+    ; Displaced code
+    lbu     t4, 0x0000(t9)
+    addu    t5, s0, t4
+
+    jr      ra
+    addiu   sp, sp, 0x40
+
+;==================================================================================================
+
 check_if_mask_sells_out:
 
     ; displaced code

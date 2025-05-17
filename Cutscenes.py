@@ -245,7 +245,7 @@ def patch_cutscenes(rom: Rom, songs_as_items: bool, settings: Settings) -> None:
         # Switch to player action 17 between frames 0 and 16.
         rom.write_int16s(0x020AFF90, [0x0011, 0x0000, 0x0010])  # action, start, end
         # Switch to player action 62 between frames 17 and 32.
-        rom.write_int16s(0x020AFFC1, [0x003E, 0x0011, 0x0020])  # action, start, end
+        rom.write_int16s(0x020AFFC0, [0x003E, 0x0011, 0x0020])  # action, start, end
 
     # Speed Phantom Ganon defeat scene
     # Removes the check for timers to switch between the different parts of the cutscene.
@@ -391,7 +391,7 @@ def patch_cutscenes(rom: Rom, songs_as_items: bool, settings: Settings) -> None:
     # Make the current miniboss music end on second frame.
     rom.write_bytes(0x2F5C7DA, [0x00, 0x01, 0x00, 0x02])
     # Restart dungeon music on third frame.
-    rom.write_bytes(0x2F5C7A4, [0x00, 0x03, 0x00, 0x04])
+    rom.write_bytes(0x2F5C7A2, [0x00, 0x03, 0x00, 0x04])
     # Kill the actors in the cutscene on the first frame by switching their first action by the last.
     # Nabooru
     rom.write_byte(0x2F5B369, 0x09)
@@ -425,7 +425,7 @@ def patch_cutscenes(rom: Rom, songs_as_items: bool, settings: Settings) -> None:
     rom.write_bytes(0x292D682, [0x00, 0x01, 0x00, 0x6C])
     # Make Link look up to the particles by changing the type of first player cue from 5 to 39.
     rom.write_byte(0x292D6E9, 0x27)
-    # Make Link look at the bridge by changing the type of second player cue from 39 to 59.
+    # Make Link look at the bridge by changing the type of second player cue from 39 to 50.
     rom.write_byte(0x292D719, 0x32)
     # Make the rainbow bridge spawn on frame 60.
     rom.write_int16(0x292D812, 0x003C)

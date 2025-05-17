@@ -13,6 +13,7 @@
 extern uint8_t PLAYER_ID;
 extern uint8_t PLAYER_NAME_ID;
 extern bool REWARDS_AS_ITEMS;
+extern uint8_t MW_SEND_OWN_ITEMS;
 
 // Original function copied over
 int32_t DoorWarp1_PlayerInRange(z64_actor_t* actor, z64_game_t* game) {
@@ -39,6 +40,10 @@ int32_t DoorWarp1_PlayerInRange_Overwrite(z64_actor_t* actor, z64_game_t* game) 
                 override_t override = lookup_override_by_key(override_key);
                 uint16_t resolved_item_id = resolve_upgrades(override);
                 item_row_t* item_row = get_item_row(resolved_item_id);
+                if (MW_SEND_OWN_ITEMS) {
+                    // Also send to multiworld plugin for informational purposes if requested
+                    push_outgoing_override(&override);
+                }
                 call_effect_function(item_row);
                 PLAYER_NAME_ID = override.value.base.player;
                 z64_DisplayTextbox(&z64_game, resolve_item_text_id(item_row, PLAYER_NAME_ID != PLAYER_ID), 0);

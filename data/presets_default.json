@@ -401,13 +401,13 @@
         "custom_ice_trap_count": 100,
         "ice_trap_appearance": "anything"
     },
-    "Standard Weekly (2024-09-21)": {
+    "Standard Weekly (2025-04-12)": {
         "aliases": [
             "Standard Weekly (Latest)",
             "weekly"
         ],
         "show_seed_info": true,
-        "user_message": "Standard Weekly (2024-09-21)",
+        "user_message": "Standard Weekly (2025-04-12)",
         "world_count": 1,
         "create_spoiler": true,
         "password_lock": false,
@@ -415,18 +415,18 @@
         "logic_rules": "glitchless",
         "reachable_locations": "all",
         "triforce_hunt": false,
-        "triforce_count_per_world": 30,
-        "triforce_goal_per_world": 20,
+        "triforce_count_per_world": 28,
+        "triforce_goal_per_world": 24,
         "lacs_condition": "vanilla",
         "lacs_medallions": 6,
         "lacs_stones": 3,
         "lacs_rewards": 9,
         "lacs_tokens": 100,
         "lacs_hearts": 20,
-        "bridge": "vanilla",
+        "bridge": "medallions",
         "bridge_medallions": 6,
         "bridge_stones": 3,
-        "bridge_rewards": 9,
+        "bridge_rewards": 7,
         "bridge_tokens": 100,
         "bridge_hearts": 20,
         "trials_random": false,
@@ -437,14 +437,14 @@
         "ganon_bosskey_rewards": 9,
         "ganon_bosskey_tokens": 100,
         "ganon_bosskey_hearts": 20,
-        "open_forest": "closed_deku",
+        "open_forest": "open",
         "open_kakariko": "open",
         "open_door_of_time": true,
         "zora_fountain": "closed",
         "gerudo_fortress": "fast",
         "dungeon_shortcuts_choice": "off",
         "dungeon_shortcuts": [],
-        "starting_age": "random",
+        "starting_age": "adult",
         "mq_dungeons_mode": "vanilla",
         "mq_dungeons_specific": [],
         "mq_dungeons_count": 0,
@@ -463,21 +463,16 @@
         "shuffle_gerudo_valley_river_exit": false,
         "owl_drops": false,
         "warp_songs": false,
-        "spawn_positions": [
-            "child"
-        ],
+        "spawn_positions": [],
         "free_bombchu_drops": false,
         "shuffle_song_items": "song",
-        "shopsanity": "off",
+        "shopsanity": "4",
         "shopsanity_prices": "random",
-        "tokensanity": "off",
-        "shuffle_scrubs": "off",
+        "tokensanity": "dungeons",
+        "shuffle_scrubs": "low",
         "shuffle_child_trade": [],
         "adult_trade_shuffle": false,
         "adult_trade_start": [
-            "Prescription",
-            "Eyeball Frog",
-            "Eyedrops",
             "Claim Check"
         ],
         "shuffle_freestanding_items": "off",
@@ -508,10 +503,12 @@
         "shuffle_silver_rupees": "vanilla",
         "silver_rupee_pouches_choice": "off",
         "silver_rupee_pouches": [],
-        "enhance_map_compass": false,
+        "enhance_map_compass": true,
         "logic_no_night_tokens_without_suns_song": false,
         "disabled_locations": [
-            "Deku Theater Mask of Truth"
+            "Deku Theater Mask of Truth",
+            "Kak 40 Gold Skulltula Reward",
+            "Kak 50 Gold Skulltula Reward"
         ],
         "allowed_tricks": [
             "logic_fewer_tunic_requirements",
@@ -530,18 +527,20 @@
             "logic_lens_shadow_platform",
             "logic_lens_bongo",
             "logic_lens_spirit",
-            "logic_visible_collisions"
+            "logic_visible_collisions",
+            "logic_dc_scarecrow_gs",
+            "logic_deku_b1_webs_with_bow"
         ],
-        "starting_equipment": [
-            "deku_shield"
-        ],
+        "starting_equipment": [],
         "starting_inventory": [
             "ocarina",
+            "farores_wind",
+            "lens",
             "zeldas_letter"
         ],
         "starting_songs": [],
         "start_with_consumables": true,
-        "start_with_rupees": false,
+        "start_with_rupees": true,
         "starting_hearts": 3,
         "skip_reward_from_rauru": true,
         "no_escape_sequence": true,
@@ -551,14 +550,14 @@
         "complete_mask_quest": false,
         "useful_cutscenes": false,
         "fast_chests": true,
-        "free_scarecrow": false,
+        "free_scarecrow": true,
         "fast_bunny_hood": true,
         "auto_equip_masks": false,
         "plant_beans": false,
         "easier_fire_arrow_entry": false,
         "fae_torch_count": 3,
         "ruto_already_f1_jabu": true,
-        "fast_shadow_boat": false,
+        "fast_shadow_boat": true,
         "chicken_count_random": false,
         "chicken_count": 3,
         "big_poe_count_random": false,
@@ -571,11 +570,12 @@
         "plandomized_locations": {},
         "misc_hints": [
             "altar",
+            "dampe_diary",
             "ganondorf",
             "warp_songs_and_owls",
+            "20_skulltulas",
             "30_skulltulas",
-            "40_skulltulas",
-            "50_skulltulas"
+            "frogs2"
         ],
         "correct_chest_appearances": "both",
         "chest_textures_specific": [
@@ -589,7 +589,7 @@
         "minor_items_as_major_chest": [],
         "invisible_chests": false,
         "correct_potcrate_appearances": "textures_content",
-        "key_appearance_match_dungeon": false,
+        "key_appearance_match_dungeon": true,
         "potcrate_textures_specific": [
             "major",
             "bosskeys",
@@ -605,7 +605,7 @@
         "starting_tod": "default",
         "blue_fire_arrows": true,
         "fix_broken_drops": false,
-        "tcg_requires_lens": false,
+        "tcg_requires_lens": true,
         "no_collectible_hearts": false,
         "one_item_per_dungeon": false,
         "item_pool_value": "balanced",
@@ -1042,13 +1042,13 @@
         "custom_ice_trap_count": 100,
         "ice_trap_appearance": "junk_only"
     },
-    "Multiworld Tournament Season 4": {
+    "Multiworld Tournament Season 5": {
         "aliases": [
             "mw",
-            "mw_s4"
+            "mw_s5"
         ],
         "show_seed_info": true,
-        "user_message": "Multiworld Tournament Season 4",
+        "user_message": "Multiworld Tournament Season 5",
         "world_count": 3,
         "create_spoiler": true,
         "password_lock": false,
@@ -1056,8 +1056,8 @@
         "logic_rules": "glitchless",
         "reachable_locations": "all",
         "triforce_hunt": false,
-        "triforce_count_per_world": 30,
-        "triforce_goal_per_world": 25,
+        "triforce_count_per_world": 28,
+        "triforce_goal_per_world": 24,
         "lacs_condition": "vanilla",
         "lacs_medallions": 6,
         "lacs_stones": 3,
@@ -1109,7 +1109,7 @@
         "shuffle_song_items": "song",
         "shopsanity": "4",
         "shopsanity_prices": "random",
-        "tokensanity": "off",
+        "tokensanity": "dungeons",
         "shuffle_scrubs": "low",
         "shuffle_child_trade": [],
         "adult_trade_shuffle": false,
@@ -1198,7 +1198,7 @@
         "easier_fire_arrow_entry": false,
         "fae_torch_count": 3,
         "ruto_already_f1_jabu": true,
-        "fast_shadow_boat": false,
+        "fast_shadow_boat": true,
         "chicken_count_random": false,
         "chicken_count": 3,
         "big_poe_count_random": false,
@@ -1211,14 +1211,14 @@
         "plandomized_locations": {},
         "misc_hints": [
             "altar",
+            "dampe_diary",
             "ganondorf",
             "warp_songs_and_owls",
             "20_skulltulas",
             "30_skulltulas",
-            "unique_merchants",
             "frogs2"
         ],
-        "correct_chest_appearances": "textures",
+        "correct_chest_appearances": "both",
         "chest_textures_specific": [
             "major",
             "bosskeys",
@@ -1246,7 +1246,7 @@
         "starting_tod": "default",
         "blue_fire_arrows": true,
         "fix_broken_drops": false,
-        "tcg_requires_lens": false,
+        "tcg_requires_lens": true,
         "no_collectible_hearts": false,
         "one_item_per_dungeon": false,
         "item_pool_value": "balanced",
