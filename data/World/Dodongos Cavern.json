@@ -109,7 +109,7 @@
             "Dodongos Cavern Before Upper Lizalfos": "
                 here(can_blast_or_smash or Progressive_Strength_Upgrade)",
             "Dodongos Cavern Far Bridge": "
-                is_adult and (logic_dc_jump or Hover_Boots or Longshot)"
+                is_adult and (logic_dc_jump or Hover_Boots or (can_see_chests and Longshot))"
         }
     },
     {

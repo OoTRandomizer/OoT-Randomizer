@@ -78,6 +78,14 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     - MQ Spirit Child Crawlspace Boulder
                     - MQ Spirit Trial Rusted Switch
                     '''},
+    'Normally Visible Chests without Lens of Truth': {
+        'name'    : 'logic_lens_invis',
+        'tags'    : ("General", "Lens of Truth", "Overworld", "Deku Tree", "Dodongo's Cavern", "Jabu Jabu's Belly", "Forest Temple", "Fire Temple", "Ice Cavern", "Water Temple", "Bottom of the Well", "Shadow Temple", "Gerudo Training Ground", "Spirit Temple",),
+        'tooltip' : '''\
+                    Applies only when "Invisible Chests" is enabled
+                    and removes the Lens of Truth requirements from
+                    all chests not covered by another trick.
+                    '''},
 
     # Overworld tricks
 

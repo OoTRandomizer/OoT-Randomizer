@@ -54,6 +54,8 @@
     "can_play(song)": "Ocarina and song and (not shuffle_individual_ocarina_notes or has_all_notes_for_song(song))",
     "can_open_bomb_grotto": "can_blast_or_smash and (Stone_of_Agony or logic_grottos_without_agony)",
     "can_open_storm_grotto": "can_play(Song_of_Storms) and (Stone_of_Agony or logic_grottos_without_agony)",
+    #TODO replace with regional lensless tricks
+    "can_see_chests": "not invisible_chests or logic_lens_invis or can_use(Lens_of_Truth)",
     # The last case in a conditional still needs a check, to prevent failure from falling through
     # into what should be the 'else' case.
     "can_use_projectile": "has_explosives or (is_adult and (Bow or Hookshot)) or (is_child and (Slingshot or Boomerang))",
