@@ -101,7 +101,7 @@ def find_user_path(path_type: PathType):
                     os.environ.get('XDG_DATA_HOME', os.path.join(os.path.expanduser('~'), '.local', 'share')),
                     'ootr-electron-gui')
             os.makedirs(test_path, mode=0o700, exist_ok=True)
-        if not platform.system() == 'Linux' or not os.path.exists(test_path) or not os.access(test_path, os.W_OK):
+        if platform.system() != 'Linux' or not os.path.exists(test_path) or not os.access(test_path, os.W_OK):
             raise RuntimeError(
                 f"No permissions to write to the user {path_type} directory. Platform: {platform.system()}, Directory: {test_path}")
     return test_path
