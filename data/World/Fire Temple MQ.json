@@ -97,7 +97,8 @@
             "Fire Temple MQ Boss Key Arrow Wonderitem": "has_fire_source and Hookshot and Bow",
             "Fairy Pot": "
                 has_bottle and has_fire_source and (Bow or logic_fire_mq_bk_chest) and
-                ((can_see_chests and Hookshot) or (logic_fire_song_of_time and shuffle_pots != 'all' and shuffle_pots != 'dungeons'))"
+                (Hookshot or logic_fire_song_of_time) and
+                ((can_see_chests and Hookshot) or (shuffle_pots != 'all' and shuffle_pots != 'dungeons'))"
 
         },
         "exits": {
