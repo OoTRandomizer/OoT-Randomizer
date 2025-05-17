@@ -106,10 +106,18 @@
                 can_use(Boomerang) or at('Dodongos Cavern Far Bridge', True)"
         },
         "exits": {
+            "Dodongos Cavern Alcove Above Stairs": "can_use(Longshot)",
             "Dodongos Cavern Before Upper Lizalfos": "
                 here(can_blast_or_smash or Progressive_Strength_Upgrade)",
             "Dodongos Cavern Far Bridge": "
                 is_adult and (logic_dc_jump or Hover_Boots or (can_see_chests and Longshot))"
+        }
+    },
+    {
+        "region_name": "Dodongos Cavern Alcove Above Stairs",
+        "dungeon": "Dodongos Cavern",
+        "locations": {
+            "Dodongos Cavern GS Alcove Above Stairs": "True"
         }
     },
     {
@@ -143,12 +151,12 @@
             "Dodongos Cavern Bomb Bag Chest": "True",
             "Dodongos Cavern End of Bridge Chest": "can_blast_or_smash",
             "Dodongos Cavern Double Eye Switch Room Pot 1": "True",
-            "Dodongos Cavern Double Eye Switch Room Pot 2": "True",
-            "Dodongos Cavern GS Alcove Above Stairs": "can_use(Hookshot) or can_use(Boomerang)"
+            "Dodongos Cavern Double Eye Switch Room Pot 2": "True"
         },
         "exits": {
             "Dodongos Cavern Mouth": "has_explosives",
-            "Dodongos Cavern Upper Lizalfos": "True"
+            "Dodongos Cavern Upper Lizalfos": "True",
+            "Dodongos Cavern Alcove Above Stairs": "can_use(Hookshot) or can_use(Boomerang)"
         }
     },
     {
