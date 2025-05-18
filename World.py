@@ -697,18 +697,21 @@ class World:
             for location in region.locations:
                 if location.type == 'Shop':
                     if location.name[-1:] in shop_item_indexes[:shop_item_count]:
-                        if self.settings.special_deal_price_distribution == 'vanilla':
-                            self.shop_prices[location.name] = ItemInfo.items[location.vanilla_item].price
-                        elif self.settings.special_deal_price_max < self.settings.special_deal_price_min:
-                            raise ValueError('Maximum special deal price is lower than minimum, perhaps you meant to swap them?')
-                        elif self.settings.special_deal_price_max == self.settings.special_deal_price_min:
-                            self.shop_prices[location.name] = self.settings.special_deal_price_min
-                        elif self.settings.special_deal_price_distribution == 'betavariate':
-                            self.shop_prices[location.name] = self.settings.special_deal_price_min + int(random.betavariate(1.5, 2) * (self.settings.special_deal_price_max - self.settings.special_deal_price_min) / 5) * 5
-                        elif self.settings.special_deal_price_distribution == 'uniform':
-                            self.shop_prices[location.name] = random.randrange(self.settings.special_deal_price_min, self.settings.special_deal_price_max + 1, 5)
-                        else:
-                            raise NotImplementedError(f'Unimplemented special deal distribution: {self.settings.special_deal_price_distribution}')
+                        self.shop_prices[location.name] = self.new_shop_price()
+
+    def new_shop_price(self) -> int:
+        if self.settings.special_deal_price_distribution == 'vanilla':
+            return ItemInfo.items[location.vanilla_item].price
+        elif self.settings.special_deal_price_max < self.settings.special_deal_price_min:
+            raise ValueError('Maximum special deal price is lower than minimum, perhaps you meant to swap them?')
+        elif self.settings.special_deal_price_max == self.settings.special_deal_price_min:
+            return self.settings.special_deal_price_min
+        elif self.settings.special_deal_price_distribution == 'betavariate':
+            return self.settings.special_deal_price_min + int(random.betavariate(1.5, 2) * (self.settings.special_deal_price_max - self.settings.special_deal_price_min) / 5) * 5
+        elif self.settings.special_deal_price_distribution == 'uniform':
+            return random.randrange(self.settings.special_deal_price_min, self.settings.special_deal_price_max + 1, 5)
+        else:
+            raise NotImplementedError(f'Unimplemented special deal distribution: {self.settings.special_deal_price_distribution}')
 
     def set_scrub_prices(self) -> None:
         # Get Deku Scrub Locations
@@ -1216,19 +1219,7 @@ class World:
                 # Reduce the frequency of obvious scams by rerolling the price once if it's too high, and taking the lower value.
                 # This affects logic so it should only be applied to refills that are logically irrelevant.
                 # Otherwise there could be seeds with e.g. a wallet that's hinted as logically required for a purchase even though the price was rerolled to no longer require the wallet.
-                if self.settings.shopsanity_prices == 'random':
-                    new_price = int(random.betavariate(1.5, 2) * 60) * 5
-                elif self.settings.shopsanity_prices == 'random_starting':
-                    new_price = random.randrange(0, 100, 5)
-                elif self.settings.shopsanity_prices == 'random_adult':
-                    new_price = random.randrange(0, 201, 5)
-                elif self.settings.shopsanity_prices == 'random_giant':
-                    new_price = random.randrange(0, 501, 5)
-                elif self.settings.shopsanity_prices == 'random_tycoon':
-                    new_price = random.randrange(0, 1000, 5)
-                elif self.settings.shopsanity_prices == 'affordable':
-                    new_price = 10
-                price = min(location.price, new_price)
+                price = min(location.price, self.new_shop_price())
         else:
             price = item.price
 
