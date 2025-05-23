@@ -29,6 +29,7 @@
             "Deku Tree Lobby Skulltula 1": "can_kill_skulltula",
             "Deku Tree Lobby Skulltula 2": "can_kill_skulltula",
             "Deku Tree Lobby Skulltula 3": "can_kill_skulltula",
+            "Deku Tree Compass Room Withered Deku Baba": "can_kill_withered_deku_baba",
             "Deku Tree Compass Room Skulltula": "can_kill_skulltula",
             "Deku Tree Compass Room Deku Baba": "can_kill_deku_baba",
             "Deku Tree GS Compass Room": "is_adult or can_child_attack",
