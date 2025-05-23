@@ -2032,7 +2032,7 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Bottom of the Well East Inner Room Keese 2",                   ("EnemyDrop",    0x08,  (5,0, 2), None,                    'Rupees (5)',                           ("Bottom of the Well", "Vanilla Dungeons", "Enemy Drops",))),
     ("Bottom of the Well East Inner Room Keese 3",                   ("EnemyDrop",    0x08,  (5,0, 3), None,                    'Rupees (5)',                           ("Bottom of the Well", "Vanilla Dungeons", "Enemy Drops",))),
     ("Bottom of the Well East Inner Room Keese 4",                   ("EnemyDrop",    0x08,  (5,0, 4), None,                    'Rupees (5)',                           ("Bottom of the Well", "Vanilla Dungeons", "Enemy Drops",))),
-    ("Bottom of the Well West Inner Room Deku Baba",                 ("EnemyDrop",    0x08,  (5,0, 3), None,                    'Rupees (5)',                           ("Bottom of the Well", "Vanilla Dungeons", "Enemy Drops",))),
+    ("Bottom of the Well West Inner Room Deku Baba",                 ("EnemyDrop",    0x08,  (6,0, 1), None,                    'Rupees (5)',                           ("Bottom of the Well", "Vanilla Dungeons", "Enemy Drops",))),
 
     # Bottom of the Well MQ
     ("Bottom of the Well MQ Map Chest",                              ("Chest",        0x08,  0x03, None,                            'Map (Bottom of the Well)',              ("Bottom of the Well MQ", "Master Quest", "Chests",))),
