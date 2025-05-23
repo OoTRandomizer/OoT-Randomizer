@@ -15,6 +15,8 @@
             "Deku Tree MQ Slingshot Room Crate 2": "can_break_crate",
             "Deku Tree MQ Lobby Lower Withered Deku Baba": "can_kill_withered_deku_baba",
             "Deku Tree MQ Lobby Upper Withered Deku Baba": "can_kill_withered_deku_baba",
+            "Deku Tree MQ Lobby Upper Deku Baba 1": "can_kill_withered_deku_baba",
+            "Deku Tree MQ Lobby Upper Deku Baba 2": "can_kill_withered_deku_baba",
             "Deku Tree MQ Lobby Lower Keese": "can_kill_keese_stationary",
             "Deku Tree MQ Lobby Upper Keese": "can_kill_keese_stationary",
             "Deku Tree MQ Lobby Vines Skullwalltula": "
@@ -115,7 +117,8 @@
         "region_name": "Deku Tree Basement Water Room Back",
         "dungeon": "Deku Tree",
         "locations": {
-            "Deku Tree MQ After Spinning Log Chest": "can_play(Song_of_Time)"
+            "Deku Tree MQ After Spinning Log Chest": "can_play(Song_of_Time)",
+            "Deku Tree MQ Spinning Log Withered Deku Baba": "can_kill_withered_deku_baba"
         },
         "exits": {
             "Deku Tree Basement Water Room Front": "True",
@@ -163,7 +166,10 @@
             "Deku Tree MQ Basement Graves Room Keese 1": "can_kill_keese_stationary",
             "Deku Tree MQ Basement Graves Room Keese 2": "can_kill_keese_stationary",
             "Deku Tree MQ Basement Graves Room Keese 3": "can_kill_keese_stationary",
-            "Deku Tree MQ Basement Graves Room Keese 4": "can_kill_keese_stationary"
+            "Deku Tree MQ Basement Graves Room Keese 4": "can_kill_keese_stationary",
+            "Deku Tree MQ Basement Graves Room Withered Deku Baba": "can_kill_withered_deku_baba",
+            "Deku Tree MQ Basement Graves Room Deku Baba 1": "can_kill_deku_baba",
+            "Deku Tree MQ Basement Graves Room Deku Baba 2": "can_kill_deku_baba"
         },
         "exits": {
             "Deku Tree Basement Ledge": "is_child",
@@ -179,6 +185,7 @@
             "Deku Tree MQ Basement Back Room Gohma Larva 2": "can_kill_gohma_larva",
             "Deku Tree MQ Basement Back Room Gohma Larva 3": "can_kill_gohma_larva",
             "Deku Tree MQ Basement Back Room Gohma Larva 4": "can_kill_gohma_larva",
+            "Deku Tree MQ Basement Back Room Deku Baba": "can_kill_deku_baba",
             "Deku Tree MQ GS Basement Back Room": "can_use(Hookshot) or can_use(Boomerang)"
         }
     },

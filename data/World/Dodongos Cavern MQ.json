@@ -52,6 +52,7 @@
             "Dodongos Cavern MQ Staircase Pot 2": "True",
             "Dodongos Cavern MQ Staircase Pot 3": "True",
             "Dodongos Cavern MQ Staircase Pot 4": "True",
+            "Dodongos Cavern MQ Staircase Withered Deku Baba": "can_kill_withered_deku_baba",
             "Dodongos Cavern MQ Staircase Beamos 1": "
                 has_soul(Beamos) and (has_explosives or Progressive_Strength_Upgrade)",
             "Dodongos Cavern MQ Staircase Beamos 2": "

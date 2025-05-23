@@ -123,6 +123,7 @@
             "Bottom of the Well West Inner Room Flying Pot 1": "has_soul(Flying_Pot)",
             "Bottom of the Well West Inner Room Flying Pot 2": "has_soul(Flying_Pot)",
             "Bottom of the Well West Inner Room Flying Pot 3": "has_soul(Flying_Pot)",
+            "Bottom of the Well West Inner Room Deku Baba": "can_kill_deku_baba", # Can't actually kill this
             "Bottom of the Well Fire Keese Pot": "True",
             "Bottom of the Well Fire Keese 1": "can_kill_keese",
             "Bottom of the Well Fire Keese 2": "can_kill_keese",
