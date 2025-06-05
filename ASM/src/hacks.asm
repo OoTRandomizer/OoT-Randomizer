@@ -2584,9 +2584,6 @@ skip_bombchu_bowling_prize_switch:
 .orga 0xEE7E4C
     jal Hit_Gossip_Stone
 
-;.orga 0x26C10E3
-;    .byte 0xFF ; Set generic grotto text ID to load from grotto ID
-
 ;==================================================================================================
 ; Disable trade quest timers in ER
 ;==================================================================================================
