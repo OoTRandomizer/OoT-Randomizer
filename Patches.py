@@ -2695,22 +2695,6 @@ def configure_dungeon_info(rom: Rom, world: World) -> None:
     rom.write_bytes(rom.sym('CFG_BOSSES'), bosses)
 
 
-# Patch rupee towers (circular patterns of rupees) to include their flag in their actor initialization data z rotation.
-# Also used for goron pot, shadow spinning pots
-def patch_rupee_tower(location: Location, rom: Rom) -> None:
-    if isinstance(location.default, tuple):
-        room, scene_setup, flag = location.default
-    elif isinstance(location.default, list):
-        room, scene_setup, flag = location.default[0]
-    else:
-        raise Exception(f"Location does not have compatible data for patch_rupee_tower: {location.name}")
-
-    flag = flag | (room << 8) | (scene_setup << 14)
-    if location.address:
-        for address in location.address:
-            rom.write_bytes(address + 12, flag.to_bytes(2, byteorder='big'))
-
-
 # Patch the first boss key door in ganons tower that leads to the room w/ the pots
 def patch_ganons_tower_bk_door(scenes: Scenes, flag: int) -> None:
     var = (0x05 << 6) + (flag & 0x3F)
