@@ -455,7 +455,7 @@ class FileDataRelocator(ABC):
         rom.write_bytes(external_pointer_address, record_address)
 
     def write_external_code_pointer(self, rom: Rom, record_address: bytearray, external_pointer_addresses: tuple[int, int]) -> None:
-        address = int.from_bytes(record_address, 4, 'big')
+        address = int.from_bytes(record_address, 'big')
         address_low: int = address & 0xFFFF
         address_high: int = (address >> 16) + (1 if address_low > 0x7FFF else 0)
         external_high, external_low = external_pointer_addresses
