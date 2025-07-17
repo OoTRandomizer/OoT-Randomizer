@@ -3629,8 +3629,8 @@ class SettingInfos:
             Give Information is enabled).
 
             Reading the Temple of Time altar as a child will
-            tell you what rewards the Ocarina of Time or/and
-            the Song of Time lead to.
+            tell you what item thrown by Zelda and what song 
+            the Ocarina of Time teaches.
 
             Reading the Temple of Time altar as adult
             will tell you the locations of the Medallions
