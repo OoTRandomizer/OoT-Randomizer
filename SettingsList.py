@@ -3600,9 +3600,9 @@ class SettingInfos:
     misc_hints = MultipleSelect(
         gui_text        = 'Misc. Hints',
         choices         = {
-            'altar':               'Temple of Time Altar',
-            'ocarina_of_time':     'Ocarina of Time reward',
-            'song_of_time':        'Song of Time',
+            'altar':               'Temple of Time Altar (Win Conditions)',
+            'ocarina_of_time':     'Temple of Time Altar (Ocarina of Time)',
+            'song_of_time':        'Temple of Time Altar (Song of Time)',
             'dampe_diary':         "Dampé's Diary (Hookshot)",
             'ganondorf':           'Ganondorf (Light Arrows)',
             'warp_songs_and_owls': 'Warp Songs and Owls',

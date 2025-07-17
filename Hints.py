@@ -1863,11 +1863,10 @@ def build_misc_dual_hints(world: World, messages: list[Message]) -> None:
             continue
 
         text = build_text_misc_dual_hints(world, data, hint_type1, hint_type2)
-        if text is not None:
-            update_message_by_id(messages, data['id'], str(GossipText(text, ['Green'], prefix='')), data['text_style'])
+        update_message_by_id(messages, data['id'], str(GossipText(text, ['Green'], prefix='')), data['text_style'])
 
 
-def build_text_misc_dual_hints(world: World, data, hint_type1: str, hint_type2: str):
+def build_text_misc_dual_hints(world: World, data, hint_type1: str, hint_type2: str) -> str:
     item_1 = world.misc_hint_location_items[hint_type1]
     item_2 = world.misc_hint_location_items[hint_type2]
     if hint_type1 in world.settings.misc_hints and hint_type1 in world.misc_hint_location_items:

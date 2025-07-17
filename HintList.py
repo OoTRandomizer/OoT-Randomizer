@@ -1960,7 +1960,7 @@ misc_location_hint_table: dict[str, dict[str, Any]] = {
         'id': 0x707A,
         'hint_location': 'Song from Ocarina of Time Hint',
         'item_location': 'Song from Ocarina of Time',
-        'location_text': 'The song learned after the reunification of \x05\x41The Spiritual Stones\x05\x40 is \x05\x42{item}\x05\x40.',
+        'location_text': 'The song learned after the reunification of the \x05\x41Spiritual Stones\x05\x40 is \x05\x42{item}\x05\x40.',
         'text_style': 0x20,
     }
 }
@@ -1977,7 +1977,7 @@ misc_dual_hint_table: dict[str, dict[str, Any]] = {
     },
     ('ocarina_of_time', 'song_of_time'): {
         'id': 0x707A,
-        'location_text': 'It is also written that reuniting \x05\x41The Spiritual Stones\x05\x40 leads to \x05\x42{item_1}\x05\x40 and \x05\x42{item_2}\x05\x40',
+        'location_text': 'Reuniting the \x05\x41Spiritual Stones\x05\x40 leads to \x05\x42{item_1}\x05\x40 and \x05\x42{item_2}\x05\x40.',
         'text_style': 0x20,
     },
 }
