@@ -1669,7 +1669,7 @@ def build_altar_hints(world: World, messages: list[Message], include_rewards: bo
             child_text += build_boss_string(reward, color, world)
     sot_oot_misc_hint = build_oot_sot_hints(world)
     if sot_oot_misc_hint is not None:
-        child_text += build_oot_sot_hints(world)
+        child_text += sot_oot_misc_hint
         child_text += '\x04'
     child_text += get_hint('Child Altar Text End', world.settings.clearer_hints).text
     child_text += '\x0B'
