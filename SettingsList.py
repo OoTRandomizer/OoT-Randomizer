@@ -3600,7 +3600,9 @@ class SettingInfos:
     misc_hints = MultipleSelect(
         gui_text        = 'Misc. Hints',
         choices         = {
-            'altar':               'Temple of Time Altar',
+            'altar':               'Temple of Time Altar (Win Conditions)',
+            'ocarina_of_time':     'Temple of Time Altar (Ocarina of Time)',
+            'song_of_time':        'Temple of Time Altar (Song of Time)',
             'dampe_diary':         "Dampé's Diary (Hookshot)",
             'ganondorf':           'Ganondorf (Light Arrows)',
             'warp_songs_and_owls': 'Warp Songs and Owls',
@@ -3625,6 +3627,10 @@ class SettingInfos:
             will tell you the locations of the
             Spiritual Stones (unless Maps and Compasses
             Give Information is enabled).
+
+            Reading the Temple of Time altar as a child will
+            tell you what item thrown by Zelda and what song
+            the Ocarina of Time teaches.
 
             Reading the Temple of Time altar as adult
             will tell you the locations of the Medallions

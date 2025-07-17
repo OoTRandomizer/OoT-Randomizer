@@ -1667,6 +1667,10 @@ def build_altar_hints(world: World, messages: list[Message], include_rewards: bo
         child_text += get_hint('Spiritual Stone Text Start', world.settings.clearer_hints).text + '\x04'
         for (reward, color) in boss_rewards_spiritual_stones:
             child_text += build_boss_string(reward, color, world)
+    sot_oot_misc_hint = build_oot_sot_hints(world)
+    if sot_oot_misc_hint is not None:
+        child_text += sot_oot_misc_hint
+        child_text += '\x04'
     child_text += get_hint('Child Altar Text End', world.settings.clearer_hints).text
     child_text += '\x0B'
     update_message_by_id(messages, 0x707A, get_raw_text(child_text), 0x20)
@@ -1713,6 +1717,12 @@ def build_boss_string(reward: str, color: str, world: World) -> str:
         text = GossipText(f"\x08\x13{item_icon}One {location_text}...", [color], prefix='')
     return str(text) + '\x04'
 
+def build_oot_sot_hints(world: World) -> str:
+    dual_data = misc_dual_hint_table.get(('ocarina_of_time', 'song_of_time'))
+    string = build_text_misc_dual_hints(world, dual_data, hint_type1='ocarina_of_time', hint_type2='song_of_time')
+    if string is None:
+        return None
+    return str(GossipText(string, ['Yellow', 'Blue', 'Blue'], prefix=''))
 
 def build_bridge_reqs_string(world: World) -> str:
     if world.settings.bridge == 'open':
@@ -1849,26 +1859,33 @@ def build_misc_location_hints(world: World, messages: list[Message]) -> None:
 
 def build_misc_dual_hints(world: World, messages: list[Message]) -> None:
     for (hint_type1, hint_type2), data in misc_dual_hint_table.items():
-        item_1 = world.misc_hint_location_items[hint_type1]
-        item_2 = world.misc_hint_location_items[hint_type2]
-        if hint_type1 in world.settings.misc_hints and hint_type1 in world.misc_hint_location_items:
-            if hint_type2 in world.settings.misc_hints and hint_type2 in world.misc_hint_location_items:
-                text = data['location_text'].format(
-                    item_1=get_hint(get_item_generic_name(item_1), world.settings.clearer_hints).text,
-                    item_2=get_hint(get_item_generic_name(item_2), world.settings.clearer_hints).text,
-                )
-            else:
-                text = misc_location_hint_table[hint_type1]['location_text'].format(
-                    item=get_hint(get_item_generic_name(item_1), world.settings.clearer_hints).text,
-                )
+        if hint_type1 == 'ocarina_of_time':
+            continue
+
+        text = build_text_misc_dual_hints(world, data, hint_type1, hint_type2)
+        update_message_by_id(messages, data['id'], str(GossipText(text, ['Green'], prefix='')), data['text_style'])
+
+
+def build_text_misc_dual_hints(world: World, data, hint_type1: str, hint_type2: str) -> str:
+    item_1 = world.misc_hint_location_items[hint_type1]
+    item_2 = world.misc_hint_location_items[hint_type2]
+    if hint_type1 in world.settings.misc_hints and hint_type1 in world.misc_hint_location_items:
+        if hint_type2 in world.settings.misc_hints and hint_type2 in world.misc_hint_location_items:
+            return data['location_text'].format(
+                item_1=get_hint(get_item_generic_name(item_1), world.settings.clearer_hints).text,
+                item_2=get_hint(get_item_generic_name(item_2), world.settings.clearer_hints).text,
+            )
         else:
-            if hint_type2 in world.settings.misc_hints and hint_type2 in world.misc_hint_location_items:
-                text = misc_location_hint_table[hint_type2]['location_text'].format(
-                    item=get_hint(get_item_generic_name(item_2), world.settings.clearer_hints).text,
-                )
-            else:
-                text = data['location_fallback']
-    update_message_by_id(messages, data['id'], str(GossipText(text, ['Green'], prefix='')), data['text_style'])
+            return misc_location_hint_table[hint_type1]['location_text'].format(
+                item=get_hint(get_item_generic_name(item_1), world.settings.clearer_hints).text,
+            )
+    else:
+        if hint_type2 in world.settings.misc_hints and hint_type2 in world.misc_hint_location_items:
+            return misc_location_hint_table[hint_type2]['location_text'].format(
+                item=get_hint(get_item_generic_name(item_2), world.settings.clearer_hints).text,
+            )
+        else:
+            return data['location_fallback']
 
 
 def get_raw_text(string: str) -> str:

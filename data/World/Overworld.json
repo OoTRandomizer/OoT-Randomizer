@@ -1308,6 +1308,8 @@
         "locations": {
             "ToT Light Arrows Cutscene": "is_adult and can_trigger_lacs",
             "ToT Child Altar Hint": "is_child",
+            "HF Ocarina of Time Item Hint": "is_child",
+            "Song from Ocarina of Time Hint": "is_child",
             "ToT Adult Altar Hint": "is_adult"
         },
         "exits": {
