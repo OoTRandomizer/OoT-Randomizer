@@ -1667,6 +1667,7 @@ def build_altar_hints(world: World, messages: list[Message], include_rewards: bo
         child_text += get_hint('Spiritual Stone Text Start', world.settings.clearer_hints).text + '\x04'
         for (reward, color) in boss_rewards_spiritual_stones:
             child_text += build_boss_string(reward, color, world)
+    if 'altar_child_oot' in world.settings.misc_hints:
         child_text += build_oot_sot_hints(world)
         child_text += '\x04'
     child_text += get_hint('Child Altar Text End', world.settings.clearer_hints).text
