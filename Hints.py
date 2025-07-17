@@ -1667,6 +1667,8 @@ def build_altar_hints(world: World, messages: list[Message], include_rewards: bo
         child_text += get_hint('Spiritual Stone Text Start', world.settings.clearer_hints).text + '\x04'
         for (reward, color) in boss_rewards_spiritual_stones:
             child_text += build_boss_string(reward, color, world)
+        child_text += build_oot_sot_hints(world)
+        child_text += '\x04'
     child_text += get_hint('Child Altar Text End', world.settings.clearer_hints).text
     child_text += '\x0B'
     update_message_by_id(messages, 0x707A, get_raw_text(child_text), 0x20)
@@ -1713,6 +1715,16 @@ def build_boss_string(reward: str, color: str, world: World) -> str:
         text = GossipText(f"\x08\x13{item_icon}One {location_text}...", [color], prefix='')
     return str(text) + '\x04'
 
+def build_oot_sot_hints(world: World) -> str:
+    sot_location = world.get_location('Song from Ocarina of Time')
+    oot_location = world.get_location('HF Ocarina of Time Item')
+
+    sot_item = "#" + get_hint(get_item_generic_name(sot_location.item), world.settings.clearer_hints).text + '# '
+    oot_item = "#" + get_hint(get_item_generic_name(oot_location.item), world.settings.clearer_hints).text + '# '
+
+    string = f"It is also written that reuniting #The Spiritual Stones# leads to " + sot_item + " and " + oot_item + ''
+
+    return str(GossipText(string, ['Yellow', 'Blue', 'Blue'], prefix=''))
 
 def build_bridge_reqs_string(world: World) -> str:
     if world.settings.bridge == 'open':
