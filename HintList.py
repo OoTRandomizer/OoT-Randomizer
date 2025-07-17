@@ -216,8 +216,8 @@ def tokens_required_by_settings(world: World) -> int:
 conditional_always: dict[str, Callable[[World], bool]] = {
     'Market 10 Big Poes':           lambda world: world.settings.big_poe_count > 3 and 'big_poes' not in world.settings.misc_hints,
     'Deku Theater Mask of Truth':   lambda world: not world.settings.complete_mask_quest and 'Mask of Truth' not in world.settings.shuffle_child_trade and 'mask_of_truth' not in world.settings.misc_hints,
-    'Song from Ocarina of Time':    lambda world: stones_required_by_settings(world) < 2,
-    'HF Ocarina of Time Item':      lambda world: stones_required_by_settings(world) < 2,
+    'Song from Ocarina of Time':    lambda world: stones_required_by_settings(world) < 2 and 'song_of_time' not in world.settings.misc_hints,
+    'HF Ocarina of Time Item':      lambda world: stones_required_by_settings(world) < 2 and 'ocarina_of_time' not in world.settings.misc_hints,
     'Sheik in Kakariko':            lambda world: medallions_required_by_settings(world) < 5,
     'DMT Biggoron':                 lambda world: ('Claim Check' not in world.settings.adult_trade_start or len(world.settings.adult_trade_start) != 1) and not world.settings.adult_trade_shuffle,
     'Kak 30 Gold Skulltula Reward': lambda world: tokens_required_by_settings(world) < 30 and '30_skulltulas' not in world.settings.misc_hints,
@@ -1949,6 +1949,20 @@ misc_location_hint_table: dict[str, dict[str, Any]] = {
         'location_fallback': "\x08Hey, young man. What's happening \x01today? If you have a \x05\x41Poe\x05\x40, I will \x01buy it.\x04\x1AIf you earn \x05\x41{poe_points} points\x05\x40, you'll\x01be a happy man! Heh heh.\x04\x08Your card now has \x05\x45\x1E\x01 \x05\x40points.\x01Come back again!\x01Heh heh heh!\x02",
         'text_style': 0x03,
     },
+    'ocarina_of_time': {
+        'id': 0x707A,
+        'hint_location': 'HF Ocarina of Time Item Hint',
+        'item_location': 'HF Ocarina of Time Item',
+        'location_text': 'The object retrieved under the drawbridge is \x05\x42{item}\x05\x40.',
+        'text_style': 0x20,
+    },
+    'song_of_time': {
+        'id': 0x707A,
+        'hint_location': 'Song from Ocarina of Time Hint',
+        'item_location': 'Song from Ocarina of Time',
+        'location_text': 'The song learned after the reunification of \x05\x41The Spiritual Stones\x05\x40 is \x05\x42{item}\x05\x40.',
+        'text_style': 0x20,
+    }
 }
 
 # Adds capability for dual misc hints. Only used when neither or both hints are enabled, uses corresponding misc_location_hint_table entries if only one is enabled.
@@ -1960,6 +1974,11 @@ misc_dual_hint_table: dict[str, dict[str, Any]] = {
         'location_text': '\x01Wearing the \x05\x41Skull Mask\x05\x40 will reward you with \x05\x42{item_1}\x05\x40.\x04Wearing the \x05\x41Mask of Truth\x05\x40 will reward you with \x05\x42{item_2}\x05\x40.',
         'location_fallback': '\x05\x42\x06\x3dForest Stage\x04\x01\x05\x40\x06\x14We are waiting to see your\x01\x06\x32beautiful face!\x01\x06\x28Win fabulous prizes!',
         'text_style': 0x13,
+    },
+    ('ocarina_of_time', 'song_of_time'): {
+        'id': 0x707A,
+        'location_text': 'It is also written that reuniting \x05\x41The Spiritual Stones\x05\x40 leads to \x05\x42{item_1}\x05\x40 and \x05\x42{item_2}\x05\x40',
+        'text_style': 0x20,
     },
 }
 

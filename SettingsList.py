@@ -3601,7 +3601,8 @@ class SettingInfos:
         gui_text        = 'Misc. Hints',
         choices         = {
             'altar':               'Temple of Time Altar',
-            'altar_child_oot':     'Temple of Time Altar Child OoT and SoT rewards',
+            'ocarina_of_time':     'Ocarina of Time reward',
+            'song_of_time':        'Song of Time',
             'dampe_diary':         "Dampé's Diary (Hookshot)",
             'ganondorf':           'Ganondorf (Light Arrows)',
             'warp_songs_and_owls': 'Warp Songs and Owls',
@@ -3628,7 +3629,7 @@ class SettingInfos:
             Give Information is enabled).
 
             Reading the Temple of Time altar as a child will
-            tell you what rewards the Ocarina of Time and
+            tell you what rewards the Ocarina of Time or/and
             the Song of Time lead to.
 
             Reading the Temple of Time altar as adult

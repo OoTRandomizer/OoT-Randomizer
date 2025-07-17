@@ -2610,6 +2610,8 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Market 10 Big Poes Hint",                                      ("Hint",         None,  None, None,                            None,                                    None)),
     ("Deku Theater Skull Mask Hint",                                 ("Hint",         None,  None, None,                            None,                                    None)),
     ("Deku Theater Mask of Truth Hint",                              ("Hint",         None,  None, None,                            None,                                    None)),
+    ("HF Ocarina of Time Item Hint",                                 ("Hint",         None,  None, None,                            None,                                    None)),
+    ("Song from Ocarina of Time Hint",                               ("Hint",         None,  None, None,                            None,                                    None)),
     ("Ganondorf Hint",                                               ("Hint",         None,  None, None,                            None,                                    None)),
 ])
 
