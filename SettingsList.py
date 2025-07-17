@@ -3629,7 +3629,7 @@ class SettingInfos:
             Give Information is enabled).
 
             Reading the Temple of Time altar as a child will
-            tell you what item thrown by Zelda and what song 
+            tell you what item thrown by Zelda and what song
             the Ocarina of Time teaches.
 
             Reading the Temple of Time altar as adult
