@@ -93,9 +93,16 @@ class GossipText:
         self.colors: Optional[list[str]] = colors
         self.hinted_locations: Optional[list[str]] = hinted_locations
         self.hinted_items: Optional[list[str]] = hinted_items
+        self.hint_type: Optional[str] = None
 
     def to_json(self) -> dict:
-        return {'text': self.text, 'colors': self.colors, 'hinted_locations': self.hinted_locations, 'hinted_items': self.hinted_items}
+        return {
+            'text': self.text,
+            'colors': self.colors,
+            'hinted_locations': self.hinted_locations,
+            'hinted_items': self.hinted_items,
+            'hint_type': self.hint_type,
+        }
 
     def __str__(self) -> str:
         return get_raw_text(line_wrap(color_text(self)))
@@ -187,7 +194,9 @@ def is_restricted_dungeon_item(item: Item) -> bool:
 
 
 def add_hint(spoiler: Spoiler, world: World, groups: list[list[int]], gossip_text: GossipText, count: int,
-             locations: Optional[list[Location]] = None, force_reachable: bool = False, hint_type: str = None) -> bool:
+             locations: Optional[list[Location]] = None, force_reachable: bool = False, *, hint_type: str) -> bool:
+    gossip_text.hint_type = hint_type
+
     random.shuffle(groups)
     skipped_groups = []
     duplicates = []
@@ -1355,7 +1364,7 @@ def build_world_gossip_hints(spoiler: Spoiler, world: World, checked_locations: 
 
     stone_ids = list(gossipLocations.keys())
 
-    world.distribution.configure_gossip(spoiler, stone_ids)
+    world.distribution.configure_gossip(spoiler, world, stone_ids, checked_locations, checked_always_locations)
 
     # If all gossip stones already have plando'd hints, do not roll any more
     if len(stone_ids) == 0:
