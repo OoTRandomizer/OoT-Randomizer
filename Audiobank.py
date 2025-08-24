@@ -155,6 +155,12 @@ class Sample:
         self.loop: AdpcmLoop = None
         self.data: bytearray = None
         self.size: int = 0
+        self.addr: int = -1
+        self.loop_addr = -1
+        self.book_addr = -1
+        self.sample_header: bytearray = None
+        self.audiotable_addr = -1
+
         self.placed_address: int = -1
 
     def from_rom_data(bankdata: bytearray, audiotable_file: bytearray, audiotable_index: bytearray, sample_offset: int, audiotable_id: int,parent, sampleCache: dict[int,Sample] = None, adpcmbookCache: dict[int,AdpcmBook] = None):
