@@ -49,6 +49,7 @@ class ItemInfo:
         self.trade: bool = self.special.get('trade', False)
         self.ocarina_button: bool = self.special.get('ocarina_button', False)
         self.market_price: Optional[int] = self.special.get('market_price', None)
+        self.market_price_non_chu_drops_only: bool = self.special.get('market_price_non_chu_drops_only', False)
 
         self.solver_id: Optional[int] = None
         if name and self.junk is None:
