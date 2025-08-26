@@ -33,6 +33,12 @@ class Rom(BigStream):
         super().__init__(bytearray())
 
         self.original: Rom = self
+        # Changed addresses are keyed on the address as an array index.
+        # 1000 is a pre-filled padding value in the changed buffer that
+        # is safe to exclude as all the changed bytes are uint8 (<255).
+        # 1000 values get filtered out by the patching functions.
+        # Size is 128MiB to ensure any extra data appended to the 64MiB
+        # vanilla uncompressed ROM is captured.
         self.changed_address: numpy.ndarray = numpy.full(134217728, 1000, numpy.uint16)
         self.changed_dma: dict[int, tuple[int, int, int]] = {}
         self.force_patch: list[int] = []
