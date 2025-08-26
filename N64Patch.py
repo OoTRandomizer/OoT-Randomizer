@@ -6,8 +6,6 @@ import zlib
 from typing import TYPE_CHECKING, Optional
 
 import numpy
-import time
-import array
 
 from Rom import Rom
 from ntype import BigStream
@@ -98,7 +96,6 @@ def write_block_section(start: int, key_skip: int, in_data: list[int], patch_dat
 # too important, but I tried to choose from a section that didn't really
 # have big gaps of 0s which we want to avoid.
 def create_patch_file(rom: Rom, file: str, xor_range: tuple[int, int] = (0x00B8AD30, 0x00F029A0)) -> None:
-    start_time = time.time_ns()
     dma_start, dma_end = rom.dma.dma_start, rom.dma.dma_end
 
     # add header
@@ -117,9 +114,6 @@ def create_patch_file(rom: Rom, file: str, xor_range: tuple[int, int] = (0x00B8A
     rom_buffer = copy.copy(rom.original.buffer)
     new_buffer[:len(rom_buffer)] = numpy.frombuffer(rom_buffer, dtype=numpy.uint8)
     new_buffer[len(rom_buffer):] = 1000
-
-    copy_time = time.time_ns()
-    print(f'Buffer copied: {(copy_time - start_time) / 1E9}')
 
     # write every changed DMA entry
     for dma_index, (from_file, start, size) in rom.changed_dma.items():
@@ -146,46 +140,22 @@ def create_patch_file(rom: Rom, file: str, xor_range: tuple[int, int] = (0x00B8A
     # end of DMA entries
     patch_data.append_int16(0xFFFF)
 
-    dma_time = time.time_ns()
-    print(f'DMA changed: {(dma_time - copy_time) / 1E9}')
-    print(f'Changed address length: {len(rom.changed_address)}')
-
-    #changed_addresses = [address for address, value in enumerate(rom.changed_address)]
-
-    enum_time = time.time_ns()
-    print(f'Enumerated: {(enum_time - dma_time) / 1E9}')
-
-    #changed_addresses = list(range(len(rom.changed_address) - 1))
-
-    list_time = time.time_ns()
-    print(f'List range: {(list_time - enum_time) / 1E9}')
-
+    # filter down the addresses that will actually need to change.
+    # Make sure to not include any of the DMA table addresses
     n = len(rom.changed_address)
     outside_mask = numpy.ones(n, dtype=bool)
     outside_mask[dma_start:dma_end] = False
+    # Check for bytes that actually changed, accounting for DMA moves.
+    # 1000 is a pre-filled padding value in the changed buffer that
+    # is safe to exclude as all the changed bytes are uint8 (<255).
     diff_mask = (rom.changed_address != new_buffer) & (rom.changed_address != 1000)
+    # Bytes that must always change (usually just the ROM header)
     force_mask = numpy.zeros(n, dtype=bool)
     force_mask[rom.force_patch] = True
+    # Determine final changed bytes to keep
     mask = outside_mask & (force_mask | diff_mask)
     changed_addresses = numpy.nonzero(mask)[0]
-
-    numpy_time = time.time_ns()
-    print(f'addresses: {len(changed_addresses)}')
-    print(f'Numpy filter: {(numpy_time - list_time) / 1E9}')
-
-    # filter down the addresses that will actually need to change.
-    # Make sure to not include any of the DMA table addresses
-    changed_addresses = [address for address, value in enumerate(rom.changed_address)
-                         if value != 1000 and (address >= dma_end or address < dma_start) and
-                         (address in rom.force_patch or new_buffer[address] != value)]
-
-    filter_time = time.time_ns()
-    print(f'addresses: {len(changed_addresses)}')
-    print(f'Filter addresses: {(filter_time - numpy_time) / 1E9}')
     changed_addresses.sort()
-
-    sort_time = time.time_ns()
-    print(f'Sort changes: {(sort_time - filter_time) / 1E9}')
 
     # Write the address changes. We'll store the data with XOR so that
     # the patch data won't be raw data from the patched rom.
@@ -214,22 +184,13 @@ def create_patch_file(rom: Rom, file: str, xor_range: tuple[int, int] = (0x00B8A
     if block_start:
         xor_address = write_block(rom, xor_address, xor_range, block_start, data, patch_data)
 
-    mem_time = time.time_ns()
-    print(f'Write to memory: {(mem_time - sort_time) / 1E9}')
-
     # compress the patch file
     patch_data = bytes(patch_data.buffer)
     patch_data = zlib.compress(patch_data)
 
-    patch_time = time.time_ns()
-    print(f'Compressed: {(patch_time - mem_time) / 1E9}')
-
     # save the patch file
     with open(file, 'wb') as outfile:
         outfile.write(patch_data)
-
-    write_time = time.time_ns()
-    print(f'Write to disk: {(write_time - patch_time) / 1E9}')
 
 
 # This will apply a patch file to a source rom to generate a patched rom.
