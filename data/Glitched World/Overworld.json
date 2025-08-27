@@ -35,7 +35,7 @@
             "KF Kokiri Sword Chest": "is_child",
             "KF GS Know It All House": "
                 is_child and (at_night or gold_skulls_ignore_daytime) and
-                (had_night_start or can_leave_forest or can_play(Suns_Song)) and can_child_attack",
+                (had_night_start or can_leave_forest or can_play(Suns_Song) or gold_skulls_ignore_daytime) and can_child_attack",
             "KF GS Bean Patch": "
                 can_plant_bugs and can_child_attack",
             "KF GS House of Twins": "
