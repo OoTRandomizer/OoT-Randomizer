@@ -153,7 +153,7 @@ INITIAL_SAVE_DATA:
 EXTENDED_INITIAL_SAVE_DATA:
 .endarea
 
-.area 0x110, 0 ; size must be at least 8 * ((max object_id parameter Patches.add_to_extended_object_table is called with) - 0x192)
+.area 0x118, 0 ; size must be at least 8 * ((max object_id parameter Patches.add_to_extended_object_table is called with) - 0x192)
 EXTENDED_OBJECT_TABLE:
 .endarea
 
@@ -258,6 +258,8 @@ REWARDS_AS_ITEMS:
 .area 14, 0x00
 CFG_DUNGEON_PRECOMPLETED:
 .endarea
+DOT_CONDITION:
+.byte 0x01
 .align 4
 
 ; These configuration values are given fixed addresses to aid auto-trackers.

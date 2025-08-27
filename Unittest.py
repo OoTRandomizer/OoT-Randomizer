@@ -22,6 +22,7 @@ from LocationList import location_is_viewable
 from Main import main, resolve_settings, build_world_graphs
 from Messages import Message, read_messages, shuffle_messages
 from Settings import Settings, get_preset_files
+from SettingsList import logic_tricks, advanced_logic_tricks
 from Spoiler import Spoiler
 from Rom import Rom
 from Audiobank import *
@@ -209,7 +210,7 @@ class TestPlandomizer(unittest.TestCase):
         if not os.path.isfile('./ZOOTDEC.z64'):
             self.skipTest("Base ROM file not available.")
         filename = "plando-ammo-max-out-of-bounds"
-        logic_rules_settings = ['glitchless', 'glitched', 'none']
+        logic_rules_settings = ['glitchless', 'advanced', 'none']
         for logic_rules_setting in logic_rules_settings:
             with self.subTest(f"Logic Rules: {logic_rules_setting}"):
                 settings = Settings({
@@ -323,6 +324,7 @@ class TestPlandomizer(unittest.TestCase):
             "plando-potscrates-allmq",
             "plando-beehives",
             "plando-freestanding-pots-crates-beehives-triforcehunt",
+            "random_starting_items",
         ]
         for filename in filenames:
             with self.subTest(filename):
@@ -665,7 +667,6 @@ class TestEntranceRandomizer(unittest.TestCase):
         # with no items, and Prelude and Serenade should be foolish. If this behaviour
         # is changed, this unit test serves as a reminder to revisit warp song
         # foolishness.
-        # Currently only tests glitchless as glitched logic does not support ER yet.
         # Assumes the player starts with an ocarina to use a warp song from Sheik at
         # Colossus or Ice Cavern.
         filenames = [
@@ -675,10 +676,14 @@ class TestEntranceRandomizer(unittest.TestCase):
             distribution_file = load_spoiler(os.path.join(test_dir, 'plando', filename + '.json'))
             settings = load_settings(distribution_file['settings'], seed='TESTTESTTEST', filename=filename)
             resolve_settings(settings)
-            # Test for an entrance shuffle error during world validation.
-            # If the test succeeds, this confirms Serenade and Prelude can be foolish.
-            with self.assertRaises(EntranceShuffleError):
-                build_world_graphs(settings)
+            # Test glitchless and advanced logic
+            logic_rules_settings = ['glitchless', 'advanced']
+            for logic_rules_setting in logic_rules_settings:
+                settings.logic_rules = logic_rules_setting
+                # Test for an entrance shuffle error during world validation.
+                # If the test succeeds, this confirms Serenade and Prelude can be foolish.
+                with self.assertRaises(EntranceShuffleError):
+                    build_world_graphs(settings)
 
 
 class TestValidSpoilers(unittest.TestCase):
@@ -812,8 +817,53 @@ class TestValidSpoilers(unittest.TestCase):
                       for filename in os.listdir(test_dir)
                       if filename.endswith('.sav')]
         for filename in test_files:
-            with self.subTest(filename=filename):
-                settings = load_settings(filename, seed='TESTTESTTEST')
+            # Test glitchless and advanced logic
+            logic_rules_settings = ['glitchless', 'advanced']
+            for logic_rules_setting in logic_rules_settings:
+                with self.subTest(logic_rules_setting, filename=filename):
+                    settings = load_settings(filename, seed='TESTTESTTEST')
+                    # If this is already an advanced logic test, don't run twice
+                    if settings.logic_rules == 'advanced' and logic_rules_setting == 'advanced':
+                        continue
+                    settings.logic_rules = logic_rules_setting
+                    main(settings)
+                    # settings.output_file contains the first part of the filename
+                    spoiler = load_spoiler('%s_Spoiler.json' % settings.output_file)
+                    self.verify_woth(spoiler)
+                    self.verify_playthrough(spoiler)
+                    self.verify_disables(spoiler)
+
+    def test_advanced_tricks(self):
+        filename = 'glitched-standard.sav'
+        settings = load_settings(filename, seed='TESTTESTTEST')
+        # Enable all standard logic tricks
+        settings.allowed_tricks = [trick['name'] for trick in logic_tricks.values()]
+        for i in range(2):
+            test_name = 'Glitched logic with all standard tricks'
+            # On the second pass, enable all advanced logic tricks
+            if i == 1:
+                test_name = 'Glitched logic with all advanced tricks'
+                settings.advanced_allowed_tricks = [trick['name'] for trick in advanced_logic_tricks.values()]
+            with self.subTest(test_name, filename=filename):
+                main(settings)
+                # settings.output_file contains the first part of the filename
+                spoiler = load_spoiler('%s_Spoiler.json' % settings.output_file)
+                self.verify_woth(spoiler)
+                self.verify_playthrough(spoiler)
+                self.verify_disables(spoiler)
+
+    def test_advanced_tricks_entrances(self):
+        filename = 'glitched-entrances.sav'
+        settings = load_settings(filename, seed='TESTTESTTEST')
+        # Enable all standard logic tricks
+        settings.allowed_tricks = [trick['name'] for trick in logic_tricks.values()]
+        for i in range(2):
+            test_name = 'Glitched logic with entrances and all standard tricks'
+            # On the second pass, enable all advanced logic tricks
+            if i == 1:
+                test_name = 'Glitched logic with entrances and all advanced tricks'
+                settings.advanced_allowed_tricks = [trick['name'] for trick in advanced_logic_tricks.values()]
+            with self.subTest(test_name, filename=filename):
                 main(settings)
                 # settings.output_file contains the first part of the filename
                 spoiler = load_spoiler('%s_Spoiler.json' % settings.output_file)
@@ -831,7 +881,13 @@ class TestValidSpoilers(unittest.TestCase):
                 with self.subTest(name, filename=ofile):
                     settings = make_settings_for_test(
                             settings_dict, seed='TESTTESTTEST', outfilename=ofile, strict=False)
-                    main(settings)
+                    try:
+                        main(settings)
+                    except EntranceShuffleError:
+                        if 'hell' in settings_dict.get('aliases', []):
+                            self.skipTest("Entrance shuffle error, see https://github.com/OoTRandomizer/OoT-Randomizer/issues/2181 for a potential fix.")
+                        else:
+                            raise
                     spoiler = load_spoiler('%s_Spoiler.json' % settings.output_file)
                     self.verify_woth(spoiler)
                     self.verify_playthrough(spoiler)

@@ -240,7 +240,7 @@ void open_gate_and_mask_shop(z64_file_t* save, int16_t arg1, int16_t arg2) {
                     // Set the openingState so it starts to open
                     BgGateShutter* gate = (BgGateShutter*)curr;
                     gate->openingState = 2;
-                    return;
+                    break;
                 }
                 curr = curr->next;
             }

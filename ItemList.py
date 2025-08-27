@@ -428,7 +428,7 @@ item_table: dict[str, tuple[str, Optional[bool], Optional[int], Optional[dict[st
     'Deku Stick Capacity':                             ('Item',     None,  GetItemId.GI_PROGRESSIVE_STICK_CAPACITY, None),
     'Bombchus':                                        ('Item',     True,  GetItemId.GI_PROGRESSIVE_BOMBCHUS, None),
     'Magic Meter':                                     ('Item',     True,  GetItemId.GI_PROGRESSIVE_MAGIC_METER, None),
-    'Ocarina':                                         ('Item',     True,  GetItemId.GI_PROGRESSIVE_OCARINA, None),
+    'Ocarina':                                         ('Item',     True,  GetItemId.GI_PROGRESSIVE_OCARINA, {'progressive': 2}),
     'Bottle with Red Potion':                          ('Item',     True,  GetItemId.GI_BOTTLE_WITH_RED_POTION, {'bottle': True, 'shop_object': 0x0F}),
     'Bottle with Green Potion':                        ('Item',     True,  GetItemId.GI_BOTTLE_WITH_GREEN_POTION, {'bottle': True, 'shop_object': 0x0F}),
     'Bottle with Blue Potion':                         ('Item',     True,  GetItemId.GI_BOTTLE_WITH_BLUE_POTION, {'bottle': True, 'shop_object': 0x0F}),

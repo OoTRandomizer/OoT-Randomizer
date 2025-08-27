@@ -310,6 +310,14 @@ child_trade_items: tuple[str, ...] = (
     "Mask of Truth",
 )
 
+ocarina_buttons: tuple[str, ...] = (
+    'Ocarina A Button',
+    'Ocarina C down Button',
+    'Ocarina C right Button',
+    'Ocarina C left Button',
+    'Ocarina C up Button',
+)
+
 normal_bottles: list[str] = [bottle for bottle in sorted(ItemInfo.bottles) if bottle not in ('Deliver Letter', 'Sell Big Poe')] + ['Bottle with Big Poe']
 reward_list: list[str] = [item.name for item in sorted([i for n, i in ItemInfo.items.items() if i.type == 'DungeonReward'], key=lambda x: x.special['item_id'])]
 song_list: list[str] = [item.name for item in sorted([i for n, i in ItemInfo.items.items() if i.type == 'Song'], key=lambda x: x.index if x.index is not None else 0)]
@@ -532,16 +540,12 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         if world.settings.shuffle_song_items == 'any':
             pending_junk_pool.extend(song_list)
         if world.settings.shuffle_individual_ocarina_notes:
-            pending_junk_pool.extend(['Ocarina A Button', 'Ocarina C up Button', 'Ocarina C left Button', 'Ocarina C down Button', 'Ocarina C right Button'])
+            pending_junk_pool.extend(ocarina_buttons)
 
     if world.settings.triforce_hunt:
         pending_junk_pool.extend(['Triforce Piece'] * world.settings.triforce_count_per_world)
     if world.settings.shuffle_individual_ocarina_notes:
-        pending_junk_pool.append('Ocarina A Button')
-        pending_junk_pool.append('Ocarina C up Button')
-        pending_junk_pool.append('Ocarina C left Button')
-        pending_junk_pool.append('Ocarina C down Button')
-        pending_junk_pool.append('Ocarina C right Button')
+        pending_junk_pool.extend(ocarina_buttons)
 
     # Use the vanilla items in the world's locations when appropriate.
     vanilla_items_processed = Counter()
@@ -658,6 +662,10 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         elif location.scene == 0x54 and location.vanilla_item == 'Rupees (50)':
             shuffle_item = world.settings.shuffle_frog_song_rupees
 
+        #100 Gold Skulltula Reward
+        elif location.scene == 0x50 and location.vanilla_item == 'Rupees (200)':
+            shuffle_item = world.settings.shuffle_100_skulltula_rupee
+
         # Hyrule Loach Reward
         elif location.scene == 0x49 and location.vanilla_item == 'Rupees (50)':
             shuffle_item = world.settings.shuffle_loach_reward != 'off'
@@ -703,7 +711,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         # Gerudo Fortress Freestanding Heart Piece
         elif location.vanilla_item == 'Piece of Heart (Out of Logic)':
             shuffle_item = world.settings.shuffle_gerudo_fortress_heart_piece == 'shuffle'
-            if world.settings.shuffle_hideout_entrances or world.settings.logic_rules == 'glitched':
+            if world.settings.shuffle_hideout_entrances or world.settings.logic_rules == 'advanced':
                 if world.settings.shuffle_hideout_entrances and world.settings.shuffle_gerudo_fortress_heart_piece == 'remove':
                     item = IGNORE_LOCATION
                 else:
@@ -756,7 +764,11 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
             elif world.settings.shuffle_pots == 'overworld' and not (location.dungeon is not None or (location.parent_region is not None and location.parent_region.is_boss_room)):
                 shuffle_item = True
 
-            if shuffle_item and (location.vanilla_item != 'Nothing' or world.settings.shuffle_empty_pots):
+            if shuffle_item and (not world.settings.fix_broken_drops and location.vanilla_item == 'Deku Shield'):
+                # Special case for Deku Shield.
+                item = 'Nothing'
+                shuffle_item = world.settings.shuffle_empty_pots
+            elif shuffle_item and (location.vanilla_item != 'Nothing' or world.settings.shuffle_empty_pots):
                 shuffle_item = True
             else:
                 shuffle_item = False
@@ -915,7 +927,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
             else:
                 pending_junk_pool.append(rupee)
 
-    if world.settings.free_scarecrow:
+    if world.settings.scarecrow_behavior == 'free':
         world.state.collect(ItemFactory('Scarecrow Song', world))
 
     if world.settings.no_epona_race:
@@ -996,6 +1008,25 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
             pool.remove(junk_item)
             pool.append(pending_item)
 
+    world.distribution.collect_starters(world.state)
+
+    if not world.settings.shuffle_individual_ocarina_notes:
+        for ocarina_button in ocarina_buttons:
+            world.state.collect(ItemFactory(ocarina_button, world))
+
+    for _ in range(world.settings.add_random_starting_items):
+        random_starting_items_pool = sorted({item for item in pool if item not in ItemInfo.junk_weight}) # give each item the same weight regardless of how many copies there are
+        selected_item = random.choice(random_starting_items_pool)
+        world.randomized_starting_items[selected_item] = world.randomized_starting_items.get(selected_item, 0) + 1
+        pool.remove(selected_item)
+        pool.extend(get_junk_item())
+    for item, count in world.randomized_starting_items.items():
+        item = ItemFactory(item, world)
+        for _ in range(count):
+            if item.solver_id is not None:
+                world.state.collect(item)
+    world.distribution.randomized_starting_items = world.randomized_starting_items
+
     if world.settings.junk_ice_traps in ('custom_count', 'custom_percent'):
         junk_pool[:] = [('Ice Trap', 1)]
         # Get a list of all "junk" type items
@@ -1058,14 +1089,5 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         # Fix for unit tests reusing globals after ludicrous pool mutates them
         item_groups['Junk'] = remove_junk_items
         world.distribution.distribution.search_groups['Junk'] = remove_junk_items
-
-    world.distribution.collect_starters(world.state)
-
-    if not world.settings.shuffle_individual_ocarina_notes:
-        world.state.collect(ItemFactory('Ocarina A Button', world))
-        world.state.collect(ItemFactory('Ocarina C up Button', world))
-        world.state.collect(ItemFactory('Ocarina C down Button', world))
-        world.state.collect(ItemFactory('Ocarina C left Button', world))
-        world.state.collect(ItemFactory('Ocarina C right Button', world))
 
     return pool, placed_items

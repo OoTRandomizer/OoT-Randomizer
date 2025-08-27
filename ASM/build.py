@@ -137,10 +137,10 @@ for (name, sym) in symbols.items():
         else:
             patch_symbols[name] = addr
 
-with open('../data/generated/symbols.json', 'w') as f:
+with open('../data/generated/symbols.json', 'w', newline='\n') as f:
     json.dump(data_symbols, f, indent=4, sort_keys=True)
 
-with open('../data/generated/patch_symbols.json', 'w') as f:
+with open('../data/generated/patch_symbols.json', 'w', newline='\n') as f:
     json.dump(patch_symbols, f, indent=4, sort_keys=True)
 
 if pj64_sym_path:

@@ -42,8 +42,8 @@ item_draw_table_entry_t item_draw_table[] = {
     [0x1A] = { draw_gi_various_opa0,        { 0x060004D0 } }, // Deku Stick
     [0x1B] = { draw_gi_various_opa0,        { 0x060003C0 } }, // Map
     [0x1C] = { draw_gi_various_opa0,        { 0x06000A50 } }, // Deku Shield
-    [0x1D] = { draw_gi_various_opa0,        { 0x06000580 } }, // Small Magic Jar
-    [0x1E] = { draw_gi_various_opa0,        { 0x06000EE0 } }, // Large Magic Jar
+    [0x1D] = { draw_gi_various_opa0,        { 0x06000580, 0xe0d4ffFF, 0xd4ffe2FF } }, // Small Magic Jar
+    [0x1E] = { draw_gi_various_opa0,        { 0x06000EE0, 0xe0d4ffFF, 0xd4ffe2FF } }, // Large Magic Jar
     [0x1F] = { draw_gi_various_opa0,        { 0x060009A0 } }, // Bomb
     [0x20] = { draw_gi_various_opa0,        { 0x06000B70 } }, // Stone of Agony
     [0x21] = { draw_gi_wallets,             { 0x06001850, 0x06001750, 0x06001790, 0x060019A0, 0x060017B0, 0x06001A28, 0x060017D0, 0x06001AD8 } }, // Adult's Wallet
@@ -174,8 +174,12 @@ item_draw_table_entry_t item_draw_table[] = {
     [0x9C] = { draw_gi_stones,              { 0x06000b00, 0x060012f0, 0x32ffffff, 0x320096ff } }, // Zora Sapphire
     [0x9D] = { draw_gi_fairy,               { 0x06000EF0 } }, // Fairy (not in a bottle but uses the fairy from the bottle)
     [0x9E] = { draw_gi_nothing,             {} },
-    [0x9F] = { draw_gi_magic_meter,         { 0x06000000, 0x060007B0, 0x06000FD8, 0x060009F8, 0x06001438, 0x286428FF, 0x000000FF } },  // Magic Meter Scroll
-    };
+    [0x9F] = { draw_gi_magic_meter,         { 0x06000000, 0x060007B0, 0x060009F8, 0x06000FD8, 0x286428FF, 0x000000FF } },  // Magic Meter Scroll
+    [0xA0] = { draw_gi_xlu_with_flame,      { 0x060004D0, 0xC0C0C0FF, 0xC0C0C0FF } }, // Deku Stick Upgrade w/ Smoke Effect
+    [0xA1] = { draw_gi_deku_nut_with_flame, { 0x06000E90, 0xC0C0C0FF, 0xC0C0C0FF } }, // Deku Nut Upgrade w/ Smoke Effect
+    [0xA2] = { draw_gi_magic_meter,         { 0x06000000, 0x06000CC0, 0x06000F08, 0x060014E8, 0x286428FF, 0x000000FF } },  // Magic Meter Scroll 2
+    [0xA3] = { draw_ice_trap,               { 0x04034380 } }, // Ice trap
+};
 
 void base_draw_gi_model(z64_game_t* game, uint32_t draw_id) {
     item_draw_table[draw_id].draw_func(game, draw_id);

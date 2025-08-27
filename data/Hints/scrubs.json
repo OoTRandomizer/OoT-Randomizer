@@ -1,33 +1,36 @@
 {
     "name":                  "scrubs",
     "gui_name":              "Scrubs",
-    "description":           "Tournament hints used for Scrubs Races. Duplicates of each hint except foolish and item which are placed at ToT. Skull Mask, Ice Cavern Final Room and Castle Great Fairies are always hinted, 4 Path, 3 Foolish (no Dungeons), 1 Item, 9 sometimes, HC(Storms) & HF(Cow Grotto) junked.",
+    "description":           "Tournament hints used for Scrubs Races. Duplicates of each hint except foolish which are placed at ToT. Skull Mask, Ice Cavern Final Room, Frogs Rewards and Castle Great Fairies are always hinted, 5 Path, 4 Foolish (2 Dungeons), 8 sometimes (2 Dual), HC(Storms) & HF(Cow Grotto) junked.",
     "add_locations":         [
         { "location": "Castle Fairy Checks", "types": ["dual_always"] },
         { "location": "Ice Cavern Final Room", "types": ["dual_always"] },
-        { "location": "Deku Theater Skull Mask", "types": ["always"] }
+        { "location": "Deku Theater Skull Mask", "types": ["always"] },
+        { "location": "ZR Frogs Rewards", "types": ["dual_always"] }
     ],
     "remove_locations":      [
+        { "location": "the Haunted Wasteland", "types": ["barren"] },
         { "location": "Hyrule Castle", "types": ["barren"] },
-        { "location": "OGC Great Fairy Reward", "types": ["always"] },
-        { "location": "Sheik at Temple", "types": ["always", "sometimes"] },
-        { "location": "ZR Frogs Rewards", "types": ["dual_always", "dual"] },
+        { "location": "Gerudo's Fortress", "types": ["barren"] },
+        { "location": "the Temple of Time", "types": ["barren"] },
+        { "location": "ZR Frogs Ocarina Game", "types": ["always"] },
         { "location": "Sheik in Forest", "types": ["sometimes"] },
         { "location": "Sheik in Crater", "types": ["sometimes"] },
-        { "location": "Sheik in Kakariko", "types": ["always", "sometimes"] },
         { "location": "Sheik in Ice Cavern", "types": ["sometimes"] },
         { "location": "Sheik at Colossus", "types": ["sometimes"] },
         { "location": "Song from Royal Familys Tomb", "types": ["sometimes"] },
-        { "location": "Song from Ocarina of Time", "types": ["always", "sometimes"] },
-        { "location": "Deku Theater Rewards", "types": ["dual_always"] }
+        { "location": "Deku Theater Rewards", "types": ["dual_always", "dual"] },
+        { "location": "Fire Temple Lower Loop", "types": ["dual"] },
+        { "location": "GF Horseback Archery Rewards", "types": ["dual_always", "dual"] },
+        { "location": "Kak Anju as Child", "types": ["sometimes"] }
     ],
     "add_items":             [],
     "remove_items":          [
         { "item": "Zeldas Lullaby", "types": ["woth", "goal"] },
         { "item": "Nocturne of Shadow", "types": ["woth", "goal"] }
     ],
-    "dungeons_woth_limit":   2,
-    "dungeons_barren_limit": 0,
+    "dungeons_woth_limit":   5,
+    "dungeons_barren_limit": 2,
     "named_items_required":  true,
     "vague_named_items":     false,
     "use_default_goals":     true,
@@ -56,13 +59,13 @@
             "HC (Storms Grotto)",
             "HF (Cow Grotto)"
         ]},
-        "barren":          {"order": 4, "weight": 0.0, "fixed":   3, "copies": 1, "priority_stones": [
+        "barren":          {"order": 4, "weight": 0.0, "fixed":   4, "copies": 1, "priority_stones": [
             "ToT (Left)",
             "ToT (Left-Center)",
             "ToT (Right)",
             "ToT (Right-Center)"
         ]},
-        "goal":            {"order": 5, "weight": 0.0, "fixed":   4, "copies": 2, "remove_stones": [
+        "goal":            {"order": 5, "weight": 0.0, "fixed":   5, "copies": 2, "remove_stones": [
             "ToT (Left)",
             "ToT (Left-Center)",
             "ToT (Right)",
@@ -78,11 +81,13 @@
             "HC (Storms Grotto)",
             "HF (Cow Grotto)"
         ]},
-        "item":            {"order": 7, "weight": 0.0, "fixed":   1, "copies": 1, "priority_stones": [
+        "dual":            {"order": 7, "weight": 0.0, "fixed":   2, "copies": 2, "remove_stones": [
             "ToT (Left)",
             "ToT (Left-Center)",
             "ToT (Right)",
-            "ToT (Right-Center)"
+            "ToT (Right-Center)",
+            "HC (Storms Grotto)",
+            "HF (Cow Grotto)"
         ]},
         "junk":            {"order": 8, "weight": 0.0, "fixed":   1, "copies": 2, "priority_stones": [
             "HC (Storms Grotto)",
@@ -104,7 +109,7 @@
         "song":            {"order": 0, "weight": 0.0, "fixed":   0, "copies": 2},
         "overworld":       {"order": 0, "weight": 0.0, "fixed":   0, "copies": 2},
         "dungeon":         {"order": 0, "weight": 0.0, "fixed":   0, "copies": 2},
-        "dual":            {"order": 0, "weight": 0.0, "fixed":   0, "copies": 0},
+        "item":            {"order": 0, "weight": 0.0, "fixed":   0, "copies": 0},
         "named-item":      {"order": 0, "weight": 0.0, "fixed":   0, "copies": 2},
         "entrance_always": {"order": 0, "weight": 0.0, "fixed":   0, "copies": 2},
         "important_check": {"order": 0, "weight": 0.0, "fixed":   0, "copies": 0}

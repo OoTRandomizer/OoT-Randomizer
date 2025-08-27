@@ -1468,7 +1468,7 @@ typedef struct {
   char             unk_16_[0x000B];        /* 0x11CBD */
   void            *room_ptr;               /* 0x11CC8 */
   char             unk_17_[0x00D4];        /* 0x11CCC */
-  float            mf_11DA0[4][4];         /* 0x11DA0 */
+  float            billboard_mtx[4][4];    /* 0x11DA0 */
   char             unk_18_[0x0004];        /* 0x11DE0 */
   uint32_t         gameplay_frames;        /* 0x11DE4 */
   uint8_t          link_age;               /* 0x11DE8 */
@@ -2464,5 +2464,7 @@ typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawn
 
 extern void Fault_AddHungupAndCrashImpl(const char* msg1, const char* msg2);
 extern int32_t sprintf(char* dst, char* fmt, ...);
+extern int32_t CutsceneFlags_Get(void* play, int16_t flag);
+extern int32_t DemoKankyo_CutsceneFlags_Get_Hook(void* play, int16_t flag);
 
 #endif

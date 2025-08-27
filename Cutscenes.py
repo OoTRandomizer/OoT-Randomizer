@@ -276,6 +276,10 @@ def patch_cutscenes(rom: Rom, scenes: Scenes, song_locations: dict[str, Location
     patch_cutscene_length(west_epona_cutscene, 84)
     patch_cutscene_length(gate_epona_cutscene, 42)
 
+    # Lakeside Professor preparing the frog before giving the eyedrops.
+    # Cut the 120 frames timer to 20 to let him cook.
+    rom.write_byte(0xE2C7F7, 0x14)
+
     # Speed learning Minuet of Forest
     minuet_cutscene = scenes[SceneIDs.SACRED_FOREST_MEADOW].headers[4].cutscene_data
     if songs_as_items:
