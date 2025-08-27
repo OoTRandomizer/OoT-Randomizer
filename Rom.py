@@ -13,7 +13,7 @@ import importlib
 try:
     import numpy
 except ImportError:
-    raise Exception('numpy is required to run the randomizer. Install via pip or use the python virtual environment created by the randomizer.')
+    pass
 
 from Models import restrictiveBytes
 from Utils import is_bundled, subprocess_args, local_path, data_path, get_version_bytes
