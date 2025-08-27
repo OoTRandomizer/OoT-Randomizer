@@ -9,6 +9,7 @@ import logging
 import os
 import time
 
+from Gui import ensure_venv
 
 def start() -> None:
     from Main import main, from_patch_file, cosmetic_patch, diff_roms
@@ -21,6 +22,7 @@ def start() -> None:
     logging.basicConfig(format='%(message)s', level=loglevel)
 
     logger = logging.getLogger('')
+    ensure_venv()
 
     if not no_log_file:
         ts = time.time()

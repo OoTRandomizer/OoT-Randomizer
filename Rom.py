@@ -8,8 +8,12 @@ from collections.abc import Iterator, Sequence
 from typing import Optional
 import logging
 import struct
+import importlib
 
-import numpy
+try:
+    import numpy
+except ImportError:
+    raise Exception('numpy is required to run the randomizer. Install via pip or use the python virtual environment created by the randomizer.')
 
 from Models import restrictiveBytes
 from Utils import is_bundled, subprocess_args, local_path, data_path, get_version_bytes

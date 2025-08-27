@@ -10,7 +10,10 @@ import time
 import zipfile
 from typing import Optional
 
-import numpy
+try:
+    import numpy
+except ImportError:
+    raise Exception('numpy is required to run the randomizer. Install via pip or use the python virtual environment created by the randomizer.')
 
 from Cosmetics import CosmeticsLog, patch_cosmetics
 from EntranceShuffle import set_entrances
