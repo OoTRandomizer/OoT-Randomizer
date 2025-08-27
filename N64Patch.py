@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING, Optional
 try:
     import numpy
 except ImportError:
-    raise Exception('numpy is required to run the randomizer. Install via pip or use the python virtual environment created by the randomizer.')
+    pass
 
 from Rom import Rom
 from ntype import BigStream
