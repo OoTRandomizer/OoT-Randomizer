@@ -253,7 +253,7 @@ def run_ci_checks() -> NoReturn:
     parser.add_argument('--only_unit_tests', help="Only run unit tests", action='store_true')
     parser.add_argument('--release', help="Include checks for release branch", action='store_true')
     parser.add_argument('--fix', help='Automatically apply fixes where possible', action='store_true')
-    args = parser.parse_args()
+    args, unknown = parser.parse_known_args()
 
     if not args.no_unit_tests:
         run_unit_tests()
