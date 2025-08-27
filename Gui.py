@@ -21,11 +21,11 @@ from SettingsToJson import create_settings_list_json
 from Utils import local_path, data_path, compare_version, VersionError
 
 
-VENV_DIR = os.path.join(os.path.dirname(__file__), ".venv")
+VENV_DIR = local_path(".venv")
 PYTHON_BIN = os.path.abspath(os.path.join(VENV_DIR, "bin", "python3"))
 if platform.system() == 'Windows':
     PYTHON_BIN = os.path.abspath(os.path.join(VENV_DIR, "Scripts", "python"))
-REQUIREMENTS = os.path.join(os.path.dirname(__file__), "requirements.txt")
+REQUIREMENTS = local_path("requirements.txt")
 
 
 def ensure_venv():
@@ -33,12 +33,22 @@ def ensure_venv():
     if not os.path.exists(PYTHON_BIN):
         print("Creating virtual environment...")
         venv.create(VENV_DIR, with_pip=True)
-        subprocess.check_call([PYTHON_BIN, "-m", "pip", "install", "-r", REQUIREMENTS])
+    requirements_not_met = False
+    if '--no-pip' not in sys.argv:
+        # Running pip twice lets us both capture output cleanly to see if
+        # we need to reload the venv and send output live to the user on
+        # actual install.
+        print("Checking for required python dependencies")
+        req_check = subprocess.run([PYTHON_BIN, "-m", "pip", "install", "-r", REQUIREMENTS, "--dry-run"], capture_output=True, text=True)
+        requirements_not_met = "collecting " in req_check.stdout.lower()
+        if requirements_not_met:
+            print("Installing missing python dependencies")
+            subprocess.check_call([PYTHON_BIN, "-m", "pip", "install", "-r", REQUIREMENTS])
 
     # If we're not already running inside the venv, restart with it
-    if sys.executable != PYTHON_BIN:
+    if sys.executable != PYTHON_BIN or requirements_not_met:
         print('Re-launching in virtual environment')
-        subprocess.check_call([PYTHON_BIN] + sys.argv)
+        subprocess.check_call([PYTHON_BIN] + sys.argv + ['--no-pip'])
         sys.exit(0)
 
 
