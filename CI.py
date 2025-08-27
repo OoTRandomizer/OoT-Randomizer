@@ -19,6 +19,7 @@ from Messages import ITEM_MESSAGES, IMPORTANT_ITEM_MESSAGES, MISC_MESSAGES
 from SettingsList import SettingInfos, logic_tricks, validate_settings
 import Unittest as Tests
 from Utils import data_path
+from Gui import ensure_venv
 
 
 def error(msg: str, can_fix: bool) -> None:
@@ -295,4 +296,5 @@ def exit_ci(fix_errors: bool = False) -> NoReturn:
 
 
 if __name__ == '__main__':
+    ensure_venv()
     run_ci_checks()

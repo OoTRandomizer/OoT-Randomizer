@@ -10,15 +10,43 @@ if sys.version_info < (3, 9):
     input("Press enter to exit...")
     sys.exit(1)
 
+import os
+import platform
 import shutil
 import subprocess
+import venv
 import webbrowser
 
 from SettingsToJson import create_settings_list_json
 from Utils import local_path, data_path, compare_version, VersionError
 
 
+VENV_DIR = os.path.join(os.path.dirname(__file__), ".venv")
+PYTHON_BIN = os.path.abspath(os.path.join(VENV_DIR, "bin", "python3"))
+if platform.system() == 'Windows':
+    PYTHON_BIN = os.path.abspath(os.path.join(VENV_DIR, "Scripts", "python"))
+REQUIREMENTS = os.path.join(os.path.dirname(__file__), "requirements.txt")
+
+
+def ensure_venv():
+    # If venv doesn’t exist, create it
+    if not os.path.exists(PYTHON_BIN):
+        print("Creating virtual environment...")
+        venv.create(VENV_DIR, with_pip=True)
+        subprocess.check_call([PYTHON_BIN, "-m", "pip", "install", "-r", REQUIREMENTS])
+
+    # If we're not already running inside the venv, restart with it
+    if sys.executable != PYTHON_BIN:
+        print('Re-launching in virtual environment')
+        subprocess.check_call([PYTHON_BIN] + sys.argv)
+        sys.exit(0)
+
+
 def gui_main() -> None:
+    # Make sure we're running in a virtual environment with
+    # required dependencies. Install and relaunch if we are not.
+    ensure_venv()
+
     try:
         version_check("Node", "14.15.0", "https://nodejs.org/en/download/")
         version_check("NPM", "6.12.0", "https://nodejs.org/en/download/")
