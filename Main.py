@@ -20,7 +20,7 @@ from Hints import build_gossip_hints
 from HintList import clear_hint_exclusion_cache, misc_item_hint_table, misc_location_hint_table
 from ItemPool import generate_itempool
 from MBSDIFFPatch import apply_ootr_3_web_patch
-from Models import patch_model_adult, patch_model_child
+from Models import patch_model_adult, patch_model_child, reset_player_model_to_vanilla
 from N64Patch import create_patch_file, apply_patch_file
 from Patches import patch_rom
 from Rom import Rom
@@ -520,6 +520,7 @@ def from_patch_file(settings: Settings) -> None:
         apply_patch_file(rom, settings, subfile)
     cosmetics_log = None
     if settings.repatch_cosmetics:
+        reset_player_model_to_vanilla(rom)
         cosmetics_log = patch_cosmetics(settings, rom)
         if settings.model_adult != "Default" or len(settings.model_adult_filepicker) > 0:
             patch_model_adult(rom, settings, cosmetics_log)

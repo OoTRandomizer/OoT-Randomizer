@@ -287,8 +287,5 @@ def apply_patch_file(rom: Rom, settings: Settings, sub_file: Optional[str] = Non
                 data += [b ^ key]
 
         # Save the new data to rom
-        if settings.repatch_cosmetics:
-            rom.write_bytes_restrictive(block_start, block_size, data, True)
-        else:
-            rom.write_bytes(block_start, data, True)
+        rom.write_bytes(block_start, data, True)
         block_start = block_start+block_size

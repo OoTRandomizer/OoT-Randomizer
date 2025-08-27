@@ -170,25 +170,11 @@ class Rom(BigStream):
             address = self.last_address
         return bytes_to_float(self.read_bytes(address, 4))
 
-    def write_byte(self, address: int, value: int, overwrite_scenes: bool = False) -> None:
-        if address >= 0x1F12000 and address <= 0x3471000 and not overwrite_scenes:
+    def write_byte(self, address: int, value: int) -> None:
+        if address >= 0x1F12000 and address <= 0x3471000:
             raise Exception(f'Attempted to write to forbidden region in vanilla scene/room files')
         super().write_byte(address, value)
         self.changed_address[self.last_address-1] = value
-
-    def write_bytes_restrictive(self, start: int, size: int, values: Sequence[int], overwrite_scenes: bool = False) -> None:
-        if (start >= 0x1F12000 or start + size >= 0x1F12000) and start <= 0x3471000 and not overwrite_scenes:
-            raise Exception(f'Attempted to write to forbidden region in vanilla scene/room files')
-        for i in range(size):
-            address = start + i
-            should_write = True
-            for restrictiveBlock in restrictiveBytes:
-                # If i is between the start of restrictive zone [0] and start + size [1]
-                if restrictiveBlock[0] <= address < restrictiveBlock[0] + restrictiveBlock[1]:
-                    should_write = False
-                    break
-            if should_write:
-                self.write_byte(address, values[i], overwrite_scenes)
 
     def write_bytes(self, address: int, values: Sequence[int], overwrite_scenes: bool = False) -> None:
         if address >= 0x1F12000 and address <= 0x3471000 and not overwrite_scenes:
