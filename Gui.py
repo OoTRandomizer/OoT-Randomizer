@@ -24,7 +24,7 @@ from Utils import local_path, data_path, compare_version, VersionError
 VENV_DIR = local_path(".venv")
 PYTHON_BIN = os.path.abspath(os.path.join(VENV_DIR, "bin", "python3"))
 if platform.system() == 'Windows':
-    PYTHON_BIN = os.path.abspath(os.path.join(VENV_DIR, "Scripts", "python"))
+    PYTHON_BIN = os.path.abspath(os.path.join(VENV_DIR, "Scripts", "python.exe"))
 REQUIREMENTS = local_path("requirements.txt")
 
 
