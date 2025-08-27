@@ -237,7 +237,7 @@ def apply_patch_file(rom: Rom, settings: Settings, sub_file: Optional[str] = Non
             # If a source file is listed, copy from there
             old_dma_start, old_dma_end, old_size = rom.original.dma.get_dmadata_record_by_key(from_file).as_tuple()
             copy_size = min(size, old_size)
-            rom.write_bytes(start, rom.original.read_bytes(from_file, copy_size))
+            rom.write_bytes(start, rom.original.read_bytes(from_file, copy_size), True)
             rom.buffer[start+copy_size:start+size] = [0] * (size - copy_size)
         else:
             # if it's a new file, fill with 0s
@@ -274,7 +274,7 @@ def apply_patch_file(rom: Rom, settings: Settings, sub_file: Optional[str] = Non
 
         # Save the new data to rom
         if settings.repatch_cosmetics:
-            rom.write_bytes_restrictive(block_start, block_size, data)
+            rom.write_bytes_restrictive(block_start, block_size, data, True)
         else:
-            rom.write_bytes(block_start, data)
+            rom.write_bytes(block_start, data, True)
         block_start = block_start+block_size
