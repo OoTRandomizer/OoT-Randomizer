@@ -418,7 +418,7 @@ def get_settings_from_command_line_args() -> tuple[Settings, bool, str, bool, st
     parser.add_argument('--output_settings', help='Always outputs a settings.json file even when spoiler is enabled.', action='store_true')
     parser.add_argument('--diff_rom', help='Generates a ZPF patch from the specified ROM file.')
 
-    args = parser.parse_args()
+    args, _ = parser.parse_known_args()
     settings_base = {}
     if args.settings_preset:
         presetsFiles = get_preset_files()
