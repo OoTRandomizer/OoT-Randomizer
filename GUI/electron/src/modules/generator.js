@@ -123,7 +123,18 @@ function romBuilding(pythonPath, randoPath, settings) {
         lockGenerationCounter = true;
       }
       else if (data.toString().includes("Patching ROM")) {
-        module.exports.emit('patchJobProgress', { generationIndex: lockGenerationCounter ? currentGeneration - 1 : currentGeneration, progressCurrent: 60, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration * 0.6)), message: data.toString().split("\n")[0] });
+        let playerNumMatch = data.toString().split("\n")[0].match(/Player (\d+)$/);
+        if (playerNumMatch) {
+          currentWorld = parseInt(playerNumMatch[1]);
+        } else {
+          currentWorld = 1;
+        }
+
+        module.exports.emit('patchJobProgress', {
+          generationIndex: lockGenerationCounter ? currentGeneration - 1 : currentGeneration,
+          progressCurrent: Math.floor(60 + (23 / (maxWorldCount * 2 - 1)) * 2 * (currentWorld - 1)),
+          progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration * 0.6) + (percentagePerGeneration * 0.23 / (maxWorldCount * 2 - 1)) * 2 * (currentWorld - 1)),
+          message: data.toString().split("\n")[0] });
 
         if (!lockGenerationCounter) {
           nextGenerationPercentage = percentagePerGeneration * currentGeneration;
@@ -132,71 +143,18 @@ function romBuilding(pythonPath, randoPath, settings) {
 
         lockGenerationCounter = true;
       }
-      else if (data.toString().includes("Parsing file")) {
-
-        let filesRemaining = parseInt(data.toString().substr(13, data.toString().indexOf(" of ")));
-
-        if (parsingTotalFiles == -1) {
-          parsingTotalFiles = 489;
-          parsingPercentagePerFileLocal = 8 / parsingTotalFiles;
-          parsingPercentagePerFileTotal = Math.floor(
-            (currentGenerationPercentage + (percentagePerGeneration / 1.37))
-          - (currentGenerationPercentage + (percentagePerGeneration / 1.54))
-          ) / parsingTotalFiles;
-        }
-
-        module.exports.emit('patchJobProgress', {
-          generationIndex: currentGeneration - 1,
-          progressCurrent: Math.floor(65 + (parsingPercentagePerFileLocal * filesRemaining)),
-          progressTotal: Math.floor(
-            (currentGenerationPercentage + (percentagePerGeneration / 1.54))
-          + (parsingPercentagePerFileTotal * filesRemaining)),
-          message: data.toString().split("\n")[0] });
-      }
-      else if (data.toString().includes("Patching file")) {
-
-        let filesRemaining = parseInt(data.toString().substr(14, data.toString().indexOf(" of ")));
-
-        if (encodingTotalFiles == -1) {
-          encodingTotalFiles = 489;
-          encodingPercentagePerFileLocal = 2 / encodingTotalFiles;
-          encodingPercentagePerFileTotal = Math.floor(
-            (currentGenerationPercentage + (percentagePerGeneration / 1.33))
-          - (currentGenerationPercentage + (percentagePerGeneration / 1.37))) / encodingTotalFiles;
-        }
-
-        module.exports.emit('patchJobProgress', {
-          generationIndex: currentGeneration - 1,
-          progressCurrent: Math.floor(73 + (encodingPercentagePerFileLocal * filesRemaining)),
-          progressTotal: Math.floor(
-            (currentGenerationPercentage + (percentagePerGeneration / 1.37))
-          + (encodingPercentagePerFileTotal * filesRemaining)),
-          message: data.toString().split("\n")[0] });
-      }
-      else if (data.toString().includes("Writing file to buffer")) {
-
-        let filesRemaining = parseInt(data.toString().substr(23, data.toString().indexOf(" of ")));
-
-        if (writingTotalFiles == -1) {
-          writingTotalFiles = 489;
-          writingPercentagePerFileLocal = 8 / writingTotalFiles;
-          writingPercentagePerFileTotal = Math.floor(
-            (currentGenerationPercentage + (percentagePerGeneration / 1.2))
-          - (currentGenerationPercentage + (percentagePerGeneration / 1.33))) / writingTotalFiles;
-        }
-
-        module.exports.emit('patchJobProgress', {
-          generationIndex: currentGeneration - 1,
-          progressCurrent: Math.floor(75 + (writingPercentagePerFileLocal * filesRemaining)),
-          progressTotal: Math.floor(
-            (currentGenerationPercentage + (percentagePerGeneration / 1.33))
-          + (writingPercentagePerFileTotal * filesRemaining)),
-          message: data.toString().split("\n")[0] });
-      }
       else if (data.toString().includes("Creating Patch File")) {
         // Replace zpf filename with "Player ##"
-        let playerNum = data.toString().split("\n")[0].match(/P(\d+)\.zpf$/)[1];
-        module.exports.emit('patchJobProgress', { generationIndex: currentGeneration - 1, progressCurrent: 83, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration / 1.2)), message: data.toString().split("\n")[0].split(":")[0] + ": Player " + playerNum });
+        let playerNumMatch = data.toString().split("\n")[0].match(/P(\d+)\.zpf$/);
+        let msg = data.toString().split("\n")[0].split(":")[0];
+        if (playerNumMatch) {
+          msg += ": Player " + playerNumMatch[1];
+        }
+        module.exports.emit('patchJobProgress', {
+          generationIndex: currentGeneration - 1,
+          progressCurrent: Math.floor(83 - (23 / (maxWorldCount * 2 - 1)) * 2 * (maxWorldCount - currentWorld)),
+          progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration / 1.2) - (percentagePerGeneration * 0.23 / (maxWorldCount * 2 - 1)) * 2 * (maxWorldCount - currentWorld)),
+          message: msg });
       }
       else if (data.toString().includes("Starting compression")) {
         module.exports.emit('patchJobProgress', { generationIndex: currentGeneration - 1, progressCurrent: 90, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration / 1.1)), message: data.toString().split("\n")[0] });
@@ -237,6 +195,10 @@ function romBuilding(pythonPath, randoPath, settings) {
 
         if (romBuildingGenerator)
           treeKill(romBuildingGenerator.pid);
+      }
+      else if (data.toString().includes("Success: Rom patched successfully")) {
+        // Reset for next generation
+        currentWorld = 1
       }
     }
 
