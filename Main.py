@@ -204,7 +204,7 @@ def make_spoiler(settings: Settings, worlds: list[World]) -> Spoiler:
     return spoiler
 
 
-def prepare_rom(spoiler: Spoiler, world: World, rom: Rom, settings: Settings, rng_state: Optional[tuple] = None, restore: bool = True) -> CosmeticsLog:
+def prepare_rom(spoiler: Spoiler, world: World, rom: Rom, rng_state: Optional[tuple] = None) -> None:
     if rng_state:
         random.setstate(rng_state)
         # Use different seeds for each world when patching.
@@ -213,17 +213,22 @@ def prepare_rom(spoiler: Spoiler, world: World, rom: Rom, settings: Settings, rn
             seed = int(random.getrandbits(256))
         random.seed(seed)
 
-    if restore:
-        rom.restore()
     patch_rom(spoiler, world, rom)
-    cosmetics_log = patch_cosmetics(settings, rom)
+
+
+def finalize_rom(rom: Rom, settings: Settings, separate_cosmetics: bool = True) -> tuple[CosmeticsLog, Rom]:
+    final_rom = rom
+    # Copy the rom if separate cosmetics are applied to the patch file and rom output.
+    if separate_cosmetics:
+        final_rom = rom.copy()
+    cosmetics_log = patch_cosmetics(settings, final_rom)
     if not settings.generating_patch_file:
         if settings.model_adult != "Default" or len(settings.model_adult_filepicker) > 0:
-            patch_model_adult(rom, settings, cosmetics_log)
+            patch_model_adult(final_rom, settings, cosmetics_log)
         if settings.model_child != "Default" or len(settings.model_child_filepicker) > 0:
-            patch_model_child(rom, settings, cosmetics_log)
-    rom.update_header()
-    return cosmetics_log
+            patch_model_child(final_rom, settings, cosmetics_log)
+    final_rom.update_header()
+    return (cosmetics_log, final_rom)
 
 
 def compress_rom(input_file: str, output_file: str, delete_input: bool = False) -> None:
@@ -375,8 +380,12 @@ def patch_and_output(settings: Settings, spoiler: Spoiler, rom: Optional[Rom]) -
                 logger.info('Patching ROM')
                 player_filename_suffix = ""
 
+            # Reset rom to vanilla prior to patching new worlds
+            if restore_rom:
+                rom.restore()
             settings.generating_patch_file = settings.create_patch_file
-            patch_cosmetics_log = prepare_rom(spoiler, world, rom, settings, rng_state, restore_rom)
+            prepare_rom(spoiler, world, rom, rng_state)
+            patch_cosmetics_log, final_rom = finalize_rom(rom, settings, separate_cosmetics)
             restore_rom = True
 
             if settings.create_patch_file:
@@ -384,7 +393,7 @@ def patch_and_output(settings: Settings, spoiler: Spoiler, rom: Optional[Rom]) -
                 logger.info(f"Creating Patch File: {patch_filename}")
                 output_path = os.path.join(output_dir, patch_filename)
                 file_list.append(patch_filename)
-                create_patch_file(rom, output_path)
+                create_patch_file(final_rom, output_path)
 
                 # Cosmetics Log for patch file only.
                 if settings.create_cosmetics_log and patch_cosmetics_log:
@@ -405,10 +414,10 @@ def patch_and_output(settings: Settings, spoiler: Spoiler, rom: Optional[Rom]) -
             logger.info(f"Saving Uncompressed ROM: {uncompressed_filename}")
             if separate_cosmetics:
                 settings.generating_patch_file = False
-                cosmetics_log = prepare_rom(spoiler, world, rom, settings, rng_state, restore_rom)
+                cosmetics_log, final_rom = finalize_rom(rom, settings, separate_cosmetics)
             else:
                 cosmetics_log = patch_cosmetics_log
-            rom.write_to_file(uncompressed_path)
+            final_rom.write_to_file(uncompressed_path)
             logger.info("Created uncompressed ROM at: %s" % uncompressed_path)
 
             # If we aren't compressing the ROM, we're done with this world.
