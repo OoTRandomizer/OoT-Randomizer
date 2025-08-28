@@ -216,7 +216,7 @@ def prepare_rom(spoiler: Spoiler, world: World, rom: Rom, rng_state: Optional[tu
     patch_rom(spoiler, world, rom)
 
 
-def finalize_rom(rom: Rom, settings: Settings, separate_cosmetics: bool = True) -> tuple[CosmeticsLog, Rom]:
+def finalize_rom(rom: Rom, settings: Settings, separate_cosmetics: bool = False) -> tuple[CosmeticsLog, Rom]:
     final_rom = rom
     # Copy the rom if separate cosmetics are applied to the patch file and rom output.
     if separate_cosmetics:
@@ -414,7 +414,7 @@ def patch_and_output(settings: Settings, spoiler: Spoiler, rom: Optional[Rom]) -
             logger.info(f"Saving Uncompressed ROM: {uncompressed_filename}")
             if separate_cosmetics:
                 settings.generating_patch_file = False
-                cosmetics_log, final_rom = finalize_rom(rom, settings, separate_cosmetics)
+                cosmetics_log, final_rom = finalize_rom(rom, settings)
             else:
                 cosmetics_log = patch_cosmetics_log
             final_rom.write_to_file(uncompressed_path)

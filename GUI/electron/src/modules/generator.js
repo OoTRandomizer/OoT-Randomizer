@@ -193,8 +193,11 @@ function romBuilding(pythonPath, randoPath, settings) {
           + (writingPercentagePerFileTotal * filesRemaining)),
           message: data.toString().split("\n")[0] });
       }
+      else if (data.toString().includes("Creating Patch File")) {
+        module.exports.emit('patchJobProgress', { generationIndex: currentGeneration - 1, progressCurrent: 83, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration / 1.2)), message: data.toString().split("\n")[0].split(":")[0] });
+      }
       else if (data.toString().includes("Starting compression")) {
-        module.exports.emit('patchJobProgress', { generationIndex: currentGeneration - 1, progressCurrent: 83, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration / 1.2)), message: data.toString().split("\n")[0] });
+        module.exports.emit('patchJobProgress', { generationIndex: currentGeneration - 1, progressCurrent: 90, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration / 1.1)), message: data.toString().split("\n")[0] });
       }
       else if (data.toString().includes("files remaining")) {
 
@@ -202,11 +205,11 @@ function romBuilding(pythonPath, randoPath, settings) {
 
         if (compressionTotalFiles == -1) {
           compressionTotalFiles = filesRemaining;
-          compressionPercentagePerFileLocal = 16 / compressionTotalFiles;
-          compressionPercentagePerFileTotal = Math.floor((currentGenerationPercentage + (percentagePerGeneration / 1.01)) - (currentGenerationPercentage + (percentagePerGeneration / 1.2))) / compressionTotalFiles;
+          compressionPercentagePerFileLocal = 9 / compressionTotalFiles;
+          compressionPercentagePerFileTotal = Math.floor((currentGenerationPercentage + (percentagePerGeneration / 1.01)) - (currentGenerationPercentage + (percentagePerGeneration / 1.1))) / compressionTotalFiles;
         }
 
-        module.exports.emit('patchJobProgress', { generationIndex: currentGeneration - 1, progressCurrent: Math.floor(84 + (compressionPercentagePerFileLocal * (compressionTotalFiles - filesRemaining))), progressTotal: Math.floor((currentGenerationPercentage + (percentagePerGeneration / 1.2)) + (compressionPercentagePerFileTotal * (compressionTotalFiles - filesRemaining))), message: data.toString().split("\n")[0] });
+        module.exports.emit('patchJobProgress', { generationIndex: currentGeneration - 1, progressCurrent: Math.floor(91 + (compressionPercentagePerFileLocal * (compressionTotalFiles - filesRemaining))), progressTotal: Math.floor((currentGenerationPercentage + (percentagePerGeneration / 1.1)) + (compressionPercentagePerFileTotal * (compressionTotalFiles - filesRemaining))), message: data.toString().split("\n")[0] });
       }
       else if (data.toString().includes("Exception") || data.toString().includes("error") || data.toString().includes("Error") || data.toString().includes("PermissionError") || data.toString().includes("TypeError") || data.toString().includes("ValueError")) {
         error = true;

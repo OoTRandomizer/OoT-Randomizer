@@ -46,6 +46,7 @@ class Rom(BigStream):
         self.changed_address: numpy.ndarray = numpy.full(134217728, 1000, numpy.uint16)
         self.changed_dma: dict[int, tuple[int, int, int]] = {}
         self.force_patch: list[int] = []
+        self.overlay_table: list[OverlayEntry] = []
         self.dma: DMAIterator = DMAIterator(self, DMADATA_START)
 
         with open(data_path('generated/symbols.json'), 'r') as stream:
@@ -85,10 +86,12 @@ class Rom(BigStream):
 
     def copy(self) -> Rom:
         new_rom: Rom = Rom()
+        new_rom.original = self.original
         new_rom.buffer = copy.copy(self.buffer)
         new_rom.changed_address = self.changed_address.copy()
         new_rom.changed_dma = copy.copy(self.changed_dma)
         new_rom.force_patch = copy.copy(self.force_patch)
+        new_rom.overlay_table = copy.copy(self.overlay_table)
         return new_rom
 
     def read_rom(self, input_file: str, output_file: Optional[str] = None, verify_crc: bool = True) -> None:
