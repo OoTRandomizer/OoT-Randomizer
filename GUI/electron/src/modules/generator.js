@@ -194,7 +194,9 @@ function romBuilding(pythonPath, randoPath, settings) {
           message: data.toString().split("\n")[0] });
       }
       else if (data.toString().includes("Creating Patch File")) {
-        module.exports.emit('patchJobProgress', { generationIndex: currentGeneration - 1, progressCurrent: 83, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration / 1.2)), message: data.toString().split("\n")[0].split(":")[0] });
+        // Replace zpf filename with "Player ##"
+        let playerNum = data.toString().split("\n")[0].match(/P(\d+)\.zpf$/)[1];
+        module.exports.emit('patchJobProgress', { generationIndex: currentGeneration - 1, progressCurrent: 83, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration / 1.2)), message: data.toString().split("\n")[0].split(":")[0] + ": Player " + playerNum });
       }
       else if (data.toString().includes("Starting compression")) {
         module.exports.emit('patchJobProgress', { generationIndex: currentGeneration - 1, progressCurrent: 90, progressTotal: Math.floor(currentGenerationPercentage + (percentagePerGeneration / 1.1)), message: data.toString().split("\n")[0] });
