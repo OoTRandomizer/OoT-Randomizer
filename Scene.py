@@ -1690,17 +1690,18 @@ class RoomMeshHeader(DataRecord):
         if list_file is None:
             raise RoomFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'display list')
         list_end = segment_address_offset(file.rom.read_int32(cursor + 0x08))
-        display_list = RoomMeshDLEntries.decode(list_file, list_offset, list_end - list_offset)
+        # Add 0x04 for the terminator word 0x01000000
+        display_list = RoomMeshDLEntries.decode(list_file, list_offset, list_end - list_offset + 0x04)
         mesh.display_list_entries = display_list
         return mesh
 
     def encode(self) -> bytearray:
         bytes = bytearray()
         bytes.extend(int.to_bytes(0x00, 1, 'big'))
-        bytes.extend(int(self.display_list_entries.length / 0x08).to_bytes(1, 'big'))
+        bytes.extend(int(len(self.display_list_entries.entries)).to_bytes(1, 'big'))
         bytes.extend(int.to_bytes(0, 2, 'big'))
         bytes.extend(self.display_list_entries.get_segment_address_bytes())
-        bytes.extend(create_segment_address(self.display_list_entries.file.type.value, self.display_list_entries.offset + self.display_list_entries.length).to_bytes(4, 'big'))
+        bytes.extend(create_segment_address(self.display_list_entries.file.type.value, self.display_list_entries.offset + len(self.display_list_entries.entries) * 8).to_bytes(4, 'big'))
         return bytes
 
 
@@ -1724,7 +1725,7 @@ class _RoomMeshImageHeader(DataRecord):
         list_offset, list_file = file.get_offset(cursor + 0x04)
         if list_file is None:
             raise RoomFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'display list')
-        display_list = RoomMeshDLEntries.decode(list_file, list_offset, 0x08)
+        display_list = RoomMeshDLEntries.decode(list_file, list_offset, 0x08, True)
         mesh.display_list_entries = display_list
         return mesh
 
@@ -1918,17 +1919,18 @@ class RoomMeshCullableHeader(DataRecord):
         if list_file is None:
             raise RoomFileAddressException(file, file.rom.read_byte(cursor + 0x04), cursor + 0x04, 'display list')
         list_end = segment_address_offset(file.rom.read_int32(cursor + 0x08))
-        display_list = RoomMeshDLCullableEntries.decode(list_file, list_offset, list_end - list_offset)
+        # Add 0x04 for the terminator word 0x01000000
+        display_list = RoomMeshDLCullableEntries.decode(list_file, list_offset, list_end - list_offset + 0x04)
         mesh.display_list_entries = display_list
         return mesh
 
     def encode(self) -> bytearray:
         bytes = bytearray()
         bytes.extend(int.to_bytes(0x02, 1, 'big'))
-        bytes.extend(int(self.display_list_entries.length / 0x10).to_bytes(1, 'big'))
+        bytes.extend(int(len(self.display_list_entries.entries)).to_bytes(1, 'big'))
         bytes.extend(int.to_bytes(0, 2, 'big'))
         bytes.extend(self.display_list_entries.get_segment_address_bytes())
-        bytes.extend(create_segment_address(self.display_list_entries.file.type.value, self.display_list_entries.offset + self.display_list_entries.length).to_bytes(4, 'big'))
+        bytes.extend(create_segment_address(self.display_list_entries.file.type.value, self.display_list_entries.offset + len(self.display_list_entries.entries) * 8).to_bytes(4, 'big'))
         return bytes
 
 
@@ -1937,9 +1939,10 @@ class RoomMeshDLEntries(DataRecord):
     def __init__(self, file: FileDataRelocator, offset: int, length: int) -> None:
         super().__init__(file, RecordType.DlistEntries, file.start, offset, length)
         self.entries: list[tuple[Optional[RoomMeshDL], Optional[RoomMeshDL]]] = []
+        self.for_image_header: bool = False
 
     @staticmethod
-    def decode(file: FileDataRelocator, offset: int, length: int) -> RoomMeshDLEntries:
+    def decode(file: FileDataRelocator, offset: int, length: int, for_image_header: bool = False) -> RoomMeshDLEntries:
         existing_record = file.get_existing_record_by_offset(offset, RecordType.DlistEntries)
         if existing_record is not None:
             return existing_record
@@ -1963,6 +1966,7 @@ class RoomMeshDLEntries(DataRecord):
                 xlu = RoomMeshDL.decode(xlu_file, xlu_offset)
             dl_entries.entries.append((opa, xlu))
             cursor += 0x08
+        dl_entries.for_image_header = for_image_header
         return dl_entries
 
     def encode(self) -> bytearray:
@@ -1976,6 +1980,10 @@ class RoomMeshDLEntries(DataRecord):
                 bytes.extend(int.to_bytes(0, 4, 'big'))
             else:
                 bytes.extend(xlu.get_segment_address_bytes())
+        if not self.for_image_header:
+            # RoomShapeNormal and RoomShapeCullable both use a terminator on the DL tuples list,
+            # but not RoomShapeImageSingle or RoomShapeImageMulti
+            bytes.extend(int.to_bytes(0x01000000, 4, 'big'))
         return bytes
 
 
@@ -2010,6 +2018,9 @@ class RoomMeshDLCullableEntries(DataRecord):
                 bytes.extend(int.to_bytes(0, 4, 'big'))
             else:
                 bytes.extend(entry.xlu.get_segment_address_bytes())
+        # RoomShapeNormal and RoomShapeCullable both use a terminator on the DL tuples list,
+        # but not RoomShapeImageSingle or RoomShapeImageMulti
+        bytes.extend(int.to_bytes(0x01000000, 4, 'big'))
         return bytes
 
 
