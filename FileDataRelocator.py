@@ -419,8 +419,8 @@ class FileDataRelocator(ABC):
             new_start = align_file(start_address)
         new_end = new_start + len(raw_file)
         self.start = new_start
-        self.end = new_end
-        return align_file(new_end)
+        self.end = align_file(new_end)
+        return self.end
 
     def write(self, rom: Rom) -> int:
         raw_file = self.encode()
