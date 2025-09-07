@@ -12,6 +12,7 @@ import time
 from Gui import ensure_venv
 
 def start() -> None:
+    ensure_venv()
     from Main import main, from_patch_file, cosmetic_patch, diff_roms
     from Settings import get_settings_from_command_line_args
     from Utils import check_version, VersionError, local_path
@@ -22,7 +23,6 @@ def start() -> None:
     logging.basicConfig(format='%(message)s', level=loglevel)
 
     logger = logging.getLogger('')
-    ensure_venv()
 
     if not no_log_file:
         ts = time.time()
