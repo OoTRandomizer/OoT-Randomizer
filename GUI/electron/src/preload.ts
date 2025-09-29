@@ -130,7 +130,7 @@ post.on('getCurrentSourceVersion', function (event) {
 
 post.on('getGeneratorGUISettings', function (event) {
 
-  return electron.ipcRenderer.sendSync('getGeneratorGUISettings');
+  return electron.ipcRenderer.sendSync('getGeneratorGUISettings', {"configPath":localConfigWritePath, "dataPath":localDataWritePath});
 });
 
 post.on('getGeneratorGUILastUserSettings', function (event) {
@@ -406,8 +406,8 @@ try {
       fs.accessSync(xdgPath, fs.constants.W_OK);
     });
 
-    localConfigWritePath = xdgConfig;
-    localDataWritePath = xdgData;
+    localConfigWritePath = path.normalize(xdgConfig + '/');
+    localDataWritePath = path.normalize(xdgData + '/');
   } else {
     alert("Read-only paths are not supported on this platform.");
     remote.app.quit();
