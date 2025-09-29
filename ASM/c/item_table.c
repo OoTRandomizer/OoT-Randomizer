@@ -154,7 +154,7 @@ item_row_t item_table[GI_RANDO_MAX] = {
     [GI_DEKU_NUT_UPGRADE_30]                                    = ITEM_ROW(0x53,       BROWN_CHEST, 0x9A, -1, 0x00A7, 0x00BB, 0xA2, no_upgrade, no_effect, -1, -1, NULL), // Deku Nut Upgrade (30)
     [GI_DEKU_NUT_UPGRADE_40]                                    = ITEM_ROW(0x53,       BROWN_CHEST, 0x9B, -1, 0x00A8, 0x00BB, 0xA2, no_upgrade, no_effect, -1, -1, NULL), // Deku Nut Upgrade (40)
     [GI_BULLET_BAG_50]                                          = ITEM_ROW(0x53,      GILDED_CHEST, 0x49, -1, 0x006C, 0x017B, 0x73, no_upgrade, no_effect, -1, -1, NULL), // Bullet Bag (50)
-    [GI_ICE_TRAP]                                               = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9002, 0x0000, 0x00, no_upgrade, ice_trap_effect, -1, -1, NULL), // Ice Trap
+    [GI_ICE_TRAP]                                               = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9002, 0x0000, 0xA4, no_upgrade, ice_trap_effect, -1, -1, NULL), // Ice Trap
 
     [GI_CAPPED_PIECE_OF_HEART]                                  = ITEM_ROW(0x3E, HEART_CHEST_SMALL, 0x41, -1, 0x90C2, 0x00BD, 0x14, no_upgrade, full_heal, -1, -1, NULL), // Capped Piece of Heart
     [GI_CAPPED_HEART_CONTAINER]                                 = ITEM_ROW(0x3E, HEART_CHEST_SMALL, 0x41, -1, 0x90C6, 0x00BD, 0x13, no_upgrade, full_heal, -1, -1, NULL), // Capped Heart Container

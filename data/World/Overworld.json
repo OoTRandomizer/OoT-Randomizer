@@ -521,7 +521,7 @@
             "Bonooru": "is_child and Ocarina and has_all_notes_for_song(Scarecrow_Song)"
         },
         "locations": {
-            "Pierre": "is_adult and Bonooru and not free_scarecrow",
+            "Pierre": "is_adult and Bonooru and scarecrow_behavior != 'free'",
             "LH Sun": "(can_use(Distant_Scarecrow) or 'Water Temple Clear') and can_use(Bow)",
             "LH Freestanding PoH": "
                 is_adult and (can_use(Scarecrow) or here(can_plant_bean))",
@@ -1312,7 +1312,7 @@
         },
         "exits": {
             "ToT Entrance": "True",
-            "Beyond Door of Time": "can_play(Song_of_Time) or open_door_of_time"
+            "Beyond Door of Time": "can_open_door_of_time"
         }
     },
     {
@@ -1417,7 +1417,7 @@
         "hint": "OUTSIDE_GANONS_CASTLE",
         "exits": {
             # The rainbow bridge cutscene trigger doesn't extend to the castle entrance
-            "Ganons Castle Grounds": "is_adult and bridge == 'open'"
+            "Ganons Castle Ledge": "is_adult"
             # No exit back into the castle because the entrance places Link in midair if the bridge isn't spawned
         }
     },
@@ -1425,13 +1425,23 @@
         "region_name": "Ganons Castle Grounds",
         "scene": "Castle Grounds",
         "hint": "OUTSIDE_GANONS_CASTLE",
+        "provides_time": "DAMPE",
         "locations": {
             "OGC GS": "True"
         },
         "exits": {
             "Castle Grounds": "True",
             "OGC Great Fairy Fountain": "can_use(Golden_Gauntlets) and at_dampe_time",
-            "Ganons Castle Lobby": "can_build_rainbow_bridge and at_dampe_time"
+            "Ganons Castle Ledge": "can_build_rainbow_bridge"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Ledge",
+        "scene": "Castle Grounds",
+        "hint": "OUTSIDE_GANONS_CASTLE",
+        "exits": {
+            "Ganons Castle Grounds": "can_build_rainbow_bridge",
+            "Ganons Castle Lobby": "at_dampe_time"
         }
     },
     {
@@ -1830,11 +1840,13 @@
             "Kak 30 Gold Skulltula Reward": "(Gold_Skulltula_Token, 30)",
             "Kak 40 Gold Skulltula Reward": "(Gold_Skulltula_Token, 40)",
             "Kak 50 Gold Skulltula Reward": "(Gold_Skulltula_Token, 50)",
+            "Kak 100 Gold Skulltula Reward": "(Gold_Skulltula_Token, 100)",
             "10 Skulltulas Reward Hint": "True",
             "20 Skulltulas Reward Hint": "True",
             "30 Skulltulas Reward Hint": "True",
             "40 Skulltulas Reward Hint": "True",
-            "50 Skulltulas Reward Hint": "True"
+            "50 Skulltulas Reward Hint": "True",
+            "100 Skulltulas Reward Hint": "True"
         },
         "exits": {
             "Kakariko Village": "True"
@@ -2502,9 +2514,10 @@
         "locations": {
             "ZR Magic Bean Salesman": "is_child",
             "ZR Frogs Ocarina Game": "
-                is_child and can_play(Zeldas_Lullaby) and can_play(Eponas_Song) and
-                can_play(Sarias_Song) and can_play(Suns_Song) and can_play(Song_of_Time) and can_play(Song_of_Storms) and
-                Ocarina_A_Button and Ocarina_C_left_Button and Ocarina_C_right_Button and Ocarina_C_down_Button",
+                is_child and
+                can_play(Zeldas_Lullaby) and can_play(Eponas_Song) and can_play(Sarias_Song) and
+                can_play(Suns_Song) and can_play(Song_of_Time) and can_play(Song_of_Storms) and
+                has_all_notes_for_song('ZR Frogs Ocarina Game')",
             "ZR Frogs Zeldas Lullaby": "is_child and can_play(Zeldas_Lullaby)",
             "ZR Frogs Eponas Song": "is_child and can_play(Eponas_Song)",
             "ZR Frogs Sarias Song": "is_child and can_play(Sarias_Song)",
@@ -2556,7 +2569,7 @@
             "Bug Shrub": "
                 (is_child or here(can_plant_bean) or Hover_Boots or logic_zora_river_lower) and
                 can_cut_shrubs and has_bottle",
-            "ZR Frogs Ocarina Minigame Hint": "True"
+            "ZR Frogs Ocarina Minigame Hint": "is_child"
         },
         "exits": {
             "ZR Front": "True",
@@ -2885,7 +2898,9 @@
         "scene": "Deku Theater",
         "locations": {
             "Deku Theater Skull Mask": "is_child and Skull_Mask",
-            "Deku Theater Mask of Truth": "is_child and Mask_of_Truth"
+            "Deku Theater Mask of Truth": "is_child and Mask_of_Truth",
+            "Deku Theater Skull Mask Hint": "True",
+            "Deku Theater Mask of Truth Hint": "True"
         },
         "exits": {
             "LW Beyond Mido": "True"

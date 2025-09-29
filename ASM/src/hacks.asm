@@ -3742,12 +3742,6 @@ DemoEffect_DrawJewel_AfterHook:
 .orga 0xDB32C8
     jal     blue_fire_arrows ; replaces addiu at, zero, 0x00F0
 
-;===================================================================================================
-; Give each cursed skulltula house resident a different text ID, for skulltula reward hints
-;===================================================================================================
-.orga 0xEA2664
-    addiu   t1, t1, 0x9003
-
 ;==================================================================================================
 ; Base Get Item Draw Override
 ;==================================================================================================
@@ -4153,11 +4147,15 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/ovl_bg_gate_shutter.asm"
 .include "hacks/ovl_bg_haka_tubo.asm"
 .include "hacks/ovl_bg_spot18_basket.asm"
+.include "hacks/ovl_demo_kankyo.asm"
 .include "hacks/ovl_en_dns.asm"
 .include "hacks/ovl_en_ko.asm"
 .include "hacks/ovl_en_kz.asm"
 .include "hacks/ovl_obj_mure3.asm"
 .include "hacks/z_parameter.asm"
+.include "hacks/ovl_en_po_field.asm"
 .include "hacks/z_title.asm"
 .include "hacks/z_file_choose.asm"
 .include "hacks/ovl_en_changer.asm"
+.include "hacks/ovl_en_ssh.asm"
+.include "hacks/ovl_en_okarina_tag.asm"

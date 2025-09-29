@@ -926,6 +926,11 @@ uint8_t item_give_collectible(uint8_t item, z64_link_t* link, z64_actor_t* from_
         uint16_t resolved_item_id = resolve_upgrades(collectible_override);
         item_row_t* item_row = get_item_row(resolved_item_id);
 
+        // If we picked an ice trap, show the ice model instead of the fake item model.
+        if (item_id == GI_ICE_TRAP) {
+            pItem->model.graphic_id = 0xA4;
+        }
+
         // Set the collectible flag
         Set_NewFlag(&flag);
         //if (item == ITEM00_HEART_PIECE || item == ITEM00_SMALL_KEY) { // Don't allow heart pieces or small keys to be collected a second time. This is really just for the "Drop" types.

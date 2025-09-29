@@ -214,7 +214,6 @@ ITEM_MESSAGES: list[tuple[int, str]] = [
     (0x00AD, "\x08\x13\x05You got \x05\x41Din's Fire\x05\x40!\x01Its fireball engulfs everything!"),
     (0x00AE, "\x08\x13\x0DYou got \x05\x42Farore's Wind\x05\x40!\x01This is warp magic you can use!"),
     (0x00AF, "\x08\x13\x13You got \x05\x43Nayru's Love\x05\x40!\x01Cast this to create a powerful\x01protective barrier."),
-    (0x00B4, "\x08You got a \x05\x41Gold Skulltula Token\x05\x40!\x01You've collected \x05\x41\x19\x05\x40 tokens in total."),
     (0x00B5, "\x08You destroyed a \x05\x41Gold Skulltula\x05\x40.\x01You got a token proving you \x01destroyed it!"), #Unused
     (0x00C2, "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01Collect four pieces total to get\x01another Heart Container."),
     (0x90C2, "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01You are already at\x01maximum health."),
@@ -292,7 +291,7 @@ ITEM_MESSAGES: list[tuple[int, str]] = [
     (0x90B5, "\x08You found \x05\x43literally nothing\x05\x40!"),
 ]
 
-KEYSANITY_MESSAGES: list[tuple[int, str]] = [
+IMPORTANT_ITEM_MESSAGES: list[tuple[int, str]] = [
     (0x001C, "\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x41Fire Temple\x05\x40!\x09"),
     (0x0006, "\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x42Forest Temple\x05\x40!\x09"),
     (0x001D, "\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x43Water Temple\x05\x40!\x09"),
@@ -328,6 +327,7 @@ KEYSANITY_MESSAGES: list[tuple[int, str]] = [
     (0x00A5, "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09"),
     (0x00A6, "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Spirit Temple\x05\x40!\x09"),
     (0x00A9, "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09"),
+    (0x00B4, "\x08You got a \x05\x41Gold Skulltula Token\x05\x40!\x01You've collected \x05\x41\x19\x05\x40 tokens in total."),
     (0x00F3, "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x44Treasure Box Shop\x05\x40!\x09"),
     # 0x9019 and 0x901A used above
     # Silver Rupee Messages with count.
@@ -472,24 +472,24 @@ i = 0x9101
 
 for dungeon_name in dungeon_names:
     if dungeon_name is not None:
-        KEYSANITY_MESSAGES.append((i, f"\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for {dungeon_name}!\x01It's your \x05\x41first\x05\x40 one!\x09"))
+        IMPORTANT_ITEM_MESSAGES.append((i, f"\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for {dungeon_name}!\x01It's your \x05\x41first\x05\x40 one!\x09"))
     i += 1
 c = 0
 for dungeon_name in dungeon_names:
     if dungeon_name is not None:
-        KEYSANITY_MESSAGES.append((i, f"\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for {dungeon_name}!\x01You've collected \x05\x41" + "\xF1" + c.to_bytes(1, 'big').decode() + "\x05\x40 of them.\x09"))
+        IMPORTANT_ITEM_MESSAGES.append((i, f"\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for {dungeon_name}!\x01You've collected \x05\x41" + "\xF1" + c.to_bytes(1, 'big').decode() + "\x05\x40 of them.\x09"))
     i += 1
     c += 1
 for dungeon_name in dungeon_names:
     if dungeon_name is not None:
-        KEYSANITY_MESSAGES.append((i, f"\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for {dungeon_name}!\x01You already have enough keys.\x09"))
+        IMPORTANT_ITEM_MESSAGES.append((i, f"\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for {dungeon_name}!\x01You already have enough keys.\x09"))
     i += 1
 
 # Add key ring messages starting at 0x9200
 i = 0x9200
 for dungeon_name in dungeon_names:
     if dungeon_name is not None:
-        KEYSANITY_MESSAGES.append((i, f"\x13\x77\x08You found a \x05\x41Small Key Ring\x05\x40\x01for {dungeon_name}!\x09"))
+        IMPORTANT_ITEM_MESSAGES.append((i, f"\x13\x77\x08You found a \x05\x41Small Key Ring\x05\x40\x01for {dungeon_name}!\x09"))
     i += 1
 
 key_rings_with_bk_dungeon_names = [
@@ -500,7 +500,7 @@ key_rings_with_bk_dungeon_names = [
     "the \x05\x45Shadow Temple\x05\x40"
 ]
 for dungeon_name in key_rings_with_bk_dungeon_names:
-    KEYSANITY_MESSAGES.append((i, f"\x13\x77\x08You found a \x05\x41Key Ring\x05\x40\x01for {dungeon_name}!\x09\x01It includes the \x05\x41Boss Key\x05\x40!"))
+    IMPORTANT_ITEM_MESSAGES.append((i, f"\x13\x77\x08You found a \x05\x41Key Ring\x05\x40\x01for {dungeon_name}!\x09\x01It includes the \x05\x41Boss Key\x05\x40!"))
     i += 1
 
 COLOR_MAP: dict[str, str] = {
@@ -1142,7 +1142,7 @@ def make_player_message(text: str) -> str:
 # reduce item message sizes and add new item messages
 # make sure to call this AFTER move_shop_item_messages()
 def update_item_messages(messages: list[Message], world: World) -> None:
-    new_item_messages = ITEM_MESSAGES + KEYSANITY_MESSAGES
+    new_item_messages = ITEM_MESSAGES + IMPORTANT_ITEM_MESSAGES
     for id, text in new_item_messages:
         if world.settings.world_count > 1:
             update_message_by_id(messages, id, make_player_message(text), 0x23)
@@ -1303,7 +1303,7 @@ def shuffle_messages(messages: list[Message], except_hints: bool = True) -> list
         GOSSIP_STONE_MESSAGES + TEMPLE_HINTS_MESSAGES +
         [data['id'] for data in misc_item_hint_table.values()] +
         [data['id'] for data in misc_location_hint_table.values()] +
-        [message_id for (message_id, message) in KEYSANITY_MESSAGES] + shuffle_messages.shop_item_messages +
+        [message_id for (message_id, message) in IMPORTANT_ITEM_MESSAGES] + shuffle_messages.shop_item_messages +
         shuffle_messages.scrubs_message_ids +
         [0x5036, 0x70F5] # Chicken count and poe count respectively
     )
@@ -1315,7 +1315,7 @@ def shuffle_messages(messages: list[Message], except_hints: bool = True) -> list
             GOSSIP_STONE_MESSAGES + TEMPLE_HINTS_MESSAGES +
             [data['id'] for data in misc_item_hint_table.values()] +
             [data['id'] for data in misc_location_hint_table.values()] +
-            [message_id for (message_id, message) in KEYSANITY_MESSAGES] +
+            [message_id for (message_id, message) in IMPORTANT_ITEM_MESSAGES] +
             shuffle_messages.shop_item_messages +
             shuffle_messages.scrubs_message_ids +
             [0x5036, 0x70F5] # Chicken count and poe count respectively
@@ -1374,20 +1374,19 @@ def update_warp_song_text(messages: list[Message], world: World) -> None:
         0x4004: 'LH Owl Flight -> Hyrule Field',
     }
 
-    if world.settings.logic_rules != "glitched": # Entrances not set on glitched logic so following code will error
-        for id, entr in msg_list.items():
-            if 'warp_songs_and_owls' in world.settings.misc_hints or not world.settings.warp_songs:
-                destination = world.get_entrance(entr).connected_region
-                destination_name = HintArea.at(destination)
-                color = COLOR_MAP[destination_name.color]
-                if destination_name.preposition(True) is not None:
-                    destination_name = f'to {destination_name}'
-            else:
-                destination_name = 'to a mysterious place'
-                color = COLOR_MAP['White']
+    for id, entr in msg_list.items():
+        if 'warp_songs_and_owls' in world.settings.misc_hints or not world.settings.warp_songs:
+            destination = world.get_entrance(entr).connected_region
+            destination_name = HintArea.at(destination)
+            color = COLOR_MAP[destination_name.color]
+            if destination_name.preposition(True) is not None:
+                destination_name = f'to {destination_name}'
+        else:
+            destination_name = 'to a mysterious place'
+            color = COLOR_MAP['White']
 
-            new_msg = f"\x08\x05{color}Warp {destination_name}?\x05\40\x09\x01\x01\x1b\x05\x42OK\x01No\x05\40"
-            update_message_by_id(messages, id, new_msg)
+        new_msg = f"\x08\x05{color}Warp {destination_name}?\x05\40\x09\x01\x01\x1b\x05\x42OK\x01No\x05\40"
+        update_message_by_id(messages, id, new_msg)
 
     if world.settings.owl_drops:
         for id, entr in owl_messages.items():

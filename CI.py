@@ -15,7 +15,7 @@ from Main import resolve_settings
 from Patches import get_override_table, get_override_table_bytes
 from Rom import Rom
 import Unittest as Tests
-from Messages import ITEM_MESSAGES, KEYSANITY_MESSAGES, MISC_MESSAGES
+from Messages import ITEM_MESSAGES, IMPORTANT_ITEM_MESSAGES, MISC_MESSAGES
 from SettingsList import SettingInfos, logic_tricks, validate_settings
 import Unittest as Tests
 from Utils import readonly_data_path
@@ -95,6 +95,7 @@ def check_presets_formatting(fix_errors: bool = False) -> None:
 
 def check_hell_mode_tricks(fix_errors: bool = False) -> None:
     # Check for tricks missing from Hell Mode preset.
+    # Not checking for advanced logic tricks since hellmode is still glitchless logic
     with open(readonly_data_path('presets_default.json'), encoding='utf-8') as f:
         presets = json.load(f)
 
@@ -142,7 +143,7 @@ def check_message_duplicates() -> None:
                     if message_id1 == message_id2:
                         error(f'Duplicate MessageID found: {hex(message_id1)}, {message1}, {message2}', False)
 
-    messages = ITEM_MESSAGES + KEYSANITY_MESSAGES + MISC_MESSAGES
+    messages = ITEM_MESSAGES + IMPORTANT_ITEM_MESSAGES + MISC_MESSAGES
     check_for_duplicates(messages)
 
 

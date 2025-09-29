@@ -230,6 +230,10 @@ def patch_cutscenes(rom: Rom, songs_as_items: bool, settings: Settings) -> None:
     patch_cutscene_length(rom, 0x1FC8550, 84) # West
     patch_cutscene_length(rom, 0x1FC8B30, 42) # Front gates
 
+    # Lakeside Professor preparing the frog before giving the eyedrops.
+    # Cut the 120 frames timer to 20 to let him cook.
+    rom.write_byte(0xE2C7F7, 0x14)
+
     # Speed learning Minuet of Forest
     if songs_as_items:
         delete_cutscene(rom, 0x020AFF80)

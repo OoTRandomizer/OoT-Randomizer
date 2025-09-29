@@ -13,7 +13,7 @@ from typing import TYPE_CHECKING, Optional
 from urllib.error import URLError, HTTPError
 
 from HintList import Hint, get_hint, get_multi, get_hint_group, get_upgrade_hint_list, hint_exclusions, \
-    misc_item_hint_table, misc_location_hint_table
+    misc_item_hint_table, misc_location_hint_table, misc_dual_hint_table
 from Item import Item, make_event_item
 from ItemList import REWARD_COLORS
 from Messages import Message, COLOR_MAP, update_message_by_id
@@ -58,6 +58,7 @@ defaultHintDists: list[str] = [
     'mw_path.json',
     'mw_woth.json',
     'scrubs.json',
+    'sgl2025.json',
     'strong.json',
     'tournament.json',
     'useless.json',
@@ -1144,16 +1145,23 @@ def get_junk_hint(spoiler: Spoiler, world: World, checked: set[str]) -> HintRetu
 
 def get_important_check_hint(spoiler: Spoiler, world: World, checked: set[str]) -> HintReturn:
     top_level_locations = []
+    empty_dungeons = [dungeon for dungeon in world.precompleted_dungeons if world.precompleted_dungeons[dungeon]]
     for location in world.get_filled_locations():
-        if (HintArea.at(location).text(world.settings.clearer_hints) not in top_level_locations
-                and (HintArea.at(location).text(world.settings.clearer_hints) + ' Important Check') not in checked
-                and HintArea.at(location) != HintArea.ROOT):
-            top_level_locations.append(HintArea.at(location).text(world.settings.clearer_hints))
-    hint_loc = random.choice(top_level_locations)
+        hint_area = HintArea.at(location)
+        if (
+            hint_area not in top_level_locations
+            and hint_area not in checked
+            and hint_area != HintArea.ROOT
+            and hint_area.dungeon_name not in empty_dungeons # prevent pre-completed dungeons from being hinted
+            and not location.locked # prevent areas with unshuffled checks from being hinted
+        ):
+            top_level_locations.append(hint_area)
+    if not top_level_locations:
+        return None
+    hint_area = random.choice(top_level_locations)
     item_count = 0
     for location in world.get_filled_locations():
-        region = HintArea.at(location).text(world.settings.clearer_hints)
-        if region == hint_loc:
+        if HintArea.at(location) == hint_area:
             if (location.item.majoritem
                 # exclude locked items
                 and not location.locked
@@ -1174,7 +1182,7 @@ def get_important_check_hint(spoiler: Spoiler, world: World, checked: set[str]) 
                     or world.settings.shuffle_ganon_bosskey == 'dungeons' or world.settings.shuffle_ganon_bosskey == 'tokens'))):
                 item_count = item_count + 1
 
-    checked.add(hint_loc + ' Important Check')
+    checked.add(hint_area)
 
     if item_count == 0:
         numcolor = 'Red'
@@ -1187,7 +1195,7 @@ def get_important_check_hint(spoiler: Spoiler, world: World, checked: set[str]) 
     else:
         numcolor = 'Green'
 
-    return GossipText('#%s# has #%d# major item%s.' % (hint_loc, item_count, "s" if item_count != 1 else ""), ['Green', numcolor]), None
+    return GossipText('%s has #%d# major item%s.' % (hint_area.text(world.settings.clearer_hints), item_count, "s" if item_count != 1 else ""), ['Green', numcolor]), None
 
 
 hint_func: dict[str, HintFunc | BarrenFunc] = {
@@ -1649,7 +1657,10 @@ def build_world_gossip_hints(spoiler: Spoiler, world: World, checked_locations: 
                 else:
                     logging.getLogger('').debug('Placed %s hint for %s.', hint_type, ', '.join([location.name for location in locations]))
             if not place_ok and custom_fixed:
-                logging.getLogger('').debug('Failed to place %s fixed hint for %s.', hint_type, ', '.join([location.name for location in locations]))
+                if locations is None:
+                    logging.getLogger('').debug('Failed to place %s fixed hint.', hint_type)
+                else:
+                    logging.getLogger('').debug('Failed to place %s fixed hint for %s.', hint_type, ', '.join([location.name for location in locations]))
                 fixed_hint_types.insert(0, hint_type)
 
 
@@ -1666,7 +1677,7 @@ def build_altar_hints(world: World, messages: list[Message], include_rewards: bo
         child_text += get_hint('Spiritual Stone Text Start', world.settings.clearer_hints).text + '\x04'
         for (reward, color) in boss_rewards_spiritual_stones:
             child_text += build_boss_string(reward, color, world)
-    child_text += get_hint('Child Altar Text End', world.settings.clearer_hints).text
+    child_text += build_dot_reqs_string(world)
     child_text += '\x0B'
     update_message_by_id(messages, 0x707A, get_raw_text(child_text), 0x20)
 
@@ -1711,6 +1722,24 @@ def build_boss_string(reward: str, color: str, world: World) -> str:
         location_text = hint_area.text(world.settings.clearer_hints, preposition=True, world=None if location.world.id == world.id else location.world.id + 1)
         text = GossipText(f"\x08\x13{item_icon}One {location_text}...", [color], prefix='')
     return str(text) + '\x04'
+
+
+def build_dot_reqs_string(world: World) -> str:
+    if world.settings.open_door_of_time == 'open':
+        string = "Ye who may become a Hero...&Go and pull the Master Sword from the Pedestal of Time."
+    elif world.settings.open_door_of_time == 'sot':
+        string = "\x13\x07Ye who may become a Hero...&Stand with the Ocarina and play the Song of Time." # Fairy Ocarina icon
+    elif world.settings.open_door_of_time == 'oot_sot':
+        string = "\x13\x08Ye who may become a Hero... Stand with the Ocarina of Time and play the Song of Time." # Ocarina of Time icon
+    elif world.settings.open_door_of_time == 'stones':
+        string = "Ye who owns 3 Spiritual Stones...&Go and pull the Master Sword from the Pedestal of Time."
+    elif world.settings.open_door_of_time == 'stones_sot':
+        string = "\x13\x07Ye who owns 3 Spiritual Stones...&Stand with the Ocarina and play the Song of Time." # Fairy Ocarina icon
+    elif world.settings.open_door_of_time == 'stones_oot_sot':
+        string = "\x13\x08Ye who owns 3 Spiritual Stones... Stand with the Ocarina of Time and play the Song of Time." # Ocarina of Time icon
+    else:
+        raise NotImplementedError(f'Unknown open_door_of_time option {world.settings.open_door_of_time!r}')
+    return str(GossipText(string, [], prefix=''))
 
 
 def build_bridge_reqs_string(world: World) -> str:
@@ -1820,26 +1849,54 @@ def build_misc_item_hints(world: World, messages: list[Message], allow_duplicate
 
 def build_misc_location_hints(world: World, messages: list[Message]) -> None:
     for hint_type, data in misc_location_hint_table.items():
+        if any(hint_type in hint_types for hint_types in misc_dual_hint_table):
+            continue # handled in build_misc_dual_hints
         text = data['location_fallback']
         # Special cased because we need to insert the big poes number.
         if hint_type == 'big_poes':
             poe_points = world.settings.big_poe_count * 100
             if hint_type in world.misc_hint_location_items and hint_type in world.settings.misc_hints:
                 item = world.misc_hint_location_items[hint_type]
-                text = data['location_text'].format(item=get_hint(get_item_generic_name(item),
-                                                                    world.settings.clearer_hints).text, poe_points=poe_points)
+                text = data['location_text'].format(
+                    item=get_hint(get_item_generic_name(item), world.settings.clearer_hints).text,
+                    poe_points=poe_points,
+                )
             else:
                 text = data['location_fallback'].format(poe_points=poe_points)
-            update_message_by_id(messages, data['id'], text)
+            update_message_by_id(messages, data['id'], text, data['text_style'])
             return
         else:
             if hint_type in world.settings.misc_hints:
                 if hint_type in world.misc_hint_location_items:
                     item = world.misc_hint_location_items[hint_type]
-                    text = data['location_text'].format(item=get_hint(get_item_generic_name(item),
-                                                                        world.settings.clearer_hints).text)
+                    text = data['location_text'].format(
+                        item=get_hint(get_item_generic_name(item), world.settings.clearer_hints).text,
+                    )
+            update_message_by_id(messages, data['id'], str(GossipText(text, ['Green'], prefix='')), data['text_style'])
 
-        update_message_by_id(messages, data['id'], str(GossipText(text, ['Green'], prefix='')), 0x23)
+
+def build_misc_dual_hints(world: World, messages: list[Message]) -> None:
+    for (hint_type1, hint_type2), data in misc_dual_hint_table.items():
+        item_1 = world.misc_hint_location_items[hint_type1]
+        item_2 = world.misc_hint_location_items[hint_type2]
+        if hint_type1 in world.settings.misc_hints and hint_type1 in world.misc_hint_location_items:
+            if hint_type2 in world.settings.misc_hints and hint_type2 in world.misc_hint_location_items:
+                text = data['location_text'].format(
+                    item_1=get_hint(get_item_generic_name(item_1), world.settings.clearer_hints).text,
+                    item_2=get_hint(get_item_generic_name(item_2), world.settings.clearer_hints).text,
+                )
+            else:
+                text = misc_location_hint_table[hint_type1]['location_text'].format(
+                    item=get_hint(get_item_generic_name(item_1), world.settings.clearer_hints).text,
+                )
+        else:
+            if hint_type2 in world.settings.misc_hints and hint_type2 in world.misc_hint_location_items:
+                text = misc_location_hint_table[hint_type2]['location_text'].format(
+                    item=get_hint(get_item_generic_name(item_2), world.settings.clearer_hints).text,
+                )
+            else:
+                text = data['location_fallback']
+    update_message_by_id(messages, data['id'], str(GossipText(text, ['Green'], prefix='')), data['text_style'])
 
 
 def get_raw_text(string: str) -> str:

@@ -10,7 +10,7 @@
         "shuffle_child_trade":                     [],
         "dungeon_shortcuts_choice":                "off",
         "open_forest":                             "closed_deku",
-        "open_door_of_time":                       true,
+        "open_door_of_time":                       "open",
         "shuffle_kokiri_sword":                    true,
         "shuffle_ocarinas":                        true,
         "shuffle_song_items":                      "song",

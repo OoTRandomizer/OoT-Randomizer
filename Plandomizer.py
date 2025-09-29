@@ -15,7 +15,7 @@ from EntranceShuffle import EntranceShuffleError, change_connections, confirm_re
 from Fill import FillError
 from Hints import HintArea, gossipLocations, GossipText
 from Item import ItemFactory, ItemInfo, ItemIterator, is_item, Item
-from ItemPool import item_groups, get_junk_item, song_list, trade_items, child_trade_items
+from ItemPool import item_groups, get_junk_item, song_list, trade_items, child_trade_items, ocarina_buttons
 from JSONDump import dump_obj, CollapseList, CollapseDict, AlignedDict, SortedDict
 from Location import Location, LocationIterator, LocationFactory
 from LocationList import location_groups, location_table
@@ -44,6 +44,7 @@ per_world_keys = (
     'songs',
     'entrances',
     'locations',
+    ':randomized_starting_items',
     ':skipped_locations',
     ':woth_locations',
     ':goal_locations',
@@ -269,6 +270,7 @@ class WorldDistribution:
         self.item_pool: Optional[dict[str, ItemPoolRecord]] = None
         self.entrances: Optional[dict[str, EntranceRecord]] = None
         self.locations: Optional[dict[str, LocationRecord | list[LocationRecord]]] = None
+        self.randomized_starting_items: Optional[dict[str, int]] = None
         self.woth_locations: Optional[dict[str, LocationRecord]] = None
         self.goal_locations: Optional[dict[str, dict[str, dict[str, LocationRecord | dict[str, LocationRecord]]]]] = None
         self.barren_regions: Optional[list[str]] = None
@@ -296,6 +298,7 @@ class WorldDistribution:
             'item_pool': {name: ItemPoolRecord(record) for (name, record) in src_dict.get('item_pool', {}).items()},
             'entrances': {name: EntranceRecord(record) for (name, record) in src_dict.get('entrances', {}).items()},
             'locations': {name: [LocationRecord(rec) for rec in record] if is_pattern(name) else LocationRecord(record) for (name, record) in src_dict.get('locations', {}).items() if not is_output_only(name)},
+            'randomized_starting_items': None,
             'woth_locations': None,
             'goal_locations': None,
             'barren_regions': None,
@@ -327,6 +330,7 @@ class WorldDistribution:
             'item_pool': SortedDict({name: record.to_json() for (name, record) in self.item_pool.items()}),
             'entrances': {name: record.to_json() for (name, record) in self.entrances.items()},
             'locations': {name: [rec.to_json() for rec in record] if is_pattern(name) else record.to_json() for (name, record) in self.locations.items()},
+            ':randomized_starting_items': None if self.randomized_starting_items is None else {name: count for (name, count) in self.randomized_starting_items.items()},
             ':skipped_locations': {loc.name: LocationRecord.from_item(loc.item).to_json() for loc in self.skipped_locations},
             ':woth_locations': None if self.woth_locations is None else {name: record.to_json() for (name, record) in self.woth_locations.items()},
             ':goal_locations': self.goal_locations,
@@ -1027,6 +1031,8 @@ class WorldDistribution:
                     stone_id = int(match[1], base=16)
                 else:
                     raise RuntimeError('Gossip stone unknown or already assigned in world %d: %r. %s' % (self.id + 1, name, build_close_match(name, 'stone')))
+            if len(record.text) > 1200:
+                raise ValueError(f'Text length for gossip stone {name!r} ({len(record.text)} characters) exceeds maximum safe length (1200 characters)')
             spoiler.hints[self.id][stone_id] = GossipText(text=record.text, colors=record.colors, prefix='')
 
     def give_items(self, world: World, save_context: SaveContext) -> None:
@@ -1043,6 +1049,10 @@ class WorldDistribution:
             if name == 'Triforce Piece' or record.count == 0:
                 continue
             save_context.give_item(world, name, record.count)
+
+    def give_randomized_items(self, world: World, save_context: SaveContext) -> None:
+        for item, count in world.randomized_starting_items.items():
+            save_context.give_item(world, item, count)
 
     def get_starting_item(self, item: str) -> int:
         items = self.starting_items
@@ -1257,15 +1267,14 @@ class Distribution:
         for itemsetting in starting_items:
             if itemsetting in StartingItems.everything:
                 item = StartingItems.everything[itemsetting]
-                if not item.special:
-                    add_starting_item_with_ammo(data, item.item_name)
+                if self.settings.blue_fire_arrows and item.item_name == 'Ice Arrows':
+                    add_starting_item_with_ammo(data, 'Blue Fire Arrows')
+                elif item.item_name == 'Rutos Letter' and self.settings.zora_fountain != 'open':
+                    data['Rutos Letter'].count += 1
+                elif item.item_name in ('Bottle', 'Rutos Letter'):
+                    data['Bottle'].count += 1
                 else:
-                    if item.item_name == 'Rutos Letter' and self.settings.zora_fountain != 'open':
-                        data['Rutos Letter'].count += 1
-                    elif item.item_name in ('Bottle', 'Rutos Letter'):
-                        data['Bottle'].count += 1
-                    else:
-                        raise KeyError("invalid special item: {}".format(item.item_name))
+                    add_starting_item_with_ammo(data, item.item_name)
             else:
                 raise KeyError("invalid starting item: {}".format(itemsetting))
         self.settings.starting_equipment = []

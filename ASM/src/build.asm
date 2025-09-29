@@ -132,6 +132,7 @@ RANDO_CONTEXT:
 .include "fairy_ocarina.asm"
 .include "en_dns.asm"
 .include "bg_gate_shutter.asm"
+.include "big_poe.asm"
 
 .align 0x10
 .importobj "../build/bundle.o"

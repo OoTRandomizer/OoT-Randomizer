@@ -3,55 +3,93 @@
         "region_name": "Jabu Jabus Belly Beginning",
         "dungeon": "Jabu Jabus Belly",
         "exits": {
-            "Jabu Jabus Belly Main": "can_use_projectile or can_isg"
+            "Zoras Fountain": "True",
+            "Jabu Jabus Belly Main": "can_use_projectile or (glitch_jabu_switch_hover and can_shield and can_jumpslash and has_soul(Octorok))",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
     {
         "region_name": "Jabu Jabus Belly Main",
         "dungeon": "Jabu Jabus Belly",
         "locations": {
-            "Jabu Jabus Belly Boomerang Chest": "True",
+            "Jabu Jabus Belly Boomerang Chest": "has_soul(Stinger)",
+            "Jabu Jabus Belly Deku Scrub": "
+                can_stun_deku and
+                (can_dive or is_child or logic_jabu_alcove_jump_dive or can_use(Iron_Boots))",
+            "Jabu Jabus Belly Small Wooden Crate 1": "True",
+            "Jabu Jabus Belly Small Wooden Crate 2": "True",
+            "Jabu Jabus Belly Basement 2 Octoroks Pot 1": "can_use(Boomerang) or can_use(Hover_Boots) or can_gdv",
+            "Jabu Jabus Belly Basement 2 Octoroks Pot 2": "can_use(Boomerang) or can_use(Hover_Boots) or can_gdv",
+            "Jabu Jabus Belly Basement 2 Octoroks Pot 3": "can_use(Boomerang) or can_use(Hover_Boots) or can_gdv",
+            "Jabu Jabus Belly Basement 2 Octoroks Pot 4": "can_use(Boomerang) or can_use(Hover_Boots) or can_gdv",
+            "Jabu Jabus Belly Basement 2 Octoroks Pot 5": "can_use(Boomerang) or can_use(Hover_Boots) or can_gdv",
+            "Jabu Jabus Belly Basement Switch Room Pot 1": "True",
+            "Jabu Jabus Belly Basement Switch Room Pot 2": "True",
+            "Jabu Jabus Belly Basement Switch Room Pot 3": "True",
             "Jabu Jabus Belly GS Water Switch Room": "True",
             "Jabu Jabus Belly GS Lobby Basement Lower": "can_use(Boomerang) or can_use(Hookshot) or can_hover",
             "Jabu Jabus Belly GS Lobby Basement Upper": "can_use(Boomerang) or can_use(Hookshot) or can_hover",
-            "Jabu Jabus Belly Deku Scrub": "True"
+            "Fairy Pot": "has_bottle"
         },
         "exits": {
-            "Jabu Jabus Belly Beginning": "True",
-            "Jabu Jabus Belly Depths": "True"
+            "Jabu Jabus Belly Depths": "can_use(Boomerang) and has_soul(Jabu_Jabu_Tentacle)",
+            "Jabu Jabus Belly Before Boss": "
+                (logic_jabu_boss_hover and can_use(Hover_Boots)) or jabu_shortcuts or Jabu_Jabus_Belly_Floor_Lowered or can_mega",
+            "Jabu Jabus Belly Compass Room": "(glitch_jabu_compass_with_death and Fairy) or
+                (glitch_jabu_compass_skip_tentacle and can_use(Hover_Boots) and has_explosives and can_live_dmg(0.5,False))",
+            "Jabu Jabus Belly Past Big Octo": "glitch_jabu_biri_hover and can_shield and can_jumpslash and has_soul(Biri_and_Bari)"
         }
     },
     {
         "region_name": "Jabu Jabus Belly Depths",
         "dungeon": "Jabu Jabus Belly",
         "locations": {
-            "Jabu Jabus Belly Map Chest": "can_use(Boomerang)",
-            "Jabu Jabus Belly Compass Chest": "can_use(Boomerang) or Fairy
-                  or (is_adult and (can_live_dmg(0.5) or Hover_Boots) and has_explosives)"
+            "Jabu Jabus Belly Map Chest": "True"
+        },
+        "exits": {
+            "Jabu Jabus Belly Past Big Octo": "(Sticks or Kokiri_Sword or is_adult) and has_soul(Octorok)",
+            "Jabu Jabus Belly Compass Room": "True"
+        }
+    },
+    {
+        "region_name": "Jabu Jabus Belly Compass Room",
+        "dungeon": "Jabu Jabus Belly",
+        "locations": {
+            "Jabu Jabus Belly Compass Chest": "has_soul(Shabom)"
+        },
+        "exits": {
+            "Jabu Jabus Belly Past Big Octo": "(Sticks or Kokiri_Sword or is_adult) and has_soul(Octorok)"
+        }
+    },
+    {
+        "region_name": "Jabu Jabus Belly Past Big Octo",
+        "dungeon": "Jabu Jabus Belly",
+        "events": {
+            "Jabu Jabus Belly Floor Lowered": "True"
+        },
+        "locations": {
+            "Jabu Jabus Belly Above Big Octo Pot 1": "True",
+            "Jabu Jabus Belly Above Big Octo Pot 2": "True",
+            "Jabu Jabus Belly Above Big Octo Pot 3": "True",
+            "Nut Pot": "True"
+        }
+    },
+    {
+        "region_name": "Jabu Jabus Belly Before Boss",
+        "dungeon": "Jabu Jabus Belly",
+        "savewarp": "Zoras Fountain -> Jabu Jabus Belly Beginning",
+        "locations": {
+            "Jabu Jabus Belly GS Near Boss": "can_use_projectile or can_use(Dins_Fire) or
+                (adv_jabu_gs_near_boss_js and (is_adult or Kokiri_Sword or Sticks))"
         },
         "exits": {
             "Jabu Jabus Belly Main": "True",
-            "Jabu Jabus Belly Boss Door": "can_use(Boomerang) or can_use(Hover_Boots) or can_mega"
-        }
-    },
-    {
-        "region_name": "Jabu Jabus Belly Boss Door",
-        "scene": "Jabu Jabus Belly",
-        "dungeon": "Jabu Jabus Belly",
-        "exits": {
-            "Barinade Boss Room": "True"
-        }
-    },
-    {
-        "region_name": "Barinade Boss Room",
-        "dungeon": "Jabu Jabus Belly",
-        "locations": {
-            "Jabu Jabus Belly Barinade Heart": "can_use(Boomerang) and (Sticks or Kokiri_Sword)",
-            "Barinade": "can_use(Boomerang) and (Sticks or Kokiri_Sword)",
-            "Jabu Jabus Belly GS Near Boss": "True"
-        },
-        "exits": {
-            "Jabu Jabus Belly Main": "True"
+            "Barinade Boss Room": "
+                can_use(Boomerang) or
+                (logic_jabu_near_boss_ranged and
+                    (can_use(Hookshot) or can_use(Bow) or can_use(Slingshot))) or
+                (logic_jabu_near_boss_explosives and
+                    (has_bombchus or (Bombs and can_use(Hover_Boots))))"
         }
     }
 ]

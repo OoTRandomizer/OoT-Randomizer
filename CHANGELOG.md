@@ -1,6 +1,36 @@
 # Dev
 
 ## New Settings and Options
+* New settings for more control over special deal prices.
+* The `Randomize Ocarina Melodies` setting has a new option to randomize the Frogs 2 melody.
+* The `Free Scarecrow's Song` setting has been renamed to `Scarecrow Behavior`, with a new `Fast` option.
+* New options `Deku Theater Skull Mask` and `Deku Theater Mask of Truth` for the `Misc. Hints` setting.
+* New setting `Shuffle 100 Skulltula Reward` along with a new `House of Skulltula: 100` option for the `Misc. Hints` setting.
+* Glitched logic has been renamed to `Advanced` and been revamped to work with any settings, including Entrance Randomization.
+* A slew of advanced tricks and glitches have been added for the new `Advanced` logic setting.
+* The `Open Door of Time` setting has been renamed to `Door of Time`, with new options to require the Spiritual Stones and/or the Ocarina of Time.
+* New `Additional Random Starting Items` setting.
+
+## Bug fixes
+* The Deku Shield pot in the Spirit Temple is no longer shuffled when both `Fix Broken Drops` and `Include Empty Pots` are off.
+* For consistency with other location types, excluded pot/crate/beehive/wonderitem/etc. locations no longer behave as if their shuffle setting was off.
+* The Triforce Piece counter display has been moved to a CRT-safe position.
+* Fix Complete Mask Quest not working if Zelda's Letter is found in Kakariko.
+* Fix a bug where some custom hint distributions could cause the generator to fail with a `TypeError`.
+* Limit length of plandomized text boxes to 1200 characters to prevent buffer overflow bugs.
+* Fix Blue Fire Arrows being logically treated as Ice Arrows when selected as a starting item.
+* Fix a bug where it was possible to buy the item from Granny's Potion Shop without turning in the Odd Mushroom in some cases.
+
+## Other changes
+* Big poe souls can now be collected while riding Epona.
+* Ice traps have a new item model that's displayed instead of nothing after being picked up.
+* The professor in the lakeside lab now only takes 1 second instead of 6 to prepare the eyeball frog.
+* The text box that appears when collecting a gold skulltula token is no longer shuffled when `Text Shuffle` is set to `Shuffled except Important Text`.
+* Important Check hints no longer generate for areas with no shuffled locations, areas hinted as Barren, or precompleted dungeons.
+
+# 8.3
+
+## New Settings and Options
 * New options `Custom (count)` and `Custom (%)` for the `Ice Traps` setting.
 * New hidden `plandomized_locations` setting to allow presets to place specific items at specific locations.
 * New setting to speed up the boat ride in the Shadow Temple.

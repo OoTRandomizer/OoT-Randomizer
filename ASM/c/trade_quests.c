@@ -157,7 +157,7 @@ uint32_t SaveFile_TradeItemIsTraded(uint16_t itemId) {
     uint16_t tradeItemNum = GetTradeItemIndex(itemId);
     uint32_t traded = (z64_file.scene_flags[0x62].unk_00_ & (0x1 << tradeItemNum)) != 0;
     if (itemId >= Z64_ITEM_POCKET_EGG && itemId <= Z64_ITEM_CLAIM_CHECK && !CFG_ADULT_TRADE_SHUFFLE) {
-        return itemId < z64_file.items[Z64_SLOT_ADULT_TRADE] || traded;
+        return (z64_file.items[Z64_SLOT_ADULT_TRADE] != 0xFF && itemId < z64_file.items[Z64_SLOT_ADULT_TRADE]) || traded;
     }
     return traded;
 }
