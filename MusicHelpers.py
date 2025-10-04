@@ -6,7 +6,7 @@ import io
 import os
 import zipfile
 from Sequence import Sequence, SequenceGame
-from Utils import data_path
+from Utils import readonly_data_path
 
 def process_sequence_mmr_zseq(filepath: str, file_name: str, seq_type: str, include_custom_audiobanks: bool, groups) -> Sequence:
     split = file_name.split('.zseq')
@@ -95,7 +95,7 @@ def process_sequence_mmrs(filepath: str, file_name: str, seq_type: str, include_
             seq.game = SequenceGame.MM
             seq.new_instrument_set = True # MM sequences always require new instrument set.
             # Make sure we have the MM audio binaries
-            if not os.path.exists(os.path.join(data_path(), 'Music', 'MM.audiobin')):
+            if not os.path.exists(os.path.join(readonly_data_path(), 'Music', 'MM.audiobin')):
                 # Raise error. Maybe just skip and log a warning?
                 raise FileNotFoundError(".MMRS sequence found but missing MM.audiobin")
 

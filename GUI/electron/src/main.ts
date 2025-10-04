@@ -324,6 +324,8 @@ function manageCSP() {
 ipcMain.on('getGeneratorGUISettings', (event, arg) => {
 
   let pythonRootPath = app.isPackaged ? app.getAppPath() + "/python/" : app.getAppPath() + "/../";
+  let userConfigPath = arg.configPath;
+  let userDataPath = arg.dataPath;
 
   //Load compiled settings_list.json
   let compiledSettingsMapPath = path.normalize(pythonRootPath + "data/generated/settings_list.json");
@@ -350,7 +352,7 @@ ipcMain.on('getGeneratorGUISettings', (event, arg) => {
 
   //Load built in presets
   let presetPaths: string[] = [path.normalize(pythonRootPath + "data/presets_default.json")];
-  let extraPresetsPath = path.normalize(pythonRootPath + "data/Presets");
+  let extraPresetsPath = path.normalize(userDataPath + "Presets");
   let adjustedBuiltInPresets = {};
 
   if (fs.existsSync(extraPresetsPath)) {
@@ -377,7 +379,7 @@ ipcMain.on('getGeneratorGUISettings', (event, arg) => {
 
 
   //Load user presets
-  let userPresetPath = path.normalize(pythonRootPath + "presets.sav");
+  let userPresetPath = path.normalize(userConfigPath + "presets.sav");
 
   if (fs.existsSync(userPresetPath)) {
     let userPresets = JSON.parse(fs.readFileSync(userPresetPath, 'utf8'));

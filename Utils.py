@@ -3,11 +3,13 @@ import io
 import json
 import logging
 import os
+import platform
 import re
 import subprocess
 import sys
 import urllib.request
 from collections.abc import Sequence
+from enum import Enum
 from itertools import chain, combinations
 from typing import AnyStr, Optional, Any
 from urllib.error import URLError, HTTPError
@@ -19,44 +21,132 @@ def is_bundled() -> bool:
     return getattr(sys, 'frozen', False)
 
 
-def local_path(path: str = '') -> str:
-    if not hasattr(local_path, "cached_path"):
-        local_path.cached_path = None
+class PathType(Enum):
+    CONFIG = 'config'
+    CACHE = 'cache'
+    DATA = 'data'
+    STATE = 'state'
 
-    if local_path.cached_path is not None:
-        return os.path.join(local_path.cached_path, path)
+
+def user_config_path(path: str = '') -> str:
+    if not hasattr(user_config_path, "cached_path"):
+        user_config_path.cached_path = None
+
+    if user_config_path.cached_path is not None:
+        return os.path.join(user_config_path.cached_path, path)
+
+    user_config_path.cached_path = find_user_path(PathType.CONFIG)
+
+    return os.path.join(user_config_path.cached_path, path)
+
+
+def user_cache_path(path: str = '') -> str:
+    if not hasattr(user_cache_path, "cached_path"):
+        user_cache_path.cached_path = None
+
+    if user_cache_path.cached_path is not None:
+        return os.path.join(user_cache_path.cached_path, path)
+
+    user_cache_path.cached_path = find_user_path(PathType.CACHE)
+
+    return os.path.join(user_cache_path.cached_path, path)
+
+
+def user_data_path(path: str = '') -> str:
+    if not hasattr(user_data_path, "cached_path"):
+        user_data_path.cached_path = None
+
+    if user_data_path.cached_path is not None:
+        return os.path.join(user_data_path.cached_path, path)
+
+    user_data_path.cached_path = find_user_path(PathType.DATA)
+
+    return os.path.join(user_data_path.cached_path, path)
+
+
+def user_state_path(path: str = '') -> str:
+    if not hasattr(user_state_path, "cached_path"):
+        user_state_path.cached_path = None
+
+    if user_state_path.cached_path is not None:
+        return os.path.join(user_state_path.cached_path, path)
+
+    user_state_path.cached_path = find_user_path(PathType.STATE)
+
+    return os.path.join(user_state_path.cached_path, path)
+
+
+def find_user_path(path_type: PathType):
+    if path_type is PathType.DATA:
+        test_path = readonly_data_path('')
+    else:
+        test_path = readonly_local_path('')
+    if not os.access(test_path, os.W_OK):
+        # Cannot write to application directory. Either sandboxed or installed for all users
+        if platform.system() == 'Linux':
+            if path_type is PathType.CACHE:
+                test_path = os.path.join(
+                    os.environ.get('XDG_CACHE_HOME', os.path.join(os.path.expanduser('~'), '.cache')),
+                    'ootr-electron-gui')
+            elif path_type is PathType.CONFIG:
+                test_path = os.path.join(
+                    os.environ.get('XDG_CONFIG_HOME', os.path.join(os.path.expanduser('~'), '.config')),
+                    'ootr-electron-gui')
+            elif path_type is PathType.STATE:
+                test_path = os.path.join(
+                    os.environ.get('XDG_STATE_HOME', os.path.join(os.path.expanduser('~'), '.local', 'state')),
+                    'ootr-electron-gui')
+            else:
+                test_path = os.path.join(
+                    os.environ.get('XDG_DATA_HOME', os.path.join(os.path.expanduser('~'), '.local', 'share')),
+                    'ootr-electron-gui')
+            os.makedirs(test_path, mode=0o700, exist_ok=True)
+        if platform.system() != 'Linux' or not os.path.exists(test_path) or not os.access(test_path, os.W_OK):
+            raise RuntimeError(
+                f"No permissions to write to the user {path_type} directory. Platform: {platform.system()}, Directory: {test_path}")
+    return test_path
+
+
+def readonly_local_path(path: str = '') -> str:
+    if not hasattr(readonly_local_path, "cached_path"):
+        readonly_local_path.cached_path = None
+
+    if readonly_local_path.cached_path is not None:
+        return os.path.join(readonly_local_path.cached_path, path)
 
     if is_bundled():
         # we are running in a bundle
-        local_path.cached_path = os.path.dirname(os.path.realpath(sys.executable))
+        readonly_local_path.cached_path = os.path.dirname(os.path.realpath(sys.executable))
     else:
         # we are running in a normal Python environment
-        local_path.cached_path = os.path.dirname(os.path.realpath(__file__))
+        readonly_local_path.cached_path = os.path.dirname(os.path.realpath(__file__))
 
-    return os.path.join(local_path.cached_path, path)
+    return os.path.join(readonly_local_path.cached_path, path)
 
 
-def data_path(path: str = '') -> str:
-    if not hasattr(data_path, "cached_path"):
-        data_path.cached_path = None
+def readonly_data_path(path: str = '') -> str:
+    if not hasattr(readonly_data_path, "cached_path"):
+        readonly_data_path.cached_path = None
 
-    if data_path.cached_path is not None:
-        return os.path.join(data_path.cached_path, path)
+    if readonly_data_path.cached_path is not None:
+        return os.path.join(readonly_data_path.cached_path, path)
 
     # Even if it's bundled we use __file__
     # if it's not bundled, then we want to use the source.py dir + Data
     # if it's bundled, then we want to use the extraction dir + Data
-    data_path.cached_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
+    readonly_data_path.cached_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
 
-    return os.path.join(data_path.cached_path, path)
+    return os.path.join(readonly_data_path.cached_path, path)
 
 
 def default_output_path(path: str) -> str:
     if path == '':
-        path = local_path('Output')
+        path = readonly_local_path('Output')
+        if not os.access(path, os.W_OK):
+            path = user_data_path('Output')
 
     if not os.path.exists(path):
-        os.mkdir(path)
+        os.makedirs(path, mode=0o700)
     return path
 
 
@@ -199,8 +289,8 @@ def subprocess_args(include_stdout: bool = True) -> dict[str, Any]:
     return ret
 
 
-def run_process(logger: logging.Logger, args: Sequence[str], stdin: Optional[AnyStr] = None, *, check: bool = False) -> None:
-    process = subprocess.Popen(args, bufsize=1, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+def run_process(logger: logging.Logger, args: Sequence[str], stdin: Optional[AnyStr] = None, *, check: bool = False, cwd: str = readonly_local_path()) -> None:
+    process = subprocess.Popen(args, bufsize=1, stdout=subprocess.PIPE, stdin=subprocess.PIPE, cwd=cwd)
     if stdin is not None:
         process.communicate(input=stdin)
     else:

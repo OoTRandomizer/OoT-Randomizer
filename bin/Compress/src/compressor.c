@@ -13,6 +13,11 @@
 #include <Windows.h>
 #endif
 
+/* Needed to get user home directory on Linux */
+#ifdef linux
+#include <pwd.h>
+#endif
+
 /* Different ROM sizes */
 #define UINTSIZE 0x1000000
 #define COMPSIZE 0x2000000
@@ -58,6 +63,7 @@ uint32_t findTable(uint8_t*);
 void     getTableEnt(table_t*, uint32_t*, uint32_t);
 void*    threadFunc(void*);
 void     errorCheck(int, char**);
+char*    getArchivePath();
 void     makeArchive();
 int32_t  getNumCores();
 int32_t  getNext();
@@ -75,6 +81,7 @@ int32_t numFiles, nextFile;
 int32_t arcCount, outSize;
 uint32_t* fileTab;
 archive_t* archive;
+char archivePath[1024];
 output_t* out;
 /* 1}}} */
 
@@ -102,7 +109,7 @@ int main(int argc, char** argv)
     fclose(file);
 
     /* Read archive if it exists*/
-    file = fopen("ARCHIVE.bin", "rb");
+    file = fopen(getArchivePath(), "rb");
     if(file != NULL)
     {
         /* Get number of files */
@@ -296,6 +303,33 @@ int main(int argc, char** argv)
 }
 /* 1}}} */
 
+/* char* getArchivePath() {{{1 */
+char* getArchivePath() {
+    if (archivePath[0] != '\0') {
+      return archivePath;
+    }
+
+    int writable = access(".", W_OK);
+    if (writable == 0) {
+        strcpy(archivePath, "ARCHIVE.bin");
+        return archivePath;
+    } else {
+#ifdef linux
+        char* xdgCache = getenv("XDG_CACHE_HOME");
+        struct passwd *pw = getpwuid(getuid());
+        char* homeCache = pw->pw_dir;
+        strcat(homeCache, "/.cache");
+        char* userPath = (xdgCache != NULL) ? xdgCache : homeCache;
+        strcat(userPath, "/ootr-electron-gui/ARCHIVE.bin");
+        strcpy(archivePath, userPath);
+        return archivePath;
+#else
+        return NULL;
+#endif
+    }
+}
+/* 1}}} */
+
 /* uint32_t findTAble(uint8_t*) {{{1 */
 uint32_t findTable(uint8_t* argROM)
 {
@@ -429,7 +463,7 @@ void makeArchive()
     }
 
     /* Open output file */
-    file = fopen("ARCHIVE.bin", "wb");
+    file = fopen(getArchivePath(), "wb");
     if(file == NULL)
     {
         perror("ARCHIVE.bin");

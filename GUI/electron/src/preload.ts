@@ -29,6 +29,9 @@ var pythonSettingsToJsonPath = pythonSourcePath + "SettingsToJson.py";
 console.log("Python Executable Path:", pythonPath);
 console.log("Python Source Path:", pythonGeneratorPath);
 
+var localConfigWritePath: string;
+var localDataWritePath: string;
+
 //Enable API in client window
 electron.webFrame.executeJavaScript('window.electronAvailable = true;');
 electron.webFrame.executeJavaScript('window.apiTestMode = ' + testMode + ';');
@@ -59,11 +62,12 @@ remote.getCurrentWindow().on('leave-html-full-screen', () => {
 //FUNCTIONS
 function dumpSettingsToFile(settingsObj) {
   settingsObj["check_version"] = true;
-  fs.writeFileSync(pythonSourcePath + "settings.sav", JSON.stringify(settingsObj, null, 4));
+
+  fs.writeFileSync(path.join(localConfigWritePath, "settings.sav"), JSON.stringify(settingsObj, null, 4));
 }
 
 function dumpPresetsToFile(presetsString: string) {
-  fs.writeFileSync(pythonSourcePath + "presets.sav", presetsString);
+  fs.writeFileSync(path.join(localConfigWritePath, "presets.sav"), presetsString);
 }
 
 function displayPythonErrorAndExit(notPython3: boolean = false) {
@@ -81,10 +85,10 @@ function displayPythonErrorAndExit(notPython3: boolean = false) {
 
 function readSettingsFromFile() {
 
-  let path = pythonSourcePath + "settings.sav";
+  let settings = path.join(localConfigWritePath, "settings.sav");
 
-  if (fs.existsSync(path))
-    return fs.readFileSync(path, 'utf8');
+  if (fs.existsSync(settings))
+    return fs.readFileSync(settings, 'utf8');
   else
     return false;
 }
@@ -126,7 +130,7 @@ post.on('getCurrentSourceVersion', function (event) {
 
 post.on('getGeneratorGUISettings', function (event) {
 
-  return electron.ipcRenderer.sendSync('getGeneratorGUISettings');
+  return electron.ipcRenderer.sendSync('getGeneratorGUISettings', {"configPath":localConfigWritePath, "dataPath":localDataWritePath});
 });
 
 post.on('getGeneratorGUILastUserSettings', function (event) {
@@ -167,11 +171,11 @@ post.on('createAndOpenPath', function (event) {
 
   //Use python dir if not specified otherwise
   if (!data || typeof (data) != "string" || data.length < 1) {
-    data = pythonSourcePath;
+    data = localDataWritePath;
   }
   else {
     if (!path.isAbsolute(data))
-      data = pythonSourcePath + data;
+      data = path.join(localDataWritePath, data);
   }
 
   if (fs.existsSync(data)) {
@@ -385,3 +389,30 @@ generator.testPythonPath(pythonPath).then(() => {
   console.error(err);
   displayPythonErrorAndExit();
 });
+
+// Test if source path is writable. If not, use user-specified locations, or if not specified sane defaults
+try {
+  fs.accessSync(pythonSourcePath, fs.constants.W_OK)
+  localConfigWritePath = localDataWritePath = pythonSourcePath;
+} catch (err) {
+  // Cannot write to application directory. Either sandboxed or installed for all users.
+  if (platform === 'linux') {
+    const xdgConfig = path.join(fs.existsSync(process.env.XDG_CONFIG_HOME) ? process.env.XDG_CONFIG_HOME : path.join(os.homedir(), '.config'), 'ootr-electron-gui');
+    const xdgData = path.join(fs.existsSync(process.env.XDG_DATA_HOME) ? process.env.XDG_DATA_HOME : path.join(os.homedir(), '.local', 'share'), 'ootr-electron-gui');
+    [xdgConfig, xdgData].forEach((xdgPath: string) => {
+      if (!fs.existsSync(xdgPath)) {
+        fs.mkdirSync(xdgPath, {recursive: true, mode: 0o700});
+      }
+      fs.accessSync(xdgPath, fs.constants.W_OK);
+    });
+
+    localConfigWritePath = path.normalize(xdgConfig + '/');
+    localDataWritePath = path.normalize(xdgData + '/');
+  } else {
+    alert("Read-only paths are not supported on this platform.");
+    remote.app.quit();
+  }
+}
+
+console.log("Configuration Write Path:", localConfigWritePath);
+console.log("Data Write Path:", localDataWritePath);
