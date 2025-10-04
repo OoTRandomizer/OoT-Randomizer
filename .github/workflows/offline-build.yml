@@ -8,8 +8,11 @@ on:
 
 jobs:
   build_windows:
-    name: Offline Build - Windows
-    runs-on: windows-latest
+    name: Offline Build - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
     steps:
       - uses: actions/checkout@v5
       - name: Set up Python
@@ -22,7 +25,8 @@ jobs:
           mkdir GUI/python
           cp *.py GUI/python
           cd GUI
-          mv -Force package_release.json package.json
+          mv package_release.json package.json
           npm i
           npm run ng-prod
           npm run dist
+        shell: bash
