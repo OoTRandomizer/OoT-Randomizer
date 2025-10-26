@@ -3,7 +3,7 @@
 #include "kaleido_item.h"
 
 void KaleidoScope_DrawItemSelect(z64_game_t* play) {
-    z64_file_t save_ctxt = z64_file;
+    z64_file_t* save_ctxt = &z64_file;
     z64_input_t* input = &play->common.input[0];
     z64_pause_ctxt_t* pause_ctxt = &play->pause_ctxt;
     uint16_t i;
@@ -126,7 +126,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
 
                 // Updates the inventory item pointed to if an item was found. Otherwise, it retains a now stale value.
                 if (cursor_move_result == 1) {
-                    cursor_item = save_ctxt.items[pause_ctxt->cursor_point[PAUSE_ITEM]];
+                    cursor_item = save_ctxt->items[pause_ctxt->cursor_point[PAUSE_ITEM]];
                 }
             }
         } else if (pause_ctxt->cursor_special_pos == PAUSE_CURSOR_PAGE_LEFT) {
@@ -143,7 +143,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
                     // Searches for an item. Checks top to bottom one column at a time. If it finds one it tries to reset
                     // state, but it forgets to unset cursor_item so the stale item remains when you switch back
                     // to this screen.
-                    if (save_ctxt.items[cursor_point] != ITEM_NONE) {
+                    if (save_ctxt->items[cursor_point] != ITEM_NONE) {
                         pause_ctxt->cursor_point[PAUSE_ITEM] = cursor_point;
                         pause_ctxt->cursor_x[PAUSE_ITEM] = cursor_x;
                         pause_ctxt->cursor_y[PAUSE_ITEM] = cursor_y;
@@ -184,7 +184,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
                     // Searches for an item. Checks top to bottom one column at a time. If it finds one it tries to reset
                     // state, but it forgets to unset cursor_item so the stale item remains when you switch back
                     // to this screen.
-                    if (save_ctxt.items[cursor_point] != ITEM_NONE) {
+                    if (save_ctxt->items[cursor_point] != ITEM_NONE) {
                         pause_ctxt->cursor_point[PAUSE_ITEM] = cursor_point;
                         pause_ctxt->cursor_x[PAUSE_ITEM] = cursor_x;
                         pause_ctxt->cursor_y[PAUSE_ITEM] = cursor_y;
@@ -228,7 +228,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
                                 pause_ctxt->cursor_y[PAUSE_ITEM]--;
                                 pause_ctxt->cursor_point[PAUSE_ITEM] -= ITEM_GRID_COLS;
 
-                                if(save_ctxt.items[pause_ctxt->cursor_point[PAUSE_ITEM]] != ITEM_NONE
+                                if(save_ctxt->items[pause_ctxt->cursor_point[PAUSE_ITEM]] != ITEM_NONE
                                     // Allow unrestricted menu Y movement without interfering with equip swap
                                     || x_move_result == 0) {
                                     cursor_move_result = 1;
@@ -244,7 +244,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
                                 pause_ctxt->cursor_y[PAUSE_ITEM]++;
                                 pause_ctxt->cursor_point[PAUSE_ITEM] += ITEM_GRID_COLS;
 
-                                if(save_ctxt.items[pause_ctxt->cursor_point[PAUSE_ITEM]] != ITEM_NONE
+                                if(save_ctxt->items[pause_ctxt->cursor_point[PAUSE_ITEM]] != ITEM_NONE
                                     // Allow unrestricted menu Y movement without interfering with equip swap
                                     || x_move_result == 0) {
                                     cursor_move_result = 1;
@@ -266,9 +266,9 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
 
             // Update the item the cursor is pointing to if you have made a valid menu move. If you have not enjoy quick swap
             if (cursor_move_result == 1) {
-                cursor_item = save_ctxt.items[pause_ctxt->cursor_point[PAUSE_ITEM]];
+                cursor_item = save_ctxt->items[pause_ctxt->cursor_point[PAUSE_ITEM]];
             } else if (cursor_move_result != 2) {
-                cursor_item = save_ctxt.items[pause_ctxt->cursor_point[PAUSE_ITEM]];
+                cursor_item = save_ctxt->items[pause_ctxt->cursor_point[PAUSE_ITEM]];
             }
 
             pause_ctxt->cursor_item[PAUSE_ITEM] = cursor_item;
@@ -365,7 +365,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
 
     // Draw outline around equipped items
     for (i = 0, j = 24 * 4; i < 3; i++, j += 4) {
-        if (save_ctxt.button_items[i + 1] != ITEM_NONE) {
+        if (save_ctxt->button_items[i + 1] != ITEM_NONE) {
             gSPVertex(POLY_OPA_DISP++, &pause_ctxt->item_vtx[j], 4, 0);
             POLY_OPA_DISP = KaleidoScope_QuadTextureIA8(POLY_OPA_DISP, z64_EquippedItemOutlineTex, 32, 32, 0);
         }
@@ -378,7 +378,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
     for (i = j = 0; i < 24; i++, j += 4) {
         gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 255, 255, 255, pause_ctxt->alpha);
 
-        if (save_ctxt.items[i] != ITEM_NONE) { // Only if you've obtained it
+        if (save_ctxt->items[i] != ITEM_NONE) { // Only if you've obtained it
             if ((pause_ctxt->changing == PAUSE_MAIN_STATE_IDLE) && (pause_ctxt->screen_idx == PAUSE_ITEM) &&
                 (pause_ctxt->cursor_special_pos == 0)) { // Cursor is over an item
                 if (CHECK_AGE_REQ_SLOT(i)) { // Item can be equipped as current age
@@ -402,7 +402,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
 
             gSPVertex(POLY_OPA_DISP++, &pause_ctxt->item_vtx[j + 0], 4, 0);
             KaleidoScope_DrawQuadTextureRGBA32(play->common.gfx,
-                                               z64_ItemIcons[save_ctxt.items[i]], ITEM_ICON_WIDTH,
+                                               z64_ItemIcons[save_ctxt->items[i]], ITEM_ICON_WIDTH,
                                                ITEM_ICON_HEIGHT, 0);
         }
     }
@@ -417,8 +417,8 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
 
     // Draw the current ammo amounts
     for (i = 0; i < 15; i++) {
-        if ((z64_AmmoItems[i] != ITEM_NONE) && (save_ctxt.items[i] != ITEM_NONE)) {
-            KaleidoScope_DrawAmmoCount(pause_ctxt, play->common.gfx, save_ctxt.items[i]);
+        if ((z64_AmmoItems[i] != ITEM_NONE) && (save_ctxt->items[i] != ITEM_NONE)) {
+            KaleidoScope_DrawAmmoCount(pause_ctxt, play->common.gfx, save_ctxt->items[i]);
         }
     }
 
