@@ -1930,7 +1930,7 @@ class RoomMeshCullableHeader(DataRecord):
         bytes.extend(int(len(self.display_list_entries.entries)).to_bytes(1, 'big'))
         bytes.extend(int.to_bytes(0, 2, 'big'))
         bytes.extend(self.display_list_entries.get_segment_address_bytes())
-        bytes.extend(create_segment_address(self.display_list_entries.file.type.value, self.display_list_entries.offset + len(self.display_list_entries.entries) * 8).to_bytes(4, 'big'))
+        bytes.extend(create_segment_address(self.display_list_entries.file.type.value, self.display_list_entries.offset + len(self.display_list_entries.entries) * 16).to_bytes(4, 'big'))
         return bytes
 
 
