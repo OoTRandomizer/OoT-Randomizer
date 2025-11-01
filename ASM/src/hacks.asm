@@ -2889,15 +2889,15 @@ courtyard_guards_kill:
 ;==================================================================================================
 ; Replaces: lui     at, 1
 ;           addu    at, at, a3
-.orga 0xCF73C8
-    jal     grotto_entrance
-    lui     at, 1
+;.orga 0xCF73C8
+;    jal     grotto_entrance
+;    lui     at, 1
 
 ; Replaces: addu    at, at, a3
 ;           sh      t6, 0x1E1A(at)
-.orga 0xBD4C58
-    jal     scene_exit_hook
-    addu    at, at, a3
+;.orga 0xBD4C58
+;    jal     scene_exit_hook
+;    addu    at, at, a3
 
 ;==================================================================================================
 ; Getting Caught by Gerudo NPCs in ER
@@ -4156,3 +4156,8 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/ovl_en_changer.asm"
 .include "hacks/ovl_en_ssh.asm"
 .include "hacks/ovl_en_okarina_tag.asm"
+.include "hacks/z_demo.asm"
+.include "hacks/z_play.asm"
+.include "hacks/z_scene.asm"
+.include "hacks/ovl_player_actor.asm"
+.include "hacks/ovl_door_ana.asm"

@@ -1,7 +1,7 @@
 #ifndef DEBUG_H
 #define DEBUG_H
 
-#define DEBUG_MODE 0
+#define DEBUG_MODE 1
 
 #include "z64.h"
 #include "gfx.h"

@@ -9,7 +9,7 @@ from MQ import align4, align8, align16, align_file
 from SceneList import RecordType, SCENE_EXTERNAL_REFERENCES
 
 if TYPE_CHECKING:
-    from Scene import SceneCutsceneData, SceneTransitionActorList, ScenePathList, RoomActorList, RoomObjectList, CollisionBgCamInfoList
+    from Scene import SceneCutsceneData, SceneTransitionActorList, ScenePathList, RoomActorList, RoomObjectList, CollisionBgCamInfoList, SceneAltHeaderList
 
 def segment_address_offset(segment_address: int) -> int:
     return segment_address & 0x00FFFFFF
@@ -354,6 +354,8 @@ class FileDataRelocator(ABC):
     def get_existing_records_by_type(self, record_type: Literal[RecordType.ActorList]) -> list[RoomActorList]: ...
     @overload
     def get_existing_records_by_type(self, record_type: Literal[RecordType.ObjectList]) -> list[RoomObjectList]: ...
+    @overload
+    def get_existing_records_by_type(self, record_type: Literal[RecordType.AlternateHeaders]) -> list[SceneAltHeaderList]: ...
 
     def get_existing_records_by_type(self, record_type: RecordType) -> list[DataRecord]:
         return list(filter(lambda r: r.type == record_type, self.data_records))

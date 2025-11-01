@@ -25,9 +25,9 @@ from Messages import read_messages, update_message_by_id, read_shop_items, updat
         get_message_by_id, TextCode, new_messages, COLOR_MAP
 from OcarinaSongs import patch_songs
 from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
-from Rom import Rom, Vec3s
+from Rom import Rom, Vec3s, EntranceTable, EntranceTableEntry, EntranceTransitionType
 from SaveContext import SaveContext, SceneIDs, FlagType, write_settings_dependent_save_context_flags
-from Scene import Scenes, CollisionSurfaceType, SceneDataRelocator, ActorEntry, ActorData, RoomDataRelocator, RoomHeader
+from Scene import Scenes, CollisionSurfaceType, SceneDataRelocator, ActorEntry, ActorData, RoomDataRelocator, RoomHeader, SceneEntrance, SceneExitList
 from SceneFlags import build_xflag_tables, build_xflags_from_world, get_alt_list_bytes
 from Sounds import move_audiobank_table
 from Spoiler import Spoiler
@@ -701,7 +701,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     scenes[SceneIDs.JABU_JABU].headers[0].entrance_list.entrances[1].room = 0x05 # Set Spawn Room to be correct (vanilla 0x0E)
 
     # Update the Water Temple Boss Exit to load the correct room (vanilla 0x00)
-    scenes[SceneIDs.WATER_TEMPLE].headers[0].entrance_list.entrances[1].room = 0x0B
+    scenes[SceneIDs.WATER_TEMPLE].headers[0].entrance_list.entrances.append(SceneEntrance(0x00, 0x0B))
 
     def set_entrance_updates(entrances: Iterable[Entrance]) -> None:
         for entrance in entrances:
@@ -714,32 +714,9 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             if 'savewarp_addresses' in replaced_entrance and entrance.reverse:
                 if entrance.parent_region.savewarp:
                     savewarp = entrance.parent_region.savewarp.replaces.data['index']
-                elif 'savewarp_fallback' in entrance.reverse.data:
-                    # Spawning outside a grotto crashes the game, so we use a nearby regular entrance instead.
-                    if entrance.reverse.data['savewarp_fallback'] == 0x0117:
-                        # We don't want savewarping in a boss room inside GV Octorok Grotto to allow out-of-logic access to Gerudo Valley,
-                        # so we spawn the player at whatever entrance GV Lower Stream -> Lake Hylia leads to.
-                        savewarp = world.get_entrance('GV Lower Stream -> Lake Hylia')
-                        savewarp = (savewarp.replaces or savewarp).data
-                        if 'savewarp_fallback' in savewarp:
-                            # the entrance GV Lower Stream -> Lake Hylia leads to is also not a valid savewarp so we place the player at Gerudo Valley from Hyrule Field instead
-                            savewarp = entrance.reverse.data['savewarp_fallback']
-                        else:
-                            savewarp = savewarp['index']
-                    else:
-                        savewarp = entrance.reverse.data['savewarp_fallback']
                 else:
                     # Spawning inside a grotto also crashes, but exiting a grotto can currently only lead to a boss room in decoupled,
                     # so we follow the entrance chain back to the nearest non-grotto.
-                    savewarp = entrance
-                    while 'savewarp_fallback' in savewarp.data:
-                        parents = list(filter(lambda parent: parent.reverse, savewarp.parent_region.entrances))
-                        if len(parents) == 0:
-                            raise Exception('Unable to set savewarp')
-                        elif len(parents) == 1:
-                            savewarp = parents[0]
-                        else:
-                            raise Exception('Found grotto with multiple entrances')
                     savewarp = savewarp.reverse.data['index']
                 for address in replaced_entrance['savewarp_addresses']:
                     rom.write_int16(address, savewarp)
@@ -763,6 +740,115 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             elif entrance.type != 'Grotto':
                 exit_updates.append((new_entrance['index'], replaced_entrance.get('child_index', replaced_entrance['index'])))
 
+    # Add adult boss blue warp entrances to child scene layers.
+    # Adult scene layers have the same child entrances followed
+    # by the blue warp entrance. Missing this in the child layers
+    # causes using the global entrance table entry for blue warps
+    # for child to crash as the referenced spawn position doesn't exist.
+    for entrance in world.get_shufflable_entrances(type='BlueWarp'):
+        if 'add_exit' in entrance.data:
+            for layer in [0, 1]:
+                if scenes[entrance.data['scene']].headers[layer] != None:
+                    # Copy spawn position from the adult layer
+                    # Adult day layer is guaranteed to exist for the blue warp target scenes
+                    adult_layer = scenes[entrance.data['scene']].headers[2]
+                    scenes[entrance.data['scene']].headers[layer].spawn_points.spawns.append(
+                        adult_layer.spawn_points.spawns[-1].copy()
+                    )
+                    # Add entry to the entrance list
+                    scenes[entrance.data['scene']].headers[layer].entrance_list.entrances.append(
+                        adult_layer.entrance_list.entrances[-1].copy()
+                    )
+
+    # Copy vanilla entrance table to extended entrance table
+    entrance_table = EntranceTable(rom)
+
+    # Patch grotto entrances and exits to work like other scene transitions
+    def get_grotto_actor(scenes: Scenes, scene_id: int, content: int) -> tuple[ActorEntry, int]:
+            parent_scene = scenes[scene_id]
+            for room in parent_scene.rooms:
+                for header in room.headers:
+                    if header is None or header.actor_list is None:
+                        continue
+                    for actor in header.actor_list.actors:
+                        if actor.id == 0x009B and (actor.params & 0x00FF) == content:
+                            return actor, room.id
+            return None
+    fairy_grotto_scene = scenes[SceneIDs.FAIRY_FOUNTAIN_HEALTH]
+    other_grotto_scene = scenes[SceneIDs.GROTTOS]
+    grotto_table_cursor = rom.sym('gGrottoTable')
+    for entrance in world.get_shufflable_entrances(type='Grotto'):
+        if entrance.primary:
+            if 'Fairy Fountain' in entrance.name:
+                grotto_scene = fairy_grotto_scene
+            else:
+                grotto_scene = other_grotto_scene
+            parent_scene = scenes[entrance.data['scene']]
+            # Find an instance of the grotto actor for extracting X/Z coordinates for the new exit entrance.
+            grotto_actor, grotto_room_id = get_grotto_actor(scenes, entrance.data['scene'], entrance.data['content'])
+            if grotto_actor == None:
+                raise Exception(f'Could not find grotto actor for entrance {entrance.name}')
+            layer_exits = []
+            entrance_list_index = 0
+            if 'add_exit' in entrance.data:
+                entrance_index = entrance_table.copy_entry(entrance.data['entrance'])
+            else:
+                entrance_index = entrance.data['entrance']
+            # Create reverse exit
+            reverse_entrance_index = entrance_table.add_entry(EntranceTableEntry(
+                parent_scene.id,
+                0, # temporary value, can vary between layers if entrance lists are different sizes
+                False,
+                True,
+                EntranceTransitionType.TRANS_TYPE_FADE_WHITE,
+                EntranceTransitionType.TRANS_TYPE_FADE_WHITE,
+            ))
+            for layer in range(0, 4):
+                # Save entrance index back to entrance for generating any shuffle data
+                if layer == 0:
+                    entrance.data['index'] = entrance_index
+                # Layer 0 always exists. If a later layer is null, the entrance table still
+                # needs the full set of four entries, so reuse the last index.
+                if (len(parent_scene.headers) > layer or layer == 0) and parent_scene.headers[layer] != None:
+                    entrance_list_index = len(parent_scene.headers[layer].entrance_list.entrances)
+                assert entrance_list_index != 0
+                entrance_table.entries[reverse_entrance_index + layer].entrance_list_index = entrance_list_index
+                # Replace dynamic ENTR_GROTTO_RETURN exit with our shiny new standard exit
+                # in a new scene layer. The scene loading system is patched to load the right
+                # layer for a given grotto entrance index.
+                if layer == 0:
+                    new_grotto_layer = grotto_scene.headers[0].copy()
+                    grotto_exit_list = SceneExitList(grotto_scene, grotto_scene.end)
+                    grotto_exit_list.exits.append(reverse_entrance_index)
+                    new_grotto_layer.exit_list = grotto_exit_list
+                    grotto_scene_layer = grotto_scene.add_header(new_grotto_layer)
+                    rom.write_int16s(grotto_table_cursor, [entrance.data['index'], grotto_scene_layer])
+                    grotto_table_cursor += 4
+                if (len(parent_scene.headers) > layer or layer == 0) and parent_scene.headers[layer] != None:
+                    # Always add the layer 0 index to the exit table because the system auto
+                    # offsets the index elsewhere.
+                    parent_scene.headers[layer].exit_list.exits.append(entrance.data['index'])
+                    layer_exits.append(len(parent_scene.headers[layer].exit_list.exits) - 1)
+                    # Add new return entrance using the grotto actor's coordinates.
+                    parent_scene.headers[layer].entrance_list.entrances.append(SceneEntrance(len(parent_scene.headers[layer].spawn_points.spawns), grotto_room_id))
+                    # Spawn actor parameters control two things for the player actor:
+                    #    - Start Mode
+                    #    - Camera Behavior
+                    # 0x04 corresponds to start mode PLAYER_START_MODE_GROTTO, which launches the player in the air briefly.
+                    # 0xFF is the default behavior that reads bgCamIndex from the current floor polygon
+                    parent_scene.headers[layer].spawn_points.spawns.append(ActorEntry(0, grotto_actor.pos.copy(), Vec3s(0, grotto_actor.rot.y, 0), 0x04FF))
+            if not all([e == layer_exits[0] for e in layer_exits]):
+                raise Exception(f'Different sized exit lists for scene {parent_scene.name}: {layer_exits}')
+            # Exit list index is static even when shuffled. Only the list entry itself changes. This
+            # needs to be the same index for every layer as it's stored in the grotto actor params
+            # at the scene level, not a lookup table per-layer.
+            entrance.data['exit_index'] = layer_exits[0]
+
+    entrance_table.write_table()
+
+    # Now that all exit lists are patched, generate lookup table
+    # keyed on entrance table index for scene changes to make
+    # for entrance randomizer.
     exit_table = generate_exit_lookup_table()
 
     if world.disable_trade_revert:
@@ -1544,16 +1630,16 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         if world.settings.shuffle_scrubs == 'random':
             shuffle_messages.scrubs_message_ids.append(text_id)
 
-    if world.settings.shuffle_grotto_entrances:
+    #if world.settings.shuffle_grotto_entrances:
         # Build the Grotto Load Table based on grotto entrance data
-        for entrance in world.get_shuffled_entrances(type='Grotto'):
-            if entrance.primary:
-                load_table_pointer = rom.sym('GROTTO_LOAD_TABLE') + 4 * entrance.data['grotto_id']
-                rom.write_int16(load_table_pointer, entrance.data['entrance'])
-                rom.write_byte(load_table_pointer + 2, entrance.data['content'])
+        #for entrance in world.get_shuffled_entrances(type='Grotto'):
+        #    if entrance.primary:
+        #        load_table_pointer = rom.sym('GROTTO_LOAD_TABLE') + 4 * entrance.data['grotto_id']
+        #        rom.write_int16(load_table_pointer, entrance.data['entrance'])
+        #        rom.write_byte(load_table_pointer + 2, entrance.data['content'])
 
         # Update grotto actors based on their new entrance
-        set_grotto_shuffle_data(scenes, world, rom)
+    set_grotto_shuffle_data(scenes, world, rom)
 
     if world.settings.shuffle_cows:
         rom.write_byte(rom.sym('SHUFFLE_COWS'), 0x01)
@@ -2344,22 +2430,17 @@ def set_cow_id_data(scenes: Scenes, world: World) -> None:
 def set_grotto_shuffle_data(scenes: Scenes, world: World, rom: Rom) -> None:
     def override_grotto_data(scene: SceneDataRelocator, actor: ActorData) -> None:
         if actor.id == 0x009B:  # Grotto
-            actor_var = actor.params
-            grotto_type = (actor_var >> 8) & 0x0F
-            grotto_actor_id = (scene.id << 8) + (actor_var & 0x00FF)
-
+            grotto_actor_id = (scene.id << 8) + (actor.params & 0x00FF)
+            if grotto_actor_id not in grotto_entrances_override:
+                raise Exception(f'Could not find grotto actor in override table for scene [{scene.id}] {scene.name} and params {actor.params}')
             actor.rot.z = grotto_entrances_override[grotto_actor_id]
-            param_upper_byte = (grotto_type + 0x20) << 8
-            actor.params = (actor.params | param_upper_byte) & (param_upper_byte | 0x00FF)
 
     # Build the override table based on shuffled grotto entrances
     grotto_entrances_override = {}
-    for entrance in world.get_shuffled_entrances(type='Grotto'):
+    for entrance in world.get_shufflable_entrances(type='Grotto'):
         if entrance.primary:
             grotto_actor_id = (entrance.data['scene'] << 8) + entrance.data['content']
-            grotto_entrances_override[grotto_actor_id] = entrance.replaces.data['index']
-        else:
-            rom.write_int16(rom.sym('GROTTO_EXIT_LIST') + 2 * entrance.data['grotto_id'], entrance.replaces.data['index'])
+            grotto_entrances_override[grotto_actor_id] = entrance.data['exit_index']
 
     # Override grotto actors data with the new data
     get_actor_list(scenes, override_grotto_data)

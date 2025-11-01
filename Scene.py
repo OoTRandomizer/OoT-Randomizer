@@ -102,6 +102,12 @@ class SceneDataRelocator(FileDataRelocator):
             adult_header.actor_list = room6.headers[0].actor_list.copy()
             room6.headers[0].actor_list.actors.pop(0)
 
+    def add_header(self, header: SceneHeader) -> int:
+        if self.headers[0].alt_header_list == None:
+            self.headers[0].alt_header_list = SceneAltHeaderList(self, self.end)
+        self.headers.append(header)
+        self.headers[0].alt_header_list.headers.append(header)
+        return len(self.headers) - 1
 
     def write(self, rom: Rom) -> int:
         aligned_file_end = super().write(rom)
@@ -138,6 +144,28 @@ class SceneHeader(DataRecord):
         self.cutscene_data: SceneCutsceneData = None
         self.actor_list: RoomActorList = None
         self.align = 16
+
+    # In general, copying the alt headers list isn't desirable
+    # as it can only be defined for the first header in a file.
+    def copy(self, with_alt_headers: bool = False) -> SceneHeader:
+        header = SceneHeader(self.file, self.file.end)
+        if with_alt_headers:
+            header.alt_header_list = self.alt_header_list
+        header.sound_settings = self.sound_settings
+        header.room_list = self.room_list
+        header.transition_actor_list = self.transition_actor_list
+        header.misc_settings = self.misc_settings
+        header.collision_header = self.collision_header
+        header.entrance_list = self.entrance_list
+        header.special_objects = self.special_objects
+        header.path_list = self.path_list
+        header.spawn_points = self.spawn_points
+        header.skybox_settings = self.skybox_settings
+        header.exit_list = self.exit_list
+        header.light_settings = self.light_settings
+        header.cutscene_data = self.cutscene_data
+        header.actor_list = self.actor_list
+        return header
 
     @staticmethod
     def decode(file: FileDataRelocator, offset: int = 0, length: Optional[int] = -1) -> SceneHeader:
@@ -1040,8 +1068,21 @@ class SceneEntranceList(DataRecord):
     def decode_late(self) -> None:
         cursor = self.start + self.offset
         self.length = self.file.get_record_length_from_neighbor(self)
-        self.refresh_rom_data()
+        # Entrance list and spawn list are usually the same size. Using next neighbor
+        # adds padding bytes in some scenes as invalid extra entries.
+        scene: SceneDataRelocator = self.file
+        highest_entrance_index = len(scene.headers[0].spawn_points.spawns)
         num_entrances = int(self.length / 0x02)
+        actual_entrances = highest_entrance_index
+        if num_entrances > highest_entrance_index:
+            for i in range(highest_entrance_index, num_entrances):
+                entrance_index = self.file.rom.read_int16(cursor + i * 0x02)
+                if entrance_index != 0:
+                    actual_entrances += 1
+                    #raise Exception(f'Nonzero unreferenced exit entry 0x{entrance_index:0>2x} at offset 0x{cursor - scene.start:0>6x} (address 0x{cursor:0>8x}) in {scene.name}.')
+            num_entrances = actual_entrances
+        self.length = num_entrances * 0x02
+        self.refresh_rom_data()
         for i in range(0, num_entrances):
             self.entrances.append(SceneEntrance.decode(self.file.rom, cursor + i * 0x02))
         self.delay_parsing = False
@@ -1071,6 +1112,9 @@ class SceneEntrance:
         bytes.extend(self.playerEntryIndex.to_bytes(1, 'big'))
         bytes.extend(self.room.to_bytes(1, 'big'))
         return bytes
+
+    def copy(self) -> SceneEntrance:
+        return SceneEntrance(self.playerEntryIndex, self.room)
 
 
 # Data only, part of scene headers
@@ -1294,8 +1338,26 @@ class SceneExitList(DataRecord):
     def decode_late(self) -> None:
         cursor = self.start + self.offset
         self.length = self.file.get_record_length_from_neighbor(self)
-        self.refresh_rom_data()
+        # Inferring end of the list as the start address of the next data record
+        # can inadvertently append padding bytes as exit data. There are cases
+        # where the last entry is actually 00 (Deku Tree in Kokiri Forest),
+        # so use the highest referenced exit index in collision data for load zones as
+        # the real end of the list.
+        highest_exit_index = 0
+        scene: SceneDataRelocator = self.file
+        for surface in scene.headers[0].collision_header.surfaceTypeList.surfaces:
+            highest_exit_index = max(highest_exit_index, (surface.data[0] >> 8) & 0x1F)
         num_entrances = int(self.length / 0x02)
+        actual_entrances = highest_exit_index
+        if num_entrances > highest_exit_index:
+            for i in range(highest_exit_index, num_entrances):
+                exit_index = self.file.rom.read_int16(cursor + i * 0x02)
+                if exit_index != 0:
+                    actual_entrances += 1
+                    #raise Exception(f'Nonzero unreferenced exit entry 0x{exit_index:0>2x} at offset 0x{cursor - scene.start:0>6x} (address 0x{cursor:0>8x}) in {scene.name}.')
+            num_entrances = actual_entrances
+        self.length = num_entrances * 0x02
+        self.refresh_rom_data()
         for i in range(0, num_entrances):
             self.exits.append(self.file.rom.read_int16(cursor + i * 0x02))
         self.delay_parsing = False
@@ -1423,6 +1485,7 @@ class RoomDataRelocator(FileDataRelocator):
     def __init__(self, rom: Rom, name: str, start: int, end: int, scene: SceneDataRelocator) -> None:
         self.scene = scene
         self.headers: list[Optional[RoomHeader]] = [None]
+        self.id = int(name.split('_')[-1])
         super().__init__(rom, name, start, end, FileType.Room)
 
     def parse_file_header(self, alternate: Optional[int] = None) -> DataRecord:
@@ -2538,3 +2601,7 @@ def compare_file_bytes(original_file: str, new_file: str) -> None:
         if original_bytes[i] != new_bytes[i]:
             raise Exception(f'Byte mismatch at offset 0x{i:0>8x}. Original: 0x{original_bytes[i]:0>2x} New: 0x{new_bytes[i]:0>2x}')
         i += 1
+
+if __name__ == '__main__':
+    romdec = Rom('ZOOTDEC.z64')
+    compare_parsed_data_to_rom(romdec, True)

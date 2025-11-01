@@ -1479,7 +1479,7 @@ typedef struct {
   char             unk_20_[0x000B];        /* 0x11DED */
   void            *map_actor_list;         /* 0x11DF8 */
   char             unk_21_[0x0008];        /* 0x11DFC */
-  void            *scene_exit_list;        /* 0x11E04 */
+  int16_t         *scene_exit_list;        /* 0x11E04 */
   char             unk_22_[0x000C];        /* 0x11E08 */
   uint8_t          skybox_type;            /* 0x11E14 */
   int8_t           scene_load_flag;        /* 0x11E15 */
@@ -2011,6 +2011,8 @@ typedef enum {
 #define GetItem_Draw_addr                       0x800570C0
 #define z64_Audio_GetActiveSeqId_addr           0x800CAB18
 #define z64_Play_SetupRespawnPoint_addr         0x8009D94C
+#define z64_Play_LoadToLastEntrance_addr        0x8009DA10
+#define z64_Play_SetRespawnData_addr            0x8009D8DC
 #define z64_EffectSsKiraKira_SpawnSmall_addr    0x8001C66C
 
 /* rom addresses */
@@ -2100,6 +2102,8 @@ typedef void(*z64_ScalePitchAndTempo_proc)(float scaleTempoAndFreq, uint8_t dura
 typedef void(*GetItem_Draw_proc)(z64_game_t* game, int16_t drawId);
 typedef uint16_t (*z64_Audio_GetActiveSeqId_proc)(uint8_t seqId);
 typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawnMode, int32_t playerParams);
+typedef void(*z64_Play_LoadToLastEntrance_proc)(z64_game_t *game);
+typedef void(*z64_Play_SetRespawnData_proc)(z64_game_t *game, int32_t respawnMode, int16_t entranceIndex, int32_t roomIndex, int32_t playerParams, z64_xyzf_t *pos, int16_t yaw);
 
 /* data */
 #define z64_file_mq             (*(OSMesgQueue*)      z64_file_mq_addr)
@@ -2193,6 +2197,8 @@ typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawn
 #define z64_ScalePitchAndTempo        ((z64_ScalePitchAndTempo_proc)z64_ScalePitchAndTempo_addr)
 #define z64_Audio_GetActiveSeqId ((z64_Audio_GetActiveSeqId_proc)z64_Audio_GetActiveSeqId_addr)
 #define z64_Play_SetupRespawnPoint ((z64_Play_SetupRespawnPoint_proc)z64_Play_SetupRespawnPoint_addr)
+#define z64_Play_LoadToLastEntrance ((z64_Play_LoadToLastEntrance_proc)z64_Play_LoadToLastEntrance_addr)
+#define z64_Play_SetRespawnData ((z64_Play_SetRespawnData_proc)z64_Play_SetRespawnData_addr)
 
 #define PlaySFX ((PlaySFX_proc)PlaySFX_addr)
 #define Font_LoadChar ((Font_LoadChar_proc)Font_LoadChar_addr)

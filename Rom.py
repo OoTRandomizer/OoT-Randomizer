@@ -1,5 +1,6 @@
 from __future__ import annotations
 import copy
+from enum import IntEnum
 import json
 import os
 import platform
@@ -567,3 +568,104 @@ def bytes_to_float(b: bytearray) -> float:
 
 def float_to_bytes(f: float) -> bytes:
     return struct.pack('>f', f)
+
+
+class EntranceTable:
+    def __init__(self, rom: Rom):
+        self.rom = rom
+        self.entries: list[EntranceTableEntry] = []
+        start_address: int = 0xB6FBF0
+        vanilla_size: int = 0x1850
+        for i in range(0, vanilla_size, 4):
+            self.entries.append(EntranceTableEntry.decode(rom, start_address + i))
+
+    # Adds entry and returns the new entry row index in the table
+    def add_entry(self, entry: EntranceTableEntry, layers: int = 4) -> int:
+        for _ in range(0, layers):
+            self.entries.append(entry)
+        return len(self.entries) - layers
+
+    # Copies entries to end of table and returns the index of the first added entry.
+    # Mainly used to duplicate grotto entries into unique entrances per grotto with all
+    # layer variants (child/adult day/night).
+    def copy_entry(self, entry_index: int, layers: int = 4) -> int:
+        for i in range(0, layers):
+            self.entries.append(self.entries[entry_index + i].copy())
+        return len(self.entries) - layers
+
+    # Always write changes to the extended table
+    def write_table(self):
+        table_bytes = bytearray()
+        for entry in self.entries:
+            table_bytes.extend(entry.encode())
+        if len(table_bytes) > 0x1850 + 55*4*4:
+            raise Exception(f'Extended entrance table is too large: {len(table_bytes):0>4x} bytes for {len(self.entries):0>4x} entries.')
+        self.rom.write_bytes(self.rom.sym('gExtendedEntranceTable'), table_bytes)
+        # For testing, delete the original entrance table to confirm the new one is used
+        blank_entrance_table = [0] * 0x1850
+        self.rom.write_bytes(0xB6FBF0, blank_entrance_table)
+
+
+class EntranceTableEntry:
+    def __init__(self, scene_id: int = 0, entrance_list_index: int = 0, continue_bgm: bool = False, display_title_card: bool = True, exit_transition: int = 0, entrance_transition: int = 0):
+        self.scene_id: int = scene_id
+        self.entrance_list_index: int = entrance_list_index
+        self.continue_bgm: bool = continue_bgm
+        self.display_title_card: bool = display_title_card
+        self.exit_transition: int = exit_transition
+        self.entrance_transition: int = entrance_transition
+
+    def copy(self) -> EntranceTableEntry:
+        return EntranceTableEntry(
+            self.scene_id,
+            self.entrance_list_index,
+            self.continue_bgm,
+            self.display_title_card,
+            self.exit_transition,
+            self.entrance_transition
+        )
+
+    @staticmethod
+    def decode(rom: Rom, cursor: int) -> EntranceTableEntry:
+        entry = EntranceTableEntry()
+        entry.scene_id = rom.read_byte(cursor)
+        entry.entrance_list_index = rom.read_byte(cursor + 0x01)
+        var = rom.read_int16(cursor + 0x02)
+        entry.continue_bgm = (var & 0x8000) >> 15 == 1
+        entry.display_title_card = (var & 0x4000) >> 14 == 1
+        entry.exit_transition = (var & 0x3F80) >> 7
+        entry.entrance_transition = var & 0x007F
+        return entry
+
+    def encode(self) -> bytearray:
+        bytes = bytearray()
+        bytes.extend(self.scene_id.to_bytes(1, 'big'))
+        bytes.extend(self.entrance_list_index.to_bytes(1, 'big'))
+        var = (int(self.continue_bgm) << 15) | (int(self.display_title_card) << 14) | ((self.exit_transition << 7) & 0x3F80) | (self.entrance_transition & 0x7F)
+        bytes.extend(var.to_bytes(2, 'big'))
+        return bytes
+
+class EntranceTransitionType(IntEnum):
+    TRANS_TYPE_WIPE =  0,
+    TRANS_TYPE_TRIFORCE =  1,
+    TRANS_TYPE_FADE_BLACK =  2,
+    TRANS_TYPE_FADE_WHITE =  3,
+    TRANS_TYPE_FADE_BLACK_FAST =  4,
+    TRANS_TYPE_FADE_WHITE_FAST =  5,
+    TRANS_TYPE_FADE_BLACK_SLOW =  6,
+    TRANS_TYPE_FADE_WHITE_SLOW =  7,
+    TRANS_TYPE_WIPE_FAST =  8,
+    TRANS_TYPE_FILL_WHITE2 =  9,
+    TRANS_TYPE_FILL_WHITE = 10,
+    TRANS_TYPE_INSTANT = 11,
+    TRANS_TYPE_FILL_BROWN = 12,
+    TRANS_TYPE_FADE_WHITE_CS_DELAYED = 13,
+    TRANS_TYPE_SANDSTORM_PERSIST = 14,
+    TRANS_TYPE_SANDSTORM_END = 15,
+    TRANS_TYPE_CS_BLACK_FILL = 16,
+    TRANS_TYPE_FADE_WHITE_INSTANT = 17,
+    TRANS_TYPE_FADE_GREEN = 18,
+    TRANS_TYPE_FADE_BLUE = 19,
+    # transition types 20 - 31 are unused
+    # transition types 32 - 55 are constructed using the TRANS_TYPE_CIRCLE macro (see decomp)
+    TRANS_TYPE_MAX = 56
