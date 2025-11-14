@@ -69,12 +69,33 @@ export class GeneratorComponent implements OnInit {
       let eventSub = this.global.globalEmitter.subscribe(eventObj => {
         if (eventObj.name == "init_finished") {
           console.log("Init finished event");
-          this.generatorReady();
-
+           if (this.global.getGlobalVar("initFail")) {
+            this.generatorFail();
+          }
+          else {
+            this.generatorReady();
+          }
           eventSub.unsubscribe();
         }
       });
     }
+  }
+
+  generatorFail() {
+    let message = this.global.getGlobalVar("initFail");
+    this.dialogService.open(ErrorDetailsWindowComponent, {
+          autoFocus: true,
+          closeOnBackdropClick: true,
+          closeOnEsc: true,
+          hasBackdrop: true,
+          hasScroll: false,
+          context: {
+            errorMessage: message
+          }
+        });
+    this.generatorBusy = false;
+    this.cd.markForCheck();
+    this.cd.detectChanges();
   }
 
   generatorReady() {
@@ -247,7 +268,6 @@ export class GeneratorComponent implements OnInit {
 
       this.global.generateSeedElectron(dialogRef && dialogRef.componentRef && dialogRef.componentRef.instance ? dialogRef.componentRef.instance : null, fromPatchFile, fromPatchFile == false && this.seedString.length > 0 ? this.seedString : "").then(res => {
         console.log('[Electron] Gen Success');
-
         this.generateSeedButtonEnabled = true;
         this.cd.markForCheck();
         this.cd.detectChanges();

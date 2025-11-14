@@ -363,7 +363,9 @@ post.on('cancelGenerateSeed', function (event) {
 });
 
 post.on('createPythonVirtualEnvironment', function (event) {
-  generator.createPythonVirtualEnvironment(pythonPath, pythonSourcePath).then((result) => {
+  generator.createPythonVirtualEnvironment(pythonPath, pythonSourcePath, (progress) => {
+    post.send(window, 'createPythonVirtualEnvironmentProgress', progress);
+  }).then((result) => {
       console.log(result);
     
       var python_venv_exe_path = "bin/python3";

@@ -230,7 +230,7 @@ function cancelRomBuilding() {
 }
 
 // Create a python virtual environment in the main python source directory
-function createPythonVirtualEnvironment(pythonPath, pythonSourceDirectory) {
+function createPythonVirtualEnvironment(pythonPath, pythonSourceDirectory, progress) {
   return new Promise(function (resolve, reject) {
       let venv_directory = path.join(pythonSourceDirectory, ".venv")
       console.log(venv_directory)
@@ -240,21 +240,24 @@ function createPythonVirtualEnvironment(pythonPath, pythonSourceDirectory) {
       if (code == 0) {
         pip_path = "bin/pip";
         if (os.platform() == "win32") {
-          pip_path = "Scripts/pip.exe"
+          pip_path = "Scripts/pip.exe";
         }
-        let pip_exec = spawn('"' + path.join(venv_directory, pip_path + '"'), ["install", "-r", `"${path.join(pythonSourceDirectory, "requirements.txt")}"`], { shell: true }).on('exit', (code, signal) => {
+        let pip_exec = spawn('"' + path.join(venv_directory, pip_path + '"'), ["install", "-r", `"${path.join(pythonSourceDirectory, "requirements.txt")}"`], { shell: true })
+        pip_exec.stderr.setEncoding("utf8");
+        pip_exec.stdout.setEncoding("utf8");
+        pip_exec.stdout.on('data', progress);
+        pip_exec.on('exit', (code, signal) => {
           if (code == 0) {
             resolve(venv_directory);
           }
           else {
-            pip_exec.stderr.setEncoding("utf8")
-            reject(pip_exec.stderr.read())
+            reject("Error install python dependencies" + "\n" + pip_exec.stderr.read() + "\n" + pip_exec.stdout.read());
           }
         });
       }
       else {
         pythonExec.stderr.setEncoding("utf8")
-        reject(pythonExec.stderr.read());
+        reject("Error creating python virtual envrionment" + "\n" + pythonExec.stderr.read());
       }
     });
   });
