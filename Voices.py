@@ -10,12 +10,19 @@ from Settings import Settings
 from Utils import data_path
 from bin.tools.adpcm.adpcm_encode import adpcm_encode
 from bin.tools.ml64_unpak import ML64Unpack
-import soundfile as sf
 import os
-import numpy as np
 import json
 import zipfile
 import io
+
+# Conditionally import soundfile and numpy since the web probably won't have them
+try:
+    import soundfile as sf
+    import numpy as np
+except Exception as e:
+    sf = None
+    np = None
+
 
 AUDIOSEQ_DMADATA_INDEX: int = 4
 
@@ -683,14 +690,14 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
 def process_sound_file(file_name: str, file: BinaryIO, age: VOICE_PACK_AGE, settings: Settings, trim: bool = False, normalize: bool = False) -> tuple[bytearray, int, int]:
     # Check if this is a file format that sf supports
     filename, ext = os.path.splitext(file_name)
-    if ext.strip('.').upper() in sf.available_formats():
+    if sf and np and ext.strip('.').upper() in sf.available_formats():
         soundData, numSampleFrames, sampleRate, book, loop = process_soundfile_file(file, age, settings, trim, normalize)
     elif ext == ".aifc":
         soundData, numSampleFrames, sampleRate, book, loop = process_aifc_file(file)
     elif ext == ".bin":
         soundData, numSampleFrames, sampleRate, book, loop = process_bin_file(file)
     else:
-        raise Exception(f"Unsupported file format {ext} in custom voice pack.")
+        raise Exception(f"Unsupported file format {ext} in custom voice pack.{" Note: Soundfile module not available." if not sf else ""}")
 
     return soundData, numSampleFrames, sampleRate, book, loop
 
