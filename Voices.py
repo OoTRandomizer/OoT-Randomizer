@@ -442,12 +442,12 @@ def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age, settings
                     _file = io.BytesIO(decompressed)
                     soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(name, _file, age, settings, trim=True, normalize=normalize)
                     _file.close()
-                    to_add.append((name, 0, rom_targets[i], soundData, numSampleFrames, sampleRate, None))
+                    to_add.append((name, 0, rom_targets[i], soundData, numSampleFrames, sampleRate, book, loop, None))
                     i += 1
                 # Randomly pick from the ones we've already added and duplicate them
                 for j in range(i, len(rom_targets)):
                     added = to_add[random.randint(0, i-1)]
-                    to_add.append((added[0], 0, rom_targets[j], added[3], added[4], added[5], None))
+                    to_add.append((added[0], 0, rom_targets[j], added[3], added[4], added[5], added[6], added[7], None))
             else:
                 # We have more than what the game expects, just take the first ones based on the length we expect
                 for i in range(0, len(rom_targets)):
@@ -455,7 +455,7 @@ def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age, settings
                     _file = io.BytesIO(decompressed)
                     soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(name, _file, age, settings, trim=True, normalize=normalize)
                     _file.close()
-                    to_add.append((name, 0, rom_targets[i], soundData, numSampleFrames, sampleRate, None))
+                    to_add.append((name, 0, rom_targets[i], soundData, numSampleFrames, sampleRate, book, loop, None))
                 pass
         elif sfx_type == SFX_TYPE_PLAY_ORDERED:
             rom_targets = mapping['sounds']
@@ -468,7 +468,7 @@ def process_pak_sfx_by_id(pak_sfx_id: int, sfx_id_map, pak_sounds, age, settings
             name, decompressed = pak_opts[0]
             _file = io.BytesIO(decompressed)
             soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(name, _file, age, settings, trim=True, normalize=normalize)
-            to_add.append((name, 0, rom_targets[0], soundData, numSampleFrames, sampleRate, patch))
+            to_add.append((name, 0, rom_targets[0], soundData, numSampleFrames, sampleRate, book, loop, patch))
             _file.close()
         else:
             raise Exception("Unsupported sfx type")
@@ -559,7 +559,7 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
                                 with zf.open(sample_file) as f:
                                     # Read and process the file
                                     soundData, numSampleFrames, sampleRate, book, loop = process_sound_file(sample_file, f, age, settings)
-                                    sfxs.append((sample_file, bank, index, soundData, numSampleFrames, sampleRate, None))
+                                    sfxs.append((sample_file, bank, index, soundData, numSampleFrames, sampleRate, book, loop, None))
                     if "direct_bank_inst" in voice_map.keys():
                         for bank_str in voice_map["direct_bank_inst"].keys():
                             bank_index = int(bank_str, 16)
@@ -648,7 +648,7 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
             zf.close()
 
     # Patch each sfx that we have
-    for _, bank_index, sfx_id, soundData, numSampleFrames, sampleRate, patch in sfxs:
+    for _, bank_index, sfx_id, soundData, numSampleFrames, sampleRate, book, loop, patch in sfxs:
         # Calculate the tuning as sampling rate / 32000.
         tuning = sampleRate / 32000
 
@@ -671,6 +671,10 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
         sfx.sample.loop.end = numSampleFrames
         # Update sample data length = length
         sfx.sample.size = len(soundData)
+
+        # Update book data
+        if book:
+            sfx.sample.book = book
 
         dma_entry = rom.dma[AUDIOSEQ_DMADATA_INDEX]
         # Need to read the Audioseq table to find the start of sequence 0
