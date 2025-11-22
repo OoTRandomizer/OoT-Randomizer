@@ -657,7 +657,6 @@ def patch_voice_pack(rom: Rom, age: VOICE_PACK_AGE, voice_pack: str, settings: S
 
         bank = rom.audiobanks[bank_index]
 
-        # Sort-of problem. We need to update audiotable in multiple different spots.
         # So instead of making the new file, maybe just add a new variable to Rom called new_audiotable_data and write it all at the end.
         # Update sample address to point to new data in audiotable.
         sfx: SFX = bank.SFX[sfx_id]
