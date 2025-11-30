@@ -176,6 +176,15 @@ class Rom(BigStream):
                 if sfx and sfx.sample:
                     samples_to_add.append(sfx.sample)
 
+            # Reset all samples and envelopes
+            for sample in samples_to_add:
+                sample.bank_offset = -1
+                sample.book.bank_offset = -1
+                sample.placed_address = -1
+            
+            for envelope in envelopes_to_add:
+                envelope.bank_offset = -1
+
             for sample in samples_to_add:
                 # Check if we've already added this sample
                 if sample.bank_offset == -1:

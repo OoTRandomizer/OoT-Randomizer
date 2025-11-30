@@ -64,12 +64,12 @@ def write_block(rom: Rom, xor_address: int, xor_range: tuple[int, int], block_st
             # XOR the key with the byte
             new_data += [b ^ key]
 
-            # Break the block if it's too long
-            if len(new_data) == 0xFFFF:
-                write_block_section(block_start, key_offset, new_data, patch_data, continue_block)
-                new_data = []
-                key_offset = 0
-                continue_block = True
+        # Break the block if it's too long
+        if len(new_data) == 0xFFFF:
+            write_block_section(block_start, key_offset, new_data, patch_data, continue_block)
+            new_data = []
+            key_offset = 0
+            continue_block = True
 
     # Save the block
     write_block_section(block_start, key_offset, new_data, patch_data, continue_block)
