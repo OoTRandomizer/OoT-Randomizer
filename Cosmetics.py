@@ -1301,7 +1301,7 @@ def patch_cosmetics(settings: Settings, rom: Rom) -> CosmeticsLog:
                 bank_index_base = (bank_index_base - ram_base) + 0x3480000
             rom.rebuild_audio_data(bank_index_base)
 
-            log.symbols = cosmetic_context_symbols
+        log.symbols = cosmetic_context_symbols
     else:
         # patch cosmetics that use vanilla oot data, and always compatible
         for patch_func in global_patch_sets:
