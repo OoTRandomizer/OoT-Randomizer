@@ -244,7 +244,7 @@ entrance_shuffle_table = [
     ('Hideout',         ('GF 3 Torches Jail Exterior -> Hideout 3 Torches Jail',            { 'index': 0x0570 }),
                         ('Hideout 3 Torches Jail -> GF 3 Torches Jail Exterior',            { 'index': 0x03A4 })),
 
-    # Unique grottos do not need new entrance table entries created 
+    # Unique grottos do not need new entrance table entries created
     ('Grotto',          ('Desert Colossus -> Colossus Grotto',                              { 'entrance': 0x05BC, 'content': 0xFD, 'scene': 0x5C, 'add_exit': True }),
                         ('Colossus Grotto -> Desert Colossus',                              {})),
     ('Grotto',          ('Lake Hylia -> LH Grotto',                                         { 'entrance': 0x05A4, 'content': 0xEF, 'scene': 0x57, 'add_exit': True }),

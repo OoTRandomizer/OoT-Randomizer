@@ -779,7 +779,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     grotto_table_cursor = rom.sym('gGrottoTable')
     for entrance in world.get_shufflable_entrances(type='Grotto'):
         if entrance.primary:
-            if 'Fairy Fountain' in entrance.name:
+            if entrance.data['entrance'] == 0x036D:
                 grotto_scene = fairy_grotto_scene
             else:
                 grotto_scene = other_grotto_scene

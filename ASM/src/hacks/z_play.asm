@@ -35,9 +35,9 @@
 ; Play_SetupRespawnPoint()
 ; Remove exclusions for respawn point setup in fairy fountains and grottos
 ; Replaces
-;   beq	    v0, at, 0x0EFE
+;   beq     v0, at, 0x0EFE
 ;   li      at, 0x3E
-;   beq	    v0, at, 0x0EFE
+;   beq     v0, at, 0x0EFE
 .org 0x8009D964
     nop
     nop

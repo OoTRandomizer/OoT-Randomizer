@@ -177,8 +177,7 @@ override_respawn_params_hook:
     lw      a1, 0x0C(sp)
     lw      a0, 0x08(sp)
     lw      ra, 0x04(sp)
-    sb	    t6, 0x137B(s2)
+    sb      t6, 0x137B(s2)
     lh      v0, 0x00A4(s1)
     jr      ra
     addiu   sp, sp, 0x20
-
