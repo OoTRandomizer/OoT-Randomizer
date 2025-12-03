@@ -21,6 +21,7 @@ CutsceneFlags_Get = 0x8005991C;
 z64_Gfx_SetupDL_42Opa = 0x8007E868;
 Audio_StopCurrentMusic = 0x800C7684;
 sprintf = 0x800CE7b4;
+Message_OpenText = 0x800DC838;
 Fault_AddHungupAndCrashImpl = 0x800AF564;
 z64_ItemIcons = 0x800F8D2C;
 z64_SfxDefaultPos = 0x80104394;

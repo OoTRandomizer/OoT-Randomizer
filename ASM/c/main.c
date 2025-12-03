@@ -23,6 +23,7 @@
 #include "uninvertYaxis.h"
 #include "debug.h"
 #include "inputviewer.h"
+#include "hints.h"
 #include "message.h"
 
 void Gameplay_InitSkybox(z64_game_t* globalCtx, int16_t skyboxId);
@@ -34,6 +35,7 @@ void c_init() {
     override_flags_init();
     models_init();
     init_textures();
+    init_hints_ids();
 #if DEBUG_MODE
     SKIP_N64_LOGO = 1;
 #endif
@@ -49,6 +51,7 @@ void before_game_state_update() {
     manage_music_changes();
     manage_uninvert_yaxis();
     display_misc_messages();
+    draw_hints(&rando_overlay_db);
 }
 
 void after_game_state_update() {

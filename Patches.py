@@ -1230,6 +1230,45 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         rom.write_int32(symbol, 0)
     else:
         write_gossip_stone_hints(spoiler, world, messages)
+        hints_ids_and_types = []
+        hints_starting = []
+        # Negative stone ids are duplicates from the previous stone.
+        for idx, hint_category in enumerate(spoiler.hints_ids):
+            if 'always' in hint_category:
+                for stone_id in spoiler.hints_ids[hint_category]:
+                    #save_context.write_byte(save_context.addresses['hints'].address, 0xFF)
+                    if stone_id > 0:
+                        hints_ids_and_types.append(stone_id - 1000)
+                        hints_ids_and_types.append(2)
+                    else:
+                        hints_ids_and_types.append(-stone_id - 1000)
+                        hints_ids_and_types.append(2 + 20)
+            if 'barren' in hint_category:
+                for stone_id in spoiler.hints_ids[hint_category]:
+                    if stone_id > 0:
+                        hints_ids_and_types.append(stone_id - 1000)
+                        hints_ids_and_types.append(3)
+                    else:
+                        hints_ids_and_types.append(-stone_id - 1000)
+                        hints_ids_and_types.append(3 + 20)
+            if 'goal' in hint_category:
+                for stone_id in spoiler.hints_ids[hint_category]:
+                    if stone_id > 0:
+                        hints_ids_and_types.append(stone_id - 1000)
+                        hints_ids_and_types.append(4)
+                    else:
+                        hints_ids_and_types.append(-stone_id - 1000)
+                        hints_ids_and_types.append(4 + 20)
+            if 'sometimes' in hint_category or 'dual' in hint_category or 'song' in hint_category:
+                for stone_id in spoiler.hints_ids[hint_category]:
+                    if stone_id > 0:
+                        hints_ids_and_types.append(stone_id - 1000)
+                        hints_ids_and_types.append(5)
+                    else:
+                        hints_ids_and_types.append(-stone_id - 1000)
+                        hints_ids_and_types.append(5 + 20)
+        #raise Exception(hints_starting)
+        rom.write_bytes(rom.sym('CFG_HINTS_IDS_AND_TYPES'), hints_ids_and_types)
 
         if world.settings.hints == 'mask':
             rom.write_int32(symbol, 0)

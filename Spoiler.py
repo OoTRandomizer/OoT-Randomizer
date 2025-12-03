@@ -78,6 +78,7 @@ class Spoiler:
         self.hints: dict[int, dict[int, GossipText]] = {world.id: {} for world in worlds}
         self.file_hash: list[int] = []
         self.password: list[int] = []
+        self.hints_ids: dict[str, list[int]] = {}
 
     def build_file_hash(self) -> None:
         dist_file_hash = self.settings.distribution.file_hash
