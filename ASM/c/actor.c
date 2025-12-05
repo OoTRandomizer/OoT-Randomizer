@@ -10,6 +10,7 @@
 #include "en_wonderitem.h"
 #include "scene.h"
 #include "en_item00.h"
+#include "grotto.h"
 
 extern uint8_t POTCRATE_TEXTURES_MATCH_CONTENTS;
 extern uint16_t CURR_ACTOR_SPAWN_INDEX;
@@ -39,17 +40,17 @@ ActorAdditionalData* Actor_GetAdditionalData(z64_actor_t* actor) {
 // Store the flag using the pointer
 void Actor_BuildFlag(z64_actor_t* actor, xflag_t* flag, uint16_t actor_index, uint8_t subflag) {
     flag->scene = z64_game.scene_index;
-    // if (z64_game.scene_index == 0x3E) {
-    //     flag->grotto.room = actor->room_index;
-    //     flag->grotto.grotto_id = z64_file.respawn[RESPAWN_MODE_RETURN].data & 0x1F;
-    //     flag->grotto.flag = actor_index;
-    //     flag->grotto.subflag = subflag;
-    // } else {
+    if (z64_game.scene_index == 0x3E) {
+        flag->grotto.room = actor->room_index;
+        flag->grotto.grotto_id = gGrottoTable[CURRENT_GROTTO_ID].content_id & 0x1F;
+        flag->grotto.flag = actor_index;
+        flag->grotto.subflag = subflag;
+    } else {
         flag->room = actor->room_index;
         flag->setup = curr_scene_setup;
         flag->flag = actor_index;
         flag->subflag = subflag;
-    // }
+    }
 }
 
 // Called from Actor_UpdateAll when spawning the actors in the scene's/room's actor list to store flags in the new space that we added to the actors.

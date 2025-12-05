@@ -28,16 +28,12 @@ def set_all_entrances_data(world: World) -> None:
         forward_entrance.data = forward_entry[1]
         forward_entrance.type = type
         forward_entrance.primary = True
-        if type == 'Grotto':
-            pass
         if return_entry:
             return_entry = return_entry[0]
             return_entrance = world.get_entrance(return_entry[0])
             return_entrance.data = return_entry[1]
             return_entrance.type = type
             forward_entrance.bind_two_way(return_entrance)
-            if type == 'Grotto':
-                pass
 
 
 def assume_entrance_pool(entrance_pool: list[Entrance]) -> list[Entrance]:
@@ -605,11 +601,11 @@ def shuffle_random_entrances(worlds: list[World]) -> None:
                 for target in one_way_target_entrance_pools[pool_type]:
                     target.set_rule(lambda state, age=None, **kwargs: age == 'child')
             elif pool_type == 'Spawn':
-                valid_target_types = ('Spawn', 'WarpSong', 'BlueWarp', 'OwlDrop', 'OverworldOneWay', 'Overworld', 'Interior', 'SpecialInterior', 'Extra')
+                valid_target_types = ('Spawn', 'WarpSong', 'BlueWarp', 'OwlDrop', 'OverworldOneWay', 'Overworld', 'Interior', 'SpecialInterior', 'Grotto', 'Extra')
                 # Restrict spawn entrances from linking to regions with no or extremely specific glitchless itemless escapes.
                 one_way_target_entrance_pools[pool_type] = build_one_way_targets(world, valid_target_types, exclude=['Volvagia Blue Warp -> DMC Central Local', 'Bolero of Fire Warp -> DMC Central Local', 'Queen Gohma Blue Warp -> KF Outside Deku Tree'])
             elif pool_type == 'WarpSong':
-                valid_target_types = ('Spawn', 'WarpSong', 'BlueWarp', 'OwlDrop', 'OverworldOneWay', 'Overworld', 'Interior', 'SpecialInterior', 'Extra')
+                valid_target_types = ('Spawn', 'WarpSong', 'BlueWarp', 'OwlDrop', 'OverworldOneWay', 'Overworld', 'Interior', 'SpecialInterior', 'Grotto', 'Extra')
                 one_way_target_entrance_pools[pool_type] = build_one_way_targets(world, valid_target_types)
             # Ensure that when trying to place the last entrance of a one way pool, we don't assume the rest of the targets are reachable
             for target in one_way_target_entrance_pools[pool_type]:

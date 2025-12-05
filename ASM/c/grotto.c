@@ -4,9 +4,10 @@
 GrottoTableEntry gGrottoTable[GROTTO_TABLE_SIZE];
 
 void SetGrottoSceneLayer() {
-    for (uint16_t i = 0; i < GROTTO_TABLE_SIZE; i++) {
+    for (uint8_t i = 0; i < GROTTO_TABLE_SIZE; i++) {
         if (gGrottoTable[i].entranceIndex == z64_file.entrance_index) {
             z64_file.scene_setup_index = gGrottoTable[i].sceneLayer;
+            CURRENT_GROTTO_ID = i;
         }
     }
 }

@@ -45,7 +45,7 @@
 
 ; Override Play_TriggerRespawn() to preserve grotto start mode on respawn,
 ; such as from lava in DMC
-.org 0x8009DA10
+.org 0x8009DAB0
     j       Play_TriggerRespawn
     nop
 

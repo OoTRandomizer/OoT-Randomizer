@@ -3,8 +3,6 @@ gossip_hints:
     sw      s1, 0x0014(sp)
     sw      ra, 0x0018(sp)
 
-    li      v1, SAVE_CONTEXT
-
     ; Get Message ID
     lh      t7, 0x001C(s0)
     andi    t8, t7, 0x00FF
@@ -12,7 +10,11 @@ gossip_hints:
     bne     t8, at, @@not_grotto
     addiu   s1, t8, 0x0400
 
-    lbu     t8, 0x1397(v1)       ; Grotto ID
+    lb      at, CURRENT_GROTTO_ID
+    la      v1, gGrottoTable
+    sll     at, at, 2
+    add     v1, v1, at
+    lbu     t8, 0x0003(v1)       ; Grotto Content ID
     andi    t8, t8, 0x1F
     addiu   s1, t8, 0x0430
 @@not_grotto:
@@ -36,6 +38,7 @@ gossip_hints:
 
 @@stone_of_agony:
     ; Show message only if stone of agony is obtained
+    li      v1, SAVE_CONTEXT
     lb      at, 0xA5(v1)
     andi    at, at, 0x0020 ; Stone of Agony
     beqz    at, @@no_hint

@@ -2,9 +2,6 @@
 #include "objects.h"
 #include "item_effects.h"
 #include "actor.h"
-#include "z64.h"
-#include "entrance_table.h"
-#include "grotto.h"
 
 const int8_t debug_text_width = 16;
 const int8_t debug_text_height = 16;
@@ -341,14 +338,6 @@ void debug_utilities(z64_disp_buf_t* db)
     draw_debug_menu(db);
     draw_debug_numbers(db);
     draw_timeofday(db);
-    draw_debug_int(0, z64_file.entrance_index);
-    draw_debug_int(1, z64_game.entrance_index);
-    draw_debug_int(2, z64_file.respawn[RESPAWN_MODE_DOWN].entranceIndex);
-    draw_debug_int(3, z64_file.respawn[RESPAWN_MODE_DOWN].playerParams);
-    draw_debug_int(4, z64_link.common.variable);
-    draw_debug_int(5, z64_file.scene_setup_index);
-    draw_debug_int(6, z64_game.scene_index);
-    draw_debug_int(7, gExtendedEntranceTable[z64_game.entrance_index].sceneId);
 }
 
 int debug_menu_is_drawn() {

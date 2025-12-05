@@ -1354,7 +1354,6 @@ class SceneExitList(DataRecord):
                 exit_index = self.file.rom.read_int16(cursor + i * 0x02)
                 if exit_index != 0:
                     actual_entrances += 1
-                    #raise Exception(f'Nonzero unreferenced exit entry 0x{exit_index:0>2x} at offset 0x{cursor - scene.start:0>6x} (address 0x{cursor:0>8x}) in {scene.name}.')
             num_entrances = actual_entrances
         self.length = num_entrances * 0x02
         self.refresh_rom_data()
@@ -2601,7 +2600,3 @@ def compare_file_bytes(original_file: str, new_file: str) -> None:
         if original_bytes[i] != new_bytes[i]:
             raise Exception(f'Byte mismatch at offset 0x{i:0>8x}. Original: 0x{original_bytes[i]:0>2x} New: 0x{new_bytes[i]:0>2x}')
         i += 1
-
-if __name__ == '__main__':
-    romdec = Rom('ZOOTDEC.z64')
-    compare_parsed_data_to_rom(romdec, True)

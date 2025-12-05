@@ -5,10 +5,16 @@
 
 typedef struct GrottoTableEntry {
     /* 0x00 */ uint16_t entranceIndex;
-    /* 0x02 */ uint16_t sceneLayer;
+    /* 0x02 */ uint8_t sceneLayer;
+    /* 0x03 */ uint8_t content_id;
 } GrottoTableEntry; // size = 0x4
 
 #define GROTTO_TABLE_SIZE 33
+
+extern GrottoTableEntry gGrottoTable[];
+extern uint8_t CURRENT_GROTTO_ID;
+
+struct DoorAna;
 
 typedef void (*DoorAnaActionFunc)(struct DoorAna*, z64_game_t*);
 

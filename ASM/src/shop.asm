@@ -212,7 +212,11 @@ Deku_Check_Sold_Out:
     li      at, 0x3E         ; Grotto Scene
     bne     t2, at, @@continue ; If in grotto, use a free scene
 
-    lbu     t3, 0x1397(t1)   ; Grotto ID
+    lb      t4, CURRENT_GROTTO_ID
+    la      t5, gGrottoTable
+    sll     t4, t4, 2
+    add     t5, t5, t4
+    lbu     t3, 0x0003(t5)   ; Grotto Content ID
     addi    t2, t3, -0xD6
 
 @@continue:
@@ -242,7 +246,11 @@ Deku_Set_Sold_Out:
     li      at, 0x3E         ; Grotto Scene
     bne     t2, at, @@continue ; If in grotto, use a free scene
 
-    lbu     t3, 0x1397(t1)   ; Grotto ID
+    lb      t4, CURRENT_GROTTO_ID
+    la      t5, gGrottoTable
+    sll     t4, t4, 2
+    add     t5, t5, t4
+    lbu     t3, 0x0003(t5)   ; Grotto Content ID
     addi    t2, t3, -0xD6
 
 @@continue:

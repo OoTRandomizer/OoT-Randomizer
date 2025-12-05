@@ -2816,7 +2816,7 @@ courtyard_guards_kill:
     jal     Static_ctxt_Init
 
 ;==================================================================================================
-; burning kak from any entrance to kak (except the grottos)
+; burning kak from any entrance to kak
 ;==================================================================================================
 ; Replaces: lw      t9, 0x0000(s0)
 ;           addiu   at, 0x01E1
@@ -2883,21 +2883,6 @@ courtyard_guards_kill:
 ;           addiu   a1, a1, -0x6B90
 .orga 0xB2E854
     lw      a1, 0x8000B198
-
-;==================================================================================================
-; Handle grottos shuffled with other entrances
-;==================================================================================================
-; Replaces: lui     at, 1
-;           addu    at, at, a3
-;.orga 0xCF73C8
-;    jal     grotto_entrance
-;    lui     at, 1
-
-; Replaces: addu    at, at, a3
-;           sh      t6, 0x1E1A(at)
-;.orga 0xBD4C58
-;    jal     scene_exit_hook
-;    addu    at, at, a3
 
 ;==================================================================================================
 ; Getting Caught by Gerudo NPCs in ER
@@ -4161,3 +4146,4 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/z_scene.asm"
 .include "hacks/ovl_player_actor.asm"
 .include "hacks/ovl_door_ana.asm"
+.include "hacks/ovl_en_torch.asm"

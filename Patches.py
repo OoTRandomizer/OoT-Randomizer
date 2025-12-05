@@ -722,7 +722,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
                     rom.write_int16(address, savewarp)
 
             for address in new_entrance.get('addresses', []):
-                rom.write_int16(address, replaced_entrance.get('child_index', replaced_entrance['index']))
+                rom.write_int16(address, replaced_entrance['index'])
 
             if entrance.type == 'BlueWarp' and replaced_entrance['index'] < 0x1000:
                 # Blue warps have multiple hardcodes leading to them. The good news is
@@ -732,13 +732,14 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
                 # Forest temple and Water temple blue warp revisits. Deku sprout remains
                 # vanilla as it never took you to the exit and the lake fill is handled
                 # above by removing the cutscene completely. Child has problems with Adult
-                # blue warps, so always use the return entrance if a child.
-                exit_updates.append((new_entrance['index'], replaced_entrance.get('child_index', replaced_entrance['index'])))
-                exit_updates.append((new_entrance['index'] + 1, replaced_entrance.get('child_index', replaced_entrance['index']) + 1))
+                # blue warps as the spawns do not exist, but they are copied from adult
+                # and patched in with the scene editing system.
+                exit_updates.append((new_entrance['index'], replaced_entrance['index']))
+                exit_updates.append((new_entrance['index'] + 1, replaced_entrance['index'] + 1))
                 exit_updates.append((new_entrance['index'] + 2, replaced_entrance['index'] + 2))
                 exit_updates.append((new_entrance['index'] + 3, replaced_entrance['index'] + 3))
-            elif entrance.type != 'Grotto':
-                exit_updates.append((new_entrance['index'], replaced_entrance.get('child_index', replaced_entrance['index'])))
+            else:
+                exit_updates.append((new_entrance['index'], replaced_entrance['index']))
 
     # Add adult boss blue warp entrances to child scene layers.
     # Adult scene layers have the same child entrances followed
@@ -807,6 +808,8 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
                 # Save entrance index back to entrance for generating any shuffle data
                 if layer == 0:
                     entrance.data['index'] = entrance_index
+                    if entrance.reverse:
+                        entrance.reverse.data['index'] = reverse_entrance_index
                 # Layer 0 always exists. If a later layer is null, the entrance table still
                 # needs the full set of four entries, so reuse the last index.
                 if (len(parent_scene.headers) > layer or layer == 0) and parent_scene.headers[layer] != None:
@@ -822,7 +825,9 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
                     grotto_exit_list.exits.append(reverse_entrance_index)
                     new_grotto_layer.exit_list = grotto_exit_list
                     grotto_scene_layer = grotto_scene.add_header(new_grotto_layer)
-                    rom.write_int16s(grotto_table_cursor, [entrance.data['index'], grotto_scene_layer])
+                    rom.write_int16(grotto_table_cursor, entrance.data['index'])
+                    rom.write_bytes(grotto_table_cursor + 2, [grotto_scene_layer, entrance.data['content']])
+                    print(f'Added grotto table entry for "{entrance.name}" at {(grotto_table_cursor):0>8x}: Entrance {entrance.data["index"]:0>4x}, Layer: {grotto_scene_layer:0>2x}, Content: {entrance.data["content"]:0>2x}')
                     grotto_table_cursor += 4
                 if (len(parent_scene.headers) > layer or layer == 0) and parent_scene.headers[layer] != None:
                     # Always add the layer 0 index to the exit table because the system auto
@@ -916,7 +921,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         # Fix save warping inside Link's House to not be a special case
         rom.write_int32(0xB06318, 0x00000000)
 
-    # Set entrances to update, except grotto entrances which are handled on their own at a later point
+    # Set entrances to update
     patch_blue_warps = ( # Settings where blue warps need to be patched to fix a crash when child steps into an adult blue warp
         world.settings.shuffle_overworld_entrances
         or world.shuffle_dungeon_entrances
@@ -1630,15 +1635,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         if world.settings.shuffle_scrubs == 'random':
             shuffle_messages.scrubs_message_ids.append(text_id)
 
-    #if world.settings.shuffle_grotto_entrances:
-        # Build the Grotto Load Table based on grotto entrance data
-        #for entrance in world.get_shuffled_entrances(type='Grotto'):
-        #    if entrance.primary:
-        #        load_table_pointer = rom.sym('GROTTO_LOAD_TABLE') + 4 * entrance.data['grotto_id']
-        #        rom.write_int16(load_table_pointer, entrance.data['entrance'])
-        #        rom.write_byte(load_table_pointer + 2, entrance.data['content'])
-
-        # Update grotto actors based on their new entrance
+    # Update grotto actors based on their converted entrance table ID (vanilla or shuffled)
     set_grotto_shuffle_data(scenes, world, rom)
 
     if world.settings.shuffle_cows:
