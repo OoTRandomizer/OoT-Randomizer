@@ -255,10 +255,15 @@ def add_hint(spoiler: Spoiler, world: World, groups: list[list[int]], gossip_tex
                         for location in locations:
                             location.add_rule(world.parser.parse_rule(repr(event_item.name)))
 
-                    total -= 1
-                    first = False
                     for id in group:
                         spoiler.hints[world.id][id] = gossip_text
+                        if first:
+                            spoiler.hints_ids.setdefault(hint_type, []).append(id)
+                        else:
+                            # We want to know the duplicates somehow, store them as negative to know the previous id was the first.
+                            spoiler.hints_ids.setdefault(hint_type, []).append(-id)
+                    total -= 1
+                    first = False
                     # Immediately start choosing duplicates from stones we passed up earlier
                     while duplicates and total:
                         group = duplicates.pop(0)

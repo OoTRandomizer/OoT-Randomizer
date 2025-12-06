@@ -921,7 +921,7 @@ class SaveContext:
                 'trials_forest': Address(extended=True, size=1),
             },
             'password' : Address(extended=True, size=6),
-
+            'hints': Address(extended=True, size=6),
         }
 
     item_id_map: dict[str, int] = {
