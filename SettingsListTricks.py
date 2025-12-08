@@ -2872,6 +2872,18 @@ advanced_logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     You can also do the same by abusing invincibility frames
                     if not on ohko.
                     '''},
+    '(Advanced) Water Hop': {
+        'name'    : 'adv_water_hop',
+        'tags'    : ("Advanced",),
+        'tooltip' : '''\
+                    By equipping the Iron Boots right before surfacing,
+                    you can keep the momentum from the swim up from a dive
+                    to propel yourself out of the water higher than usual
+                    allowing ledges to be grabbed.
+
+                    Notably allows for access to Morpha's ledge and the
+                    Eastern Middle Layer ledge in Water Temple.
+                    '''},
     '(Glitch) Water Temple Antigrav to Boss Key Area': {
         'name'    : 'glitch_water_bk_area_antigrav',
         'tags'    : ("Glitch","Adult","Water Temple","Water Temple MQ",),
