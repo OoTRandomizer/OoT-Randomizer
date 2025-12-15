@@ -186,8 +186,9 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
         for world in worlds:
             if world.skip_child_zelda and world.settings.shuffle_song_items == 'song':
                 own_songs = [song for song in songitempool if song.world.id == world.id]
-                if own_songs:
-                    impas.append(world.get_location('Song from Impa'))
+                impa = world.get_location('Song from Impa')
+                if own_songs and impa.item is None:
+                    impas.append(impa)
                     impas_songs.append(random.choice(own_songs))
         if impas and impas_songs:
             fill_ownworld_restrictive(worlds, search, impas, impas_songs, progitempool, "song")
