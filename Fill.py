@@ -356,8 +356,8 @@ def fill_dungeon_unique_item(worlds: list[World], search: Search, fill_locations
 def fill_ownworld_restrictive(worlds: list[World], search: Search, locations: list[Location], ownpool: list[Item],
                               itempool: list[Item], description: str = "Unknown", attempts: int = 15) -> None:
     # look for preplaced items
-    placed_prizes = [loc.item.name for loc in locations if loc.item is not None]
-    unplaced_prizes = [item for item in ownpool if item.name not in placed_prizes]
+    placed_prizes = [loc.item for loc in locations if loc.item is not None]
+    unplaced_prizes = [item for item in ownpool if item not in placed_prizes]
     empty_locations = [loc for loc in locations if loc.item is None]
 
     prizepool_dict = {world.id: [item for item in unplaced_prizes if item.world.id == world.id] for world in worlds}
