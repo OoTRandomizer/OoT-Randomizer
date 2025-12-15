@@ -178,6 +178,15 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
     # the song locations only.
     if worlds[0].settings.shuffle_song_items != 'any':
         logger.info('Placing song items.')
+        # Prioritize Song from Impa when skip child zelda is on to ensure it
+        # gets a song and not some other type of item when songs on songs is
+        # enabled.
+        impas: list[Location] = []
+        for world in worlds:
+            if world.skip_child_zelda and world.settings.shuffle_song_items == 'song':
+                impas.append(world.get_location('Song from Impa'))
+        if impas:
+            fill_ownworld_restrictive(worlds, search, impas, songitempool, progitempool, "song")
         fill_ownworld_restrictive(worlds, search, song_locations, songitempool, progitempool, "song")
         search.collect_locations()
         fill_locations += [location for location in song_locations if location.item is None]

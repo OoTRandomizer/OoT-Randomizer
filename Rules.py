@@ -26,7 +26,15 @@ def set_rules(world: World) -> None:
 
     for location in world.get_locations():
         if world.settings.shuffle_song_items == 'song':
-            if location.type == 'Song':
+            if location.name == 'Song from Impa' and location.world.skip_child_zelda \
+            and not all(name in world.settings.starting_items.keys() and world.settings.starting_items[name].count >= 1 for name in song_list):
+                # Enforce songs on Song from Impa when skip child zelda in
+                # effect to ensure a starting song as expected, in addition to
+                # any starting songs from other settings or plando. Exception
+                # if all songs are already starting items.
+                add_item_rule(location, lambda location, item:
+                    (item.type == 'Song' and item.world.id == location.world.id))
+            elif location.type == 'Song':
                 # allow junk items, but songs must still have matching world
                 add_item_rule(location, lambda location, item:
                     ((location.world.distribution.songs_as_items or any(name in song_list and record.count for name, record in world.settings.starting_items.items()))
