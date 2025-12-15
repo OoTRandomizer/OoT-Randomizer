@@ -182,11 +182,15 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
         # gets a song and not some other type of item when songs on songs is
         # enabled.
         impas: list[Location] = []
+        impas_songs: list[Item] = []
         for world in worlds:
             if world.skip_child_zelda and world.settings.shuffle_song_items == 'song':
-                impas.append(world.get_location('Song from Impa'))
-        if impas:
-            fill_ownworld_restrictive(worlds, search, impas, songitempool, progitempool, "song")
+                own_songs = [song for song in songitempool if song.world.id == world.id]
+                if own_songs:
+                    impas.append(world.get_location('Song from Impa'))
+                    impas_songs.append(random.choice(own_songs))
+        if impas and impas_songs:
+            fill_ownworld_restrictive(worlds, search, impas, impas_songs, progitempool, "song")
         fill_ownworld_restrictive(worlds, search, song_locations, songitempool, progitempool, "song")
         search.collect_locations()
         fill_locations += [location for location in song_locations if location.item is None]
