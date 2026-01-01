@@ -15,7 +15,7 @@ from Main import resolve_settings
 from Patches import get_override_table, get_override_table_bytes
 from Rom import Rom
 import Unittest as Tests
-from Messages import ITEM_MESSAGES, IMPORTANT_ITEM_MESSAGES, MISC_MESSAGES
+from Language import Language
 from SettingsList import SettingInfos, logic_tricks, validate_settings
 import Unittest as Tests
 from Utils import data_path
@@ -137,16 +137,16 @@ def check_preset_settings(fix_errors: bool = False) -> None:
 # This is not a perfect check because it doesn't account for everything that gets manually done in Patches.py
 # For that, we perform additional checking at patch time
 def check_message_duplicates() -> None:
-    def check_for_duplicates(new_item_messages: list[tuple[int, str]]) -> None:
+    def check_for_duplicates(new_item_messages) -> None:
         for i in range(0, len(new_item_messages)):
             for j in range(i, len(new_item_messages)):
                 if i != j:
-                    message_id1, message1 = new_item_messages[i]
-                    message_id2, message2 = new_item_messages[j]
+                    message_id1, message1 = new_item_messages[i]["id"], new_item_messages[i]["text"]
+                    message_id2, message2 = new_item_messages[j]["id"], new_item_messages[j]["text"]
                     if message_id1 == message_id2:
                         error(f'Duplicate MessageID found: {hex(message_id1)}, {message1}, {message2}', False)
-
-    messages = ITEM_MESSAGES + IMPORTANT_ITEM_MESSAGES + MISC_MESSAGES
+    lang = Language("English")
+    messages = lang.ITEM_MESSAGES + lang.IMPORTANT_ITEM_MESSAGES + lang.MISC_MESSAGES
     check_for_duplicates(messages)
 
 
