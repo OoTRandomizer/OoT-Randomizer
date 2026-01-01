@@ -1,0 +1,16 @@
+{
+    "title.bin": "0x01795300",
+    "keaton.bin":"0x8A7C00",
+    "NESFont.bin": "0x928000",
+    "Kanji.bin": "0x4D9F40",
+    "TitleCardJP.bin": "0x864000",
+    "TitleCardEN.bin": "0x872000",
+    "ItemNameJP.bin": "0x880000",
+    "ItemNameEN.bin": "0x89EC00",
+    "MapName.bin": "0x8BE000",
+    "ActionJP.bin": "0x8E0000",
+    "ActionEN.bin": "0x8E2B80",
+    "PlaceName.bin": "0x198A000",
+    "FileSelJP.bin": "0x1A02000",
+    "FileSelEN.bin": "0x1A2CF00"
+}
