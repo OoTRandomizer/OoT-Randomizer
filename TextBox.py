@@ -10,9 +10,11 @@ if TYPE_CHECKING:
 # Least common multiple of all possible character widths. A line wrap must occur when the combined widths of all of the
 # characters on a line reach this value.
 NORMAL_LINE_WIDTH: int = 1801800
+NORMAL_LINE_WIDTH_JP: int = 16*16
 
 # Attempting to display more lines in a single text box will cause additional lines to bleed past the bottom of the box.
 LINES_PER_BOX: int = 4
+LINES_PER_BOX_JP: int = 3
 
 # Attempting to display more characters in a single text box will cause buffer overflows. First, visual artifacts will
 # appear in lower areas of the text box. Eventually, the text box will become uncloseable.
@@ -30,9 +32,13 @@ TEXT_END: str = '\x02'
 hex_string_regex: re.Pattern = re.compile(r"\$\{((?:[0-9a-f][0-9a-f] ?)+)}", flags=re.IGNORECASE)
 
 
-def line_wrap(text: str, strip_existing_lines: bool = False, strip_existing_boxes: bool = False, replace_control_chars: bool = True):
+def line_wrap(text: str, lang: str, strip_existing_lines: bool = False, strip_existing_boxes: bool = False, replace_control_chars: bool = True, align: str = "Left"):
     # Replace stand-in characters with their actual control code.
-    if replace_control_chars:
+    lang_index = 0 if lang == "jp" else 1
+    line_box = LINES_PER_BOX if lang_index else LINES_PER_BOX_JP
+
+    skip_align = [0x81BC, 0x81B8, 0x819A]
+    if replace_control_chars and lang_index:
         def replace_bytes(match: re.Match) -> str:
             return ''.join(chr(x) for x in bytes.fromhex(match[1]))
 
@@ -42,14 +48,14 @@ def line_wrap(text: str, strip_existing_lines: bool = False, strip_existing_boxe
         text = hex_string_regex.sub(replace_bytes, text)
 
     # Parse the text into a list of control codes.
-    text_codes = Messages.parse_control_codes(text)
+    text_codes = Messages.parse_control_codes(text, lang_index)
 
     # Existing line/box break codes to strip.
     strip_codes = []
     if strip_existing_boxes:
-        strip_codes.append(0x04)
+        strip_codes.append([0x81A5, 0x04][lang_index])
     if strip_existing_lines:
-        strip_codes.append(0x01)
+        strip_codes.append([0x0A, 0x01][lang_index])
 
     # Replace stripped codes with a space.
     if strip_codes:
@@ -59,14 +65,14 @@ def line_wrap(text: str, strip_existing_lines: bool = False, strip_existing_boxe
             if text_code.code in strip_codes:
                 # Check for existing whitespace near this control code.
                 # If one is found, simply remove this text code.
-                if index > 0 and text_codes[index-1].code == 0x20:
+                if index > 0 and text_codes[index - 1].code == [0x8170, 0x20][lang_index]:
                     text_codes.pop(index)
                     continue
-                if index + 1 < len(text_codes) and text_codes[index+1].code == 0x20:
+                if index + 1 < len(text_codes) and text_codes[index + 1].code == [0x8170, 0x20][lang_index]:
                     text_codes.pop(index)
                     continue
                 # Replace this text code with a space.
-                text_codes[index] = Messages.TextCode(0x20, 0)
+                text_codes[index] = Messages.TextCode([0x8170, 0x20][lang_index], 0, lang_index)
             index += 1
 
     # Split the text codes by current box breaks.
@@ -75,7 +81,7 @@ def line_wrap(text: str, strip_existing_lines: bool = False, strip_existing_boxe
     end_index = 0
     for text_code in text_codes:
         end_index += 1
-        if text_code.code == 0x04:
+        if text_code.code == [0x81A5, 0x04][lang_index]:
             boxes.append(text_codes[start_index:end_index])
             start_index = end_index
     boxes.append(text_codes[start_index:end_index])
@@ -83,33 +89,47 @@ def line_wrap(text: str, strip_existing_lines: bool = False, strip_existing_boxe
     # Split the boxes into lines and words.
     processed_boxes = []
     for box_codes in boxes:
-        line_width = NORMAL_LINE_WIDTH
+        line_width = NORMAL_LINE_WIDTH if lang_index else NORMAL_LINE_WIDTH_JP
         icon_code = None
         words = []
 
         # Group the text codes into words.
         index = 0
+        align_box = align
         while index < len(box_codes):
             text_code = box_codes[index]
             index += 1
 
             # Check for an icon code and lower the width of this box if one is found.
-            if text_code.code == 0x13:
-                line_width = 1441440
+            if text_code.code == [0x819A, 0x13][lang_index]:
+                line_width = 1441440 if lang_index else 16 * 14
                 icon_code = text_code
 
-            # Find us a whole word.
-            if text_code.code in [0x01, 0x04, 0x20]:
-                if index > 1:
-                    words.append(box_codes[0:index-1])
-                if text_code.code in [0x01, 0x04]:
-                    # If we have run into a line or box break, add it as a "word" as well.
-                    words.append([box_codes[index-1]])
+            if any([tc.code in skip_align for tc in box_codes[index:]]) and not any([tc.code == 0x81A5 for tc in box_codes[index:]]):
+                align_box = "Left"
+
+            if calculate_width([box_codes[:index - 1]], lang_index) >= line_width and not lang_index:
+                words.append(calculate_align(box_codes[:index], lang_index, line_width, align_box))
                 box_codes = box_codes[index:]
+                if text_code.code == 0x81A5:
+                    align_box = align
+                index = 0
+
+            # Find us a whole word.
+            if text_code.code in [[0x0A, 0x81A5, 0x8170],[0x01, 0x04, 0x20]][lang_index]:
+                if index > 1:
+                    words.append(calculate_align(box_codes[:index - 1], lang_index, line_width, align_box))
+                if text_code.code in [[0x0A, 0x81A5],[0x01, 0x04]][lang_index]:
+                    # If we have run into a line or box break, add it as a "word" as well.
+                    words.append([box_codes[index - 1]])
+                box_codes = box_codes[index:]
+                if text_code.code == 0x81A5:
+                    align_box = align
                 index = 0
             if index > 0 and index == len(box_codes):
-                words.append(box_codes)
+                words.append(calculate_align(box_codes, lang_index, line_width, align_box))
                 box_codes = []
+                align_box = align
 
         # Arrange our words into lines.
         lines = []
@@ -123,61 +143,88 @@ def line_wrap(text: str, strip_existing_lines: bool = False, strip_existing_boxe
 
             # If this word is a line/box break, trim our line back a word and deal with it later.
             break_char = False
-            if words[end_index-1][0].code in [0x01, 0x04]:
-                line = words[start_index:end_index-1]
+            if words[end_index - 1][0].code in [[0x0A, 0x81A5],[0x01, 0x04]][lang_index]:
+                line = words[start_index:end_index - 1]
                 break_char = True
 
             # Check the width of the line after adding one more word.
-            if end_index == len(words) or break_char or calculate_width(words[start_index:end_index+1]) > line_width:
+            if end_index == len(words) or break_char or (calculate_width(words[start_index:end_index + 1], lang_index) >= line_width):
                 if line or lines:
                     lines.append(line)
                 start_index = end_index
 
             # If we've reached the end of the box, finalize it.
-            if end_index == len(words) or words[end_index-1][0].code == 0x04 or len(lines) == LINES_PER_BOX:
+            if end_index == len(words) or words[end_index - 1][0].code == [0x81A5, 0x04][lang_index] or len(lines) == line_box:
                 # Append the same icon to any wrapped boxes.
                 if icon_code and box_count > 1:
                     lines[0][0] = [icon_code] + lines[0][0]
                 processed_boxes.append(lines)
                 lines = []
                 box_count += 1
-
     # Construct our final string.
     # This is a hideous level of list comprehension. Sorry.
-    return '\x04'.join(['\x01'.join([' '.join([''.join([code.get_string() for code in word]) for word in line]) for line in box]) for box in processed_boxes])
+    if lang_index: return '\x04'.join(['\x01'.join([' '.join([''.join([code.get_string() for code in word]) for word in line]) for line in box]) for box in processed_boxes])
+    else: return '^'.join(['&'.join([''.join([''.join([code.get_string() for code in word]) for word in line]) for line in box]) for box in processed_boxes]).replace("&&", "&").replace("^^", "^").replace("&^", "^")
 
 
-def calculate_width(words: list[list[TextCode]]):
+def calculate_width(words: list[list[TextCode]], lang: str|int):
     words_width = 0
+    lang_index = 1 if lang in ["en", 1] else 0
+    CC = Messages.CONTROL_CODES if lang_index else Messages.CC_PARSE_JP
     for word in words:
         index = 0
         while index < len(word):
             character = word[index]
             index += 1
-            if character.code in Messages.CONTROL_CODES:
-                if character.code == 0x06:
+            if character.code in CC:
+                if character.code == [0x86C7, 0x06][lang_index]:
                     words_width += character.data
-            words_width += get_character_width(chr(character.code))
-    spaces_width = get_character_width(' ') * (len(words) - 1)
-
+            words_width += get_character_width(chr(character.code) if lang_index else character.code, lang_index)
+    spaces_width = get_character_width(' ', lang_index) * (len(words) - 1) if lang_index else 0
     return words_width + spaces_width
 
 
-def get_character_width(character: str) -> int:
-    try:
-        return character_table[character]
-    except KeyError:
-        if character in Messages.CONTROL_CODES:
+def get_character_width(character: str|int, lang: str|int) -> int:
+    if lang in ["en", 1]:
+        try:
+            return character_table[character]
+        except KeyError:
+            if character in Messages.CONTROL_CODES:
+                if character in control_code_width:
+                    return sum([character_table[c] for c in control_code_width[character]])
+                else:
+                    return 0
+            else:
+                # A sane default with the most common character width
+                return character_table[' ']
+    else:
+        if character in Messages.CC_PARSE_JP:
             if character in control_code_width:
-                return sum([character_table[c] for c in control_code_width[character]])
+                return 16 * len(control_code_width[character])
             else:
                 return 0
         else:
             # A sane default with the most common character width
-            return character_table[' ']
+            if character in character_table:
+                return character_table[character]
+            return 16
 
+def calculate_align(words, lang: int, line_width:int, align:str="Left"):
+    if align == "Left":
+        return words
+    word_codes = [w.code for w in words]
+    if [0x86C7, 0x06][lang] in word_codes:
+        words.pop(word_codes.index([0x86C7, 0x06][lang]))
+    h = calculate_width([words], lang)
+    g = line_width - h
+    if g <= 0:
+        return words
+    if lang:
+        g = g * 16 // 120120
+    align_code = Messages.TextCode([0x86C7, 0x06][lang], int(g // 2 if align == "Center" else g), lang)
+    return [align_code] + words
 
-control_code_width: dict[str, str] = {
+control_code_width: dict[str|int, str] = {
     '\x0F': '00000000',
     '\x16': '00\'00"',
     '\x17': '00\'00"',
@@ -189,6 +236,17 @@ control_code_width: dict[str, str] = {
     '\xF0': '10',
     '\xF1': '0',
     '\xF2': '00000000',
+    0x874F: '00000000',
+    0x8791: '00\'00"',
+    0x8792: '00\'00"',
+    0x879B: '00000',
+    0x86A3: '100',
+    0x86A4: '00',
+    0x869F: '00000',
+    0x81A1: '00\'00"',
+    0x87F0: '10',
+    0x87F1: '0',
+    0x87F2: '00000000',
 }
 
 
@@ -198,7 +256,7 @@ control_code_width: dict[str, str] = {
 # at worst. This ensures that we will never bleed text out of the text box while line wrapping.
 # Larger numbers in the denominator mean more of that character fits on a line; conversely, larger values in this table
 # mean the character is wider and can't fit as many on one line.
-character_table: dict[str, int] = {
+character_table: dict[str|int, int] = {
     '\x0F': 655200,
     '\x16': 292215,
     '\x17': 292215,
@@ -283,28 +341,64 @@ character_table: dict[str, int] = {
     ')':  42900,  # LINE_WIDTH /  42
     '$':  51480,  # LINE_WIDTH /  35
     '\xF2': 655200,
+    0x8140: 6, # '　'
+    0x8141: 7, # '、'
+    0x8142: 7, # '。'
+    0x8144: 3, # '．'
+    0x8145: 7, # '・'
+    0x8148: 14,# '？'
+    0x8149: 14,# '！'
+    0x814F: 7, # '＾'
+    0x8167: 7, # '“'
+    0x8168: 7, # '”'
+    0x8169: 10, # '（'
+    0x816A: 5, # '）'
+    0x8175: 10, # '「'
+    0x8176: 5, # '」'
+    0x8194: 9, # '＃'
+    0x8196: 9, # '＊'
+    0x8250: 14 # '１'
 }
 
+trans_map = str.maketrans(
+    { chr(0x21 + i): chr(0xFF01 + i) for i in range(94) }
+)
+
+character_table_jp = {}
+for ch, ap in character_table.items():
+    if type(ch) != str: continue
+    if len(ch) == 1 and not ch.isprintable():
+        continue
+    try:
+        key = str(ch).translate(trans_map).encode("cp932")
+    except:
+        continue
+
+    character_table_jp[key] = ap
 
 # To run tests, enter the following into a python3 REPL:
 # >>> import Messages
 # >>> from TextBox import line_wrap_tests
 # >>> line_wrap_tests()
-def line_wrap_tests() -> None:
-    test_wrap_simple_line()
-    test_honor_forced_line_wraps()
-    test_honor_box_breaks()
-    test_honor_control_characters()
-    test_honor_player_name()
-    test_maintain_multiple_forced_breaks()
-    test_trim_whitespace()
-    test_support_long_words()
+def line_wrap_tests(lang) -> None:
+    test_wrap_simple_line(lang)
+    test_honor_forced_line_wraps(lang)
+    test_honor_box_breaks(lang)
+    test_honor_control_characters(lang)
+    test_honor_player_name(lang)
+    test_maintain_multiple_forced_breaks(lang)
+    test_trim_whitespace(lang)
+    test_support_long_words(lang)
 
 
-def test_wrap_simple_line() -> None:
-    words = 'Hello World! Hello World! Hello World!'
-    expected = 'Hello World! Hello World! Hello\x01World!'
-    result = line_wrap(words)
+def test_wrap_simple_line(lang) -> None:
+    if lang == "jp":
+        words = 'あいうえおかきくけこさしすせそたちつてと'
+        expected = 'あいうえおかきくけこさしすせそた&ちつてと'
+    else:
+        words = 'Hello World! Hello World! Hello World!'
+        expected = 'Hello World! Hello World! Hello\x01World!'
+    result = line_wrap(words, lang)
 
     if result != expected:
         print('"Wrap Simple Line" test failed: Got ' + result + ', wanted ' + expected)
@@ -312,10 +406,14 @@ def test_wrap_simple_line() -> None:
         print('"Wrap Simple Line" test passed!')
 
 
-def test_honor_forced_line_wraps() -> None:
-    words = 'Hello World! Hello World!&Hello World! Hello World! Hello World!'
-    expected = 'Hello World! Hello World!\x01Hello World! Hello World! Hello\x01World!'
-    result = line_wrap(words)
+def test_honor_forced_line_wraps(lang) -> None:
+    if lang == "jp":
+        words = 'あいう&えおかきくけこさしすせそたちつてとなにぬねの'
+        expected = 'あいう&えおかきくけこさしすせそたちつて&と'
+    else:
+        words = 'Hello World! Hello World!&Hello World! Hello World! Hello World!'
+        expected = 'Hello World! Hello World!\x01Hello World! Hello World! Hello\x01World!'
+    result = line_wrap(words, lang)
 
     if result != expected:
         print('"Honor Forced Line Wraps" test failed: Got ' + result + ', wanted ' + expected)
@@ -323,10 +421,14 @@ def test_honor_forced_line_wraps() -> None:
         print('"Honor Forced Line Wraps" test passed!')
 
 
-def test_honor_box_breaks() -> None:
-    words = 'Hello World! Hello World!^Hello World! Hello World! Hello World!'
-    expected = 'Hello World! Hello World!\x04Hello World! Hello World! Hello\x01World!'
-    result = line_wrap(words)
+def test_honor_box_breaks(lang) -> None:
+    if lang == "jp":
+        words = 'あいう^えおかきくけこさしすせそたちつてとなにぬねの'
+        expected = 'あいう^えおかきくけこさしすせそたちつて&と'
+    else:
+        words = 'Hello World! Hello World!^Hello World! Hello World! Hello World!'
+        expected = 'Hello World! Hello World!\x04Hello World! Hello World! Hello\x01World!'
+    result = line_wrap(words, lang)
 
     if result != expected:
         print('"Honor Box Breaks" test failed: Got ' + result + ', wanted ' + expected)
@@ -334,10 +436,14 @@ def test_honor_box_breaks() -> None:
         print('"Honor Box Breaks" test passed!')
 
 
-def test_honor_control_characters() -> None:
-    words = 'Hello World! #Hello# World! Hello World!'
-    expected = 'Hello World! \x05\x00Hello\x05\x00 World! Hello\x01World!'
-    result = line_wrap(words)
+def test_honor_control_characters(lang) -> None:
+    if lang == "jp":
+        words = 'あいうえお#01かきくけこ#00さしすせそたちつてと'
+        expected = 'あいうえお#01かきくけこ#00さしすせそた&ちつてと'
+    else:
+        words = 'Hello World! #Hello# World! Hello World!'
+        expected = 'Hello World! \x05\x00Hello\x05\x00 World! Hello\x01World!'
+    result = line_wrap(words, lang)
 
     if result != expected:
         print('"Honor Control Characters" test failed: Got ' + result + ', wanted ' + expected)
@@ -345,10 +451,14 @@ def test_honor_control_characters() -> None:
         print('"Honor Control Characters" test passed!')
 
 
-def test_honor_player_name() -> None:
-    words = 'Hello @! Hello World! Hello World!'
-    expected = 'Hello \x0F! Hello World!\x01Hello World!'
-    result = line_wrap(words)
+def test_honor_player_name(lang) -> None:
+    if lang == "jp":
+        words = 'あいうえお@さしすせそたちつてと'
+        expected = 'あいうえお@さしすせそた&ちつてと'
+    else:
+        words = 'Hello @! Hello World! Hello World!'
+        expected = 'Hello \x0F! Hello World!\x01Hello World!'
+    result = line_wrap(words, lang)
 
     if result != expected:
         print('"Honor Player Name" test failed: Got ' + result + ', wanted ' + expected)
@@ -356,10 +466,14 @@ def test_honor_player_name() -> None:
         print('"Honor Player Name" test passed!')
 
 
-def test_maintain_multiple_forced_breaks() -> None:
-    words = 'Hello World!&&&Hello World!'
-    expected = 'Hello World!\x01\x01\x01Hello World!'
-    result = line_wrap(words)
+def test_maintain_multiple_forced_breaks(lang) -> None:
+    if lang == "jp":
+        words = 'あいうえお&&&かきくけこさしすせそたちつてと'
+        expected = 'あいうえお&&^かきくけこさしすせそたちつてと'
+    else:
+        words = 'Hello World!&&&Hello World!'
+        expected = 'Hello World!\x01\x01\x01Hello World!'
+    result = line_wrap(words, lang)
 
     if result != expected:
         print('"Maintain Multiple Forced Breaks" test failed: Got ' + result + ', wanted ' + expected)
@@ -367,10 +481,14 @@ def test_maintain_multiple_forced_breaks() -> None:
         print('"Maintain Multiple Forced Breaks" test passed!')
 
 
-def test_trim_whitespace() -> None:
-    words = 'Hello World! & Hello World!'
-    expected = 'Hello World!\x01Hello World!'
-    result = line_wrap(words)
+def test_trim_whitespace(lang) -> None:
+    if lang == "jp":
+        words = 'あいうえおかきく　けこさしすせそたちつてと'
+        expected = 'あいうえおかきく　けこさしすせそ&たちつてと'
+    else:
+        words = 'Hello World! & Hello World!'
+        expected = 'Hello World!\x01Hello World!'
+    result = line_wrap(words, lang)
 
     if result != expected:
         print('"Trim Whitespace" test failed: Got ' + result + ', wanted ' + expected)
@@ -378,10 +496,14 @@ def test_trim_whitespace() -> None:
         print('"Trim Whitespace" test passed!')
 
 
-def test_support_long_words() -> None:
-    words = 'Hello World! WWWWWWWWWWWWWWWWWWWW Hello World!'
-    expected = 'Hello World!\x01WWWWWWWWWWWWWWWWWWWW\x01Hello World!'
-    result = line_wrap(words)
+def test_support_long_words(lang) -> None:
+    if lang == "jp":
+        words = 'あいうえおかきくけこさしすせそたちつてと'
+        expected = 'あいうえおかきくけこさしすせそた&ちつてと'
+    else:
+        words = 'Hello World! WWWWWWWWWWWWWWWWWWWW Hello World!'
+        expected = 'Hello World!\x01WWWWWWWWWWWWWWWWWWWW\x01Hello World!'
+    result = line_wrap(words, lang)
 
     if result != expected:
         print('"Support Long Words" test failed: Got ' + result + ', wanted ' + expected)

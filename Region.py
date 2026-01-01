@@ -77,23 +77,17 @@ class Region:
 
     @property
     def hint(self) -> Optional[HintArea]:
-        from Hints import HintArea
-
         if self.hint_name is not None:
-            return HintArea[self.hint_name]
+            return self.world.HintAreaLang[self.hint_name]
         if self.dungeon:
             return self.dungeon.hint
 
     @property
     def alt_hint(self) -> Optional[HintArea]:
-        from Hints import HintArea
-
         if self.alt_hint_name is not None:
-            return HintArea[self.alt_hint_name]
+            return self.world.HintAreaLang[self.alt_hint_name]
 
     def can_fill(self, item: Item, manual: bool = False) -> bool:
-        from Hints import HintArea
-
         if not manual and self.world.settings.empty_dungeons_mode != 'none' and item.dungeonitem:
             # An empty dungeon can only store its own dungeon items
             if self.dungeon and self.dungeon.world.precompleted_dungeons.get(self.dungeon.name, False):
@@ -123,32 +117,32 @@ class Region:
             )
 
             is_self_dungeon_restricted = (shuffle_setting == 'dungeon' or (shuffle_setting == 'vanilla' and item.type != 'DungeonReward')) and item.type not in ('HideoutSmallKey', 'TCGSmallKey', 'HideoutSmallKeyRing', 'TCGSmallKeyRing')
-            is_self_region_restricted = [HintArea.GERUDO_FORTRESS, HintArea.THIEVES_HIDEOUT] if shuffle_setting == 'fortress' else None
+            is_self_region_restricted = [self.world.HintAreaLang.GERUDO_FORTRESS, self.world.HintAreaLang.THIEVES_HIDEOUT] if shuffle_setting == 'fortress' else None
             if item.name in REWARD_COLORS:
                 is_hint_color_restricted = [REWARD_COLORS[item.name]] if shuffle_setting == 'regional' else None
             else:
-                is_hint_color_restricted = [HintArea.for_dungeon(item.name).color] if shuffle_setting == 'regional' else None
+                is_hint_color_restricted = [self.world.HintAreaLang.for_dungeon(item.name).color] if shuffle_setting == 'regional' else None
             is_dungeon_restricted = shuffle_setting == 'any_dungeon'
             is_overworld_restricted = shuffle_setting == 'overworld'
 
         if is_self_dungeon_restricted and not manual:
-            hint_area = HintArea.at(self)
+            hint_area = self.world.HintAreaLang.at(self)
             if item.name == 'Light Medallion':
-                return hint_area in (HintArea.ROOT, HintArea.TEMPLE_OF_TIME) and item.world.id == self.world.id
+                return hint_area in (self.world.HintAreaLang.ROOT, self.world.HintAreaLang.TEMPLE_OF_TIME) and item.world.id == self.world.id
             else:
                 return hint_area.is_dungeon and hint_area.is_dungeon_item(item) and item.world.id == self.world.id
 
         if is_self_region_restricted and not manual:
-            return HintArea.at(self) in is_self_region_restricted and item.world.id == self.world.id
+            return self.world.HintAreaLang.at(self) in is_self_region_restricted and item.world.id == self.world.id
 
         if is_hint_color_restricted and not manual:
-            return HintArea.at(self).color in is_hint_color_restricted
+            return self.world.HintAreaLang.at(self).color in is_hint_color_restricted
 
         if is_dungeon_restricted and not manual:
-            return HintArea.at(self).is_dungeon
+            return self.world.HintAreaLang.at(self).is_dungeon
 
         if is_overworld_restricted and not manual:
-            return not HintArea.at(self).is_dungeon
+            return not self.world.HintAreaLang.at(self).is_dungeon
 
         if item.name == 'Triforce Piece':
             return item.world.id == self.world.id

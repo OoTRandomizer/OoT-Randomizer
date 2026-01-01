@@ -15,7 +15,7 @@ from typing import Literal, Optional, Any, overload
 
 from EntranceShuffle import EntranceShuffleError
 from Fill import ShuffleError
-from Hints import HintArea, build_misc_item_hints
+from Hints import HintAreaDefault, build_misc_item_hints
 from Item import ItemInfo
 from ItemPool import remove_junk_items, remove_junk_ludicrous_items, ludicrous_items_base, ludicrous_items_extended, trade_items, ludicrous_exclusions
 from LocationList import location_is_viewable
@@ -26,6 +26,9 @@ from SettingsList import logic_tricks, advanced_logic_tricks
 from Spoiler import Spoiler
 from Rom import Rom
 from Audiobank import *
+from Language import Language
+import language.property_build
+from Utils import lang_path, data_path
 
 test_dir = os.path.join(os.path.dirname(__file__), 'tests')
 output_dir = os.path.join(test_dir, 'Output')
@@ -60,6 +63,7 @@ ludicrous_set = set(ludicrous_items_base) | set(ludicrous_items_extended) | ludi
 def make_settings_for_test(settings_dict: dict[str, Any], seed: Optional[str] = None, outfilename: str = '', strict: bool = True) -> Settings:
     # Some consistent settings for testability
     settings_dict.update({
+        'language_selection': 'English',
         'create_patch_file': False,
         'create_compressed_rom': False,
         'create_wad_file': False,
@@ -79,6 +83,7 @@ def load_settings(settings_file: dict[str, Any] | str, seed: Optional[str] = Non
             raise RuntimeError("Running test with in memory file but did not supply a filename for output file.")
         j = settings_file
         j.update({
+            'language_selection': 'English',
             'enable_distribution_file': True,
             'distribution_file': os.path.join(test_dir, 'plando', filename + '.json')
         })
@@ -111,6 +116,7 @@ def generate_with_plandomizer(filename: str, live_copy: bool = False, max_attemp
         settings = load_settings(distribution_file['settings'], seed='TESTTESTTEST', filename=filename)
     except KeyError:  # No settings dict in distribution file, create minimal consistent configuration
         settings = Settings({
+            'language_selection': 'English',
             'enable_distribution_file': True,
             'distribution_file': os.path.join(test_dir, 'plando', filename + '.json'),
             'create_patch_file': False,
@@ -214,6 +220,7 @@ class TestPlandomizer(unittest.TestCase):
         for logic_rules_setting in logic_rules_settings:
             with self.subTest(f"Logic Rules: {logic_rules_setting}"):
                 settings = Settings({
+                    'language_selection': 'English',
                     'enable_distribution_file': True,
                     'distribution_file': os.path.join(test_dir, 'plando', filename + '.json'),
                     'patch_without_output': True,
@@ -523,14 +530,14 @@ class TestPlandomizer(unittest.TestCase):
             "empty-dungeons-half-songs-dungeon"
         ]
         dungeons = {
-            HintArea.DEKU_TREE: "Queen Gohma",
-            HintArea.DODONGOS_CAVERN: "King Dodongo",
-            HintArea.JABU_JABUS_BELLY: "Barinade",
-            HintArea.FOREST_TEMPLE: "Phantom Ganon",
-            HintArea.FIRE_TEMPLE: "Volvagia",
-            HintArea.WATER_TEMPLE: "Morpha",
-            HintArea.SHADOW_TEMPLE: "Bongo Bongo",
-            HintArea.SPIRIT_TEMPLE: "Twinrova"
+            HintAreaDefault.DEKU_TREE: "Queen Gohma",
+            HintAreaDefault.DODONGOS_CAVERN: "King Dodongo",
+            HintAreaDefault.JABU_JABUS_BELLY: "Barinade",
+            HintAreaDefault.FOREST_TEMPLE: "Phantom Ganon",
+            HintAreaDefault.FIRE_TEMPLE: "Volvagia",
+            HintAreaDefault.WATER_TEMPLE: "Morpha",
+            HintAreaDefault.SHADOW_TEMPLE: "Bongo Bongo",
+            HintAreaDefault.SPIRIT_TEMPLE: "Twinrova"
         }
         for filename in filenames:
             with self.subTest(filename):
@@ -643,10 +650,10 @@ class TestHints(unittest.TestCase):
         _, spoiler = generate_with_plandomizer(filename, live_copy=True)
         world = spoiler.worlds[0]
         location = spoiler.worlds[0].misc_hint_item_locations["ganondorf"]
-        area = HintArea.at(location, use_alt_hint=True).text(world.settings.clearer_hints, world=None if not location.world or location.world.id == world.id else location.world.id + 1)
+        area = HintAreaDefault.at(location, use_alt_hint=True).text(world.language, world.settings.clearer_hints, world=None if not location.world or location.world.id == world.id else location.world.id + 1)
         self.assertEqual(area, "#Ganondorf's Chamber#")
         # Build a test message with the same ID as the ganondorf hint (0x70CC)
-        messages = [Message("Test", 0, 0x70CC, 0, 0, 0)]
+        messages = [Message("Test", 0, 0x70CC, 0, 0, 0, "en")]
         build_misc_item_hints(spoiler.worlds[0], messages, allow_duplicates=True)
         for message in messages:
             if message.id == 0x70CC: # Ganondorf hint message
@@ -898,6 +905,7 @@ class TestValidSpoilers(unittest.TestCase):
     def test_fuzzer(self):
         random.seed()
         fuzz_settings = [Settings({
+            'language_selection': 'English',
             'randomize_settings': True,
             'create_patch_file': False,
             'create_compressed_rom': False,
@@ -932,7 +940,7 @@ class TestTextShuffle(unittest.TestCase):
         if not os.path.isfile('./ZOOTDEC.z64'):
             self.skipTest("Base ROM file not available.")
         rom = Rom("./ZOOTDEC.z64")
-        messages = read_messages(rom)
+        messages = read_messages(rom, Language("English"))
         shuffle_messages(messages)
         shuffle_messages(messages, False)
 
@@ -986,3 +994,38 @@ class TestCustomAudio(unittest.TestCase):
         self.assertEqual(num_banks, 0x26)
         self.assertEqual(audiobanks[0x25].bank_offset, 0x19110)
         self.assertEqual(audiobanks[0x25].size, 0x3940)
+
+def extract_first_second_level_keys(data: dict) -> list:
+    result = []
+    for first_key, first_value in data.items():
+        if isinstance(first_value, dict):
+            if first_key in ["pronoun_mapping", "verb_mapping"]:
+                result.append(f"{first_key}")
+            else:
+                for second_key in first_value.keys():
+                    result.append(f"{first_key}.{second_key}")
+        else:
+            result.append(f"{first_key}")
+    return result
+
+class TestLanguageFile(unittest.TestCase):
+    def test_langfiles(self):
+        base_keys = extract_first_second_level_keys(language.property_build.lang_info)
+        bin_patch = list(json.load(open(data_path("bin_patch.json"))).keys()) + ["blue_fire_arrow_item_name_jap.ia4", "blue_fire_arrow_item_name_eng.ia4"]
+        for lang in os.listdir(lang_path()):
+            if os.path.isdir(os.path.join(lang_path(), lang)) and lang != "__pycache__":
+                lang_files = os.listdir(os.path.join(lang_path(), lang))
+                self.assertIn("property.json", lang_files, msg = "\n{}: property.json is not included".format(lang))
+                lang_files.remove("property.json")
+                property_keys = extract_first_second_level_keys(json.load(open(os.path.join(lang_path(), lang, "property.json"))))
+                only_in_base = list(sorted(set(base_keys) - set(property_keys)))
+                only_in_lang = list(sorted(set(property_keys) - set(base_keys)))
+                diff_keys = []
+                if only_in_base:
+                    diff_keys.append(f"missing: [{', '.join(only_in_base)}]")
+                if only_in_lang:
+                    diff_keys.append(f"extra: [{', '.join(only_in_lang)}]")
+                bin_full = list(sorted(set(lang_files) - set(bin_patch)))
+                diff_texts = "\n".join(diff_keys)
+                self.assertTrue(not diff_keys, msg = "\n{}: some properties are wrong in property.json\n\n{}".format(lang, diff_texts))
+                self.assertEqual(bin_full, [], msg = "\n{}: some non-wanted bin files are included".format(lang))

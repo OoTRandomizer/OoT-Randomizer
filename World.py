@@ -12,7 +12,7 @@ from Dungeon import Dungeon
 from Entrance import Entrance
 from Goals import Goal, GoalCategory
 from HintList import get_required_hints, misc_item_hint_table, misc_location_hint_table, misc_dual_hint_table
-from Hints import HintArea, hint_dist_keys, hint_dist_files
+from Hints import HintArea, hint_dist_keys, hint_dist_files, hint_area_enum, area_flat, HintAreaDefault
 from Item import Item, ItemFactory, ItemInfo, make_event_item
 from ItemList import REWARD_COLORS
 from ItemPool import reward_list
@@ -27,6 +27,7 @@ from SettingsList import SettingInfos, get_settings_from_section
 from Spoiler import Spoiler
 from State import State
 from Utils import data_path, read_logic_file
+from Language import Language
 
 
 class World:
@@ -63,6 +64,20 @@ class World:
         self.event_items: set[str] = set()
         self.settings: Settings = settings.copy()
         self.distribution: WorldDistribution = settings.distribution.world_dists[world_id]
+
+        # language property...
+        self.language: Language = Language(settings.language_selection)
+        def update_dict(a: dict, b: dict) -> dict:
+            c = {}
+            for key, subdict in a.items():
+                merged = subdict.copy()
+                if key in b:
+                    merged.update(b[key])
+                c[key] = merged
+            return c
+
+        lang_hint_area_enum = update_dict(hint_area_enum, self.language.hint_area_enum)
+        self.HintAreaLang = HintArea("HintAreaLang", area_flat(lang_hint_area_enum))
 
         # rename a few attributes...
         self.keysanity: bool = settings.shuffle_smallkeys in ('keysanity', 'remove', 'any_dungeon', 'overworld', 'regional')
@@ -376,6 +391,7 @@ class World:
         new_world.randomized_list = list(self.randomized_list)
         for randomized_item in new_world.randomized_list:
             setattr(new_world, randomized_item, getattr(self.settings, randomized_item))
+
         new_world.distribution.randomized_starting_items = new_world.randomized_starting_items = copy.copy(self.randomized_starting_items)
 
         new_world.always_hints = list(self.always_hints)
@@ -628,7 +644,7 @@ class World:
 
     def create_dungeons(self) -> list[tuple[Entrance, str]]:
         savewarps_to_connect = []
-        for hint_area in HintArea:
+        for hint_area in HintAreaDefault:
             if (name := hint_area.dungeon_name) is not None:
                 logic_folder = 'Glitched World' if self.settings.logic_rules == 'advanced' else 'World'
                 file_name = name + (' MQ.json' if self.dungeon_mq[name] else '.json')
@@ -765,7 +781,7 @@ class World:
     def set_empty_dungeon_rewards(self, empty_rewards: list[str] = []) -> None:
         empty_dungeon_bosses = list(map(lambda reward: self.find_items(reward)[0], empty_rewards))
         for boss in empty_dungeon_bosses:
-            hint_area = HintArea.at(boss)
+            hint_area = HintAreaDefault.at(boss)
             if hint_area.dungeon_name in self.precompleted_dungeons: # filter out side dungeons and overworld
                 self.precompleted_dungeons[hint_area.dungeon_name] = True
 
@@ -1244,7 +1260,7 @@ class World:
 
     def region_has_shortcuts(self, region_name: str) -> bool:
         region = self.get_region(region_name)
-        dungeon_name = HintArea.at(region).dungeon_name
+        dungeon_name = HintAreaDefault.at(region).dungeon_name
         return dungeon_name in self.settings.dungeon_shortcuts
 
     # Returns whether the given dungeon has a keyring.
@@ -1284,9 +1300,9 @@ class World:
     def update_useless_areas(self, spoiler: Spoiler) -> None:
         areas: dict[HintArea, dict[str, Any]] = {}
         # Link's Pocket and None are not real areas
-        excluded_areas = [None, HintArea.ROOT]
+        excluded_areas = [None, HintAreaDefault.ROOT]
         for location in self.get_locations():
-            location_hint = HintArea.at(location)
+            location_hint = HintAreaDefault.at(location)
 
             # We exclude event and locked locations. This means that medallions
             # and stones are not considered here. This is not really an accurate
