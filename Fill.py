@@ -113,7 +113,7 @@ def reduce_placed_items_to_barren(worlds: list[World]) -> None:
         # Case 4: Replace all health upgrades when the goal is not heart count (without testing)
         elif original_item.name in item_groups['HealthUpgrade'] and item.world.settings.shuffle_ganon_bosskey != 'hearts' and item.world.settings.bridge != 'hearts':
             is_replaced = replace_junk_item_with_nothing(location, original_item, worlds)
-        
+
         # Case 5: Bottles can be removed in all locations reachable
         elif original_item.name in item_groups['Bottle']:
             is_replaced = replace_major_item_with_nothing(location, original_item, worlds)
@@ -121,7 +121,7 @@ def reduce_placed_items_to_barren(worlds: list[World]) -> None:
         # Case 6: Major items can be removed because they unlock no location
         elif original_item.name in remove_junk_barren_items:
             is_replaced = replace_major_item_with_nothing(location, original_item, worlds)
-        
+
         # Case 7: Major items can be replaced by other items to unlock locations
         elif original_item.name in removable_major_barren_items:
             is_replaced = replace_major_item_with_nothing(location, original_item, worlds)
