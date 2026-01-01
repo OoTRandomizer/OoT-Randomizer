@@ -39,6 +39,9 @@ def is_item_replaceable_barren(item: Item, settings) -> bool:
     Returns:
         bool: True if the item can be replaced, False otherwise
     """
+    if item.type == 'Shop':
+        return False
+
     # Songs: depends on shuffle_song_items setting
     if item.type == 'Song' and settings.shuffle_song_items != 'any':
         return False
@@ -51,6 +54,10 @@ def is_item_replaceable_barren(item: Item, settings) -> bool:
 
     # Ice Traps: NEVER replace (important gameplay role)
     if item.name == 'Ice Trap':
+        return False
+    
+    # Winner piece of heart isn't removed for junk ice trap
+    if item.name == 'Piece of Heart (Treasure Chest Game)' and settings.ice_trap_appearance == 'junk_only' and settings.junk_ice_traps != 'off':
         return False
 
     return True
