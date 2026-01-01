@@ -98,35 +98,35 @@ def reduce_placed_items_to_barren(worlds: list[World]) -> None:
         original_item = location.item
         is_replaced = False
 
-        #Case 1: Replace junk directly without testing
+        # Case 1: Replace junk directly (without testing)
         if original_item.name in item_groups['Junk']:
             is_replaced = replace_junk_item_with_nothing(location, original_item, worlds)
 
-        #Case 2: Replace junk songs (prelude and serenade) without testing
+        # Case 2: Replace junk songs (Prelude and Serenade) (without testing)
         elif original_item.name in item_groups['JunkSong']:
             is_replaced = replace_junk_item_with_nothing(location, original_item, worlds)
 
-        #Case 3: Replace junk dungeon items (Map/Compass) without testing
+        # Case 3: Replace junk dungeon items (maps/compasses) (without testing)
         elif original_item.name in item_groups['Map'] or original_item.name in item_groups['Compass']:
             is_replaced = replace_junk_item_with_nothing(location, original_item, worlds)
 
-        #Case 4: Replace all health upgrade when goal is not heart count without testing
+        # Case 4: Replace all health upgrades when the goal is not heart count (without testing)
         elif original_item.name in item_groups['HealthUpgrade'] and item.world.settings.shuffle_ganon_bosskey != 'hearts' and item.world.settings.bridge != 'hearts':
             is_replaced = replace_junk_item_with_nothing(location, original_item, worlds)
         
-        #Case 5: Bottle can be removed in all location recheable
+        # Case 5: Bottles can be removed in all locations reachable
         elif original_item.name in item_groups['Bottle']:
             is_replaced = replace_major_item_with_nothing(location, original_item, worlds)
 
-        #Case 6: Major items can be removed because unlock no location
+        # Case 6: Major items can be removed because they unlock no location
         elif original_item.name in remove_junk_barren_items:
             is_replaced = replace_major_item_with_nothing(location, original_item, worlds)
         
-        #Case 7: Major item can be replaced by another item to unlock location
+        # Case 7: Major items can be replaced by other items to unlock locations
         elif original_item.name in removable_major_barren_items:
             is_replaced = replace_major_item_with_nothing(location, original_item, worlds)
 
-        #Default: Replace all major only on beatable only
+        # Default: Replace major items only when reachable_locations is 'beatable'
         elif item.world.settings.reachable_locations == 'beatable':
             is_replaced = replace_major_item_with_nothing(location, original_item, worlds)
 
