@@ -4151,7 +4151,8 @@ class SettingInfos:
             'plentiful': 'Plentiful',
             'balanced':  'Balanced',
             'scarce':    'Scarce',
-            'minimal':   'Minimal'
+            'minimal':   'Minimal',
+            'barren':    'Barren'
         },
         gui_tooltip    = '''\
             'Ludicrous': Every item in the game is a major
@@ -4172,10 +4173,18 @@ class SettingInfos:
             open location checks are removed. All health
             upgrades are removed. Only one Bombchu item is
             available.
+
+            'Barren': Replaces items with "Nothing" while
+            ensuring the seed remains beatable. Junk items
+            (rupees, ammo) are replaced automatically. Progression
+            items are tested one by one. Results in the absolute
+            minimum required items. Warning: Very challenging!
+            Ammo must be farmed from enemies/pots.
         ''',
         shared         = True,
         disable        = {
-            'ludicrous':  {'settings': ['one_item_per_dungeon']}
+            'ludicrous':  {'settings': ['one_item_per_dungeon']},
+            'barren':     {'settings': ['one_item_per_dungeon']}
         }
     )
 

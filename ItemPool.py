@@ -245,6 +245,38 @@ item_difficulty_max: dict[str, dict[str, int]] = {
         'Heart Container': 0,
         'Piece of Heart': 0,
     },
+    # Barren mode: starts with minimal pool + removes junk, then reduce_item_pool_barren() removes progression items
+    'barren': {
+        'Bombchus (5)': 1,
+        'Bombchus (10)': 0,
+        'Bombchus (20)': 0,
+        'Magic Meter': 1,
+        'Nayrus Love': 1,
+        'Double Defense': 0,
+        'Deku Stick Capacity': 0,
+        'Deku Nut Capacity': 0,
+        'Bow': 1,
+        'Slingshot': 1,
+        'Bomb Bag': 1,
+        'Heart Container': 0,
+        'Piece of Heart': 0,
+        # Additional junk removal for barren - remove all ammo/consumables
+        'Bombs (5)': 0,
+        'Bombs (10)': 0,
+        'Bombs (20)': 0,
+        'Arrows (5)': 0,
+        'Arrows (10)': 0,
+        'Arrows (30)': 0,
+        'Deku Seeds (30)': 0,
+        'Deku Stick (1)': 0,
+        'Deku Nuts (5)': 0,
+        'Deku Nuts (10)': 0,
+        'Recovery Heart': 0,
+        'Rupees (5)': 0,
+        'Rupees (20)': 0,
+        'Rupees (50)': 0,
+        'Rupees (200)': 0,
+    },
 }
 
 shopsanity_rupees: list[str] = (
@@ -331,6 +363,30 @@ remove_junk_ludicrous_items: list[str] = [
     'Deku Stick Capacity',
     'Double Defense',
     'Biggoron Sword'
+]
+
+remove_junk_barren_items: list[str] = [
+    'Ice Arrows',
+    'Deku Nut Capacity',
+    'Deku Stick Capacity',
+    'Double Defense',
+    'Biggoron Sword',
+    'Farores Wind',
+    "Goron Mask",
+    "Zora Mask",
+    "Gerudo Mask",
+    "Mask of Truth",
+    "Rupee (1)",
+    "Rupee (Treasure Chest Game) (1)",
+    "Rupees (Treasure Chest Game) (20)",
+    "Rupees (Treasure Chest Game) (5)"
+]
+
+removable_major_barren_items: list[str] = [
+    'Nayrus Love',
+    'Stone of Agony',
+    'Fire Arrows',
+    'Blue Fire Arrows'
 ]
 
 # a useless placeholder item placed at some skipped and inaccessible locations

@@ -13,7 +13,7 @@ from typing import Optional
 
 from Cosmetics import CosmeticsLog, patch_cosmetics
 from EntranceShuffle import set_entrances
-from Fill import distribute_items_restrictive, ShuffleError
+from Fill import distribute_items_restrictive, reduce_placed_items_to_barren, ShuffleError
 from Goals import update_goal_items, replace_goal_names
 from Hints import build_gossip_hints
 from HintList import clear_hint_exclusion_cache, misc_item_hint_table, misc_location_hint_table
@@ -117,7 +117,13 @@ def resolve_settings(settings: Settings) -> Optional[Rom]:
 
 def generate(settings: Settings) -> Spoiler:
     worlds = build_world_graphs(settings)
+
     place_items(worlds)
+
+    # If barren mode is enabled, replace non-required items with Nothing AFTER placement
+    if settings.item_pool_value == 'barren':
+        reduce_placed_items_to_barren(worlds)
+
     for world in worlds:
         world.distribution.configure_effective_starting_items(worlds, world)
     if worlds[0].enable_goal_hints:
