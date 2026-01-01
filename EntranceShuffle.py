@@ -483,13 +483,13 @@ def shuffle_random_entrances(worlds: list[World]) -> None:
                     or worlds[0].mixed_pools_bosses
                 ):
                     wincons -= {'dungeons', 'stones', 'medallions'}
-                
+
                 if (
                     worlds[0].settings.reachable_locations == 'all'
                     or ('tokens' in wincons and worlds[0].settings.tokensanity in ('off', 'dungeons'))
                 ):
                     one_way_priorities['Bolero'] = priority_entrance_table['Bolero']
-                
+
                 if (
                     worlds[0].settings.logic_rules == 'glitchless'
                     or (
@@ -512,7 +512,7 @@ def shuffle_random_entrances(worlds: list[World]) -> None:
                     or ('tokens' in wincons and worlds[0].settings.tokensanity in ('off', 'overworld'))
                 ):
                     one_way_priorities['Nocturne'] = priority_entrance_table['Nocturne']
-                
+
                 if (
                     worlds[0].settings.logic_rules == 'glitchless'
                     or (
