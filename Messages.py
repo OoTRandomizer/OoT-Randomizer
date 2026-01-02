@@ -1260,7 +1260,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
             if dungeon.name in ('Gerudo Training Ground', 'Ganons Castle'):
                 pass
             elif dungeon.name in ('Bottom of the Well', 'Ice Cavern'):
-                dungeon_name, gender = dungeon_list["name"], dungeon_list["gender"]
+                dungeon_name, gender = dungeon_list[dungeon.name]
                 compass_id, map_id = dungeon_id_list[dungeon.name]
                 if 'map_dungeon_location' in world.settings.enhance_map_compass and world.settings.shuffle_dungeon_entrances != 'off':
                     dungeon_index = [i for i, c in dungeon_entrances.items() if dungeon.name in c]
@@ -1269,7 +1269,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                             if dungeon_name.startswith(prefix):
                                 dungeon_name = dungeon_name.replace(prefix, '', 1)
                                 break
-                    dungeon_location = dungeon_textbox_list[dungeon_index[0]],
+                    dungeon_location = dungeon_textbox_list[dungeon_index[0]]
                     if 'map_mq' in world.settings.enhance_map_compass and (world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12):
                         map_message = lang.format_from_id(
                             "PATCH_TEXTS.map_location_mq",
@@ -1305,7 +1305,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                         if world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12:
                             update_message_by_id(messages, map_id, map_message, lang, allow_duplicates=True)
             else:
-                dungeon_name, gender = dungeon_list["name"], dungeon_list["gender"]
+                dungeon_name, gender = dungeon_list[dungeon.name]
                 compass_id, map_id, boss_entrance = dungeon_id_list[dungeon.name]
                 if 'compass_reward' in world.settings.enhance_map_compass:
                     if world.settings.shuffle_dungeon_rewards != 'dungeon':
@@ -1395,7 +1395,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                         if dungeon_name.startswith(prefix):
                             dungeon_name = dungeon_name.replace(prefix, '', 1)
                             break
-                    dungeon_location = dungeon_textbox_list[dungeon_index[0]],
+                    dungeon_location = dungeon_textbox_list[dungeon_index[0]]
                     if 'map_mq' in world.settings.enhance_map_compass and (world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12):
                         map_message = lang.format_from_id(
                             "PATCH_TEXTS.map_location_mq",
