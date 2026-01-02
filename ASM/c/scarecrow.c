@@ -19,9 +19,24 @@ void* save_scarecrow_song(uint8_t* dest, uint8_t* src, int32_t len) {
 
     // Fix the length of each note to a minimum.
     OcarinaNote* scarecrow_song = (OcarinaNote*)src;
-    for (uint8_t i = 0; i < 8; i++) {
-        if (scarecrow_song[i].length < 4) {
+    uint8_t song_notes = 0;
+    for (uint8_t i = 0; i < 20; i++) {
+        if (scarecrow_song[i].length < 4 && scarecrow_song[i].pitch > 0) {
             scarecrow_song[i].length = 4;
+        }
+
+        // Determine position of eighth non-rest note
+        if (scarecrow_song[i].pitch > 0 && scarecrow_song[i].pitch != 0xFF) {
+            song_notes++;
+        }
+        // Ignore rests and notes after the eighth input
+        if (song_notes > 8) {
+            scarecrow_song[i].pitch = 0;
+            scarecrow_song[i].length = 0;
+            scarecrow_song[i].volume = 0;
+            scarecrow_song[i].vibrato = 0;
+            scarecrow_song[i].bend = 0;
+            scarecrow_song[i].bFlat4Flag = 0;
         }
     }
 
