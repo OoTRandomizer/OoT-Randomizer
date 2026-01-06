@@ -1158,8 +1158,15 @@ def get_junk_hint(spoiler: Spoiler, world: World, checked: dict[HintArea | str, 
 def get_important_check_hint(spoiler: Spoiler, world: World, checked: dict[HintArea | str, set[CheckedKind]]) -> HintReturn:
     top_level_locations = []
     empty_dungeons = [dungeon for dungeon in world.precompleted_dungeons if world.precompleted_dungeons[dungeon]]
+
     for location in world.get_filled_locations():
         hint_area = HintArea.at(location)
+        shuffled_locations_in_region = filter(lambda loc: HintArea.at(loc) == hint_area and not loc.locked, world.get_filled_locations())
+
+        # Don't hint areas with all locations already hinted
+        if shuffled_locations_in_region and all(map(lambda loc: is_checked([loc], checked), shuffled_locations_in_region)):
+            continue
+
         if (
             hint_area not in top_level_locations
             and hint_area not in checked
@@ -1168,11 +1175,16 @@ def get_important_check_hint(spoiler: Spoiler, world: World, checked: dict[HintA
             and not location.locked # prevent areas with unshuffled checks from being hinted
         ):
             top_level_locations.append(hint_area)
+
     if not top_level_locations:
         return None
+
     hint_area = random.choice(top_level_locations)
     item_count = 0
+
     for location in world.get_filled_locations():
+        shuffled_locations_in_region = list(filter(lambda loc: HintArea.at(loc) == hint_area and not loc.locked, world.get_filled_locations()))
+
         if HintArea.at(location) == hint_area:
             if (location.item.majoritem
                 # exclude locked items
@@ -1192,6 +1204,9 @@ def get_important_check_hint(spoiler: Spoiler, world: World, checked: dict[HintA
                     or world.settings.shuffle_ganon_bosskey == 'stones' or world.settings.shuffle_ganon_bosskey == 'medallions'
                     or world.settings.shuffle_ganon_bosskey == 'dungeons' or world.settings.shuffle_ganon_bosskey == 'tokens'))):
                 item_count = item_count + 1
+
+            if location in shuffled_locations_in_region and len(shuffled_locations_in_region) == 1:
+                mark_checked(checked, location.name)
 
     mark_checked(checked, hint_area, CheckedKind.IMPORTANT_CHECK)
 
