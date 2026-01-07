@@ -1161,11 +1161,6 @@ def get_important_check_hint(spoiler: Spoiler, world: World, checked: dict[HintA
 
     for location in world.get_filled_locations():
         hint_area = HintArea.at(location)
-        shuffled_locations_in_region = filter(lambda loc: HintArea.at(loc) == hint_area and not loc.locked, world.get_filled_locations())
-
-        # Don't hint areas with all locations already hinted
-        if shuffled_locations_in_region and all(map(lambda loc: is_checked([loc], checked), shuffled_locations_in_region)):
-            continue
 
         if (
             hint_area not in top_level_locations
@@ -1174,6 +1169,11 @@ def get_important_check_hint(spoiler: Spoiler, world: World, checked: dict[HintA
             and hint_area.dungeon_name not in empty_dungeons # prevent pre-completed dungeons from being hinted
             and not location.locked # prevent areas with unshuffled checks from being hinted
         ):
+            shuffled_locations_in_region = list(filter(lambda loc: HintArea.at(loc) == hint_area and not loc.locked, world.get_filled_locations()))
+
+            # Don't hint areas with all locations already hinted
+            if shuffled_locations_in_region and all(map(lambda loc: is_checked([loc], checked), shuffled_locations_in_region)):
+                continue
             top_level_locations.append(hint_area)
 
     if not top_level_locations:
@@ -1183,9 +1183,10 @@ def get_important_check_hint(spoiler: Spoiler, world: World, checked: dict[HintA
     item_count = 0
 
     for location in world.get_filled_locations():
-        shuffled_locations_in_region = list(filter(lambda loc: HintArea.at(loc) == hint_area and not loc.locked, world.get_filled_locations()))
 
         if HintArea.at(location) == hint_area:
+            shuffled_locations_in_region = list(filter(lambda loc: HintArea.at(loc) == hint_area and not loc.locked, world.get_filled_locations()))
+
             if (location.item.majoritem
                 # exclude locked items
                 and not location.locked
