@@ -187,6 +187,11 @@ bool Message_Decode_Additional_Control_Codes(uint8_t currChar, uint32_t* pDecode
                     break;
                 }
                 case 0x41B:
+                case 0x427: {
+                    // Ganon's Tower
+                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[12].name);
+                    break;
+                }
                 case 0x467:
                 case 0x534:
                 case 0x538:
@@ -195,8 +200,8 @@ bool Message_Decode_Additional_Control_Codes(uint8_t currChar, uint32_t* pDecode
                 case 0x544:
                 case 0x548:
                 case 0x54C: {
-                    // Ganon
-                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[12].name);
+                    // Ganon's Castle
+                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[13].name);
                     break;
                 }
                 default: {

@@ -11,22 +11,23 @@
 int dungeon_count = 13;
 
 dungeon_entry_t dungeons[] = {
-    {  0, 0, 0, 0, 1, 0x0F, "Deku",      {-1, -1, -1, -1}, {-1, -1, -1, -1} },
-    {  1, 0, 0, 0, 1, 0x1F, "Dodongo",   {-1, -1, -1, -1}, { 0, -1, -1, -1} },
-    {  2, 0, 0, 0, 1, 0x0F, "Jabu",      {-1, -1, -1, -1}, {-1, -1, -1, -1} },
+    {  0, 0, 0, 0, 1, 0x0F, "Deku",       "Deku Tree",              {-1, -1, -1, -1}, {-1, -1, -1, -1} },
+    {  1, 0, 0, 0, 1, 0x1F, "Dodongo",    "Dodongo's Cavern",       {-1, -1, -1, -1}, { 0, -1, -1, -1} },
+    {  2, 0, 0, 0, 1, 0x0F, "Jabu",       "Jabu Jabu's Belly",      {-1, -1, -1, -1}, {-1, -1, -1, -1} },
 
-    {  3, 1, 1, 0, 1, 0x1F, "Forest",    {-1, -1, -1, -1}, {-1, -1, -1, -1} },
-    {  4, 1, 1, 0, 1, 0x1F, "Fire",      {-1, -1, -1, -1}, {-1, -1, -1, -1} },
-    {  5, 1, 1, 0, 1, 0x1F, "Water",     {-1, -1, -1, -1}, {-1, -1, -1, -1} },
-    {  7, 1, 1, 0, 1, 0x1F, "Shadow",    { 4,  6,  7, -1}, { 4,  5,  6,  7} },
-    {  6, 1, 1, 0, 1, 0x1F, "Spirit",    {11, 14, 12, -1}, {13, 15, -1, -1} },
+    {  3, 1, 1, 0, 1, 0x1F, "Forest",     "Forest Temple",          {-1, -1, -1, -1}, {-1, -1, -1, -1} },
+    {  4, 1, 1, 0, 1, 0x1F, "Fire",       "Fire Temple",            {-1, -1, -1, -1}, {-1, -1, -1, -1} },
+    {  5, 1, 1, 0, 1, 0x1F, "Water",      "Water Temple",           {-1, -1, -1, -1}, {-1, -1, -1, -1} },
+    {  7, 1, 1, 0, 1, 0x1F, "Shadow",     "Shadow Temple",          { 4,  6,  7, -1}, { 4,  5,  6,  7} },
+    {  6, 1, 1, 0, 1, 0x1F, "Spirit",     "Spirit Temple",          {11, 14, 12, -1}, {13, 15, -1, -1} },
 
-    {  8, 1, 0, 0, 1, 0x07, "BotW",      { 3, -1, -1, -1}, {-1, -1, -1, -1} },
-    {  9, 0, 0, 0, 1, 0x07, "Ice",       { 1,  2, -1, -1}, {-1, -1, -1, -1} },
-    { 12, 1, 0, 1, 0, 0x00, "Hideout",   {-1, -1, -1, -1}, {-1, -1, -1, -1} },
-    { 11, 1, 0, 0, 0, 0x00, "GTG",       { 8,  9, 10, -1}, { 8,  9, 10, -1} },
-    { 13, 1, 1, 0, 0, 0x00, "Ganon",     {16, 17, 18, 21}, {18, 19, 20, -1} },
-    { 16, 1, 0, 0, 0, 0x00, "Chest Game",{-1, -1, -1, -1}, {-1, -1, -1, -1 }},
+    {  8, 1, 0, 0, 1, 0x07, "BotW",       "Bottom of the Well",     { 3, -1, -1, -1}, {-1, -1, -1, -1} },
+    {  9, 0, 0, 0, 1, 0x07, "Ice",        "Ice Cavern",             { 1,  2, -1, -1}, {-1, -1, -1, -1} },
+    { 12, 1, 0, 1, 0, 0x00, "Hideout",    "Thieves' Hideout",       {-1, -1, -1, -1}, {-1, -1, -1, -1} },
+    { 11, 1, 0, 0, 0, 0x00, "GTG",        "Gerudo Training Ground", { 8,  9, 10, -1}, { 8,  9, 10, -1} },
+    { 10, 0, 0, 0, 0, 0x00, "Tower",      "Ganon's Tower",          {-1, -1, -1, -1}, {-1, -1, -1, -1} },
+    { 13, 1, 1, 0, 0, 0x00, "Ganon",      "Ganon's Castle",         {16, 17, 18, 21}, {18, 19, 20, -1} },
+    { 16, 1, 0, 0, 0, 0x00, "Chest Game", "Treasure Box Shop",      {-1, -1, -1, -1}, {-1, -1, -1, -1} },
 };
 
 boss_entry_t bosses[] = {
@@ -283,7 +284,7 @@ void draw_world_info(z64_disp_buf_t* db) {
                 gDPPipeSync(db->p++);
                 dungeon_entry_t dungeon = dungeons[i];
                 top += font_height + padding;
-                text_print_size(db, dungeon.name, left, top, font_width, font_height);
+                text_print_size(db, dungeon.short_name, left, top, font_width, font_height);
             }
 
             // Draw the list of dungeons interiors.
@@ -358,7 +359,7 @@ void draw_world_info(z64_disp_buf_t* db) {
                 gDPPipeSync(db->p++);
                 dungeon_entry_t dungeon = dungeons[i];
                 top += font_height + padding;
-                text_print_size(db, dungeon.name, left, top, font_width, font_height);
+                text_print_size(db, dungeon.short_name, left, top, font_width, font_height);
             }
             // List of bosses, located in CFG_BOSSES after the first list of 12 for the dpad left menu.
             for (uint8_t i = 0; i < rows - 1; i++) {
@@ -437,7 +438,7 @@ void draw_world_info(z64_disp_buf_t* db) {
                 }
                 dungeon_entry_t dungeon = dungeons[i];
                 top += font_height + padding;
-                text_print_size(db, dungeon.name, left, top, font_width, font_height);
+                text_print_size(db, dungeon.short_name, left, top, font_width, font_height);
             }
             // Draw the area each dungeon is located in.
             for (uint8_t i = 0; i < rows - 1; i++) {
