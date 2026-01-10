@@ -104,6 +104,7 @@ int d_right_dungeon_idx(int i) {
     if (!CFG_DUNGEON_INFO_SILVER_RUPEES || !CFG_DUNGEON_IS_MQ[DODONGO_ID]) dungeon_idx++; // skip DC
     if (dungeon_idx >= 2) dungeon_idx++; // skip Jabu
     if (dungeon_idx >= 9 && (!CFG_DUNGEON_INFO_SILVER_RUPEES || CFG_DUNGEON_IS_MQ[ICE_ID])) dungeon_idx++; // skip Ice
+    if (dungeon_idx > 11) dungeon_idx++; // skip Tower
     return dungeon_idx;
 }
 
@@ -282,7 +283,7 @@ void draw_world_info(z64_disp_buf_t* db) {
                     continue;
                 }
                 gDPPipeSync(db->p++);
-                dungeon_entry_t dungeon = dungeons[i];
+                dungeon_entry_t dungeon = i == 12 ? dungeons[i + 1] : dungeons[i];
                 top += font_height + padding;
                 text_print_size(db, dungeon.short_name, left, top, font_width, font_height);
             }
@@ -357,7 +358,7 @@ void draw_world_info(z64_disp_buf_t* db) {
                     continue;
                 }
                 gDPPipeSync(db->p++);
-                dungeon_entry_t dungeon = dungeons[i];
+                dungeon_entry_t dungeon = i == 12 ? dungeons[i + 1] : dungeons[i];
                 top += font_height + padding;
                 text_print_size(db, dungeon.short_name, left, top, font_width, font_height);
             }
@@ -647,12 +648,12 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
         // Pre completed dungeons are grayed and crossed out.
         for (int i = 0; i < rows; i++) {
             gDPPipeSync(db->p++);
-            dungeon_entry_t* d = &(dungeons[i]);
+            dungeon_entry_t* d = &(dungeons[i + (i > 11 ? 1 : 0)]); // skip Tower
             bool empty = CFG_DUNGEON_PRECOMPLETED[d->index];
             int top = start_top + ((icon_size + padding) * i) + 1;
             if (empty) {
                 gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0x7F);
-                uint16_t sizeRectangle = text_print_size(db, d->name, left, top, font_width, font_height) - left;
+                uint16_t sizeRectangle = text_print_size(db, d->short_name, left, top, font_width, font_height) - left;
                 gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xBF);
                 gDPSetCombineMode(db->p++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
                 gSPTextureRectangle(db->p++,
@@ -664,7 +665,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
                 gDPSetCombineMode(db->p++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
             } else {
                 gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
-                text_print_size(db, d->name, left, top, font_width, font_height);
+                text_print_size(db, d->short_name, left, top, font_width, font_height);
             }
         }
 
@@ -677,7 +678,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
             sprite_load(db, &quest_items_sprite, 17, 1);
 
             for (int i = 0; i < rows; i++) {
-                dungeon_entry_t* d = &(dungeons[i]);
+                dungeon_entry_t* d = &(dungeons[i + (i > 11 ? 1 : 0)]); // skip Tower
                 if (!d->has_keys) continue;
 
                 int8_t current_keys = z64_file.dungeon_keys[d->index];
@@ -702,7 +703,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
             sprite_load(db, &quest_items_sprite, 14, 1);
 
             for (int i = 0; i < rows; i++) {
-                dungeon_entry_t* d = &(dungeons[i]);
+                dungeon_entry_t* d = &(dungeons[i + (i > 11 ? 1 : 0)]); // skip Tower
                 // Replace index 13 (Ganon's Castle) with 10 (Ganon's Tower)
                 int index = d->index == 13 ? 10 : d->index;
 
@@ -718,7 +719,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
             sprite_load(db, &quest_items_sprite, 10, 1);
 
             for (int i = 0; i < rows; i++) {
-                dungeon_entry_t* d = &(dungeons[i]);
+                dungeon_entry_t* d = &(dungeons[i + (i > 11 ? 1 : 0)]); // skip Tower
                 if (d->has_card && z64_file.gerudos_card) {
                     int top = start_top + ((icon_size + padding) * i);
                     sprite_draw(db, &quest_items_sprite, 0,
@@ -737,7 +738,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
             sprite_load(db, &quest_items_sprite, 16, 1);
 
             for (int i = 0; i < rows; i++) {
-                dungeon_entry_t* d = &(dungeons[i]);
+                dungeon_entry_t* d = &(dungeons[i + (i > 11 ? 1 : 0)]); // skip Tower
                 if (d->has_map && z64_file.dungeon_items[d->index].map) {
                     int top = start_top + ((icon_size + padding) * i);
                     sprite_draw(db, &quest_items_sprite, 0,
@@ -752,7 +753,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
             sprite_load(db, &quest_items_sprite, 15, 1);
 
             for (int i = 0; i < rows; i++) {
-                dungeon_entry_t* d = &(dungeons[i]);
+                dungeon_entry_t* d = &(dungeons[i + (i > 11 ? 1 : 0)]); // skip Tower
                 if (d->has_map && z64_file.dungeon_items[d->index].compass) {
                     int top = start_top + ((icon_size + padding) * i);
                     sprite_draw(db, &quest_items_sprite, 0,
@@ -769,7 +770,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
             sprite_load(db, &quest_items_sprite, 11, 1);
 
             for (int i = 0; i < rows; i++) {
-                dungeon_entry_t* d = &(dungeons[i]);
+                dungeon_entry_t* d = &(dungeons[i + (i > 11 ? 1 : 0)]); // skip Tower
                 if (d->skulltulas && z64_file.gs_flags[d->index ^ 0x03] == d->skulltulas) {
                     int top = start_top + ((icon_size + padding) * i);
                     sprite_draw(db, &quest_items_sprite, 0,
@@ -784,7 +785,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
 
         if (show_mq) {
             for (int i = 0; i < non_chest_game_dungeon_count; i++) {
-                dungeon_entry_t* d = &(dungeons[i]);
+                dungeon_entry_t* d = &(dungeons[i + (i > 11 ? 1 : 0)]); // skip Tower
                 if (CFG_DUNGEON_INFO_MQ_NEED_MAP && d->has_map &&
                         !z64_file.dungeon_items[d->index].map) {
                     continue;
@@ -803,7 +804,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
             sprite_load(db, &key_rupee_clock_sprite, 1, 1);
 
             for (int i = 0; i < dungeon_count; i++) {
-                dungeon_entry_t* d = &(dungeons[i]);
+                dungeon_entry_t* d = &(dungeons[i + (i > 11 ? 1 : 0)]); // skip Tower
                 bool show_silver_rupees = false;
                 uint8_t* silver_rupee_puzzles = CFG_DUNGEON_IS_MQ[d->index] ? d->silver_rupee_puzzles_mq : d->silver_rupee_puzzles_vanilla;
                 for (int puzzle_idx = 0; puzzle_idx < 4; puzzle_idx++) {
@@ -827,7 +828,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
             sprite_load(db, &font_sprite, 16, 10); // load characters 0 through 9
 
             for (int i = 0; i < dungeon_count; i++) {
-                dungeon_entry_t* d = &(dungeons[i]);
+                dungeon_entry_t* d = &(dungeons[i + (i > 11 ? 1 : 0)]); // skip Tower
                 bool show_silver_rupees = false;
                 uint8_t* silver_rupee_puzzles = CFG_DUNGEON_IS_MQ[d->index] ? d->silver_rupee_puzzles_mq : d->silver_rupee_puzzles_vanilla;
                 for (int puzzle_idx = 0; puzzle_idx < 4; puzzle_idx++) {
@@ -1037,9 +1038,9 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
         // Draw dungeon names
 
         for (int i = 0; i < rows; i++) {
-            dungeon_entry_t* d = &(dungeons[d_right_dungeon_idx(i)]); // skip Deku/DC/Jabu/Ice dynamically
+            dungeon_entry_t* d = &(dungeons[d_right_dungeon_idx(i)]); // skip Deku/DC/Jabu/Ice/Tower dynamically
             int top = start_top + ((icon_size + padding) * i) + 1;
-            text_print(db, d->name, left, top);
+            text_print(db, d->short_name, left, top);
         }
 
         left += ((SHUFFLE_CHEST_GAME == 1 ? 11 : 8) * font_sprite.tile_w) + padding;
@@ -1051,7 +1052,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
         sprite_load(db, &quest_items_sprite, 17, 1);
 
         for (int i = 0; i < rows; i++) {
-            dungeon_entry_t* d = &(dungeons[d_right_dungeon_idx(i)]); // skip Deku/DC/Jabu/Ice dynamically
+            dungeon_entry_t* d = &(dungeons[d_right_dungeon_idx(i)]); // skip Deku/DC/Jabu/Ice/Tower dynamically
             if (!d->has_keys) continue;
 
             int8_t current_keys = z64_file.dungeon_keys[d->index];
@@ -1076,7 +1077,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
         sprite_load(db, &quest_items_sprite, 14, 1);
 
         for (int i = 0; i < rows; i++) {
-            dungeon_entry_t* d = &(dungeons[d_right_dungeon_idx(i)]); // skip Deku/DC/Jabu/Ice dynamically
+            dungeon_entry_t* d = &(dungeons[d_right_dungeon_idx(i)]); // skip Deku/DC/Jabu/Ice/Tower dynamically
             // Replace index 13 (Ganon's Castle) with 10 (Ganon's Tower)
             int index = d->index == 13 ? 10 : d->index;
 
@@ -1092,7 +1093,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
         sprite_load(db, &quest_items_sprite, 10, 1);
 
         for (int i = 0; i < rows; i++) {
-            dungeon_entry_t* d = &(dungeons[d_right_dungeon_idx(i)]); // skip Deku/DC/Jabu/Ice dynamically
+            dungeon_entry_t* d = &(dungeons[d_right_dungeon_idx(i)]); // skip Deku/DC/Jabu/Ice/Tower dynamically
             if (d->has_card && z64_file.gerudos_card) {
                 int top = start_top + ((icon_size + padding) * i);
                 sprite_draw(db, &quest_items_sprite, 0,
@@ -1108,7 +1109,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
             sprite_load(db, &key_rupee_clock_sprite, 1, 1);
 
             for (int i = 0; i < rows; i++) {
-                dungeon_entry_t* d = &(dungeons[d_right_dungeon_idx(i)]); // skip Deku/DC/Jabu/Ice dynamically
+                dungeon_entry_t* d = &(dungeons[d_right_dungeon_idx(i)]); // skip Deku/DC/Jabu/Ice/Tower dynamically
                 bool show_silver_rupees = false;
                 uint8_t* silver_rupee_puzzles = CFG_DUNGEON_IS_MQ[d->index] ? d->silver_rupee_puzzles_mq : d->silver_rupee_puzzles_vanilla;
                 for (int puzzle_idx = 0; puzzle_idx < 4; puzzle_idx++) {
@@ -1132,7 +1133,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
             sprite_load(db, &font_sprite, 16, 10); // load characters 0 through 9
 
             for (int i = 0; i < rows; i++) {
-                dungeon_entry_t* d = &(dungeons[d_right_dungeon_idx(i)]);
+                dungeon_entry_t* d = &(dungeons[d_right_dungeon_idx(i)]); // skip Deku/DC/Jabu/Ice/Tower dynamically
                 bool show_silver_rupees = false;
                 uint8_t* silver_rupee_puzzles = CFG_DUNGEON_IS_MQ[d->index] ? d->silver_rupee_puzzles_mq : d->silver_rupee_puzzles_vanilla;
                 for (int puzzle_idx = 0; puzzle_idx < 4; puzzle_idx++) {
@@ -1199,13 +1200,21 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
 
         // Draw dungeon names
 
+        int d_idx = 0;
+
         for (int i = 0; i < 12; i++) {
-            dungeon_entry_t* d = &(dungeons[i + (i > 9 ? 1 : 0)]); // skip Hideout
+            // skip Hideout and Tower
+            if (d_idx == 10 || (d_idx == 12)) {
+                d_idx++;
+            }
+            dungeon_entry_t* d = &(dungeons[d_idx]);
+            d_idx++;
+
             bool empty = CFG_DUNGEON_PRECOMPLETED[d->index];
             int top = start_top + ((icon_size + padding) * i) + 1;
             if (empty) {
                 gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0x7F);
-                uint16_t sizeRectangle = text_print(db, d->name, left, top) - left;
+                uint16_t sizeRectangle = text_print(db, d->short_name, left, top) - left;
                 gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xBF);
                 gDPSetCombineMode(db->p++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
                 gSPTextureRectangle(db->p++,
@@ -1217,7 +1226,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
                 gDPSetCombineMode(db->p++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
             } else {
                 gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
-                text_print(db, d->name, left, top);
+                text_print(db, d->short_name, left, top);
             }
         }
 
@@ -1231,8 +1240,15 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
 
             sprite_load(db, &quest_items_sprite, 16, 1);
 
+            d_idx = 0;
             for (int i = 0; i < 12; i++) {
-                dungeon_entry_t* d = &(dungeons[i + (i > 9 ? 1 : 0)]); // skip Hideout
+                // skip Hideout and Tower
+                if (d_idx == 10 || (d_idx == 12)) {
+                    d_idx++;
+                }
+                dungeon_entry_t* d = &(dungeons[d_idx]);
+                d_idx++;
+
                 if (d->has_map && z64_file.dungeon_items[d->index].map) {
                     int top = start_top + ((icon_size + padding) * i);
                     sprite_draw(db, &quest_items_sprite, 0,
@@ -1246,8 +1262,15 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
 
             sprite_load(db, &quest_items_sprite, 15, 1);
 
+            d_idx = 0;
             for (int i = 0; i < 12; i++) {
-                dungeon_entry_t* d = &(dungeons[i + (i > 9 ? 1 : 0)]); // skip Hideout
+                // skip Hideout and Tower
+                if (d_idx == 10 || (d_idx == 12)) {
+                    d_idx++;
+                }
+                dungeon_entry_t* d = &(dungeons[d_idx]);
+                d_idx++;
+
                 if (d->has_map && z64_file.dungeon_items[d->index].compass) {
                     int top = start_top + ((icon_size + padding) * i);
                     sprite_draw(db, &quest_items_sprite, 0,
@@ -1263,8 +1286,15 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
 
             sprite_load(db, &quest_items_sprite, 11, 1);
 
+            d_idx = 0;
             for (int i = 0; i < 12; i++) {
-                dungeon_entry_t* d = &(dungeons[i + (i > 9 ? 1 : 0)]); // skip Hideout
+                // skip Hideout and Tower
+                if (d_idx == 10 || (d_idx == 12)) {
+                    d_idx++;
+                }
+                dungeon_entry_t* d = &(dungeons[d_idx]);
+                d_idx++;
+
                 if (d->skulltulas && z64_file.gs_flags[d->index ^ 0x03] == d->skulltulas) {
                     int top = start_top + ((icon_size + padding) * i);
                     sprite_draw(db, &quest_items_sprite, 0,
@@ -1278,8 +1308,15 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
         // Draw master quest dungeons
 
         if (show_mq) {
+            d_idx = 0;
             for (int i = 0; i < 12; i++) {
-                dungeon_entry_t* d = &(dungeons[i + (i > 9 ? 1 : 0)]); // skip Hideout
+                // skip Hideout and Tower
+                if (d_idx == 10 || (d_idx == 12)) {
+                    d_idx++;
+                }
+                dungeon_entry_t* d = &(dungeons[d_idx]);
+                d_idx++;
+
                 if (CFG_DUNGEON_INFO_MQ_NEED_MAP && d->has_map &&
                         !z64_file.dungeon_items[d->index].map) {
                     continue;
