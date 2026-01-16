@@ -616,6 +616,7 @@ class Message:
 
         text_codes = []
         instant_text_code = TextCode([0x8189, 0x08][self.lang], 0, self.lang)
+        uninstant_text_code = TextCode([0x818A, 0x09][self.lang], 0, self.lang)
         current_color = [0x0C00, 0x40][self.lang]
 
         # # speed the text
@@ -657,6 +658,11 @@ class Message:
 
         if replace_ending:
             if ending:
+                # In Japanese, use uninstant text code before goto ending is needed
+                if speed_up_text and (not self.lang) and ending.code == 0x81CB:
+                    if not text_codes or text_codes[-1].code != uninstant_text_code.code:
+                        text_codes.append(uninstant_text_code)
+
                 if speed_up_text and ending.code == [0x81F0, 0x10][self.lang]:  # ocarina
                     text_codes.append(TextCode([0x818A, 0x09][self.lang], 0, self.lang))  # disallow instant text
                 text_codes.append(ending)  # write special ending

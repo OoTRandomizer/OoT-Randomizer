@@ -1768,6 +1768,16 @@
             "name": "the \u0005CWater Temple"
         }
     },
+    "goal_place_textboxes": {
+        "Door of Time": "path of #time#",
+        "Evil's Bane": "path to #Evil's Bane#",
+        "Skulls": "path of #Skulls#",
+        "gold": "path of #gold#",
+        "hearts": "path of #hearts#",
+        "the Key": "path to #the Key#",
+        "the Tower": "path to #the Tower#",
+        "the hero": "path of #the hero#"
+    },
     "hintPrefixes": [
         "a few ",
         "some ",

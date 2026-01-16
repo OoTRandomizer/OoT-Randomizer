@@ -1260,6 +1260,21 @@ dungeon_list = {
                             }
 }
 
+# Goal place text mappings for Goal's hint texts
+
+goal_place_textboxes = {
+    "the Tower": "path to #the Tower#",
+    "gold": "path of #gold#",
+    "Door of Time": "path of #time#",
+    "Evil's Bane":"path to #Evil\'s Bane#",
+    "Skulls":"path of #Skulls#",
+    "hearts":"path of #hearts#",
+    "the Key":"path to #the Key#",
+    "the hero":"path of #the hero#",
+}
+    
+    
+
 # Boss room text mappings for enhanced descriptions on compass
 
 boss_textboxes = {
@@ -3637,6 +3652,7 @@ lang_info = {
     "SHOP_TEXTS": SHOP_TEXTS,
     'dungeon_list': dungeon_list,
     'boss_textboxes': boss_textboxes,
+    "goal_place_textboxes": goal_place_textboxes,
     'region_list': region_list,
     "hintTable": hintTableFix,
     "hint_text": hint_text,

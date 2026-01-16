@@ -1740,6 +1740,16 @@
         "Twinrova Boss Room": "#01ツインローバ",
         "Ganons Castle Tower": "#01ガノンドロフ"
     },
+    "goal_place_textboxes": {
+        "Door of Time": "#時#の道",
+        "Evil's Bane": "#悪#の根絶",
+        "Skulls": "#クモ#の道",
+        "gold": "#金#の道",
+        "hearts": "#力#の道",
+        "the Key": "#カギ#の道",
+        "the Tower": "#塔#への道",
+        "the hero": "#英雄#の道"
+    },
     "hintPrefixes": [
         "少しの",
         "いくつかの",

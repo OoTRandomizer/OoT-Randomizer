@@ -346,7 +346,7 @@ def get_simple_hint_no_prefix(item: Item, lang: Language) -> Hint:
 
 
 def color_text(gossip_text: GossipText, lang: Language) -> str:
-    text = gossip_text.text
+    text = gossip_text.text.replace("##","#")
     colors = list(gossip_text.colors) if gossip_text.colors is not None else []
     color = 'White'
     # JP-base also uses '#' as color so, to not be confused
