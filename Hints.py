@@ -346,30 +346,6 @@ def get_simple_hint_no_prefix(item: Item, lang: Language) -> Hint:
 
 _HEX_HEAD = re.compile(r"^[0-9A-Fa-f]")
 
-def _normalize_hash_runs(s: str) -> str:
-    out = []
-    i, n = 0, len(s)
-    while i < n:
-        if s[i] != "#":
-            out.append(s[i])
-            i += 1
-            continue
-        j = i
-        while j < n and s[j] == "#":
-            j += 1
-        run_len = j - i
-        if run_len == 1:
-            out.append("#")
-            i = j
-            continue
-        prev = s[i - 1] if i > 0 else ""
-        nxt  = s[j] if j < n else ""
-        prev_ok = (prev != "" and prev != "#" and not prev.isspace())
-        nxt_ok  = (nxt  != "" and nxt  != "#" and not nxt.isspace())
-        out.append("##" if (prev_ok and nxt_ok) else "#")
-        i = j
-    return "".join(out)
-
 def color_text(gossip_text: GossipText, lang: Language) -> str:
     text = gossip_text.text
     colors = list(gossip_text.colors) if gossip_text.colors is not None else []

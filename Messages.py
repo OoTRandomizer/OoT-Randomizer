@@ -531,10 +531,15 @@ class Message:
 
     # check if this is an unused message that just contains it's own id as text
     def is_id_message(self) -> bool:
-        if self.unpadded_length != [10, 5][self.lang] or self.id == 0xFFFC:
+        if (self.lang and self.unpadded_length != 5) or self.id == 0xFFFC:
             return False
-        for i in range(4):
-            code = self.text_codes[i].code
+        i = 0
+        start_i = 0
+        while i - start_i < 4:
+            try:
+                code = self.text_codes[i].code
+            except IndexError:
+                return False
             if self.lang:
                 if not (
                         code in range(ord('0'), ord('9')+1)
@@ -543,12 +548,18 @@ class Message:
                 ):
                     return False
             else:
+                # In Japanese, some id messages use control codes as well for the dev's tests
+                if code in CC_PARSE_JP.keys():
+                    start_i += 1
+                    i += 1
+                    continue
                 if not (
                         code in range(0x824F, 0x8258+1) # ０ - ９
                         or code in range(0x8260, 0x8265+1) # Ａ - Ｆ
                         or code in range(0x8281, 0x8286+1) # ａ - ｆ
                 ):
                     return False
+            i += 1
         return True
 
     def parse_text(self) -> None:
@@ -597,16 +608,20 @@ class Message:
 
     # applies whatever transformations we want to the dialogs
     def transform(self, replace_ending: bool = False, ending: Optional[TextCode] = None,
-                  always_allow_skip: bool = True, speed_up_text: bool = True) -> None:
-        ending_codes = [[0x8170, 0x81CB, 0x86C8, 0x819F, 0x819E, 0x81F0], [0x02, 0x07, 0x0A, 0x0B, 0x0E, 0x10]][self.lang]
-        box_breaks = [[0x81A5, 0x81A3], [0x04, 0x0C]][self.lang]
-        slows_text = [[0x8189, 0x818A, 0x86C9], [0x08, 0x09, 0x14]][self.lang]
-        slow_icons = [0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x04, 0x02]
+                always_allow_skip: bool = True, speed_up_text: bool = True) -> None:
+        ending_codes = [[0x8170, 0x81CB, 0x86C8, 0x819F, 0x819E, 0x81F0],
+                        [0x02,   0x07,   0x0A,   0x0B,   0x0E,   0x10]][self.lang]
+        box_breaks   = [[0x81A5, 0x81A3], [0x04, 0x0C]][self.lang]
+        slows_text   = [[0x8189, 0x818A, 0x86C9], [0x08, 0x09, 0x14]][self.lang]
+        slow_icons   = [0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x04, 0x02]
+
+        end_code = [0x8170, 0x02][self.lang]
+        jp_goto  = 0x81CB  # JP only
 
         ignores = []
-        # ignore ending codes if it's going to be replaced
-        if replace_ending:
-            ignores += ending_codes
+        # NOTE: When replace_ending is True, we do NOT ignore ending codes globally.
+        # We strip only the trailing ending sequence before processing, so mid-text control codes stay intact.
+
         # ignore the "make unskippable flag"
         if always_allow_skip:
             ignores += [[0x8199, 0x1A][self.lang]]
@@ -614,31 +629,74 @@ class Message:
         if speed_up_text:
             ignores += slows_text
 
-        text_codes = []
-        instant_text_code = TextCode([0x8189, 0x08][self.lang], 0, self.lang)
-        uninstant_text_code = TextCode([0x818A, 0x09][self.lang], 0, self.lang)
+        text_codes: list[TextCode] = []
+        instant_text_code   = TextCode([0x8189, 0x08][self.lang], 0, self.lang)  # allow instant text
+        uninstant_text_code = TextCode([0x818A, 0x09][self.lang], 0, self.lang)  # disallow instant text
         current_color = [0x0C00, 0x40][self.lang]
 
-        # # speed the text
+        # If we are replacing the ending, strip the trailing ending sequence from the *source* message first.
+        # This prevents cases like "... <disallow><goto> <disallow><keep open>" where the original trailing goto
+        # survives and the new ending is merely appended.
+        src_codes = self.text_codes
+        if replace_ending and src_codes:
+            ending_set = set(ending_codes)
+
+            tmp = list(src_codes)
+
+            # drop a trailing end marker if present
+            if tmp and tmp[-1].code == end_code:
+                tmp.pop()
+
+            # drop trailing ending code(s) and the paired uninstant code directly before them, if any
+            while tmp and tmp[-1].code in ending_set:
+                tmp.pop()
+                if tmp and tmp[-1].code == uninstant_text_code.code:
+                    tmp.pop()
+
+            # optionally drop any stray trailing instant/uninstant toggles (trailing only)
+            while tmp and tmp[-1].code in (instant_text_code.code, uninstant_text_code.code):
+                tmp.pop()
+
+            src_codes = tmp
+
+        # speed up the text
         if speed_up_text:
-            text_codes.append(instant_text_code) # allow instant
+            text_codes.append(instant_text_code)  # allow instant
 
         # write the message
-        for i, code in enumerate(self.text_codes):
+        for i, code in enumerate(src_codes):
             # ignore the color change if the next code is color as well
             if code.code == [0x0B, 0x05][self.lang]:
-                if self.text_codes[i + 1].code == code.code or all(tc.code == [0x8140, 0x20][self.lang] or tc.code in ignores for tc in itertools.takewhile(lambda tc: tc.code != code.code, self.text_codes[i + 1:])) or current_color == code.data:
+                nxt = src_codes[i + 1].code if (i + 1) < len(src_codes) else None
+                if (
+                    nxt == code.code or
+                    all(
+                        tc.code == [0x8140, 0x20][self.lang] or tc.code in ignores
+                        for tc in itertools.takewhile(lambda tc: tc.code != code.code, src_codes[i + 1:])
+                    ) or
+                    current_color == code.data
+                ):
                     continue
                 current_color = code.data
-            # ignore ending codes if it's going to be replaced
-            if speed_up_text and code.code == 0x81CB and not self.lang:
-                text_codes.append(TextCode([0x818A, 0x09][self.lang], 0, self.lang))
+
+            # stop at end marker (should not normally occur here if src_codes was stripped)
+            if code.code == end_code:
+                break
+
+            # ignore codes that should be removed/neutralized
+            if code.code in ignores:
+                continue
+
+            # JP goto must be preceded by "disallow instant" when speeding up,
+            # otherwise the dialog can freeze/softlock in some contexts.
+            # Handle this BEFORE appending to avoid duplicate insertion.
+            if speed_up_text and (not self.lang) and code.code == jp_goto:
+                text_codes.append(uninstant_text_code)
                 text_codes.append(code)
                 continue
-            if code.code in ignores:
-                pass
-            elif speed_up_text and code.code in box_breaks:
-                # some special cases for text that needs to be on a timer
+
+            if speed_up_text and code.code in box_breaks:
+                # special cases for text that needs to remain on a timer
                 if (self.id == 0x605A or  # twinrova transformation
                     self.id == 0x706C or  # rauru ending text
                     self.id == 0x70DD or  # ganondorf ending text
@@ -649,24 +707,36 @@ class Message:
                 else:
                     text_codes.append(TextCode([0x81A5, 0x04][self.lang], 0, self.lang))  # un-delayed break
                     text_codes.append(instant_text_code)  # allow instant
+
             elif speed_up_text and code.code == [0x819A, 0x13][self.lang] and code.data in slow_icons:
+                # certain icons force slow text unless we re-apply instant afterwards
                 text_codes.append(code)
                 text_codes.pop(find_last(text_codes, instant_text_code))  # remove last instance of instant text
                 text_codes.append(instant_text_code)  # allow instant
+
             else:
                 text_codes.append(code)
 
+        # write/replace ending
         if replace_ending:
             if ending:
-                # In Japanese, use uninstant text code before goto ending is needed
-                if speed_up_text and (not self.lang) and ending.code == 0x81CB:
+                # clone ending to avoid accidental cross-message mutation
+                ending = TextCode(ending.code, ending.data, self.lang)
+
+                # In Japanese, if instant text is enabled, a disallow-instant marker before the ending
+                # is often required for stability (especially for goto/keep-open style endings).
+                if speed_up_text and (not self.lang):
                     if not text_codes or text_codes[-1].code != uninstant_text_code.code:
                         text_codes.append(uninstant_text_code)
 
-                if speed_up_text and ending.code == [0x81F0, 0x10][self.lang]:  # ocarina
-                    text_codes.append(TextCode([0x818A, 0x09][self.lang], 0, self.lang))  # disallow instant text
+                # ocarina also needs instant disabled before the ending when speeding up
+                if speed_up_text and ending.code == [0x81F0, 0x10][self.lang]:
+                    if not text_codes or text_codes[-1].code != uninstant_text_code.code:
+                        text_codes.append(uninstant_text_code)
+
                 text_codes.append(ending)  # write special ending
-            text_codes.append(TextCode([0x8170, 0x02][self.lang], 0, self.lang))  # write end code
+
+            text_codes.append(TextCode(end_code, 0, self.lang))  # write end code
 
         self.text_codes = text_codes
 
@@ -1237,8 +1307,8 @@ def update_map_compass_messages(messages: list[Message], world: World):
                 'Ice Cavern':         (0x87,   0x92),
             }
         lang = world.language
-        dungeon_list = {dungeon: (name, gender) for dungeon, (name, gender, has_map) in lang.dungeon_list.items() if has_map}
-        dungeon_textbox_list = {dungeon: (name, gender) for dungeon, (name, gender, _) in lang.dungeon_list.items()}
+        dungeon_list = {dungeon: (value["name"], value["gender"]) for dungeon, value in lang.dungeon_list.items() if value["has_map"]}
+        dungeon_textbox_list = {dungeon: (value["name"], value["gender"]) for dungeon, value in lang.dungeon_list.items()}
         dungeon_entrances_list = {
             "Deku Tree": "KF Outside Deku Tree -> Deku Tree Lobby",
             "Dodongos Cavern": "Death Mountain -> Dodongos Cavern Beginning",
@@ -1297,7 +1367,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                                 "location_gender": dungeon_location[1],
                             }
                         )
-                    update_message_by_id(messages, map_id, map_message, lang, allow_duplicates=True)
+                    update_message_by_id(messages, map_id, map_message, lang, allow_duplicates=True, force_left=True)
                 else:
                     if 'map_mq' in world.settings.enhance_map_compass:
                         map_message = lang.format_from_id(
@@ -1309,7 +1379,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                             })
 
                         if world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12:
-                            update_message_by_id(messages, map_id, map_message, lang, allow_duplicates=True)
+                            update_message_by_id(messages, map_id, map_message, lang, allow_duplicates=True, force_left=True)
             else:
                 dungeon_name, gender = dungeon_list[dungeon.name]
                 compass_id, map_id, boss_entrance = dungeon_id_list[dungeon.name]
@@ -1370,7 +1440,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                                         "gender": gender
                                     }
                                 )
-                        update_message_by_id(messages, compass_id, compass_message, lang, allow_duplicates=True)
+                        update_message_by_id(messages, compass_id, compass_message, lang, allow_duplicates=True, force_left=True)
                     else:
                         if 'compass_boss_location' in world.settings.enhance_map_compass and world.settings.shuffle_bosses != 'off':
                             boss_room = world.get_entrance(boss_entrance).connected_region.name
@@ -1382,7 +1452,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                                     "gender": gender
                                 }
                             )
-                            update_message_by_id(messages, compass_id, compass_message, lang, allow_duplicates=True)
+                            update_message_by_id(messages, compass_id, compass_message, lang, allow_duplicates=True, force_left=True)
                 else:
                     if 'compass_boss_location' in world.settings.enhance_map_compass and world.settings.shuffle_bosses != 'off':
                         boss_room = world.get_entrance(boss_entrance).connected_region.name
@@ -1394,7 +1464,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                                 "gender": gender
                             }
                         )
-                        update_message_by_id(messages, compass_id, compass_message, lang, allow_duplicates=True)
+                        update_message_by_id(messages, compass_id, compass_message, lang, allow_duplicates=True, force_left=True)
                 if 'map_dungeon_location' in world.settings.enhance_map_compass and world.settings.shuffle_dungeon_entrances != 'off':
                     dungeon_index = [i for i, c in dungeon_entrances.items() if dungeon.name in c]
                     for prefix in lang.hintPrefixes:
@@ -1423,7 +1493,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                                 "location_gender": dungeon_location[1],
                             }
                         )
-                    update_message_by_id(messages, map_id, map_message, lang, allow_duplicates=True)
+                    update_message_by_id(messages, map_id, map_message, lang, allow_duplicates=True, force_left=True)
                 else:
                     if 'map_mq' in world.settings.enhance_map_compass and (world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12):
                         map_message = lang.format_from_id(
@@ -1433,4 +1503,4 @@ def update_map_compass_messages(messages: list[Message], world: World):
                                 "dungeon_state": lang.PATCH_TEXTS["masterful"] if world.dungeon_mq[dungeon.name] else lang.PATCH_TEXTS["ordinary"],
                                 "gender": gender
                             })
-                        update_message_by_id(messages, map_id, map_message, lang, allow_duplicates=True)
+                        update_message_by_id(messages, map_id, map_message, lang, allow_duplicates=True, force_left=True)
