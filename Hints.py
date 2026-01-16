@@ -344,27 +344,93 @@ def get_simple_hint_no_prefix(item: Item, lang: Language) -> Hint:
     # no prefex
     return hint
 
+_HEX_HEAD = re.compile(r"^[0-9A-Fa-f]")
+
+def _normalize_hash_runs(s: str) -> str:
+    out = []
+    i, n = 0, len(s)
+    while i < n:
+        if s[i] != "#":
+            out.append(s[i])
+            i += 1
+            continue
+        j = i
+        while j < n and s[j] == "#":
+            j += 1
+        run_len = j - i
+        if run_len == 1:
+            out.append("#")
+            i = j
+            continue
+        prev = s[i - 1] if i > 0 else ""
+        nxt  = s[j] if j < n else ""
+        prev_ok = (prev != "" and prev != "#" and not prev.isspace())
+        nxt_ok  = (nxt  != "" and nxt  != "#" and not nxt.isspace())
+        out.append("##" if (prev_ok and nxt_ok) else "#")
+        i = j
+    return "".join(out)
 
 def color_text(gossip_text: GossipText, lang: Language) -> str:
-    text = gossip_text.text.replace("##","#")
+    text = gossip_text.text
     colors = list(gossip_text.colors) if gossip_text.colors is not None else []
     color = 'White'
     # JP-base also uses '#' as color so, to not be confused
     # this'll separate color-coded one and message function
     if lang.base == "jp":
-        index = 0
-        while "#" in text[index:]:
-            pre_text = text[:index]
-            split_text = text[index:].split("#", 2)
-            split_text[0] = pre_text + split_text[0]
-            if not bool(re.match(r'^[0-9A-Fa-f]', split_text[1])):
-                if len(colors) > 0:
+        out = []
+        i, n = 0, len(text)
+        in_seg = False
+        open_len = 0
+        while i < n:
+            ch = text[i]
+
+            if ch != "#":
+                out.append(ch)
+                i += 1
+                continue
+            if i + 1 < n and _HEX_HEAD.match(text[i + 1]):
+                out.append("#")
+                i += 1
+                continue
+            j = i
+            while j < n and text[j] == "#":
+                j += 1
+            run_len = j - i
+            if not in_seg:
+                start_len = 2 if run_len >= 2 else 1
+                ni = i + start_len
+                if ni >= n or text[ni].isspace() or text[ni] == "#":
+                    i += run_len
+                    continue
+                for prefix in lang.hintPrefixes:
+                    if text.startswith(prefix, ni):
+                        out.append(prefix)
+                        ni += len(prefix)
+                        break
+                if colors:
                     color = colors.pop(0)
-                split_text[1] = COLOR_MAP[color][1] + split_text[1]
-                split_text[2] = "00" + split_text[2]
-            split_text[1] = "#" + split_text[1] + "#"
-            index += len(split_text[0]) + len(split_text[1])
-            text = "".join(split_text)
+                out.append("#" + COLOR_MAP[color][1])
+                in_seg = True
+                open_len = start_len
+                i = ni
+                continue
+            else:
+                if open_len == 2 and run_len >= 2:
+                    out.append("#00")
+                    in_seg = False
+                    open_len = 0
+                    i += 2
+                    i = max(i, j)
+                    continue
+                else:
+                    out.append("#00")
+                    in_seg = False
+                    open_len = 0
+                    i += 1
+                    continue
+        if in_seg:
+            raise ValueError(f"Unclosed color segment in text: {gossip_text.text!r}")
+        return "".join(out)
     else:
         while '#' in text:
             split_text = text.split('#', 2)
