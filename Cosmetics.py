@@ -933,15 +933,27 @@ def patch_voices(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[
         log.sfx[log_key] = voice_setting
 
 def patch_voice_packs(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]):
-    if settings.sfx_link_adult == 'Silent':
-        patch_silent_voice(rom, VOICE_PACK_AGE.ADULT, log)
-    elif settings.sfx_link_adult != 'Default':
-        patch_voice_pack(rom, VOICE_PACK_AGE.ADULT, settings.sfx_link_adult, settings)
+    voice_ages = (
+        ( VOICE_PACK_AGE.CHILD, 'Child', settings.sfx_link_child, Sounds.get_voice_sfx_choices(0, False)),
+        ( VOICE_PACK_AGE.ADULT, 'Adult', settings.sfx_link_adult, Sounds.get_voice_sfx_choices(1, False))
+    )
 
-    if settings.sfx_link_child == 'Silent':
-        patch_silent_voice(rom, VOICE_PACK_AGE.ADULT, log)
-    elif settings.sfx_link_child != 'Default':
-        patch_voice_pack(rom, VOICE_PACK_AGE.CHILD, settings.sfx_link_child, settings)
+    for age, name, voice_setting, choices in voice_ages:
+        # Handle Plando
+        log_key = f'{name} Voice'
+        voice_setting = log.src_dict['sfx'][log_key] if log.src_dict.get('sfx', {}).get(log_key, '') else voice_setting
+
+        # Resolve Random option
+        if voice_setting == 'Random':
+            voice_setting = random.choice(choices)
+        
+        if voice_setting == 'Silent':
+            patch_silent_voice(rom, age, log)
+        elif voice_setting != 'Default':
+            patch_voice_pack(rom, age, voice_setting, settings)
+        
+        # Write the setting to the log
+        log.sfx[log_key] = voice_setting
 
 def patch_voice_volume(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]):
     rom.write_f32(symbols["CFG_ADULT_VOLUME"], settings.sfx_link_adult_volume / 100.0)
