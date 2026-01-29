@@ -75,8 +75,9 @@ def resolve_settings(settings: Settings) -> Optional[Rom]:
     for trick in logic_tricks.values():
         settings.settings_dict[trick['name']] = trick['name'] in settings.allowed_tricks
 
-    for trick in advanced_logic_tricks.values():
-        settings.settings_dict[trick['name']] = trick['name'] in settings.advanced_allowed_tricks
+    if settings.logic_rules == 'advanced':
+        for trick in advanced_logic_tricks.values():
+            settings.settings_dict[trick['name']] = trick['name'] in settings.advanced_allowed_tricks
 
     # we load the rom before creating the seed so that errors get caught early
     outputting_specific_world = settings.create_uncompressed_rom or settings.create_compressed_rom or settings.create_wad_file
