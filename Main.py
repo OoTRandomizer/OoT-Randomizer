@@ -65,11 +65,11 @@ def resolve_settings(settings: Settings) -> Optional[Rom]:
     old_tricks = settings.allowed_tricks
     old_advanced_tricks = settings.advanced_allowed_tricks
     settings.load_distribution()
+    settings.remove_disabled()
 
     # compare pointers to lists rather than contents, so even if the two are identical
     # we'll still log the error and note the dist file overrides completely.
-    if old_tricks and (old_tricks is not settings.allowed_tricks
-                    or old_advanced_tricks is not settings.advanced_allowed_tricks):
+    if (old_tricks and old_tricks is not settings.allowed_tricks) or (old_advanced_tricks and old_advanced_tricks is not settings.advanced_allowed_tricks):
         logger.error('Tricks are set in two places! Using only the tricks from the distribution file.')
 
     for trick in logic_tricks.values():
@@ -107,7 +107,6 @@ def resolve_settings(settings: Settings) -> Optional[Rom]:
         settings.hint_dist = 'custom'
 
     logger.info('OoT Randomizer Version %s  -  Seed: %s', __version__, settings.seed)
-    settings.remove_disabled()
     logger.info('(Original) Settings string: %s\n', settings.settings_string)
     random.seed(settings.numeric_seed)
     settings.resolve_random_settings(cosmetic=False)
