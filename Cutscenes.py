@@ -164,6 +164,10 @@ def patch_cutscenes(rom: Rom, songs_as_items: bool, settings: Settings) -> None:
         rom.write_int16(0x020B1A0A, 0x01D4)
         rom.write_int16(0x020B1A16, 0x01D4)
 
+    # Goron vase (z_bg_spot18_basket)
+    rom.write_int32(0xE476D4, 0x00000000) # Delete cutscene
+    rom.write_int16(0xE47872, 0x0001) # Stop spinning at frame 1
+
     # Play Sarias Song to Darunia
     delete_cutscene(rom, 0x22769E0)
 
