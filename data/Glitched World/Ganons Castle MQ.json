@@ -1,6 +1,7 @@
 [
     {
         "region_name": "Ganons Castle Lobby",
+        "dungeon": "Ganons Castle",
         "exits": {
             "Castle Grounds From Ganons Castle": "True",
             "Ganons Castle Main": "
