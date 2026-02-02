@@ -9214,6 +9214,7 @@
             "display_name": "the Bottom of the Well",
             "gender": "no_gender",
             "short_name": "Bottom of the Well",
+            "shorter_name": "BotW",
             "vague_prep": "within"
         },
         "CASTLE_GROUNDS": {
@@ -9221,6 +9222,7 @@
             "display_name": "the Castle Grounds",
             "gender": "no_gender",
             "short_name": null,
+            "shorter_name": "Castle",
             "vague_prep": "on"
         },
         "DEATH_MOUNTAIN_CRATER": {
@@ -9228,6 +9230,7 @@
             "display_name": "the Death Mountain Crater",
             "gender": "no_gender",
             "short_name": "Death Mountain Crater",
+            "shorter_name": "Crater",
             "vague_prep": "in"
         },
         "DEATH_MOUNTAIN_TRAIL": {
@@ -9235,6 +9238,7 @@
             "display_name": "the Death Mountain Trail",
             "gender": "no_gender",
             "short_name": "Death Mountain Trail",
+            "shorter_name": "Trail",
             "vague_prep": "on"
         },
         "DEKU_TREE": {
@@ -9242,6 +9246,7 @@
             "display_name": "the Deku Tree",
             "gender": "no_gender",
             "short_name": "Deku Tree",
+            "shorter_name": "Deku",
             "vague_prep": "inside"
         },
         "DESERT_COLOSSUS": {
@@ -9249,6 +9254,7 @@
             "display_name": "the Desert Colossus",
             "gender": "no_gender",
             "short_name": "Desert Colossus",
+            "shorter_name": "Colossus",
             "vague_prep": "at"
         },
         "DODONGOS_CAVERN": {
@@ -9256,6 +9262,7 @@
             "display_name": "Dodongo's Cavern",
             "gender": "no_gender",
             "short_name": "Dodongo's Cavern",
+            "shorter_name": "DC",
             "vague_prep": "within"
         },
         "FIRE_TEMPLE": {
@@ -9263,6 +9270,7 @@
             "display_name": "the Fire Temple",
             "gender": "no_gender",
             "short_name": "Fire Temple",
+            "shorter_name": "Fire",
             "vague_prep": "on"
         },
         "FOREST_TEMPLE": {
@@ -9270,6 +9278,7 @@
             "display_name": "the Forest Temple",
             "gender": "no_gender",
             "short_name": "Forest Temple",
+            "shorter_name": "Forest",
             "vague_prep": "in"
         },
         "GANONDORFS_CHAMBER": {
@@ -9284,6 +9293,7 @@
             "display_name": "Gerudo's Fortress",
             "gender": "no_gender",
             "short_name": "Gerudo's Fortress",
+            "shorter_name": "Fortress",
             "vague_prep": "at"
         },
         "GERUDO_TRAINING_GROUND": {
@@ -9291,6 +9301,7 @@
             "display_name": "the Gerudo Training Ground",
             "gender": "no_gender",
             "short_name": "Gerudo Training Ground",
+            "shorter_name": "GTG",
             "vague_prep": "within"
         },
         "GERUDO_VALLEY": {
@@ -9298,6 +9309,7 @@
             "display_name": "Gerudo Valley",
             "gender": "no_gender",
             "short_name": "Gerudo Valley",
+            "shorter_name": "Valley",
             "vague_prep": "at"
         },
         "GORON_CITY": {
@@ -9305,6 +9317,7 @@
             "display_name": "Goron City",
             "gender": "no_gender",
             "short_name": "Goron City",
+            "shorter_name": "Goron",
             "vague_prep": "in"
         },
         "GRAVEYARD": {
@@ -9312,6 +9325,7 @@
             "display_name": "the Graveyard",
             "gender": "no_gender",
             "short_name": "Graveyard",
+            "shorter_name": "GY",
             "vague_prep": "in"
         },
         "HAUNTED_WASTELAND": {
@@ -9319,6 +9333,7 @@
             "display_name": "the Haunted Wasteland",
             "gender": "no_gender",
             "short_name": "Haunted Wasteland",
+            "shorter_name": "Wasteland",
             "vague_prep": "in"
         },
         "HYRULE_CASTLE": {
@@ -9326,6 +9341,7 @@
             "display_name": "Hyrule Castle",
             "gender": "no_gender",
             "short_name": "Hyrule Castle",
+            "shorter_name": "HC",
             "vague_prep": "at"
         },
         "HYRULE_FIELD": {
@@ -9333,6 +9349,7 @@
             "display_name": "Hyrule Field",
             "gender": "no_gender",
             "short_name": "Hyrule Field",
+            "shorter_name": "Field",
             "vague_prep": "in"
         },
         "ICE_CAVERN": {
@@ -9340,6 +9357,7 @@
             "display_name": "the Ice Cavern",
             "gender": "no_gender",
             "short_name": "Ice Cavern",
+            "shorter_name": "Ice",
             "vague_prep": "inside"
         },
         "INSIDE_GANONS_CASTLE": {
@@ -9347,6 +9365,7 @@
             "display_name": "inside Ganon's Castle",
             "gender": "no_gender",
             "short_name": "Inside Ganon's Castle",
+            "shorter_name": "Ganon",
             "vague_prep": "inside"
         },
         "JABU_JABUS_BELLY": {
@@ -9354,6 +9373,7 @@
             "display_name": "Jabu Jabu's Belly",
             "gender": "no_gender",
             "short_name": "Jabu Jabu's Belly",
+            "shorter_name": "Jabu",
             "vague_prep": "in"
         },
         "KAKARIKO_VILLAGE": {
@@ -9361,6 +9381,7 @@
             "display_name": "Kakariko Village",
             "gender": "no_gender",
             "short_name": "Kakariko Village",
+            "shorter_name": "Kakariko",
             "vague_prep": "in"
         },
         "KOKIRI_FOREST": {
@@ -9368,6 +9389,7 @@
             "display_name": "Kokiri Forest",
             "gender": "no_gender",
             "short_name": "Kokiri Forest",
+            "shorter_name": "Kokiri",
             "vague_prep": "in"
         },
         "LAKE_HYLIA": {
@@ -9375,6 +9397,7 @@
             "display_name": "Lake Hylia",
             "gender": "no_gender",
             "short_name": "Lake Hylia",
+            "shorter_name": "Lake",
             "vague_prep": "at"
         },
         "LON_LON_RANCH": {
@@ -9382,6 +9405,7 @@
             "display_name": "Lon Lon Ranch",
             "gender": "no_gender",
             "short_name": "Lon Lon Ranch",
+            "shorter_name": "Ranch",
             "vague_prep": "at"
         },
         "LOST_WOODS": {
@@ -9389,6 +9413,7 @@
             "display_name": "the Lost Woods",
             "gender": "no_gender",
             "short_name": "Lost Woods",
+            "shorter_name": "Woods",
             "vague_prep": "in"
         },
         "MARKET": {
@@ -9396,6 +9421,7 @@
             "display_name": "the Market",
             "gender": "no_gender",
             "short_name": "Market",
+            "shorter_name": "Market",
             "vague_prep": "in"
         },
         "OUTSIDE_GANONS_CASTLE": {
@@ -9403,6 +9429,7 @@
             "display_name": "outside Ganon's Castle",
             "gender": "no_gender",
             "short_name": "Outside Ganon's Castle",
+            "shorter_name": "OGC",
             "vague_prep": null
         },
         "ROOT": {
@@ -9417,6 +9444,7 @@
             "display_name": "the Sacred Forest Meadow",
             "gender": "no_gender",
             "short_name": "Sacred Forest Meadow",
+            "shorter_name": "Meadow",
             "vague_prep": "at"
         },
         "SHADOW_TEMPLE": {
@@ -9424,6 +9452,7 @@
             "display_name": "the Shadow Temple",
             "gender": "no_gender",
             "short_name": "Shadow Temple",
+            "shorter_name": "Shadow",
             "vague_prep": "within"
         },
         "SPIRIT_TEMPLE": {
@@ -9431,6 +9460,7 @@
             "display_name": "the Spirit Temple",
             "gender": "no_gender",
             "short_name": "Spirit Temple",
+            "shorter_name": "Spirit",
             "vague_prep": "inside"
         },
         "TEMPLE_OF_TIME": {
@@ -9438,6 +9468,7 @@
             "display_name": "the Temple of Time",
             "gender": "no_gender",
             "short_name": "Temple of Time",
+            "shorter_name": "ToT",
             "vague_prep": "inside"
         },
         "THIEVES_HIDEOUT": {
@@ -9445,6 +9476,7 @@
             "display_name": "the Thieves' Hideout",
             "gender": "no_gender",
             "short_name": "Thieves' Hideout",
+            "shorter_name": "Hideout",
             "vague_prep": "in"
         },
         "WATER_TEMPLE": {
@@ -9452,6 +9484,7 @@
             "display_name": "the Water Temple",
             "gender": "no_gender",
             "short_name": "Water Temple",
+            "shorter_name": "Water",
             "vague_prep": "under"
         },
         "ZORAS_DOMAIN": {
@@ -9459,6 +9492,7 @@
             "display_name": "Zora's Domain",
             "gender": "no_gender",
             "short_name": "Zora's Domain",
+            "shorter_name": "Domain",
             "vague_prep": "at"
         },
         "ZORAS_FOUNTAIN": {
@@ -9466,6 +9500,7 @@
             "display_name": "Zora's Fountain",
             "gender": "no_gender",
             "short_name": "Zora's Fountain",
+            "shorter_name": "Fountain",
             "vague_prep": "at"
         },
         "ZORA_RIVER": {
@@ -9473,6 +9508,7 @@
             "display_name": "Zora's River",
             "gender": "no_gender",
             "short_name": "Zora's River",
+            "shorter_name": "River",
             "vague_prep": "at"
         }
     },

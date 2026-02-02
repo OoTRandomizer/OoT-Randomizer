@@ -14,9 +14,9 @@ from typing import Optional, Any
 from Cutscenes import patch_cutscenes, patch_wondertalk2
 from Entrance import Entrance
 from HintList import get_hint
-from Hints import GossipText, HintAreaDefault, write_gossip_stone_hints, build_altar_hints, \
+from Hints import GossipText, HintArea, write_gossip_stone_hints, build_altar_hints, \
         build_ganon_text, build_misc_item_hints, build_misc_location_hints, build_misc_dual_hints, \
-        get_simple_hint_no_prefix, get_item_generic_name, hint_area_enum
+        get_simple_hint_no_prefix, get_item_generic_name
 from Item import Item
 from ItemList import REWARD_COLORS
 from ItemPool import reward_list, song_list, trade_items, child_trade_items
@@ -2635,10 +2635,10 @@ def configure_dungeon_info(rom: Rom, world: World) -> None:
         for reward in REWARD_COLORS:
             location = world.hinted_dungeon_reward_locations[reward]
             if location is None:
-                area = HintAreaDefault.ROOT
+                area = HintArea.ROOT
             else:
-                area = HintAreaDefault.at(location)
-            dungeon_reward_areas += hint_area_enum[area.dungeon_profile]["short_name"].encode('ascii').ljust(0x16) + b'\0'
+                area = HintArea.at(location)
+            dungeon_reward_areas += area.short_name(world.language).encode('ascii').ljust(0x16) + b'\0'
             dungeon_reward_worlds.append((world.id if location is None else location.world.id) + 1)
             if location is not None and location.world.id == world.id and area.is_dungeon:
                 dungeon_rewards[codes.index(area.dungeon_name)] = boss_reward_index(location.item)
@@ -2662,9 +2662,9 @@ def configure_dungeon_info(rom: Rom, world: World) -> None:
         dungeon_info.append(1)
         for dungeon_entrance in dungeon_entrances_list:
             connected_region = world.get_entrance(dungeon_entrance).connected_region
-            area = HintAreaDefault.at(connected_region)
-            dungeon_entrances += area.shorter_name.encode('ascii').ljust(0x8) + b'\0'
-            if (area in [HintAreaDefault.GERUDO_TRAINING_GROUND, HintAreaDefault.ICE_CAVERN, HintAreaDefault.BOTTOM_OF_THE_WELL]):
+            area = HintArea.at(connected_region)
+            dungeon_entrances += area.shorter_name(world.language).encode('ascii').ljust(0x8) + b'\0'
+            if (area in [HintArea.GERUDO_TRAINING_GROUND, HintArea.ICE_CAVERN, HintArea.BOTTOM_OF_THE_WELL]):
                 boss_index.append(-1)
             else:
                 boss_index.append(dungeon_names_list.index(area.short_name))
@@ -2722,8 +2722,8 @@ def configure_dungeon_info(rom: Rom, world: World) -> None:
 
     for dungeon_entrance in dungeon_entrances_list:
         connected_region = world.get_entrance(dungeon_entrance).connected_region
-        area = HintAreaDefault.at(connected_region)
-        dungeon_info.append(dungeon_map_index[area.shorter_name])
+        area = HintArea.at(connected_region)
+        dungeon_info.append(dungeon_map_index[area.shorter_name(world.language)])
 
     # Mixed pools
     # In this case, the dungeon location should point to the world area instead.
@@ -2740,7 +2740,7 @@ def configure_dungeon_info(rom: Rom, world: World) -> None:
     #        area = HintArea.at(connected_region)
     #        areas.append(area)
     #        # Every area probably needs a shorter name.
-    #        dungeon_entrances += area.shorter_name.encode('ascii').ljust(0x8) + b'\0'
+    #        dungeon_entrances += area.shorter_name(world.language).encode('ascii').ljust(0x8) + b'\0'
     #else:
     #    dungeon_info.append(0)
 
@@ -2753,7 +2753,7 @@ def configure_dungeon_info(rom: Rom, world: World) -> None:
     #    dungeon_info.append(2)
     #    for boss_region in boss_lobby_list:
     #        area = HintArea.at(world.get_region(boss_region))
-    #        bosses += area.shorter_name.encode('ascii').ljust(0x8) + b'\0'
+    #        bosses += area.shorter_name(world.language).encode('ascii').ljust(0x8) + b'\0'
     #else:
     #    dungeon_info.append(0)
 

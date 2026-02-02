@@ -8,8 +8,15 @@ from __future__ import annotations
 import json, re, os
 import unicodedata
 from functools import reduce
+from typing import TypedDict
 
 from Utils import lang_path
+
+
+class ItemMessage(TypedDict):
+    id: int
+    text: str
+
 
 def half_to_full_width(s: str) -> str:
     out = []

@@ -37,7 +37,7 @@ settings_versioning = [
 
 def get_language() -> dict[str, str]:
     return {
-        lang: lang.capitalize()
+        lang: lang
         for lang in os.listdir(lang_path())
         if os.path.isdir(os.path.join(lang_path(), lang))
         and os.path.isfile(os.path.join(lang_path(), lang, 'property.json'))
@@ -55,8 +55,8 @@ class SettingInfos:
     output_file = SettingInfoStr(None, None)
     seed = SettingInfoStr(None, None)
 
-    language_selection = Combobox(
-        gui_text       = 'Language Selection',
+    language = Combobox(
+        gui_text       = 'Language',
         default        = 'English',
         choices        = get_language(),
         gui_tooltip    = '''\

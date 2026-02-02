@@ -3,7 +3,7 @@ import random
 import logging
 from typing import TYPE_CHECKING, Optional
 
-from Hints import HintAreaDefault
+from Hints import HintArea
 from Item import Item, ItemFactory, ItemInfo
 from ItemPool import remove_junk_items
 from Location import Location, DisableType
@@ -149,7 +149,7 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
         empty_locations = [
             location
             for location in fill_locations
-            if location.world.precompleted_dungeons.get(HintAreaDefault.at(location).dungeon_name, False)
+            if location.world.precompleted_dungeons.get(HintArea.at(location).dungeon_name, False)
         ]
         for location in empty_locations:
             fill_locations.remove(location)
@@ -296,7 +296,7 @@ def fill_dungeon_unique_item(worlds: list[World], search: Search, fill_locations
         regions = []
         for region in dungeon.world.regions:
             try:
-                if HintAreaDefault.at(region).dungeon_name == dungeon.name:
+                if HintArea.at(region).dungeon_name == dungeon.name:
                     regions.append(region)
             except:
                 pass

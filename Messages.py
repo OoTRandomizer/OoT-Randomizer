@@ -11,7 +11,7 @@ import itertools
 from ItemList import REWARD_COLORS
 from HintList import misc_item_hint_table, misc_location_hint_table
 from TextBox import line_wrap
-from Utils import find_last
+from Utils import find_last, data_path
 from Language import Language
 
 if TYPE_CHECKING:
@@ -176,7 +176,7 @@ for char, byte in CHARACTER_MAP.items():
     REVERSE_MAP[byte] = char
 
 try:
-    CHARACTER_MAP_JP, REVERSE_MAP_JP = json.load(open("./jp_char_map.otrx", mode="r+"))
+    CHARACTER_MAP_JP, REVERSE_MAP_JP = json.load(open(data_path('generated/jp_char_map.otrx'), mode="r+"))
 except:
     CHARACTER_MAP_JP: Dict[str, int] = {}
     for cp in range(0x110000):
@@ -210,7 +210,7 @@ except:
     for code, token in SCJP.items():
         if code < 0x10000:
             REVERSE_MAP_JP[code] = token
-    json.dump([CHARACTER_MAP_JP, REVERSE_MAP_JP], open("./jp_char_map.otrx", mode="w"))
+    json.dump([CHARACTER_MAP_JP, REVERSE_MAP_JP], open(data_path('generated/jp_char_map.otrx'), mode="w"))
 
 # [0x0500,0x0560] (inclusive) are reserved for plandomakers
 GOSSIP_STONE_MESSAGES: list[int] = list(range(0x0401, 0x04FF))  # ids of the actual hints
@@ -1264,9 +1264,9 @@ def update_warp_song_text(messages: list[Message], world: World) -> None:
         for id, entr in msg_list.items():
             if 'warp_songs_and_owls' in world.settings.misc_hints or not world.settings.warp_songs:
                 destination = world.get_entrance(entr).connected_region
-                destination_name = world.HintAreaLang.at(destination)
+                destination_name = HintArea.at(destination)
                 color = COLOR_MAP[destination_name.color][lang_num]
-                if destination_name.preposition(True) is not None:
+                if destination_name.preposition(lang, True) is not None:
                     destination_name = lang.format_from_id("PATCH_TEXTS.warp_to", {"destination_name": destination_name})
             else:
                 destination_name = lang.PATCH_TEXTS["warp_mysterious"]
@@ -1279,9 +1279,9 @@ def update_warp_song_text(messages: list[Message], world: World) -> None:
         for id, entr in owl_messages.items():
             if 'warp_songs_and_owls' in world.settings.misc_hints:
                 destination = world.get_entrance(entr).connected_region
-                destination_name = world.HintAreaLang.at(destination)
+                destination_name = HintArea.at(destination)
                 color = COLOR_MAP[destination_name.color][lang_num]
-                if destination_name.preposition(True) is not None:
+                if destination_name.preposition(lang, True) is not None:
                     destination_name = lang.format_from_id("PATCH_TEXTS.warp_to", {"destination_name": destination_name})
             else:
                 destination_name = lang.PATCH_TEXTS["warp_mysterious"]
@@ -1389,9 +1389,9 @@ def update_map_compass_messages(messages: list[Message], world: World):
                             vanilla_reward = world.get_location(dungeon.vanilla_boss_name).vanilla_item
                             vanilla_reward_location = world.hinted_dungeon_reward_locations[vanilla_reward]
                             if vanilla_reward_location is None:
-                                area = world.HintAreaLang.ROOT
+                                area = HintArea.ROOT
                             else:
-                                area = world.HintAreaLang.at(vanilla_reward_location)
+                                area = HintArea.at(vanilla_reward_location)
                             area = GossipText(area.text(lang, world.settings.clearer_hints, preposition=True, use_2nd_person=True), lang, [area.color], prefix='', capitalize=False)
                             if 'compass_boss_location' in world.settings.enhance_map_compass and world.settings.shuffle_bosses != 'off':
                                 boss_room = world.get_entrance(boss_entrance).connected_region.name

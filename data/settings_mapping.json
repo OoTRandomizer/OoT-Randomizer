@@ -14,7 +14,7 @@
           "settings": [
             "rom",
             "output_dir",
-            "language_selection",
+            "language",
             "enable_distribution_file",
             "enable_cosmetic_file",
             "distribution_file",
@@ -43,7 +43,7 @@
           "col_span": 4,
           "row_span": [1,1,1],
           "settings": [
-            "language_selection",
+            "language",
             "enable_distribution_file",
             "enable_cosmetic_file",
             "distribution_file",

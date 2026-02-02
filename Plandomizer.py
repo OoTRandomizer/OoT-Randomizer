@@ -13,7 +13,7 @@ import StartingItems
 from Entrance import Entrance
 from EntranceShuffle import EntranceShuffleError, change_connections, confirm_replacement, validate_world, check_entrances_compatibility
 from Fill import FillError
-from Hints import HintAreaDefault, gossipLocations, GossipText
+from Hints import HintArea, gossipLocations, GossipText
 from Item import ItemFactory, ItemInfo, ItemIterator, is_item, Item
 from ItemPool import item_groups, get_junk_item, song_list, trade_items, child_trade_items, ocarina_buttons
 from JSONDump import dump_obj, CollapseList, CollapseDict, AlignedDict, SortedDict
@@ -1108,7 +1108,7 @@ class WorldDistribution:
                     skipped_locations_from_dungeons += [iter_world.get_location(loc_name) for loc_name in location_groups['BossHeart']]
                 for location in skipped_locations_from_dungeons:
                     if location.item is not None and world.id == location.item.world.id:
-                        hint_area = HintAreaDefault.at(location)
+                        hint_area = HintArea.at(location)
                         if hint_area.is_dungeon and iter_world.precompleted_dungeons.get(hint_area.dungeon_name, False):
                             skipped_locations.append(location)
                             world.item_added_hint_types['barren'].append(location.item.name)
@@ -1387,7 +1387,7 @@ class Distribution:
                                 world_dist.goal_locations[cat_name][goal_text] = {loc.name: LocationRecord.from_item(loc.item).to_json() for loc in locations}
                             else:
                                 world_dist.goal_locations[cat_name][goal_text]['from World ' + str(location_world + 1)] = {loc.name: LocationRecord.from_item(loc.item).to_json() for loc in locations}
-            world_dist.barren_regions = list(map(str, world.empty_areas))
+            world_dist.barren_regions = [area.name for area in world.empty_areas]
             world_dist.gossip_stones = {}
             for loc in spoiler.hints[world.id]:
                 hint = GossipRecord(spoiler.hints[world.id][loc].to_json())

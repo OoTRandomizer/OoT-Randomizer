@@ -429,6 +429,46 @@ class HintAreaNotFound(RuntimeError):
 
 
 class HintArea(Enum):
+    # internal name          ID      color         internal dungeon name
+    ROOT                   = auto(), 'White',      None
+    HYRULE_FIELD           = auto(), 'Light Blue', None
+    LON_LON_RANCH          = auto(), 'Light Blue', None
+    MARKET                 = auto(), 'Light Blue', None
+    TEMPLE_OF_TIME         = auto(), 'Light Blue', None
+    CASTLE_GROUNDS         = auto(), 'Light Blue', None # required for warp songs
+    HYRULE_CASTLE          = auto(), 'Light Blue', None
+    OUTSIDE_GANONS_CASTLE  = auto(), 'Light Blue', None
+    INSIDE_GANONS_CASTLE   = auto(), 'Light Blue', 'Ganons Castle'
+    GANONDORFS_CHAMBER     = auto(), 'Light Blue', None
+    KOKIRI_FOREST          = auto(), 'Green',      None
+    DEKU_TREE              = auto(), 'Green',      'Deku Tree'
+    LOST_WOODS             = auto(), 'Green',      None
+    SACRED_FOREST_MEADOW   = auto(), 'Green',      None
+    FOREST_TEMPLE          = auto(), 'Green',      'Forest Temple'
+    DEATH_MOUNTAIN_TRAIL   = auto(), 'Red',        None
+    DODONGOS_CAVERN        = auto(), 'Red',        'Dodongos Cavern'
+    GORON_CITY             = auto(), 'Red',        None
+    DEATH_MOUNTAIN_CRATER  = auto(), 'Red',        None
+    FIRE_TEMPLE            = auto(), 'Red',        'Fire Temple'
+    ZORA_RIVER             = auto(), 'Blue',       None
+    ZORAS_DOMAIN           = auto(), 'Blue',       None
+    ZORAS_FOUNTAIN         = auto(), 'Blue',       None
+    JABU_JABUS_BELLY       = auto(), 'Blue',       'Jabu Jabus Belly'
+    ICE_CAVERN             = auto(), 'Blue',       'Ice Cavern'
+    LAKE_HYLIA             = auto(), 'Blue',       None
+    WATER_TEMPLE           = auto(), 'Blue',       'Water Temple'
+    KAKARIKO_VILLAGE       = auto(), 'Pink',       None
+    BOTTOM_OF_THE_WELL     = auto(), 'Pink',       'Bottom of the Well'
+    GRAVEYARD              = auto(), 'Pink',       None
+    SHADOW_TEMPLE          = auto(), 'Pink',       'Shadow Temple'
+    GERUDO_VALLEY          = auto(), 'Yellow',     None
+    GERUDO_FORTRESS        = auto(), 'Yellow',     None
+    THIEVES_HIDEOUT        = auto(), 'Yellow',     None
+    GERUDO_TRAINING_GROUND = auto(), 'Yellow',     'Gerudo Training Ground'
+    HAUNTED_WASTELAND      = auto(), 'Yellow',     None
+    DESERT_COLOSSUS        = auto(), 'Yellow',     None
+    SPIRIT_TEMPLE          = auto(), 'Yellow',     'Spirit Temple'
+
     # Performs a breadth first search to find the closest hint area from a given spot (region, location, or entrance).
     # May fail to find a hint if the given spot is only accessible from the root and not from any other region with a hint area
     @staticmethod
@@ -487,50 +527,41 @@ class HintArea(Enum):
                 return hint_area
         return None
 
-    def preposition(self, clearer_hints: bool) -> str:
-        return self.value[1 if clearer_hints else 0]
+    def preposition(self, lang: Language, clearer_hints: bool) -> str:
+        return lang.hint_area_enum[self.name]['clear_prep' if clearer_hints else 'vague_prep']
 
     def __str__(self) -> str:
-        return self.value[2]
+        raise TypeError('Attempted to format hint area')
 
     # used for dungeon reward locations in the pause menu
-    @property
-    def short_name(self) -> str:
-        return self.value[3]
+    def short_name(self, lang: Language) -> str:
+        return lang.hint_area_enum[self.name]['short_name']
 
     # Hint areas are further grouped into colored sections of the map by association with the medallions.
     # These colors are used to generate the text boxes for shuffled warp songs.
     @property
     def color(self) -> str:
-        return self.value[4]
+        return self.value[1]
 
     @property
     def dungeon_name(self) -> Optional[str]:
-        return self.value[5]
+        return self.value[2]
 
-    @property
-    def shorter_name(self) -> Optional[str]:
-        return self.value[6]
-
-    @property
-    def dungeon_gender(self) -> str:
-        return self.value[7]
-    @property
-    def dungeon_profile(self) -> str:
-        return self.value[8]
+    def shorter_name(self, lang: Language) -> Optional[str]:
+        return lang.hint_area_enum[self.name]['shorter_name']
 
     @property
     def is_dungeon(self) -> bool:
         return self.dungeon_name is not None
 
     def dungeon(self, world: World) -> Optional[Dungeon]:
-        dungeons = [dungeon for dungeon in world.dungeons if dungeon.hint.dungeon_profile == self.dungeon_profile]
+        dungeons = [dungeon for dungeon in world.dungeons if dungeon.name == self.dungeon_name]
         if dungeons:
             return dungeons[0]
 
     def is_dungeon_item(self, item: Item) -> bool:
         for dungeon in item.world.dungeons:
-            if dungeon.hint.dungeon_profile == self.dungeon_profile:
+            if dungeon.name == self.dungeon_name:
                 return dungeon.is_dungeon_item(item)
         return False
 
@@ -542,7 +573,7 @@ class HintArea(Enum):
         if self.is_dungeon and self.dungeon_name:
             text = get_hint(self.dungeon_name, lang, clearer_hints).text
         else:
-            text = str(self)
+            text = lang.hint_area_enum[self.name]['display_name']
         pre_suf = text.replace('#', '').split(lang.hint_text["separator"], 1)
         if world is None:
             if pre_suf[0] == lang.hint_text["own_prefix"]:
@@ -563,453 +594,12 @@ class HintArea(Enum):
                 text = lang.format_from_id("hint_text.world's", {"world": world, "suffix": text})
         if '#' not in text:
             text = f'#{text}#'
-        if preposition and self.preposition(clearer_hints) is not None:
+        if preposition and self.preposition(lang, clearer_hints) is not None:
             if prep_pos == "first":
-                text = f"{self.preposition(clearer_hints)}{' ' if lang.base == 'en' else '　'}{text}"
+                text = f"{self.preposition(lang, clearer_hints)}{' ' if lang.base == 'en' else '　'}{text}"
             elif prep_pos == "last":
-                text = f"{text}{' ' if lang.base == 'en' else '　'}{self.preposition(clearer_hints)}"
+                text = f"{text}{' ' if lang.base == 'en' else '　'}{self.preposition(lang, clearer_hints)}"
         return text
-
-
-hint_area_enum = {
-    "ROOT": {
-        "vague_prep": 'in',
-        "clear_prep": 'in',
-        "display_name": "Link's pocket",
-        "short_name": 'Free',
-        "color": 'White',
-        "dungeon_name": None,
-        "shorter_name": None,
-        "gender": "o",
-        "dungeon_profile": "ROOT",
-    },
-    "HYRULE_FIELD": {
-        "vague_prep": 'in',
-        "clear_prep": 'in',
-        "display_name": 'Hyrule Field',
-        "short_name": 'Hyrule Field',
-        "color": 'Light Blue',
-        "dungeon_name": None,
-        "shorter_name": 'Field',
-        "gender": "o",
-        "dungeon_profile": "HYRULE_FIELD",
-    },
-    "LON_LON_RANCH": {
-        "vague_prep": 'at',
-        "clear_prep": 'at',
-        "display_name": 'Lon Lon Ranch',
-        "short_name": 'Lon Lon Ranch',
-        "color": 'Light Blue',
-        "dungeon_name": None,
-        "shorter_name": 'Ranch',
-        "gender": "o",
-        "dungeon_profile": "LON_LON_RANCH",
-    },
-    "MARKET": {
-        "vague_prep": 'in',
-        "clear_prep": 'in',
-        "display_name": 'the Market',
-        "short_name": 'Market',
-        "color": 'Light Blue',
-        "dungeon_name": None,
-        "shorter_name": 'Market',
-        "gender": "o",
-        "dungeon_profile": "MARKET",
-    },
-    "TEMPLE_OF_TIME": {
-        "vague_prep": 'inside',
-        "clear_prep": 'inside',
-        "display_name": 'the Temple of Time',
-        "short_name": 'Temple of Time',
-        "color": 'Light Blue',
-        "dungeon_name": None,
-        "shorter_name": 'ToT',
-        "gender": "o",
-        "dungeon_profile": "TEMPLE_OF_TIME",
-    },
-    "CASTLE_GROUNDS": {
-        "vague_prep": 'on',
-        "clear_prep": 'on',
-        "display_name": 'the Castle Grounds',
-        "short_name": None,
-        "color": 'Light Blue',
-        "dungeon_name": None,
-        "shorter_name": 'Castle',
-        "gender": "o",
-        "dungeon_profile": "CASTLE_GROUNDS",
-    },
-    "HYRULE_CASTLE": {
-        "vague_prep": 'at',
-        "clear_prep": 'at',
-        "display_name": 'Hyrule Castle',
-        "short_name": 'Hyrule Castle',
-        "color": 'Light Blue',
-        "dungeon_name": None,
-        "shorter_name": 'HC',
-        "gender": "o",
-        "dungeon_profile": "HYRULE_CASTLE",
-    },
-    "OUTSIDE_GANONS_CASTLE": {
-        "vague_prep": None,
-        "clear_prep": None,
-        "display_name": "outside Ganon's Castle",
-        "short_name": "Outside Ganon's Castle",
-        "color": 'Light Blue',
-        "dungeon_name": None,
-        "shorter_name": 'OGC',
-        "gender": "o",
-        "dungeon_profile": "OUTSIDE_GANONS_CASTLE",
-    },
-    "INSIDE_GANONS_CASTLE": {
-        "vague_prep": 'inside',
-        "clear_prep": None,
-        "display_name": "inside Ganon's Castle",
-        "short_name": "Inside Ganon's Castle",
-        "color": 'Light Blue',
-        "dungeon_name": 'Ganons Castle',
-        "shorter_name": 'Ganon',
-        "gender": "o",
-        "dungeon_profile": "INSIDE_GANONS_CASTLE",
-    },
-    "GANONDORFS_CHAMBER": {
-        "vague_prep": 'in',
-        "clear_prep": 'in',
-        "display_name": "Ganondorf's Chamber",
-        "short_name": "Ganondorf's Chamber",
-        "color": 'Light Blue',
-        "dungeon_name": None,
-        "shorter_name": None,
-        "gender": "o",
-        "dungeon_profile": "GANONDORFS_CHAMBER",
-    },
-    "KOKIRI_FOREST": {
-        "vague_prep": 'in',
-        "clear_prep": 'in',
-        "display_name": 'Kokiri Forest',
-        "short_name": "Kokiri Forest",
-        "color": 'Green',
-        "dungeon_name": None,
-        "shorter_name": 'Kokiri',
-        "gender": "o",
-        "dungeon_profile": "KOKIRI_FOREST",
-    },
-    "DEKU_TREE": {
-        "vague_prep": 'inside',
-        "clear_prep": 'inside',
-        "display_name": 'the Deku Tree',
-        "short_name": "Deku Tree",
-        "color": 'Green',
-        "dungeon_name": 'Deku Tree',
-        "shorter_name": 'Deku',
-        "gender": "o",
-        "dungeon_profile": "DEKU_TREE",
-    },
-    "LOST_WOODS": {
-        "vague_prep": 'in',
-        "clear_prep": 'in',
-        "display_name": 'the Lost Woods',
-        "short_name": "Lost Woods",
-        "color": 'Green',
-        "dungeon_name": None,
-        "shorter_name": 'Woods',
-        "gender": "o",
-        "dungeon_profile": "LOST_WOODS",
-    },
-    "SACRED_FOREST_MEADOW": {
-        "vague_prep": 'at',
-        "clear_prep": 'at',
-        "display_name": 'the Sacred Forest Meadow',
-        "short_name": "Sacred Forest Meadow",
-        "color": 'Green',
-        "dungeon_name": None,
-        "shorter_name": 'Meadow',
-        "gender": "o",
-        "dungeon_profile": "SACRED_FOREST_MEADOW",
-    },
-    "FOREST_TEMPLE": {
-        "vague_prep": 'in',
-        "clear_prep": 'in',
-        "display_name": 'the Forest Temple',
-        "short_name": "Forest Temple",
-        "color": 'Green',
-        "dungeon_name": 'Forest Temple',
-        "shorter_name": 'Forest',
-        "gender": "o",
-        "dungeon_profile": "FOREST_TEMPLE",
-    },
-    "DEATH_MOUNTAIN_TRAIL": {
-        "vague_prep": 'on',
-        "clear_prep": 'on',
-        "display_name": 'the Death Mountain Trail',
-        "short_name": "Death Mountain Trail",
-        "color": 'Red',
-        "dungeon_name": None,
-        "shorter_name": 'Trail',
-        "gender": "o",
-        "dungeon_profile": "DEATH_MOUNTAIN_TRAIL",
-    },
-    "DODONGOS_CAVERN": {
-        "vague_prep": 'within',
-        "clear_prep": 'in',
-        "display_name": "Dodongo's Cavern",
-        "short_name": "Dodongo's Cavern",
-        "color": 'Red',
-        "dungeon_name": 'Dodongos Cavern',
-        "shorter_name": 'DC',
-        "gender": "o",
-        "dungeon_profile": "DODONGOS_CAVERN",
-    },
-    "GORON_CITY": {
-        "vague_prep": 'in',
-        "clear_prep": 'in',
-        "display_name": 'Goron City',
-        "short_name": "Goron City",
-        "color": 'Red',
-        "dungeon_name": None,
-        "shorter_name": 'Goron',
-        "gender": "o",
-        "dungeon_profile": "GORON_CITY",
-    },
-    "DEATH_MOUNTAIN_CRATER": {
-        "vague_prep": 'in',
-        "clear_prep": 'in',
-        "display_name": 'the Death Mountain Crater',
-        "short_name": "Death Mountain Crater",
-        "color": 'Red',
-        "dungeon_name": None,
-        "shorter_name": 'Crater',
-        "gender": "o",
-        "dungeon_profile": "DEATH_MOUNTAIN_CRATER",
-    },
-    "FIRE_TEMPLE": {
-        "vague_prep": 'on',
-        "clear_prep": 'in',
-        "display_name": 'the Fire Temple',
-        "short_name": "Fire Temple",
-        "color": 'Red',
-        "dungeon_name": 'Fire Temple',
-        "shorter_name": 'Fire',
-        "gender": "o",
-        "dungeon_profile": "FIRE_TEMPLE",
-    },
-    "ZORA_RIVER": {
-        "vague_prep": 'at',
-        "clear_prep": 'at',
-        "display_name": "Zora's River",
-        "short_name": "Zora's River",
-        "color": 'Blue',
-        "dungeon_name": None,
-        "shorter_name": 'River',
-        "gender": "o",
-        "dungeon_profile": "ZORA_RIVER",
-    },
-    "ZORAS_DOMAIN": {
-        "vague_prep": 'at',
-        "clear_prep": 'at',
-        "display_name": "Zora's Domain",
-        "short_name": "Zora's Domain",
-        "color": 'Blue',
-        "dungeon_name": None,
-        "shorter_name": 'Domain',
-        "gender": "o",
-        "dungeon_profile": "ZORAS_DOMAIN",
-    },
-    "ZORAS_FOUNTAIN": {
-        "vague_prep": 'at',
-        "clear_prep": 'at',
-        "display_name": "Zora's Fountain",
-        "short_name": "Zora's Fountain",
-        "color": 'Blue',
-        "dungeon_name": None,
-        "shorter_name": 'Fountain',
-        "gender": "o",
-        "dungeon_profile": "ZORAS_FOUNTAIN",
-    },
-    "JABU_JABUS_BELLY": {
-        "vague_prep": 'in',
-        "clear_prep": 'inside',
-        "display_name": "Jabu Jabu's Belly",
-        "short_name": "Jabu Jabu's Belly",
-        "color": 'Blue',
-        "dungeon_name": 'Jabu Jabus Belly',
-        "shorter_name": 'Jabu',
-        "gender": "o",
-        "dungeon_profile": "JABU_JABUS_BELLY",
-    },
-    "ICE_CAVERN": {
-        "vague_prep": 'inside',
-        "clear_prep": 'in'    ,
-        "display_name": 'the Ice Cavern',
-        "short_name": "Ice Cavern",
-        "color": 'Blue',
-        "dungeon_name": 'Ice Cavern',
-        "shorter_name": 'Ice',
-        "gender": "o",
-        "dungeon_profile": "ICE_CAVERN",
-    },
-    "LAKE_HYLIA": {
-        "vague_prep": 'at',
-        "clear_prep": 'at',
-        "display_name": 'Lake Hylia',
-        "short_name": "Lake Hylia",
-        "color": 'Blue',
-        "dungeon_name": None,
-        "shorter_name": 'Lake',
-        "gender": "o",
-        "dungeon_profile": "LAKE_HYLIA",
-    },
-    "WATER_TEMPLE": {
-        "vague_prep": 'under',
-        "clear_prep": 'in',
-        "display_name": 'the Water Temple',
-        "short_name": "Water Temple",
-        "color": 'Blue',
-        "dungeon_name": 'Water Temple',
-        "shorter_name": 'Water',
-        "gender": "o",
-        "dungeon_profile": "WATER_TEMPLE",
-    },
-    "KAKARIKO_VILLAGE": {
-        "vague_prep": 'in',
-        "clear_prep": 'in',
-        "display_name": 'Kakariko Village',
-        "short_name": "Kakariko Village",
-        "color": 'Pink',
-        "dungeon_name": None,
-        "shorter_name": 'Kakariko',
-        "gender": "o",
-        "dungeon_profile": "KAKARIKO_VILLAGE",
-    },
-    "BOTTOM_OF_THE_WELL": {
-        "vague_prep": 'within',
-        "clear_prep": 'at',
-        "display_name": 'the Bottom of the Well',
-        "short_name": "Bottom of the Well",
-        "color": 'Pink',
-        "dungeon_name": 'Bottom of the Well',
-        "shorter_name": 'BotW',
-        "gender": "o",
-        "dungeon_profile": "BOTTOM_OF_THE_WELL",
-    },
-    "GRAVEYARD": {
-        "vague_prep": 'in',
-        "clear_prep": 'in',
-        "display_name": 'the Graveyard',
-        "short_name": "Graveyard",
-        "color": 'Pink',
-        "dungeon_name": None,
-        "shorter_name": 'GY',
-        "gender": "o",
-        "dungeon_profile": "GRAVEYARD",
-    },
-    "SHADOW_TEMPLE": {
-        "vague_prep": 'within',
-        "clear_prep": 'in',
-        "display_name": 'the Shadow Temple',
-        "short_name": "Shadow Temple",
-        "color": 'Pink',
-        "dungeon_name": 'Shadow Temple',
-        "shorter_name": 'Shadow',
-        "gender": "o",
-        "dungeon_profile": "SHADOW_TEMPLE",
-    },
-    "GERUDO_VALLEY": {
-        "vague_prep": 'at',
-        "clear_prep": 'at',
-        "display_name": 'Gerudo Valley',
-        "short_name": "Gerudo Valley",
-        "color": 'Yellow',
-        "dungeon_name": None,
-        "shorter_name": 'Valley',
-        "gender": "o",
-        "dungeon_profile": "GERUDO_VALLEY",
-    },
-    "GERUDO_FORTRESS": {
-        "vague_prep": 'at',
-        "clear_prep": 'at',
-        "display_name": "Gerudo's Fortress",
-        "short_name": "Gerudo's Fortress",
-        "color": 'Yellow',
-        "dungeon_name": None,
-        "shorter_name": 'Fortress',
-        "gender": "o",
-        "dungeon_profile": "GERUDO_FORTRESS",
-    },
-    "THIEVES_HIDEOUT": {
-        "vague_prep": 'in',
-        "clear_prep": 'in',
-        "display_name": "the Thieves' Hideout",
-        "short_name": "Thieves' Hideout",
-        "color": 'Yellow',
-        "dungeon_name": None,
-        "shorter_name": 'Hideout',
-        "gender": "o",
-        "dungeon_profile": "THIEVES_HIDEOUT",
-    },
-    "GERUDO_TRAINING_GROUND": {
-        "vague_prep": 'within',
-        "clear_prep": 'on',
-        "display_name": 'the Gerudo Training Ground',
-        "short_name": "Gerudo Training Ground",
-        "color": 'Yellow',
-        "dungeon_name": 'Gerudo Training Ground',
-        "shorter_name": 'GTG',
-        "gender": "o",
-        "dungeon_profile": "GERUDO_TRAINING_GROUND",
-    },
-    "HAUNTED_WASTELAND": {
-        "vague_prep": 'in',
-        "clear_prep": 'in',
-        "display_name": 'the Haunted Wasteland',
-        "short_name": "Haunted Wasteland",
-        "color": 'Yellow',
-        "dungeon_name": None,
-        "shorter_name": 'Wasteland',
-        "gender": "o",
-        "dungeon_profile": "HAUNTED_WASTELAND",
-    },
-    "DESERT_COLOSSUS": {
-        "vague_prep": 'at',
-        "clear_prep": 'at',
-        "display_name": 'the Desert Colossus',
-        "short_name": "Desert Colossus",
-        "color": 'Yellow',
-        "dungeon_name": None,
-        "shorter_name": 'Colossus',
-        "gender": "o",
-        "dungeon_profile": "DESERT_COLOSSUS",
-    },
-    "SPIRIT_TEMPLE": {
-        "vague_prep": 'inside',
-        "clear_prep": 'in',
-        "display_name": 'the Spirit Temple',
-        "short_name": "Spirit Temple",
-        "color": 'Yellow',
-        "dungeon_name": 'Spirit Temple',
-        "shorter_name": 'Spirit',
-        "gender": "o",
-        "dungeon_profile": "SPIRIT_TEMPLE",
-    }
-}
-
-def area_flat(hint_area_enum):
-    fields = [
-        "vague_prep",
-        "clear_prep",
-        "display_name",
-        "short_name",
-        "color",
-        "dungeon_name",
-        "shorter_name",
-        "gender",
-        "dungeon_profile",
-    ]
-    res_enum = {}
-    for key, info in hint_area_enum.items():
-        res_enum[key] = tuple(info[field] for field in fields)
-    return res_enum
-
-HintAreaDefault = HintArea("HintAreaDefault", area_flat(hint_area_enum))
 
 
 class CheckedKind(Enum):
@@ -1021,7 +611,7 @@ def get_woth_hint(spoiler: Spoiler, world: World, checked: dict[HintArea | str, 
     locations = spoiler.required_locations[world.id]
     locations = list(filter(lambda location:
         location.name not in checked
-        and not (world.woth_dungeon >= world.hint_dist_user['dungeons_woth_limit'] and HintAreaDefault.at(location).is_dungeon)
+        and not (world.woth_dungeon >= world.hint_dist_user['dungeons_woth_limit'] and HintArea.at(location).is_dungeon)
         and location.name not in world.hint_exclusions
         and location.name not in world.hint_type_overrides['woth']
         and location.item.name not in world.item_hint_type_overrides['woth']
@@ -1035,7 +625,7 @@ def get_woth_hint(spoiler: Spoiler, world: World, checked: dict[HintArea | str, 
     mark_checked(checked, location.name)
     lang = world.language
 
-    hint_area = world.HintAreaLang.at(location)
+    hint_area = HintArea.at(location)
     if hint_area.is_dungeon:
         world.woth_dungeon += 1
     location_text = hint_area.text(lang, world.settings.clearer_hints)
@@ -1167,7 +757,7 @@ def get_goal_hint(spoiler: Spoiler, world: World, checked: dict[HintArea | str, 
     goal.weight = 0
 
 
-    location_text = world.HintAreaLang.at(location).text(world.language, world.settings.clearer_hints)
+    location_text = HintArea.at(location).text(world.language, world.settings.clearer_hints)
     if world_id == world.id:
         player_text = lang.hint_text["world_is_world_player"]
         goal_text = goal.hint_text
@@ -1194,7 +784,7 @@ def get_barren_hint(spoiler: Spoiler, world: World, checked: dict[HintArea | str
     if not hasattr(world, 'get_barren_hint_prev'):
         world.get_barren_hint_prev = RegionRestriction.NONE
 
-    def get_area_from_name(check: HintAreaDefault | str) -> HintAreaDefault | str:
+    def get_area_from_name(check: HintArea | str) -> HintArea | str:
         try:
             location = world.get_location(check)
         except Exception:
@@ -1202,21 +792,21 @@ def get_barren_hint(spoiler: Spoiler, world: World, checked: dict[HintArea | str
         # Don't consider dungeons as already hinted from the reward hint on the Temple of Time altar
         if location.type == 'Boss' and world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward'):
             return None
-        return HintAreaDefault.at(location)
+        return HintArea.at(location)
 
     checked_areas = {get_area_from_name(check) for check, kinds in checked.items() if any(kind is not CheckedKind.ALWAYS for kind in kinds)}
     lang = world.language
 
     areas = list(filter(lambda area:
         area not in checked_areas
-        and str(area) not in world.hint_type_overrides['barren']
+        and area.name not in world.hint_type_overrides['barren']
         and not world.precompleted_dungeons.get(area.dungeon_name, False)
         and not (world.barren_dungeon >= world.hint_dist_user['dungeons_barren_limit'] and world.empty_areas[area]['dungeon'])
         and any(
             location.name not in checked
             and location.name not in world.hint_exclusions
             and location.name not in hint_exclusions(world)
-            and HintAreaDefault.at(location) == area
+            and HintArea.at(location) == area
             for location in world.get_filled_locations()
         ),
         world.empty_areas))
@@ -1272,7 +862,7 @@ def is_checked(locations: Iterable[Location], checked: dict[HintArea | str, set[
     for location in locations:
         if any(kind not in ignore for kind in checked.get(location.name, set())):
             return True
-        hint_area = HintAreaDefault.at(location)
+        hint_area = HintArea.at(location)
         if any(kind not in ignore for kind in checked.get(hint_area, set())):
             return True
         if location.world.precompleted_dungeons.get(hint_area.dungeon_name, False):
@@ -1306,7 +896,7 @@ def get_good_item_hint(spoiler: Spoiler, world: World, checked: dict[HintArea | 
 
     item_text = get_hint(get_item_generic_name(location.item), lang, world.settings.clearer_hints).text
 
-    hint_area = world.HintAreaLang.at(location)
+    hint_area = HintArea.at(location)
     if hint_area.is_dungeon:
         location_text = hint_area.text(lang, world.settings.clearer_hints)
         return GossipText(
@@ -1374,7 +964,7 @@ def get_specific_item_hint(spoiler: Spoiler, world: World, checked: dict[HintAre
         mark_checked(checked, location.name)
         item_text = get_hint(get_item_generic_name(location.item), lang, world.settings.clearer_hints).text
 
-        hint_area = world.HintAreaLang.at(location)
+        hint_area = HintArea.at(location)
         if world.hint_dist_user.get('vague_named_items', False):
             location_text = hint_area.text(lang, world.settings.clearer_hints)
             return GossipText(lang.format_from_id("hint_text.hero_path", {"location_text": location_text}), lang, ['Green'], [location.name], [location.item.name], prefix = lang.hint_text["gossip_prefix"]), [location]
@@ -1467,7 +1057,7 @@ def get_specific_item_hint(spoiler: Spoiler, world: World, checked: dict[HintAre
         mark_checked(checked, location.name)
         item_text = get_hint(get_item_generic_name(location.item), lang, world.settings.clearer_hints).text
 
-        hint_area = world.HintAreaLang.at(location)
+        hint_area = HintArea.at(location)
         if world.hint_dist_user.get('vague_named_items', False):
             location_text = hint_area.text(lang, world.settings.clearer_hints, world=location.world.id + 1)
             return GossipText(lang.format_from_id("hint_text.hero_path", {"location_text": location_text}), lang, ['Green'], [location.name], [location.item.name], prefix = lang.hint_text["gossip_prefix"]), [location]
@@ -1510,7 +1100,7 @@ def get_random_location_hint(spoiler: Spoiler, world: World, checked: dict[HintA
     mark_checked(checked, location.name)
     item_text = get_hint(get_item_generic_name(location.item), lang, world.settings.clearer_hints).text
 
-    hint_area = world.HintAreaLang.at(location)
+    hint_area = HintArea.at(location)
     if hint_area.is_dungeon:
         location_text = hint_area.text(lang, world.settings.clearer_hints)
         return GossipText(lang.format_from_id(
@@ -1713,11 +1303,11 @@ def get_important_check_hint(spoiler: Spoiler, world: World, checked: dict[HintA
     lang = world.language
 
     for location in world.get_filled_locations():
-        hint_area = world.HintAreaLang.at(location)
+        hint_area = HintArea.at(location)
         if (
             hint_area not in top_level_locations
             and hint_area not in checked
-            and hint_area != world.HintAreaLang.ROOT
+            and hint_area != HintArea.ROOT
             and hint_area.dungeon_name not in empty_dungeons # prevent pre-completed dungeons from being hinted
             and not location.locked # prevent areas with unshuffled checks from being hinted
         ):
@@ -1727,7 +1317,7 @@ def get_important_check_hint(spoiler: Spoiler, world: World, checked: dict[HintA
     hint_area = random.choice(top_level_locations)
     item_count = 0
     for location in world.get_filled_locations():
-        if world.HintAreaLang.at(location) == hint_area:
+        if HintArea.at(location) == hint_area:
             if (location.item.majoritem
                 # exclude locked items
                 and not location.locked
@@ -1868,9 +1458,9 @@ def build_gossip_hints(spoiler: Spoiler, worlds: list[World]) -> None:
                         compass_location
                         for compass_world in worlds
                         for compass_location in compass_world.get_filled_locations()
-                        if world.HintAreaLang.at(location).dungeon_name is None # free/ToT reward is shown in menu from beginning of game
+                        if HintArea.at(location).dungeon_name is None # free/ToT reward is shown in menu from beginning of game
                         or (
-                            compass_location.item.name == HintAreaDefault.at(location).dungeon(location.world).item_name('Compass')
+                            compass_location.item.name == HintArea.at(location).dungeon(location.world).item_name('Compass')
                             and compass_location.item.world == world
                         )
                     ]
@@ -2368,9 +1958,9 @@ def build_boss_string(reward: str, color: str, world: World) -> str:
     else:
         location = world.hinted_dungeon_reward_locations[reward]
         if location is None:
-            hint_area = world.HintAreaLang.ROOT
+            hint_area = HintArea.ROOT
         else:
-            hint_area = world.HintAreaLang.at(location)
+            hint_area = HintArea.at(location)
         location_text = hint_area.text(world.language, world.settings.clearer_hints, preposition=True, world=None if location.world.id == world.id else location.world.id + 1)
         text = GossipText(
             world.language.format_from_id(
@@ -2523,7 +2113,7 @@ def build_misc_item_hints(world: World, messages: list[Message], allow_duplicate
                     text = world.language.format_from_text(d['custom_item_text'], {"area": world.language.hint_text["pocket"], "item": item})
             elif hint_type in world.misc_hint_item_locations:
                 location = world.misc_hint_item_locations[hint_type]
-                area = world.HintAreaLang.at(location, use_alt_hint=data['use_alt_hint']).text(world.language, world.settings.clearer_hints, world=None if location.world.id == world.id else location.world.id + 1)
+                area = HintArea.at(location, use_alt_hint=data['use_alt_hint']).text(world.language, world.settings.clearer_hints, world=None if location.world.id == world.id else location.world.id + 1)
                 if item == data['default_item']:
                     text = world.language.format_from_text(d['default_item_text'], {"area": area})
                 else:

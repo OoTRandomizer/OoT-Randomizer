@@ -15,7 +15,7 @@ from Main import resolve_settings
 from Patches import get_override_table, get_override_table_bytes
 from Rom import Rom
 import Unittest as Tests
-from Language import Language
+from Language import Language, ItemMessage
 from SettingsList import SettingInfos, logic_tricks, validate_settings
 import Unittest as Tests
 from Utils import data_path
@@ -137,7 +137,7 @@ def check_preset_settings(fix_errors: bool = False) -> None:
 # This is not a perfect check because it doesn't account for everything that gets manually done in Patches.py
 # For that, we perform additional checking at patch time
 def check_message_duplicates() -> None:
-    def check_for_duplicates(new_item_messages) -> None:
+    def check_for_duplicates(new_item_messages: list[ItemMessage]) -> None:
         for i in range(0, len(new_item_messages)):
             for j in range(i, len(new_item_messages)):
                 if i != j:

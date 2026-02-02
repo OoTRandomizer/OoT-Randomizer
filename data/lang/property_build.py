@@ -3238,6 +3238,7 @@ hint_area_enum = {
         "clear_prep": 'in',
         "display_name": 'Hyrule Field',
         "short_name": 'Hyrule Field',
+        "shorter_name": 'Field',
         "gender": "no_gender",
     },
     "LON_LON_RANCH": {
@@ -3245,6 +3246,7 @@ hint_area_enum = {
         "clear_prep": 'at',
         "display_name": 'Lon Lon Ranch',
         "short_name": 'Lon Lon Ranch',
+        "shorter_name": 'Ranch',
         "gender": "no_gender",
     },
     "MARKET": {
@@ -3252,6 +3254,7 @@ hint_area_enum = {
         "clear_prep": 'in',
         "display_name": 'the Market',
         "short_name": 'Market',
+        "shorter_name": 'Market',
         "gender": "no_gender",
     },
     "TEMPLE_OF_TIME": {
@@ -3259,6 +3262,7 @@ hint_area_enum = {
         "clear_prep": 'inside',
         "display_name": 'the Temple of Time',
         "short_name": 'Temple of Time',
+        "shorter_name": 'ToT',
         "gender": "no_gender",
     },
     "CASTLE_GROUNDS": {
@@ -3266,6 +3270,7 @@ hint_area_enum = {
         "clear_prep": 'on',
         "display_name": 'the Castle Grounds',
         "short_name": None,
+        "shorter_name": 'Castle',
         "gender": "no_gender",
     },
     "HYRULE_CASTLE": {
@@ -3273,6 +3278,7 @@ hint_area_enum = {
         "clear_prep": 'at',
         "display_name": 'Hyrule Castle',
         "short_name": 'Hyrule Castle',
+        "shorter_name": 'HC',
         "gender": "no_gender",
     },
     "OUTSIDE_GANONS_CASTLE": {
@@ -3280,6 +3286,7 @@ hint_area_enum = {
         "clear_prep": None,
         "display_name": "outside Ganon's Castle",
         "short_name": "Outside Ganon's Castle",
+        "shorter_name": 'OGC',
         "gender": "no_gender",
     },
     "INSIDE_GANONS_CASTLE": {
@@ -3287,6 +3294,7 @@ hint_area_enum = {
         "clear_prep": None,
         "display_name": "inside Ganon's Castle",
         "short_name": "Inside Ganon's Castle",
+        "shorter_name": 'Ganon',
         "gender": "no_gender",
     },
     "GANONDORFS_CHAMBER": {
@@ -3301,6 +3309,7 @@ hint_area_enum = {
         "clear_prep": 'in',
         "display_name": 'Kokiri Forest',
         "short_name": "Kokiri Forest",
+        "shorter_name": 'Kokiri',
         "gender": "no_gender",
     },
     "DEKU_TREE": {
@@ -3308,6 +3317,7 @@ hint_area_enum = {
         "clear_prep": 'inside',
         "display_name": 'the Deku Tree',
         "short_name": "Deku Tree",
+        "shorter_name": 'Deku',
         "gender": "no_gender",
     },
     "LOST_WOODS": {
@@ -3315,6 +3325,7 @@ hint_area_enum = {
         "clear_prep": 'in',
         "display_name": 'the Lost Woods',
         "short_name": "Lost Woods",
+        "shorter_name": 'Woods',
         "gender": "no_gender",
     },
     "SACRED_FOREST_MEADOW": {
@@ -3322,6 +3333,7 @@ hint_area_enum = {
         "clear_prep": 'at',
         "display_name": 'the Sacred Forest Meadow',
         "short_name": "Sacred Forest Meadow",
+        "shorter_name": 'Meadow',
         "gender": "no_gender",
     },
     "FOREST_TEMPLE": {
@@ -3329,6 +3341,7 @@ hint_area_enum = {
         "clear_prep": 'in',
         "display_name": 'the Forest Temple',
         "short_name": "Forest Temple",
+        "shorter_name": 'Forest',
         "gender": "no_gender",
     },
     "DEATH_MOUNTAIN_TRAIL": {
@@ -3336,6 +3349,7 @@ hint_area_enum = {
         "clear_prep": 'on',
         "display_name": 'the Death Mountain Trail',
         "short_name": "Death Mountain Trail",
+        "shorter_name": 'Trail',
         "gender": "no_gender",
     },
     "DODONGOS_CAVERN": {
@@ -3343,6 +3357,7 @@ hint_area_enum = {
         "clear_prep": 'in',
         "display_name": "Dodongo's Cavern",
         "short_name": "Dodongo's Cavern",
+        "shorter_name": 'DC',
         "gender": "no_gender",
     },
     "GORON_CITY": {
@@ -3350,6 +3365,7 @@ hint_area_enum = {
         "clear_prep": 'in',
         "display_name": 'Goron City',
         "short_name": "Goron City",
+        "shorter_name": 'Goron',
         "gender": "no_gender",
     },
     "DEATH_MOUNTAIN_CRATER": {
@@ -3357,6 +3373,7 @@ hint_area_enum = {
         "clear_prep": 'in',
         "display_name": 'the Death Mountain Crater',
         "short_name": "Death Mountain Crater",
+        "shorter_name": 'Crater',
         "gender": "no_gender",
     },
     "FIRE_TEMPLE": {
@@ -3364,6 +3381,7 @@ hint_area_enum = {
         "clear_prep": 'in',
         "display_name": 'the Fire Temple',
         "short_name": "Fire Temple",
+        "shorter_name": 'Fire',
         "gender": "no_gender",
     },
     "ZORA_RIVER": {
@@ -3371,6 +3389,7 @@ hint_area_enum = {
         "clear_prep": 'at',
         "display_name": "Zora's River",
         "short_name": "Zora's River",
+        "shorter_name": 'River',
         "gender": "no_gender",
     },
     "ZORAS_DOMAIN": {
@@ -3378,6 +3397,7 @@ hint_area_enum = {
         "clear_prep": 'at',
         "display_name": "Zora's Domain",
         "short_name": "Zora's Domain",
+        "shorter_name": 'Domain',
         "gender": "no_gender",
     },
     "ZORAS_FOUNTAIN": {
@@ -3385,6 +3405,7 @@ hint_area_enum = {
         "clear_prep": 'at',
         "display_name": "Zora's Fountain",
         "short_name": "Zora's Fountain",
+        "shorter_name": 'Fountain',
         "gender": "no_gender",
     },
     "JABU_JABUS_BELLY": {
@@ -3392,6 +3413,7 @@ hint_area_enum = {
         "clear_prep": 'inside',
         "display_name": "Jabu Jabu's Belly",
         "short_name": "Jabu Jabu's Belly",
+        "shorter_name": 'Jabu',
         "gender": "no_gender",
     },
     "ICE_CAVERN": {
@@ -3399,6 +3421,7 @@ hint_area_enum = {
         "clear_prep": 'in'    ,
         "display_name": 'the Ice Cavern',
         "short_name": "Ice Cavern",
+        "shorter_name": 'Ice',
         "gender": "no_gender",
     },
     "LAKE_HYLIA": {
@@ -3406,6 +3429,7 @@ hint_area_enum = {
         "clear_prep": 'at',
         "display_name": 'Lake Hylia',
         "short_name": "Lake Hylia",
+        "shorter_name": 'Lake',
         "gender": "no_gender",
     },
     "WATER_TEMPLE": {
@@ -3413,6 +3437,7 @@ hint_area_enum = {
         "clear_prep": 'in',
         "display_name": 'the Water Temple',
         "short_name": "Water Temple",
+        "shorter_name": 'Water',
         "gender": "no_gender",
     },
     "KAKARIKO_VILLAGE": {
@@ -3420,6 +3445,7 @@ hint_area_enum = {
         "clear_prep": 'in',
         "display_name": 'Kakariko Village',
         "short_name": "Kakariko Village",
+        "shorter_name": 'Kakariko',
         "gender": "no_gender",
     },
     "BOTTOM_OF_THE_WELL": {
@@ -3427,6 +3453,7 @@ hint_area_enum = {
         "clear_prep": 'at',
         "display_name": 'the Bottom of the Well',
         "short_name": "Bottom of the Well",
+        "shorter_name": 'BotW',
         "gender": "no_gender",
     },
     "GRAVEYARD": {
@@ -3434,6 +3461,7 @@ hint_area_enum = {
         "clear_prep": 'in',
         "display_name": 'the Graveyard',
         "short_name": "Graveyard",
+        "shorter_name": 'GY',
         "gender": "no_gender",
     },
     "SHADOW_TEMPLE": {
@@ -3441,6 +3469,7 @@ hint_area_enum = {
         "clear_prep": 'in',
         "display_name": 'the Shadow Temple',
         "short_name": "Shadow Temple",
+        "shorter_name": 'Shadow',
         "gender": "no_gender",
     },
     "GERUDO_VALLEY": {
@@ -3448,6 +3477,7 @@ hint_area_enum = {
         "clear_prep": 'at',
         "display_name": 'Gerudo Valley',
         "short_name": "Gerudo Valley",
+        "shorter_name": 'Valley',
         "gender": "no_gender",
     },
     "GERUDO_FORTRESS": {
@@ -3455,6 +3485,7 @@ hint_area_enum = {
         "clear_prep": 'at',
         "display_name": "Gerudo's Fortress",
         "short_name": "Gerudo's Fortress",
+        "shorter_name": 'Fortress',
         "gender": "no_gender",
     },
     "THIEVES_HIDEOUT": {
@@ -3462,6 +3493,7 @@ hint_area_enum = {
         "clear_prep": 'in',
         "display_name": "the Thieves' Hideout",
         "short_name": "Thieves' Hideout",
+        "shorter_name": 'Hideout',
         "gender": "no_gender",
     },
     "GERUDO_TRAINING_GROUND": {
@@ -3469,6 +3501,7 @@ hint_area_enum = {
         "clear_prep": 'on',
         "display_name": 'the Gerudo Training Ground',
         "short_name": "Gerudo Training Ground",
+        "shorter_name": 'GTG',
         "gender": "no_gender",
     },
     "HAUNTED_WASTELAND": {
@@ -3476,6 +3509,7 @@ hint_area_enum = {
         "clear_prep": 'in',
         "display_name": 'the Haunted Wasteland',
         "short_name": "Haunted Wasteland",
+        "shorter_name": 'Wasteland',
         "gender": "no_gender",
     },
     "DESERT_COLOSSUS": {
@@ -3483,6 +3517,7 @@ hint_area_enum = {
         "clear_prep": 'at',
         "display_name": 'the Desert Colossus',
         "short_name": "Desert Colossus",
+        "shorter_name": 'Colossus',
         "gender": "no_gender",
     },
     "SPIRIT_TEMPLE": {
@@ -3490,6 +3525,7 @@ hint_area_enum = {
         "clear_prep": 'in',
         "display_name": 'the Spirit Temple',
         "short_name": "Spirit Temple",
+        "shorter_name": 'Spirit',
         "gender": "no_gender",
     }
 }
@@ -3670,4 +3706,4 @@ lang_info = {
     "PLAIN_TEXTS": PLAIN_TEXTS,
 }
 
-json.dump(lang_info, open("property.json", mode="w+"), ensure_ascii=False, indent=4, sort_keys=True, separators=(',', ': '))
+json.dump(lang_info, open("property.json", mode="w+", encoding='utf-8', newline=''), ensure_ascii=False, indent=4, sort_keys=True)

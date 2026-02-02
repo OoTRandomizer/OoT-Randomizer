@@ -12,7 +12,7 @@ from Region import Region, TimeOfDay
 from Rules import set_entrances_based_rules
 from State import State
 from Item import ItemFactory
-from Hints import HintAreaDefault, HintAreaNotFound
+from Hints import HintArea, HintAreaNotFound
 from HintList import misc_item_hint_table
 
 if TYPE_CHECKING:
@@ -938,7 +938,7 @@ def check_entrances_compatibility(entrance: Entrance, target: Entrance, rollback
     # One way entrances shouldn't lead to the same hint area as other already chosen one way entrances
     if entrance.type in ('OverworldOneWay', 'OwlDrop', 'Spawn', 'WarpSong'):
         try:
-            hint_area = HintAreaDefault.at(target.connected_region)
+            hint_area = HintArea.at(target.connected_region)
         except HintAreaNotFound:
             pass # not connected to a hint area yet, will be checked when shuffling two-way entrances
         else:
@@ -946,8 +946,8 @@ def check_entrances_compatibility(entrance: Entrance, target: Entrance, rollback
             for rollback in (*rollbacks, *placed_one_way_entrances):
                 try:
                     placed_entrance = rollback[0]
-                    if entrance.type == placed_entrance.type and HintAreaDefault.at(placed_entrance.connected_region) == hint_area:
-                        raise EntranceShuffleError(f'Another {entrance.type} entrance already leads to {hint_area}')
+                    if entrance.type == placed_entrance.type and HintArea.at(placed_entrance.connected_region) == hint_area:
+                        raise EntranceShuffleError(f'Another {entrance.type} entrance already leads to {hint_area.name}')
                 except HintAreaNotFound:
                     pass
 
@@ -1062,15 +1062,15 @@ def validate_world(world: World, worlds: list[World], entrance_placed: Optional[
     for idx1 in range(len(placed_one_way_entrances)):
         try:
             entrance1 = placed_one_way_entrances[idx1][0]
-            hint_area1 = HintAreaDefault.at(entrance1.connected_region)
+            hint_area1 = HintArea.at(entrance1.connected_region)
         except HintAreaNotFound:
             pass
         else:
             for idx2 in range(idx1):
                 try:
                     entrance2 = placed_one_way_entrances[idx2][0]
-                    if entrance1.type == entrance2.type and hint_area1 == HintAreaDefault.at(entrance2.connected_region):
-                        raise EntranceShuffleError(f'Multiple {entrance1.type} entrances lead to {hint_area1}')
+                    if entrance1.type == entrance2.type and hint_area1 == HintArea.at(entrance2.connected_region):
+                        raise EntranceShuffleError(f'Multiple {entrance1.type} entrances lead to {hint_area1.name}')
                 except HintAreaNotFound:
                     pass
 
@@ -1107,7 +1107,7 @@ def entrance_unreachable_as(entrance: Entrance, age: str, already_checked: Optio
 # Returns whether two entrances are in the same hint area
 def same_hint_area(first: Entrance, second: Entrance) -> bool:
     try:
-        return HintAreaDefault.at(first) == HintAreaDefault.at(second)
+        return HintArea.at(first) == HintArea.at(second)
     except HintAreaNotFound:
         return False
 
