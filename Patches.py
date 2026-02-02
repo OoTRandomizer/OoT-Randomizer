@@ -35,7 +35,7 @@ from SceneFlags import build_xflag_tables, build_xflags_from_world, get_alt_list
 from Sounds import move_audiobank_table
 from Spoiler import Spoiler
 from TextBox import line_wrap
-from Utils import data_path
+from Utils import data_path, lang_path
 from World import World
 from ntype import BigStream
 from texture_util import ci4_rgba16patch_to_ci8, rgba16_patch
@@ -2620,6 +2620,7 @@ def boss_reward_index(item: Item) -> int:
 
 
 def configure_dungeon_info(rom: Rom, world: World) -> None:
+    default_lang = Language("English")
     mq_enable = (world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12)
     enhance_map_mq = 'map_mq' in world.settings.enhance_map_compass
 
@@ -2638,7 +2639,12 @@ def configure_dungeon_info(rom: Rom, world: World) -> None:
                 area = HintArea.ROOT
             else:
                 area = HintArea.at(location)
-            dungeon_reward_areas += area.short_name(world.language).encode('ascii').ljust(0x16) + b'\0'
+            # Some languages uses full wide characters which cannot be translated via ascii
+            # For that, use English version for now if the language is full wide
+            try:
+                dungeon_reward_areas += area.short_name(world.language).encode('ascii').ljust(0x16) + b'\0'
+            except:
+                dungeon_reward_areas += area.short_name(default_lang).encode('ascii').ljust(0x16) + b'\0'
             dungeon_reward_worlds.append((world.id if location is None else location.world.id) + 1)
             if location is not None and location.world.id == world.id and area.is_dungeon:
                 dungeon_rewards[codes.index(area.dungeon_name)] = boss_reward_index(location.item)
@@ -2663,11 +2669,14 @@ def configure_dungeon_info(rom: Rom, world: World) -> None:
         for dungeon_entrance in dungeon_entrances_list:
             connected_region = world.get_entrance(dungeon_entrance).connected_region
             area = HintArea.at(connected_region)
-            dungeon_entrances += area.shorter_name(world.language).encode('ascii').ljust(0x8) + b'\0'
+            try:
+                dungeon_entrances += area.shorter_name(world.language).encode('ascii').ljust(0x8) + b'\0'
+            except:
+                dungeon_entrances += area.shorter_name(default_lang).encode('ascii').ljust(0x8) + b'\0'
             if (area in [HintArea.GERUDO_TRAINING_GROUND, HintArea.ICE_CAVERN, HintArea.BOTTOM_OF_THE_WELL]):
                 boss_index.append(-1)
             else:
-                boss_index.append(dungeon_names_list.index(area.short_name))
+                boss_index.append(dungeon_names_list.index(area.short_name(default_lang)))
     else:
         dungeon_info.append(0)
         boss_index = [0, 1, 2, 3, 4, 5, 6, 7, -1, -1, -1, 8]
@@ -2723,7 +2732,7 @@ def configure_dungeon_info(rom: Rom, world: World) -> None:
     for dungeon_entrance in dungeon_entrances_list:
         connected_region = world.get_entrance(dungeon_entrance).connected_region
         area = HintArea.at(connected_region)
-        dungeon_info.append(dungeon_map_index[area.shorter_name(world.language)])
+        dungeon_info.append(dungeon_map_index[area.shorter_name(default_lang)])
 
     # Mixed pools
     # In this case, the dungeon location should point to the world area instead.

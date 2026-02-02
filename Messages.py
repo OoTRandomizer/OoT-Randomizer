@@ -1245,6 +1245,7 @@ def shuffle_messages(messages: list[Message], except_hints: bool = True) -> list
 
 # Update warp song text boxes for ER
 def update_warp_song_text(messages: list[Message], world: World) -> None:
+    from Hints import HintArea
     lang = world.language
     lang_num = 1 if lang.base == "jp" else 0
     msg_list = {
@@ -1291,7 +1292,7 @@ def update_warp_song_text(messages: list[Message], world: World) -> None:
             update_message_by_id(messages, id, new_msg, world.language)
 
 def update_map_compass_messages(messages: list[Message], world: World):
-    from Hints import GossipText
+    from Hints import GossipText, HintArea
     if world.settings.enhance_map_compass and world.settings.shuffle_mapcompass != 'remove' and world.settings.world_count == 1:
         dungeon_id_list = {
                 #                      compass map

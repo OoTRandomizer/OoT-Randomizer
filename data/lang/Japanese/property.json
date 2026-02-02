@@ -9139,6 +9139,7 @@
             "clear_prep": "に",
             "display_name": "井戸の底",
             "short_name": "井戸",
+            "shorter_name": "井戸",
             "gender": "no_gender"
         },
         "CASTLE_GROUNDS": {
@@ -9146,6 +9147,7 @@
             "clear_prep": "の上に",
             "display_name": "ハイラル城中庭",
             "short_name": null,
+            "shorter_name": "中庭",
             "gender": "no_gender"
         },
         "DEATH_MOUNTAIN_CRATER": {
@@ -9153,6 +9155,7 @@
             "clear_prep": "の中に",
             "display_name": "デスマウンテン火口",
             "short_name": "火口",
+            "shorter_name": "火口",
             "gender": "no_gender"
         },
         "DEATH_MOUNTAIN_TRAIL": {
@@ -9160,6 +9163,7 @@
             "clear_prep": "の上に",
             "display_name": "デスマウンテン登山道",
             "short_name": "登山道",
+            "shorter_name": "登山道",
             "gender": "no_gender"
         },
         "DEKU_TREE": {
@@ -9167,6 +9171,7 @@
             "clear_prep": "の中に",
             "display_name": "デクの樹",
             "short_name": "デクの樹",
+            "shorter_name": "デク",
             "gender": "no_gender"
         },
         "DESERT_COLOSSUS": {
@@ -9174,6 +9179,7 @@
             "clear_prep": "に",
             "display_name": "砂漠の巨像",
             "short_name": "砂漠の巨像",
+            "shorter_name": "砂漠",
             "gender": "no_gender"
         },
         "DODONGOS_CAVERN": {
@@ -9181,13 +9187,15 @@
             "clear_prep": "の中に",
             "display_name": "ドドンゴの洞窟",
             "short_name": "ドドンゴ",
+            "shorter_name": "ドドンゴ",
             "gender": "no_gender"
         },
         "FIRE_TEMPLE": {
             "vague_prep": "の上に",
             "clear_prep": "の中に",
             "display_name": "炎の神殿",
-            "short_name": "神殿",
+            "short_name": "炎の神殿",
+            "shorter_name": "炎",
             "gender": "no_gender"
         },
         "FOREST_TEMPLE": {
@@ -9195,6 +9203,7 @@
             "clear_prep": "の中に",
             "display_name": "森の神殿",
             "short_name": "森の神殿",
+            "shorter_name": "森",
             "gender": "no_gender"
         },
         "GANONDORFS_CHAMBER": {
@@ -9202,6 +9211,7 @@
             "clear_prep": "の中に",
             "display_name": "ガノンドロフの間",
             "short_name": "ガノンの間",
+            "shorter_name": "ガノン間",
             "gender": "no_gender"
         },
         "GERUDO_FORTRESS": {
@@ -9209,6 +9219,7 @@
             "clear_prep": "に",
             "display_name": "ゲルドの砦",
             "short_name": "ゲルドの砦",
+            "shorter_name": "砦",
             "gender": "no_gender"
         },
         "GERUDO_TRAINING_GROUND": {
@@ -9216,6 +9227,7 @@
             "clear_prep": "の上に",
             "display_name": "ゲルドの修練場",
             "short_name": "修練場",
+            "shorter_name": "修練場",
             "gender": "no_gender"
         },
         "GERUDO_VALLEY": {
@@ -9223,6 +9235,7 @@
             "clear_prep": "に",
             "display_name": "ゲルドの谷",
             "short_name": "ゲルドの谷",
+            "shorter_name": "谷",
             "gender": "no_gender"
         },
         "GORON_CITY": {
@@ -9230,6 +9243,7 @@
             "clear_prep": "の中に",
             "display_name": "ゴロンシティ",
             "short_name": "ゴロンシティ",
+            "shorter_name": "ゴロン",
             "gender": "no_gender"
         },
         "GRAVEYARD": {
@@ -9237,6 +9251,7 @@
             "clear_prep": "の中に",
             "display_name": "墓地",
             "short_name": "墓地",
+            "shorter_name": "墓",
             "gender": "no_gender"
         },
         "HAUNTED_WASTELAND": {
@@ -9244,6 +9259,7 @@
             "clear_prep": "の中に",
             "display_name": "呪われた荒野",
             "short_name": "荒野",
+            "shorter_name": "荒野",
             "gender": "no_gender"
         },
         "HYRULE_CASTLE": {
@@ -9251,6 +9267,7 @@
             "clear_prep": "に",
             "display_name": "ハイラル城",
             "short_name": "ハイラル城",
+            "shorter_name": "城",
             "gender": "no_gender"
         },
         "HYRULE_FIELD": {
@@ -9258,6 +9275,7 @@
             "clear_prep": "の中に",
             "display_name": "ハイラル平原",
             "short_name": "平原",
+            "shorter_name": "平原",
             "gender": "no_gender"
         },
         "ICE_CAVERN": {
@@ -9265,6 +9283,7 @@
             "clear_prep": "に",
             "display_name": "氷の洞窟",
             "short_name": "氷の洞窟",
+            "shorter_name": "氷",
             "gender": "no_gender"
         },
         "INSIDE_GANONS_CASTLE": {
@@ -9272,6 +9291,7 @@
             "clear_prep": null,
             "display_name": "ガノン城の中",
             "short_name": "ガノン城内",
+            "shorter_name": "ガノン城内",
             "gender": "no_gender"
         },
         "JABU_JABUS_BELLY": {
@@ -9279,6 +9299,7 @@
             "clear_prep": "の中に",
             "display_name": "ジャブジャブさまのお腹",
             "short_name": "ジャブジャブ",
+            "shorter_name": "ジャブ",
             "gender": "no_gender"
         },
         "KAKARIKO_VILLAGE": {
@@ -9286,6 +9307,7 @@
             "clear_prep": "の中に",
             "display_name": "カカリコ村",
             "short_name": "カカリコ村",
+            "shorter_name": "カカリコ",
             "gender": "no_gender"
         },
         "KOKIRI_FOREST": {
@@ -9293,6 +9315,7 @@
             "clear_prep": "の中に",
             "display_name": "コキリの森",
             "short_name": "コキリの森",
+            "shorter_name": "コキリ",
             "gender": "no_gender"
         },
         "LAKE_HYLIA": {
@@ -9300,6 +9323,7 @@
             "clear_prep": "に",
             "display_name": "ハイリア湖畔",
             "short_name": "湖畔",
+            "shorter_name": "湖",
             "gender": "no_gender"
         },
         "LON_LON_RANCH": {
@@ -9307,6 +9331,7 @@
             "clear_prep": "に",
             "display_name": "ロンロン牧場",
             "short_name": "牧場",
+            "shorter_name": "牧場",
             "gender": "no_gender"
         },
         "LOST_WOODS": {
@@ -9314,6 +9339,7 @@
             "clear_prep": "の中に",
             "display_name": "迷いの森",
             "short_name": "迷いの森",
+            "shorter_name": "迷森",
             "gender": "no_gender"
         },
         "MARKET": {
@@ -9321,6 +9347,7 @@
             "clear_prep": "の中に",
             "display_name": "城下町",
             "short_name": "城下町",
+            "shorter_name": "城下町",
             "gender": "no_gender"
         },
         "OUTSIDE_GANONS_CASTLE": {
@@ -9328,6 +9355,7 @@
             "clear_prep": null,
             "display_name": "ガノン城の外",
             "short_name": "ガノン城外",
+            "shorter_name": "ガノン城外",
             "gender": "no_gender"
         },
         "ROOT": {
@@ -9335,6 +9363,7 @@
             "clear_prep": "の中に",
             "display_name": "リンクのポケット",
             "short_name": "ポケット",
+            "shorter_name": "手持ち",
             "gender": "no_gender"
         },
         "SACRED_FOREST_MEADOW": {
@@ -9342,6 +9371,7 @@
             "clear_prep": "に",
             "display_name": "森の聖域",
             "short_name": "森の聖域",
+            "shorter_name": "聖域",
             "gender": "no_gender"
         },
         "SHADOW_TEMPLE": {
@@ -9349,6 +9379,7 @@
             "clear_prep": "の中に",
             "display_name": "闇の神殿",
             "short_name": "闇の神殿",
+            "shorter_name": "闇",
             "gender": "no_gender"
         },
         "SPIRIT_TEMPLE": {
@@ -9356,6 +9387,7 @@
             "clear_prep": "の中に",
             "display_name": "魂の神殿",
             "short_name": "魂の神殿",
+            "shorter_name": "魂",
             "gender": "no_gender"
         },
         "TEMPLE_OF_TIME": {
@@ -9363,6 +9395,7 @@
             "clear_prep": "の中に",
             "display_name": "時の神殿",
             "short_name": "時の神殿",
+            "shorter_name": "時",
             "gender": "no_gender"
         },
         "THIEVES_HIDEOUT": {
@@ -9370,6 +9403,7 @@
             "clear_prep": "の中に",
             "display_name": "盗賊の隠れ家",
             "short_name": "盗賊の隠れ家",
+            "shorter_name": "盗賊",
             "gender": "no_gender"
         },
         "WATER_TEMPLE": {
@@ -9377,6 +9411,7 @@
             "clear_prep": "の中に",
             "display_name": "水の神殿",
             "short_name": "水の神殿",
+            "shorter_name": "水",
             "gender": "no_gender"
         },
         "ZORAS_DOMAIN": {
@@ -9384,6 +9419,7 @@
             "clear_prep": "に",
             "display_name": "ゾーラの里",
             "short_name": "ゾーラの里",
+            "shorter_name": "里",
             "gender": "no_gender"
         },
         "ZORAS_FOUNTAIN": {
@@ -9391,6 +9427,7 @@
             "clear_prep": "に",
             "display_name": "ゾーラの泉",
             "short_name": "ゾーラの泉",
+            "shorter_name": "泉",
             "gender": "no_gender"
         },
         "ZORA_RIVER": {
@@ -9398,6 +9435,7 @@
             "clear_prep": "に",
             "display_name": "ゾーラ川",
             "short_name": "ゾーラ川",
+            "shorter_name": "川",
             "gender": "no_gender"
         }
     },
