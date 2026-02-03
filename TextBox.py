@@ -96,6 +96,13 @@ def line_wrap(text: str, lang: str, strip_existing_lines: bool = False, strip_ex
         # Group the text codes into words.
         index = 0
         align_box = align
+        line_break = [0x0A, 0x01][lang_index]
+        box_break  = [0x81A5, 0x04][lang_index]
+        space_code = [0x8170, 0x20][lang_index]
+
+        break_any  = (line_break, box_break, space_code)
+        break_word = (line_break, box_break)
+
         while index < len(box_codes):
             text_code = box_codes[index]
             index += 1
@@ -116,16 +123,24 @@ def line_wrap(text: str, lang: str, strip_existing_lines: bool = False, strip_ex
                 index = 0
 
             # Find us a whole word.
-            if text_code.code in [[0x0A, 0x81A5, 0x8170],[0x01, 0x04, 0x20]][lang_index]:
+            if text_code.code in break_any:
                 if index > 1:
                     words.append(calculate_align(box_codes[:index - 1], lang_index, line_width, align_box))
-                if text_code.code in [[0x0A, 0x81A5],[0x01, 0x04]][lang_index]:
+                if text_code.code in break_word:
                     # If we have run into a line or box break, add it as a "word" as well.
-                    words.append([box_codes[index - 1]])
+                    words.append([text_code])
                 box_codes = box_codes[index:]
-                if text_code.code == 0x81A5:
+                if text_code.code == box_break:
                     align_box = align
                 index = 0
+                continue
+
+            if not lang_index and calculate_width([box_codes[:index - 1]], lang_index) >= line_width:
+                words.append(calculate_align(box_codes[:index], lang_index, line_width, align_box))
+                box_codes = box_codes[index:]
+                index = 0
+                continue
+
             if index > 0 and index == len(box_codes):
                 words.append(calculate_align(box_codes, lang_index, line_width, align_box))
                 box_codes = []

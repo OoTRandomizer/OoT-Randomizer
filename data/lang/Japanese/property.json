@@ -5177,7 +5177,7 @@
         "Gerudo Training Ground MQ Underwater Silver Rupee Chest": {
             "vague_hint": [
                 "#沈んだ銀ルピー#を得た者は",
-                "#水中の銀を集める者は"
+                "#水中の銀#を集める者は"
             ],
             "clear_hint": null,
             "gender": null
@@ -5225,7 +5225,7 @@
         "Gerudo Training Ground Underwater Silver Rupee Chest": {
             "vague_hint": [
                 "#沈んだ銀ルピー#を得た者は",
-                "#水中の銀を集める者は"
+                "#水中の銀#を集める者は"
             ],
             "clear_hint": null,
             "gender": null
