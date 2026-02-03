@@ -3,6 +3,7 @@
         "aliases": [
             "easy"
         ],
+        "language": "English",
         "show_seed_info": true,
         "user_message": "Easy Mode",
         "world_count": 1,
@@ -207,6 +208,7 @@
             "s9",
             "tournament"
         ],
+        "language": "English",
         "show_seed_info": true,
         "user_message": "S9 Tournament",
         "world_count": 1,
@@ -432,6 +434,7 @@
             "Standard Weekly (Latest)",
             "weekly"
         ],
+        "language": "English",
         "show_seed_info": true,
         "user_message": "Standard Weekly (2025-09-13)",
         "world_count": 1,
@@ -654,6 +657,7 @@
             "ddr",
             "ddrweekly"
         ],
+        "language": "English",
         "show_seed_info": true,
         "user_message": "DDR Season 2",
         "world_count": 1,
@@ -877,6 +881,7 @@
         "aliases": [
             "scrub"
         ],
+        "language": "English",
         "show_seed_info": true,
         "user_message": "Scrub Tournament",
         "world_count": 1,
@@ -1112,6 +1117,7 @@
             "mw",
             "mw_s5"
         ],
+        "language": "English",
         "show_seed_info": true,
         "user_message": "Multiworld Tournament Season 5",
         "world_count": 3,
@@ -1335,6 +1341,7 @@
             "sgl",
             "sgl2025"
         ],
+        "language": "English",
         "show_seed_info": true,
         "user_message": "SGL 2025 Tournament",
         "world_count": 1,
@@ -1567,6 +1574,7 @@
         "aliases": [
             "hell"
         ],
+        "language": "English",
         "show_seed_info": true,
         "user_message": "Hell Mode",
         "world_count": 1,
@@ -1968,6 +1976,7 @@
         "aliases": [
             "bingo"
         ],
+        "language": "English",
         "show_seed_info": true,
         "user_message": "Bingo",
         "world_count": 1,
@@ -2172,6 +2181,7 @@
             "league",
             "league_s9"
         ],
+        "language": "English",
         "show_seed_info": true,
         "user_message": "OoTR League S9",
         "world_count": 1,
@@ -2400,6 +2410,7 @@
             "co-op_s3",
             "coop"
         ],
+        "language": "English",
         "show_seed_info": true,
         "user_message": "Co-Op Tournament Season 3",
         "world_count": 1,
@@ -2623,6 +2634,7 @@
             "no_logic",
             "nl"
         ],
+        "language": "English",
         "show_seed_info": true,
         "user_message": "No Logic Weekly",
         "world_count": 1,
@@ -2828,6 +2840,7 @@
             "advanced",
             "glitched"
         ],
+        "language": "English",
         "show_seed_info": true,
         "user_message": "Glitch Logic Advanced Base",
         "world_count": 1,
