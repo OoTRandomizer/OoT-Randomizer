@@ -1261,20 +1261,19 @@ def update_warp_song_text(messages: list[Message], world: World) -> None:
         0x4004: 'LH Owl Flight -> Hyrule Field',
     }
 
-    if world.settings.owl_drops:
-        for id, entr in msg_list.items():
-            if 'warp_songs_and_owls' in world.settings.misc_hints or not world.settings.warp_songs:
-                destination = world.get_entrance(entr).connected_region
-                destination_name = HintArea.at(destination)
-                color = COLOR_MAP[destination_name.color][lang_num]
-                if destination_name.preposition(lang, True) is not None:
-                    destination_name = lang.format_from_id("PATCH_TEXTS.warp_to", {"destination_name": destination_name})
-            else:
-                destination_name = lang.PATCH_TEXTS["warp_mysterious"]
-                color = COLOR_MAP['White'][lang_num]
+    for id, entr in msg_list.items():
+        if 'warp_songs_and_owls' in world.settings.misc_hints or not world.settings.warp_songs:
+            destination = world.get_entrance(entr).connected_region
+            destination_name = HintArea.at(destination)
+            color = COLOR_MAP[destination_name.color][lang_num]
+            if destination_name.preposition(lang, True) is not None:
+                destination_name = lang.format_from_id("PATCH_TEXTS.warp_to", {"destination_name": destination_name.display_name(lang)})
+        else:
+            destination_name = lang.PATCH_TEXTS["warp_mysterious"]
+            color = COLOR_MAP['White'][lang_num]
 
-            new_msg = lang.format_from_id("PATCH_TEXTS.warp_msg", {"destination_name": destination_name, "color": color})
-            update_message_by_id(messages, id, new_msg, world.language)
+        new_msg = lang.format_from_id("PATCH_TEXTS.warp_msg", {"destination_name": destination_name, "color": color})
+        update_message_by_id(messages, id, new_msg, world.language)
 
     if world.settings.owl_drops:
         for id, entr in owl_messages.items():
@@ -1283,7 +1282,7 @@ def update_warp_song_text(messages: list[Message], world: World) -> None:
                 destination_name = HintArea.at(destination)
                 color = COLOR_MAP[destination_name.color][lang_num]
                 if destination_name.preposition(lang, True) is not None:
-                    destination_name = lang.format_from_id("PATCH_TEXTS.warp_to", {"destination_name": destination_name})
+                    destination_name = lang.format_from_id("PATCH_TEXTS.warp_to", {"destination_name": destination_name.display_name(lang)})
             else:
                 destination_name = lang.PATCH_TEXTS["warp_mysterious"]
                 color = COLOR_MAP['White'][lang_num]

@@ -537,6 +537,10 @@ class HintArea(Enum):
     def short_name(self, lang: Language) -> str:
         return lang.hint_area_enum[self.name]['short_name']
 
+    # This call is for replacing __str__ function
+    def display_name(self, lang: Language) -> str:
+        return lang.hint_area_enum[self.name]['display_name']
+
     # Hint areas are further grouped into colored sections of the map by association with the medallions.
     # These colors are used to generate the text boxes for shuffled warp songs.
     @property
