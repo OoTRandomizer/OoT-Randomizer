@@ -211,31 +211,38 @@ class TestPlandomizer(unittest.TestCase):
             self.assertNotEqual(excess_item, test_item)
         self.assertNotIn(excess_item, spoiler['item_pool'])
 
+    def test_line_wrap_japanese(self):
+        import TextBox
+
+        TextBox.line_wrap('やあ！今タルミナから留学中なんだ。^東の時計台町は英雄の道だって言うよ。', 'jp', align='Center') # Should not crash
+
     def test_rom_patching(self):
         # This makes sure there are no crashes while patching.
         if not os.path.isfile('./ZOOTDEC.z64'):
             self.skipTest("Base ROM file not available.")
         filename = "plando-ammo-max-out-of-bounds"
+        language_settings = ['English', 'Japanese']
         logic_rules_settings = ['glitchless', 'advanced', 'none']
-        for logic_rules_setting in logic_rules_settings:
-            with self.subTest(f"Logic Rules: {logic_rules_setting}"):
-                settings = Settings({
-                    'language': 'English',
-                    'enable_distribution_file': True,
-                    'distribution_file': os.path.join(test_dir, 'plando', filename + '.json'),
-                    'patch_without_output': True,
-                    'create_patch_file': False,
-                    'create_compressed_rom': False,
-                    'create_wad_file': False,
-                    'create_uncompressed_rom': False,
-                    'count': 1,
-                    'create_spoiler': True,
-                    'create_cosmetics_log': False,
-                    'output_file': os.path.join(test_dir, 'Output', filename),
-                    'seed': 'TESTTESTTEST',
-                    'logic_rules': logic_rules_setting
-                })
-                main(settings)  # Should not crash
+        for language_setting in language_settings:
+            for logic_rules_setting in logic_rules_settings:
+                with self.subTest(f"Language: {language_setting}, Logic Rules: {logic_rules_setting}"):
+                    settings = Settings({
+                        'language': language_setting,
+                        'enable_distribution_file': True,
+                        'distribution_file': os.path.join(test_dir, 'plando', filename + '.json'),
+                        'patch_without_output': True,
+                        'create_patch_file': False,
+                        'create_compressed_rom': False,
+                        'create_wad_file': False,
+                        'create_uncompressed_rom': False,
+                        'count': 1,
+                        'create_spoiler': True,
+                        'create_cosmetics_log': False,
+                        'output_file': os.path.join(test_dir, 'Output', filename),
+                        'seed': 'TESTTESTTEST',
+                        'logic_rules': logic_rules_setting
+                    })
+                    main(settings)  # Should not crash
 
     def test_ice_traps(self):
         filenames = [
