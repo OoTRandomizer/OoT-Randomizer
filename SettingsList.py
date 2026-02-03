@@ -2656,8 +2656,8 @@ class SettingInfos:
         shared         = True,
     )
 
-    shuffle_mapcompass = Combobox(
-        gui_text       = 'Maps & Compasses',
+    shuffle_map = Combobox(
+        gui_text       = 'Maps',
         default        = 'dungeon',
         choices        = {
             'remove':      'Remove',
@@ -2670,36 +2670,83 @@ class SettingInfos:
             'keysanity':   'Anywhere',
         },
         gui_tooltip    = '''\
-            'Remove': Maps and Compasses are removed.
+            'Remove': Maps are removed.
             This will add a small amount of money and refill items to the pool.
 
-            'Start With': Maps and Compasses are given to you from the start.
+            'Start With': Maps are given to you from the start.
             This will add a small amount of money and refill items to the pool.
 
-            'Vanilla': Maps and Compasses will appear in their vanilla locations.
+            'Vanilla': Maps will appear in their vanilla locations.
 
-            'Own Dungeon': Maps and Compasses can only appear in their respective
-            dungeon.
+            'Own Dungeon': Maps can only appear in their respective dungeon.
 
-            'Regional': Maps and Compasses can only appear in regions near the
+            'Regional': Maps can only appear in regions near the
             original dungeon (including the dungeon itself or other dungeons in
             the region). <a href="https://wiki.ootrandomizer.com/index.php?title=Hints#Hint_Regions" target="_blank">The Wiki has a list of corresponding regions here.</a>
 
-            'Overworld Only': Maps and Compasses can only appear
-            outside of dungeons.
+            'Overworld Only': Maps can only appear outside of dungeons.
 
-            'Any Dungeon': Maps and Compasses can only appear in a dungeon, but
+            'Any Dungeon': Maps can only appear in a dungeon, but
             not necessarily the dungeon they are for.
 
-            'Anywhere': Maps and Compasses can appear anywhere in the world.
+            'Anywhere': Maps can appear anywhere in the world.
 
-            Setting 'Remove', 'Start With', 'Overworld', or 'Anywhere' will add 2
-            more possible locations to each Dungeons. This makes dungeons more
+            Setting 'Remove', 'Start With', 'Overworld', or 'Anywhere' will add 1
+            more possible location to each Dungeon. This makes dungeons more
             profitable, especially Ice Cavern, Water Temple, and Jabu Jabu's Belly.
 
-            Regardless of the selected option, maps and compasses from pre-completed
-            dungeons won't be placed outside their respective dungeons and maps and
-            compasses from other dungeons won't be placed inside pre-completed dungeons.
+            Regardless of the selected option, maps from pre-completed
+            dungeons won't be placed outside their respective dungeons and maps
+            from other dungeons won't be placed inside pre-completed dungeons.
+        ''',
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    )
+
+    shuffle_compass = Combobox(
+        gui_text       = 'Compasses',
+        default        = 'dungeon',
+        choices        = {
+            'remove':      'Remove',
+            'startwith':   'Start With',
+            'vanilla':     'Vanilla Locations',
+            'dungeon':     'Own Dungeon',
+            'regional':    'Regional',
+            'overworld':   'Overworld Only',
+            'any_dungeon': 'Any Dungeon',
+            'keysanity':   'Anywhere',
+        },
+        gui_tooltip    = '''\
+                'Remove': Compasses are removed.
+                This will add a small amount of money and refill items to the pool.
+
+                'Start With': Compasses are given to you from the start.
+                This will add a small amount of money and refill items to the pool.
+
+                'Vanilla': Compasses will appear in their vanilla locations.
+
+                'Own Dungeon': Compasses can only appear in their respective dungeon.
+
+                'Regional': Compasses can only appear in regions near the
+                original dungeon (including the dungeon itself or other dungeons in
+                the region). <a href="https://wiki.ootrandomizer.com/index.php?title=Hints#Hint_Regions" target="_blank">The Wiki has a list of corresponding regions here.</a>
+
+                'Overworld Only': Compasses can only appear outside of dungeons.
+
+                'Any Dungeon': Compasses can only appear in a dungeon, but
+                not necessarily the dungeon they are for.
+
+                'Anywhere': Compasses can appear anywhere in the world.
+
+                Setting 'Remove', 'Start With', 'Overworld', or 'Anywhere' will add 1
+                more possible location to each Dungeon. This makes dungeons more
+                profitable, especially Ice Cavern, Water Temple, and Jabu Jabu's Belly.
+
+                Regardless of the selected option, compasses from pre-completed
+                dungeons won't be placed outside their respective dungeons and
+                compasses from other dungeons won't be placed inside pre-completed dungeons.
         ''',
         shared         = True,
         gui_params     = {

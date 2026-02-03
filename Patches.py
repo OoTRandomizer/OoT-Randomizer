@@ -1015,10 +1015,12 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.write_int16s(0x21BD62C, new_gate_opening_guard)  # Adult Night
 
     # start with maps/compasses
-    if world.settings.shuffle_mapcompass == 'startwith':
+    if world.settings.shuffle_map == 'startwith':
+        for dungeon in ('deku', 'dodongo', 'jabu', 'forest', 'fire', 'water', 'spirit', 'shadow', 'botw', 'ice'):
+            save_context.addresses['dungeon_items'][dungeon]['map'].value = True
+    if world.settings.shuffle_compass == 'startwith':
         for dungeon in ('deku', 'dodongo', 'jabu', 'forest', 'fire', 'water', 'spirit', 'shadow', 'botw', 'ice'):
             save_context.addresses['dungeon_items'][dungeon]['compass'].value = True
-            save_context.addresses['dungeon_items'][dungeon]['map'].value = True
 
     # start with silver rupees
     if world.settings.shuffle_silver_rupees == 'remove':

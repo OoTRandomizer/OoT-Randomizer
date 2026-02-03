@@ -18,7 +18,8 @@
           "Shadow Temple",
           "Spirit Temple"
         ],
-        "shuffle_mapcompass":                      "any_dungeon",
+        "shuffle_map":                             "any_dungeon",
+        "shuffle_compass":                         "any_dungeon",
         "shuffle_smallkeys":                       "any_dungeon",
         "shuffle_bosskeys":                        "any_dungeon"
     }

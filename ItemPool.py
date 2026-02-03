@@ -867,10 +867,16 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                     dungeon_collection = dungeon.boss_key
                     if shuffle_setting == 'vanilla':
                         shuffle_item = False
-            # Map or Compass
-            elif location.vanilla_item in (dungeon.item_name("Map"), dungeon.item_name("Compass")):
-                shuffle_setting = world.settings.shuffle_mapcompass
-                dungeon_collection = dungeon.dungeon_items
+            # Map
+            elif location.vanilla_item == dungeon.item_name("Map"):
+                shuffle_setting = world.settings.shuffle_map
+                dungeon_collection = dungeon.maps
+                if shuffle_setting == 'vanilla':
+                    shuffle_item = False
+            # Compass
+            elif location.vanilla_item == dungeon.item_name("Compass"):
+                shuffle_setting = world.settings.shuffle_compass
+                dungeon_collection = dungeon.compasses
                 if shuffle_setting == 'vanilla':
                     shuffle_item = False
             # Small Key

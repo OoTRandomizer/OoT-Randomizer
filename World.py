@@ -244,7 +244,7 @@ class World:
 
         self.always_hints: list[str] = [hint.name for hint in get_required_hints(self)]
 
-        self.dungeon_rewards_hinted: bool = settings.shuffle_mapcompass != 'remove' if 'compass_reward' in settings.enhance_map_compass else 'altar' in settings.misc_hints
+        self.dungeon_rewards_hinted: bool = settings.shuffle_compass != 'remove' if 'compass_reward' in settings.enhance_map_compass else 'altar' in settings.misc_hints
         self.misc_hint_items: dict[str, str] = {hint_type: self.hint_dist_user.get('misc_hint_items', {}).get(hint_type, data['default_item']) for hint_type, data in misc_item_hint_table.items()}
         self.misc_hint_locations: dict[str, str] = {hint_type: self.hint_dist_user.get('misc_hint_locations', {}).get(hint_type, data['item_location']) for hint_type, data in misc_location_hint_table.items()}
         self.state: State = State(self)
@@ -668,9 +668,12 @@ class World:
             for item in dungeon_items:
                 shuffle_setting = None
                 dungeon_collection = None
-                if item.map or item.compass:
-                    dungeon_collection = dungeon.dungeon_items
-                    shuffle_setting = self.settings.shuffle_mapcompass
+                if item.map:
+                    dungeon_collection = dungeon.maps
+                    shuffle_setting = self.settings.shuffle_map
+                elif item.compass:
+                    dungeon_collection = dungeon.compasses
+                    shuffle_setting = self.settings.shuffle_compass
                 elif item.smallkey:
                     dungeon_collection = dungeon.small_keys
                     shuffle_setting = self.settings.shuffle_smallkeys
@@ -1361,7 +1364,7 @@ class World:
             # These silver rupees unlock a door to an area that's also reachable with lens
             exclude_item_list.append('Silver Rupee (Bottom of the Well Basement)')
             exclude_item_list.append('Silver Rupee Pouch (Bottom of the Well Basement)')
-        if self.dungeon_mq['Shadow Temple'] and self.settings.shuffle_mapcompass == 'vanilla':
+        if self.dungeon_mq['Shadow Temple'] and self.settings.shuffle_map == 'vanilla':
             # These silver rupees only unlock the map chest
             exclude_item_list.append('Silver Rupee (Shadow Temple Scythe Shortcut)')
             exclude_item_list.append('Silver Rupee Pouch (Shadow Temple Scythe Shortcut)')

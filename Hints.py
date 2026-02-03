@@ -178,7 +178,8 @@ def is_restricted_dungeon_item(item: Item) -> bool:
     if item.world is None:
         return False
     return (
-        ((item.map or item.compass) and item.world.settings.shuffle_mapcompass == 'dungeon') or
+        (item.map and item.world.settings.shuffle_map == 'dungeon') or
+        (item.compass and item.world.settings.shuffle_compass == 'dungeon') or
         (item.type in ('SmallKey', 'SmallKeyRing') and item.world.settings.shuffle_smallkeys == 'dungeon') or
         (item.type == 'BossKey' and item.world.settings.shuffle_bosskeys == 'dungeon') or
         (item.type == 'GanonBossKey' and item.world.settings.shuffle_ganon_bosskey == 'dungeon') or

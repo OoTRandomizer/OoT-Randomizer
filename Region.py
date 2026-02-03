@@ -111,7 +111,8 @@ class Region:
 
         if item.type in ('Map', 'Compass', 'SmallKey', 'HideoutSmallKey', 'TCGSmallKey', 'SmallKeyRing', 'HideoutSmallKeyRing', 'TCGSmallKeyRing', 'BossKey', 'GanonBossKey', 'SilverRupee', 'DungeonReward'):
             shuffle_setting = (
-                self.world.settings.shuffle_mapcompass if item.type in ('Map', 'Compass') else
+                self.world.settings.shuffle_map if item.type == 'Map' else
+                self.world.settings.shuffle_compass if item.type == 'Compass' else
                 self.world.settings.shuffle_smallkeys if item.type in ('SmallKey', 'SmallKeyRing') else
                 self.world.settings.shuffle_hideoutkeys if item.type in ('HideoutSmallKey', 'HideoutSmallKeyRing') else
                 self.world.settings.shuffle_tcgkeys if item.type in ('TCGSmallKey', 'TCGSmallKeyRing') else
