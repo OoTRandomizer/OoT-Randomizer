@@ -5,6 +5,7 @@
 * The `Free Reward from Rauru` has a new `Yes (Forced)` option which forces the check to be a dungeon reward even if these are otherwise shuffled.
 * The `Maps & Compasses` shuffle setting has been split into separate `Maps` and `Compasses` settings.
 * The Farore's Wind text box now distinguishes between Ganon's Castle and Ganon's Tower.
+* New `Water Hop` trick added to advanced logic.
 
 ## Bug fixes
 * Fix a potential softlock when talking to Pierre (the upper scarecrow) as child in Lake Hylia.
