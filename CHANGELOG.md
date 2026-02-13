@@ -6,6 +6,7 @@
 * The `Maps & Compasses` shuffle setting has been split into separate `Maps` and `Compasses` settings.
 * The Farore's Wind text box now distinguishes between Ganon's Castle and Ganon's Tower.
 * New `Water Hop` trick added to advanced logic.
+* Improve Debug menu with new options.
 
 ## Bug fixes
 * Fix a potential softlock when talking to Pierre (the upper scarecrow) as child in Lake Hylia.

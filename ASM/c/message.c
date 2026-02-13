@@ -1,5 +1,4 @@
 #include "message.h"
-#include "z64.h"
 #include "stdbool.h"
 #include "save.h"
 #include "dungeon_info.h"
@@ -26,7 +25,7 @@ char FILENAME_ENCODING[256] = {
 
 extern uint8_t PLAYER_NAMES[256][8];
 extern uint8_t PLAYER_NAME_ID;
-
+uint16_t current_textbox_id;
 // Helper function for adding characters to the decoded message buffer
 void Message_AddCharacter(MessageContext* msgCtx, void* pFont, uint32_t* pDecodedBufPos, uint32_t* pCharTexIdx, uint8_t charToAdd) {
     uint32_t decodedBufPosVal = *pDecodedBufPos;
@@ -217,6 +216,14 @@ bool Message_Decode_Additional_Control_Codes(uint8_t currChar, uint32_t* pDecode
             return false;
         }
     }
+}
+
+void grab_textbox_id(z64_game_t* play, uint16_t textId)
+{
+    // Displaced code
+    Message_OpenText(play, textId);
+
+    current_textbox_id = textId;
 }
 
 uint8_t shooting_gallery_show_message = 0;
