@@ -172,7 +172,8 @@ void draw_input_viewer(z64_disp_buf_t* db) {
 }
 
 uint8_t is_hook_static() {
-    if (z64_game.common.input[0].raw.pad.a || z64_game.common.input[0].raw.x != 0 || z64_game.common.input[0].raw.y != 0) {
+    if (z64_game.common.input[0].raw.pad.a || z64_game.common.input[0].raw.pad.b ||
+        ABS(z64_game.common.input[0].raw.x) > 7 || ABS(z64_game.common.input[0].raw.y) > 7) {
         return 0;
     }
     return 1;

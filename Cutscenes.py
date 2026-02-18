@@ -230,6 +230,10 @@ def patch_cutscenes(rom: Rom, songs_as_items: bool, settings: Settings) -> None:
     patch_cutscene_length(rom, 0x1FC8550, 84) # West
     patch_cutscene_length(rom, 0x1FC8B30, 42) # Front gates
 
+    # Lakeside Professor preparing the frog before giving the eyedrops.
+    # Cut the 120 frames timer to 20 to let him cook.
+    rom.write_byte(0xE2C7F7, 0x14)
+
     # Speed learning Minuet of Forest
     if songs_as_items:
         delete_cutscene(rom, 0x020AFF80)
@@ -245,7 +249,7 @@ def patch_cutscenes(rom: Rom, songs_as_items: bool, settings: Settings) -> None:
         # Switch to player action 17 between frames 0 and 16.
         rom.write_int16s(0x020AFF90, [0x0011, 0x0000, 0x0010])  # action, start, end
         # Switch to player action 62 between frames 17 and 32.
-        rom.write_int16s(0x020AFFC1, [0x003E, 0x0011, 0x0020])  # action, start, end
+        rom.write_int16s(0x020AFFC0, [0x003E, 0x0011, 0x0020])  # action, start, end
 
     # Speed Phantom Ganon defeat scene
     # Removes the check for timers to switch between the different parts of the cutscene.
@@ -259,6 +263,10 @@ def patch_cutscenes(rom: Rom, songs_as_items: bool, settings: Settings) -> None:
     rom.write_int32(0xC945A8, 0x00000000)
     # Last part is 250 frames.
     rom.write_int32(0xC94594, 0x00000000)
+
+    # Speed scene after Forest Temple
+    # Blue warp brings us to right before Deku Sprout cutscene number 3.
+    delete_cutscene(rom, 0x207B9D0)
 
     # Speed learning Prelude of Light
     if songs_as_items:
@@ -387,7 +395,7 @@ def patch_cutscenes(rom: Rom, songs_as_items: bool, settings: Settings) -> None:
     # Make the current miniboss music end on second frame.
     rom.write_bytes(0x2F5C7DA, [0x00, 0x01, 0x00, 0x02])
     # Restart dungeon music on third frame.
-    rom.write_bytes(0x2F5C7A4, [0x00, 0x03, 0x00, 0x04])
+    rom.write_bytes(0x2F5C7A2, [0x00, 0x03, 0x00, 0x04])
     # Kill the actors in the cutscene on the first frame by switching their first action by the last.
     # Nabooru
     rom.write_byte(0x2F5B369, 0x09)
@@ -421,7 +429,7 @@ def patch_cutscenes(rom: Rom, songs_as_items: bool, settings: Settings) -> None:
     rom.write_bytes(0x292D682, [0x00, 0x01, 0x00, 0x6C])
     # Make Link look up to the particles by changing the type of first player cue from 5 to 39.
     rom.write_byte(0x292D6E9, 0x27)
-    # Make Link look at the bridge by changing the type of second player cue from 39 to 59.
+    # Make Link look at the bridge by changing the type of second player cue from 39 to 50.
     rom.write_byte(0x292D719, 0x32)
     # Make the rainbow bridge spawn on frame 60.
     rom.write_int16(0x292D812, 0x003C)

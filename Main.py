@@ -25,7 +25,7 @@ from Patches import patch_rom
 from Rom import Rom
 from Rules import set_rules, set_shop_rules
 from Settings import Settings
-from SettingsList import logic_tricks
+from SettingsList import logic_tricks, advanced_logic_tricks
 from Spoiler import Spoiler
 from Utils import default_output_path, is_bundled, run_process, data_path
 from World import World
@@ -63,15 +63,20 @@ def resolve_settings(settings: Settings) -> Optional[Rom]:
     logger = logging.getLogger('')
 
     old_tricks = settings.allowed_tricks
+    old_advanced_tricks = settings.advanced_allowed_tricks
     settings.load_distribution()
 
     # compare pointers to lists rather than contents, so even if the two are identical
     # we'll still log the error and note the dist file overrides completely.
-    if old_tricks and old_tricks is not settings.allowed_tricks:
+    if old_tricks and (old_tricks is not settings.allowed_tricks
+                    or old_advanced_tricks is not settings.advanced_allowed_tricks):
         logger.error('Tricks are set in two places! Using only the tricks from the distribution file.')
 
     for trick in logic_tricks.values():
         settings.settings_dict[trick['name']] = trick['name'] in settings.allowed_tricks
+
+    for trick in advanced_logic_tricks.values():
+        settings.settings_dict[trick['name']] = trick['name'] in settings.advanced_allowed_tricks
 
     # we load the rom before creating the seed so that errors get caught early
     outputting_specific_world = settings.create_uncompressed_rom or settings.create_compressed_rom or settings.create_wad_file
@@ -132,7 +137,7 @@ def build_world_graphs(settings: Settings) -> list[World]:
         logger.info('Creating Overworld')
 
         # Load common json rule files (those used regardless of MQ status)
-        if settings.logic_rules == 'glitched':
+        if settings.logic_rules == 'advanced':
             path = 'Glitched World'
         else:
             path = 'World'
@@ -159,14 +164,16 @@ def build_world_graphs(settings: Settings) -> list[World]:
         if world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward'):
             world.fill_bosses()
 
-        if settings.empty_dungeons_mode == 'rewards':
-            world.set_empty_dungeon_rewards(settings.empty_dungeons_rewards)
-
     if settings.triforce_hunt:
         settings.distribution.configure_triforce_hunt(worlds)
 
     logger.info('Setting Entrances.')
     set_entrances(worlds, savewarps_to_connect)
+
+    for world in worlds:
+        if world.settings.empty_dungeons_mode == 'rewards':
+            world.set_empty_dungeon_rewards(world.settings.empty_dungeons_rewards)
+
     return worlds
 
 
@@ -233,10 +240,7 @@ def compress_rom(input_file: str, output_file: str, delete_input: bool = False) 
         else:
             compressor_path += "Compress"
     elif platform.system() == 'Darwin':
-        if platform.machine() == 'arm64':
-            compressor_path += "Compress_ARM64.out"
-        else:
-            compressor_path += "Compress.out"
+        compressor_path += "Compress.out"
     else:
         logger.info("OS not supported for ROM compression.")
         raise Exception("This operating system does not support ROM compression. You may only output patch files or uncompressed ROMs.")
@@ -253,8 +257,49 @@ def generate_wad(wad_file: str, rom_file: str, output_file: str, channel_title: 
     if not os.path.isfile(wad_file):
         raise Exception("Cannot open base WAD file.")
 
+    try:
+        with open(wad_file, 'rb') as wad_stream:
+            wad_buffer = bytearray(wad_stream.read(0xFC0))
+    except FileNotFoundError as ex:
+            raise FileNotFoundError(f'Invalid path to Base WAD: "{input_file}"')
+
+    wad_app1_sha1_usa = [
+        [0x76, 0x3D, 0x4D, 0x3D, 0x07, 0x13, 0xE4, 0xD1, 0x0E, 0x44, 0x54, 0x0C, 0xCF, 0xA3, 0x25, 0x5E, 0x19, 0xF2, 0x8A, 0xF7], # US Wad App1
+    ]
+
+    wad_app1_sha1_jpn = [
+        [0x47, 0x54, 0x6E, 0x48, 0x46, 0x7A, 0xE1, 0x4D, 0x71, 0x2B, 0x8C, 0x20, 0x7E, 0x91, 0x18, 0x21, 0x58, 0x6D, 0x10, 0x43], # JP Wad App1
+    ]
+
+    wad_app5_sha1_usa = [
+        [0x7C, 0x94, 0x77, 0x69, 0x68, 0xA7, 0xE1, 0xF5, 0xFD, 0x5D, 0xC5, 0xE2, 0xB6, 0xF8, 0x32, 0xEE, 0xF4, 0x55, 0x35, 0xA0], # US Wad App5
+    ]
+
+    wad_app5_sha1_jpn = [
+        [0xD1, 0x4D, 0xEF, 0x1E, 0xCE, 0xB0, 0x6D, 0xE2, 0x05, 0xA3, 0x53, 0xC4, 0xB5, 0x66, 0xFD, 0x55, 0x9C, 0x25, 0x4F, 0x1F], # JP Wad App5
+    ]
+
+    wad_patch_name = ""
+    wad_app1_sha1 = list(wad_buffer[0xF18:0xF2C])
+    wad_app5_sha1 = list(wad_buffer[0xFA8:0xFBC])
+
+    is_usa_app1 = wad_app1_sha1 in wad_app1_sha1_usa
+    is_usa_app5 = wad_app5_sha1 in wad_app5_sha1_usa
+    is_jpn_app1 = wad_app1_sha1 in wad_app1_sha1_jpn
+    is_jpn_app5 = wad_app5_sha1 in wad_app5_sha1_jpn
+
+    is_usa_wad = is_usa_app1 and is_usa_app5
+    is_jpn_wad = is_jpn_app1 and is_jpn_app5
+
+    if is_usa_wad:
+        wad_patch_name = "ootr_usa.gzi"
+    elif is_jpn_wad:
+        wad_patch_name = "ootr_jpn.gzi"
+    else:
+        raise RuntimeError('Base WAD file is not a valid OoT USA or JPN wad.')
+
     gzinject_path = "./" if is_bundled() else "bin/gzinject/"
-    gzinject_patch_path = gzinject_path + "ootr.gzi"
+    gzinject_patch_path = gzinject_path + wad_patch_name
     if platform.system() == 'Windows':
         if platform.machine() == 'AMD64':
             gzinject_path += "gzinject.exe"

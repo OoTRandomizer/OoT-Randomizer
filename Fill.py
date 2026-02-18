@@ -146,18 +146,27 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
 
     # If some dungeons are supposed to be empty, fill them with useless items.
     if worlds[0].settings.empty_dungeons_mode != 'none':
-        empty_locations = [location for location in fill_locations
-                           if location.world.empty_dungeons[HintArea.at(location).dungeon_name].empty]
+        empty_locations = [
+            location
+            for location in fill_locations
+            if location.world.precompleted_dungeons.get(HintArea.at(location).dungeon_name, False)
+        ]
         for location in empty_locations:
             fill_locations.remove(location)
 
-        if worlds[0].settings.shuffle_mapcompass in ['any_dungeon', 'overworld', 'keysanity', 'regional']:
+        # We need to check both settings now as they are separate and handle each case respectively.
+        non_empty_map_setting = worlds[0].settings.shuffle_map in ('any_dungeon', 'overworld', 'keysanity', 'regional')
+        non_empty_compass_setting = worlds[0].settings.shuffle_compass in ('any_dungeon', 'overworld', 'keysanity', 'regional')
+        if non_empty_map_setting or non_empty_compass_setting:
             # Non-empty dungeon items are present in restitempool but yet we
             # don't want to place them in an empty dungeon
             restdungeon, restother = [], []
             for item in restitempool:
                 if item.dungeonitem:
-                    restdungeon.append(item)
+                    if (not non_empty_map_setting and item.map) or (not non_empty_compass_setting and item.compass):
+                        restother.append(item)
+                    else:
+                        restdungeon.append(item)
                 else:
                     restother.append(item)
             fast_fill(empty_locations, restother)
@@ -268,7 +277,7 @@ def fill_dungeon_unique_item(worlds: list[World], search: Search, fill_locations
     minor_items = [item for item in itempool if not item.majoritem]
 
     if worlds[0].settings.empty_dungeons_mode != 'none':
-        dungeons = [dungeon for world in worlds for dungeon in world.dungeons if not world.empty_dungeons[dungeon.name].empty]
+        dungeons = [dungeon for world in worlds for dungeon in world.dungeons if not world.precompleted_dungeons.get(dungeon.name, False)]
     else:
         dungeons = [dungeon for world in worlds for dungeon in world.dungeons]
 

@@ -1,7 +1,8 @@
-CC = mips64-gcc
-LD = mips64-ld
-OBJDUMP = mips64-objdump
-OBJCOPY = mips64-objcopy
+MIPS_BINUTILS_PREFIX ?= mips64-
+CC = $(MIPS_BINUTILS_PREFIX)gcc
+LD = $(MIPS_BINUTILS_PREFIX)ld
+OBJDUMP = $(MIPS_BINUTILS_PREFIX)objdump
+OBJCOPY = $(MIPS_BINUTILS_PREFIX)objcopy
 
 CFLAGS = -O1 -G0 -fno-reorder-blocks -march=vr4300 -mtune=vr4300 -mabi=32 -mno-gpopt -mdivide-breaks \
 	-mexplicit-relocs

@@ -141,7 +141,8 @@ class Item:
                 (self.type in ('TCGSmallKey', 'TCGSmallKeyRing') and self.world.settings.shuffle_tcgkeys in ('remove', 'vanilla')) or
                 (self.type == 'BossKey' and self.world.settings.shuffle_bosskeys in ('remove', 'vanilla', 'dungeon')) or
                 (self.type == 'GanonBossKey' and self.world.settings.shuffle_ganon_bosskey in ('remove', 'vanilla', 'dungeon')) or
-                ((self.map or self.compass) and (self.world.settings.shuffle_mapcompass in ('remove', 'startwith', 'vanilla', 'dungeon'))) or
+                (self.map and (self.world.settings.shuffle_map in ('remove', 'startwith', 'vanilla', 'dungeon'))) or
+                (self.compass and (self.world.settings.shuffle_compass in ('remove', 'startwith', 'vanilla', 'dungeon'))) or
                 (self.type == 'SilverRupee' and self.world.settings.shuffle_silver_rupees in ('remove','vanilla','dungeon')) or
                 (self.type == 'DungeonReward' and self.world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward', 'dungeon')))
 

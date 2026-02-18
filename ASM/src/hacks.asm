@@ -2606,15 +2606,13 @@ skip_bombchu_bowling_prize_switch:
 ;==================================================================================================
 ; Trade Quest Shuffle Flag Hooks
 ;==================================================================================================
-; Control if Fado (blonde Kokiri girl) can spawn in Lost Woods
-.orga 0xE538C4
-    or      t3, $zero, $ra
-    jal     check_fado_spawn_flags
-.orga 0xE538D4
-    or      $ra, $zero, t3
-; Fix Fado's text id when trading in the odd potion out of order
-.orga 0xE535E4
-    sh      t2, 0x010E(s0)
+; Handle custom flags for trade item revert on savewarp
+; Replaces
+;   lbu     t4, 0x0000(t9)
+;   addu    t5, s0, t4
+.orga 0xB064E0 ; VRAM 0x80090580
+    jal     update_shiftable_trade_item_save_hook
+    nop
 
 ; Control if Grog can spawn in Lost Woods
 .orga 0xE20BC8
@@ -3618,16 +3616,10 @@ DemoEffect_DrawJewel_AfterHook:
     sh      t8, 0x0204(s0)
 
 ; Replaces: sw     t3, 0x0014($sp)
-            sw     t2, 0x0010($sp)
+;           sw     t2, 0x0010($sp)
 .orga 0xE94774
     jal     chestgame_initial_message
     sw      t3, 0x0014($sp)
-
-; Allow TCG chests to open separately
-; Skips this entire function func_80AC3A2C:
-.orga 0xE43874
-    jal     chestgame_open_chests_separately
-    or      a2, a0, $zero
 
 ; Skip instruction to reset TCG chest flags
 ; Replaces: sw     $zero, 0x1D38(t8)
@@ -3651,14 +3643,6 @@ DemoEffect_DrawJewel_AfterHook:
 ; Change GetItemID that TCG Salesman gives while title card is up
 .orga 0xE94C14
     addiu   a2, $zero, 0x0071   ; replaces 0x0042 (generic key) with 0x0071 (chest game key)
-
-; Skip instructions to open unopened chests in previous rooms.
-; Replaces: lh     t9, 0x0158(s0)
-;           lw     a0, 0x004C($sp)
-
-.orga 0xE437A8
-    jal     chestgame_delayed_chest_open
-    nop
 
 ; Show a key in the unopened chest regardless of chest
 ; contents if the tcg_requires_lens setting is enabled.
@@ -3764,12 +3748,6 @@ DemoEffect_DrawJewel_AfterHook:
 ;===================================================================================================
 .orga 0xDB32C8
     jal     blue_fire_arrows ; replaces addiu at, zero, 0x00F0
-
-;===================================================================================================
-; Give each cursed skulltula house resident a different text ID, for skulltula reward hints
-;===================================================================================================
-.orga 0xEA2664
-    addiu   t1, t1, 0x9003
 
 ;==================================================================================================
 ; Base Get Item Draw Override
@@ -4176,9 +4154,18 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/ovl_bg_gate_shutter.asm"
 .include "hacks/ovl_bg_haka_tubo.asm"
 .include "hacks/ovl_bg_spot18_basket.asm"
+.include "hacks/ovl_demo_kankyo.asm"
 .include "hacks/ovl_en_dns.asm"
+.include "hacks/ovl_en_ko.asm"
 .include "hacks/ovl_en_kz.asm"
 .include "hacks/ovl_obj_mure3.asm"
 .include "hacks/z_parameter.asm"
+.include "hacks/ovl_en_po_field.asm"
+.include "hacks/z_title.asm"
+.include "hacks/message.asm"
 .include "hacks/z_file_choose.asm"
+.include "hacks/ovl_en_changer.asm"
+.include "hacks/ovl_en_ssh.asm"
+.include "hacks/ovl_en_okarina_tag.asm"
+.include "hacks/sound.asm"
 .include "hacks/z_kaleido_scope.asm"

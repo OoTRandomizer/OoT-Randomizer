@@ -1,0 +1,89 @@
+name: Build
+on:
+  push:
+    branches: [ "Dev" ]
+  pull_request:
+    branches: [ "Dev" ]
+
+jobs:
+  test_assembly_build:
+    name: Build - Assembly
+    runs-on: ubuntu-latest
+    container:
+      image: practicerom/practicerom-dev
+    strategy:
+      matrix:
+        python-version: ["3.x"]
+
+    steps:
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install armips dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake g++
+      - name: Checkout armips
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          repository: Kingcom/armips
+          ref: master
+      - name: Build armips
+        run: mkdir build && cd build && cmake .. && cmake --build . --config Release && sudo mv armips /usr/local/bin/armips && cd ..
+      - uses: actions/checkout@v4
+      - name: Create fake base ROM
+        run: dd if=/dev/zero of=ASM/roms/base.z64 bs=64M count=1
+      - name: Run build scripts
+        run: python ASM/build.py --no-compile-c --mips-binutils-prefix mips64-ultra-elf-
+  test_C_build:
+    name: Build - C
+    runs-on: ubuntu-latest
+    container:
+      image: practicerom/practicerom-dev
+    strategy:
+      matrix:
+        python-version: [ "3.x" ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Create fake base ROM
+        run: dd if=/dev/zero of=ASM/roms/base.z64 bs=64M count=1
+      - name: Create fake patched ROM
+        run: dd if=/dev/zero of=ASM/roms/patched.z64 bs=64M count=1
+      - name: Run build scripts
+        run: python ASM/build.py --diff-only --mips-binutils-prefix mips64-ultra-elf-
+  test_full_build:
+    name: Build - Full
+    runs-on: ubuntu-latest
+    container:
+      image: practicerom/practicerom-dev
+    strategy:
+      matrix:
+        python-version: [ "3.x" ]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install armips dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake g++
+      - name: Checkout armips
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          repository: Kingcom/armips
+          ref: master
+      - name: Build armips
+        run: mkdir build && cd build && cmake .. && cmake --build . --config Release && sudo mv armips /usr/local/bin/armips && cd ..
+      - uses: actions/checkout@v4
+      - name: Create fake base ROM
+        run: dd if=/dev/zero of=ASM/roms/base.z64 bs=64M count=1
+      - name: Run build scripts
+        run: python ASM/build.py --mips-binutils-prefix mips64-ultra-elf-
+

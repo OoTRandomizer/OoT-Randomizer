@@ -148,12 +148,12 @@ class GoalCategory:
 
 def replace_goal_names(worlds: list[World]) -> None:
     for world in worlds:
-        if world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward'):
+        if world.hint_dist_user['boss_goal_names'] and world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward'):
             bosses = [
                 location
                 for location in world.get_filled_locations()
                 if location.type == 'Boss'
-                and (location.name != 'ToT Reward from Rauru' or not world.settings.skip_reward_from_rauru)
+                and (location.name != 'ToT Reward from Rauru' or world.settings.skip_reward_from_rauru == 'not_free')
             ]
             for category in world.goal_categories.values():
                 for goal in category.goals:

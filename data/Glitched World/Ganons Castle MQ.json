@@ -2,122 +2,308 @@
     {
         "region_name": "Ganons Castle Lobby",
         "exits": {
-            "Ganons Castle Grounds": "True",
-            "Ganons Castle Forest Trial": "True",
-            "Ganons Castle Fire Trial": "True",
+            "Castle Grounds From Ganons Castle": "True",
+            "Ganons Castle Main": "
+                has_soul(Armos) and has_soul(Bubble) and has_soul(Iron_Knuckle) and
+                here(is_adult or
+                    (Kokiri_Sword and (Sticks or has_explosives or Nuts or Boomerang)) or
+                    (has_explosives and (Sticks or ((Nuts or Boomerang) and Slingshot))) or
+                    (Sticks and Slingshot and (Nuts or Boomerang)))",
+            "Ganons Castle Tower": "can_use(Hookshot) and glitch_igc_trials_skip",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Main",
+        "dungeon": "Ganons Castle",
+        "savewarp": "Ganons Castle Ledge -> Ganons Castle Lobby",
+        "exits": {
+            "Ganons Castle Forest Trial": "here(is_adult or Kokiri_Sword)",
             "Ganons Castle Water Trial": "True",
             "Ganons Castle Shadow Trial": "True",
+            "Ganons Castle Fire Trial": "logic_fewer_tunic_requirements or can_use(Goron_Tunic)",
+            "Ganons Castle Light Trial": "can_use(Golden_Gauntlets) or
+                (is_adult and glitch_clipping and has_explosives and can_live_dmg(0.5,False))
+                or (glitch_clipping and can_superslide and Bombs)",
             "Ganons Castle Spirit Trial": "True",
-            "Ganons Castle Light Trial": "can_use(Golden_Gauntlets)",
-            "Ganons Castle Tower": "
+            "Ganons Castle Deku Scrubs": "logic_lens_castle_mq or can_use(Lens_of_Truth)",
+            "Ganons Castle Tower": "(glitch_igc_trials_skip and can_hover) or (
                 (skipped_trials[Forest] or 'Forest Trial Clear') and
                 (skipped_trials[Fire] or 'Fire Trial Clear') and
                 (skipped_trials[Water] or 'Water Trial Clear') and
                 (skipped_trials[Shadow] or 'Shadow Trial Clear') and
                 (skipped_trials[Spirit] or 'Spirit Trial Clear') and
-                (skipped_trials[Light] or 'Light Trial Clear')",
-            "Ganons Castle Deku Scrubs": "logic_lens_castle_mq or can_use(Lens_of_Truth)"
-        }
-    },
-    {
-        "region_name": "Ganons Castle Deku Scrubs",
-        "locations": {
-            "Ganons Castle MQ Deku Scrub Center-Left": "True",
-            "Ganons Castle MQ Deku Scrub Center": "True",
-            "Ganons Castle MQ Deku Scrub Center-Right": "True",
-            "Ganons Castle MQ Deku Scrub Left": "True",
-            "Ganons Castle MQ Deku Scrub Right": "True"
+                (skipped_trials[Light] or 'Light Trial Clear')
+                )"
         }
     },
     {
         "region_name": "Ganons Castle Forest Trial",
         "dungeon": "Ganons Castle",
-        "events": {
-            "Forest Trial Clear": "can_use(Light_Arrows) and can_play(Song_of_Time)"
-        },
         "locations": {
-            "Ganons Castle MQ Forest Trial Eye Switch Chest": "Bow",
-            "Ganons Castle MQ Forest Trial Frozen Eye Switch Chest": "has_fire_source",
-            "Ganons Castle MQ Forest Trial Freestanding Key": "Progressive_Hookshot"
+            "Ganons Castle MQ Forest Trial Freestanding Key": "can_use(Hookshot) or can_use(Boomerang)"
+        },
+        "exits": {
+            "Ganons Castle Forest Trial Wind Room": "has_soul(Stalfos)"
         }
     },
     {
-        "region_name": "Ganons Castle Fire Trial",
+        "region_name": "Ganons Castle Forest Trial Wind Room",
+        "dungeon": "Ganons Castle",
+        "locations": {
+            "Ganons Castle MQ Forest Trial Eye Switch Chest": "can_use(Bow) or can_use(Slingshot) or (can_gdv and can_use(Hover_Boots))",
+            "Ganons Castle MQ Forest Trial Frozen Eye Switch Chest": "has_fire_source or can_gdv"
+        },
+        "exits": {
+            "Ganons Castle Forest Trial Ending": "is_adult and can_play(Song_of_Time)"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Forest Trial Ending",
         "dungeon": "Ganons Castle",
         "events": {
-            "Fire Trial Clear": "
-                can_use(Goron_Tunic) and can_use(Golden_Gauntlets) and
-                can_use(Light_Arrows) and (can_use(Longshot) or Hover_Boots)"
+            "Forest Trial Clear": "can_use(Light_Arrows)"
+        },
+        "locations": {
+            "Ganons Castle MQ Forest Trial Pot 1": "True",
+            "Ganons Castle MQ Forest Trial Pot 2": "True"
         }
     },
     {
         "region_name": "Ganons Castle Water Trial",
         "dungeon": "Ganons Castle",
-        "events": {
-            "Water Trial Clear": "
-                Blue_Fire and can_use(Light_Arrows) and
-                (Small_Key_Ganons_Castle, 3)"
-        },
         "locations": {
             "Ganons Castle MQ Water Trial Chest": "Blue_Fire",
-            "Blue Fire": "has_bottle"
+            "Ganons Castle MQ Water Trial Recovery Heart": "
+                Blue_Fire or (logic_boomerang_boulders and can_use(Boomerang))",
+            "Blue Fire": "has_bottle and (can_jumpslash or has_explosives)"
+        },
+        "exits": {
+            # These boulders share a single switch flag. Breaking one and reloading the room they will all be gone
+            # Glitch - megaflipping off the water bypasses the boulders
+            "Ganons Castle Water Trial Push Block Room": "(Blue_Fire or
+                    (can_mega or (can_superslide and can_use(Hover_Boots))
+                    or (can_use(Hover_Boots) and can_live_dmg(0.5,False) and has_explosives and adv_hovers_recoil))
+                )
+                and (Small_Key_Ganons_Castle, 3)"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Water Trial Push Block Room",
+        "dungeon": "Ganons Castle",
+        "locations": {
+            "Ganons Castle MQ Water Trial Silver Rupee Hole": "True",
+            "Ganons Castle MQ Water Trial Silver Rupee Near Blocks": "True",
+            "Ganons Castle MQ Water Trial Silver Rupee Center Left": "True",
+            "Ganons Castle MQ Water Trial Silver Rupee Red Ice": "is_adult",
+            "Ganons Castle MQ Water Trial Silver Rupee Above Void": "True"
+        },
+        "exits": {
+            "Ganons Castle Water Trial Ending": "(Silver_Rupee_Ganons_Castle_Water_Trial, 5)
+                and (Blue_Fire or (glitch_ledge_clip and adv_hovers_recoil and can_use(Hover_Boots))
+                )"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Water Trial Ending",
+        "dungeon": "Ganons Castle",
+        "events": {
+            "Water Trial Clear": "can_use(Light_Arrows)"
+        },
+        "locations": {
+            "Ganons Castle MQ Water Trial Pot 1": "True",
+            "Ganons Castle MQ Water Trial Pot 2": "True"
         }
     },
     {
         "region_name": "Ganons Castle Shadow Trial",
         "dungeon": "Ganons Castle",
-        "events": {
-            "Shadow Trial Clear": "
-                can_use(Light_Arrows) and (logic_lens_castle_mq or can_use(Lens_of_Truth)) and
-                (Hover_Boots or (Progressive_Hookshot and has_fire_source))"
-        },
         "locations": {
             "Ganons Castle MQ Shadow Trial Bomb Flower Chest": "
-                (Bow and (Progressive_Hookshot or Hover_Boots)) or
-                (Hover_Boots and (logic_lens_castle_mq or can_use(Lens_of_Truth)) and
-                    (has_explosives or Progressive_Strength_Upgrade or can_use(Dins_Fire)))",
-            "Ganons Castle MQ Shadow Trial Eye Switch Chest": "
-                Bow and (logic_lens_castle_mq or can_use(Lens_of_Truth)) and
-                (Hover_Boots or (Progressive_Hookshot and has_fire_source))"
+                is_adult and ((Bow and (Hookshot or Hover_Boots)) or
+                at('Ganons Castle Shadow Trial Moving Platform',
+                    has_explosives or Progressive_Strength_Upgrade or can_use(Dins_Fire) or can_gdv))"
+        },
+        "exits": {
+            "Ganons Castle Shadow Trial Moving Platform": "
+                is_adult and ((logic_lens_shadow_trial_mq or can_use(Lens_of_Truth)) and
+                (Hover_Boots or (Bow and Hookshot)))"
         }
     },
     {
-        "region_name": "Ganons Castle Spirit Trial",
+        "region_name": "Ganons Castle Shadow Trial Moving Platform",
+        "dungeon": "Ganons Castle",
+        "locations": {
+            "Ganons Castle MQ Shadow Trial Silver Rupee Moving Platform": "True",
+            "Ganons Castle MQ Shadow Trial Silver Rupee Bomb Flower": "True",
+            "Ganons Castle MQ Shadow Trial Silver Rupee First Beamos": "True"
+        },
+        "exits": {
+            "Ganons Castle Shadow Trial Second Gap": "Hover_Boots or has_fire_source or logic_shadow_trial_mq"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Shadow Trial Second Gap",
+        "dungeon":"Ganons Castle",
+        "locations": {
+            "Ganons Castle MQ Shadow Trial Eye Switch Chest": "Bow",
+            "Ganons Castle MQ Shadow Trial Silver Rupee Last Beamos": "True",
+            "Ganons Castle MQ Shadow Trial Silver Rupee Guillotine": "True"
+        },
+        "exits": {
+            "Ganons Castle Shadow Trial Ending": "(Silver_Rupee_Ganons_Castle_Shadow_Trial, 5)"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Shadow Trial Ending",
         "dungeon": "Ganons Castle",
         "events": {
-            "Spirit Trial Clear": "
-                can_use(Light_Arrows) and Megaton_Hammer and
-                has_bombchus and Fire_Arrows and Mirror_Shield"
+            "Shadow Trial Clear": "can_use(Light_Arrows)"
         },
         "locations": {
-            "Ganons Castle MQ Spirit Trial First Chest": "(Bow or logic_rusted_switches) and Megaton_Hammer",
-            "Ganons Castle MQ Spirit Trial Invisible Chest": "
-                (Bow or logic_rusted_switches) and Megaton_Hammer and
-                has_bombchus and (logic_lens_castle_mq or can_use(Lens_of_Truth))",
-            "Ganons Castle MQ Spirit Trial Sun Front Left Chest": "
-                Megaton_Hammer and has_bombchus and
-                can_use(Fire_Arrows) and Mirror_Shield",
-            "Ganons Castle MQ Spirit Trial Sun Back Left Chest": "
-                Megaton_Hammer and has_bombchus and
-                can_use(Fire_Arrows) and Mirror_Shield",
-            "Ganons Castle MQ Spirit Trial Golden Gauntlets Chest": "
-                Megaton_Hammer and has_bombchus and
-                can_use(Fire_Arrows) and Mirror_Shield",
-            "Ganons Castle MQ Spirit Trial Sun Back Right Chest": "
-                Megaton_Hammer and has_bombchus and
-                can_use(Fire_Arrows) and Mirror_Shield"
+            "Ganons Castle MQ Shadow Trial Pot 1": "True",
+            "Ganons Castle MQ Shadow Trial Pot 2": "True"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Fire Trial",
+        "dungeon": "Ganons Castle",
+        "locations": {
+            "Ganons Castle MQ Fire Trial Silver Rupee Rising Platform": "True",
+            "Ganons Castle MQ Fire Trial Silver Rupee Beamos": "
+                can_use(Goron_Tunic) and can_use(Golden_Gauntlets)",
+            "Ganons Castle MQ Fire Trial Silver Rupee Left Front": "can_use(Goron_Tunic)",
+            "Ganons Castle MQ Fire Trial Silver Rupee Left Center": "can_use(Goron_Tunic)",
+            "Ganons Castle MQ Fire Trial Silver Rupee Left Back": "can_use(Goron_Tunic)"
+        },
+        "exits": {
+            "Ganons Castle Fire Trial Ending": "
+                is_adult and Goron_Tunic and (Silver_Rupee_Ganons_Castle_Fire_Trial, 5) and
+                (Longshot or
+                    (Golden_Gauntlets and
+                        ( Hover_Boots or (logic_fire_trial_mq and Hookshot) )
+                    )
+                )"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Fire Trial Ending",
+        "dungeon": "Ganons Castle",
+        "events": {
+            "Fire Trial Clear": "can_use(Light_Arrows)"
+        },
+        "locations": {
+            "Ganons Castle MQ Fire Trial Pot 1": "True",
+            "Ganons Castle MQ Fire Trial Pot 2": "True"
         }
     },
     {
         "region_name": "Ganons Castle Light Trial",
         "dungeon": "Ganons Castle",
-        "events": {
-            "Light Trial Clear": "
-                can_use(Light_Arrows) and Progressive_Hookshot and
-                (Small_Key_Ganons_Castle, 3)"
-        },
+        "exits": {
+            "Ganons Castle Light Trial Hallway": "has_soul(Torch_Slug) and has_soul(Lizalfos_and_Dinalfos)"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Light Trial Hallway",
+        "dungeon": "Ganons Castle",
         "locations": {
             "Ganons Castle MQ Light Trial Lullaby Chest": "can_play(Zeldas_Lullaby)"
+        },
+        "exits": {
+            "Ganons Castle Light Trial Boulder Room Front": "(Small_Key_Ganons_Castle, 2)"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Light Trial Boulder Room Front",
+        "dungeon": "Ganons Castle",
+        "exits": {
+            "Ganons Castle Light Trial Boulder Room Back": "Hookshot or logic_light_trial_mq"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Light Trial Boulder Room Back",
+        "dungeon": "Ganons Castle",
+        "locations": {
+            "Ganons Castle MQ Light Trial Recovery Heart 1": "True",
+            "Ganons Castle MQ Light Trial Recovery Heart 2": "True"
+        },
+        "exits": {
+            "Ganons Castle Light Trial Fake Ending": "(Small_Key_Ganons_Castle, 3)"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Light Trial Fake Ending",
+        "dungeon": "Ganons Castle",
+        "exits": {
+            "Ganons Castle Light Trial Ending": "logic_lens_castle_mq or can_use(Lens_of_Truth)"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Light Trial Ending",
+        "dungeon": "Ganons Castle",
+        "events": {
+            "Light Trial Clear": "can_use(Light_Arrows)"
+        },
+        "locations": {
+            "Ganons Castle MQ Light Trial Pot 1": "True",
+            "Ganons Castle MQ Light Trial Pot 2": "True"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Spirit Trial",
+        "dungeon": "Ganons Castle",
+        "exits": {
+            "Ganons Castle Spirit Trial After Knuckle": "
+                can_use(Megaton_Hammer) and ((Bow and has_soul(Iron_Knuckle)) or logic_rusted_switches)"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Spirit Trial After Knuckle",
+        "dungeon": "Ganons Castle",
+        "locations": {
+            "Ganons Castle MQ Spirit Trial First Chest": "True"
+        },
+        "exits": {
+            "Ganons Castle Spirit Trial Second Room": "has_bombchus or can_weirdshot"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Spirit Trial Second Room",
+        "dungeon": "Ganons Castle",
+        "locations": {
+            "Ganons Castle MQ Spirit Trial Invisible Chest": "logic_lens_castle_mq or can_use(Lens_of_Truth)"
+        },
+        "exits": {
+            "Ganons Castle Spirit Trial Ending": "can_use(Fire_Arrows) and Mirror_Shield"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Spirit Trial Ending",
+        "dungeon": "Ganons Castle",
+        "events": {
+            "Spirit Trial Clear": "can_use(Light_Arrows)"
+        },
+        "locations": {
+            "Ganons Castle MQ Spirit Trial Sun Front Left Chest": "True",
+            "Ganons Castle MQ Spirit Trial Sun Back Left Chest": "True",
+            "Ganons Castle MQ Spirit Trial Golden Gauntlets Chest": "True",
+            "Ganons Castle MQ Spirit Trial Sun Back Right Chest": "True",
+            "Ganons Castle MQ Spirit Trial Pot 1": "True",
+            "Ganons Castle MQ Spirit Trial Pot 2": "True",
+            "Nut Pot": "True"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Deku Scrubs",
+        "dungeon": "Ganons Castle",
+        "locations": {
+            "Ganons Castle MQ Deku Scrub Center-Left": "can_stun_deku",
+            "Ganons Castle MQ Deku Scrub Center": "can_stun_deku",
+            "Ganons Castle MQ Deku Scrub Center-Right": "can_stun_deku",
+            "Ganons Castle MQ Deku Scrub Left": "can_stun_deku",
+            "Ganons Castle MQ Deku Scrub Right": "can_stun_deku",
+            "Free Fairies": "has_bottle"
         }
     }
 ]

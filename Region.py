@@ -96,11 +96,11 @@ class Region:
 
         if not manual and self.world.settings.empty_dungeons_mode != 'none' and item.dungeonitem:
             # An empty dungeon can only store its own dungeon items
-            if self.dungeon and self.dungeon.world.empty_dungeons[self.dungeon.name].empty:
+            if self.dungeon and self.dungeon.world.precompleted_dungeons.get(self.dungeon.name, False):
                 return self.dungeon.is_dungeon_item(item) and item.world.id == self.world.id
             # Items from empty dungeons can only be in their own dungeons
             for dungeon in item.world.dungeons:
-                if item.world.empty_dungeons[dungeon.name].empty and dungeon.is_dungeon_item(item):
+                if item.world.precompleted_dungeons.get(dungeon.name, False) and dungeon.is_dungeon_item(item):
                     return False
 
         is_self_dungeon_restricted = False
@@ -111,7 +111,8 @@ class Region:
 
         if item.type in ('Map', 'Compass', 'SmallKey', 'HideoutSmallKey', 'TCGSmallKey', 'SmallKeyRing', 'HideoutSmallKeyRing', 'TCGSmallKeyRing', 'BossKey', 'GanonBossKey', 'SilverRupee', 'DungeonReward'):
             shuffle_setting = (
-                self.world.settings.shuffle_mapcompass if item.type in ('Map', 'Compass') else
+                self.world.settings.shuffle_map if item.type == 'Map' else
+                self.world.settings.shuffle_compass if item.type == 'Compass' else
                 self.world.settings.shuffle_smallkeys if item.type in ('SmallKey', 'SmallKeyRing') else
                 self.world.settings.shuffle_hideoutkeys if item.type in ('HideoutSmallKey', 'HideoutSmallKeyRing') else
                 self.world.settings.shuffle_tcgkeys if item.type in ('TCGSmallKey', 'TCGSmallKeyRing') else

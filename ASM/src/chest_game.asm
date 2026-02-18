@@ -68,29 +68,6 @@ chestgame_remove_chest_rng:
     jr      ra
     nop
 
-chestgame_open_chests_separately:
-    lb      t0, SHUFFLE_CHEST_GAME
-    beqz    t0, @@return        ; skip if the chest game isn't randomized
-    nop
-    lw      ra, 0x14(sp)        ; set original return addresss
-    jr ra                       ; jump out of function (skip it)
-    nop
-
-@@return:
-    jr      ra
-    or      a3, a1, $zero       ; displaced code
-
-chestgame_delayed_chest_open:
-    lb      t1, SHUFFLE_CHEST_GAME
-    beqz    t3, @@return        ; skip if the chest game isn't randomized
-    nop
-    or      t9, $zero, $zero    ; set t9 to 0 so conditional always fails
-    lw      a0, 0x004C($sp)     ; displaced code
-
-@@return:
-    jr      ra
-    lw      a0, 0x004C($sp)     ; displaced code
-
 ; Show a key in the unopened chest regardless of chest
 ; contents if the tcg_requires_lens setting is enabled
 chestgame_force_game_loss_left:
@@ -109,15 +86,20 @@ chestgame_force_game_loss_left:
     lui     $t1, hi(SAVE_CONTEXT + 0x81)
     lb      $t2, lo(SAVE_CONTEXT + 0x81)($t1) ; lens item slot
     li      $t3, 15 ; lens item ID
-    beq     $t2, $t3, @@return
+    bne     $t2, $t3, @@force_loss
     nop
+    ; check if player has magic
+    lb      $t2, SAVE_CONTEXT + 0x3A ; magic_acquired
+    beqz    $t2, @@force_loss
+    nop
+@@return:
+    jr      $ra
+    nop
+
+@@force_loss:
     ; simulate lost game
     addiu   $t0, $zero, 0x0071
     j       chestgame_warn_player_of_rigged_game
-    nop
-
-@@return:
-    jr      $ra
     nop
 
 chestgame_force_game_loss_right:
@@ -136,15 +118,20 @@ chestgame_force_game_loss_right:
     lui     $t1, hi(SAVE_CONTEXT + 0x81)
     lb      $t2, lo(SAVE_CONTEXT + 0x81)($t1) ; lens item slot
     li      $t3, 15 ; lens item ID
-    beq     $t2, $t3, @@return
+    bne     $t2, $t3, @@force_loss
     nop
+    ; check if player has magic
+    lb      $t2, SAVE_CONTEXT + 0x3A ; magic_acquired
+    beqz    $t2, @@force_loss
+    nop
+@@return:
+    jr      $ra
+    nop
+
+@@force_loss:
     ; simulate lost game
     addiu   $v1, $zero, 0x0071
     j       chestgame_warn_player_of_rigged_game
-    nop
-
-@@return:
-    jr      $ra
     nop
 
 ; Add a helper message if the tcg_requires_lens

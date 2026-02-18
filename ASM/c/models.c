@@ -74,10 +74,14 @@ typedef void (*actor_draw_fn)(z64_actor_t* actor, z64_game_t* game);
 #define pre_draw_2 ((pre_draw_fn)0x80022554)
 #define base_collectable_draw ((actor_draw_fn)0x80013268)
 
+z64_actor_t* curr_drawn_actor = NULL;
+
 void draw_model_low_level(uint8_t graphic_id_minus_1, z64_actor_t* actor, z64_game_t* game) {
     pre_draw_1(actor, game, 0);
     pre_draw_2(actor, game, 0);
+    curr_drawn_actor = actor;
     base_draw_gi_model(game, graphic_id_minus_1);
+    curr_drawn_actor = NULL;
 }
 
 float scale_factor(uint8_t graphic_id, z64_actor_t* actor, float base_scale) {

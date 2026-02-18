@@ -3,11 +3,11 @@ from collections import namedtuple
 from itertools import chain
 from typing import Optional
 
-Entry = namedtuple("Entry", ["setting_name", "item_name", "available", "gui_text", "special", "ammo", "i"])
+Entry = namedtuple("Entry", ["setting_name", "item_name", "available", "gui_text", "ammo", "i"])
 
 
 def _entry(setting_name: str, item_name: Optional[str] = None, available: int = 1, gui_text: Optional[str] = None,
-           special: bool = False, ammo: Optional[dict[str, tuple[int, ...]]] = None) -> list[tuple[str, Entry]]:
+           ammo: Optional[dict[str, tuple[int, ...]]] = None) -> list[tuple[str, Entry]]:
     if item_name is None:
         item_name = setting_name.capitalize()
     if gui_text is None:
@@ -18,7 +18,7 @@ def _entry(setting_name: str, item_name: Optional[str] = None, available: int = 
             name = setting_name
         else:
             name = f"{setting_name}{i + 1}"
-        result.append((name, Entry(name, item_name, available, gui_text, special, ammo, i)))
+        result.append((name, Entry(name, item_name, available, gui_text, ammo, i)))
     return result
 
 
@@ -42,8 +42,8 @@ inventory: dict[str, Entry] = dict(chain(
     _entry("megaton_hammer", "Megaton Hammer", gui_text="Megaton Hammer"),
     _entry("light_arrow", "Light Arrows"),
     _entry("nayrus_love", "Nayrus Love", gui_text="Nayru's Love"),
-    _entry("bottle", available=3, special=True),
-    _entry("letter", "Rutos Letter", gui_text="Ruto's Letter", special=True),
+    _entry("bottle", available=3),
+    _entry("letter", "Rutos Letter", gui_text="Ruto's Letter"),
     _entry("pocket_egg",    "Pocket Egg", gui_text="Pocket Egg"),
     _entry("pocket_cucco",  "Pocket Cucco", gui_text="Pocket Cucco"),
     _entry("cojiro",        "Cojiro", gui_text="Cojiro"),

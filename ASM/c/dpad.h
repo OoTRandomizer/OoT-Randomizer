@@ -58,6 +58,7 @@ extern uint8_t CFG_CHILD_TRADE_SHUFFLE;
                             (z64_file.game_mode == 0) && \
                             ((z64_event_state_1 & 0x20) == 0) && \
                             (!CAN_DRAW_DUNGEON_INFO || !CFG_DPAD_DUNGEON_INFO_ENABLE) && \
+                            (!CAN_DRAW_WORLD_INFO || !CFG_DPAD_DUNGEON_INFO_ENABLE) && \
                             !(debug_menu_is_drawn()))
 // Not in pause menu
 // Ocarina in inventory

@@ -109,14 +109,22 @@ uint32_t SaveFile_TradeItemIsOwned(uint16_t itemId) {
 }
 
 // Update trade item owned flags if the game updates the item.
-// Currently only called for hatching chickens. Will eventually
-// be used for timers.
+// Works "forwards" for hatching eggs as both child and adult,
+// and "backwards" for reverting adult trade items due to timers
+// or savewarps. Note that the disabled timers hack works by
+// setting the new and old item IDs to the same value, not disabling
+// the function itself, so this needs to be checked before unsetting
+// flags.
 int32_t SaveFile_UpdateShiftableItem(uint16_t oldItemId, uint16_t newItemId) {
     if (IsTradeItem(newItemId)) {
         switch(newItemId) {
+            // Eggs hatching
             case Z64_ITEM_CHICKEN:
             case Z64_ITEM_POCKET_CUCCO:
-                if (SaveFile_TradeItemIsOwned(oldItemId)) {
+            // Timer reverts
+            case Z64_ITEM_COJIRO:
+            case Z64_ITEM_PRESCRIPTION:
+                if (SaveFile_TradeItemIsOwned(oldItemId) && oldItemId != newItemId) {
                     SaveFile_SetTradeItemAsOwned(newItemId);
                     SaveFile_UnsetTradeItemAsOwned(oldItemId);
                     return 1;
@@ -149,7 +157,7 @@ uint32_t SaveFile_TradeItemIsTraded(uint16_t itemId) {
     uint16_t tradeItemNum = GetTradeItemIndex(itemId);
     uint32_t traded = (z64_file.scene_flags[0x62].unk_00_ & (0x1 << tradeItemNum)) != 0;
     if (itemId >= Z64_ITEM_POCKET_EGG && itemId <= Z64_ITEM_CLAIM_CHECK && !CFG_ADULT_TRADE_SHUFFLE) {
-        return itemId < z64_file.items[Z64_SLOT_ADULT_TRADE] || traded;
+        return (z64_file.items[Z64_SLOT_ADULT_TRADE] != 0xFF && itemId < z64_file.items[Z64_SLOT_ADULT_TRADE]) || traded;
     }
     return traded;
 }

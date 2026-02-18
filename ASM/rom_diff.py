@@ -37,7 +37,7 @@ def create_diff(base_path, compare_path, output_path):
                 if comp_words[j] != base_words[j]:
                     diffs.append((addr + 4*j, comp_words[j]))
 
-    with open(output_path, 'w') as out_f:
+    with open(output_path, 'w', newline='\n') as out_f:
         for (addr, word) in diffs:
             out_f.write('{0:x},{1:x}\n'.format(addr, word))
 

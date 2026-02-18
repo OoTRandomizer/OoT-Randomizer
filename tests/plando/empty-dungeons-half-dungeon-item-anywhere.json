@@ -9,7 +9,8 @@
         "shuffle_song_items":                      "song",
         "empty_dungeons_mode":                     "count",
         "empty_dungeons_count":                    4,
-        "shuffle_mapcompass":                      "keysanity",
+        "shuffle_map":                             "keysanity",
+        "shuffle_compass":                         "keysanity",
         "shuffle_smallkeys":                       "keysanity",
         "shuffle_bosskeys":                        "keysanity"
     }

@@ -470,6 +470,7 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Kak 30 Gold Skulltula Reward",                                 ("NPC",          0x50,  0x46, None,                            'Progressive Wallet',                    ("Kakariko Village", "Skulltula House", "NPCs",))),
     ("Kak 40 Gold Skulltula Reward",                                 ("NPC",          0x50,  0x03, None,                            'Bombchus (10)',                         ("Kakariko Village", "Skulltula House", "NPCs",))),
     ("Kak 50 Gold Skulltula Reward",                                 ("NPC",          0x50,  0x3E, None,                            'Piece of Heart',                        ("Kakariko Village", "Skulltula House", "NPCs",))),
+    ("Kak 100 Gold Skulltula Reward",                                ("NPC",          0x50,  0x56, None,                           'Rupees (200)',                          ("Kakariko Village", "Skulltula House", "NPCs",))),
     ("Kak Impas House Cow",                                          ("NPC",          0x37,  0x15, None,                            'Milk',                                  ("Kakariko Village", "Cows",))),
     ("Kak GS Tree",                                                  ("GS Token",     0x10,  0x20, None,                            'Gold Skulltula Token',                  ("Kakariko Village", "Gold Skulltulas",))),
     ("Kak GS Near Gate Guard",                                       ("GS Token",     0x10,  0x02, None,                            'Gold Skulltula Token',                  ("Kakariko Village", "Gold Skulltulas",))),
@@ -2604,8 +2605,11 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("30 Skulltulas Reward Hint",                                    ("Hint",         None,  None, None,                            None,                                    None)),
     ("40 Skulltulas Reward Hint",                                    ("Hint",         None,  None, None,                            None,                                    None)),
     ("50 Skulltulas Reward Hint",                                    ("Hint",         None,  None, None,                            None,                                    None)),
+    ("100 Skulltulas Reward Hint",                                   ("Hint",         None,  None, None,                            None,                                    None)),
     ("ZR Frogs Ocarina Minigame Hint",                               ("Hint",         None,  None, None,                            None,                                    None)),
     ("Market 10 Big Poes Hint",                                      ("Hint",         None,  None, None,                            None,                                    None)),
+    ("Deku Theater Skull Mask Hint",                                 ("Hint",         None,  None, None,                            None,                                    None)),
+    ("Deku Theater Mask of Truth Hint",                              ("Hint",         None,  None, None,                            None,                                    None)),
     ("Ganondorf Hint",                                               ("Hint",         None,  None, None,                            None,                                    None)),
 ])
 

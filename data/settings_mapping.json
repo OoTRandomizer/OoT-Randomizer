@@ -191,7 +191,9 @@
           "settings": [
             "shuffle_song_items",
             "shopsanity",
-            "shopsanity_prices",
+            "special_deal_price_distribution",
+            "special_deal_price_min",
+            "special_deal_price_max",
             "tokensanity",
             "shuffle_scrubs",
             "shuffle_child_trade",
@@ -211,6 +213,7 @@
             "shuffle_beans",
             "shuffle_expensive_merchants",
             "shuffle_frog_song_rupees",
+            "shuffle_100_skulltula_rupee",
             "shuffle_loach_reward",
             "shuffle_individual_ocarina_notes"
           ]
@@ -221,7 +224,8 @@
           "row_span": [6,6,9],
           "settings": [
             "shuffle_dungeon_rewards",
-            "shuffle_mapcompass",
+            "shuffle_map",
+            "shuffle_compass",
             "shuffle_smallkeys",
             "shuffle_hideoutkeys",
             "shuffle_tcgkeys",
@@ -271,6 +275,7 @@
           "text": "Enable Tricks",
           "row_span": [8,10,10],
           "settings": [
+            "advanced_allowed_tricks",
             "allowed_tricks",
             "tricks_list_msg"
           ]
@@ -286,7 +291,7 @@
           "name": "starting_equipment_section",
           "text": "Starting Equipment",
           "col_span": 2,
-          "row_span": [2,2,2],
+          "row_span": [3,3,3],
           "settings": [
             "starting_equipment"
           ]
@@ -313,8 +318,11 @@
           "name": "starting_other_section",
           "text": "Other",
           "col_span": 2,
-          "row_span": [1,1,1],
+          "row_span": [2,2,2],
           "settings": [
+            "add_random_starting_items",
+            "random_starting_items_exclude",
+            "random_starting_items_count",
             "start_with_consumables",
             "start_with_rupees",
             "starting_hearts"
@@ -341,7 +349,7 @@
             "complete_mask_quest",
             "useful_cutscenes",
             "fast_chests",
-            "free_scarecrow",
+            "scarecrow_behavior",
             "fast_bunny_hood",
             "auto_equip_masks",
             "plant_beans",

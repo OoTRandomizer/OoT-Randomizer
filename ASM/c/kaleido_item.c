@@ -3,9 +3,7 @@
 #include "kaleido_item.h"
 
 void KaleidoScope_DrawItemSelect(z64_game_t* play) {
-    static int16_t magic_arrow_effects_r[] = {255, 100, 255 };
-    static int16_t magic_arrow_effects_g[] = {0, 100, 255 };
-    static int16_t magic_arrow_effects_b[] = {0, 255, 100 };
+    z64_file_t* save_ctxt = &z64_file;
     z64_input_t* input = &play->common.input[0];
     z64_pause_ctxt_t* pause_ctxt = &play->pause_ctxt;
     uint16_t i;
@@ -17,7 +15,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
     int16_t cursor_x;
     int16_t cursor_y;
     int16_t old_cursor_point;
-    int16_t move_cursor_result;
+    int16_t cursor_move_result;
 
     OPEN_DISPS(play->common.gfx);
 
@@ -30,7 +28,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
 
     if ((pause_ctxt->state == PAUSE_STATE_MAIN) && (pause_ctxt->changing == PAUSE_MAIN_STATE_IDLE) &&
         (pause_ctxt->screen_idx == PAUSE_ITEM)) {
-        move_cursor_result = 0;
+        cursor_move_result = 0;
         old_cursor_point = pause_ctxt->cursor_point[PAUSE_ITEM];
 
         cursor_item = pause_ctxt->cursor_item[PAUSE_ITEM];
@@ -47,12 +45,12 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
             // has been removed for randomizer. It's a valid position for the cursor to start and empty slots can't equip
             // items so there is no need for this.
 
-            if (ABS(pause_ctxt->stick_movement_x) > 30) {
+            if (ABS(pause_ctxt->stick_movement_x) > 30) { // Left pressed
                 cursor_point = pause_ctxt->cursor_point[PAUSE_ITEM];
                 cursor_x = pause_ctxt->cursor_x[PAUSE_ITEM];
                 cursor_y = pause_ctxt->cursor_y[PAUSE_ITEM];
 
-                while (move_cursor_result == 0) {
+                do {
                     // From the current position, checks the columns to the left until it finds an item, or reaches the far left.
                     // Then it checks the leftmost column down, then loops back to the top until it reaches the same Y position
                     // again. At this point no more items could be found, so it changes `cursor_special_pos` to the left screen
@@ -63,7 +61,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
                             pause_ctxt->cursor_point[PAUSE_ITEM] -= 1;
 
                             // Randomizer needs X navigation to be unlimited to avoid impossible menu configurations
-                            move_cursor_result = 1;
+                            cursor_move_result = 1;
                         } else {
                             pause_ctxt->cursor_x[PAUSE_ITEM] = cursor_x;
                             pause_ctxt->cursor_y[PAUSE_ITEM]++;
@@ -86,7 +84,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
 
                                 KaleidoScope_MoveCursorToSpecialPos(play, PAUSE_CURSOR_PAGE_LEFT);
 
-                                move_cursor_result = 2;
+                                cursor_move_result = 2;
                             }
                         }
                     } else if (pause_ctxt->stick_movement_x > 30) {
@@ -97,7 +95,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
                             pause_ctxt->cursor_point[PAUSE_ITEM] += 1;
 
                             // Randomizer needs X navigation to be unlimited to avoid impossible menu configurations
-                            move_cursor_result = 1;
+                            cursor_move_result = 1;
                         } else {
                             pause_ctxt->cursor_x[PAUSE_ITEM] = cursor_x;
                             pause_ctxt->cursor_y[PAUSE_ITEM]++;
@@ -120,15 +118,15 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
 
                                 KaleidoScope_MoveCursorToSpecialPos(play, PAUSE_CURSOR_PAGE_RIGHT);
 
-                                move_cursor_result = 2;
+                                cursor_move_result = 2;
                             }
                         }
                     }
-                }
+                } while (cursor_move_result == 0);
 
                 // Updates the inventory item pointed to if an item was found. Otherwise, it retains a now stale value.
-                if (move_cursor_result == 1) {
-                    cursor_item = z64_file.items[pause_ctxt->cursor_point[PAUSE_ITEM]];
+                if (cursor_move_result == 1) {
+                    cursor_item = save_ctxt->items[pause_ctxt->cursor_point[PAUSE_ITEM]];
                 }
             }
         } else if (pause_ctxt->cursor_special_pos == PAUSE_CURSOR_PAGE_LEFT) {
@@ -145,24 +143,24 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
                     // Searches for an item. Checks top to bottom one column at a time. If it finds one it tries to reset
                     // state, but it forgets to unset cursor_item so the stale item remains when you switch back
                     // to this screen.
-                    if (z64_file.items[cursor_point] != ITEM_NONE) {
+                    if (save_ctxt->items[cursor_point] != ITEM_NONE) {
                         pause_ctxt->cursor_point[PAUSE_ITEM] = cursor_point;
                         pause_ctxt->cursor_x[PAUSE_ITEM] = cursor_x;
                         pause_ctxt->cursor_y[PAUSE_ITEM] = cursor_y;
-                        move_cursor_result = 1;
+                        cursor_move_result = 1;
                         break;
                     }
 
-                    cursor_y = cursor_y + 1;
-                    cursor_point = cursor_point + 6;
-                    if (cursor_y < 4) {
+                    cursor_y += 1;
+                    cursor_point += ITEM_GRID_COLS;
+                    if (cursor_y < ITEM_GRID_ROWS) {
                         continue;
                     }
 
                     cursor_y = 0;
-                    cursor_point = cursor_x + 1;
+                    cursor_point = (int16_t)(cursor_x + 1);
                     cursor_x = cursor_point;
-                    if (cursor_x < 6) {
+                    if (cursor_x < ITEM_GRID_COLS) {
                         continue;
                     }
 
@@ -180,28 +178,28 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
                 z64_Audio_PlaySoundGeneral(NA_SE_SY_CURSOR, &z64_SfxDefaultPos, 4, &z64_SfxDefaultFreqAndVolScale,
                                            &z64_SfxDefaultFreqAndVolScale, &z64_SfxDefaultReverb);
 
-                cursor_point = cursor_x = 5;
+                cursor_point = cursor_x = ITEM_GRID_COLS - 1;
                 cursor_y = 0;
                 while (1) {
                     // Searches for an item. Checks top to bottom one column at a time. If it finds one it tries to reset
                     // state, but it forgets to unset cursor_item so the stale item remains when you switch back
                     // to this screen.
-                    if (z64_file.items[cursor_point] != ITEM_NONE) {
+                    if (save_ctxt->items[cursor_point] != ITEM_NONE) {
                         pause_ctxt->cursor_point[PAUSE_ITEM] = cursor_point;
                         pause_ctxt->cursor_x[PAUSE_ITEM] = cursor_x;
                         pause_ctxt->cursor_y[PAUSE_ITEM] = cursor_y;
-                        move_cursor_result = 1;
+                        cursor_move_result = 1;
                         break;
                     }
 
-                    cursor_y = cursor_y + 1;
-                    cursor_point = cursor_point + 6;
-                    if (cursor_y < 4) {
+                    cursor_y += 1;
+                    cursor_point += ITEM_GRID_COLS;
+                    if (cursor_y < ITEM_GRID_ROWS) {
                         continue;
                     }
 
                     cursor_y = 0;
-                    cursor_point = cursor_x - 1;
+                    cursor_point = (int16_t)(cursor_x - 1);
                     cursor_x = cursor_point;
                     if (cursor_x >= 0) {
                         continue;
@@ -219,43 +217,46 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
                                                  // through this loop at least once since the screen rotated back to this
                                                  // screen)
                 if (ABS(pause_ctxt->stick_movement_y) > 30) {
+                    int16_t x_move_result = cursor_move_result;
                     cursor_point = pause_ctxt->cursor_point[PAUSE_ITEM];
                     cursor_y = pause_ctxt->cursor_y[PAUSE_ITEM];
-                    move_cursor_result = 0;
+                    cursor_move_result = 0;
 
-                    while (move_cursor_result == 0) {
+                    do {
                         if (pause_ctxt->stick_movement_y > 30) {
                             if (pause_ctxt->cursor_y[PAUSE_ITEM] != 0) {
                                 pause_ctxt->cursor_y[PAUSE_ITEM]--;
-                                pause_ctxt->cursor_point[PAUSE_ITEM] -= 6;
+                                pause_ctxt->cursor_point[PAUSE_ITEM] -= ITEM_GRID_COLS;
 
-                                if(z64_file.items[pause_ctxt->cursor_point[PAUSE_ITEM]] != ITEM_NONE
-                                   || pause_ctxt->cursor_x[PAUSE_ITEM] > 0 && pause_ctxt->cursor_x[PAUSE_ITEM] < 5) {
-                                    move_cursor_result = 1;
+                                if(save_ctxt->items[pause_ctxt->cursor_point[PAUSE_ITEM]] != ITEM_NONE
+                                    // Allow unrestricted menu Y movement without interfering with equip swap
+                                    || x_move_result == 0) {
+                                    cursor_move_result = 1;
                                 }
                             } else { // Nothing fancy if we've reached the vertical bounds.
                                 pause_ctxt->cursor_y[PAUSE_ITEM] = cursor_y;
                                 pause_ctxt->cursor_point[PAUSE_ITEM] = cursor_point;
 
-                                move_cursor_result = 2;
+                                cursor_move_result = 2;
                             }
                         } else if (pause_ctxt->stick_movement_y < -30) {
-                            if (pause_ctxt->cursor_y[PAUSE_ITEM] < 3) {
+                            if (pause_ctxt->cursor_y[PAUSE_ITEM] < ITEM_GRID_ROWS - 1) {
                                 pause_ctxt->cursor_y[PAUSE_ITEM]++;
-                                pause_ctxt->cursor_point[PAUSE_ITEM] += 6;
+                                pause_ctxt->cursor_point[PAUSE_ITEM] += ITEM_GRID_COLS;
 
-                                if(z64_file.items[pause_ctxt->cursor_point[PAUSE_ITEM]] != ITEM_NONE
-                                   || pause_ctxt->cursor_x[PAUSE_ITEM] > 0 && pause_ctxt->cursor_x[PAUSE_ITEM] < 5) {
-                                    move_cursor_result = 1;
+                                if(save_ctxt->items[pause_ctxt->cursor_point[PAUSE_ITEM]] != ITEM_NONE
+                                    // Allow unrestricted menu Y movement without interfering with equip swap
+                                    || x_move_result == 0) {
+                                    cursor_move_result = 1;
                                 }
                             } else { // Nothing fancy if we've reached the vertical bounds.
                                 pause_ctxt->cursor_y[PAUSE_ITEM] = cursor_y;
                                 pause_ctxt->cursor_point[PAUSE_ITEM] = cursor_point;
 
-                                move_cursor_result = 2;
+                                cursor_move_result = 2;
                             }
                         }
-                    }
+                    } while (cursor_move_result == 0);
                 }
             }
 
@@ -264,10 +265,10 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
             pause_ctxt->cursor_color_set = 4;
 
             // Update the item the cursor is pointing to if you have made a valid menu move. If you have not enjoy quick swap
-            if (move_cursor_result == 1) {
-                cursor_item = z64_file.items[pause_ctxt->cursor_point[PAUSE_ITEM]];
-            } else if (move_cursor_result != 2) {
-                cursor_item = z64_file.items[pause_ctxt->cursor_point[PAUSE_ITEM]];
+            if (cursor_move_result == 1) {
+                cursor_item = save_ctxt->items[pause_ctxt->cursor_point[PAUSE_ITEM]];
+            } else if (cursor_move_result != 2) {
+                cursor_item = save_ctxt->items[pause_ctxt->cursor_point[PAUSE_ITEM]];
             }
 
             pause_ctxt->cursor_item[PAUSE_ITEM] = cursor_item;
@@ -364,7 +365,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
 
     // Draw outline around equipped items
     for (i = 0, j = 24 * 4; i < 3; i++, j += 4) {
-        if (z64_file.button_items[i + 1] != ITEM_NONE) {
+        if (save_ctxt->button_items[i + 1] != ITEM_NONE) {
             gSPVertex(POLY_OPA_DISP++, &pause_ctxt->item_vtx[j], 4, 0);
             POLY_OPA_DISP = KaleidoScope_QuadTextureIA8(POLY_OPA_DISP, z64_EquippedItemOutlineTex, 32, 32, 0);
         }
@@ -377,7 +378,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
     for (i = j = 0; i < 24; i++, j += 4) {
         gDPSetPrimColor(POLY_OPA_DISP++, 0, 0, 255, 255, 255, pause_ctxt->alpha);
 
-        if (z64_file.items[i] != ITEM_NONE) { // Only if you've obtained it
+        if (save_ctxt->items[i] != ITEM_NONE) { // Only if you've obtained it
             if ((pause_ctxt->changing == PAUSE_MAIN_STATE_IDLE) && (pause_ctxt->screen_idx == PAUSE_ITEM) &&
                 (pause_ctxt->cursor_special_pos == 0)) { // Cursor is over an item
                 if (CHECK_AGE_REQ_SLOT(i)) { // Item can be equipped as current age
@@ -401,7 +402,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
 
             gSPVertex(POLY_OPA_DISP++, &pause_ctxt->item_vtx[j + 0], 4, 0);
             KaleidoScope_DrawQuadTextureRGBA32(play->common.gfx,
-                                               z64_ItemIcons[z64_file.items[i]], ITEM_ICON_WIDTH,
+                                               z64_ItemIcons[save_ctxt->items[i]], ITEM_ICON_WIDTH,
                                                ITEM_ICON_HEIGHT, 0);
         }
     }
@@ -416,8 +417,8 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
 
     // Draw the current ammo amounts
     for (i = 0; i < 15; i++) {
-        if ((z64_AmmoItems[i] != ITEM_NONE) && (z64_file.items[i] != ITEM_NONE)) {
-            KaleidoScope_DrawAmmoCount(pause_ctxt, play->common.gfx, z64_file.items[i]);
+        if ((z64_AmmoItems[i] != ITEM_NONE) && (save_ctxt->items[i] != ITEM_NONE)) {
+            KaleidoScope_DrawAmmoCount(pause_ctxt, play->common.gfx, save_ctxt->items[i]);
         }
     }
 

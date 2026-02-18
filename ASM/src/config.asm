@@ -153,7 +153,7 @@ INITIAL_SAVE_DATA:
 EXTENDED_INITIAL_SAVE_DATA:
 .endarea
 
-.area 0x110, 0 ; size must be at least 8 * ((max object_id parameter Patches.add_to_extended_object_table is called with) - 0x192)
+.area 0x118, 0 ; size must be at least 8 * ((max object_id parameter Patches.add_to_extended_object_table is called with) - 0x192)
 EXTENDED_OBJECT_TABLE:
 .endarea
 
@@ -258,13 +258,15 @@ REWARDS_AS_ITEMS:
 .area 14, 0x00
 CFG_DUNGEON_PRECOMPLETED:
 .endarea
+DOT_CONDITION:
+.byte 0x01
 .align 4
 
 ; These configuration values are given fixed addresses to aid auto-trackers.
 ; Any changes made here should be documented in Notes/auto-tracker-ctx.md
 AUTO_TRACKER_CONTEXT:
 AUTO_TRACKER_VERSION:
-.word 5 ; Increment this if the auto-tracker context layout changes
+.word 6 ; Increment this if the auto-tracker context layout changes
 
 CFG_DUNGEON_INFO_ENABLE:
 .word 0
@@ -330,5 +332,19 @@ CFG_ADULT_TRADE_SHUFFLE:
 .byte 0x00
 CFG_CHILD_TRADE_SHUFFLE:
 .byte 0x00
+
+.area 14, 0x00
+CFG_DUNGEON_BOSS_INFO:
+.endarea
+; First two bytes determine if dungeons and bosses are shuffled or mixed (0 : not shuffled, 1 : shuffled in their pool, 2 : mixed)
+; Next 12 bytes say if the dungeon in the i-th entrance has a map
+
+.area 12 * 0x9, 0x00
+CFG_DUNGEON_ENTRANCES:
+.endarea
+.area 21 * 0x9, 0x00
+CFG_BOSSES:
+.endarea
+; Bosses are listed twice, first 12 are sorted by the same order as the dungeon entrances (including the 3 with no bosses), then 9 in the usual dungeon order.
 
 .align 4

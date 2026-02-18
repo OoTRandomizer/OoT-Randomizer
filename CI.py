@@ -15,7 +15,7 @@ from Main import resolve_settings
 from Patches import get_override_table, get_override_table_bytes
 from Rom import Rom
 import Unittest as Tests
-from Messages import ITEM_MESSAGES, KEYSANITY_MESSAGES, MISC_MESSAGES
+from Messages import ITEM_MESSAGES, IMPORTANT_ITEM_MESSAGES, MISC_MESSAGES
 from SettingsList import SettingInfos, logic_tricks, validate_settings
 import Unittest as Tests
 from Utils import data_path
@@ -95,6 +95,7 @@ def check_presets_formatting(fix_errors: bool = False) -> None:
 
 def check_hell_mode_tricks(fix_errors: bool = False) -> None:
     # Check for tricks missing from Hell Mode preset.
+    # Not checking for advanced logic tricks since hellmode is still glitchless logic
     with open(data_path('presets_default.json'), encoding='utf-8') as f:
         presets = json.load(f)
 
@@ -113,12 +114,15 @@ def check_hell_mode_tricks(fix_errors: bool = False) -> None:
             print(file=file)
 
 
-def check_preset_spoilers(fix_errors: bool = False) -> None:
-    # Check to make sure spoiler logs are enabled for all presets.
+def check_preset_settings(fix_errors: bool = False) -> None:
+    # Check to make sure password lock is disabled and spoiler logs are enabled for all presets.
     with open(data_path('presets_default.json'), encoding='utf-8') as f:
         presets = json.load(f)
 
     for preset_name, preset in presets.items():
+        if preset['password_lock']:
+            error(f'{preset_name} preset is password-locked', True)
+            preset['password_lock'] = False
         if not preset['create_spoiler']:
             error(f'{preset_name} preset does not create spoiler logs', True)
             preset['create_spoiler'] = True
@@ -142,7 +146,7 @@ def check_message_duplicates() -> None:
                     if message_id1 == message_id2:
                         error(f'Duplicate MessageID found: {hex(message_id1)}, {message1}, {message2}', False)
 
-    messages = ITEM_MESSAGES + KEYSANITY_MESSAGES + MISC_MESSAGES
+    messages = ITEM_MESSAGES + IMPORTANT_ITEM_MESSAGES + MISC_MESSAGES
     check_for_duplicates(messages)
 
 
@@ -258,7 +262,7 @@ def run_ci_checks() -> NoReturn:
         check_code_style(args.fix)
         check_presets_formatting(args.fix)
         check_table_sizes()
-        check_preset_spoilers(args.fix)
+        check_preset_settings(args.fix)
         check_message_duplicates()
 
     exit_ci(args.fix)
@@ -283,7 +287,7 @@ def exit_ci(fix_errors: bool = False) -> NoReturn:
                     which_errors = 'some of these errors'
                 else:
                     which_errors = 'these errors'
-                print(f'Run `CI.py --fix --no_unit_tests{release_arg}` to automatically fix {which_errors}.', file=sys.stderr)
+                print(f'Run `./CI.py --fix --no_unit_tests{release_arg}` to automatically fix {which_errors}.', file=sys.stderr)
             sys.exit(1)
     else:
         print(f'CI checks successful.')

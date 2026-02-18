@@ -15,7 +15,7 @@ from EntranceShuffle import EntranceShuffleError, change_connections, confirm_re
 from Fill import FillError
 from Hints import HintArea, gossipLocations, GossipText
 from Item import ItemFactory, ItemInfo, ItemIterator, is_item, Item
-from ItemPool import item_groups, get_junk_item, song_list, trade_items, child_trade_items
+from ItemPool import item_groups, get_junk_item, song_list, trade_items, child_trade_items, ocarina_buttons
 from JSONDump import dump_obj, CollapseList, CollapseDict, AlignedDict, SortedDict
 from Location import Location, LocationIterator, LocationFactory
 from LocationList import location_groups, location_table
@@ -44,6 +44,7 @@ per_world_keys = (
     'songs',
     'entrances',
     'locations',
+    ':randomized_starting_items',
     ':skipped_locations',
     ':woth_locations',
     ':goal_locations',
@@ -269,6 +270,7 @@ class WorldDistribution:
         self.item_pool: Optional[dict[str, ItemPoolRecord]] = None
         self.entrances: Optional[dict[str, EntranceRecord]] = None
         self.locations: Optional[dict[str, LocationRecord | list[LocationRecord]]] = None
+        self.randomized_starting_items: Optional[dict[str, int]] = None
         self.woth_locations: Optional[dict[str, LocationRecord]] = None
         self.goal_locations: Optional[dict[str, dict[str, dict[str, LocationRecord | dict[str, LocationRecord]]]]] = None
         self.barren_regions: Optional[list[str]] = None
@@ -296,6 +298,7 @@ class WorldDistribution:
             'item_pool': {name: ItemPoolRecord(record) for (name, record) in src_dict.get('item_pool', {}).items()},
             'entrances': {name: EntranceRecord(record) for (name, record) in src_dict.get('entrances', {}).items()},
             'locations': {name: [LocationRecord(rec) for rec in record] if is_pattern(name) else LocationRecord(record) for (name, record) in src_dict.get('locations', {}).items() if not is_output_only(name)},
+            'randomized_starting_items': None,
             'woth_locations': None,
             'goal_locations': None,
             'barren_regions': None,
@@ -327,6 +330,7 @@ class WorldDistribution:
             'item_pool': SortedDict({name: record.to_json() for (name, record) in self.item_pool.items()}),
             'entrances': {name: record.to_json() for (name, record) in self.entrances.items()},
             'locations': {name: [rec.to_json() for rec in record] if is_pattern(name) else record.to_json() for (name, record) in self.locations.items()},
+            ':randomized_starting_items': None if self.randomized_starting_items is None else {name: count for (name, count) in self.randomized_starting_items.items()},
             ':skipped_locations': {loc.name: LocationRecord.from_item(loc.item).to_json() for loc in self.skipped_locations},
             ':woth_locations': None if self.woth_locations is None else {name: record.to_json() for (name, record) in self.woth_locations.items()},
             ':goal_locations': self.goal_locations,
@@ -420,7 +424,7 @@ class WorldDistribution:
                 raise KeyError('Cannot add location that already exists')
         self.locations[new_location] = LocationRecord(new_item)
 
-    def configure_dungeons(self, world: World, mq_dungeon_pool: list[str], empty_dungeon_pool: list[str]) -> tuple[int, int]:
+    def configure_dungeons(self, world: World, mq_dungeon_pool: list[str], precompleted_dungeon_pool: list[str]) -> tuple[int, int]:
         dist_num_mq, dist_num_empty = 0, 0
         for (name, record) in self.dungeons.items():
             if record.mq is not None:
@@ -430,10 +434,10 @@ class WorldDistribution:
                     world.dungeon_mq[name] = True
         for (name, record) in self.empty_dungeons.items():
             if record.empty is not None:
-                empty_dungeon_pool.remove(name)
+                precompleted_dungeon_pool.remove(name)
                 if record.empty:
                     dist_num_empty += 1
-                    world.empty_dungeons[name].empty = True
+                    world.precompleted_dungeons[name] = True
         return dist_num_mq, dist_num_empty
 
     def configure_trials(self, trial_pool: list[str]) -> list[str]:
@@ -1027,6 +1031,8 @@ class WorldDistribution:
                     stone_id = int(match[1], base=16)
                 else:
                     raise RuntimeError('Gossip stone unknown or already assigned in world %d: %r. %s' % (self.id + 1, name, build_close_match(name, 'stone')))
+            if len(record.text) > 1200:
+                raise ValueError(f'Text length for gossip stone {name!r} ({len(record.text)} characters) exceeds maximum safe length (1200 characters)')
             spoiler.hints[self.id][stone_id] = GossipText(text=record.text, colors=record.colors, prefix='')
 
     def give_items(self, world: World, save_context: SaveContext) -> None:
@@ -1043,6 +1049,10 @@ class WorldDistribution:
             if name == 'Triforce Piece' or record.count == 0:
                 continue
             save_context.give_item(world, name, record.count)
+
+    def give_randomized_items(self, world: World, save_context: SaveContext) -> None:
+        for item, count in world.randomized_starting_items.items():
+            save_context.give_item(world, item, count)
 
     def get_starting_item(self, item: str) -> int:
         items = self.starting_items
@@ -1080,7 +1090,7 @@ class WorldDistribution:
 
         for iter_world in worlds:
             skipped_locations: list[Location] = []
-            if iter_world.settings.skip_reward_from_rauru:
+            if iter_world.settings.skip_reward_from_rauru in ('free', 'free_forced'):
                 skipped_locations.append(iter_world.get_location('ToT Reward from Rauru'))
             if iter_world.skip_child_zelda:
                 skipped_locations += [iter_world.get_location('HC Zeldas Letter'), iter_world.get_location('Song from Impa')]
@@ -1089,18 +1099,19 @@ class WorldDistribution:
             if iter_world.settings.empty_dungeons_mode != 'none':
                 skipped_locations_from_dungeons: list[Location] = []
                 if iter_world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward'):
-                    skipped_locations_from_dungeons += [world.get_location(loc_name) for loc_name in location_groups['Boss'] if loc_name != 'ToT Reward from Rauru']
-                elif world.settings.shuffle_dungeon_rewards == 'dungeon':
+                    skipped_locations_from_dungeons += [iter_world.get_location(loc_name) for loc_name in location_groups['Boss'] if loc_name != 'ToT Reward from Rauru']
+                elif iter_world.settings.shuffle_dungeon_rewards == 'dungeon':
                     skipped_locations_from_dungeons += [location for location in iter_world.get_filled_locations() if location.item.type == 'DungeonReward']
-                if world.settings.shuffle_song_items == 'song':
-                    skipped_locations_from_dungeons += [world.get_location(loc_name) for loc_name in location_groups['Song']]
-                elif world.settings.shuffle_song_items == 'dungeon':
-                    skipped_locations_from_dungeons += [world.get_location(loc_name) for loc_name in location_groups['BossHeart']]
+                if iter_world.settings.shuffle_song_items == 'song':
+                    skipped_locations_from_dungeons += [iter_world.get_location(loc_name) for loc_name in location_groups['Song']]
+                elif iter_world.settings.shuffle_song_items == 'dungeon':
+                    skipped_locations_from_dungeons += [iter_world.get_location(loc_name) for loc_name in location_groups['BossHeart']]
                 for location in skipped_locations_from_dungeons:
-                    hint_area = HintArea.at(location)
-                    if hint_area.is_dungeon and iter_world.empty_dungeons[hint_area.dungeon_name].empty:
-                        skipped_locations.append(location)
-                        world.item_added_hint_types['barren'].append(location.item.name)
+                    if location.item is not None and world.id == location.item.world.id:
+                        hint_area = HintArea.at(location)
+                        if hint_area.is_dungeon and iter_world.precompleted_dungeons.get(hint_area.dungeon_name, False):
+                            skipped_locations.append(location)
+                            world.item_added_hint_types['barren'].append(location.item.name)
             for location in skipped_locations:
                 if iter_world.id == world.id:
                     self.skipped_locations.append(location)
@@ -1256,15 +1267,14 @@ class Distribution:
         for itemsetting in starting_items:
             if itemsetting in StartingItems.everything:
                 item = StartingItems.everything[itemsetting]
-                if not item.special:
-                    add_starting_item_with_ammo(data, item.item_name)
+                if self.settings.blue_fire_arrows and item.item_name == 'Ice Arrows':
+                    add_starting_item_with_ammo(data, 'Blue Fire Arrows')
+                elif item.item_name == 'Rutos Letter' and self.settings.zora_fountain != 'open':
+                    data['Rutos Letter'].count += 1
+                elif item.item_name in ('Bottle', 'Rutos Letter'):
+                    data['Bottle'].count += 1
                 else:
-                    if item.item_name == 'Rutos Letter' and self.settings.zora_fountain != 'open':
-                        data['Rutos Letter'].count += 1
-                    elif item.item_name in ('Bottle', 'Rutos Letter'):
-                        data['Bottle'].count += 1
-                    else:
-                        raise KeyError("invalid special item: {}".format(item.item_name))
+                    add_starting_item_with_ammo(data, item.item_name)
             else:
                 raise KeyError("invalid starting item: {}".format(itemsetting))
         self.settings.starting_equipment = []
@@ -1348,8 +1358,8 @@ class Distribution:
         for world in spoiler.worlds:
             world_dist = self.world_dists[world.id]
             world_dist.randomized_settings = {randomized_item: getattr(world.settings, randomized_item) for randomized_item in world.randomized_list}
-            world_dist.dungeons = {dung: DungeonRecord({ 'mq': world.dungeon_mq[dung] }) for dung in world.dungeon_mq}
-            world_dist.empty_dungeons = {dung: EmptyDungeonRecord({ 'empty': world.empty_dungeons[dung].empty }) for dung in world.empty_dungeons}
+            world_dist.dungeons = {name: DungeonRecord({ 'mq': is_mq }) for name, is_mq in world.dungeon_mq.items()}
+            world_dist.empty_dungeons = {name: EmptyDungeonRecord({ 'empty': is_precompleted }) for name, is_precompleted in world.precompleted_dungeons.items()}
             world_dist.trials = {trial: TrialRecord({ 'active': not world.skipped_trials[trial] }) for trial in world.skipped_trials}
             if hasattr(world, 'song_notes'):
                 world_dist.songs = {song: SongRecord({ 'notes': str(world.song_notes[song]) }) for song in world.song_notes}

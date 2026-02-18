@@ -10,7 +10,7 @@ from Item import ItemInfo
 from Location import LocationIterator
 from LocationList import location_table
 from Models import get_model_choices
-from SettingsListTricks import logic_tricks
+from SettingsListTricks import logic_tricks, advanced_logic_tricks
 from SettingTypes import SettingInfo, SettingInfoStr, SettingInfoList, SettingInfoDict, Textbox, Button, Checkbutton, \
     Combobox, Radiobutton, Fileinput, Directoryinput, Textinput, ComboboxInt, Scale, Numberinput, MultipleSelect, \
     SearchBox
@@ -623,17 +623,7 @@ class SettingInfos:
         default        = False,
         disable        = {
             True: {
-                'sections': ['shuffle_section'],
-                'settings': [
-                    'open_forest', 'open_kakariko', 'open_door_of_time', 'zora_fountain', 'gerudo_fortress', 'dungeon_shortcuts_choice',
-                    'dungeon_shortcuts', 'trials_random', 'trials',
-                    'starting_age', 'shuffle_interior_entrances', 'shuffle_hideout_entrances', 'shuffle_gerudo_fortress_heart_piece',
-                    'shuffle_grotto_entrances', 'shuffle_dungeon_entrances',
-                    'shuffle_bosses', 'shuffle_overworld_entrances', 'shuffle_gerudo_valley_river_exit', 'owl_drops', 'warp_songs', 'spawn_positions',
-                    'triforce_hunt', 'triforce_count_per_world', 'triforce_goal_per_world', 'free_bombchu_drops', 'one_item_per_dungeon',
-                    'shuffle_mapcompass', 'shuffle_smallkeys', 'shuffle_hideoutkeys', 'shuffle_tcgkeys', 'key_rings_choice', 'key_rings',
-                    'shuffle_silver_rupees', 'silver_rupee_pouches_choice', 'silver_rupee_pouches', 'shuffle_bosskeys', 'enhance_map_compass',
-                ],
+                'sections': ['open_section', 'world_section', 'shuffle_section', 'shuffle_dungeon_section'],
             },
         },
         shared         = True,
@@ -644,7 +634,7 @@ class SettingInfos:
         default        = 'glitchless',
         choices        = {
             'glitchless': 'Glitchless',
-            'glitched':   'Glitched',
+            'advanced':   'Advanced',
             'none':       'No Logic',
         },
         gui_tooltip    = '''\
@@ -656,20 +646,20 @@ class SettingInfos:
             some minor tricks. Add minor tricks to consider for logic
             in the 'Detailed Logic' tab.
 
-            'Glitched': Movement-oriented glitches are likely required.
-            No locations excluded.
+            'Advanced': More Glitchless tricks and toggleable
+            glitches for accessability to curate the overall difficulty
+            level for every skill level.
 
             'No Logic': Maximize randomization, All locations are
             considered available. MAY BE IMPOSSIBLE TO BEAT.
         ''',
         disable        = {
-            'glitchless': {'settings': ['tricks_list_msg']},
-            'glitched':   {'settings': ['allowed_tricks', 'shuffle_interior_entrances', 'shuffle_hideout_entrances', 'shuffle_gerudo_fortress_heart_piece', 'shuffle_grotto_entrances',
-                                         'shuffle_dungeon_entrances', 'shuffle_overworld_entrances', 'shuffle_gerudo_valley_river_exit', 'owl_drops',
-                                         'warp_songs', 'spawn_positions', 'mq_dungeons_mode', 'mq_dungeons_specific',
-                                         'mq_dungeons_count', 'shuffle_bosses', 'shuffle_ganon_tower', 'dungeon_shortcuts', 'deadly_bonks',
-                                         'shuffle_freestanding_items', 'shuffle_pots', 'shuffle_crates', 'shuffle_beehives', 'shuffle_silver_rupees', 'shuffle_wonderitems']},
-            'none':       {'settings': ['allowed_tricks', 'logic_no_night_tokens_without_suns_song', 'reachable_locations']},
+            'glitchless': {'settings': ['tricks_list_msg', 'advanced_allowed_tricks']},
+            # Forcing blue fire arrows to be on, and the tcg lens setting to be off as we can do it without the lens logically
+            # and don't care if people do 1/32
+            'advanced':   {'settings': ['tricks_list_msg', 'blue_fire_arrows', 'tcg_requires_lens'
+                                ]},
+            'none':       {'settings': ['allowed_tricks', 'advanced_allowed_tricks', 'logic_no_night_tokens_without_suns_song', 'reachable_locations']},
         },
         shared         = True,
     )
@@ -1241,11 +1231,12 @@ class SettingInfos:
             required to access the Deku Tree. Items needed for this will be
             guaranteed inside the forest area. This setting is incompatible
             with starting as adult, and so Starting Age will be locked to Child.
-            With either "Shuffle Interior Entrances" set to "All", "Shuffle
-            Overworld Entrances" on, "Randomize Warp Song Destinations" on
-            or "Randomize Overworld Spawns" on, Closed Forest will instead
-            be treated as Closed Deku with starting age Child and WILL NOT
-            guarantee that these items are available in the forest area.
+            With any of "Shuffle Interior Entrances" set to "All", "Shuffle
+            Overworld Entrances" on, "Randomize Warp Song Destinations" on,
+            "Randomize Overworld Spawns" on, or "Shuffle Grottos" in Advanced
+            Logic, Closed Forest will instead be treated as Closed Deku with
+            starting age Child and WILL NOT guarantee that these items are
+            available in the forest area.
         ''',
         shared         = True,
         disable        = {
@@ -1292,13 +1283,40 @@ class SettingInfos:
         },
     )
 
-    open_door_of_time = Checkbutton(
-        gui_text       = 'Open Door of Time',
+    open_door_of_time = Combobox(
+        gui_text       = 'Door of Time',
+        default        = 'sot',
+        choices        = {
+            'open':           'Open',
+            'sot':            'Song of Time',
+            'oot_sot':        'Ocarina of Time + Song of Time',
+            'stones':         '3 Spiritual Stones',
+            'stones_sot':     '3 Stones + Song of Time',
+            'stones_oot_sot': '3 Stones + OoT + SoT',
+        },
         gui_tooltip    = '''\
-            The Door of Time starts opened instead of needing to
-            play the Song of Time. If this is not set, only
-            an Ocarina and Song of Time must be found to open
-            the Door of Time.
+            'Open': The Door of Time starts opened instead of
+            needing to play the Song of Time.
+
+            'Song of Time': Only an Ocarina and Song of Time
+            must be found to open the Door of Time. This is the
+            vanilla behavior despite what the story suggests.
+
+            'Ocarina of Time + Song of Time': The Door of Time
+            is opened by playing the Song of Time on the
+            Ocarina of Time.
+
+            '3 Spiritual Stones': The Door of Time
+            automatically opens upon collecting all three
+            Spiritual Stones. Song of Time is not required.
+
+            '3 Stones + Song of Time': The Door of Time is
+            opened by playing the Song of Time after collecting
+            all three Spiritual Stones.
+
+            '3 Stones + OoT + SoT': The Door of Time is opened
+            by playing the Song of Time on the Ocarina of Time
+            after collecting all three Spiritual Stones.
         ''',
         shared         = True,
         gui_params     = {
@@ -1550,7 +1568,9 @@ class SettingInfos:
             randomly rolled with no major items, but their dungeon rewards won't
             be given for free.
             - 'Specific Dungeons': Choose which specific dungeons will be pre-completed.
-            - 'Specific Rewards': Choose which specific dungeon rewards will be in pre-completed dungeons. Not compatible with shuffled dungeon rewards.
+            - 'Specific Rewards': Choose which specific dungeon rewards will be in
+            pre-completed dungeons. If dungeon rewards are shuffled, rewards in side
+            dungeons or the overworld will have no effect on pre-completion.
             - 'Count': Choose how many pre-completed dungeons will be randomly chosen.
 
             A same dungeon won't be both MQ and pre-completed unless it has been
@@ -1574,7 +1594,6 @@ class SettingInfos:
             '!specific': {'settings': ['empty_dungeons_specific']},
             '!rewards':  {'settings': ['empty_dungeons_rewards']},
             '!count':    {'settings': ['empty_dungeons_count']},
-            'rewards':   {'settings': ['shuffle_dungeon_rewards']},
         },
         gui_params     = {
             'distribution':  [
@@ -2001,8 +2020,8 @@ class SettingInfos:
             'random': 'Random # of Items Per Shop',
         },
         disable        = {
-            'off':  {'settings': ['shopsanity_prices']},
-            '0':    {'settings': ['shopsanity_prices']},
+            'off':  {'settings': ['special_deal_price_distribution', 'special_deal_price_min', 'special_deal_price_max']},
+            '0':    {'settings': ['special_deal_price_distribution', 'special_deal_price_min', 'special_deal_price_max']},
         },
         gui_tooltip    = '''\
             Randomizes Shop contents.
@@ -2043,36 +2062,73 @@ class SettingInfos:
         },
     )
 
-    shopsanity_prices = Combobox(
-        gui_text         = 'Shopsanity Prices',
-        default          = 'random',
+    special_deal_price_distribution = Combobox(
+        gui_text         = 'Special Deal Prices',
+        default          = 'betavariate',
         choices          = {
-            'random':          "Random",
-            'random_starting': "Starting Wallet",
-            'random_adult':    "Adult's Wallet",
-            'random_giant':    "Giant's Wallet",
-            'random_tycoon':   "Tycoon's Wallet",
-            'affordable':      "Affordable",
+            'vanilla':     'Vanilla',
+            'betavariate': 'Weighted',
+            'uniform':     'Uniform',
+        },
+        disable          = {
+            'vanilla': {'settings': ['special_deal_price_min', 'special_deal_price_max']},
         },
         gui_tooltip      = '''\
-            Controls the randomization of prices for shopsanity items.
-            For more control, utilize the plandomizer.
+            Controls how the prices for Special Deal items in shops are
+            selected. For more control, utilize the plandomizer.
 
-            'Random': The default randomization. Shop prices for
-            shopsanity items will range between 0 to 300 rupees,
-            with a bias towards values slightly below the middle of the
-            range, in multiples of 5.
+            'Vanilla': Each item will be sold for the price of the item
+            that appears in its slot in the vanilla game.
 
-            'X Wallet': Shop prices for shopsanity items will range
-            between 0 and the specified wallet's maximum capacity,
-            in multiples of 5.
+            'Weighted': Shop prices will be biased towards slightly below
+            the middle of the selected range, with very low or very high
+            prices only appearing rarely.
 
-            'Affordable': Shop prices for shopsanity items will be
-            fixed to 10 rupees.
+            'Uniform': Each price value in the selected range is equally
+            likely.
         ''',
-        disabled_default =  'random',
         shared           = True,
         gui_params       = {
+            "hide_when_disabled": True,
+        },
+    )
+
+    special_deal_price_min = Scale(
+        gui_text       = 'Minimum Special Deal Price',
+        default        = 0,
+        minimum        = 0,
+        maximum        = 995,
+        step           = 5,
+        shared         = True,
+        gui_tooltip    = '''\
+            Select the minimum price in rupees for Special Deal
+            items in shops. Prices will be selected randomly in
+            multiples of 5 according to the "Special Deal Price
+            Distribution" setting. Set this setting and "Maximum
+            Special Deal Price" to the same value to give all
+            Special Deals a fixed price.
+        ''',
+        gui_params     = {
+            "hide_when_disabled": True,
+        },
+    )
+
+    special_deal_price_max = Scale(
+        gui_text       = 'Maximum Special Deal Price',
+        default        = 300,
+        minimum        = 0,
+        maximum        = 995,
+        step           = 5,
+        shared         = True,
+        gui_tooltip    = '''\
+            Select the maximum price in rupees for Special Deal
+            items in shops. Prices will be selected randomly in
+            multiples of 5 according to the "Special Deal Price
+            Distribution" setting. Set this setting and "Minimum
+            Special Deal Price" to the same value to give all
+            Special Deals a fixed price.
+        ''',
+        gui_params     = {
             "hide_when_disabled": True,
         },
     )
@@ -2476,6 +2532,20 @@ class SettingInfos:
         },
     )
 
+    shuffle_100_skulltula_rupee = Checkbutton(
+        gui_text       = 'Shuffle 100 Skulltula Reward',
+        gui_tooltip    = '''\
+            Enabling this adds the repeatable Huge Rupee reward
+            from the Skulltula house to the item pool. This is obtained
+            by collecting all 100 gold skulltulas.
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    )
+
     shuffle_loach_reward = Combobox(
         gui_text       = 'Shuffle Hyrule Loach Reward',
         gui_tooltip    = '''\
@@ -2586,8 +2656,8 @@ class SettingInfos:
         shared         = True,
     )
 
-    shuffle_mapcompass = Combobox(
-        gui_text       = 'Maps & Compasses',
+    shuffle_map = Combobox(
+        gui_text       = 'Maps',
         default        = 'dungeon',
         choices        = {
             'remove':      'Remove',
@@ -2600,36 +2670,83 @@ class SettingInfos:
             'keysanity':   'Anywhere',
         },
         gui_tooltip    = '''\
-            'Remove': Maps and Compasses are removed.
+            'Remove': Maps are removed.
             This will add a small amount of money and refill items to the pool.
 
-            'Start With': Maps and Compasses are given to you from the start.
+            'Start With': Maps are given to you from the start.
             This will add a small amount of money and refill items to the pool.
 
-            'Vanilla': Maps and Compasses will appear in their vanilla locations.
+            'Vanilla': Maps will appear in their vanilla locations.
 
-            'Own Dungeon': Maps and Compasses can only appear in their respective
-            dungeon.
+            'Own Dungeon': Maps can only appear in their respective dungeon.
 
-            'Regional': Maps and Compasses can only appear in regions near the
+            'Regional': Maps can only appear in regions near the
             original dungeon (including the dungeon itself or other dungeons in
             the region). <a href="https://wiki.ootrandomizer.com/index.php?title=Hints#Hint_Regions" target="_blank">The Wiki has a list of corresponding regions here.</a>
 
-            'Overworld Only': Maps and Compasses can only appear
-            outside of dungeons.
+            'Overworld Only': Maps can only appear outside of dungeons.
 
-            'Any Dungeon': Maps and Compasses can only appear in a dungeon, but
+            'Any Dungeon': Maps can only appear in a dungeon, but
             not necessarily the dungeon they are for.
 
-            'Anywhere': Maps and Compasses can appear anywhere in the world.
+            'Anywhere': Maps can appear anywhere in the world.
 
-            Setting 'Remove', 'Start With', 'Overworld', or 'Anywhere' will add 2
-            more possible locations to each Dungeons. This makes dungeons more
+            Setting 'Remove', 'Start With', 'Overworld', or 'Anywhere' will add 1
+            more possible location to each Dungeon. This makes dungeons more
             profitable, especially Ice Cavern, Water Temple, and Jabu Jabu's Belly.
 
-            Regardless of the selected option, maps and compasses from pre-completed
-            dungeons won't be placed outside their respective dungeons and maps and
-            compasses from other dungeons won't be placed inside pre-completed dungeons.
+            Regardless of the selected option, maps from pre-completed
+            dungeons won't be placed outside their respective dungeons and maps
+            from other dungeons won't be placed inside pre-completed dungeons.
+        ''',
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    )
+
+    shuffle_compass = Combobox(
+        gui_text       = 'Compasses',
+        default        = 'dungeon',
+        choices        = {
+            'remove':      'Remove',
+            'startwith':   'Start With',
+            'vanilla':     'Vanilla Locations',
+            'dungeon':     'Own Dungeon',
+            'regional':    'Regional',
+            'overworld':   'Overworld Only',
+            'any_dungeon': 'Any Dungeon',
+            'keysanity':   'Anywhere',
+        },
+        gui_tooltip    = '''\
+                'Remove': Compasses are removed.
+                This will add a small amount of money and refill items to the pool.
+
+                'Start With': Compasses are given to you from the start.
+                This will add a small amount of money and refill items to the pool.
+
+                'Vanilla': Compasses will appear in their vanilla locations.
+
+                'Own Dungeon': Compasses can only appear in their respective dungeon.
+
+                'Regional': Compasses can only appear in regions near the
+                original dungeon (including the dungeon itself or other dungeons in
+                the region). <a href="https://wiki.ootrandomizer.com/index.php?title=Hints#Hint_Regions" target="_blank">The Wiki has a list of corresponding regions here.</a>
+
+                'Overworld Only': Compasses can only appear outside of dungeons.
+
+                'Any Dungeon': Compasses can only appear in a dungeon, but
+                not necessarily the dungeon they are for.
+
+                'Anywhere': Compasses can appear anywhere in the world.
+
+                Setting 'Remove', 'Start With', 'Overworld', or 'Anywhere' will add 1
+                more possible location to each Dungeon. This makes dungeons more
+                profitable, especially Ice Cavern, Water Temple, and Jabu Jabu's Belly.
+
+                Regardless of the selected option, compasses from pre-completed
+                dungeons won't be placed outside their respective dungeons and
+                compasses from other dungeons won't be placed inside pre-completed dungeons.
         ''',
         shared         = True,
         gui_params     = {
@@ -3039,13 +3156,25 @@ class SettingInfos:
         shared          = True,
     )
 
-    enhance_map_compass = Checkbutton(
+    enhance_map_compass = MultipleSelect(
         gui_text       = 'Maps and Compasses Give Information',
+        choices        = {
+            'map_mq':                'Map gives MQ info',
+            'map_dungeon_location':  'Map gives dungeon location',
+            'compass_boss_location': 'Compass gives boss location',
+            'compass_reward':        'Compass gives reward info',
+        },
+        default         = [],
         gui_tooltip    = '''\
             Gives the Map and Compass extra functionality.
-            Map will tell if a dungeon is vanilla or Master Quest.
-            Compass will tell what medallion or stone is within.
-            The Temple of Time Altar will no longer provide
+
+            Map can be enhanced to tell if a dungeon is vanilla or Master Quest,
+            and to give dungeon locations if Dungeon entrance shuffle is enabled.
+
+            Compass can be enhanced to reveal which boss is in the corresponding dungeon
+            if Boss entrance shuffle is enabled,
+            or to tell what medallion or stone is within.
+            If compass is enabled, the Temple of Time Altar will no longer provide
             information on the location of medallions and stones.
 
             'Maps/Compasses: Remove': The dungeon information is
@@ -3054,7 +3183,6 @@ class SettingInfos:
             'Maps/Compasses: Start With': The dungeon information
             is available immediately from the dungeon menu.
         ''',
-        default        = False,
         shared         = True,
         gui_params     = {
             'randomize_key': 'randomize_settings',
@@ -3117,8 +3245,26 @@ class SettingInfos:
             and MAY be required to complete the game.
 
             Tricks in the left column are NEVER required.
+        '''
+    )
 
-            Tricks are only relevant for Glitchless logic.
+    advanced_allowed_tricks = SearchBox(
+        gui_text       = "Enable Advanced Tricks",
+        shared         = True,
+        choices        = {
+            val['name']: gui_text for gui_text, val in advanced_logic_tricks.items()
+        },
+        default        = [],
+        gui_params     = {
+            'choice_tooltip': {choice['name']: choice['tooltip'] for choice in advanced_logic_tricks.values()},
+            'filterdata': {val['name']: val['tags'] for _, val in advanced_logic_tricks.items()},
+            "hide_when_disabled": True,
+        },
+        gui_tooltip='''
+            Tricks moved to the right column are in-logic
+            and MAY be required to complete the game.
+
+            Tricks in the left column are NEVER required.
         '''
     )
 
@@ -3167,6 +3313,47 @@ class SettingInfos:
         ''',
     )
 
+    add_random_starting_items = Checkbutton(
+        gui_text         = 'Additional Random Starting Items',
+        gui_tooltip      = '''\
+            Begin the game with a configurable amount of randomly selected items in
+            addition to your selections from the tables.
+        ''',
+        disable          = {
+            False: {'settings': ['random_starting_items_exclude', 'random_starting_items_count']}
+        },
+        shared           = True,
+    )
+
+    random_starting_items_exclude = MultipleSelect(
+        gui_text         = 'Exclude Item Types',
+        gui_tooltip      = '''\
+            Selections here will be excluded from the random starting item pool.
+        ''',
+        choices          = {
+            'songs':           'Songs',
+            'bombchus':        'Bombchus',
+            'shields':         'Deku/Hylian Shields',
+            'deku_upgrades':   'Deku Stick/Nut Upgrades',
+            'health_upgrades': 'Health Upgrades',
+            'junk':            'Junk Items',
+        },
+        default          = [],
+        disabled_default = [],
+        shared           = True,
+    )
+
+    random_starting_items_count = Scale(
+        gui_text         = 'Amount of Items',
+        gui_tooltip      = '''\
+            Configure the amount of random items to start with.
+        ''',
+        default          = 0,
+        minimum          = 0,
+        maximum          = 10,
+        shared           = True,
+    )
+
     start_with_consumables = Checkbutton(
         gui_text       = 'Start with Consumables',
         gui_tooltip    = '''\
@@ -3200,12 +3387,30 @@ class SettingInfos:
 
     # Other
 
-    skip_reward_from_rauru = Checkbutton(
+    skip_reward_from_rauru = Combobox(
         gui_text       = 'Free Reward from Rauru',
+        default        = 'not_free',
+        choices        = {
+            'not_free':    'No',
+            'free':        'Yes',
+            'free_forced': 'Yes (Forced)',
+        },
         gui_tooltip    = '''\
             The item given by Rauru beyond the Door of Time
             (the Light Medallion in the vanilla game) is
             given as a starting item instead.
+
+            'No': Rauru gives reward when you go beyond
+            the Door of Time.
+
+            'Yes': You begin the game with the reward Rauru
+            normally gives beyond the Door of Time. If dungeon
+            rewards are shuffled then this will be as well.
+
+            'Yes (Forced)': You begin the game with the
+            reward Rauru normally gives beyond the Door of Time,
+            if dungeon rewards are shuffled you will still
+            get a random Spiritual Stone or Medallion.
         ''',
         shared         = True,
     )
@@ -3286,12 +3491,22 @@ class SettingInfos:
         shared         = True,
     )
 
-    free_scarecrow = Checkbutton(
-        gui_text       = "Free Scarecrow's Song",
+    scarecrow_behavior = Combobox(
+        gui_text       = 'Scarecrow Behavior',
+        default        = 'vanilla',
+        choices        = {
+            'vanilla':   'Vanilla',
+            'fast':   'Fast',
+            'free':  'Free',
+        },
         gui_tooltip    = '''\
-            Pulling out the Ocarina near a
-            spot at which Pierre can spawn will
-            do so, without needing the song.
+            "Fast" will require setting the same song
+            both as child and adult, but pulling out
+            the Ocarina near a spot at which Pierre can
+            spawn will do so, without needing the song.
+
+            "Free" removes both the need to set the song first
+            and to play the song to summon Pierre.
         ''',
         shared         = True,
     )
@@ -3540,19 +3755,22 @@ class SettingInfos:
     misc_hints = MultipleSelect(
         gui_text        = 'Misc. Hints',
         choices         = {
-            'altar':       'Temple of Time Altar',
-            'dampe_diary': "Dampé's Diary (Hookshot)",
-            'ganondorf':   'Ganondorf (Light Arrows)',
-            'warp_songs_and_owls':  'Warp Songs and Owls',
-            '10_skulltulas':  'House of Skulltula: 10',
-            '20_skulltulas':  'House of Skulltula: 20',
-            '30_skulltulas':  'House of Skulltula: 30',
-            '40_skulltulas':  'House of Skulltula: 40',
-            '50_skulltulas':  'House of Skulltula: 50',
-            'frogs2':         'Frogs Ocarina Game',
-            'mask_shop':  'Shuffled Mask Shop',
-            'unique_merchants':  'Unique Merchants',
-            'big_poes':  'Market Big Poes',
+            'altar':               'Temple of Time Altar',
+            'dampe_diary':         "Dampé's Diary (Hookshot)",
+            'ganondorf':           'Ganondorf (Light Arrows)',
+            'warp_songs_and_owls': 'Warp Songs and Owls',
+            '10_skulltulas':       'House of Skulltula: 10',
+            '20_skulltulas':       'House of Skulltula: 20',
+            '30_skulltulas':       'House of Skulltula: 30',
+            '40_skulltulas':       'House of Skulltula: 40',
+            '50_skulltulas':       'House of Skulltula: 50',
+            '100_skulltulas':      'House of Skulltula: 100',
+            'frogs2':              'Frogs Ocarina Game',
+            'mask_shop':           'Shuffled Mask Shop',
+            'unique_merchants':    'Unique Merchants',
+            'big_poes':            'Market Big Poes',
+            'skull_mask':          'Deku Theater Skull Mask',
+            'mask_of_truth':       'Deku Theater Mask of Truth',
         },
         gui_tooltip    = '''\
             This setting adds some hints at locations
@@ -3593,7 +3811,7 @@ class SettingInfos:
             Placing yourself on the log at Zora River
             where you play the songs for the frogs will
             tell you what the reward is for playing all
-            six non warp songs.
+            six non-warp songs.
 
             If shuffled, right side items in the mask
             shop will be visible but not obtainable
@@ -3609,6 +3827,9 @@ class SettingInfos:
 
             The Poe collector will tell the reward for selling
             him Big Poes.
+
+            The sign in Deku Theater will tell the reward for showing
+            the Skull Mask and/or the Mask of Truth.
         ''',
         shared         = True,
         default        = ['altar', 'ganondorf', 'warp_songs_and_owls'],
@@ -3790,20 +4011,33 @@ class SettingInfos:
         },
     )
 
-    ocarina_songs = Combobox(
+    ocarina_songs = MultipleSelect(
         gui_text       = 'Randomize Ocarina Melodies',
-        default        = 'off',
+        default        = [],
         choices        = {
-            'off': 'Off',
-            'frog': 'Frog Songs Only',
-            'warp': 'Warp Songs Only',
-            'all':  'All Songs',
+            'frog':   'Top Row Songs',
+            'warp':   'Warp Songs',
+            'frogs2': 'Frogs Ocarina Game',
         },
         gui_tooltip    = '''\
             Will need to memorize a new set of songs.
             Can be silly, but difficult. All songs are
             generally sensible, but warp songs are
-            typically more difficult than frog songs.
+            typically more difficult than top row
+            songs.
+
+            "Top Row Songs": Randomizes Zelda's Lullaby,
+            Epona's Song, Saria's Song, Sun's Song,
+            Song of Time, and Song of Storms.
+
+            "Warp Songs": Randomizes Minuet of Forest,
+            Bolero of Fire, Serenade of Water, Requiem
+            of Spirit, Nocturne of Shadow, and Prelude
+            of Light.
+
+            "Frogs Ocarina Game": Randomizes the 14
+            notes of the final song of the Fabulous
+            Five Froggish Tenors.
             ''',
         shared         = True,
     )
@@ -3891,14 +4125,18 @@ class SettingInfos:
     )
 
     blue_fire_arrows = Checkbutton(
-        gui_text       = 'Blue Fire Arrows',
-        gui_tooltip    = '''\
+        gui_text            = 'Blue Fire Arrows',
+        gui_tooltip         = '''\
             Ice arrows gain the power of blue fire.
             They can be used to melt red ice
             and break the mud walls in Dodongo's Cavern.
         ''',
-        default        = False,
-        shared         = True,
+        default             = False,
+        disabled_default    = True,
+        gui_params          = {
+            "hide_when_disabled": True,
+        },
+        shared              = True,
     )
 
     fix_broken_drops = Checkbutton(
@@ -3920,7 +4158,8 @@ class SettingInfos:
         gui_tooltip    = '''\
             Force the player to always lose the
             treasure chest game in the first room
-            unless they have the Lens of Truth.
+            unless they have the Lens of Truth and
+            a Magic Meter.
             Does not function if Treasure Chest Game
             small keys are shuffled.
         ''',
@@ -3977,9 +4216,6 @@ class SettingInfos:
             fail to generate, consider turning this option off.
         ''',
         shared         = True,
-        gui_params     = {
-            'randomize_key': 'randomize_settings',
-        },
     )
 
     item_pool_value = Combobox(
