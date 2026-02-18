@@ -27,6 +27,8 @@
 
 void Gameplay_InitSkybox(z64_game_t* globalCtx, int16_t skyboxId);
 
+extern void* ICON_STATIC_GAME_OVER;
+
 void c_init() {
     heap_init();
     gfx_init();
@@ -34,6 +36,7 @@ void c_init() {
     override_flags_init();
     models_init();
     init_textures();
+    ICON_STATIC_GAME_OVER = heap_alloc(0x3300);
 #if DEBUG_MODE
     SKIP_N64_LOGO = 1;
 #endif

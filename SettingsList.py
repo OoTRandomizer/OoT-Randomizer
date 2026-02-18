@@ -3603,6 +3603,16 @@ class SettingInfos:
         shared         = True,
     )
 
+    save_and_quit_from_pause = Checkbutton(
+        gui_text       = 'Add Return To Title Option In Pause Screen',
+        gui_tooltip    = '''\
+            Adds the option to return to title
+            after the save prompt closes.
+        ''',
+        default        = False,
+        shared         = True,
+    )
+
     chicken_count_random = Checkbutton(
         gui_text       = 'Random Cucco Count',
         gui_tooltip    = '''\

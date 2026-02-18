@@ -2,10 +2,7 @@
 #define AUDIO_H
 
 #include <stdint.h>
-
-typedef struct {
-    float x, y, z;
-} Vec3f; // move this if needed elsewhere
+#include "z64.h"
 
 extern Vec3f z64_SfxDefaultPos;
 extern float z64_SfxDefaultFreqAndVolScale;

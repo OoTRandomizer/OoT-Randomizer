@@ -2034,6 +2034,11 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     # Static initial seed value for one-time random actions like the Hylian Shield discount
     rom.write_int32(rom.sym('RANDOMIZER_RNG_SEED'), spoiler.settings.numeric_seed & 0xFFFFFFFF)
 
+
+    if world.settings.save_and_quit_from_pause:
+        symbol = rom.sym('CFG_SAVE_AND_QUIT')
+        rom.write_byte(symbol, 0x01)
+
     return rom
 
 

@@ -35,6 +35,13 @@ Gameplay_InitSkybox:
     nop
 
 ;==================================================================================================
+; Replace KaleidoScopeCall_Draw call with new KaleidoScopeCall_Draw function
+;==================================================================================================
+
+.org 0x8009C044
+    jal KaleidoScopeCall_Draw
+
+;==================================================================================================
 ; Expand Audio Thread memory
 ;==================================================================================================
 
@@ -4161,3 +4168,4 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/ovl_en_ssh.asm"
 .include "hacks/ovl_en_okarina_tag.asm"
 .include "hacks/sound.asm"
+.include "hacks/z_kaleido_scope.asm"
