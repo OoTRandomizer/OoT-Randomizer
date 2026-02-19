@@ -15,6 +15,7 @@
 * Fix a bug where the starting health capacity in game might be miscalculated when starting with a heart piece.
 * Fix the Chicken (child trade quest item) using the same get item text box as the Pocket Cucco (adult trade quest item).
 * Fix a vanilla bug where playing the ocarina with vibrato before recording the Scarecrow's Song could prevent Pierre from spawning.
+* Fix unshuffled treasure box shop keys showing the wrong item model while inside the chests if `Key Appearance Matches Dungeon` is enabled.
 
 # 9.0
 
