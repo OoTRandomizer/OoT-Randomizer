@@ -7,6 +7,7 @@
 * The Farore's Wind text box now distinguishes between Ganon's Castle and Ganon's Tower.
 * New `Water Hop` trick added to advanced logic.
 * Improve Debug menu with new options.
+* Refill items sold as special deals are now less likely to cost more than the "market price" of a repeatable purchase.
 
 ## Bug fixes
 * Fix a potential softlock when talking to Pierre (the upper scarecrow) as child in Lake Hylia.

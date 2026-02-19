@@ -704,18 +704,21 @@ class World:
             for location in region.locations:
                 if location.type == 'Shop':
                     if location.name[-1:] in shop_item_indexes[:shop_item_count]:
-                        if self.settings.special_deal_price_distribution == 'vanilla':
-                            self.shop_prices[location.name] = ItemInfo.items[location.vanilla_item].price
-                        elif self.settings.special_deal_price_max < self.settings.special_deal_price_min:
-                            raise ValueError('Maximum special deal price is lower than minimum, perhaps you meant to swap them?')
-                        elif self.settings.special_deal_price_max == self.settings.special_deal_price_min:
-                            self.shop_prices[location.name] = self.settings.special_deal_price_min
-                        elif self.settings.special_deal_price_distribution == 'betavariate':
-                            self.shop_prices[location.name] = self.settings.special_deal_price_min + int(random.betavariate(1.5, 2) * (self.settings.special_deal_price_max - self.settings.special_deal_price_min) / 5) * 5
-                        elif self.settings.special_deal_price_distribution == 'uniform':
-                            self.shop_prices[location.name] = random.randrange(self.settings.special_deal_price_min, self.settings.special_deal_price_max + 1, 5)
-                        else:
-                            raise NotImplementedError(f'Unimplemented special deal distribution: {self.settings.special_deal_price_distribution}')
+                        self.shop_prices[location.name] = self.new_shop_price()
+
+    def new_shop_price(self) -> int:
+        if self.settings.special_deal_price_distribution == 'vanilla':
+            return ItemInfo.items[location.vanilla_item].price
+        elif self.settings.special_deal_price_max < self.settings.special_deal_price_min:
+            raise ValueError('Maximum special deal price is lower than minimum, perhaps you meant to swap them?')
+        elif self.settings.special_deal_price_max == self.settings.special_deal_price_min:
+            return self.settings.special_deal_price_min
+        elif self.settings.special_deal_price_distribution == 'betavariate':
+            return self.settings.special_deal_price_min + int(random.betavariate(1.5, 2) * (self.settings.special_deal_price_max - self.settings.special_deal_price_min) / 5) * 5
+        elif self.settings.special_deal_price_distribution == 'uniform':
+            return random.randrange(self.settings.special_deal_price_min, self.settings.special_deal_price_max + 1, 5)
+        else:
+            raise NotImplementedError(f'Unimplemented special deal distribution: {self.settings.special_deal_price_distribution}')
 
     def set_scrub_prices(self) -> None:
         # Get Deku Scrub Locations
@@ -1216,10 +1219,20 @@ class World:
         if not isinstance(location, Location):
             location = self.get_location(location)
 
+        price: Optional[int]
+        if location.price is not None: # special deal
+            price = location.price
+            if item.info.market_price is not None and not (item.info.market_price_non_chu_drops_only and self.settings.free_bombchu_drops) and location.price >= item.info.market_price:
+                # Reduce the frequency of obvious scams by rerolling the price once if it's too high, and taking the lower value.
+                # This affects logic so it should only be applied to refills that are logically irrelevant.
+                # Otherwise there could be seeds with e.g. a wallet that's hinted as logically required for a purchase even though the price was rerolled to no longer require the wallet.
+                price = min(location.price, self.new_shop_price())
+        else:
+            price = item.price
+
         location.item = item
         item.location = location
-        item.price = location.price if location.price is not None else item.price
-        location.price = item.price
+        item.price = location.price = price
 
         logging.getLogger('').debug('Placed %s [World %d] at %s [World %d]', item, item.world.id if hasattr(item, 'world') else -1, location, location.world.id if hasattr(location, 'world') else -1)
 
