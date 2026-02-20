@@ -615,86 +615,90 @@ class Message:
         slows_text   = [[0x8189, 0x818A, 0x86C9], [0x08, 0x09, 0x14]][self.lang]
         slow_icons   = [0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x04, 0x02]
 
-        end_code = [0x8170, 0x02][self.lang]
-        jp_goto  = 0x81CB  # JP only
+        end_code          = [0x8170, 0x02][self.lang]
+        jp_goto           = 0x81CB  # JP only
+        color_code        = [0x0B, 0x05][self.lang]
+        icon_code         = [0x819A, 0x13][self.lang]
+        space_or_pad_code = [0x8140, 0x20][self.lang]  # fullwidth space / ASCII space
 
-        ignores = []
-        # NOTE: When replace_ending is True, we do NOT ignore ending codes globally.
-        # We strip only the trailing ending sequence before processing, so mid-text control codes stay intact.
+        def tc(code: int, data: int = 0) -> TextCode:
+            return TextCode(code, data, self.lang)
 
-        # ignore the "make unskippable flag"
+        instant_allow_code   = [0x8189, 0x08][self.lang]  # ♂ allow instant text
+        instant_disallow_code = [0x818A, 0x09][self.lang]  # ♀ disallow instant text
+        instant_text_code   = tc(instant_allow_code, 0)
+        uninstant_text_code = tc(instant_disallow_code, 0)
+
+        default_color = [0x0C00, 0x40][self.lang]
+
+        ignores: list[int] = []
         if always_allow_skip:
             ignores += [[0x8199, 0x1A][self.lang]]
         # ignore anything that slows down text
         if speed_up_text:
-            ignores += slows_text
-
-        text_codes: list[TextCode] = []
-        instant_text_code   = TextCode([0x8189, 0x08][self.lang], 0, self.lang)  # allow instant text
-        uninstant_text_code = TextCode([0x818A, 0x09][self.lang], 0, self.lang)  # disallow instant text
-        current_color = [0x0C00, 0x40][self.lang]
+            ignores += slows_text  # includes existing speed codes too
 
         # If we are replacing the ending, strip the trailing ending sequence from the *source* message first.
         # This prevents cases like "... <disallow><goto> <disallow><keep open>" where the original trailing goto
         # survives and the new ending is merely appended.
         src_codes = self.text_codes
         if replace_ending and src_codes:
-            ending_set = set(ending_codes)
+            ending_set = set(ending_codes) - {end_code}
+            peel_set = {space_or_pad_code, color_code, instant_allow_code, instant_disallow_code} | ending_set
 
             tmp = list(src_codes)
 
-            # drop a trailing end marker if present
-            if tmp and tmp[-1].code == end_code:
+            # drop trailing end marker(s) if present
+            while tmp and tmp[-1].code == end_code:
                 tmp.pop()
 
-            # drop trailing ending code(s) and the paired uninstant code directly before them, if any
-            while tmp and tmp[-1].code in ending_set:
-                tmp.pop()
-                if tmp and tmp[-1].code == uninstant_text_code.code:
-                    tmp.pop()
-
-            # optionally drop any stray trailing instant/uninstant toggles (trailing only)
-            while tmp and tmp[-1].code in (instant_text_code.code, uninstant_text_code.code):
+            # drop trailing "formatting/instant/ending" cluster
+            while tmp and tmp[-1].code in peel_set:
                 tmp.pop()
 
             src_codes = tmp
 
-        # speed up the text
+        out: list[TextCode] = []
+
+        # instant state tracking (so we can avoid useless duplicates except when we *must* re-assert)
+        last_instant: Optional[bool] = None  # True=allow, False=disallow
+
+        def emit_instant(allow: bool, force: bool = False) -> None:
+            nonlocal last_instant
+            if (not force) and (last_instant is not None) and (last_instant == allow):
+                return
+            out.append(tc(instant_allow_code if allow else instant_disallow_code, 0))
+            last_instant = allow
+
+        # current color tracking
+        current_color = default_color
+
+        # start: allow instant
         if speed_up_text:
-            text_codes.append(instant_text_code)  # allow instant
+            emit_instant(True, force=True)
 
-        # write the message
-        for i, code in enumerate(src_codes):
-            # ignore the color change if the next code is color as well
-            if code.code == [0x0B, 0x05][self.lang]:
-                nxt = src_codes[i + 1].code if (i + 1) < len(src_codes) else None
-                if (
-                    nxt == code.code or
-                    all(
-                        tc.code == [0x8140, 0x20][self.lang] or tc.code in ignores
-                        for tc in itertools.takewhile(lambda tc: tc.code != code.code, src_codes[i + 1:])
-                    ) or
-                    current_color == code.data
-                ):
-                    continue
-                current_color = code.data
-
-            # stop at end marker (should not normally occur here if src_codes was stripped)
+        # --- main rewrite ---
+        for code in src_codes:
             if code.code == end_code:
                 break
-
-            # ignore codes that should be removed/neutralized
             if code.code in ignores:
                 continue
 
-            # JP goto must be preceded by "disallow instant" when speeding up,
-            # otherwise the dialog can freeze/softlock in some contexts.
-            # Handle this BEFORE appending to avoid duplicate insertion.
-            if speed_up_text and (not self.lang) and code.code == jp_goto:
-                text_codes.append(uninstant_text_code)
-                text_codes.append(code)
+            # colors: only drop exact duplicates (do NOT drop tail #00 by "empty all()" logic)
+            if code.code == color_code:
+                if code.data == current_color:
+                    continue
+                out.append(code)
+                current_color = code.data
                 continue
 
+            # JP goto: must be preceded by disallow when speed-up is enabled
+            if speed_up_text and (not self.lang) and code.code == jp_goto:
+                emit_instant(False)
+                out.append(code)
+                continue
+
+            # box breaks: remove delay, then re-assert instant (force)
             if speed_up_text and code.code in box_breaks:
                 # special cases for text that needs to remain on a timer
                 if (self.id == 0x605A or  # twinrova transformation
@@ -702,43 +706,52 @@ class Message:
                     self.id == 0x70DD or  # ganondorf ending text
                     self.id in (0x706F, 0x7091, 0x7092, 0x7093, 0x7094, 0x7095, 0x7070)  # zelda ending text
                 ):
-                    text_codes.append(code)
-                    text_codes.append(instant_text_code)  # allow instant
+                    out.append(code)
+                    emit_instant(True, force=True)
                 else:
-                    text_codes.append(TextCode([0x81A5, 0x04][self.lang], 0, self.lang))  # un-delayed break
-                    text_codes.append(instant_text_code)  # allow instant
+                    out.append(tc([0x81A5, 0x04][self.lang], 0))  # un-delayed break
+                    emit_instant(True, force=True)
+                continue
 
-            elif speed_up_text and code.code == [0x819A, 0x13][self.lang] and code.data in slow_icons:
-                # certain icons force slow text unless we re-apply instant afterwards
-                text_codes.append(code)
-                text_codes.pop(find_last(text_codes, instant_text_code))  # remove last instance of instant text
-                text_codes.append(instant_text_code)  # allow instant
+            # slow icons: must re-assert instant *after* the icon (force)
+            if speed_up_text and code.code == icon_code and code.data in slow_icons:
+                out.append(code)
+                emit_instant(True, force=True)
+                continue
 
-            else:
-                text_codes.append(code)
+            out.append(code)
 
         # write/replace ending
         if replace_ending:
-            if ending:
-                # clone ending to avoid accidental cross-message mutation
-                ending = TextCode(ending.code, ending.data, self.lang)
+            # write ending if provided
+            if ending is not None:
+                ending = tc(ending.code, ending.data)  # clone
 
-                # In Japanese, if instant text is enabled, a disallow-instant marker before the ending
-                # is often required for stability (especially for goto/keep-open style endings).
-                if speed_up_text and (not self.lang):
-                    if not text_codes or text_codes[-1].code != uninstant_text_code.code:
-                        text_codes.append(uninstant_text_code)
+                # Rule: if speed-up is enabled, disallow must be placed immediately before ending
+                if speed_up_text:
+                    emit_instant(False)
 
-                # ocarina also needs instant disabled before the ending when speeding up
-                if speed_up_text and ending.code == [0x81F0, 0x10][self.lang]:
-                    if not text_codes or text_codes[-1].code != uninstant_text_code.code:
-                        text_codes.append(uninstant_text_code)
+                out.append(ending)
 
-                text_codes.append(ending)  # write special ending
+                # Rule: final color must be #00 if non-default is active
+                if current_color != default_color:
+                    out.append(tc(color_code, default_color))
+                    current_color = default_color
 
-            text_codes.append(TextCode(end_code, 0, self.lang))  # write end code
+            else:
+                # no special ending: still enforce "disallow near the end" when speeding up
+                if speed_up_text:
+                    emit_instant(False)
 
-        self.text_codes = text_codes
+                # enforce final color reset if needed
+                if current_color != default_color:
+                    out.append(tc(color_code, default_color))
+                    current_color = default_color
+
+            # always terminate
+            out.append(tc(end_code, 0))
+
+        self.text_codes = out
 
     # writes a Message back into the rom, using the given index and offset to update the table
     # returns the offset of the next message
