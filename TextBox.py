@@ -12,6 +12,12 @@ if TYPE_CHECKING:
 NORMAL_LINE_WIDTH: int = 1801800
 NORMAL_LINE_WIDTH_JP: int = 16*16
 
+# The text box in the JP version appears to be slightly narrower than the EN version
+# so we need to apply a correction to our center and right alignments to make them look correct
+# These values were found through trial and error.
+JP_CENTER_SHIFT_CORRECTION: int = 8
+JP_RIGHT_SHIFT_CORRECTION: int = JP_CENTER_SHIFT_CORRECTION * 2
+
 # Attempting to display more lines in a single text box will cause additional lines to bleed past the bottom of the box.
 LINES_PER_BOX: int = 4
 LINES_PER_BOX_JP: int = 3
@@ -116,7 +122,7 @@ def line_wrap(text: str, lang: str, strip_existing_lines: bool = False, strip_ex
                 align_box = "Left"
 
             if calculate_width([box_codes[:index - 1]], lang_index) >= line_width and not lang_index:
-                words.append(calculate_align(box_codes[:index], lang_index, line_width, align_box))
+                _append_if_nonempty(words, calculate_align(box_codes[:index], lang_index, line_width, align_box))
                 box_codes = box_codes[index:]
                 if text_code.code == 0x81A5:
                     align_box = align
@@ -125,7 +131,7 @@ def line_wrap(text: str, lang: str, strip_existing_lines: bool = False, strip_ex
             # Find us a whole word.
             if text_code.code in break_any:
                 if index > 1:
-                    words.append(calculate_align(box_codes[:index - 1], lang_index, line_width, align_box))
+                    _append_if_nonempty(words, calculate_align(box_codes[:index - 1], lang_index, line_width, align_box))
                 if text_code.code in break_word:
                     # If we have run into a line or box break, add it as a "word" as well.
                     words.append([text_code])
@@ -136,13 +142,13 @@ def line_wrap(text: str, lang: str, strip_existing_lines: bool = False, strip_ex
                 continue
 
             if not lang_index and calculate_width([box_codes[:index - 1]], lang_index) >= line_width:
-                words.append(calculate_align(box_codes[:index], lang_index, line_width, align_box))
+                _append_if_nonempty(words, calculate_align(box_codes[:index], lang_index, line_width, align_box))
                 box_codes = box_codes[index:]
                 index = 0
                 continue
 
             if index > 0 and index == len(box_codes):
-                words.append(calculate_align(box_codes, lang_index, line_width, align_box))
+                _append_if_nonempty(words, calculate_align(box_codes, lang_index, line_width, align_box))
                 box_codes = []
                 align_box = align
 
@@ -158,7 +164,8 @@ def line_wrap(text: str, lang: str, strip_existing_lines: bool = False, strip_ex
 
             # If this word is a line/box break, trim our line back a word and deal with it later.
             break_char = False
-            if words[end_index - 1][0].code in [[0x0A, 0x81A5],[0x01, 0x04]][lang_index]:
+            last_word = words[end_index - 1]
+            if last_word and last_word[0].code in [[0x0A, 0x81A5], [0x01, 0x04]][lang_index]:
                 line = words[start_index:end_index - 1]
                 break_char = True
 
@@ -169,7 +176,8 @@ def line_wrap(text: str, lang: str, strip_existing_lines: bool = False, strip_ex
                 start_index = end_index
 
             # If we've reached the end of the box, finalize it.
-            if end_index == len(words) or words[end_index - 1][0].code == [0x81A5, 0x04][lang_index] or len(lines) == line_box:
+            last_is_box_break = bool(words[end_index - 1]) and (words[end_index - 1][0].code == [0x81A5, 0x04][lang_index])
+            if end_index == len(words) or last_is_box_break or len(lines) == line_box:
                 # Append the same icon to any wrapped boxes.
                 if icon_code and box_count > 1:
                     lines[0][0] = [icon_code] + lines[0][0]
@@ -224,19 +232,58 @@ def get_character_width(character: str|int, lang: str|int) -> int:
                 return character_table[character]
             return 16
 
+
+def _has_visible_glyph(codes: list["TextCode"], lang: int) -> bool:
+    cc_table = Messages.CONTROL_CODES if lang else Messages.CC_PARSE_JP
+    shift_code = [0x86C7, 0x06][lang]
+    name_code  = [0x874F, 0x0F][lang]
+
+    for tc in codes:
+        if tc.code == shift_code:
+            continue
+        if tc.code == name_code:
+            return True
+        if tc.code in cc_table:
+            continue
+        return True
+    return False
+
+def _append_if_nonempty(dst: list, chunk: list) -> None:
+    if chunk:
+        dst.append(chunk)
+
 def calculate_align(words, lang: int, line_width:int, align:str="Left"):
     if align == "Left":
         return words
-    word_codes = [w.code for w in words]
-    if [0x86C7, 0x06][lang] in word_codes:
-        words.pop(word_codes.index([0x86C7, 0x06][lang]))
+
+    shift_code = [0x86C7, 0x06][lang]
+
+    words = [w for w in words if w.code != shift_code]
+    if not words:
+        return words
+
+    if not _has_visible_glyph(words, lang):
+        return words
+
     h = calculate_width([words], lang)
     g = line_width - h
     if g <= 0:
         return words
+
+    shift = (g // 2) if align == "Center" else g
+
     if lang:
-        g = g * 16 // 120120
-    align_code = Messages.TextCode([0x86C7, 0x06][lang], int(g // 2 if align == "Center" else g), lang)
+        shift = shift * 16 // 120120
+    else:
+        if align == "Center":
+            shift -= JP_CENTER_SHIFT_CORRECTION
+        elif align == "Right":
+            shift -= JP_RIGHT_SHIFT_CORRECTION
+
+    if shift < 0:
+        shift = 0
+
+    align_code = Messages.TextCode(shift_code, int(shift), lang)
     return [align_code] + words
 
 control_code_width: dict[str|int, str] = {
@@ -362,7 +409,7 @@ character_table: dict[str|int, int] = {
     0x8144: 3, # '．'
     0x8145: 7, # '・'
     0x8148: 14,# '？'
-    0x8149: 14,# '！'
+    0x8149: 12,# '！'
     0x814F: 7, # '＾'
     0x8167: 7, # '“'
     0x8168: 7, # '”'

@@ -9440,16 +9440,16 @@
         }
     },
     "hint_text": {
-        "always": "{location}　#{item}#",
+        "always": "{location}&#{item}#",
         "player_own": "@の{suffix}",
         "boss_pocket_clear": "♂★{item_icon}一つは　#@の手#　に…",
-        "boss_pocket_vague": "♂★{item_icon}一つは　#@のポケット#　に…",
+        "boss_pocket_vague": "♂★{item_icon}一つは　#@#　に…",
         "boss_string": "♂★{item_icon}一つは　{location_text}　に…",
-        "bridge_clear": "勇者が{item_req}を集める時　虹の橋はかけられる",
-        "bridge_open": "目覚めし者により　悪しき者への橋は　#すでにかけられている#",
-        "bridge_vague": "勇者が{item_req}集める時を　目覚めし者は待つ",
-        "bridge_vanilla": "#闇と魂のメダル#　そして#光の矢#",
-        "can_be_found": "#{item_text}#は{location_text}ある",
+        "bridge_clear": "勇者が{item_req}を集める時&虹の橋はかけられる",
+        "bridge_open": "目覚めし者により&悪しき者への橋は&#すでにかけられている#",
+        "bridge_vague": "勇者が{item_req}集める時を&目覚めし者は待つ",
+        "bridge_vanilla": "#闇と魂のメダル#&そして#光の矢#",
+        "can_be_found": "#{item_text}#は&{location_text}ある",
         "conjunction": "そして",
         "conjunction_more": "、",
         "dot_oot_sot": "★08勇者なるもの&時のオカリナをもち&時の歌を　奏でよ",
@@ -9458,31 +9458,31 @@
         "dot_stones": "３つの精霊石持つもの&マスターソードを&いざ　引き抜け",
         "dot_stones_oot_sot": "★08３つの精霊石持つもの&時のオカリナをもち&時の歌を　奏でよ",
         "dot_stones_sot": "★07３つの精霊石持つもの&オカリナをもち&時の歌を　奏でよ",
-        "dual_always": "{location}　#{first_item}#と#{second_item}#",
-        "entrance": "{entrance}　{region}",
-        "foolish": "{area}で探るのは　あまり良くない",
-        "ganon_base": "#01悪しき者#00への鍵は{bk_location_string}",
+        "dual_always": "{location}&#{first_item}#と#{second_item}#",
+        "entrance": "{entrance}&{region}",
+        "foolish": "{area}で探るのは&あまり良くない",
+        "ganon_base": "#01悪しき者#00への鍵は&{bk_location_string}",
         "ganon_dungeons": [
             "#精霊石かメダル#",
             "#精霊石とメダル#",
             "",
             ""
         ],
-        "ganon_grant_bk": "{item_req}を集めた時に授かる",
+        "ganon_grant_bk": "{item_req}を&集めた時に授かる",
         "ganon_hearts": [
             "#ハート#",
             "#ハート#",
             "",
             ""
         ],
-        "ganon_lacs_bk": "{item_req}を集めた時　ゼルダより授かる",
+        "ganon_lacs_bk": "{item_req}を&集めた時　ゼルダより授かる",
         "ganon_medallions": [
             "#メダル#",
             "#メダル#",
             "",
             ""
         ],
-        "ganon_remove": "#01悪しき者#00への扉は#開かれている#",
+        "ganon_remove": "#01悪しき者#00への扉は&#開かれている#",
         "ganon_req_vanilla": "#闇と魂のメダル#",
         "ganon_stones": [
             "#精霊石#",
@@ -9496,12 +9496,12 @@
             "",
             ""
         ],
-        "goal_format": "{player_text}{goal_text}{location_text}",
+        "goal_format": "{player_text}{goal_text}&{location_text}",
         "gossip_prefix": "",
-        "hero_path": "{location_text}は勇者の道にある",
-        "hoards": "{location_text}#{item_text}#を隠す",
-        "major_item": "#{hint_loc}#は#{item_count}個#重要なものがある",
-        "major_items": "#{hint_loc}#は#{item_count}個#重要なものがある",
+        "hero_path": "{location_text}は&勇者の道にある",
+        "hoards": "{location_text}&#{item_text}#を隠す",
+        "major_item": "#{hint_loc}#は&#{item_count}個#重要なものがある",
+        "major_items": "#{hint_loc}#は&#{item_count}個#重要なものがある",
         "move_prefixes": [],
         "move_world": "{world}の{suffix}の{prefix}",
         "own_prefix": "リンク",
@@ -9512,14 +9512,14 @@
         "req_custom": "{count}つの{item}",
         "second_own": "あなたの{suffix}",
         "separator": "の",
-        "trial_all": "#ガノンの塔#は　強力な結界で守られている",
-        "trial_combine_ganon": "#{trials}の試練#により　ガノンの塔は守られている",
-        "trial_combine_sheik": "#{trials}の試練#は　シークによって破られた",
-        "trial_ganon": "#{trial}の試練#により　ガノンの塔は守られている",
-        "trial_none": "#ガノンの塔#の結界は　シークによって破られた",
-        "trial_sheik": "#{trial}の試練#は　シークによって破られた",
+        "trial_all": "#ガノンの塔#は&強力な結界で守られている",
+        "trial_combine_ganon": "#{trials}の試練#により&ガノンの塔は守られている",
+        "trial_combine_sheik": "#{trials}の試練#は&シークによって破られた",
+        "trial_ganon": "#{trial}の試練#により&ガノンの塔は守られている",
+        "trial_none": "#ガノンの塔#の結界は&シークによって破られた",
+        "trial_sheik": "#{trial}の試練#は&シークによって破られた",
         "world_is_world_player": "",
-        "way_of_hero": "{location_text}は勇者の道",
+        "way_of_hero": "{location_text}は&勇者の道",
         "world's": "{world}の{suffix}"
     },
     "lang_property": {
@@ -9531,22 +9531,22 @@
     "misc_dual_hint_table": {
         "skull_mask, mask_of_truth": {
             "location_fallback": "#02森のステージ^#00あなたのお顔を拝見するのを&楽しみにしています&豪華な賞品　あります",
-            "location_text": "#01ドクロの仮面#00をかぶると　#02{item_1}#00をくれるらしい^#01まことの仮面#00をかぶると　#02{item_2}#00をくれるらしい"
+            "location_text": "#01ドクロの仮面#00をかぶると&#02{item_1}#00をくれるらしい^#01まことの仮面#00をかぶると&#02{item_2}#00をくれるらしい"
         }
     },
     "misc_item_hint_table": {
         "dampe_diary": {
-            "custom_item_fallback": "これ読んだ人、{item}　#無くし#マシタ。&墓守り　ダンペイ",
-            "custom_item_text": "これ読んだ人、{area}に　おいで。 {item}　あげマス。^あなたの　おこしを　まってます。&墓守り　ダンペイ",
-            "default_item_fallback": "これ読んだ人、のびちぢみする形見　#無くし#マシタ。&墓守り　ダンペイ",
-            "default_item_text": "これ読んだ人、{area}に　おいで。 のびちぢみする形見　あげマス。^あなたの　おこしを　まってます。&墓守り　ダンペイ",
+            "custom_item_fallback": "これ読んだ人、&{item}　#無く#シタ。&墓守り　ダンペイ",
+            "custom_item_text": "これ読んだ人、&{area}に　おいで。&{item}　あげマス。^あなたの　おこしを　まってます。&墓守り　ダンペイ",
+            "default_item_fallback": "これ読んだ人、&のびちぢみする形見　#無く#シタ。&墓守り　ダンペイ",
+            "default_item_text": "これ読んだ人、&{area}に　おいで。&のびちぢみする形見　あげマス。^あなたの　おこしを　まってます。&墓守り　ダンペイ",
             "replace": {
                 "#手持ち#に　おいで。": "持ってマス。"
             }
         },
         "ganondorf": {
-            "custom_item_text": "はっはっは…{area}から{item}を探し出すなど、決してできぬぞ！",
-            "default_item_text": "はっはっは…{area}で私の雷をはじき返し、矢を放っても私を倒すことはできぬぞ！",
+            "custom_item_text": "はっはっは…&{area}から{item}を&探すなど、決してできぬぞ！",
+            "default_item_text": "はっはっは…&{area}で雷をはじき、&矢を射ても我は倒せぬぞ！",
             "replace": {
                 "#ガノンの間#から": "#あの壺の中#から",
                 "#ガノン城内#から": "#我が城内#から",
@@ -9584,8 +9584,8 @@
             "location_text": "♂坊や、調子はどうだ？&#01{item}#00が欲しいかい？^☆もし#01{poe_points}#00ポイント稼げたら、幸せ者になれるぞ！へへへ。^♂君のカードには現在#05♤01#00ポイントあるぞ。&またおいで！&へへへ！｝"
         },
         "frogs2": {
-            "location_fallback": "水中からカエルたちがあなたを見つめている…",
-            "location_text": "水中から#02{item}#00を持ったカエルたちがあなたを見つめている…"
+            "location_fallback": "水中からカエルたちが&あなたを見つめている…",
+            "location_text": "水中から#02{item}#00を持った&カエルたちがあなたを&見つめている…"
         },
         "mask_of_truth": {
             "location_text": "#01まことの仮面#00をかぶると&#02{item}#00をくれるらしい"
@@ -9658,7 +9658,7 @@
     },
     "verb_mapping": {
         "おぼえた": "#02☼#00は入手",
-        "が強化された": "#02☼#00はを入手",
+        "が強化された": "#02☼#00は入手",
         "もらった": "#02☼#00は入手",
         "借りた": "#02☼#00は入手",
         "入手した": "#02☼#00は入手",

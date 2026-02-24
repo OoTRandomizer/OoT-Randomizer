@@ -1131,9 +1131,20 @@ def repack_messages(rom: Rom, messages: list[Message], lang: str, permutation: O
         remember_id = new_message.id
         new_message.id = old_message.id
 
+        # For debugging: create the debug text file for checking the message transformations
+        # with open("message_debug.txt", "a+", encoding="utf-8") as debug_file:
+        #     debug_file.write(f"Writing message 0x{new_message.id:04X} at offset 0x{offset:06X}\n")
+        #     debug_file.write(f"Message opts: {new_message.opts}\n")
+        #     debug_file.write(f"Message original text: {old_message.get_string()}\n")
+        #     debug_file.write(f"Message non-transformed text: {new_message.get_string()}\n")
+
         # modify message, making it represent how we want it to be written
         if new_message.id != 0xFFFC:
             new_message.transform(True, old_message.ending, always_allow_skip, speed_up_text)
+
+        # For debugging: create the debug text file for checking the message transformations
+        # with open("message_debug.txt", "a+", encoding="utf-8") as debug_file:
+        #     debug_file.write(f"Message text: {new_message.get_string()}\n\n")
 
         # check if there is space to write the message
         message_size = new_message.size()
