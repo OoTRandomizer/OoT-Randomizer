@@ -1971,7 +1971,9 @@
                 or
                 (is_child and
                     ( (glitch_navi_dive and can_jumpslash)
-                    or (at_day and (can_isg or Nuts))
+                    or (at_day and glitch_botw_cucco_dive and 
+                        (Nuts or (can_shield and (Sticks or Kokiri_Sword or can_use(Megaton_Hammer))))
+                        )
                     )
                 )
                 or

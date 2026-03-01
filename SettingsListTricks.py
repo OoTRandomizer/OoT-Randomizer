@@ -2378,6 +2378,14 @@ advanced_logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     Drop a chu, then perform a ledgeclip from the edge near windmill
                     entrance to clip into BotW as adult. Alternative to Odie clip.
                     '''},
+    '(Glitch) BotW Cucco Dive': {
+        'name'    : 'glitch_botw_cucco_dive',
+        'tags'    : ("Glitch","Child","Bottom of the Well",),
+        'tooltip' : '''\
+                    Using ISG (individual trick not required) or Nuts, you can trigger
+                    the angry cucco cutscene as you enter the water, allowing Link to
+                    fall through it and enter the Bottom of the Well.
+                    '''},
     '(Glitch) BotW Blank A': {
         'name'    : 'glitch_botw_blank_a',
         'tags'    : ("Glitch","Child","Bottom of the Well",),
