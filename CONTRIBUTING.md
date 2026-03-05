@@ -81,4 +81,6 @@ Regular releases of the randomizer roughly follow this schedule:
 * Full freeze also lasts at least one week and may take longer if beta tester activity is low.
 * If no critical issues are found during beta testing, the release is published and any PRs labelled “waiting for release” are merged to start off the next release cycle.
 
+The current state of the release cycle is pinned in the #dev-public-talk Discord channel.
+
 There may also be hotfix releases which bypass this procedure, e.g. in case of a severe bug that wasn't caught in beta testing or in case of changes to racing presets.
