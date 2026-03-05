@@ -18,8 +18,7 @@ import Unittest as Tests
 from Messages import ITEM_MESSAGES, IMPORTANT_ITEM_MESSAGES, MISC_MESSAGES
 from SettingsList import SettingInfos, logic_tricks, validate_settings
 import Unittest as Tests
-from Utils import data_path
-from Gui import ensure_venv
+from Utils import data_path, ensure_venv
 
 
 def error(msg: str, can_fix: bool) -> None:

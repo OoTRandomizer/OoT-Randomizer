@@ -9,7 +9,7 @@ import logging
 import os
 import time
 
-from Gui import ensure_venv
+from Utils import ensure_venv
 
 def start() -> None:
     ensure_venv()
