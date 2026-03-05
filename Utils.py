@@ -245,29 +245,30 @@ def ensure_venv():
     if platform.system() == 'Windows':
         PYTHON_BIN = os.path.abspath(os.path.join(VENV_DIR, "Scripts", "python.exe"))
     REQUIREMENTS = local_path("requirements.txt")
+    logger = logging.getLogger('')
 
     # If venv doesn’t exist, create it
     if not os.path.exists(PYTHON_BIN):
-        print("Creating virtual environment...")
+        logger.info("Creating virtual environment...")
         venv.create(VENV_DIR, with_pip=True)
     requirements_not_met = False
     if '--no-pip' not in sys.argv:
         # Running pip twice lets us both capture output cleanly to see if
         # we need to reload the venv and send output live to the user on
         # actual install.
-        print("Checking for required python dependencies")
+        logger.info("Checking for required python dependencies")
         req_check = subprocess.run([PYTHON_BIN, "-m", "pip", "install", "-r", REQUIREMENTS, "--dry-run"], capture_output=True, text=True)
         if req_check.returncode != 0:
             raise ImportError(f"pip failed to verify required dependencies:\n{req_check.stderr}")
         requirements_not_met = "collecting " in req_check.stdout.lower()
         if requirements_not_met:
-            print("Installing missing python dependencies")
+            logger.info("Installing missing python dependencies")
             req_check = subprocess.run([PYTHON_BIN, "-m", "pip", "install", "-r", REQUIREMENTS], capture_output=True, text=True)
             if req_check.returncode != 0:
                 raise ImportError(f"pip failed to install required dependencies:\n{req_check.stderr}")
 
     # If we're not already running inside the venv, restart with it
     if sys.executable != PYTHON_BIN or requirements_not_met:
-        print('Re-launching in virtual environment')
+        logger.info('Re-launching in virtual environment')
         subprocess.check_call([PYTHON_BIN] + sys.argv + ['--no-pip'])
         sys.exit(0)
