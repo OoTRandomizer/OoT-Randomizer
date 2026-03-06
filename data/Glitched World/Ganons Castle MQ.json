@@ -138,8 +138,7 @@
             "Ganons Castle MQ Shadow Trial Silver Rupee Bomb Flower": "True",
             "Ganons Castle MQ Shadow Trial Silver Rupee First Beamos": "True",
             "Ganons Castle MQ Shadow Trial Explosives Wonderitem": "
-                at('Ganons Castle Shadow Trial', can_use(Bow)) or
-                has_explosives or Progressive_Strength_Upgrade or can_use(Dins_Fire) or can_gdv"
+                Bow or has_explosives or Progressive_Strength_Upgrade or can_use(Dins_Fire) or can_gdv"
         },
         "exits": {
             "Ganons Castle Shadow Trial Second Gap": "Hover_Boots or has_fire_source or logic_shadow_trial_mq"
