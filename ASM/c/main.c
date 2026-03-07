@@ -49,6 +49,9 @@ void before_game_state_update() {
     manage_music_changes();
     manage_uninvert_yaxis();
     display_misc_messages();
+#if DEBUG_MODE
+    manage_debug_inputs();
+#endif
 }
 
 void after_game_state_update() {
