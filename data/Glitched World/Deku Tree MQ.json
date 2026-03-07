@@ -54,8 +54,7 @@
                 (can_use(Hookshot) or can_use(Boomerang) or can_hover) and
                 (
                 has_bombchus or (Bombs and (can_play(Song_of_Time) or is_adult)) or
-                (can_use(Megaton_Hammer) and (can_play(Song_of_Time) or logic_deku_mq_compass_gs))
-                )"
+                (can_use(Megaton_Hammer) and (can_play(Song_of_Time) or logic_deku_mq_compass_gs)))"
         }
     },
     {
@@ -134,8 +133,9 @@
         },
         "exits": {
             "Deku Tree Basement Back Room": "is_child",
-            "Deku Tree Before Boss": "can_jumpslash and (deku_tree_shortcuts or here(has_fire_source_with_torch or can_gdv))
-                or (can_weirdshot and can_swim)"
+            "Deku Tree Before Boss": "(can_swim or can_use(Iron_Boots)) and (
+            deku_tree_shortcuts or here(has_fire_source_with_torch or can_gdv)
+                or can_weirdshot)"
         }
     },
     {

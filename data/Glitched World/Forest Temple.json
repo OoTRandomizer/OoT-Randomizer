@@ -57,8 +57,7 @@
                 (is_adult or Slingshot or Sticks or has_explosives or Kokiri_Sword or can_use(Dins_Fire) or can_use(Megaton_Hammer))"
         },
         "exits": {
-            "Forest Temple NE Outdoors": "
-                (can_use(Iron_Boots) and can_use(Hookshot)) or (Progressive_Scale, 3)",
+            "Forest Temple NE Outdoors": "(Progressive_Scale, 3) or (can_use(Iron_Boots) and can_swim)",
             "Forest Temple Outdoors High Balconies": "can_kill_blue_bubble",
             "Forest Temple NW Outdoors Freestandings": "logic_forest_courtyard_hearts and can_use(Boomerang)",
             # Low grav ?
@@ -103,7 +102,8 @@
             "Forest Temple Outdoors High Balconies": "
                 can_use(Longshot) or (logic_forest_vines and can_use(Hookshot))",
                 # Longshot can grab some very high up vines to drain the well.
-            "Forest Temple NW Outdoors": "can_use(Iron_Boots) or (Progressive_Scale, 3)"
+            "Forest Temple NW Outdoors": "(can_use(Iron_Boots) and can_use(Longshot)) or (Progressive_Scale, 3)"
+                #Longshot needed to grab the vines at the top to climb out without swimming. Relevant for bronze scale
         }
     },
     {

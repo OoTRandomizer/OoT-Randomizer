@@ -103,8 +103,8 @@
         },
         "exits": {
             "Forest Temple NE Outdoors": "
-                can_swim and (can_use(Iron_Boots) or can_use(Longshot) or (Progressive_Scale, 3
-                )) or
+                (can_use(Iron_Boots) and can_swim) or
+                (Progressive_Scale, 3) or
                 (logic_forest_well_swim and can_swim and can_use(Hookshot))",
             "Forest Temple Outdoors High Balconies": "can_use(Fire_Arrows) or (can_gdv and can_isg)",
             "Forest Temple Outside Upper Ledge": "can_hover or can_megajump",

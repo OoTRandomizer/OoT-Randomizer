@@ -17,7 +17,7 @@
         "exits": {
             "KF Outside Deku Tree": "True",
             "Deku Tree Slingshot Room": "here(has_shield or can_use(Megaton_Hammer)) and has_soul(Deku_Scrub)",
-            "Deku Tree Basement": "deku_tree_shortcuts or here(is_adult or (can_child_attack or Nuts and can_jumpslash))",
+            "Deku Tree Basement": "deku_tree_shortcuts or here(is_adult or (can_child_attack or Nuts))",
             "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
@@ -36,8 +36,8 @@
             "Deku Tree Basement Chest": "True",
             "Deku Tree GS Basement Gate": "is_adult or can_child_attack",
             "Deku Tree GS Basement Vines": "
-                can_use_projectile or can_use(Dins_Fire) or
-                (logic_deku_basement_gs and (Kokiri_Sword or Sticks or is_adult))"
+                can_swim and (can_use_projectile or can_use(Dins_Fire) or
+                (logic_deku_basement_gs and (Kokiri_Sword or Sticks or is_adult)))"
         },
         "exits": {
             "Deku Tree Basement Eye Switch Room": "here(has_fire_source_with_torch or can_use(Bow) or (can_gdv and can_isg))",
@@ -59,7 +59,7 @@
         "dungeon": "Deku Tree",
         "exits":
         {
-            "Deku Tree Basement Torch Room": "can_swim or can_use(Iron_boots)"
+            "Deku Tree Basement Torch Room": "can_swim or can_use(Iron_Boots)"
         }
     },
     {
@@ -96,8 +96,10 @@
             "Deku Tree Basement": "True",
             "Deku Tree Basement Back Room": "is_child",
             "Deku Tree Before Boss": "
-                can_jumpslash and (deku_tree_shortcuts or
-                here(has_fire_source_with_torch or (logic_deku_b1_webs_with_bow and can_use(Bow)) or can_gdv))"
+                (can_swim or can_use(Iron_Boots)) and (
+                deku_tree_shortcuts or
+                here(has_fire_source_with_torch or (logic_deku_b1_webs_with_bow and can_use(Bow)) or can_gdv)
+                )"
         }
     },
     {

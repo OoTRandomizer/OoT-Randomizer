@@ -31,7 +31,7 @@
             "Bottom of the Well Near Entrance Pot 1": "True",
             "Bottom of the Well Near Entrance Pot 2": "True",
             "Bottom of the Well Underwater Pot": "
-                can_swim or can_play(Zeldas_Lullaby) or can_use(Slingshot) or can_use(Boomerang) or has_bombchus",
+                (can_swim or can_play(Zeldas_Lullaby)) and (can_use(Slingshot) or can_use(Boomerang) or has_bombchus)",
             "Bottom of the Well Basement Pot 1": "True",
             "Bottom of the Well Basement Pot 2": "True",
             "Bottom of the Well Basement Pot 3": "True",

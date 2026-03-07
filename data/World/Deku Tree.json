@@ -36,8 +36,9 @@
             "Deku Tree Basement Chest": "True",
             "Deku Tree GS Basement Gate": "is_adult or can_child_attack",
             "Deku Tree GS Basement Vines": "
+                can_swim and (
                 can_use_projectile or can_use(Dins_Fire) or
-                (logic_deku_basement_gs and (is_adult or Sticks or Kokiri_Sword))"
+                (logic_deku_basement_gs and (Kokiri_Sword or Sticks or is_adult)))"
         },
         "exits": {
             "Deku Tree Basement Eye Switch Room": "
@@ -96,7 +97,8 @@
             "Deku Tree Basement": "True",
             "Deku Tree Basement Back Room": "is_child",
             "Deku Tree Before Boss": "
-               can_jumpslash and (deku_tree_shortcuts or
+               (can_swim or can_use(Iron_Boots)) and (
+               deku_tree_shortcuts or
                 here(has_fire_source_with_torch or (logic_deku_b1_webs_with_bow and can_use(Bow))))"
         }
     },
@@ -111,7 +113,7 @@
         },
         "exits": {
             "Deku Tree Basement Ledge": "(deku_tree_shortcuts or logic_visible_collisions) and (can_swim or can_use(Iron_Boots))",
-            "Queen Gohma Boss Room": "deku_tree_shortcuts or (here(has_shield) and has_soul(Deku_Scrub))"
+            "Queen Gohma Boss Room": "deku_tree_shortcuts or here(has_shield)"
         }
     }
 ]
