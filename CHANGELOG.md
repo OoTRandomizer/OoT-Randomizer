@@ -18,6 +18,7 @@
 * Fix a vanilla bug where playing the ocarina with vibrato before recording the Scarecrow's Song could prevent Pierre from spawning.
 * Fix unshuffled treasure box shop keys showing the wrong item model while inside the chests if `Key Appearance Matches Dungeon` is enabled.
 * Add two missing locations: `Ganons Castle MQ Shadow Trial Explosives Wonderitem` and a `Bombable Fairy` in MQ Jabu.
+* Improve the error message when a settings string from the wrong randomizer version is imported.
 
 # 9.0
 
