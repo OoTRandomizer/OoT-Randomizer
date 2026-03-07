@@ -17,6 +17,7 @@
 * Fix the Chicken (child trade quest item) using the same get item text box as the Pocket Cucco (adult trade quest item).
 * Fix a vanilla bug where playing the ocarina with vibrato before recording the Scarecrow's Song could prevent Pierre from spawning.
 * Fix unshuffled treasure box shop keys showing the wrong item model while inside the chests if `Key Appearance Matches Dungeon` is enabled.
+* Add two missing locations: `Ganons Castle MQ Shadow Trial Explosives Wonderitem` and a `Bombable Fairy` in MQ Jabu.
 
 # 9.0
 
