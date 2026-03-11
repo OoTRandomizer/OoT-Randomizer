@@ -708,7 +708,10 @@ class World:
 
     def new_shop_price(self, location: Location) -> int:
         if self.settings.special_deal_price_distribution == 'vanilla':
-            return ItemInfo.items[location.vanilla_item].price
+            price = location.price
+            if price is None:
+                price = ItemInfo.items[location.vanilla_item].price
+            return price
         elif self.settings.special_deal_price_max < self.settings.special_deal_price_min:
             raise ValueError('Maximum special deal price is lower than minimum, perhaps you meant to swap them?')
         elif self.settings.special_deal_price_max == self.settings.special_deal_price_min:
