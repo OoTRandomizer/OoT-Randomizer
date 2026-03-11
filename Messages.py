@@ -6,7 +6,6 @@ from collections.abc import Callable, Iterable
 from typing import TYPE_CHECKING, Optional, Any, Dict, Tuple, List
 from math import ceil
 import json
-import itertools
 
 from ItemList import REWARD_COLORS
 from HintList import misc_item_hint_table, misc_location_hint_table
@@ -169,20 +168,37 @@ SPECIAL_CHARACTERS: dict[int, str] = {
 
 SCJP: dict[int, str] = {k + 0x8300: v for k, v in SPECIAL_CHARACTERS.items()}
 
+JP_SPECIAL_CHAR_GLYPHS: dict[int, str] = {
+    code: bytes([(code >> 8) & 0xFF, code & 0xFF]).decode("cp932")
+    for code in SCJP.keys()
+}
+
+JP_TOKEN_TO_GLYPH: dict[str, str] = {
+    token: JP_SPECIAL_CHAR_GLYPHS[code]
+    for code, token in SCJP.items()
+}
+
+def normalize_jp_controller_tokens(text: str) -> str:
+    for token in sorted(JP_TOKEN_TO_GLYPH.keys(), key=len, reverse=True):
+        text = text.replace(token, JP_TOKEN_TO_GLYPH[token])
+    return text
+
 REVERSE_MAP: list[str] = list(chr(x) for x in range(256))
 
 for char, byte in CHARACTER_MAP.items():
     SPECIAL_CHARACTERS.setdefault(byte, char)
     REVERSE_MAP[byte] = char
 
+_jp_char_map_path = data_path('generated/jp_char_map.otrx')
+_refresh_jp_char_map_cache = False
+
 try:
-    CHARACTER_MAP_JP, REVERSE_MAP_JP = json.load(open(data_path('generated/jp_char_map.otrx'), mode="r+"))
-except:
-    CHARACTER_MAP_JP: Dict[str, int] = {}
+    with open(_jp_char_map_path, mode="r", encoding="utf-8") as f:
+        CHARACTER_MAP_JP, REVERSE_MAP_JP = json.load(f)
+except Exception:
+    CHARACTER_MAP_JP = {}
     for cp in range(0x110000):
         ch = chr(cp)
-        if cp in CC_PARSE_JP.keys():
-            continue
         try:
             b = ch.encode("cp932")
         except UnicodeEncodeError:
@@ -211,6 +227,10 @@ except:
         if code < 0x10000:
             REVERSE_MAP_JP[code] = token
     json.dump([CHARACTER_MAP_JP, REVERSE_MAP_JP], open(data_path('generated/jp_char_map.otrx'), mode="w"))
+
+for code, token in SCJP.items():
+    if code < len(REVERSE_MAP_JP):
+        REVERSE_MAP_JP[code] = token
 
 # [0x0500,0x0560] (inclusive) are reserved for plandomakers
 GOSSIP_STONE_MESSAGES: list[int] = list(range(0x0401, 0x04FF))  # ids of the actual hints
@@ -273,10 +293,12 @@ def display_code_list(codes: list[TextCode]) -> str:
     return message
 
 def encode_text_string_jp(text: str) -> list[int]:
+    text = normalize_jp_controller_tokens(text)
+
     result = []
     c = ""
     q = 0
-    it=iter(text)
+    it = iter(text)
     for ch in it:
         if q != 0:
             c += ch
@@ -609,6 +631,7 @@ class Message:
     # applies whatever transformations we want to the dialogs
     def transform(self, replace_ending: bool = False, ending: Optional[TextCode] = None,
                 always_allow_skip: bool = True, speed_up_text: bool = True) -> None:
+
         ending_codes = [[0x8170, 0x81CB, 0x86C8, 0x819F, 0x819E, 0x81F0],
                         [0x02,   0x07,   0x0A,   0x0B,   0x0E,   0x10]][self.lang]
         box_breaks   = [[0x81A5, 0x81A3], [0x04, 0x0C]][self.lang]
@@ -1144,7 +1167,8 @@ def repack_messages(rom: Rom, messages: list[Message], lang: str, permutation: O
 
         # For debugging: create the debug text file for checking the message transformations
         # with open("message_debug.txt", "a+", encoding="utf-8") as debug_file:
-        #     debug_file.write(f"Message text: {new_message.get_string()}\n\n")
+        #     debug_file.write(f"Message transformed text: {new_message.get_string()}\n")
+        #     debug_file.write(f"Message text codes: {' '.join(f'0x{x.code:04X}' for x in new_message.text_codes)}\n\n")
 
         # check if there is space to write the message
         message_size = new_message.size()
