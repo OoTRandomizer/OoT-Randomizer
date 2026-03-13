@@ -55,8 +55,10 @@ def default_output_path(path: str) -> str:
     if path == '':
         path = local_path('Output')
 
-    if not os.path.exists(path):
+    try:
         os.mkdir(path)
+    except FileExistsError:
+        pass
     return path
 
 
