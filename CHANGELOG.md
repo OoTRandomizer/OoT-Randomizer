@@ -5,7 +5,7 @@
 * The `Free Reward from Rauru` has a new `Yes (Forced)` option which forces the check to be a dungeon reward even if these are otherwise shuffled.
 * The `Maps & Compasses` shuffle setting has been split into separate `Maps` and `Compasses` settings.
 * The Farore's Wind text box now distinguishes between Ganon's Castle and Ganon's Tower.
-* New `Water Hop` trick added to advanced logic.
+* New `Water Hop` trick and `BotW Cucco Dive` glitch added to advanced logic.
 * Improve Debug menu with new options.
 * Refill items sold as special deals are now less likely to cost more than the "market price" of a repeatable purchase.
 * The heart chest texture has been tweaked to display heart icons on the lid rather than triangles.
