@@ -545,10 +545,13 @@ class Message:
             ret = ret + code.get_python_string()
         return ret
 
-    def get_string(self) -> str:
+    def get_string(self, left_control: bool = False) -> str:
         ret = ''
         for code in self.text_codes:
-            ret = ret + code.get_string()
+            if left_control and code.code in code.CC:
+                ret += code.get_python_string()
+            else:
+                ret = ret + code.get_string()
         return ret
 
     # check if this is an unused message that just contains it's own id as text
@@ -847,10 +850,17 @@ class Message:
 # if the id does not exist in the list, then it will add it
 # Checks if the message being updated is a newly added message in order to prevent duplicates.
 # Use allow_duplicates=True if the same message is purposely updated multiple times
-def update_message_by_id(messages: list[Message], id: int, text: bytearray | str, lang: Language, opts: Optional[int] = None, allow_duplicates: bool = False, force_left: bool = False):
+def update_message_by_id(messages: list[Message], id: int, text: bytearray | str, lang: Language, opts: Optional[int] = None, allow_duplicates: bool = False, force_left: bool = False, overwrite_existed: bool = False):
     # Check is we have previously added/modified this message.
-    if id in new_messages and not allow_duplicates:
-        raise Exception(f'Attempting to add duplicate message {hex(id)}')
+    if id in new_messages:
+        if overwrite_existed:
+            # Find the existing message and update it
+            for i, msg in enumerate(messages):
+                if msg.id == id:
+                    update_message_by_index(messages, i, text, lang, opts)
+                    return
+        if not allow_duplicates:
+            raise Exception(f'Attempting to add duplicate message {hex(id)}')
 
     new_messages.append(id)
     # get the message index
@@ -1057,10 +1067,6 @@ def make_player_message(text: str, lang: Language) -> str:
 # make sure to call this AFTER move_shop_item_messages()
 def update_item_messages(messages: list[Message], world: World) -> None:
     lang = world.language
-    if lang.PLAIN_TEXTS != []:
-        for plain_text in lang.PLAIN_TEXTS:
-            id, text, opt = plain_text["id"], plain_text["text"], plain_text["box_type"]
-            update_message_by_id(messages, id, text, lang, opt, force_left=True)
 
     new_item_messages = lang.ITEM_MESSAGES + lang.IMPORTANT_ITEM_MESSAGES
     for item_message in new_item_messages:

@@ -3706,4 +3706,36 @@ lang_info = {
     "PLAIN_TEXTS": PLAIN_TEXTS,
 }
 
+
+def replace_char_in_dict(d: dict, replace_list: list[list[str, str]]) -> dict:
+    """
+    Replace lang_info's string values' characters according to the replace_list
+    replace_list: [[old_char, new_char], ...]
+    """
+    if replace_list == []:
+        return d
+
+    def replace_in_str(s: str) -> str:
+        for old, new in replace_list:
+            s = s.replace(old, new)
+        return s
+
+    def replace_recursive(obj: Any) -> Any:
+        if isinstance(obj, str):
+            return replace_in_str(obj)
+
+        if isinstance(obj, dict):
+            return {k: replace_recursive(v) for k, v in obj.items()}
+
+        if isinstance(obj, list):
+            return [replace_recursive(item) for item in obj]
+
+        return obj
+
+    return replace_recursive(d)
+
+replace_list = []
+lang_info = replace_char_in_dict(lang_info, replace_list)
+
+
 json.dump(lang_info, open("property.json", mode="w+", encoding='utf-8', newline=''), ensure_ascii=False, indent=4, sort_keys=True)

@@ -60,7 +60,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     # Binary patches of certain assets.
     bin_patches = [
-        (os.path.join(lang.path, x), int(y, base=16)) for x, y in json.load(open(data_path("bin_patch.json"))).items() if x in lang.data.keys()
+        (os.path.join(lang.path, x), int(y[0], base=16)) for x, y in json.load(open(data_path("bin_patch.json"))).items() if x in lang.data.keys()
         ]
 
     for (bin_path, write_address) in bin_patches:
@@ -1170,6 +1170,10 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     # Load Message and Shop Data
     messages = read_messages(rom, lang)
+    if lang.PLAIN_TEXTS != []:
+        for plain_text in lang.PLAIN_TEXTS:
+            id, text, opt = plain_text["id"], plain_text["text"], plain_text["box_type"]
+            update_message_by_id(messages, id, text, lang, opt, force_left=True)
     new_messages.clear()
     remove_unused_messages(messages)
     shop_items = read_shop_items(rom, shop_item_file.start + 0x1DEC)
