@@ -12,6 +12,7 @@ import re
 import unittest
 from collections import Counter, defaultdict
 from typing import Literal, Optional, Any, overload
+from unittest.mock import patch
 
 from EntranceShuffle import EntranceShuffleError
 from Fill import ShuffleError
@@ -567,6 +568,68 @@ class TestPlandomizer(unittest.TestCase):
 
 
 class TestHints(unittest.TestCase):
+    def test_multiworld_goal_weights_initialized_per_world(self):
+        settings = make_settings_for_test({
+            "world_count": 2,
+            "bridge": "medallions",
+            "bridge_medallions": 4,
+            "shuffle_ganon_bosskey": "medallions",
+            "ganon_bosskey_medallions": 6,
+            "item_pool_value": "minimal",
+            "trials_random": False,
+            "trials": 0,
+            "open_forest": "closed_deku",
+            "open_door_of_time": "open",
+            "shuffle_song_items": "song",
+            "tokensanity": "off",
+            "mq_dungeons_mode": "vanilla",
+            "hint_dist_user": {
+                "name": "goal_weight_regression",
+                "gui_name": "Goal Weight Regression",
+                "description": "Custom hint distribution for multiworld goal weight regression testing.",
+                "add_locations": [],
+                "remove_locations": [],
+                "add_items": [],
+                "remove_items": [],
+                "dungeons_woth_limit": 2,
+                "dungeons_barren_limit": 1,
+                "named_items_required": True,
+                "vague_named_items": False,
+                "use_default_goals": True,
+                "distribution": {
+                    "trial":      {"order": 1,  "weight": 0.0, "fixed": 0,  "copies": 1},
+                    "always":     {"order": 2,  "weight": 0.0, "fixed": 0,  "copies": 1},
+                    "woth":       {"order": 3,  "weight": 0.0, "fixed": 0,  "copies": 1},
+                    "goal":       {"order": 4,  "weight": 0.0, "fixed": 6,  "copies": 1},
+                    "barren":     {"order": 5,  "weight": 0.0, "fixed": 0,  "copies": 1},
+                    "entrance":   {"order": 6,  "weight": 0.0, "fixed": 0,  "copies": 1},
+                    "sometimes":  {"order": 7,  "weight": 0.0, "fixed": 99, "copies": 1},
+                },
+            },
+        }, seed="TESTTESTTEST", outfilename="multiworld-goal-weight-regression")
+
+        # Build weights via update_goal_items and skip hint generation, which mutates weights.
+        with patch("Main.build_gossip_hints", return_value=None):
+            spoiler = main(settings)
+
+        self.assertGreater(len(spoiler.worlds), 1)
+        for world in spoiler.worlds[1:]:
+            with self.subTest(world=world.id + 1):
+                self.assertIn(world.id, spoiler.goal_locations)
+                self.assertGreater(len(spoiler.goal_locations[world.id]), 0)
+
+                weighted_goals = 0
+                for category_name, goals in spoiler.goal_locations[world.id].items():
+                    category = world.goal_categories[category_name]
+                    for goal_name, goal_worlds in goals.items():
+                        if not any(len(locations) > 0 for locations in goal_worlds.values()):
+                            continue
+                        weighted_goals += 1
+                        self.assertEqual(category.weight, 1)
+                        self.assertEqual(category.get_goal(goal_name).weight, 1)
+
+                self.assertGreater(weighted_goals, 0)
+
     def test_skip_zelda(self):
         # Song from Impa would be WotH, but instead of relying on random chance to get HC WotH,
         # just exclude all other locations to see if HC is barren.
