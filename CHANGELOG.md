@@ -19,6 +19,7 @@
 * Fix unshuffled treasure box shop keys showing the wrong item model while inside the chests if `Key Appearance Matches Dungeon` is enabled.
 * Add two missing locations: `Ganons Castle MQ Shadow Trial Explosives Wonderitem` and a `Bombable Fairy` in MQ Jabu.
 * Improve the error message when a settings string from the wrong randomizer version is imported.
+* Fix wrong Goal hints being generated for worlds other than the first in multiworld seeds.
 
 # 9.0
 
