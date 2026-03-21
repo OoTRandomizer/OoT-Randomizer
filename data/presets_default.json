@@ -1112,13 +1112,13 @@
         "custom_ice_trap_count": 100,
         "ice_trap_appearance": "junk_only"
     },
-    "Multiworld Tournament Season 5": {
+    "Multiworld Tournament Season 6": {
         "aliases": [
             "mw",
-            "mw_s5"
+            "mw_s6"
         ],
         "show_seed_info": true,
-        "user_message": "Multiworld Tournament Season 5",
+        "user_message": "Multiworld Tournament Season 6",
         "world_count": 3,
         "create_spoiler": true,
         "password_lock": false,
