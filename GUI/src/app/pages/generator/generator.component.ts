@@ -50,6 +50,17 @@ export class GeneratorComponent implements OnInit {
   repatchCosmeticsCheckboxTooltipPatch: string = "Replaces the cosmetic and sound settings generated in the patch file<br>with those selected on this page.";
   repatchCosmeticsCheckboxTooltipSeedPageWeb: string = "Replaces the cosmetic and sound settings generated in the seed<br>with those selected on this page.";
 
+  visibilityDirty = false;
+  recomputingVisibility = false;
+
+  // Visibility index built once: target -> array of rules to satisfy (AND)
+  visibilityIndex: Map<
+    string,
+    Map<string, { type: 'bool' | 'int' | 'str'; clauses: Array<{ value: any; negated: boolean }> }>
+  > = new Map<
+    string,
+    Map<string, { type: 'bool' | 'int' | 'str'; clauses: Array<{ value: any; negated: boolean }> }>
+  >();
   constructor(private overlayContainer: OverlayContainer, private cd: ChangeDetectorRef, public global: GUIGlobal, private dialogService: NbDialogService) {
   }
 
@@ -92,6 +103,9 @@ export class GeneratorComponent implements OnInit {
       this.activeFooterTab = this.generateFromFileTabTitle;
       this.global.generator_settingsMap["generate_from_file"] = true;
     }
+
+    // Build the visibility index once after settings are loaded
+    this.buildVisibilityIndex();
 
     this.recheckAllSettings();
     this.cd.markForCheck();
@@ -1089,6 +1103,260 @@ export class GeneratorComponent implements OnInit {
     return null;
   }
 
+  private buildVisibilityIndex(): void {
+    this.visibilityIndex.clear();
+
+    const settingsArray = this.global.getGlobalVar('generatorSettingsArray') || [];
+    const settingsObj   = this.global.getGlobalVar('generatorSettingsObj') || {};
+
+    const detectType = (settingDef: any): 'bool'|'int'|'str' => {
+      switch (settingDef?.type) {
+        case 'Checkbutton': return 'bool';
+        case 'Numberinput':
+        case 'ComboboxInt':
+        case 'Scale':       return 'int';
+        default:            return 'str';
+      }
+    };
+
+    // Collect all settings (with section context for expansion)
+    const allSettings: Array<{setting:any, tab:any, section:any}> = [];
+    for (const tab of settingsArray) {
+      if (!tab?.sections) continue;
+      for (const section of tab.sections) {
+        if (!section?.settings) continue;
+        for (const s of section.settings) {
+          if (s?.name) {
+            allSettings.push({ setting: s, tab, section });
+          }
+        }
+      }
+    }
+
+    // Helper: get or create controller bucket for a target
+    const touchControllerBucket = (target: string, controller: string, type: 'bool'|'int'|'str') => {
+      if (!this.visibilityIndex.has(target)) {
+        this.visibilityIndex.set(
+          target,
+          new Map<string, { type: 'bool' | 'int' | 'str'; clauses: Array<{ value: any; negated: boolean }> }>()
+        );
+      }
+      const cmap = this.visibilityIndex.get(target)!;
+      if (!cmap.has(controller)) {
+        cmap.set(controller, { type, clauses: [] });
+      }
+      return cmap.get(controller)!;
+    };
+
+
+    // Per-option controls_visibility_setting: OR across options for the SAME controller -> target
+    for (const { setting: controller } of allSettings) {
+      if (!Array.isArray(controller.options) || controller.options.length === 0) continue;
+      const controllerType = detectType(controller);
+
+      for (const opt of controller.options) {
+        const ctlValRaw = opt?.name;
+        if (ctlValRaw === undefined) continue;
+
+        const rawTargets = opt?.controls_visibility_setting || '';
+        if (!rawTargets) continue;
+
+        const targets = String(rawTargets)
+          .split(',')
+          .map((t: string) => t.trim())
+          .filter((t: string) => t.length > 0);
+
+        const negated = (typeof ctlValRaw === 'string') && ctlValRaw.startsWith('!');
+        const value   = negated ? (ctlValRaw as string).slice(1) : ctlValRaw;
+
+        for (const target of targets) {
+          // OR clause within controller
+          const bucket = touchControllerBucket(target, controller.name, controllerType);
+          bucket.clauses.push({ value, negated });
+        }
+      }
+    }
+
+    // Helper: expand a section name to its setting names
+    const expandSectionSettings = (sectionName: string): string[] => {
+      const res: string[] = [];
+      for (const tab of settingsArray) {
+        if (!tab?.sections) continue;
+        const sec = tab.sections.find((s: any) => s?.name === sectionName);
+        if (!sec?.settings) continue;
+        for (const s of sec.settings) {
+          if (s?.name) res.push(s.name);
+        }
+      }
+      return res;
+    };
+
+    // controls_visibility_section (controller-level): tie controller's current option(s) to all settings in sections.
+    // If section visibility per-option, adapt similarly to per-option above.
+    for (const { setting: controller } of allSettings) {
+      const rawSections = controller.controls_visibility_section || '';
+      if (!rawSections) continue;
+
+      const controllerType = detectType(controller);
+
+      const sections = String(rawSections)
+        .split(',')
+        .map((t: string) => t.trim())
+        .filter((t: string) => t.length > 0);
+
+      const targets = sections.flatMap(expandSectionSettings);
+
+      for (const target of targets) {
+        // Skip affecting the controller itself when it's in the same section to avoid self-disabling
+        if (target === controller.name) continue;
+
+        // Use a special marker for "match current value" by pushing a unique token
+        const bucket = touchControllerBucket(target, controller.name, controllerType);
+        bucket.clauses.push({ value: { __useCurrentValue: true }, negated: false });
+      }
+    }
+
+    // Per-option controls_visibility_section: disable targets only when that option is selected
+    for (const { setting: controller } of allSettings) {
+      if (!Array.isArray(controller.options) || controller.options.length === 0) continue;
+      const controllerType = detectType(controller);
+
+      for (const opt of controller.options) {
+        const rawSections = opt?.controls_visibility_section || '';
+        if (!rawSections) continue;
+
+        const sections = String(rawSections)
+          .split(',')
+          .map((t: string) => t.trim())
+          .filter((t: string) => t.length > 0);
+
+        const targets = sections.flatMap(expandSectionSettings);
+
+        for (const target of targets) {
+          if (target === controller.name) continue; // avoid self-disable
+          const bucket = touchControllerBucket(target, controller.name, controllerType);
+          bucket.clauses.push({ value: opt.name, negated: false });
+        }
+      }
+    }
+
+    // controls_visibility_tab -> expand to all settings in those tabs
+    for (const { setting: controller } of allSettings) {
+      const rawTabs = controller.controls_visibility_tab || '';
+      if (!rawTabs) continue;
+
+      const controllerType = detectType(controller);
+
+      const tabNames = String(rawTabs)
+        .split(',')
+        .map((t: string) => t.trim())
+        .filter((t: string) => t.length > 0);
+
+      const targets: string[] = [];
+      for (const tab of settingsArray) {
+        if (!tab || tabNames.indexOf(tab.name) === -1 || !Array.isArray(tab.sections)) continue;
+        for (const section of tab.sections) {
+          if (!section?.settings) continue;
+          for (const s of section.settings) {
+            if (s?.name) targets.push(s.name);
+          }
+        }
+      }
+
+      for (const target of targets) {
+        if (target === controller.name) continue; // avoid self-disable
+        const bucket = touchControllerBucket(target, controller.name, controllerType);
+        bucket.clauses.push({ value: { __useCurrentValue: true }, negated: false });
+      }
+    }
+  }
+
+  // Debounced, loop-safe recompute
+  private scheduleRecomputeVisibility(): void {
+    this.visibilityDirty = true;
+    if (this.recomputingVisibility) return;
+
+    this.recomputingVisibility = true;
+    Promise.resolve().then(() => {
+      try {
+        if (this.visibilityDirty) {
+          this.visibilityDirty = false;
+          this.recomputeVisibility();
+        }
+        this.cd.markForCheck();
+        this.cd.detectChanges();
+      } finally {
+        this.recomputingVisibility = false;
+      }
+    });
+  }
+
+  private recomputeVisibility(): void {
+    const settingsMap = this.global.generator_settingsMap as Record<string, any>;
+    const visMap = this.global.generator_settingsVisibilityMap as Record<string, boolean>;
+
+    // Collect all targets
+    const knownTargets: string[] = [];
+    for (const tab of (this.global.getGlobalVar('generatorSettingsArray') || [])) {
+      for (const section of (tab.sections || [])) {
+        for (const s of (section.settings || [])) {
+          if (s?.name) {
+            knownTargets.push(s.name);
+            if (!(s.name in visMap)) visMap[s.name] = true;
+          }
+        }
+      }
+    }
+
+    const coerce = (val: any, type: 'bool'|'int'|'str') => {
+      if (type === 'bool') {
+        if (typeof val === 'boolean') return val;
+        if (typeof val === 'string') {
+          const low = val.trim().toLowerCase();
+          if (['true','yes','1','on','checked'].includes(low)) return true;
+          if (['false','no','0','off','unchecked'].includes(low)) return false;
+        }
+        return !!val;
+      }
+      if (type === 'int') return typeof val === 'number' ? val : parseInt(val, 10);
+      return String(val);
+    };
+
+    for (const target of knownTargets) {
+      const controllers = this.visibilityIndex.get(target);
+      if (!controllers || controllers.size === 0) {
+        visMap[target] = true;
+        continue;
+      }
+
+      // AND across controllers: a target remains visible only if
+      // NO controller disables it. A clause match means "DISABLE".
+      let visible = true;
+
+      for (const [controllerName, bucket] of controllers.entries()) {
+        const current = coerce(settingsMap[controllerName], bucket.type);
+
+        // If ANY clause matches, this controller disables the target.
+        let controllerDisables = false;
+        for (const { value, negated } of bucket.clauses) {
+          const expected = (value && (value as any).__useCurrentValue) ? current : coerce(value, bucket.type);
+          const match = negated ? (current !== expected) : (current === expected);
+          if (match) {
+            controllerDisables = true;
+            break;
+          }
+        }
+
+        if (controllerDisables) {
+          visible = false;
+          break;
+        }
+      }
+
+      visMap[target] = visible;
+    }
+  }
+
   checkVisibility(newValue: any, setting: any, option: any = null, refColorPicker: HTMLInputElement = null, disableOnly: boolean = false, noValueChange: boolean = false) {
 
     if (!disableOnly && !noValueChange)
@@ -1151,6 +1419,7 @@ export class GeneratorComponent implements OnInit {
 
     //Handle activations/deactivations
     this.toggleVisibility(targetSettings, disableOnly, setting.name);
+    this.scheduleRecomputeVisibility();
   }
 
   toggleVisibility(targetSettings: any, disableOnly: boolean, skipSetting: string = "") {
@@ -1216,73 +1485,27 @@ export class GeneratorComponent implements OnInit {
     }
 
   private triggerSectionVisibility(targetSetting: any, targetValue: boolean, triggeredChange: boolean) {
-      targetSetting["controls_visibility_section"].split(",").forEach(section => {
-
-        let targetSection = null;
-
-        //Find section
-        for (let i = 0; i < this.global.getGlobalVar('generatorSettingsArray').length; i++) {
-          let tab = this.global.getGlobalVar('generatorSettingsArray')[i];
-
-          for (let n = 0; n < tab.sections.length; n++) {
-
-            if (tab.sections[n].name === section) {
-              targetSection = tab.sections[n];
-              break;
-            }
-          }
-
-          if (targetSection)
-            break;
-        }
-
-        //Disable/Enable entire section
-        if (targetSection) {
-
-          targetSection.settings.forEach(setting => {
-
-            //Ignore settings that don't exist in this specific app
-            if (!(setting.name in this.global.generator_settingsVisibilityMap))
-              return;
-
-            let enabledChildren = false;
-
-            //If a setting gets disabled, re-enable all the settings that this setting caused to deactivate. The later full check will fix any potential issues
-            if (targetValue == false && this.global.generator_settingsVisibilityMap[setting.name] == true) {
-              enabledChildren = this.clearDeactivationsOfSetting(setting);
-            }
-
-            if ((targetValue == true && this.global.generator_settingsVisibilityMap[setting.name] == false) || (enabledChildren)) //Only trigger change if a (sub) setting gets re-enabled
-              triggeredChange = true;
-
-            this.global.generator_settingsVisibilityMap[setting.name] = targetValue;
-          });
-        }
-      });
-
-      return triggeredChange;
-    }
+      // No imperative updates; section visibility is handled by recomputeVisibility using visibilityIndex.
+      // Just flag that visibility needs recomputation.
+      this.visibilityDirty = true;
+      return true;
+  }
 
   private triggerSettingVisibility(targetSetting: any, targetValue: boolean, triggeredChange: boolean) {
-      targetSetting["controls_visibility_setting"].split(",").forEach(setting => {
+      targetSetting["controls_visibility_setting"].split(",").forEach(settingName => {
+        if (!(settingName in this.global.generator_settingsVisibilityMap)) return;
 
-        //Ignore settings that don't exist in this specific app
-        if (!(setting in this.global.generator_settingsVisibilityMap))
-          return;
+        // targetValue here means "disable". Visibility is the inverse.
+        const desiredVisible = !targetValue;
+        const prevVisible = !!this.global.generator_settingsVisibilityMap[settingName];
 
-        let enabledChildren = false;
-
-        if (targetValue == false && this.global.generator_settingsVisibilityMap[setting] == true) {
-          enabledChildren = this.clearDeactivationsOfSetting(this.global.findSettingByName(setting));
-        }
-
-        if ((targetValue == true && this.global.generator_settingsVisibilityMap[setting] == false) || (enabledChildren)) //Only trigger change if a (sub) setting gets re-enabled
+        if (prevVisible !== desiredVisible) {
+          this.global.generator_settingsVisibilityMap[settingName] = desiredVisible;
           triggeredChange = true;
-
-        this.global.generator_settingsVisibilityMap[setting] = targetValue;
+          this.visibilityDirty = true;
+        }
       });
-
-    return triggeredChange;
+      return triggeredChange;
   }
 
   clearDeactivationsOfSetting(setting: any) {

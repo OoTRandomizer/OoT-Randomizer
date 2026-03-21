@@ -90,12 +90,43 @@ class SettingInfo:
         return 0
 
     def create_dependency(self, disabling_setting: 'SettingInfo', option, negative: bool = False) -> None:
+        # Coerce the option to the disabling setting's value type to avoid "True" vs True issues, "3" vs 3, etc.
+        target_type = getattr(disabling_setting, 'type', type(option))
+
+        def _coerce(opt):
+            # Special handling for booleans
+            if target_type is bool:
+                if isinstance(opt, bool):
+                    return opt
+                if isinstance(opt, str):
+                    low = opt.strip().lower()
+                    if low in ('true', 'yes', '1', 'on', 'checked'):
+                        return True
+                    if low in ('false', 'no', '0', 'off', 'unchecked'):
+                        return False
+                # Fall back: return as-is; comparison will likely fail rather than mis-disable
+                return opt
+            # Ints
+            if target_type is int and isinstance(opt, str):
+                try:
+                    return int(opt)
+                except ValueError:
+                    return opt
+            # Strings are fine, lists/dicts unlikely for options
+            return opt
+
+        coerced_option = _coerce(option)
+
         op = operator.__ne__ if negative else operator.__eq__
+        ds_name = disabling_setting.name
+
         if self.dependency is None:
-            self.dependency = lambda settings: op(getattr(settings, disabling_setting.name), option)
+            # Bind captured values to avoid late-binding surprises
+            self.dependency = lambda settings, ds=ds_name, opt=coerced_option, _op=op: _op(getattr(settings, ds), opt)
         else:
             old_dependency = self.dependency
-            self.dependency = lambda settings: op(getattr(settings, disabling_setting.name), option) or old_dependency(settings)
+            self.dependency = lambda settings, ds=ds_name, opt=coerced_option, _op=op, old_dep=old_dependency: _op(
+                getattr(settings, ds), opt) or old_dep(settings)
 
 
 class SettingInfoNone(SettingInfo):

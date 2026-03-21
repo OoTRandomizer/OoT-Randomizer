@@ -581,7 +581,7 @@ export class GUIGlobal implements OnDestroy {
               this.generator_customColorMap[setting.name] = "";
             }
           }
-          
+
           //Handle dynamic settings. The available options (and sometimes the tooltip) are determined at runtime
           if (setting.dynamic) {
             let dynamicSetting = await this.updateDynamicSetting(setting.name)
@@ -591,22 +591,22 @@ export class GUIGlobal implements OnDestroy {
               let parsedSetting = JSON.parse(dynamicSetting);
 
               let isCosmetic = (tab.name in guiSettings.cosmeticsObj);
-                     
+
               guiSettings.settingsObj[tab.name].sections[section.name].settings[setting.name] = parsedSetting.object;
-              
+
               guiSettings.settingsArray[tabIndex].sections[sectionIndex].settings[settingIndex] = parsedSetting.array;
-  
+
               if (isCosmetic) {
                 guiSettings.cosmeticsObj[tab.name].sections[section.name].settings[setting.name] = parsedSetting.object;
-  
+
                 let cosmeticTabIndex = guiSettings.cosmeticsArray.findIndex(elem => elem.name == tab.name);
-  
+
                 if (cosmeticTabIndex != -1) {
-  
+
                   //Note: This follows the assumption that sections and settings are structured identically between settings and cosmetics arrays.
                   guiSettings.cosmeticsArray[cosmeticTabIndex].sections[sectionIndex].settings[settingIndex] = parsedSetting.array;
                 }
-              }  
+              }
             }
           }
         };
@@ -664,12 +664,12 @@ export class GUIGlobal implements OnDestroy {
         }).catch(err => {
           console.error("[updateDynamicSettingy] Post-Robot Error:", err);
           reject(null);
-        });   
+        });
       } else { //web mode
           //TODO: Should dynamic settings ever be needed on web, add API call or browser lookups here.
           //for now, resolving with null is fine.
           resolve(null);
-      }   
+      }
     })
   }
 
@@ -1582,7 +1582,7 @@ export class GUIGlobal implements OnDestroy {
 
       useStaticSeed = ""; //Static seeds aren't allowed in race mode
       settingsFile["create_spoiler"] = true; //Force spoiler mode to on
-      
+
       if (masterVersion) {
         settingsFile["encrypt"] = true;
       }
