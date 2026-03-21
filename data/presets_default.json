@@ -1216,7 +1216,7 @@
         "keyring_give_bk": false,
         "shuffle_bosskeys": "dungeon",
         "shuffle_silver_rupees": "vanilla",
-        "silver_rupee_pouches_choice": "off",
+        "silver_rupee_pouches_choice": "all",
         "silver_rupee_pouches": [],
         "enhance_map_compass": [
             "map_mq",
