@@ -598,7 +598,7 @@
         "no_epona_race": true,
         "skip_some_minigame_phases": true,
         "complete_mask_quest": false,
-        "useful_cutscenes": true,
+        "useful_cutscenes": false,
         "fast_chests": true,
         "scarecrow_behavior": "vanilla",
         "fast_bunny_hood": false,
