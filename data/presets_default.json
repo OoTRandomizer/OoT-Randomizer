@@ -465,7 +465,7 @@
         "ganon_bosskey_rewards": 7,
         "ganon_bosskey_tokens": 100,
         "ganon_bosskey_hearts": 20,
-        "open_forest": "open",
+        "open_forest": "closed_deku",
         "open_kakariko": "open",
         "open_door_of_time": "open",
         "zora_fountain": "closed",
@@ -627,8 +627,6 @@
             "40_skulltulas",
             "50_skulltulas",
             "frogs2",
-            "mask_shop",
-            "unique_merchants",
             "mask_of_truth"
         ],
         "correct_chest_appearances": "both",
