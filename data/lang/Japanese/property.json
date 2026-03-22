@@ -1729,6 +1729,7 @@
             "gender": "no_gender"
         }
     },
+    "language_specific_replace_table": [],
     "boss_textboxes": {
         "Queen Gohma Boss Room": "#01ゴーマ",
         "King Dodongo Boss Room": "#01キングドドンゴ",

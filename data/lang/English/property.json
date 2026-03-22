@@ -9208,6 +9208,7 @@
             "vague_hint": "kept in a big chest #inside its tower#"
         }
     },
+    "language_specific_replace_table": [],
     "hint_area_enum": {
         "BOTTOM_OF_THE_WELL": {
             "clear_prep": "at",
