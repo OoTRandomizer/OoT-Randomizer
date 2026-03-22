@@ -3203,6 +3203,10 @@ hint_text = {
     "ganon_base": "And the \x05\x41evil one\x05\x40's key will be {bk_location_string}"
 }
 
+# Language specific text replace table
+# Format: [[from: str, to: str]]
+language_specific_replace_table = []
+
 # Trial name replacer
 trials = {
     'Spirit': "Spirit",
@@ -3692,6 +3696,7 @@ lang_info = {
     'region_list': region_list,
     "hintTable": hintTableFix,
     "hint_text": hint_text,
+    "language_specific_replace_table": language_specific_replace_table,
     "trials": trials,
     "hintPrefixes": hintPrefixes,
     "hint_area_enum": hint_area_enum,

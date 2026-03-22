@@ -42,4 +42,4 @@ def get_ia4(frm, export, start=0, size=0):
 # for file in diff_list:
 #     make_diff("data/lang/baserom.z64", "data/lang/german_edit.z64", file)
     
-get_ia4("/Users/lyonniki/Desktop/oot/build/ntsc-1.0/oot-ntsc-1.0.z64", "blue_fire_arrow_item_name_eng.ia4", 0x8A1C00, 0x400)
+get_ia4("baserom.z64", "blue_fire_arrow_item_name_eng.ia4", 0x8A1C00, 0x400)

@@ -2436,13 +2436,17 @@ def create_fake_name(name: str, censor: list[str]) -> str:
     dak  = ["がぎぐげご", "ざじずぜぞ", "だぢづでど", "ばびぶべぼ", "ぱぴぷぺぽ"]
     for b_str, d_str in zip(bases, dak):
         for b, d in zip(b_str, d_str):
-            M[b] = d; M[d] = b
+            M[b] = d
+            M[d] = b
     M |= {k.upper(): v.upper() for k, v in M.items()}
+
     for s, f in zip("ぁぃぅぇぉゃゅょァィゥェォャュョ", "あいうえおやゆよアイウエオヤユヨ"):
         M[s] = f
-    M[f] = s
-    vowels = 'aeiou'
+        M[f] = s
+
+    vowels = "aeiou"
     list_name = list(name)
+
     vowel_indexes = [i for i, c in enumerate(list_name) if c in vowels]
     for i in random.sample(vowel_indexes, min(2, len(vowel_indexes))):
         c = list_name[i]
@@ -2468,13 +2472,39 @@ def create_fake_name(name: str, censor: list[str]) -> str:
         n += 1 if n % 2 == 0 else -1
         list_name[i] = KANJI[n]
 
-    # keeping the game E...
     new_name = ''.join(list_name)
     new_name_az = re.sub(r'[^a-zA-Z]', '', new_name.lower())
     for cuss in censor:
         if cuss in new_name_az:
-            return create_fake_name(name)
+            return create_fake_name(name, censor)
+
     return new_name
+
+
+_PROTECTED_RE = re.compile(
+    r'''
+    \[[^\[\]]*\]      |   # [ ... ]
+    \{[^{}]*\}        |   # { ... }
+    \#[^#]*\#         |   # # ... #
+    \\x[0-9A-Fa-f]{2}     # \xNN
+    ''',
+    re.VERBOSE,
+)
+
+def create_fake_name_in_text(text: str, censor: list[str]) -> str:
+    parts = []
+    last = 0
+
+    for m in _PROTECTED_RE.finditer(text):
+        if m.start() > last:
+            parts.append(create_fake_name(text[last:m.start()], censor))
+        parts.append(m.group(0))
+        last = m.end()
+
+    if last < len(text):
+        parts.append(create_fake_name(text[last:], censor))
+
+    return ''.join(parts)
 
 
 def place_shop_items(rom: Rom, world: World, shop_items, messages, locations, init_shop_id: bool = False) -> set[int]:
@@ -2549,7 +2579,7 @@ def place_shop_items(rom: Rom, world: World, shop_items, messages, locations, in
                 extra_name = world.language.SHOP_TEXTS["dungeon-item_extra"].get(extra_name, extra_name)
 
                 if location.item.name == 'Ice Trap':
-                    base_name = create_fake_name(base_name, world.language.SHOP_TEXTS["censor"])
+                    base_name = create_fake_name_in_text(base_name, world.language.SHOP_TEXTS["censor"])
 
                 if world.settings.world_count > 1:
                     description_text = world.language.format_from_id(
@@ -2581,7 +2611,7 @@ def place_shop_items(rom: Rom, world: World, shop_items, messages, locations, in
             else:
                 shop_item_name = get_simple_hint_no_prefix(item_display, world.language)
                 if location.item.name == 'Ice Trap':
-                    shop_item_name = create_fake_name(shop_item_name, world.language.SHOP_TEXTS["censor"])
+                    shop_item_name = create_fake_name_in_text(shop_item_name, world.language.SHOP_TEXTS["censor"])
 
                 if world.settings.world_count > 1:
                     description_text = world.language.format_from_id(

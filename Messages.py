@@ -1041,21 +1041,40 @@ def make_player_message(text: str, lang: Language) -> str:
     pronoun_mapping = lang.pronoun_mapping
     verb_mapping = lang.verb_mapping
     new_text = text
-    # Replace the first instance of a 'You' with the player name
-    if lang.search is not None:
-        if lang.base != "jp":
-            lower_text = text.lower()
-            you_index = lower_text.find(lang.search)
+    you_index = -1
+
+    # Replace the first instance of a player-directed phrase with the player name
+    if lang.search is not None and lang.base != "jp":
+        lower_text = text.lower()
+
+        if isinstance(lang.search, str):
+            search_terms = [lang.search]
+        elif isinstance(lang.search, (list, tuple, set)):
+            search_terms = [s for s in lang.search if isinstance(s, str) and s]
+        else:
+            raise TypeError(f"Unsupported lang.search type: {type(lang.search)}")
+
+        matches: list[tuple[int, int, str]] = []
+        for term in search_terms:
+            idx = lower_text.find(term.lower())
+            if idx != -1:
+                # earliest match first, and for same position prefer longer match
+                matches.append((idx, -len(term), term))
+
+        if matches:
+            matches.sort()
+            you_index = matches[0][0]
+
         if you_index != -1:
-            for find_text, replace_text in pronoun_mapping.items():
-                # if the index do not match, then it is not the first 'You'
-                if text.find(find_text) == you_index:
+            for find_text, replace_text in sorted(pronoun_mapping.items(), key=lambda x: len(x[0]), reverse=True):
+                if lower_text.find(find_text.lower()) == you_index:
                     new_text = new_text.replace(find_text, replace_text, 1)
                     break
 
-    # because names are longer, we shorten the verbs to they fit in the textboxes better
+    # because names are longer, we shorten verbs so they fit in the textboxes better
     for find_text, replace_text in verb_mapping.items():
         new_text = new_text.replace(find_text, replace_text)
+
     wrapped_text = line_wrap(new_text, lang.base, False, False, False)
     if wrapped_text != new_text:
         new_text = line_wrap(new_text, lang.base, True, False, False)
@@ -1390,7 +1409,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
             if dungeon.name in ('Gerudo Training Ground', 'Ganons Castle'):
                 pass
             elif dungeon.name in ('Bottom of the Well', 'Ice Cavern'):
-                dungeon_name, gender = dungeon_list[dungeon.name]
+                dungeon_name, dungeon_gender = dungeon_list[dungeon.name]
                 compass_id, map_id = dungeon_id_list[dungeon.name]
                 if 'map_dungeon_location' in world.settings.enhance_map_compass and world.settings.shuffle_dungeon_entrances != 'off':
                     dungeon_index = [i for i, c in dungeon_entrances.items() if dungeon.name in c]
@@ -1406,7 +1425,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                             {
                                 "dungeon_name": dungeon_name,
                                 "dungeon_state": lang.PATCH_TEXTS['masterful'] if world.dungeon_mq[dungeon.name] else lang.PATCH_TEXTS['ordinary'],
-                                "gender": gender,
+                                "dungeon_gender": dungeon_gender,
                                 "dungeon_location": dungeon_location[0],
                                 "location_gender": dungeon_location[1],
                             }
@@ -1416,7 +1435,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                             "PATCH_TEXTS.map_location",
                             {
                                 "dungeon_name": dungeon_name,
-                                "gender": gender,
+                                "dungeon_gender": dungeon_gender,
                                 "dungeon_location": dungeon_location[0],
                                 "location_gender": dungeon_location[1],
                             }
@@ -1429,13 +1448,13 @@ def update_map_compass_messages(messages: list[Message], world: World):
                             {
                                 "dungeon_name": dungeon_name,
                                 "dungeon_state": lang.PATCH_TEXTS["masterful"] if world.dungeon_mq[dungeon.name] else lang.PATCH_TEXTS["ordinary"],
-                                "gender": gender
+                                "dungeon_gender": dungeon_gender
                             })
 
                         if world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12:
                             update_message_by_id(messages, map_id, map_message, lang, allow_duplicates=True, force_left=True)
             else:
-                dungeon_name, gender = dungeon_list[dungeon.name]
+                dungeon_name, dungeon_gender = dungeon_list[dungeon.name]
                 compass_id, map_id, boss_entrance = dungeon_id_list[dungeon.name]
                 if 'compass_reward' in world.settings.enhance_map_compass:
                     if world.settings.shuffle_dungeon_rewards != 'dungeon':
@@ -1453,10 +1472,10 @@ def update_map_compass_messages(messages: list[Message], world: World):
                                     "PATCH_TEXTS.compass_boss_area",
                                     {
                                         "dungeon_name": dungeon_name,
-                                        "area": area,
+                                        "dungeon_gender": dungeon_gender,
+                                        "area": area.text,
                                         "boss_name": boss_textboxes[boss_room],
-                                        "vanilla_reward": world.language.hintTable[vanilla_reward]["clear_hint"],
-                                        "gender": gender
+                                        "vanilla_reward": world.language.hintTable[vanilla_reward]["clear_hint"]
                                     }
                                 )
                             else:
@@ -1464,9 +1483,9 @@ def update_map_compass_messages(messages: list[Message], world: World):
                                     "PATCH_TEXTS.compass_area",
                                     {
                                         "dungeon_name": dungeon_name,
-                                        "area": area,
+                                        "area": area.text,
                                         "vanilla_reward": world.language.hintTable[vanilla_reward]["clear_hint"],
-                                        "gender": gender
+                                        "dungeon_gender": dungeon_gender
                                     }
                                 )
                         else:
@@ -1481,7 +1500,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                                         "color": COLOR_MAP[REWARD_COLORS[dungeon_reward]][1 if lang.base == "jp" else 0],
                                         "boss_name": boss_textboxes[boss_room],
                                         "dungeon_reward": world.language.hintTable[dungeon_reward]["clear_hint"],
-                                        "gender": gender
+                                        "dungeon_gender": dungeon_gender
                                     }
                                 )
                             else:
@@ -1491,7 +1510,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                                         "dungeon_name": dungeon_name,
                                         "color": COLOR_MAP[REWARD_COLORS[dungeon_reward]][1 if lang.base == "jp" else 0],
                                         "dungeon_reward": world.language.hintTable[dungeon_reward]["clear_hint"],
-                                        "gender": gender
+                                        "dungeon_gender": dungeon_gender
                                     }
                                 )
                         update_message_by_id(messages, compass_id, compass_message, lang, allow_duplicates=True, force_left=True)
@@ -1503,7 +1522,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                                 {
                                     "dungeon_name": dungeon_name,
                                     "boss_name": boss_textboxes[boss_room],
-                                    "gender": gender
+                                    "dungeon_gender": dungeon_gender
                                 }
                             )
                             update_message_by_id(messages, compass_id, compass_message, lang, allow_duplicates=True, force_left=True)
@@ -1515,7 +1534,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                             {
                                 "dungeon_name": dungeon_name,
                                 "boss_name": boss_textboxes[boss_room],
-                                "gender": gender
+                                "dungeon_gender": dungeon_gender
                             }
                         )
                         update_message_by_id(messages, compass_id, compass_message, lang, allow_duplicates=True, force_left=True)
@@ -1532,7 +1551,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                             {
                                 "dungeon_name": dungeon_name,
                                 "dungeon_state": lang.PATCH_TEXTS['masterful'] if world.dungeon_mq[dungeon.name] else lang.PATCH_TEXTS['ordinary'],
-                                "gender": gender,
+                                "dungeon_gender": dungeon_gender,
                                 "dungeon_location": dungeon_location[0],
                                 "location_gender": dungeon_location[1],
                             }
@@ -1542,7 +1561,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                             "PATCH_TEXTS.map_location",
                             {
                                 "dungeon_name": dungeon_name,
-                                "gender": gender,
+                                "dungeon_gender": dungeon_gender,
                                 "dungeon_location": dungeon_location[0],
                                 "location_gender": dungeon_location[1],
                             }
@@ -1555,6 +1574,6 @@ def update_map_compass_messages(messages: list[Message], world: World):
                             {
                                 "dungeon_name": dungeon_name,
                                 "dungeon_state": lang.PATCH_TEXTS["masterful"] if world.dungeon_mq[dungeon.name] else lang.PATCH_TEXTS["ordinary"],
-                                "gender": gender
+                                "dungeon_gender": dungeon_gender
                             })
                         update_message_by_id(messages, map_id, map_message, lang, allow_duplicates=True, force_left=True)
