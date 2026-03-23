@@ -282,9 +282,15 @@ class Language:
         return s
 
     def _to_expr_literal(self, value):
+        value = self._coerce_expr_value(value)
         if self.base == "jp" and type(value) is int:
             return repr(half_to_full_width(str(value)))
         return repr(value)
+    
+    def _coerce_expr_value(self, value):
+        if isinstance(value, (str, int, float, bool, type(None), list, tuple, dict, set)):
+            return value
+        return str(value)
 
     def _format_expr_function(self, value, external=None):
         if external is not None and not isinstance(external, dict):

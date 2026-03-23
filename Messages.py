@@ -1473,7 +1473,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                                     {
                                         "dungeon_name": dungeon_name,
                                         "dungeon_gender": dungeon_gender,
-                                        "area": area.text,
+                                        "area": area,
                                         "boss_name": boss_textboxes[boss_room],
                                         "vanilla_reward": world.language.hintTable[vanilla_reward]["clear_hint"]
                                     }
@@ -1483,7 +1483,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                                     "PATCH_TEXTS.compass_area",
                                     {
                                         "dungeon_name": dungeon_name,
-                                        "area": area.text,
+                                        "area": area,
                                         "vanilla_reward": world.language.hintTable[vanilla_reward]["clear_hint"],
                                         "dungeon_gender": dungeon_gender
                                     }
