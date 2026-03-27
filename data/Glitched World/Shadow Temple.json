@@ -172,7 +172,7 @@
                 (is_adult and can_kill_redead and can_groundjump
                     and
                     (
-                    (Hover_Boots and (Goron_Tunic or can_live(0.25,False,True)))
+                    (Hover_Boots and (Goron_Tunic or can_live_dmg(0.25,False,True)))
                     or
                     (can_isg and glitch_clipping)
                     )
