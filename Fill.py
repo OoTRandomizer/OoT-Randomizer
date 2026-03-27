@@ -184,6 +184,20 @@ def distribute_items_restrictive(worlds: list[World], fill_locations: Optional[l
     # the song locations only.
     if worlds[0].settings.shuffle_song_items != 'any':
         logger.info('Placing song items.')
+        # Prioritize Song from Impa when skip child zelda is on to ensure it
+        # gets a song and not some other type of item when songs on songs is
+        # enabled.
+        impas: list[Location] = []
+        impas_songs: list[Item] = []
+        for world in worlds:
+            if world.skip_child_zelda:
+                own_songs = [song for song in songitempool if song.world.id == world.id]
+                impa = world.get_location('Song from Impa')
+                if own_songs and impa.item is None:
+                    impas.append(impa)
+                    impas_songs.append(random.choice(own_songs))
+        if impas and impas_songs:
+            fill_ownworld_restrictive(worlds, search, impas, impas_songs, progitempool, "song")
         fill_ownworld_restrictive(worlds, search, song_locations, songitempool, progitempool, "song")
         search.collect_locations()
         fill_locations += [location for location in song_locations if location.item is None]
@@ -348,8 +362,8 @@ def fill_dungeon_unique_item(worlds: list[World], search: Search, fill_locations
 def fill_ownworld_restrictive(worlds: list[World], search: Search, locations: list[Location], ownpool: list[Item],
                               itempool: list[Item], description: str = "Unknown", attempts: int = 15) -> None:
     # look for preplaced items
-    placed_prizes = [loc.item.name for loc in locations if loc.item is not None]
-    unplaced_prizes = [item for item in ownpool if item.name not in placed_prizes]
+    placed_prizes = [loc.item for loc in locations if loc.item is not None]
+    unplaced_prizes = [item for item in ownpool if item not in placed_prizes]
     empty_locations = [loc for loc in locations if loc.item is None]
 
     prizepool_dict = {world.id: [item for item in unplaced_prizes if item.world.id == world.id] for world in worlds}
