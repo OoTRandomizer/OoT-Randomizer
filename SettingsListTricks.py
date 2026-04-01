@@ -34,7 +34,6 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     "Child", "Adult",),
         'tooltip' : '''\
                     Allows the following possible without Tunics:
-                    - Enter Fire Temple as adult.
                     - Zora's Fountain bottom Freestandings. You
                     might not have enough time to resurface, and
                     you may need to make multiple trips.
