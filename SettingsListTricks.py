@@ -37,6 +37,8 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     - Zora's Fountain bottom Freestandings. You
                     might not have enough time to resurface, and
                     you may need to make multiple trips.
+                    - Enter Fire Temple from Goron City, the grotto,
+                    or the great fairy fountain.
                     - Traverse the first floor of the Fire Temple,
                     except the elevator room and Volvagia.
                     - Go underwater in the Water Temple. (The area
