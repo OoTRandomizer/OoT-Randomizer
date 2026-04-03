@@ -84,8 +84,8 @@ item_row_t item_table[GI_RANDO_MAX] = {
     [GI_BOMB_BAG_40]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x4F, -1, 0x005A, 0x00BF, 0x1A, no_upgrade, no_effect, -1, -1, NULL), // Biggest Bomb Bag
     [GI_SILVER_GAUNTLETS]                                       = ITEM_ROW(0x53,      GILDED_CHEST, 0x51, -1, 0x005B, 0x012D, 0x49, no_upgrade, no_effect, -1, -1, NULL), // Silver Gauntlets
     [GI_GOLD_GAUNTLETS]                                         = ITEM_ROW(0x53,      GILDED_CHEST, 0x52, -1, 0x005C, 0x012D, 0x4A, no_upgrade, no_effect, -1, -1, NULL), // Golden Gauntlets
-    [GI_SCALE_SILVER]                                           = ITEM_ROW(0x53,      GILDED_CHEST, 0x53, -1, 0x00CD, 0x00DB, 0x2A, no_upgrade, no_effect, -1, -1, NULL), // Silver Scale
-    [GI_SCALE_GOLDEN]                                           = ITEM_ROW(0x53,      GILDED_CHEST, 0x54, -1, 0x00CE, 0x00DB, 0x2B, no_upgrade, no_effect, -1, -1, NULL), // Golden Scale
+    [GI_SCALE_SILVER]                                           = ITEM_ROW(0x53,      GILDED_CHEST, 0x53, -1, 0x00CD, 0x00DB, 0x2A, no_upgrade, give_progressive_scale, 1, -1, NULL), // Silver Scale
+    [GI_SCALE_GOLDEN]                                           = ITEM_ROW(0x53,      GILDED_CHEST, 0x54, -1, 0x00CE, 0x00DB, 0x2B, no_upgrade, give_progressive_scale, 2, -1, NULL), // Golden Scale
     [GI_STONE_OF_AGONY]                                         = ITEM_ROW(0x53,      GILDED_CHEST, 0x6F, -1, 0x0068, 0x00C8, 0x21, no_upgrade, no_effect, -1, -1, NULL), // Stone of Agony
     [GI_GERUDOS_CARD]                                           = ITEM_ROW(0x53,      GILDED_CHEST, 0x70, -1, 0x007B, 0x00D7, 0x24, no_upgrade, no_effect, -1, -1, NULL), // Gerudo Membership Card
 
@@ -347,6 +347,8 @@ item_row_t item_table[GI_RANDO_MAX] = {
     [GI_WATER_MEDALLION]                                        = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x003D, 0x01B1, 0x98, no_upgrade, give_quest_item,  2, -1, NULL), // Water Medallion
     [GI_SHADOW_MEDALLION]                                       = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x0041, 0x01B2, 0x99, no_upgrade, give_quest_item,  4, -1, NULL), // Shadow Medallion
     [GI_SPIRIT_MEDALLION]                                       = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x003F, 0x01B3, 0x9A, no_upgrade, give_quest_item,  3, -1, NULL), // Spirit Medallion
+
+    [GI_SCALE_BRONZE]                                           = ITEM_ROW(0x53,      GILDED_CHEST, 0x54, -1, 0x90B6, 0x00DB, 0xA5, no_upgrade, give_progressive_scale, 0, -1, NULL), // Golden Scale
 };
 
 /*  Determine which message to display based on the number of silver rupees collected.

@@ -23,7 +23,7 @@
             "Ice Cavern Large Room": "Blue_Fire or
                 (can_use(Hover_Boots) and (can_superslide or can_hess))
                 or can_hover",
-            "Ice Cavern End": "glitch_reverse_ice and is_adult and Iron_Boots",
+            "Ice Cavern End": "glitch_reverse_ice and is_adult and Iron_Boots and can_swim",
             "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },

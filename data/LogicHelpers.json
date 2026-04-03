@@ -44,11 +44,12 @@
     "can_child_attack": "is_child and (Slingshot or Boomerang or Sticks or Kokiri_Sword or has_explosives or can_use(Dins_Fire) or can_use(Megaton_Hammer))",
     "can_child_damage": "is_child and (Slingshot or Sticks or Kokiri_Sword or has_explosives or can_use(Dins_Fire) or can_use(Megaton_Hammer))",
     "can_cut_shrubs": "is_adult or Sticks or Kokiri_Sword or Boomerang or has_explosives or can_use(Megaton_Hammer)",
-    "can_dive": "Progressive_Scale",
     "can_leave_forest": "open_forest != 'closed' or is_adult or 'Defeat Queen Gohma'
         or glitch_itemless_forest_escape
         or (glitch_pokey_escape and Deku_Shield and (Kokiri_Sword or Sticks))
         or (glitch_wess_escape and (Kokiri_Sword or Sticks))",
+    "can_swim": "Progressive_Scale",
+    "can_dive": "(Progressive_Scale, 2)",
     "can_plant_bugs": "is_child and Bugs",
     "can_ride_epona": "is_adult and Epona and (can_play_ocarina(Eponas_Song) or (can_hover and not shuffle_overworld_entrances))",
     "can_stun_deku": "is_adult or (Slingshot or Boomerang or Sticks or Kokiri_Sword or has_explosives or can_use(Dins_Fire) or Nuts or Deku_Shield or can_use(Megaton_Hammer))",

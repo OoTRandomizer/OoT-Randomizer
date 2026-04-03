@@ -45,7 +45,7 @@
         "exits": {
             "Lake Hylia": "True",
             "Water Temple Alcove Ledge Clip": "is_adult and Reset_Water_Level and
-                glitch_ledge_clip",
+                glitch_ledge_clip and can_swim",
             "Water Temple East Column": "(glitch_water_bottle_dive and can_use(Hover_Boots) and (Fish or Bugs)) or
                 (
                 is_adult and (Zora_Tunic or logic_fewer_tunic_requirements) and Iron_Boots
@@ -98,14 +98,14 @@
         "dungeon": "Water Temple",
         "locations": {},
         "exits": {
-            "Water Temple East Column": "True",
-            "Water Temple South Basement": "glitch_water_south_basement_clip or (Zora_Tunic and Iron_Boots)",
-            "Water Temple North Basement": "
+            "Water Temple East Column": "can_swim",
+            "Water Temple South Basement": "can_swim and glitch_water_south_basement_clip or (Zora_Tunic and Iron_Boots)",
+            "Water Temple North Basement": "can_swim and
                 (glitch_water_bk_area_antigrav and can_live_dmg(0.5))
                 or (Longshot or (logic_water_north_basement and Hover_Boots) or can_hover)",
-            "Water Temple Boss Key Cage": "True",
+            "Water Temple Boss Key Cage": "can_swim",
             "Water Temple Bottom Gates Switch": "can_use(Iron_Boots)",
-            "Water Temple Boss Key Spout": "glitch_water_mq_bk_pit"
+            "Water Temple Boss Key Spout": "can_swim and glitch_water_mq_bk_pit"
         }
     },
     {
@@ -125,9 +125,9 @@
         "region_name": "Water Temple Bottom Gates Switch",
         "dungeon": "Water Temple",
         "exits": {
-            "Water Temple South Basement": "can_use(Iron_Boots) or Progressive_Scale",
+            "Water Temple South Basement": "can_use(Iron_Boots) or (Progressive_Scale, 2)",
             "Water Temple North Basement": "Longshot or (logic_water_north_basement and can_use(Hover_Boots)) or can_hover",
-            "Water Temple Boss Key Cage": "True"
+            "Water Temple Boss Key Cage": "can_swim and has_fire_source"
         }
     },
     {
@@ -147,7 +147,7 @@
             "Water Temple Lobby": "Reset_Water_Level",
             "Water Temple Storage Room": "can_use(Hookshot)",
             "Water Temple Middle South": "True",
-            "Water Temple Below Central Pillar": "is_adult and glitch_ledge_clip and
+            "Water Temple Below Central Pillar": "is_adult and glitch_ledge_clip and can_swim and
                 ((has_explosives and can_shield) or Megaton_Hammer)",
             "Water Temple Middle West": "can_use(Hookshot)",
             "Water Temple Bottom Gates Switch": "can_weirdshot"
@@ -418,25 +418,25 @@
             "Water Temple MQ Dragon Statue By Torches Small Wooden Crate 3": "
                 (can_dive or can_use(Iron_Boots) or can_use(Longshot) or at('Water Temple Lower River',is_adult and glitch_ledge_clip))",
             "Water Temple MQ Dragon Statue Submerged Crate 1": "
-                (can_use(Iron_Boots) and can_bonk) or (has_bombchus and (can_dive or can_use(Iron_Boots)
+                (can_use(Iron_Boots) and can_bonk and can_swim) or (has_bombchus and (can_dive or can_use(Iron_Boots)
                     or at('Water Temple Lower River', glitch_ledge_clip and is_adult)))",
             "Water Temple MQ Dragon Statue Submerged Crate 2": "
-                (can_use(Iron_Boots) and can_bonk) or (has_bombchus and (can_dive or can_use(Iron_Boots)
+                can_swim and (can_use(Iron_Boots) and can_bonk) or (has_bombchus and (can_dive or can_use(Iron_Boots)
                     or at('Water Temple Lower River', glitch_ledge_clip and is_adult)))",
             "Water Temple MQ Dragon Statue Submerged Crate 3": "
-                (can_use(Iron_Boots) and can_bonk) or (has_bombchus and (can_dive or can_use(Iron_Boots)
+                can_swim and (can_use(Iron_Boots) and can_bonk) or (has_bombchus and (can_dive or can_use(Iron_Boots)
                     or at('Water Temple Lower River', glitch_ledge_clip and is_adult)))",
             "Water Temple MQ Dragon Statue Submerged Crate 4": "
-                (can_use(Iron_Boots) and can_bonk) or (has_bombchus and (can_dive or can_use(Iron_Boots)
+                can_swim and (can_use(Iron_Boots) and can_bonk) or (has_bombchus and (can_dive or can_use(Iron_Boots)
                     or at('Water Temple Lower River', glitch_ledge_clip and is_adult)))",
-            "Water Temple MQ Dragon Statue Crates Hookshot Wonderitem": "can_use(Hookshot) and
+            "Water Temple MQ Dragon Statue Crates Hookshot Wonderitem": "can_use(Hookshot) and can_swim and
                 (can_dive or can_use(Iron_Boots) or can_use(Longshot) or at('Water Temple Lower River',is_adult and glitch_ledge_clip))",
             "Water Temple MQ Dragon Statue Eyes Hookshot Wonderitem 1": "can_use(Iron_Boots) and can_use(Hookshot)",
             "Water Temple MQ Dragon Statue Eyes Hookshot Wonderitem 2": "can_use(Iron_Boots) and can_use(Hookshot)"
         },
         "exits": {
             "Water Temple Boss Key Room Upper Ledge": "has_fire_source and (can_use(Iron_Boots) or can_use(Longshot) or
-                at('Water Temple Lower River', glitch_ledge_clip and is_adult))",
+                at('Water Temple Lower River', glitch_ledge_clip and is_adult and can_swim))",
             "Water Temple Lower River": "Longshot or (glitch_water_dragon_hover and can_hover_no_trick)"
         }
     },

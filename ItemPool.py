@@ -549,6 +549,9 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
     if world.settings.shuffle_individual_ocarina_notes:
         pending_junk_pool.extend(ocarina_buttons)
 
+    if world.settings.add_bronze_scale:
+        pending_junk_pool.append('Progressive Scale')
+
     # Use the vanilla items in the world's locations when appropriate.
     vanilla_items_processed = Counter()
     rauru_random_location = None
@@ -1036,6 +1039,9 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
     if not world.settings.shuffle_individual_ocarina_notes:
         for ocarina_button in ocarina_buttons:
             world.state.collect(ItemFactory(ocarina_button, world))
+
+    if not world.settings.add_bronze_scale:
+        world.state.collect(ItemFactory('Progressive Scale', world))
 
     for _ in range(world.settings.random_starting_items_count):
         random_starting_items_pool = configure_random_starting_items_pool(world, pool)

@@ -51,8 +51,7 @@
                 has_explosives or Kokiri_Sword or can_use(Dins_Fire)"
         },
         "exits": {
-            "Forest Temple NE Outdoors": "(Progressive_Scale, 2)",
-            # Other methods of crossing through the well are not currently relevant.
+            "Forest Temple NE Outdoors": "(Progressive_Scale, 3) or (can_use(Iron_Boots) and can_swim)",
             "Forest Temple Outdoors High Balconies": "
                 here(is_adult or has_explosives or
                     ((Boomerang or Nuts or Deku_Shield) and (Sticks or Kokiri_Sword or Slingshot)))",
@@ -95,7 +94,8 @@
             "Forest Temple Outdoors High Balconies": "
                 can_use(Longshot) or (logic_forest_vines and can_use(Hookshot))",
                 # Longshot can grab some very high up vines to drain the well.
-            "Forest Temple NW Outdoors": "can_use(Iron_Boots) or (Progressive_Scale, 2)"
+            "Forest Temple NW Outdoors": "(can_use(Iron_Boots) and can_use(Longshot)) or (Progressive_Scale, 3)"
+            #Longshot needed to grab the vines at the top to climb out without swimming. Relevant for bronze scale
         }
     },
     {

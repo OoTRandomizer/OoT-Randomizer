@@ -437,7 +437,7 @@
         "locations": {
             # This is the third rupee from the shortcut entrance and is automatically
             # collected upon entering through the shortcut. Only matters for overworld ER.
-            "LW Underwater Shortcut Green Rupee": "is_child"
+            "LW Underwater Shortcut Green Rupee": "is_child and can_swim"
         },
         "exits": {
             "Lost Woods": "True"
@@ -525,8 +525,8 @@
         "hint": "HYRULE_FIELD",
         "time_passes": true,
         "locations": {
-            "HF Ocarina of Time Item": "is_child and has_all_stones",
-            "Song from Ocarina of Time": "is_child and has_all_stones",
+            "HF Ocarina of Time Item": "is_child and has_all_stones and can_swim",
+            "Song from Ocarina of Time": "is_child and has_all_stones and can_swim",
             "HF Child Above Drawbridge Wonderitem 1": "is_child",
             "HF Child Above Drawbridge Wonderitem 2": "is_child",
             "HF Child Above Drawbridge Wonderitem 3": "is_child",
@@ -565,11 +565,11 @@
         },
         "locations": {
             "Pierre": "is_adult and Bonooru and scarecrow_behavior != 'free'",
-            "LH Sun": "(can_use(Distant_Scarecrow) or 'Water Temple Clear' or can_hover) and can_use(Bow)",
+            "LH Sun": "(can_use(Distant_Scarecrow) or ('Water Temple Clear' and can_swim) or can_hover) and can_use(Bow)",
             "LH Freestanding PoH": "can_hover or
                 (is_adult and (can_use(Scarecrow) or here(can_plant_bean)))",
             "LH Underwater Item": "is_child and can_dive",
-            "LH Underwater Near Shore Green Rupee": "is_child",
+            "LH Underwater Near Shore Green Rupee": "is_child and can_swim",
             "LH Underwater Green Rupee 1": "is_child and (
                 can_dive or (adv_wallwalking and Boomerang)
                 )",
@@ -585,7 +585,7 @@
                         (has_projectile(child) and can_use(Megaton_Hammer))
                     ))
                 )",
-            "LH GS Small Island": "is_child and can_child_attack and at_night",
+            "LH GS Small Island": "is_child and can_swim and can_child_attack and at_night",
             "LH GS Tree": "at_night and is_adult and (can_use(Longshot) or can_hookshot_jump or
                 (adv_lh_tree_gs_hookshot and adv_wallwalking and Hookshot))",
             "LH Lab Gossip Stone": "True",
@@ -606,8 +606,8 @@
             # The seemingly redundant "plant_beans" check is to allow supplementary searches,
             # which can't collect events, to use this path.
             "LH Fishing Island": "
-                is_child or can_use(Scarecrow) or
-                here(can_plant_bean) or plant_beans or 'Water Temple Clear' or can_hover",
+                (is_child and can_swim) or can_use(Scarecrow) or
+                here(can_plant_bean) or plant_beans or ('Water Temple Clear' and can_swim) or can_hover",
             # Branch 1 - hit the crystal switch in some way and enter the opening in some way
             # Branch 2 - enter from oob as adult
             # Branch 3 - enter from oob as child
@@ -615,17 +615,17 @@
                 (
                 is_adult and Hookshot and
                     (Iron_Boots or
-                    ( (Longshot or logic_water_hookshot_entry) and
-                        ((Progressive_Scale, 2) or (Ocarina and glitch_enter_water_ocarina))
+                    ((Longshot or logic_water_hookshot_entry) and
+                        ((Progressive_Scale, 3) or (Ocarina and glitch_enter_water_ocarina and can_swim))
                     ))
                 ) or
-                (is_adult and
+                (is_adult and can_swim and
                     (glitch_enter_water_groundclip or
                     glitch_enter_water_ledgeclip or
                     glitch_enter_water_lab_clip_adult
                     )
                 ) or
-                (is_child and glitch_enter_water_lab_clip_child)",
+                (is_child and glitch_enter_water_lab_clip_child and can_swim)",
             "LH Grotto": "True"
         }
     },
@@ -657,20 +657,20 @@
         "locations": {
             "LH Trade Eyeball Frog": "'Eyedrops Access'",
             "LH Lab Dive": "
-                (Progressive_Scale, 2) or
-                (logic_lab_diving and is_adult and Iron_Boots and Hookshot) or
-                (glitch_lakeside_lab_with_less and is_adult and
+                (Progressive_Scale, 3) or
+                (logic_lab_diving and is_adult and Iron_Boots and Hookshot and can_swim) or
+                (glitch_lakeside_lab_with_less and is_adult and can_swim and
                     (
                         (Hover_Boots and (Bugs or Fish)) or
                         (can_isg and Ocarina)
                     )
                 )",
-            "LH Lab Dive Red Rupee 1": "(Progressive_Scale, 2) or can_use(Iron_Boots) or
-                (glitch_lakeside_lab_with_less and can_use(Hover_Boots) and (Bugs or Fish))",
-            "LH Lab Dive Red Rupee 2": "(Progressive_Scale, 2) or can_use(Iron_Boots) or
-                (glitch_lakeside_lab_with_less and can_use(Hover_Boots) and (Bugs or Fish))",
-            "LH Lab Dive Red Rupee 3": "(Progressive_Scale, 2) or can_use(Iron_Boots) or
-                (glitch_lakeside_lab_with_less and can_use(Hover_Boots) and (Bugs or Fish))",
+            "LH Lab Dive Red Rupee 1": "(Progressive_Scale, 3) or can_use(Iron_Boots) or
+                (glitch_lakeside_lab_with_less and can_swim and can_use(Hover_Boots) and (Bugs or Fish))",
+            "LH Lab Dive Red Rupee 2": "(Progressive_Scale, 3) or can_use(Iron_Boots) or
+                (glitch_lakeside_lab_with_less and can_swim and can_use(Hover_Boots) and (Bugs or Fish))",
+            "LH Lab Dive Red Rupee 3": "(Progressive_Scale, 3) or can_use(Iron_Boots) or
+                (glitch_lakeside_lab_with_less and can_swim and can_use(Hover_Boots) and (Bugs or Fish))",
             "LH GS Lab Crate": "
                 can_use(Iron_Boots) and can_use(Hookshot) and
                 (deadly_bonks != 'ohko' or Fairy or (can_use(Nayrus_Love) and not shuffle_interior_entrances))"
@@ -726,11 +726,12 @@
         "hint": "GERUDO_VALLEY",
         "time_passes": true,
         "locations": {
-            "GV Waterfall Freestanding PoH": "True",
+            "GV Waterfall Freestanding PoH": "is_child or can_swim or (can_use(Iron_Boots) and can_use(Hookshot))",
             "GV Cow": "is_child and can_play(Eponas_Song)",
             "GV Crate Near Cow": "is_child and can_break_crate",
             "GV GS Bean Patch": "can_plant_bugs and can_child_attack",
-            "GV Adult Upper Waterfall Wonderitem": "is_adult",
+            "GV Adult Upper Waterfall Wonderitem": "is_adult and here(can_plant_bean) or can_swim or
+            (can_use(Iron_Boots) and can_use(Longshot))",
             "GV Adult Lower Waterfall Wonderitem": "is_adult",
             "GV Gossip Stone": "True",
             "Gossip Stone Fairy": "can_summon_gossip_fairy and has_bottle",
@@ -2850,33 +2851,33 @@
             "ZR Waterfall Red Rupee 2": "is_adult and (Iron_Boots or logic_zora_river_rupees)",
             "ZR Waterfall Red Rupee 3": "is_adult and (Iron_Boots or logic_zora_river_rupees)",
             "ZR Waterfall Red Rupee 4": "is_adult and (Iron_Boots or logic_zora_river_rupees)",
-            "ZR Child River Wonderitem 1": "is_child",
-            "ZR Child River Wonderitem 2": "is_child",
-            "ZR Child River Wonderitem 3": "is_child",
-            "ZR Child River Wonderitem 4": "is_child",
-            "ZR Child River Wonderitem 5": "is_child",
-            "ZR Child River Wonderitem 6": "is_child",
-            "ZR Child River Wonderitem 7": "is_child",
-            "ZR Child River Wonderitem 8": "is_child",
-            "ZR Child River Wonderitem 9": "is_child",
-            "ZR Child River Wonderitem 10": "is_child",
-            "ZR Child River Wonderitem 11": "is_child",
-            "ZR Child River Wonderitem 12": "is_child",
-            "ZR Child River Wonderitem 13": "is_child",
-            "ZR Child River Wonderitem 14": "is_child",
-            "ZR Child River Wonderitem 15": "is_child",
-            "ZR Child River Wonderitem 16": "is_child",
-            "ZR Child River Wonderitem 17": "is_child",
-            "ZR Child River Wonderitem 18": "is_child",
-            "ZR Child River Wonderitem 19": "is_child",
-            "ZR Child River Wonderitem 20": "is_child",
-            "ZR Child River Wonderitem 21": "is_child",
-            "ZR Child River Wonderitem 22": "is_child",
-            "ZR Child River Wonderitem 23": "is_child",
-            "ZR Child River Wonderitem 24": "is_child",
-            "ZR Child River Wonderitem 25": "is_child",
-            "ZR Child River Wonderitem 26": "is_child",
-            "ZR Child River Wonderitem 27": "is_child",
+            "ZR Child River Wonderitem 1": "is_child and can_swim",
+            "ZR Child River Wonderitem 2": "is_child and can_swim",
+            "ZR Child River Wonderitem 3": "is_child and can_swim",
+            "ZR Child River Wonderitem 4": "is_child and can_swim",
+            "ZR Child River Wonderitem 5": "is_child and can_swim",
+            "ZR Child River Wonderitem 6": "is_child and can_swim",
+            "ZR Child River Wonderitem 7": "is_child and can_swim",
+            "ZR Child River Wonderitem 8": "is_child and can_swim",
+            "ZR Child River Wonderitem 9": "is_child and can_swim",
+            "ZR Child River Wonderitem 10": "is_child and can_swim",
+            "ZR Child River Wonderitem 11": "is_child and can_swim",
+            "ZR Child River Wonderitem 12": "is_child and can_swim",
+            "ZR Child River Wonderitem 13": "is_child and can_swim",
+            "ZR Child River Wonderitem 14": "is_child and can_swim",
+            "ZR Child River Wonderitem 15": "is_child and can_swim",
+            "ZR Child River Wonderitem 16": "is_child and can_swim",
+            "ZR Child River Wonderitem 17": "is_child and can_swim",
+            "ZR Child River Wonderitem 18": "is_child and can_swim",
+            "ZR Child River Wonderitem 19": "is_child and can_swim",
+            "ZR Child River Wonderitem 20": "is_child and can_swim",
+            "ZR Child River Wonderitem 21": "is_child and can_swim",
+            "ZR Child River Wonderitem 22": "is_child and can_swim",
+            "ZR Child River Wonderitem 23": "is_child and can_swim",
+            "ZR Child River Wonderitem 24": "is_child and can_swim",
+            "ZR Child River Wonderitem 25": "is_child and can_swim",
+            "ZR Child River Wonderitem 26": "is_child and can_swim",
+            "ZR Child River Wonderitem 27": "is_child and can_swim",
             "ZR GS Ladder": "is_child and at_night and can_child_attack",
             "ZR GS Near Raised Grottos": "is_adult and at_night and
                 (can_use(Hookshot) or can_hover or
@@ -2898,7 +2899,7 @@
             "ZR Front": "True",
             "ZR Open Grotto": "True",
             "ZR Fairy Grotto": "here(can_blast_or_smash)",
-            "LW Underwater Entrance": "can_dive or can_use(Iron_Boots) or (is_adult and glitch_zr_lw_adult_ledge_clip)
+            "LW Underwater Entrance": "can_dive or can_use(Iron_Boots) or (is_adult and glitch_zr_lw_adult_ledge_clip and can_swim)
                 or (is_child and glitch_zr_lw_child_mega and can_mega)",
             "ZR Storms Grotto": "can_open_storm_grotto",
             "ZR Behind Waterfall": "
@@ -2938,7 +2939,7 @@
                     Prescription or ('Prescription Access' and not adult_trade_shuffle))"
         },
         "locations": {
-            "ZD Diving Minigame": "is_child",
+            "ZD Diving Minigame": "is_child and can_swim",
             "ZD Chest": "is_child and can_use(Sticks)",
             "Deliver Rutos Letter": "
                 is_child and Rutos_Letter and zora_fountain != 'open'",
@@ -2962,22 +2963,22 @@
         },
         "exits": {
             "ZR Behind Waterfall": "True",
-            "Lake Hylia": "(is_child and (can_dive or can_js_clip or
+            "Lake Hylia": "(is_child and (can_dive or (can_js_clip and can_swim) or can_swim and
                 (glitch_zd_child_oob and can_live_dmg(0.5,False,False) and has_bombchus and can_shield and can_live_dmg(1.5) )
                 or (glitch_zd_zf_burning_stick and Sticks and can_live_dmg(1.0))
                 )) or
-                (is_adult and can_js_clip and can_live_dmg(1.0))",
+                (can_swim and is_adult and can_js_clip and can_live_dmg(1.0))",
             "ZD Behind King Zora": "
                 Deliver_Letter or zora_fountain == 'open' or
-                (is_adult and (can_js_clip or zora_fountain == 'adult' or logic_king_zora_skip))
+                (is_adult and ((can_swim and can_js_clip) or zora_fountain == 'adult' or logic_king_zora_skip))
                 or
-                (is_child and (
+                (is_child and can_swim and (
                     (glitch_zd_child_oob and can_live_dmg(0.5,False,False) and has_bombchus and can_shield) or
                     (glitch_zd_zf_ledge_cancel and can_shield and has_explosives) or
                     (glitch_zd_zf_burning_stick and Sticks)
                 )
                 )",
-            "ZD Shop": "is_child or Blue_Fire or (is_adult and can_js_clip)",
+            "ZD Shop": "is_child or Blue_Fire or (is_adult and can_js_clip and can_swim)",
             "ZD Storms Grotto": "can_open_storm_grotto"
         }
     },
@@ -3430,7 +3431,7 @@
         "region_name": "HF Tektite Grotto",
         "scene": "HF Tektite Grotto",
         "locations": {
-            "HF Tektite Grotto Freestanding PoH": "(Progressive_Scale, 2) or can_use(Iron_Boots) or
+            "HF Tektite Grotto Freestanding PoH": "(Progressive_Scale, 3) or can_use(Iron_Boots) or
                 (adv_tektite_hp_rang and can_use(Boomerang))"
         },
         "exits": {
@@ -3635,14 +3636,14 @@
         "region_name": "GV Octorok Grotto",
         "scene": "GV Octorok Grotto",
         "locations": {
-            "GV Octorok Grotto Red Rupee": "True",
-            "GV Octorok Grotto Blue Rupee 1": "True",
-            "GV Octorok Grotto Blue Rupee 2": "True",
-            "GV Octorok Grotto Blue Rupee 3": "True",
-            "GV Octorok Grotto Green Rupee 1": "True",
-            "GV Octorok Grotto Green Rupee 2": "True",
-            "GV Octorok Grotto Green Rupee 3": "True",
-            "GV Octorok Grotto Green Rupee 4": "True"
+            "GV Octorok Grotto Red Rupee": "can_swim or can_use(Boomerang)",
+            "GV Octorok Grotto Blue Rupee 1": "can_swim or can_use(Boomerang)",
+            "GV Octorok Grotto Blue Rupee 2": "can_swim or can_use(Boomerang)",
+            "GV Octorok Grotto Blue Rupee 3": "can_swim or can_use(Boomerang)",
+            "GV Octorok Grotto Green Rupee 1": "can_swim or can_use(Boomerang)",
+            "GV Octorok Grotto Green Rupee 2": "can_swim or can_use(Boomerang)",
+            "GV Octorok Grotto Green Rupee 3": "can_swim or can_use(Boomerang)",
+            "GV Octorok Grotto Green Rupee 4": "can_swim or can_use(Boomerang)"
         },
         "exits": {
             "GV Grotto Ledge": "True"

@@ -179,6 +179,7 @@ item_draw_table_entry_t item_draw_table[] = {
     [0xA1] = { draw_gi_deku_nut_with_flame, { 0x06000E90, 0xC0C0C0FF, 0xC0C0C0FF } }, // Deku Nut Upgrade w/ Smoke Effect
     [0xA2] = { draw_gi_magic_meter,         { 0x06000000, 0x06000CC0, 0x06000F08, 0x060014E8, 0x286428FF, 0x000000FF } },  // Magic Meter Scroll 2
     [0xA3] = { draw_ice_trap,               { 0x04034380 } }, // Ice trap
+    [0xA4] = { draw_bronze_scale,           { 0x06000AA0, 0x06000A40, 0x06000A80, 0x06000CC8 } }, // Bronze scale
 };
 
 void base_draw_gi_model(z64_game_t* game, uint32_t draw_id) {
