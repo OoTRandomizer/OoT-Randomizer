@@ -10,12 +10,12 @@ services:
         USER_GID: ${DOCKER_GID:-1000}
     user: ${DOCKER_UID_GID:-}
     volumes:
-      - ..:/app/OoT-Randomizer:cached
-      - ./build:/app/OoT-Randomizer/ASM/build:consistent
-      - ./roms:/app/OoT-Randomizer/ASM/roms:consistent
-      - ../Output:/app/OoT-Randomizer/Output:consistent
-      - ../data/generated:/app/OoT-Randomizer/data/generated:consistent
-      - ../Logs:/app/OoT-Randomizer/Logs:consistent
+      - ..:/app/OoT-Randomizer:cached,Z
+      - ./build:/app/OoT-Randomizer/ASM/build:consistent,Z
+      - ./roms:/app/OoT-Randomizer/ASM/roms:consistent,Z
+      - ../Output:/app/OoT-Randomizer/Output:consistent,Z
+      - ../data/generated:/app/OoT-Randomizer/data/generated:consistent,Z
+      - ../Logs:/app/OoT-Randomizer/Logs:consistent,Z
     network_mode: host
     extra_hosts:
       - host.docker.internal:host-gateway
@@ -27,4 +27,4 @@ services:
       - seccomp:unconfined
 
     # Overrides default command so things don't shut down after the process ends.
-    command: python3 /app/OoT-Randomizer/ASM/build.py
+    command: python3 /app/OoT-Randomizer/ASM/build.py --mips-binutils-prefix=mips64-ultra-elf-
