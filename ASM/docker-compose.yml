@@ -2,6 +2,7 @@ name: ootr-dev
 
 services:
   toolchain:
+    userns_mode: keep-id
     build:
       context: .
       args:
