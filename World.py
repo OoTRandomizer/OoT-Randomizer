@@ -704,11 +704,14 @@ class World:
             for location in region.locations:
                 if location.type == 'Shop':
                     if location.name[-1:] in shop_item_indexes[:shop_item_count]:
-                        self.shop_prices[location.name] = self.new_shop_price()
+                        self.shop_prices[location.name] = self.new_shop_price(location)
 
-    def new_shop_price(self) -> int:
+    def new_shop_price(self, location: Location) -> int:
         if self.settings.special_deal_price_distribution == 'vanilla':
-            return ItemInfo.items[location.vanilla_item].price
+            price = location.price
+            if price is None:
+                price = ItemInfo.items[location.vanilla_item].price
+            return price
         elif self.settings.special_deal_price_max < self.settings.special_deal_price_min:
             raise ValueError('Maximum special deal price is lower than minimum, perhaps you meant to swap them?')
         elif self.settings.special_deal_price_max == self.settings.special_deal_price_min:
@@ -1226,7 +1229,7 @@ class World:
                 # Reduce the frequency of obvious scams by rerolling the price once if it's too high, and taking the lower value.
                 # This affects logic so it should only be applied to refills that are logically irrelevant.
                 # Otherwise there could be seeds with e.g. a wallet that's hinted as logically required for a purchase even though the price was rerolled to no longer require the wallet.
-                price = min(location.price, self.new_shop_price())
+                price = min(location.price, self.new_shop_price(location))
         else:
             price = item.price
 
