@@ -30,6 +30,7 @@
 * It is no longer required to have either the goron tunic or the Fewer Tunic Requirements trick for adult to go from the Bolero warp pad to the Fire temple in logic.
 * Further shortening of version number in file select screen.
 * Areas which have all locations hinted will not be selected for important checks hints.
+* Successfully entering a password will now take you back to the file select screen.
 
 # 9.0
 
