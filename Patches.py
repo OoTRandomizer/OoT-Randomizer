@@ -355,8 +355,22 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     line_len = 21
     version_str = "version " + __version__
-    if len(version_str) > line_len:
-        version_str = "ver. " + __version__
+    if version_str.endswith('.0 Release'):
+        if len(version_str) > line_len:
+            version_str = "version " + __version__[:-len('.0 Release')] + " Release"
+        if len(version_str) > line_len:
+            version_str = "ver. " + __version__[:-len('.0 Release')] + " Release"
+        if len(version_str) > line_len:
+            version_str = "v. " + __version__[:-len('.0 Release')] + " Release"
+        if len(version_str) > line_len:
+            version_str = "v" + __version__[:-len('.0 Release')] + " Release"
+    else:
+        if len(version_str) > line_len:
+            version_str = "ver. " + __version__
+        if len(version_str) > line_len:
+            version_str = "v. " + __version__
+        if len(version_str) > line_len:
+            version_str = "v" + __version__
     rom.write_bytes(rom.sym('VERSION_STRING_TXT'), make_bytes(version_str, 25))
 
     if world.settings.create_spoiler:
