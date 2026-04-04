@@ -117,7 +117,7 @@
             "Forest Temple Twisted Hallway Switch": "True"
         },
         "locations": {
-            "Forest Temple MQ ReDead Chest": "has_soul(Redead_and_Gibdo)"
+            "Forest Temple MQ Redead Chest": "has_soul(Redead_and_Gibdo)"
         },
         "exits": {
             "Forest Temple NW Outdoors": "True",

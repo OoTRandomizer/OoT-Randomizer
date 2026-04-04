@@ -20,6 +20,7 @@
 * Add two missing locations: `Ganons Castle MQ Shadow Trial Explosives Wonderitem` and a `Bombable Fairy` in MQ Jabu.
 * Improve the error message when a settings string from the wrong randomizer version is imported.
 * Fix wrong Goal hints being generated for worlds other than the first in multiworld seeds.
+* Added some missing or incorrectly named locations in advanced logic.
 
 ## Other Changes
 * It is no longer required to have either the goron tunic or the Fewer Tunic Requirements trick for adult to go from the Bolero warp pad to the Fire temple in logic.

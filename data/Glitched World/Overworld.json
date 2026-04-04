@@ -3460,7 +3460,7 @@
         "region_name": "Kak Redead Grotto",
         "scene": "Kak Redead Grotto",
         "locations": {
-            "Kak ReDead Grotto Chest": "can_kill_redead"
+            "Kak Redead Grotto Chest": "can_kill_redead"
         },
         "exits": {
             "Kakariko Village": "True"
