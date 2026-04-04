@@ -1819,7 +1819,10 @@ def build_misc_item_hints(world: World, messages: list[Message], allow_duplicate
     for hint_type, data in misc_item_hint_table.items():
         if hint_type in world.settings.misc_hints:
             item = world.misc_hint_items[hint_type]
-            if item in world.distribution.effective_starting_items and world.distribution.effective_starting_items[item].count > 0:
+            if (
+                (item in world.distribution.effective_starting_items and world.distribution.effective_starting_items[item].count > 0) or
+                (item in world.distribution.randomized_starting_items and world.distribution.randomized_starting_items[item] > 0)
+            ):
                 if item == data['default_item']:
                     text = data['default_item_text'].format(area='#your pocket#')
                 else:
