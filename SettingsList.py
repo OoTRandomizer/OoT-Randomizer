@@ -3265,7 +3265,8 @@ class SettingInfos:
             and MAY be required to complete the game.
 
             Tricks in the left column are NEVER required.
-        '''
+        ''',
+        disabled_default = []
     )
 
     # Starting Inventory

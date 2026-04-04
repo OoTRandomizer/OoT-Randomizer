@@ -68,15 +68,22 @@ def resolve_settings(settings: Settings) -> Optional[Rom]:
 
     # compare pointers to lists rather than contents, so even if the two are identical
     # we'll still log the error and note the dist file overrides completely.
-    if old_tricks and (old_tricks is not settings.allowed_tricks
-                    or old_advanced_tricks is not settings.advanced_allowed_tricks):
+    if (old_tricks and old_tricks is not settings.allowed_tricks) or (old_advanced_tricks and old_advanced_tricks is not settings.advanced_allowed_tricks):
         logger.error('Tricks are set in two places! Using only the tricks from the distribution file.')
 
+    # flag tricks based on settings
+    # special case advanced so that if another logic is selected, all tricks are set to False
+    # this is a failsafe for disabled_default
     for trick in logic_tricks.values():
         settings.settings_dict[trick['name']] = trick['name'] in settings.allowed_tricks
 
-    for trick in advanced_logic_tricks.values():
-        settings.settings_dict[trick['name']] = trick['name'] in settings.advanced_allowed_tricks
+    if settings.logic_rules == 'advanced':
+        for trick in advanced_logic_tricks.values():
+            settings.settings_dict[trick['name']] = trick['name'] in settings.advanced_allowed_tricks
+    else:
+        for trick in advanced_logic_tricks.values():
+            settings.settings_dict[trick['name']] = False
+
 
     # we load the rom before creating the seed so that errors get caught early
     outputting_specific_world = settings.create_uncompressed_rom or settings.create_compressed_rom or settings.create_wad_file

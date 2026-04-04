@@ -22,6 +22,7 @@
 * Fix wrong Goal hints being generated for worlds other than the first in multiworld seeds.
 * Added some missing or incorrectly named locations in advanced logic.
 * Various minor fixes for advanced logic.
+* Fix for advanced logic tricks being cached when switching to glitchless logic.
 
 ## Other Changes
 * It is no longer required to have either the goron tunic or the Fewer Tunic Requirements trick for adult to go from the Bolero warp pad to the Fire temple in logic.
