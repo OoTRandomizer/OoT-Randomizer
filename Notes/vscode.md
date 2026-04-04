@@ -91,7 +91,7 @@ Running the GUI from the container is not currently supported. It is technically
 
 ## Building the ASM/C code
 
-Instead of manually running the build script in a terminal, you can add a build task to VS Code by creating a `.vscode/tasks.json` file with the following content:
+Instead of manually running the build script in a terminal, you can add a build task to VS Code by creating a `.vscode/tasks.json` file with the following content (adjust toolchain prefix for your system):
 
 ```jsonc
 {
@@ -102,7 +102,8 @@ Instead of manually running the build script in a terminal, you can add a build 
             "type": "shell",
             "command": "python3",
             "args": [
-                "${workspaceFolder}/ASM/build.py"
+                "${workspaceFolder}/ASM/build.py",
+                "--mips-binutils-prefix=mips64-ultra-elf-"
             ],
             "group": {
                 "kind": "build",
