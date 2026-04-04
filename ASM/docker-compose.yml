@@ -27,4 +27,4 @@ services:
       - seccomp:unconfined
 
     # Overrides default command so things don't shut down after the process ends.
-    command: python3 /app/OoT-Randomizer/ASM/build.py --compile-c
+    command: python3 /app/OoT-Randomizer/ASM/build.py

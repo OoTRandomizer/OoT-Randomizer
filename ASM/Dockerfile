@@ -1,4 +1,4 @@
-FROM debian:bookworm
+FROM debian:stable
 
 ARG USERNAME=ootr
 ARG USER_UID=1000
@@ -11,51 +11,27 @@ RUN groupadd --gid $USER_GID $USERNAME \
 # Install build tools
 RUN apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends --assume-yes curl gnupg ca-certificates \
-  && curl https://practicerom.com/public/packages/debian/pgp.pub | apt-key add - \
-  && echo deb http://practicerom.com/public/packages/debian staging main >/etc/apt/sources.list.d/practicerom.list \
-  && apt-get update \
   && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends --assume-yes \
     build-essential \
     nodejs \
     npm \
     git \
     cmake \
-    gdb-multiarch
+    gdb-multiarch \
+    gpgv
+
+# Allow SHA1 signing in the practicerom repo. Debian disabled it Feb 2026.
+RUN rm -f /usr/bin/sqv
 
 # Install toolchain. Compile from source if not on Intel/AMD.
+RUN curl -o /usr/share/keyrings/practicerom-archive-keyring.gpg https://practicerom.com/public/packages/debian/practicerom-archive-keyring.gpg
 RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
-    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends --assume-yes n64-ultra; \
+    echo deb [arch=all,amd64 signed-by=/usr/share/keyrings/practicerom-archive-keyring.gpg] http://practicerom.com/public/packages/debian stable main > /etc/apt/sources.list.d/practicerom.list; \
   else \
-    DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends --assume-yes \
-      wget \
-      tar \
-      make \
-      diffutils \
-      texinfo \
-      gcc \
-      g++ \
-      lua5.3 \
-      libjansson4 \
-      libusb-1.0-0 \
-      libgmp10 \
-      liblua5.3-dev \
-      libjansson-dev \
-      libusb-1.0-0-dev \
-      libgmp-dev \
-      libmpfr-dev \
-      zlib1g-dev; \
+    echo deb [arch=all,arm64 signed-by=/usr/share/keyrings/practicerom-archive-keyring.gpg] http://practicerom.com/public/packages/debian stable main > /etc/apt/sources.list.d/practicerom.list; \
   fi
-RUN if [ "$(dpkg --print-architecture)" != "amd64" ]; then \
-    mkdir -p build \
-    && cd build \
-    && git clone --recursive https://github.com/glankk/n64.git \
-    && cd n64 \
-    && ./configure --enable-vc --prefix=/opt/n64 \
-    && make install-toolchain \
-    && make && make install \
-    && make install-sys \
-    && echo 'export PATH="/opt/n64/bin:$PATH"' >> /etc/profile; \
-  fi
+RUN DEBIAN_FRONTEND=noninteractive apt-get update
+RUN DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends --assume-yes practicerom-dev
 
 # Build armips
 WORKDIR /build
