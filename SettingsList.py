@@ -1216,31 +1216,27 @@ class SettingInfos:
             'closed':      'Closed Forest',
             },
         gui_tooltip    = '''\
-            'Open Forest': Mido no longer blocks the path to the
-            Deku Tree, and the Kokiri boy no longer blocks the path
-            out of the forest.
+            'Closed Forest': In the child era, Mido blocks the path
+            to the Deku Tree, requiring Kokiri Sword and Deku Shield
+            to access the Deku Tree, and another Kokiri boy blocks
+            the path out of the forest until Queen Gohma is defeated.
+            It may be logically required to "escape" the forest
+            (via one of the shortcuts in the Lost Woods, for example);
+            the setting "Closed Forest Requires Gohma" can be used to
+            prevent this.
 
             'Closed Deku': The Kokiri boy no longer blocks the path
             out of the forest, but Mido still blocks the path to the
             Deku Tree, requiring Kokiri Sword and Deku Shield to access
             the Deku Tree.
 
-            'Closed Forest': Beating Deku Tree is logically required
-            to leave the forest area (Kokiri Forest/Lost Woods/Sacred Forest
-            Meadow/Deku Tree), while the Kokiri Sword and a Deku Shield are
-            required to access the Deku Tree. Items needed for this will be
-            guaranteed inside the forest area. This setting is incompatible
-            with starting as adult, and so Starting Age will be locked to Child.
-            With any of "Shuffle Interior Entrances" set to "All", "Shuffle
-            Overworld Entrances" on, "Randomize Warp Song Destinations" on,
-            "Randomize Overworld Spawns" on, or "Shuffle Grottos" in Advanced
-            Logic, Closed Forest will instead be treated as Closed Deku with
-            starting age Child and WILL NOT guarantee that these items are
-            available in the forest area.
+            'Open Forest': Mido no longer blocks the path to the
+            Deku Tree, and the Kokiri boy no longer blocks the path
+            out of the forest.
         ''',
         shared         = True,
         disable        = {
-            'closed': {'settings': ['starting_age']}
+            'closed':  {'settings': ['starting_age']},
         },
         gui_params     = {
             'randomize_key': 'randomize_settings',
@@ -1249,6 +1245,37 @@ class SettingInfos:
                 ('closed_deku', 1),
                 ('closed',      1),
             ],
+        },
+    )
+
+    require_gohma = Checkbutton(
+        gui_text       = 'Closed Forest Requires Gohma',
+        gui_tooltip    = '''\
+            Defeating Queen Gohma is required to leave the forest area
+            (Kokiri Forest/Lost Woods/Sacred Forest Meadow/Deku Tree).
+            Items needed for this will be guaranteed inside the forest area,
+            and items that could be used to escape the forest without
+            defeating Queen Gohma (such as explosives to enter Goron City)
+            will be prevented from appearing inside the forest area.
+
+            If entrances are shuffled, entrances inside and outside the
+            forest area will be shuffled separately. For example, "Shuffle
+            Dungeon Entrances" and "Shuffle Boss Entrances" don't affect the
+            Deku Tree. As an exception, grottos are not shuffled separately
+            (except in Advanced Logic), and neither are interiors if only
+            simple interiors are shuffled.
+
+            This setting is incompatible with starting as adult, and so
+            Starting Age will be locked to Child.
+        ''',
+        default        = True,
+        disabled_default = False,
+        shared         = True,
+        disable        = {
+            True : {'settings' : ['open_forest']},
+        },
+        gui_params     = {
+            'optional': True,
         },
     )
 

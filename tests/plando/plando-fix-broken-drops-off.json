@@ -1,5 +1,6 @@
 {
   "settings": {
+    "require_gohma": false,
     "fix_broken_drops": false
   }
 }

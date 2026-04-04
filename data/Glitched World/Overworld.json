@@ -205,7 +205,10 @@
             "KF Outside Deku Tree": "is_adult or open_forest == 'open' or 'Showed Mido Sword & Shield'
                 or can_mega or can_superslide or can_hess or can_hover",
             "Lost Woods": "True",
-            "LW Bridge From Forest": "can_leave_forest",
+            "LW Bridge From Forest": "is_adult or 'Deku Tree Clear' or open_forest != 'closed'
+                or glitch_itemless_forest_escape
+                or (glitch_pokey_escape and Deku_Shield and (Kokiri_Sword or Sticks))
+                or (glitch_wess_escape and (Kokiri_Sword or Sticks))",
             "KF Storms Grotto": "can_open_storm_grotto"
         }
     },
@@ -514,7 +517,7 @@
         "scene": "Lost Woods",
         "hint": "LOST_WOODS",
         "exits": {
-            "Kokiri Forest": "True",
+            "Kokiri Forest": "True", # Walking through this entrance places Link past the Kokiri guard, so there are no restrictions for Closed Forest here
             "Hyrule Field": "True",
             "Lost Woods": "can_use(Longshot) or can_mega or can_damage_boost or can_hookshot_jump"
         }

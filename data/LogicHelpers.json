@@ -45,7 +45,7 @@
     "can_child_damage": "is_child and (Slingshot or Sticks or Kokiri_Sword or has_explosives or can_use(Dins_Fire) or can_use(Megaton_Hammer))",
     "can_cut_shrubs": "is_adult or Sticks or Kokiri_Sword or Boomerang or has_explosives or can_use(Megaton_Hammer)",
     "can_dive": "Progressive_Scale",
-    "can_leave_forest": "open_forest != 'closed' or is_adult or 'Defeat Queen Gohma'
+    "can_leave_forest": "is_adult or 'Deku Tree Clear' or not require_gohma
         or glitch_itemless_forest_escape
         or (glitch_pokey_escape and Deku_Shield and (Kokiri_Sword or Sticks))
         or (glitch_wess_escape and (Kokiri_Sword or Sticks))",
