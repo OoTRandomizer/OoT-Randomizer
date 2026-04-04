@@ -2,7 +2,7 @@ name: ootr-dev
 
 services:
   toolchain:
-    userns_mode: keep-id
+    userns_mode: keep-id:uid=${DOCKER_UID:-1000},gid=${DOCKER_GID:-1000}
     build:
       context: .
       args:
