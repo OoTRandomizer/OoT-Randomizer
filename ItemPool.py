@@ -910,8 +910,13 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
             if shuffle_setting is not None and dungeon_collection is not None and not shuffle_item:
                 if shuffle_setting in ('remove', 'startwith'):
                     world.state.collect(ItemFactory(item, world))
-                    item = get_junk_item()[0]
-                    shuffle_item = True
+                    if location.type == 'SilverRupee':
+                        # Silver rupees handled differently since removing them actually removes their locations from the world
+                        item = IGNORE_LOCATION
+                        shuffle_item = False
+                    else:
+                        item = get_junk_item()[0]
+                        shuffle_item = True
                 elif shuffle_setting in ('any_dungeon', 'overworld', 'keysanity', 'regional', 'anywhere') and not world.precompleted_dungeons.get(dungeon.name, False):
                     shuffle_item = True
                 elif shuffle_item is None:
