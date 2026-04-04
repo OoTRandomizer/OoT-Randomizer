@@ -2773,9 +2773,7 @@
                 is_adult and (Hover_Boots or Hookshot or here(can_plant_bean) or plant_beans or (can_hover and can_use(Goron_Tunic)))",
             "DMC Upper Nearby": "is_adult and (here(can_plant_bean) or plant_beans)",
             # Check boulder color
-            "DMC Fire Temple Entrance": "
-                (is_child and shuffle_dungeon_entrances) or
-                (is_adult and (logic_fewer_tunic_requirements or Goron_Tunic))",
+            "DMC Fire Temple Entrance": "is_adult or shuffle_dungeon_entrances",
             "DMC Pierre Platform": "can_use(Distant_Scarecrow)"
         }
     },

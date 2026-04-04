@@ -21,6 +21,9 @@
 * Improve the error message when a settings string from the wrong randomizer version is imported.
 * Fix wrong Goal hints being generated for worlds other than the first in multiworld seeds.
 
+## Other Changes
+* It is no longer required to have either the goron tunic or the Fewer Tunic Requirements trick for adult to go from the Bolero warp pad to the Fire temple in logic.
+
 # 9.0
 
 ## New Settings and Options
