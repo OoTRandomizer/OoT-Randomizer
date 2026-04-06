@@ -20,9 +20,6 @@ RUN apt-get update \
     gdb-multiarch \
     gpgv
 
-# Allow SHA1 signing in the practicerom repo. Debian disabled it Feb 2026.
-RUN rm -f /usr/bin/sqv
-
 # Install toolchain. Compile from source if not on Intel/AMD.
 RUN curl -o /usr/share/keyrings/practicerom-archive-keyring.gpg https://practicerom.com/public/packages/debian/practicerom-archive-keyring.gpg
 RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
