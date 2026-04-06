@@ -589,6 +589,8 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.write_bytes(0xE5400E, [0xB4, 0xA4])
     if world.settings.open_forest != 'closed':
         rom.write_bytes(0xE5401C, [0x14, 0x0B])
+    # Move Link spawn 40 units forwards to prevent Pokey trap
+    rom.write_byte(0x206F0C7, 0xA3)
 
     # Remove the check on the number of days that passed for claim check.
     rom.write_bytes(0xED4470, [0x00, 0x00, 0x00, 0x00])

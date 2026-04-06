@@ -164,7 +164,7 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     # Lost Woods
     ("LW Gift from Saria",                                           ("Cutscene",     0xFF,  0x02, None,                            'Ocarina',                               ("Lost Woods", "Forest Area", "NPCs",))),
     ("LW Ocarina Memory Game",                                       ("NPC",          0x5B,  0x76, None,                            'Piece of Heart',                        ("Lost Woods", "Forest Area", "Minigames",))),
-    ("LW Target in Woods",                                           ("NPC",          0x5B,  0x60, None,                            'Slingshot',                             ("Lost Woods", "Forest Area", "NPCs",))),
+    ("LW Target in Woods",                                           ("NPC",          0x5B,  0x60, None,                            'Deku Seed Bag',                         ("Lost Woods", "Forest Area", "NPCs",))),
     ("LW Near Shortcuts Grotto Chest",                               ("Chest",        0x3E,  0x14, None,                            'Rupees (5)',                            ("Lost Woods", "Forest Area", "Grottos", "Chests",))),
     ("LW Trade Cojiro",                                              ("NPC",          0x5B,  0x1F, None,                            'Odd Mushroom',                          ("Lost Woods", "Forest",))),
     ("LW Trade Odd Potion",                                          ("NPC",          0x5B,  0x21, None,                            'Poachers Saw',                          ("Lost Woods", "Forest",))),
@@ -248,7 +248,7 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("HF Child Above Drawbridge Wonderitem 2",                       ("Wonderitem",   0x51, [(0,0,54),(0,1,52)], None,              'Rupees (20)',                           ("Hyrule Field", "Wonderitem"))),
     ("HF Child Above Drawbridge Wonderitem 3",                       ("Wonderitem",   0x51, [(0,0,55),(0,1,53)], None,              'Rupees (20)',                           ("Hyrule Field", "Wonderitem"))),
 
-    ("Market Shooting Gallery Reward",                               ("NPC",          0x42,  0x60, None,                            'Slingshot',                             ("Market", "Minigames",))),
+    ("Market Shooting Gallery Reward",                               ("NPC",          0x42,  0x60, None,                            'Deku Seed Bag',                         ("Market", "Minigames",))),
     ("Market Bombchu Bowling First Prize",                           ("NPC",          0x4B,  0x34, None,                            'Bomb Bag',                              ("Market", "Minigames",))),
     ("Market Bombchu Bowling Second Prize",                          ("NPC",          0x4B,  0x3E, None,                            'Piece of Heart',                        ("Market", "Minigames",))),
     ("Market Bombchu Bowling Bombchus",                              ("NPC",          0x4B,  0x03, None,                            'Bombchus (10)',                         None)),
