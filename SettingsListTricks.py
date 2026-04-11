@@ -34,10 +34,11 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     "Child", "Adult",),
         'tooltip' : '''\
                     Allows the following possible without Tunics:
-                    - Enter Fire Temple as adult.
                     - Zora's Fountain bottom Freestandings. You
                     might not have enough time to resurface, and
                     you may need to make multiple trips.
+                    - Enter Fire Temple from Goron City, the grotto,
+                    or the great fairy fountain.
                     - Traverse the first floor of the Fire Temple,
                     except the elevator room and Volvagia.
                     - Go underwater in the Water Temple. (The area
@@ -2378,6 +2379,14 @@ advanced_logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     Drop a chu, then perform a ledgeclip from the edge near windmill
                     entrance to clip into BotW as adult. Alternative to Odie clip.
                     '''},
+    '(Glitch) BotW Cucco Dive': {
+        'name'    : 'glitch_botw_cucco_dive',
+        'tags'    : ("Glitch","Child","Bottom of the Well",),
+        'tooltip' : '''\
+                    Using ISG (individual trick not required) or Nuts, you can trigger
+                    the angry cucco cutscene as you enter the water, allowing Link to
+                    fall through it and enter the Bottom of the Well.
+                    '''},
     '(Glitch) BotW Blank A': {
         'name'    : 'glitch_botw_blank_a',
         'tags'    : ("Glitch","Child","Bottom of the Well",),
@@ -2871,6 +2880,18 @@ advanced_logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
 
                     You can also do the same by abusing invincibility frames
                     if not on ohko.
+                    '''},
+    '(Advanced) Water Hop': {
+        'name'    : 'adv_water_hop',
+        'tags'    : ("Advanced",),
+        'tooltip' : '''\
+                    By equipping the Iron Boots right before surfacing,
+                    you can keep the momentum from the swim up from a dive
+                    to propel yourself out of the water higher than usual
+                    allowing ledges to be grabbed.
+
+                    Notably allows for access to Morpha's ledge and the
+                    Eastern Middle Layer ledge in Water Temple.
                     '''},
     '(Glitch) Water Temple Antigrav to Boss Key Area': {
         'name'    : 'glitch_water_bk_area_antigrav',

@@ -6,7 +6,9 @@ from decimal import Decimal, ROUND_UP
 from typing import TYPE_CHECKING, Optional
 
 from Item import Item, ItemInfo, ItemFactory
+from ItemList import REWARD_COLORS
 from Location import DisableType
+from LocationList import location_groups
 import StartingItems
 
 if TYPE_CHECKING:
@@ -549,6 +551,7 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
 
     # Use the vanilla items in the world's locations when appropriate.
     vanilla_items_processed = Counter()
+    rauru_random_location = None
     for location in world.get_locations():
         if location.vanilla_item is None:
             continue
@@ -810,11 +813,25 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
             if world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward'):
                 pass # handled in World.fill_bosses
             else:
-                shuffle_item = True
+                if world.settings.skip_reward_from_rauru != 'free_forced':
+                    shuffle_item = True
+                else:
+                    if world.settings.shuffle_dungeon_rewards in ('any_dungeon', 'overworld', 'anywhere'):
+                        # Rauru is currently considered a "Boss" by location, may need to change this in the future.
+                        boss_locations = location_groups['Boss']
+                        rauru_random_location: str = random.choice(boss_locations)
+                        item = world.get_location(rauru_random_location).vanilla_item
+                        world.push_item(location, ItemFactory(item, world))
+                    else:
+                        item = location.vanilla_item
+                        world.push_item(location, ItemFactory(item, world))
         elif location.type == 'Boss':
             if world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward'):
                 pass # handled in World.fill_bosses
             elif world.settings.shuffle_dungeon_rewards in ('any_dungeon', 'overworld', 'regional', 'anywhere'):
+                # We swap with the dungeon reward that rauru became if it is a guaranteed dungeon reward then shuffle like usual
+                if rauru_random_location == location.name:
+                    item = world.get_location('ToT Reward from Rauru').vanilla_item
                 shuffle_item = True
             else:
                 dungeon = Dungeon.from_vanilla_reward(ItemFactory(location.vanilla_item, world))
@@ -850,10 +867,16 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                     dungeon_collection = dungeon.boss_key
                     if shuffle_setting == 'vanilla':
                         shuffle_item = False
-            # Map or Compass
-            elif location.vanilla_item in (dungeon.item_name("Map"), dungeon.item_name("Compass")):
-                shuffle_setting = world.settings.shuffle_mapcompass
-                dungeon_collection = dungeon.dungeon_items
+            # Map
+            elif location.vanilla_item == dungeon.item_name("Map"):
+                shuffle_setting = world.settings.shuffle_map
+                dungeon_collection = dungeon.maps
+                if shuffle_setting == 'vanilla':
+                    shuffle_item = False
+            # Compass
+            elif location.vanilla_item == dungeon.item_name("Compass"):
+                shuffle_setting = world.settings.shuffle_compass
+                dungeon_collection = dungeon.compasses
                 if shuffle_setting == 'vanilla':
                     shuffle_item = False
             # Small Key
@@ -1022,6 +1045,8 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         pool.extend(get_junk_item())
     add_random_starting_items_ammo(world.randomized_starting_items)
     for item, count in world.randomized_starting_items.items():
+        if item in REWARD_COLORS and count > 0:
+            world.hinted_dungeon_reward_locations[item] = None
         item = ItemFactory(item, world)
         for _ in range(count):
             if item.solver_id is not None:

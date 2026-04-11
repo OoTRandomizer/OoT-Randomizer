@@ -38,8 +38,7 @@
             "Forest Temple Basement": "
                 (Forest_Temple_Jo_and_Beth and Forest_Temple_Amy_and_Meg) or forest_temple_shortcuts
                 or (glitch_forest_temple_basement and can_use(Hover_Boots) and Bombs and can_mega and can_live_dmg(1.0,True,False))",
-            "Forest Temple Green Poe Room": "can_hover or (can_use(Hover_Boots) and has_explosives and
-                can_live_dmg(0.5))"
+            "Forest Temple Green Poe Room": "can_hover or can_hovers_recoil"
         }
     },
     {
@@ -106,7 +105,7 @@
                 can_use(Iron_Boots) or can_use(Longshot) or (Progressive_Scale, 2) or
                 (logic_forest_well_swim and can_use(Hookshot))",
             "Forest Temple Outdoors High Balconies": "can_use(Fire_Arrows) or (can_gdv and can_isg)",
-            "Forest Temple Outside Upper Ledge": "can_hover or can_megajump",
+            "Forest Temple Outside Upper Ledge": "can_hover or (can_megajump and glitch_clipping)",
             "Forest Temple NW Outdoors Freestandings": "logic_forest_courtyard_hearts and can_use(Boomerang)"
         }
     },
@@ -117,7 +116,7 @@
             "Forest Temple Twisted Hallway Switch": "True"
         },
         "locations": {
-            "Forest Temple MQ ReDead Chest": "has_soul(Redead_and_Gibdo)"
+            "Forest Temple MQ Redead Chest": "has_soul(Redead_and_Gibdo)"
         },
         "exits": {
             "Forest Temple NW Outdoors": "True",

@@ -277,7 +277,7 @@
             "Dodongos Cavern Lower Lizalfos": "True",
             "Dodongos Cavern Lower Lizalfos Enemies": "True",
             "Dodongos Cavern Lower Scrubs Room": "can_use(Bow) or has_explosives or Progressive_Strength_Upgrade or can_use(Dins_Fire)
-                or can_gdv_stick or (can_gdv_ledge and can_isg)"
+                or can_gdv_stick or (can_gdv_empty and can_isg)"
         }
     },
     {

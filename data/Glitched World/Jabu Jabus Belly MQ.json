@@ -5,19 +5,19 @@
         "locations": {
             "Jabu Jabus Belly MQ Map Chest": "can_blast_or_smash",
             "Jabu Jabus Belly MQ First Room Side Chest": "can_use(Slingshot)
-                or (can_isg and (can_gdv_stick or ('Jabu Jabus Belly MQ Map Chest' and can_gdv_empty)))",
+                or (can_isg and (can_gdv_stick or (can_blast_or_smash and can_gdv_empty)))",
             "Jabu Jabus Belly MQ First Room Pot 1": "True",
             "Jabu Jabus Belly MQ First Room Pot 2": "True",
             "Jabu Jabus Belly MQ Entryway Left Cow Wonderitem": "can_use(Slingshot)
-                or (can_isg and (can_gdv_stick or ('Jabu Jabus Belly MQ Map Chest' and can_gdv_empty)))",
+                or (can_isg and (can_gdv_stick or (can_blast_or_smash and can_gdv_empty)))",
             "Jabu Jabus Belly MQ Entryway Right Cow Wonderitem": "can_use(Slingshot)
-                or (can_isg and (can_gdv_stick or ('Jabu Jabus Belly MQ Map Chest' and can_gdv_empty)))",
+                or (can_isg and (can_gdv_stick or (can_blast_or_smash and can_gdv_empty)))",
             "Nut Pot": "True"
         },
         "exits": {
             "Zoras Fountain": "True",
             "Jabu Jabus Belly Elevator Room": "jabu_shortcuts or here(can_use(Slingshot)
-                or (can_isg and (can_gdv_stick or ('Jabu Jabus Belly MQ Map Chest' and can_gdv_empty))))",
+                or (can_isg and (can_gdv_stick or (can_blast_or_smash and can_gdv_empty))))",
             "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
@@ -104,8 +104,18 @@
             "Jabu Jabus Belly MQ Falling Like Like Room Chest": "has_soul(Like_Like)",
             "Jabu Jabus Belly MQ Falling Like Like Room Pot 1": "True",
             "Jabu Jabus Belly MQ Falling Like Like Room Pot 2": "True",
+            "Jabu Jabus Belly MQ Falling Like-Like Room Right Cow Wonderitem 1": "True",
+            "Jabu Jabus Belly MQ Falling Like-Like Room Right Cow Wonderitem 2": "True",
+            "Jabu Jabus Belly MQ Falling Like-Like Room Right Cow Wonderitem 3": "True",
+            "Jabu Jabus Belly MQ Falling Like-Like Room Left Cow Wonderitem 1": "True",
+            "Jabu Jabus Belly MQ Falling Like-Like Room Left Cow Wonderitem 2": "True",
+            "Jabu Jabus Belly MQ Falling Like-Like Room Left Cow Wonderitem 3": "True",
+            "Jabu Jabus Belly MQ Falling Like-Like Room Explosives Wonderitem 1": "has_explosives",
+            "Jabu Jabus Belly MQ Falling Like-Like Room Explosives Wonderitem 2": "has_explosives",
+            "Jabu Jabus Belly MQ Falling Like-Like Room Explosives Wonderitem 3": "has_explosives",
             "Jabu Jabus Belly MQ Hallway Small Crate 1": "True",
-            "Jabu Jabus Belly MQ Hallway Small Crate 2": "True"
+            "Jabu Jabus Belly MQ Hallway Small Crate 2": "True",
+            "Bombable Fairy": "has_bottle and has_explosives"
         },
         "exits": {
             "Jabu Jabus After Right Tentacle": "Jabu_Jabus_Belly_Right_Tentacle_Cleared"

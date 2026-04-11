@@ -224,7 +224,8 @@
           "row_span": [6,6,9],
           "settings": [
             "shuffle_dungeon_rewards",
-            "shuffle_mapcompass",
+            "shuffle_map",
+            "shuffle_compass",
             "shuffle_smallkeys",
             "shuffle_hideoutkeys",
             "shuffle_tcgkeys",

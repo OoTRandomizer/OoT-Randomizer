@@ -68,15 +68,22 @@ def resolve_settings(settings: Settings) -> Optional[Rom]:
 
     # compare pointers to lists rather than contents, so even if the two are identical
     # we'll still log the error and note the dist file overrides completely.
-    if old_tricks and (old_tricks is not settings.allowed_tricks
-                    or old_advanced_tricks is not settings.advanced_allowed_tricks):
+    if (old_tricks and old_tricks is not settings.allowed_tricks) or (old_advanced_tricks and old_advanced_tricks is not settings.advanced_allowed_tricks):
         logger.error('Tricks are set in two places! Using only the tricks from the distribution file.')
 
+    # flag tricks based on settings
+    # special case advanced so that if another logic is selected, all tricks are set to False
+    # this is a failsafe for disabled_default
     for trick in logic_tricks.values():
         settings.settings_dict[trick['name']] = trick['name'] in settings.allowed_tricks
 
-    for trick in advanced_logic_tricks.values():
-        settings.settings_dict[trick['name']] = trick['name'] in settings.advanced_allowed_tricks
+    if settings.logic_rules == 'advanced':
+        for trick in advanced_logic_tricks.values():
+            settings.settings_dict[trick['name']] = trick['name'] in settings.advanced_allowed_tricks
+    else:
+        for trick in advanced_logic_tricks.values():
+            settings.settings_dict[trick['name']] = False
+
 
     # we load the rom before creating the seed so that errors get caught early
     outputting_specific_world = settings.create_uncompressed_rom or settings.create_compressed_rom or settings.create_wad_file
@@ -261,7 +268,7 @@ def generate_wad(wad_file: str, rom_file: str, output_file: str, channel_title: 
         with open(wad_file, 'rb') as wad_stream:
             wad_buffer = bytearray(wad_stream.read(0xFC0))
     except FileNotFoundError as ex:
-            raise FileNotFoundError(f'Invalid path to Base WAD: "{input_file}"')
+        raise FileNotFoundError(f'Invalid path to Base WAD: "{wad_file}"')
 
     wad_app1_sha1_usa = [
         [0x76, 0x3D, 0x4D, 0x3D, 0x07, 0x13, 0xE4, 0xD1, 0x0E, 0x44, 0x54, 0x0C, 0xCF, 0xA3, 0x25, 0x5E, 0x19, 0xF2, 0x8A, 0xF7], # US Wad App1

@@ -226,8 +226,16 @@
             "Spirit Temple MQ Lobby and Lower Adult Silver Rupee Near Door": "True",
             "Spirit Temple MQ Lobby and Lower Adult Silver Rupee Behind Water Jet": "True",
             "Spirit Temple MQ Lobby and Lower Adult Silver Rupee Water Jet": "
-                (Megaton_Hammer) or
-                (logic_spirit_mq_water_rupee and (Silver_Rupee_Spirit_Temple_Lobby_and_Lower_Adult, 5))",
+                Megaton_Hammer or
+                (logic_spirit_mq_water_rupee and can_use(Longshot) and (Silver_Rupee_Spirit_Temple_Lobby_and_Lower_Adult, 5))
+                or (can_use(Hover_Boots)
+                and ((adv_hovers_recoil and
+                            ((has_explosives and can_live_dmg(0.5,False,True)) or can_shield
+                            )
+                        )
+                    or (can_superslide or can_hess or can_mega)
+                    )
+                )",
             "Spirit Temple MQ GS Leever Room": "True"
         },
         "exits": {
