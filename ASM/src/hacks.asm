@@ -4143,15 +4143,6 @@ DemoEffect_DrawJewel_AfterHook:
     j       Message_Decode_reset_msgCtx.textPosX
     nop
 
-;================================================================================
-; Fixes softlock when starting cutscene while dismounting a ladder.
-;================================================================================
-; Replaces  lw  t8,1644(s0)
-;           lui at,0xffdf
-.orga 0xBE8074      ; 0x8084a6c4 (0x803a3064) in Player_Action_DismountLadder
-    jal  ladder_cutscene
-    nop
-
 .include "hacks/en_item00.asm"
 .include "hacks/ovl_bg_gate_shutter.asm"
 .include "hacks/ovl_bg_haka_tubo.asm"
@@ -4170,3 +4161,4 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/ovl_en_ssh.asm"
 .include "hacks/ovl_en_okarina_tag.asm"
 .include "hacks/sound.asm"
+.include "hacks/z_player.asm"
