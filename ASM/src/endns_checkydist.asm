@@ -14,4 +14,3 @@ EnDns_CheckYDist:
     addi    ra,ra,0x8c
     jr      ra              ; 0x80a75598
     nop
-
