@@ -139,6 +139,11 @@ typedef struct {
   z64_col_water_t  *water;
 } z64_col_hdr_t;
 
+typedef struct {
+    /* 0x00 */ z64_col_hdr_t* colHeader; // scene's static collision
+    /* 0x04 */ char colCtxData[0x1460];
+} CollisionContext;
+
 typedef enum {
   Z64_ITEM_NULL = -1,
   Z64_ITEM_STICK,
@@ -1394,8 +1399,7 @@ typedef struct {
   char             unk_07_[0x0010];        /* 0x00798 */
   z64_lighting_t   lighting;               /* 0x007A8 */
   char             unk_08_[0x0008];        /* 0x007B8 */
-  z64_col_hdr_t   *col_hdr;                /* 0x007C0 */
-  char             unk_09_[0x1460];        /* 0x007C4 */
+  CollisionContext colCtx;                 /* 0x007C0 */
   z64_actor_ctxt_t actor_ctxt;             /* 0x01C24 */
   uint8_t          n_actors_loaded;        /* 0x01C2C */
   char             unk_0A_[0x0003];        /* 0x01C2D */
