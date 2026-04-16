@@ -4130,6 +4130,15 @@ class SettingInfos:
         shared              = True,
     )
 
+    remote_hookshot = Checkbutton(
+        gui_text       = 'Enable Remote Hookshot',
+        gui_tooltip    = '''\
+            Enables the Remote Hookshot bug from Majora's Mask
+            by drinking milk.
+        ''',
+        shared         = True,
+    )
+
     fix_broken_drops = Checkbutton(
         gui_text       = 'Fix Broken Drops',
         gui_tooltip    = '''\
