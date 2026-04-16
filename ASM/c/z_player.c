@@ -32,7 +32,7 @@ void Player_CheckEponaWater(volatile float ySurface) {
         // Check line intersection: player position vs player-waterbox Y position "pos"
         // Intersect position is stored in "posResult"
         BgCheck_AnyLineTest1(&z64_game.colCtx, &z64_link.common.pos_world, &pos, &posResult, &floorPoly, false);
-            
+
             // If the water surface is either higher than resulting Y position (= is above floor),
             // or same height (= is waterbox itself), water is higher than the floor
             if((posResult.y <= ySurface)) {
