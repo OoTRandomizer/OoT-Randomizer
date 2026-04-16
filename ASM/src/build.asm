@@ -133,6 +133,8 @@ RANDO_CONTEXT:
 .include "en_dns.asm"
 .include "bg_gate_shutter.asm"
 .include "big_poe.asm"
+.include "player_remote_hookshot.asm"
+.include "playerlib_remote_hookshot.asm"
 
 .align 0x10
 .importobj "../build/bundle.o"

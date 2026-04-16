@@ -1916,6 +1916,10 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             if mask_segment_id not in (0x05, 0x06, 0x07, 0x0F, 0x15, 0x1C):
                 rom.write_int16s(0x00B66E60 + mask_segment_id * 0x12, [0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000])
 
+    if world.settings.remote_hookshot:
+        symbol = rom.sym('REMOTE_HOOKSHOT_ENABLED')
+        rom.write_byte(symbol, 0x01)
+
     if world.settings.fix_broken_drops:
         symbol = rom.sym('FIX_BROKEN_DROPS')
         rom.write_byte(symbol, 0x01)
