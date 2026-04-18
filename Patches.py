@@ -1286,13 +1286,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         if world.dungeon_mq['Spirit Temple']: # Patch Spirit MQ Lobby front right chest to use permanent switch flag 0x1F
             rom.write_byte(0x2b08ce4 + 13, 0x1F)
 
-        if not world.dungeon_mq['Bottom of the Well']:
-            # Collecting the final BotW basement silver rupee and activating the cutscene of the door unlocking while on the ladder causes a softlock.
-            # Move slightly the X coordinate of this actor so that it cannot be collected while climbing.
-            # This is a vanilla bug tracked at https://github.com/OoTRandomizer/OoT-Randomizer/issues/2004
-            # If and when that bug is fixed in rando, this displacement can be removed.
-            rom.write_int16(0x32E92C6, 0xFD78)
-
     # Write flag table data
     xflags_tables, alt_list = build_xflags_from_world(world)
     xflag_scene_table, xflag_room_table, xflag_room_blob, max_bit = build_xflag_tables(xflags_tables)
