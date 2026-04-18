@@ -1,4 +1,3 @@
-
 BunnyMatrixPush:
     addiu   sp,sp,-12
     sw      ra,4(sp)
