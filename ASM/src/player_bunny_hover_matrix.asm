@@ -41,7 +41,7 @@ HoverMatrixPop:
     sw      ra,4(sp)    ; No need to save registers here
     jal     Matrix_Pop
     nop
-    lw      ra,4(sp) 
+    lw      ra,4(sp)
     lw      v1,720(s1)  ; Displaced
     jr      ra
     addiu   sp,sp,4
