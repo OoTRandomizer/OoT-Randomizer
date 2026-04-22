@@ -7,7 +7,7 @@ Player_CallUseDpadItem:
     beqz    v0,@@DidntUseReturn       ; if didn't use item, continue normal function
     lw      ra,(sp)
     b       @@DidUseReturn            ; else, go to 0x80832134 (end of calling function)
-    addi    ra,0x74                   
+    addi    ra,0x74
 @@DidntUseReturn:
     lw      v1,4(sp)                  ; restore for continue function
     move    a3,zero                   ; displaced
