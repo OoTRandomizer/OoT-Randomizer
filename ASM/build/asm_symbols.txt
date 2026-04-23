@@ -1228,9 +1228,9 @@
 804072B8 big_poe_soul_collision
 804072F8 @@no_collision
 80407300 @@collision
-80407308 PlayerFrozenElectrifiedMagicReset
-80407334 @@MagicResetReturn
-80407340 PlayerSetFaroreMagicState
+80407308 Player_FrozenElectrifiedMagicReset
+80407338 @@MagicResetReturn
+80407340 Player_SetFaroreMagicState
 80407350 after_spawn_override_silver_rupee,00000018
 80407368 Actor_GetAdditionalData,00000008
 80407370 Actor_BuildFlag,000000BC

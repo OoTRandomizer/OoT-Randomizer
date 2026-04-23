@@ -8,14 +8,14 @@
 ; Replaces  li      a1,255
 ;           li      a2,10
 .org 0x80835df0                 ; in func_80837C0C
-    jal     PlayerFrozenElectrifiedMagicReset
+    jal     Player_FrozenElectrifiedMagicReset
     li      a2,10
 
 ; Call magic reset upon getting electrified
 ; Replaces  li      a1,255
 ;           li      a2,80
 .org 0x80835e4c                 ; in func_80837C0C
-    jal     PlayerFrozenElectrifiedMagicReset
+    jal     Player_FrozenElectrifiedMagicReset
     li      a2,80
 
 ; Remove the Farore check for normal consume magic, so that it can be done
@@ -29,5 +29,5 @@
 ; Replaces  sw      t4,3716(v0)
 ;           sw      t5,3720(v0)
 .org 0x8084e824                 ; in Player_Action_CastMagicSpell
-    jal     PlayerSetFaroreMagicState
+    jal     Player_SetFaroreMagicState
     sw      t4,3716(v0)
