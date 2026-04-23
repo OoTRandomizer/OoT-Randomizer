@@ -10,5 +10,5 @@
 .org 0x8083aa1c                     ; in Player_SetStartingMovement (start at 0x80393360)
     sub.s   $f12,$f6,$f8            ; (waterbox Y surface - player Y) = ySurface
     move    s7,a2                   ; store Player_Action_StartModeWater address
-    jal     Player_CheckEponaWater
+    jal     Player_CallCheckEponaWater
     swc1    $f12,40(sp)             ; store new ySurface (restored in end of jal to $f10)

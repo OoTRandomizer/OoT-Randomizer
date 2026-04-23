@@ -28,6 +28,7 @@ z64_ItemIcons = 0x800F8D2C;
 z64_SfxDefaultPos = 0x80104394;
 z64_SfxDefaultFreqAndVolScale = 0x801043A0;
 z64_SfxDefaultReverb = 0x801043A8;
+R_EXITED_SCENE_RIDING_HORSE = 0x801c7cf0;
 KaleidoScope_DrawAmmoCount = 0x8038EA10;
 KaleidoScope_SetCursorVtx = 0x8038EF94;
 KaleidoScope_QuadTextureIA8 = 0x80394200;

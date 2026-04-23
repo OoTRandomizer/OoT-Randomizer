@@ -33,21 +33,15 @@ void Player_CheckEponaWater(volatile float ySurface) {
         // Intersect position is stored in "posResult"
         BgCheck_AnyLineTest1(&z64_game.colCtx, &z64_link.common.pos_world, &pos, &posResult, &floorPoly, false);
 
-            // If the water surface is either higher than resulting Y position (= is above floor),
-            // or same height (= is waterbox itself), water is higher than the floor
-            if((posResult.y <= ySurface)) {
-                // Dismount in all areas, except Lake Hylia warp entrance (X pos -1045).
-                // (That waterbox has Y surface -90 for one frame, so special X-based fix is needed)
-                if((z64_game.scene_index != SCENE_LAKE_HYLIA) || (z64_game.scene_index == SCENE_LAKE_HYLIA &&
-                    !(z64_link.common.pos_world.x > -1050.0f && z64_link.common.pos_world.x < -1040.0f))) {
-                    R_EXITED_SCENE_RIDING_HORSE = false;
-                }
+        // If the water surface is either higher than resulting Y position (= is above floor),
+        // or same height (= is waterbox itself), water is higher than the floor
+        if((posResult.y <= ySurface)) {
+            // Dismount in all areas, except Lake Hylia warp entrance (X pos -1045).
+            // (That waterbox has Y surface -90 for one frame, so special X-based fix is needed)
+            if((z64_game.scene_index != SCENE_LAKE_HYLIA) || (z64_game.scene_index == SCENE_LAKE_HYLIA &&
+            !(z64_link.common.pos_world.x > -1050.0f && z64_link.common.pos_world.x < -1040.0f))) {
+                R_EXITED_SCENE_RIDING_HORSE = false;
             }
+        }
     }
-    // Restore displaced a0 and a1 (z64_game and z64_link), address to Player_Action_StartModeWater to a2
-    // and $f10 as ySurface (for c.le.s after return)
-    asm("move   $a0,$s1\n"
-        "move   $a1,$s0\n"
-        "move   $a2,$s7\n"
-        "lwc1   $f10,40($sp)\n");
 }
