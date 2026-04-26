@@ -4161,3 +4161,4 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/ovl_en_ssh.asm"
 .include "hacks/ovl_en_okarina_tag.asm"
 .include "hacks/sound.asm"
+.include "hacks/z_player.asm"

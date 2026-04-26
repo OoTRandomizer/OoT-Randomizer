@@ -65,7 +65,6 @@ defaultHintDists: list[str] = [
     'useless.json',
     'very_strong.json',
     'very_strong_magic.json',
-    'weekly.json',
 ]
 
 unHintableWothItems: set[str] = {*REWARD_COLORS, 'Triforce Piece', 'Gold Skulltula Token', 'Piece of Heart', 'Piece of Heart (Treasure Chest Game)', 'Heart Container'}
