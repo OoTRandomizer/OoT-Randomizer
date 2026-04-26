@@ -22,6 +22,7 @@
 * Various minor fixes for advanced logic.
 * Fix for advanced logic tricks being cached when switching to glitchless logic.
 * Fix for misc hints when the hinted item was randomly selected as a starting item.
+* Fix a vanilla softlock when starting a cutscene while climbing a ladder.
 
 ## Other Changes
 * It is no longer required to have either the goron tunic or the Fewer Tunic Requirements trick for adult to go from the Bolero warp pad to the Fire temple in logic.
