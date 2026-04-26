@@ -31,6 +31,7 @@
 * Successfully entering a password will now take you back to the file select screen.
 * Refill items sold as special deals are now less likely to cost more than the "market price" of a repeatable purchase.
 * The heart chest texture has been tweaked to display heart icons on the lid rather than triangles.
+* The `Standard Weekly` settings preset and hint distribution have been removed to reflect the end of the weekly races.
 
 # 9.0
 
