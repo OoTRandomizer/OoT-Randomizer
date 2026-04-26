@@ -7,8 +7,6 @@
 * The Farore's Wind text box now distinguishes between Ganon's Castle and Ganon's Tower.
 * New `Water Hop` trick and `BotW Cucco Dive` glitch added to advanced logic.
 * Improve Debug menu with new options.
-* Refill items sold as special deals are now less likely to cost more than the "market price" of a repeatable purchase.
-* The heart chest texture has been tweaked to display heart icons on the lid rather than triangles.
 
 ## Bug fixes
 * Fix a potential softlock when talking to Pierre (the upper scarecrow) as child in Lake Hylia.
@@ -23,7 +21,6 @@
 * Added some missing or incorrectly named locations in advanced logic.
 * Various minor fixes for advanced logic.
 * Fix for advanced logic tricks being cached when switching to glitchless logic.
-* Fix for failure to generate when special deal prices are set to vanilla.
 * Fix for misc hints when the hinted item was randomly selected as a starting item.
 
 ## Other Changes
@@ -31,6 +28,8 @@
 * Further shortening of version number in file select screen.
 * Areas which have all locations hinted will not be selected for important checks hints.
 * Successfully entering a password will now take you back to the file select screen.
+* Refill items sold as special deals are now less likely to cost more than the "market price" of a repeatable purchase.
+* The heart chest texture has been tweaked to display heart icons on the lid rather than triangles.
 
 # 9.0
 
