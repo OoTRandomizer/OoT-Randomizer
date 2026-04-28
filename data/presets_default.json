@@ -1346,19 +1346,19 @@
         "custom_ice_trap_count": 100,
         "ice_trap_appearance": "junk_only"
     },
-    "SGL 2025 Tournament": {
+    "SGL 2026 Tournament": {
         "aliases": [
             "sgl",
-            "sgl2025"
+            "sgl2026"
         ],
         "show_seed_info": true,
-        "user_message": "SGL 2025 Tournament",
+        "user_message": "SGL 2026 Tournament",
         "world_count": 1,
         "create_spoiler": true,
         "password_lock": false,
         "randomize_settings": false,
         "logic_rules": "glitchless",
-        "reachable_locations": "all",
+        "reachable_locations": "beatable",
         "triforce_hunt": false,
         "triforce_count_per_world": 28,
         "triforce_goal_per_world": 24,
@@ -1528,7 +1528,7 @@
         "big_poe_count": 1,
         "clearer_hints": true,
         "hints": "always",
-        "hint_dist": "sgl2025",
+        "hint_dist": "sgl2026",
         "item_hints": [],
         "hint_dist_user": {},
         "plandomized_locations": {

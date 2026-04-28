@@ -1,7 +1,7 @@
 {
-    "name":                  "sgl2025",
-    "gui_name":              "SGL 2025",
-    "description":           "Hint distribution used for SGL 2025.",
+    "name":                  "sgl2026",
+    "gui_name":              "SGL 2026",
+    "description":           "Hint distribution used for SGL 2026.",
     "add_locations":         [
         { "location": "Deku Theater Skull Mask", "types": ["always"] }
     ],
