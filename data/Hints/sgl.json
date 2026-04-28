@@ -1,5 +1,5 @@
 {
-    "name":                  "sgl2026",
+    "name":                  "sgl",
     "gui_name":              "SGL 2026",
     "description":           "Hint distribution used for SGL 2026.",
     "add_locations":         [
