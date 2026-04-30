@@ -1,5 +1,3 @@
-
-
 EnBox_CallLoadObject:
     addiu   sp,sp,-8
     sw      ra,4(sp)
