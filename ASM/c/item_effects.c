@@ -234,7 +234,7 @@ void open_gate_and_mask_shop(z64_file_t* save, int16_t arg1, int16_t arg2) {
         // Check if we're in kak and actually open the gate
         if (z64_game.scene_index == 82) {
             // Loop through the actors looking for the gate
-            z64_actor_t* curr = z64_game.actor_list[7].first;
+            z64_actor_t* curr = z64_game.actorLists[7].head;
             while (curr != NULL) {
                 if (curr->actor_id == 0x100) { // Check for BG_GATE_SHUTTER
                     // Set the openingState so it starts to open

@@ -19,6 +19,7 @@ Flags_SetCollectible = 0x8002071C;
 Actor_SetColorFilter = 0x80027090;
 CutsceneFlags_Get = 0x8005991C;
 z64_Gfx_SetupDL_42Opa = 0x8007E868;
+func_800982FC = 0x80081740;
 Audio_StopCurrentMusic = 0x800C7684;
 sprintf = 0x800CE7b4;
 Message_OpenText = 0x800DC838;
