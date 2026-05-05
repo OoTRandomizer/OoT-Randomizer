@@ -695,14 +695,17 @@ def get_goal_hint(spoiler: Spoiler, world: World, checked: dict[HintArea | str, 
     goal.weight = 0
 
     location_text = HintArea.at(location).text(world.settings.clearer_hints)
-    if world_id == world.id:
-        player_text = "the"
-        goal_text = goal.hint_text
+    if goal.name in world.hint_dist_user.get('upgrade_goals_to_woth', []) and location in spoiler.required_locations[world.id]:
+        return GossipText('%s is on the way of the hero.' % location_text, ['Light Blue'], [location.name], [location.item.name]), [location]
     else:
-        player_text = "Player %s's" % (world_id + 1)
-        goal_text = spoiler.goal_categories[world_id][goal_category.name].get_goal(goal.name).hint_text
+        if world_id == world.id:
+            player_text = "the"
+            goal_text = goal.hint_text
+        else:
+            player_text = "Player %s's" % (world_id + 1)
+            goal_text = spoiler.goal_categories[world_id][goal_category.name].get_goal(goal.name).hint_text
 
-    return GossipText('%s is on %s %s.' % (location_text, player_text, goal_text), ['Light Blue', goal.color], [location.name], [location.item.name]), [location]
+        return GossipText('%s is on %s %s.' % (location_text, player_text, goal_text), ['Light Blue', goal.color], [location.name], [location.item.name]), [location]
 
 
 def get_barren_hint(spoiler: Spoiler, world: World, checked: dict[HintArea | str, set[CheckedKind]]) -> HintReturn:
