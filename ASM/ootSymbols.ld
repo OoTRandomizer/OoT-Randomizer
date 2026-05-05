@@ -25,6 +25,7 @@ sprintf = 0x800CE7b4;
 Message_OpenText = 0x800DC838;
 Fault_AddHungupAndCrashImpl = 0x800AF564;
 z64_ItemIcons = 0x800F8D2C;
+gObjectTable = 0x800f8ff8;
 z64_SfxDefaultPos = 0x80104394;
 z64_SfxDefaultFreqAndVolScale = 0x801043A0;
 z64_SfxDefaultReverb = 0x801043A8;
