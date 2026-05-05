@@ -20,7 +20,7 @@ RUN apt-get update \
     gdb-multiarch \
     gpgv
 
-# Install toolchain. Compile from source if not on Intel/AMD.
+# Install toolchain
 RUN curl -o /usr/share/keyrings/practicerom-archive-keyring.gpg https://practicerom.com/public/packages/debian/practicerom-archive-keyring.gpg
 RUN if [ "$(dpkg --print-architecture)" = "amd64" ]; then \
     echo deb [arch=all,amd64 signed-by=/usr/share/keyrings/practicerom-archive-keyring.gpg] http://practicerom.com/public/packages/debian stable main > /etc/apt/sources.list.d/practicerom.list; \
