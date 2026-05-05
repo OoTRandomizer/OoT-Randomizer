@@ -1882,7 +1882,7 @@ def build_misc_location_hints(world: World, messages: list[Message]) -> None:
                 if hint_type in world.misc_hint_location_items:
                     item = world.misc_hint_location_items[hint_type]
                     text = data['location_text'].format(
-                        item=get_item_hint_text(item, world.settings.clearer_hints, True),
+                        item=item_hint_text(item, world.settings.clearer_hints, True),
                     )
             update_message_by_id(messages, data['id'], str(GossipText(text, ['Green'], prefix='')), data['text_style'])
 
