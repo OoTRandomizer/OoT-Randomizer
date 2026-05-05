@@ -13,7 +13,7 @@ from enum import Enum, auto
 from typing import TYPE_CHECKING, Optional
 from urllib.error import URLError, HTTPError
 
-from HintList import Hint, get_hint, get_multi, get_hint_group, get_upgrade_hint_list, hint_exclusions, \
+from HintList import Hint, item_hint_text, get_hint, get_multi, get_hint_group, get_upgrade_hint_list, hint_exclusions, \
     misc_item_hint_table, misc_location_hint_table, misc_dual_hint_table
 from Item import Item, make_event_item
 from ItemList import REWARD_COLORS
@@ -164,13 +164,6 @@ gossipLocations: dict[int, GossipStone] = {
 gossipLocations_reversemap: dict[str, int] = {
     stone.name: stone_id for stone_id, stone in gossipLocations.items()
 }
-
-
-def get_item_generic_name(item: Item) -> str:
-    if item.unshuffled_dungeon_item and item.type != 'DungeonReward':
-        return item.type
-    else:
-        return item.name
 
 
 def is_restricted_dungeon_item(item: Item) -> bool:
@@ -340,7 +333,7 @@ hintPrefixes: list[str] = [
 
 
 def get_simple_hint_no_prefix(item: Item) -> Hint:
-    hint = get_hint(item.name, True).text
+    hint = item_hint_text(item, True, False)
 
     for prefix in hintPrefixes:
         if hint.startswith(prefix):
@@ -811,7 +804,7 @@ def get_good_item_hint(spoiler: Spoiler, world: World, checked: dict[HintArea | 
     location = random.choice(locations)
     mark_checked(checked, location.name)
 
-    item_text = get_hint(get_item_generic_name(location.item), world.settings.clearer_hints).text
+    item_text = item_hint_text(location.item, world.settings.clearer_hints, True)
     hint_area = HintArea.at(location)
     if hint_area.is_dungeon:
         location_text = hint_area.text(world.settings.clearer_hints)
@@ -863,7 +856,7 @@ def get_specific_item_hint(spoiler: Spoiler, world: World, checked: dict[HintAre
 
         location = random.choice(locations)
         mark_checked(checked, location.name)
-        item_text = get_hint(get_item_generic_name(location.item), world.settings.clearer_hints).text
+        item_text = item_hint_text(location.item, world.settings.clearer_hints, False)
 
         hint_area = HintArea.at(location)
         if world.hint_dist_user.get('vague_named_items', False):
@@ -944,7 +937,7 @@ def get_specific_item_hint(spoiler: Spoiler, world: World, checked: dict[HintAre
 
         location = random.choice(locations)
         mark_checked(checked, location.name)
-        item_text = get_hint(get_item_generic_name(location.item), world.settings.clearer_hints).text
+        item_text = item_hint_text(location.item, world.settings.clearer_hints, False)
 
         hint_area = HintArea.at(location)
         if world.hint_dist_user.get('vague_named_items', False):
@@ -973,7 +966,7 @@ def get_random_location_hint(spoiler: Spoiler, world: World, checked: dict[HintA
 
     location = random.choice(locations)
     mark_checked(checked, location.name)
-    item_text = get_hint(get_item_generic_name(location.item), world.settings.clearer_hints).text
+    item_text = item_hint_text(location.item, world.settings.clearer_hints, True)
 
     hint_area = HintArea.at(location)
     if hint_area.is_dungeon:
@@ -1021,7 +1014,7 @@ def get_specific_hint(spoiler: Spoiler, world: World, checked: dict[HintArea | s
         location_text = hint.text
     if '#' not in location_text:
         location_text = '#%s#' % location_text
-    item_text = get_hint(get_item_generic_name(location.item), world.settings.clearer_hints).text
+    item_text = item_hint_text(location.item, world.settings.clearer_hints, True)
 
     return GossipText('%s #%s#.' % (location_text, item_text), ['Red', 'Green'], [location.name], [location.item.name]), [location]
 
@@ -1099,7 +1092,7 @@ def get_specific_multi_hint(spoiler: Spoiler, world: World, checked: dict[HintAr
             gossip_string = gossip_string + '#%s# '
 
     items = [location.item for location in locations]
-    text_segments = [multi_text] + [get_hint(get_item_generic_name(item), world.settings.clearer_hints).text for item in items]
+    text_segments = [multi_text] + [item_hint_text(item, world.settings.clearer_hints, True) for item in items]
     return GossipText(gossip_string % tuple(text_segments), colors, [location.name for location in locations], [item.name for item in items]), locations
 
 
@@ -1499,8 +1492,8 @@ def build_world_gossip_hints(spoiler: Spoiler, world: World, checked_locations: 
                 location_text = get_hint(hint.name, world.settings.clearer_hints).text
             if '#' not in location_text:
                 location_text = '#%s#' % location_text
-            first_item_text = get_hint(get_item_generic_name(first_location.item), world.settings.clearer_hints).text
-            second_item_text = get_hint(get_item_generic_name(second_location.item), world.settings.clearer_hints).text
+            first_item_text = item_hint_text(first_location.item, world.settings.clearer_hints, True)
+            second_item_text = item_hint_text(second_location.item, world.settings.clearer_hints, True)
             add_hint(spoiler, world, stone_groups, GossipText('%s #%s# and #%s#.' % (location_text, first_item_text, second_item_text), ['Red', 'Green', 'Green'], [first_location.name, second_location.name], [first_location.item.name, second_location.item.name]), hint_dist['dual_always'][1], [first_location, second_location], force_reachable=True, hint_type='dual_always')
             logging.getLogger('').debug('Placed dual_always hint for %s.', hint.name)
 
@@ -1520,7 +1513,7 @@ def build_world_gossip_hints(spoiler: Spoiler, world: World, checked_locations: 
                 location_text = get_hint(location.name, world.settings.clearer_hints).text
             if '#' not in location_text:
                 location_text = '#%s#' % location_text
-            item_text = get_hint(get_item_generic_name(location.item), world.settings.clearer_hints).text
+            item_text = item_hint_text(location.item, world.settings.clearer_hints, True)
             add_hint(spoiler, world, stone_groups, GossipText('%s #%s#.' % (location_text, item_text), ['Red', 'Green'], [location.name], [location.item.name]), hint_dist['always'][1], [location], force_reachable=True, hint_type='always')
             logging.getLogger('').debug('Placed always hint for %s.', location.name)
 
@@ -1848,7 +1841,7 @@ def build_misc_item_hints(world: World, messages: list[Message], allow_duplicate
                 if item == data['default_item']:
                     text = data['default_item_text'].format(area=area)
                 else:
-                    text = data['custom_item_text'].format(area=area, item=get_hint(get_item_generic_name(location.item), world.settings.clearer_hints).text)
+                    text = data['custom_item_text'].format(area=area, item=item_hint_text(location.item, world.settings.clearer_hints, False))
             elif 'custom_item_fallback' in data:
                 if 'default_item_fallback' in data and item == data['default_item']:
                     text = data['default_item_fallback']
@@ -1858,7 +1851,7 @@ def build_misc_item_hints(world: World, messages: list[Message], allow_duplicate
                 text = get_hint('Validation Line', world.settings.clearer_hints).text
                 for location in world.get_filled_locations():
                     if location.name == 'Ganons Tower Boss Key Chest':
-                        text += f"#{get_hint(get_item_generic_name(location.item), world.settings.clearer_hints).text}#"
+                        text += f"#{get_item_hint_name(location.item, world.settings.clearer_hints, world.settings.world_count > 1)}#"
                         break
             for find, replace in data.get('replace', {}).items():
                 text = text.replace(find, replace)
@@ -1877,7 +1870,7 @@ def build_misc_location_hints(world: World, messages: list[Message]) -> None:
             if hint_type in world.misc_hint_location_items and hint_type in world.settings.misc_hints:
                 item = world.misc_hint_location_items[hint_type]
                 text = data['location_text'].format(
-                    item=get_hint(get_item_generic_name(item), world.settings.clearer_hints).text,
+                    item=item_hint_text(item, world.settings.clearer_hints, True),
                     poe_points=poe_points,
                 )
             else:
@@ -1889,7 +1882,7 @@ def build_misc_location_hints(world: World, messages: list[Message]) -> None:
                 if hint_type in world.misc_hint_location_items:
                     item = world.misc_hint_location_items[hint_type]
                     text = data['location_text'].format(
-                        item=get_hint(get_item_generic_name(item), world.settings.clearer_hints).text,
+                        item=get_item_hint_text(item, world.settings.clearer_hints, True),
                     )
             update_message_by_id(messages, data['id'], str(GossipText(text, ['Green'], prefix='')), data['text_style'])
 
@@ -1901,17 +1894,17 @@ def build_misc_dual_hints(world: World, messages: list[Message]) -> None:
         if hint_type1 in world.settings.misc_hints and hint_type1 in world.misc_hint_location_items:
             if hint_type2 in world.settings.misc_hints and hint_type2 in world.misc_hint_location_items:
                 text = data['location_text'].format(
-                    item_1=get_hint(get_item_generic_name(item_1), world.settings.clearer_hints).text,
-                    item_2=get_hint(get_item_generic_name(item_2), world.settings.clearer_hints).text,
+                    item_1=item_hint_text(item_1, world.settings.clearer_hints, True),
+                    item_2=item_hint_text(item_2, world.settings.clearer_hints, True),
                 )
             else:
                 text = misc_location_hint_table[hint_type1]['location_text'].format(
-                    item=get_hint(get_item_generic_name(item_1), world.settings.clearer_hints).text,
+                    item=item_hint_text(item_1, world.settings.clearer_hints, True),
                 )
         else:
             if hint_type2 in world.settings.misc_hints and hint_type2 in world.misc_hint_location_items:
                 text = misc_location_hint_table[hint_type2]['location_text'].format(
-                    item=get_hint(get_item_generic_name(item_2), world.settings.clearer_hints).text,
+                    item=item_hint_text(item_2, world.settings.clearer_hints, True),
                 )
             else:
                 text = data['location_fallback']

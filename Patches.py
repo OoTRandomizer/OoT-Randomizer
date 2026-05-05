@@ -11,9 +11,9 @@ from typing import Optional, Any
 
 from Cutscenes import patch_cutscenes, patch_wondertalk2
 from Entrance import Entrance
-from HintList import get_hint
+from HintList import item_hint_text
 from Hints import GossipText, HintArea, write_gossip_stone_hints, build_altar_hints, \
-        build_ganon_text, build_misc_item_hints, build_misc_location_hints, build_misc_dual_hints, get_simple_hint_no_prefix, get_item_generic_name
+        build_ganon_text, build_misc_item_hints, build_misc_location_hints, build_misc_dual_hints, get_simple_hint_no_prefix
 from Item import Item
 from ItemList import REWARD_COLORS
 from ItemPool import reward_list, song_list, trade_items, child_trade_items
@@ -1213,7 +1213,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         new_message = "\x08Princess Ruto is a \x05\x43FOOL\x05\x40!\x01But why Princess Ruto?\x02"
     else:
         jabu_item = location.item
-        reward_text = get_hint(get_item_generic_name(location.item), True).text
+        reward_text = item_hint_text(location.item, True, True)
         reward_color = REWARD_COLORS.get(location.item.name, 'Blue')
         new_message = f"\x08Princess Ruto got \x01\x05{COLOR_MAP[reward_color]}{reward_text}\x05\x40!\x01But why Princess Ruto?\x02"
     update_message_by_id(messages, 0x4050, new_message)
@@ -1582,7 +1582,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             update_message_by_id(messages, 0x405E, "\x1AChomp chomp chomp...\x01We have... \x05\x41a mysterious item\x05\x40! \x01Do you want it...huh? Huh?\x04\x05\x41\x0860 Rupees\x05\x40 and it's yours!\x01Keyahahah!\x01\x1B\x05\x42Yes\x01No\x05\x40\x02")
         else:
             location = world.get_location("ZR Magic Bean Salesman")
-            item_text = get_hint(get_item_generic_name(location.item), True).text
+            item_text = item_hint_text(location.item, True, True)
             wrapped_item_text = line_wrap(item_text, False, False, False)
             if wrapped_item_text != item_text:
                 update_message_by_id(messages, 0x405E, "\x1AChomp chomp chomp...We have...\x01\x05\x41" + wrapped_item_text + "\x05\x40!\x04\x05\x41\x0860 Rupees\x05\x40 and it's yours!\x01Keyahahah!\x01\x1B\x05\x42Yes\x01No\x05\x40\x02")
@@ -1600,7 +1600,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             update_message_by_id(messages, 0x6077, "\x06\x41Well Come!\x04I am selling stuff, strange and \x01rare, from all over the world to \x01everybody.\x01Today's special is...\x04A mysterious item! \x01Intriguing! \x01I won't tell you what it is until \x01I see the money....\x04How about \x05\x41200 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
         else:
             location = world.get_location("Wasteland Bombchu Salesman")
-            item_text = get_hint(get_item_generic_name(location.item), True).text
+            item_text = item_hint_text(location.item, True, True)
             wrapped_item_text = line_wrap(item_text, False, False, False)
             if wrapped_item_text != item_text:
                 update_message_by_id(messages, 0x6077, "\x06\x41Well Come!\x04I am selling stuff, strange and \x01rare. Today's special is...\x01\x05\x41"+ wrapped_item_text + "\x05\x40!\x04How about \x05\x41200 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
@@ -1616,7 +1616,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             update_message_by_id(messages, 0x304F, "How about buying this cool item for \x01200 Rupees?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
         else:
             location = world.get_location("GC Medigoron")
-            item_text = get_hint(get_item_generic_name(location.item), True).text
+            item_text = item_hint_text(location.item, True, True)
             wrapped_item_text = line_wrap(item_text, False, False, False)
             if wrapped_item_text != item_text:
                 update_message_by_id(messages, 0x304F, "For 200 Rupees, how about buying...\x04\x05\x41" + wrapped_item_text + "\x05\x40?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
@@ -1628,7 +1628,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             update_message_by_id(messages, 0x500C, "Mysterious item! How about\x01\x05\x41100 Rupees\x05\x40?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
         else:
             location = world.get_location("Kak Granny Buy Blue Potion")
-            item_text = get_hint(get_item_generic_name(location.item), True).text
+            item_text = item_hint_text(location.item, True, True)
             wrapped_item_text = line_wrap(item_text, False, False, False)
             if wrapped_item_text != item_text:
                 update_message_by_id(messages, 0x500C, "How about \x05\x41100 Rupees\x05\x40 for...\x04\x05\x41"+ wrapped_item_text +"\x05\x40?\x01\x1B\x05\x42Buy\x01Don't buy\x05\x40\x02")
@@ -1647,7 +1647,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             update_message_by_id(messages, 0x6D, "I seem to have misplaced my\x01keys, but I have a fun item to\x01sell instead.\x04How about \x05\x4110 Rupees\x05\x40?\x01\x01\x1B\x05\x42Buy\x01Don't Buy\x05\x40\x02")
         else:
             location = world.get_location("Market Treasure Chest Game Salesman")
-            item_text = get_hint(get_item_generic_name(location.item), True).text
+            item_text = item_hint_text(location.item, True, True)
             wrapped_item_text = line_wrap(item_text, False, False, False)
             if wrapped_item_text != item_text:
                 update_message_by_id(messages, 0x6D, "I seem to have misplaced my\x01keys, but I have a fun item to\x01sell instead.\x01How about \x05\x4110 Rupees\x05\x40 for...\x04\x05\x41" + wrapped_item_text + "\x05\x40?\x01\x1B\x05\x42Buy\x01Don't Buy\x05\x40\x02")

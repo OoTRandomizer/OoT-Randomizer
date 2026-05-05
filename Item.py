@@ -191,6 +191,20 @@ class Item:
             return False
         return self.name in self.world.goal_items
 
+    @property
+    def shuffled_across_worlds(self) -> bool:
+        if self.world.settings.world_count == 1:
+            return False
+
+        if self.name == 'Triforce Piece':
+            return False
+        if self.type == 'Song':
+            return self.world.settings.shuffle_song_items == 'any'
+        if self.type == 'Token':
+            return self.world.settings.tokensanity != 'off'
+
+        return not self.unshuffled_dungeon_item
+
     def __str__(self) -> str:
         return self.name
 
