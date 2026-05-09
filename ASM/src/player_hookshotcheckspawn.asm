@@ -1,5 +1,5 @@
 Player_HookshotCheckActorSpawn:
-    bnez    v0,@@Return     ; If Hookshot actor spawned, 
+    bnez    v0,@@Return     ; If Hookshot actor spawned,
     sw      v0,924(a1)      ; set it as heldActor and continue
 
     addiu   sp,sp,-24
