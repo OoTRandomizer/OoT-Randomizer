@@ -8,6 +8,10 @@ CFLAGS = -O1 -G0 -fno-reorder-blocks -march=vr4300 -mtune=vr4300 -mabi=32 -mno-g
 	-mexplicit-relocs
 CPPFLAGS = -DF3DEX_GBI_2
 
+ifdef DEBUG_MODE
+  CFLAGS += -DDEBUG_MODE=1
+endif
+
 OUTDIR := build
 OBJDIR := build/bin
 SRCDIR := c
