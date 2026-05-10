@@ -1391,14 +1391,6 @@ nop
 .orga 0xD12F78
     li  t7, 0
 
-;li v1, 5
-.orga 0xE29388
-    j   override_saria_song_check
-
-;lh v0, 0xa4(t6)       ; v0 = scene
-.orga 0xE2A044
-    jal  set_saria_song_flag
-
 ; li a1, 3
 .orga 0xDB532C
     jal override_song_of_time
@@ -4162,3 +4154,4 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/ovl_en_okarina_tag.asm"
 .include "hacks/sound.asm"
 .include "hacks/z_player.asm"
+.include "hacks/z_en_sa.asm"
