@@ -1,15 +1,15 @@
 Player_FrozenElectrifiedMagicReset:
-    addiu   sp,sp,-8                    ; Extra -4 because Magic_Reset stores at (sp) without decreasing sp
-    sw      ra,4(sp)
+    addiu   sp,sp,-24
+    sw      ra,16(sp)
     li      t4,4                        ; MAGIC_STATE_METER_FLASH_2 (waiting for consume)
     la      t5,SAVE_CONTEXT
     lh      t6,5104(t5)                 ; gSaveContext.magicState
     bnel    t4,t6,@@MagicResetReturn    ; Reset if flash 2 state
-    addiu   sp,sp,8
+    addiu   sp,sp,24
     jal     Magic_Reset                 ; Call vanilla magic reset
     nop
-    lw      ra,4(sp)
-    addiu   sp,sp,8
+    lw      ra,16(sp)
+    addiu   sp,sp,24
 @@MagicResetReturn:                     ; If other state, ra is unchanged, don't need to load it
     jr      ra
     li      a1,255                      ; Displaced
