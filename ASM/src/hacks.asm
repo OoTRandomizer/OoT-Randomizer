@@ -3495,41 +3495,6 @@ courtyard_guards_kill:
     j    malon_reload
 
 ;==================================================================================================
-; Clean Up Big Octo Room For Multiple Visits
-;==================================================================================================
-;make link drop ruto if "visited big octo" flag is set
-;Replaces: lh     t9, 0x1C(s0)
-;          lh     t6, 0x1C(s0)
-.orga 0xD4BCB0
-    jal    drop_ruto
-    lh     t9, 0x1C(s0)
-
-;kill Demo_Effect if "visited big octo" flag is set
-;Replaces: sw     a1, 0x64(sp)
-;          lh     v0, 0x1C(s0)
-.orga 0xCC85B8
-    jal    check_kill_demoeffect
-    sw     a1, 0x64(sp)
-
-;==================================================================================================
-; Override appearance of Zoras Sapphire spiritual stone inside Jabu
-;==================================================================================================
-.headersize(0x8092ACC0 - 0x00CC8430)
-; Increase the size of DemoEffect actor to store override
-.org 0x8093019c
-; Replaces: .d32 0x00000190
-.d32 0x000001C0
-
-; Hook the function DemoEffect_DrawJewel
-.org 0x8092e3f8
-; Replaces:
-;   addiu   sp, sp, -0x78
-;   sw      s3, 0x40(sp)
-    j   DemoEffect_DrawJewel_Hook
-    nop
-DemoEffect_DrawJewel_AfterHook:
-
-;==================================================================================================
 ; Use Sticks and Masks as Adult
 ;==================================================================================================
 ; Deku Stick
@@ -4162,3 +4127,5 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/ovl_en_okarina_tag.asm"
 .include "hacks/sound.asm"
 .include "hacks/z_player.asm"
+.include "hacks/z_demo_effect.asm"
+.include "hacks/z_bg_bdan_objects.asm"
