@@ -15,8 +15,8 @@
 ;================================================================================
 ; If receiving Gerudo Card in Gerudo Fortress, load new minimap
 ;================================================================================
-; Replaces: bnezl	t4,800e14a0
-;           lw	    t2,52(sp)
+; Replaces: bnezl   t4,800e14a0
+;           lw      t2,52(sp)
 .org 0x800e13d8     ; in Message_Update
     jal     Message_GerudoCardMinimap
-    lw	    a0,96(sp)
+    lw      a0,96(sp)
