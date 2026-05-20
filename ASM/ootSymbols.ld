@@ -1,5 +1,6 @@
 /* Addresses should be listed in order */
 z64_EquippedItemOutlineTex = 0x2000E00;
+DmaMgr_RequestAsync = 0x80000d28;
 Flags_GetSwitch = 0x8002049C;
 Flags_SetSwitch = 0x800204D0;
 Flags_UnsetSwitch = 0x80020510;
@@ -16,6 +17,7 @@ Flags_SetTempClear = 0x800206AC;
 Flags_UnsetTempClear = 0x800206C8;
 Flags_GetCollectible = 0x800206E8;
 Flags_SetCollectible = 0x8002071C;
+Actor_SpawnEntry = 0x800255c4;
 Actor_SetColorFilter = 0x80027090;
 CutsceneFlags_Get = 0x8005991C;
 z64_Gfx_SetupDL_42Opa = 0x8007E868;
@@ -27,6 +29,7 @@ z64_ItemIcons = 0x800F8D2C;
 z64_SfxDefaultPos = 0x80104394;
 z64_SfxDefaultFreqAndVolScale = 0x801043A0;
 z64_SfxDefaultReverb = 0x801043A8;
+gMapData = 0x8011bf10;
 KaleidoScope_DrawAmmoCount = 0x8038EA10;
 KaleidoScope_SetCursorVtx = 0x8038EF94;
 KaleidoScope_QuadTextureIA8 = 0x80394200;

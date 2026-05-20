@@ -1,141 +1,99 @@
-                      ; ID      x       y       z       xrot    yrot    zrot    var
-Gossip_Actor: .halfword 0x01B9, 0xFCD5, 0xFB25, 0x1AD2, 0x0000, 0xF2DC, 0x0000, 0x8022
+                                     ; ID      x       y       z       xrot    yrot    zrot    var
+HyliaWater_GossipActorEntry: .halfword 0x01B9, 0xFCD5, 0xFB25, 0x1AD2, 0x0000, 0xF2DC, 0x0000, 0x8022
 
-
-Hit_Gossip_Stone:
-    addi    sp, sp, -0x14
-    sw      ra, 0x10(sp)
-
-    ; If special flag is not set, then display time as normal
-    lhu     t0, 0x001C(s0)
-    andi    t0, t0, 0x8000
-    beqz    t0, @@show_time
+EnGs_HitGossipStone:
+    lhu     t0,0x1C(s0)         ; s0 = this EnGs
+    andi    t0,t0,0x8000        ; If actor variable/params is not set bit 0x8000,
+    beqz    t0,@@ShowTime       ; then display time as normal
     nop
 
-    ; Check if control over lake is enabled
-    ; If morpha is alive, do nothing
-    li      v1, SAVE_CONTEXT
-    lhu     t5, 0x0EDC(v1)
-    andi    t5, t5, 0x0400     ;t5 = morpha flag
-    beqz    t5, @@return
-    nop
+    la      v1,SAVE_CONTEXT
+    lhu     t5,0x0EDC(v1)
+    andi    t5,t5,0x0400        ; Morpha dead flag/used Water Temple blue warp
+    beqz    t5,@@Return         ; If Morpha is not defeated, do nothing
 
-    ; Only Adult has control
-    lw      t6, 0x0004(v1)
-    bnez    t6, @@return
-    nop
+    lb      t5,0x01D2A(a0)      ; Else, trigger water fill/drain
+    ori     t6,t5,1             ; Set scene switch flag #0
+    b       @@Return
+    sb      t6,0x01D2A(a0)
 
-@@trigger_fill:
-    ; Set switch flag #0
-    lhu     t5, 0x01D2A(a0)     ;t5 = switch flags
-    ori     t6, t5, 0x0001
-    sh      t6, 0x01D2A(a0)     ; clear switch flag #0
-    b       @@return
+@@ShowTime:
+    addiu   sp,sp,-24
+    sw      ra,16(sp)
+    jal     0x800DCE14          ; Message_StartTextbox
     nop
+    lw      ra,16(sp)
+    addiu   sp,sp,24
 
-@@show_time:
-    jal     0x800DCE14
-    nop
-
-@@return:
-    lw      ra, 0x10(sp)
-    addi    sp, sp, 0x14
+@@Return:
     jr      ra
     nop
 
+HyliaWater_SetupWaterFunction:
+    la      v1,SAVE_CONTEXT
+    lw      t6,4(v1)            ; Age
+    bnezl   t6,@@Return         ; Return if child
+    sw      t2,340(s0)          ; Set empty DoNothing as action function
 
-Check_Fill_Lake:
-    lw      t6, 0x0004(v1)     ; otherwise return if age is child
+    addiu   sp,sp,-24           ; Adult: spawn Gossip + set action function
+    sw      ra,16(sp)
+    lhu     t5,0x0EDC(v1)       ; Check Morpha dead flag/used Water Temple blue warp
+    andi    t5,t5,0x0400
+    beqzl   t5,@@SpawnGossip    ; If Morpha not dead, still spawn Gossip +
+    sw      t1,340(s0)          ; set DoNothing as action function (from t1 for adult)
+
+    la      t2,HyliaWater_WaterFunction
+    sw      t2,340(s0)          ; If defeated, set water level control action function
+@@SpawnGossip:
+    la      a1,HyliaWater_GossipActorEntry
+    lw      a2,92(sp)           ; a2 play, old sp 68 + added 24
+    jal     Actor_SpawnEntry
+    addiu   a0,a2,0x1C24        ; a0 actorCtx
+    lw      ra,16(sp)
+    addiu   sp,sp,24
+@@Return:
     jr      ra
     nop
 
-
-Fill_Lake_Destroy:
-    ; If this is the water plane, setup the
-    ; fill code instead of destroying
-    lh  t0, 0x001C(a0)
-    li  at, 0x0002
-    bne t0, at, @@destroy
-    nop
-
-    ; if child then destroy
-    li      v0, SAVE_CONTEXT
-    lw      t3, 0x0004(v0)
-    bnez    t3, @@return
-    nop
-
-@@setup_fill_control:
-    ; Set fill code for main loop
-    lui     t1, hi(Fill_Lake)
-    addiu   t1, t1, lo(Fill_Lake)
-    sw      t1, 0x0154(a0)
-
-    ; Spawn relevant actors
-    addiu   sp, sp, -0x20
-    sw      ra, 0x10(sp)
-    sw      a1, 0x14(sp)
-
-    ; Spawn gossip stone
-    lw      a2, 0x14(sp)
-    li      a1, Gossip_Actor
-    jal 0x800255C4
-    addiu   a0, a2, 0x1C24
-
-    lw      ra, 0x10(sp)
-    addiu   sp, sp, 0x20
-    b       @@return
-    nop
-
-@@destroy:
-    sw  a0, 0x0000(sp)
-    sw  a1, 0x0004(sp)
-
-@@return:
-    jr  $ra
-    nop
-
-
-Fill_Lake:
+HyliaWater_WaterFunction:
     addiu   sp, sp, -0x28
     sw      s0, 0x0020(sp)
     sw      ra, 0x0024(sp)
-    sw      a1, 0x002C(sp)
-    or      s0, a0, zero       ;s0 = actor*
+    sw      a1, 0x002C(sp)      ; a1 = play
+    or      s0, a0, zero       ;s0 = actor
+    la      v0, SAVE_CONTEXT
 
-    lwc1    f0, 0x015C(s0)     ; f0 = water displacement
-
-    li      at, 0xC4A42000      ;at = water offset (-1313.0)
-    mtc1    at, f2
-
-    ; if morpha is not dead, then return
-    li      v0, SAVE_CONTEXT
-    lhu     t3, 0x0EDC(v0)
-    andi    t4, t3, 0x0400     ;t4 = morpha flag
-    lhu     t3, 0x0EE0(v0)
-    beqz    t4, @@return
-    nop
-    addiu   t7, zero, 0xFBA7   ;t7 = FFFFFBA7 (-0x0459)
-
-@@morpha_dead:
     ; toggle the fill flag if the ocarina spot switch flag was set
-    lhu     t5, 0x01D2A(a1)     ;t5 = switch flags
+    lb      t5, 0x01D2A(a1)     ;t5 = switch flags
     andi    t6, t5, 0x0001
     beqz    t6, @@no_trigger    ; switch flag #0
-    nop
-    andi    t5, t5, 0xFFFE
-    sh      t5, 0x01D2A(a1)     ; clear switch flag #0
+    andi    t5, t5, 0xFE
+
+    sb      t5, 0x01D2A(a1)     ; clear switch flag #0
+    lhu     t3, 0x0EE0(v0)
     li      at, 0x0200
     xor     t3, t3, at
     sh      t3, 0x0EE0(v0)      ; toggle fill flag
 
-@@no_trigger:
+    sw      a2,48(sp)           ; load new minimap
+    sw      v0,0x28(sp)
+    jal     LakeHylia_ChangeMinimap
+    move    a0,a1               ; play
+    move    a0,s0
+    lw      a2,48(sp)
+    lw      v0,0x28(sp)
+
     ; set target to fill or drain
+@@no_trigger:
+    lwc1    f0, 0x015C(s0)     ; f0 = water displacement
+    li      at, 0xC4A42000     ; at = water offset (-1313.0)
+    lhu     t3, 0x0EE0(v0)
     andi    t4, t3, 0x0200     ;t3 = lake filled flag
     beqz    t4, @@draining
-    nop
+    mtc1    at, f2
 
 @@filling:
-    li     at, 0x00000000
+    move   at, zero
     mtc1   at, f4              ;f4 = target displacement [0.00]
     lui    a2, 0x4080
     mtc1   a2, f6              ;f6 = fill speed [4.00]
@@ -144,10 +102,10 @@ Fill_Lake:
     c.lt.s f8, f4
     nop
     b      @@check_fill_max
-    nop
+    addiu   t7, zero, 0xFBA7   ;t7 = FFFFFBA7 (-0x0459)
 
 @@draining:
-    li     at, 0xC42A0000
+    lui    at, 0xC42A
     mtc1   at, f4              ;f4 = target displacement [-680.00]
     lui    a2, 0xC080
     mtc1   a2, f6              ;f6 = fill speed [-4.00]
@@ -161,14 +119,12 @@ Fill_Lake:
     ; if next fill level would pass the taget, then set to target
     ; this will skip the audio as well
     bc1f    @@skip_fill_update
-    nop
+    li      a1, 0x205E      ; argument to sound function, ok as delay
 
-    ; update the fill level with the new value
-    mov.s   f4, f8
     ; Play sound
     jal     0x80023108
-    li      a1, 0x205E
-    or      a0, s0, zero
+    mov.s   f4, f8          ; update the fill level with the new value
+    or      a0, s0, zero    ; restore
 
 @@skip_fill_update:
     swc1    f4, 0x015C(s0)
@@ -190,6 +146,5 @@ Fill_Lake:
 @@return:
     lw      ra, 0x0024(sp)
     lw      s0, 0x0020(sp)
-    addiu   sp, sp, 0x0028
     jr      ra
-    nop
+    addiu   sp, sp, 0x0028

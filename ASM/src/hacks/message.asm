@@ -11,3 +11,12 @@
 ; Replaces  li  t7,1      (msgCtx->stateTimer = 1)
 .org 0x800debb8     ; in Message_DrawMain
     li  t7,2        ; Add one extra frame between Ocarina effect and Nayru killed
+
+;================================================================================
+; If receiving Gerudo Card in Gerudo Fortress, load new minimap
+;================================================================================
+; Replaces: bnezl	t4,800e14a0
+;           lw	    t2,52(sp)
+.org 0x800e13d8     ; in Message_Update
+    jal     Message_GerudoCardMinimap
+    lw	    a0,96(sp)
