@@ -32,6 +32,8 @@ extern uint8_t CFG_DPAD_ON_THE_LEFT;
                      0x00200000 | \
                      0x08000000)
 
+#define PLAYER_STATE3_FLYING_WITH_HOOKSHOT (1 << 7)
+
 extern uint8_t CFG_ADULT_TRADE_SHUFFLE;
 extern uint8_t CFG_CHILD_TRADE_SHUFFLE;
 
@@ -60,6 +62,7 @@ extern uint8_t CFG_CHILD_TRADE_SHUFFLE;
                             (!CAN_DRAW_DUNGEON_INFO || !CFG_DPAD_DUNGEON_INFO_ENABLE) && \
                             (!CAN_DRAW_WORLD_INFO || !CFG_DPAD_DUNGEON_INFO_ENABLE) && \
                             !(debug_menu_is_drawn()))
+
 // Not in pause menu
 // Ocarina in inventory
 // Scenes ocarina restrictions, specific to each scene
@@ -71,7 +74,7 @@ extern uint8_t CFG_CHILD_TRADE_SHUFFLE;
                             (z64_file.items[Z64_SLOT_OCARINA] == Z64_ITEM_FAIRY_OCARINA || z64_file.items[Z64_SLOT_OCARINA] == Z64_ITEM_OCARINA_OF_TIME) && \
                             !z64_game.restriction_flags.ocarina && \
                             ((z64_link.state_flags_1 & BLOCK_ITEMS) == 0) && \
-                            (!(z64_link.state_flags_3 & (1 << 7))) && \
+                            (!(z64_link.state_flags_3 & PLAYER_STATE3_FLYING_WITH_HOOKSHOT)) && \
                             z64_game.bombchuBowlingStatus == 0 && \
                             z64_game.shootingGalleryStatus == 0)
 
