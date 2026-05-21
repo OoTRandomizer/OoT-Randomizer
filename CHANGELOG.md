@@ -1,5 +1,9 @@
 # Dev
 
+_(No changes yet)_
+
+# 9.1
+
 ## New features
 * New hint distribution field `boss_goal_names` can be set to `false` to force dungeon reward names to be used for goal text instead of boss names even if dungeon rewards are on bosses.
 * The `Free Reward from Rauru` has a new `Yes (Forced)` option which forces the check to be a dungeon reward even if these are otherwise shuffled.
