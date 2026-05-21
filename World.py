@@ -183,6 +183,8 @@ class World:
             self.hint_dist_user['upgrade_hints'] = 'off'
         if 'combine_trial_hints' not in self.hint_dist_user:
             self.hint_dist_user['combine_trial_hints'] = False
+        if 'boss_goal_names' not in self.hint_dist_user:
+            self.hint_dist_user['boss_goal_names'] = True
 
         # Validate hint distribution format
         # Originally built when I was just adding the type distributions
@@ -242,7 +244,7 @@ class World:
 
         self.always_hints: list[str] = [hint.name for hint in get_required_hints(self)]
 
-        self.dungeon_rewards_hinted: bool = settings.shuffle_mapcompass != 'remove' if 'compass_reward' in settings.enhance_map_compass else 'altar' in settings.misc_hints
+        self.dungeon_rewards_hinted: bool = settings.shuffle_compass != 'remove' if 'compass_reward' in settings.enhance_map_compass else 'altar' in settings.misc_hints
         self.misc_hint_items: dict[str, str] = {hint_type: self.hint_dist_user.get('misc_hint_items', {}).get(hint_type, data['default_item']) for hint_type, data in misc_item_hint_table.items()}
         self.misc_hint_locations: dict[str, str] = {hint_type: self.hint_dist_user.get('misc_hint_locations', {}).get(hint_type, data['item_location']) for hint_type, data in misc_location_hint_table.items()}
         self.state: State = State(self)
@@ -666,9 +668,12 @@ class World:
             for item in dungeon_items:
                 shuffle_setting = None
                 dungeon_collection = None
-                if item.map or item.compass:
-                    dungeon_collection = dungeon.dungeon_items
-                    shuffle_setting = self.settings.shuffle_mapcompass
+                if item.map:
+                    dungeon_collection = dungeon.maps
+                    shuffle_setting = self.settings.shuffle_map
+                elif item.compass:
+                    dungeon_collection = dungeon.compasses
+                    shuffle_setting = self.settings.shuffle_compass
                 elif item.smallkey:
                     dungeon_collection = dungeon.small_keys
                     shuffle_setting = self.settings.shuffle_smallkeys
@@ -699,18 +704,24 @@ class World:
             for location in region.locations:
                 if location.type == 'Shop':
                     if location.name[-1:] in shop_item_indexes[:shop_item_count]:
-                        if self.settings.special_deal_price_distribution == 'vanilla':
-                            self.shop_prices[location.name] = ItemInfo.items[location.vanilla_item].price
-                        elif self.settings.special_deal_price_max < self.settings.special_deal_price_min:
-                            raise ValueError('Maximum special deal price is lower than minimum, perhaps you meant to swap them?')
-                        elif self.settings.special_deal_price_max == self.settings.special_deal_price_min:
-                            self.shop_prices[location.name] = self.settings.special_deal_price_min
-                        elif self.settings.special_deal_price_distribution == 'betavariate':
-                            self.shop_prices[location.name] = self.settings.special_deal_price_min + int(random.betavariate(1.5, 2) * (self.settings.special_deal_price_max - self.settings.special_deal_price_min) / 5) * 5
-                        elif self.settings.special_deal_price_distribution == 'uniform':
-                            self.shop_prices[location.name] = random.randrange(self.settings.special_deal_price_min, self.settings.special_deal_price_max + 1, 5)
-                        else:
-                            raise NotImplementedError(f'Unimplemented special deal distribution: {self.settings.special_deal_price_distribution}')
+                        self.shop_prices[location.name] = self.new_shop_price(location)
+
+    def new_shop_price(self, location: Location) -> int:
+        if self.settings.special_deal_price_distribution == 'vanilla':
+            price = location.price
+            if price is None:
+                price = ItemInfo.items[location.vanilla_item].price
+            return price
+        elif self.settings.special_deal_price_max < self.settings.special_deal_price_min:
+            raise ValueError('Maximum special deal price is lower than minimum, perhaps you meant to swap them?')
+        elif self.settings.special_deal_price_max == self.settings.special_deal_price_min:
+            return self.settings.special_deal_price_min
+        elif self.settings.special_deal_price_distribution == 'betavariate':
+            return self.settings.special_deal_price_min + int(random.betavariate(1.5, 2) * (self.settings.special_deal_price_max - self.settings.special_deal_price_min) / 5) * 5
+        elif self.settings.special_deal_price_distribution == 'uniform':
+            return random.randrange(self.settings.special_deal_price_min, self.settings.special_deal_price_max + 1, 5)
+        else:
+            raise NotImplementedError(f'Unimplemented special deal distribution: {self.settings.special_deal_price_distribution}')
 
     def set_scrub_prices(self) -> None:
         # Get Deku Scrub Locations
@@ -1211,10 +1222,20 @@ class World:
         if not isinstance(location, Location):
             location = self.get_location(location)
 
+        price: Optional[int]
+        if location.price is not None: # special deal
+            price = location.price
+            if item.info.market_price is not None and not (item.info.market_price_non_chu_drops_only and self.settings.free_bombchu_drops) and location.price >= item.info.market_price:
+                # Reduce the frequency of obvious scams by rerolling the price once if it's too high, and taking the lower value.
+                # This affects logic so it should only be applied to refills that are logically irrelevant.
+                # Otherwise there could be seeds with e.g. a wallet that's hinted as logically required for a purchase even though the price was rerolled to no longer require the wallet.
+                price = min(location.price, self.new_shop_price(location))
+        else:
+            price = item.price
+
         location.item = item
         item.location = location
-        item.price = location.price if location.price is not None else item.price
-        location.price = item.price
+        item.price = location.price = price
 
         logging.getLogger('').debug('Placed %s [World %d] at %s [World %d]', item, item.world.id if hasattr(item, 'world') else -1, location, location.world.id if hasattr(location, 'world') else -1)
 
@@ -1359,7 +1380,7 @@ class World:
             # These silver rupees unlock a door to an area that's also reachable with lens
             exclude_item_list.append('Silver Rupee (Bottom of the Well Basement)')
             exclude_item_list.append('Silver Rupee Pouch (Bottom of the Well Basement)')
-        if self.dungeon_mq['Shadow Temple'] and self.settings.shuffle_mapcompass == 'vanilla':
+        if self.dungeon_mq['Shadow Temple'] and self.settings.shuffle_map == 'vanilla':
             # These silver rupees only unlock the map chest
             exclude_item_list.append('Silver Rupee (Shadow Temple Scythe Shortcut)')
             exclude_item_list.append('Silver Rupee Pouch (Shadow Temple Scythe Shortcut)')

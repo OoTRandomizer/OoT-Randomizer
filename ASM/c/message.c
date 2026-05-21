@@ -1,5 +1,4 @@
 #include "message.h"
-#include "z64.h"
 #include "stdbool.h"
 #include "save.h"
 #include "dungeon_info.h"
@@ -26,7 +25,7 @@ char FILENAME_ENCODING[256] = {
 
 extern uint8_t PLAYER_NAMES[256][8];
 extern uint8_t PLAYER_NAME_ID;
-
+uint16_t current_textbox_id;
 // Helper function for adding characters to the decoded message buffer
 void Message_AddCharacter(MessageContext* msgCtx, void* pFont, uint32_t* pDecodedBufPos, uint32_t* pCharTexIdx, uint8_t charToAdd) {
     uint32_t decodedBufPosVal = *pDecodedBufPos;
@@ -187,6 +186,11 @@ bool Message_Decode_Additional_Control_Codes(uint8_t currChar, uint32_t* pDecode
                     break;
                 }
                 case 0x41B:
+                case 0x427: {
+                    // Ganon's Tower
+                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[12].name);
+                    break;
+                }
                 case 0x467:
                 case 0x534:
                 case 0x538:
@@ -195,8 +199,8 @@ bool Message_Decode_Additional_Control_Codes(uint8_t currChar, uint32_t* pDecode
                 case 0x544:
                 case 0x548:
                 case 0x54C: {
-                    // Ganon
-                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[12].name);
+                    // Ganon's Castle
+                    Message_AddString(msgCtx, pFont, pDecodedBufPos, pCharTexIdx, dungeons[13].name);
                     break;
                 }
                 default: {
@@ -212,6 +216,14 @@ bool Message_Decode_Additional_Control_Codes(uint8_t currChar, uint32_t* pDecode
             return false;
         }
     }
+}
+
+void grab_textbox_id(z64_game_t* play, uint16_t textId)
+{
+    // Displaced code
+    Message_OpenText(play, textId);
+
+    current_textbox_id = textId;
 }
 
 uint8_t shooting_gallery_show_message = 0;

@@ -17,3 +17,14 @@ adapt_scarecrow:
     nop
 ; Now we can continue with our comparison between t0 and at
 ; If at != t0, following code will branch to ignore
+
+
+scarecrow_vibrato_fix:
+    ; Displaced code
+    sb      $zero, 0x0000(v1)          ; sCurOcarinaBendIndex = 0;
+    lui     $at, 0x8010
+
+    lui     v0, 0x8010
+    addiu   v0, v0, 0x2230
+    jr      ra
+    sb      $zero, 0x0000(v0)          ; sCurOcarinaVibrato = 0

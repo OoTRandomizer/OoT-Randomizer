@@ -1,3 +1,38 @@
+# 9.1
+
+## New features
+* New hint distribution field `boss_goal_names` can be set to `false` to force dungeon reward names to be used for goal text instead of boss names even if dungeon rewards are on bosses.
+* The `Free Reward from Rauru` has a new `Yes (Forced)` option which forces the check to be a dungeon reward even if these are otherwise shuffled.
+* The `Maps & Compasses` shuffle setting has been split into separate `Maps` and `Compasses` settings.
+* The Farore's Wind text box now distinguishes between Ganon's Castle and Ganon's Tower.
+* New `Water Hop` trick and `BotW Cucco Dive` glitch added to advanced logic.
+* Improve Debug menu with new options.
+
+## Bug fixes
+* Fix a potential softlock when talking to Pierre (the upper scarecrow) as child in Lake Hylia.
+* Fix a generator failure when a dungeon reward is selected as a random starting item.
+* Fix a bug where the starting health capacity in game might be miscalculated when starting with a heart piece.
+* Fix the Chicken (child trade quest item) using the same get item text box as the Pocket Cucco (adult trade quest item).
+* Fix a vanilla bug where playing the ocarina with vibrato before recording the Scarecrow's Song could prevent Pierre from spawning.
+* Fix unshuffled treasure box shop keys showing the wrong item model while inside the chests if `Key Appearance Matches Dungeon` is enabled.
+* Add two missing locations: `Ganons Castle MQ Shadow Trial Explosives Wonderitem` and a `Bombable Fairy` in MQ Jabu.
+* Improve the error message when a settings string from the wrong randomizer version is imported.
+* Fix wrong Goal hints being generated for worlds other than the first in multiworld seeds.
+* Added some missing or incorrectly named locations in advanced logic.
+* Various minor fixes for advanced logic.
+* Fix for advanced logic tricks being cached when switching to glitchless logic.
+* Fix for misc hints when the hinted item was randomly selected as a starting item.
+* Fix a vanilla softlock when starting a cutscene while climbing a ladder.
+
+## Other Changes
+* It is no longer required to have either the goron tunic or the Fewer Tunic Requirements trick for adult to go from the Bolero warp pad to the Fire temple in logic.
+* Further shortening of version number in file select screen.
+* Areas which have all locations hinted will not be selected for important checks hints.
+* Successfully entering a password will now take you back to the file select screen.
+* Refill items sold as special deals are now less likely to cost more than the "market price" of a repeatable purchase.
+* The heart chest texture has been tweaked to display heart icons on the lid rather than triangles.
+* The `Standard Weekly` settings preset and hint distribution have been removed to reflect the end of the weekly races.
+
 # 9.0
 
 ## New Settings and Options

@@ -1090,7 +1090,7 @@ class WorldDistribution:
 
         for iter_world in worlds:
             skipped_locations: list[Location] = []
-            if iter_world.settings.skip_reward_from_rauru:
+            if iter_world.settings.skip_reward_from_rauru in ('free', 'free_forced'):
                 skipped_locations.append(iter_world.get_location('ToT Reward from Rauru'))
             if iter_world.skip_child_zelda:
                 skipped_locations += [iter_world.get_location('HC Zeldas Letter'), iter_world.get_location('Song from Impa')]

@@ -2503,6 +2503,9 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Ganons Castle MQ Water Trial Silver Rupee Red Ice",            ("SilverRupee", 0x0D, (3,0,10), None,                       'Silver Rupee (Ganons Castle Water Trial)', ("Ganon's Castle MQ", "Master Quest", "Silver Rupees",))),
     ("Ganons Castle MQ Water Trial Silver Rupee Above Void",         ("SilverRupee", 0x0D, (3,0,11), None,                       'Silver Rupee (Ganons Castle Water Trial)', ("Ganon's Castle MQ", "Master Quest", "Silver Rupees",))),
 
+    # Ganon's Castle MQ Wonderitems
+    ("Ganons Castle MQ Shadow Trial Explosives Wonderitem",            ("Wonderitem",   0x0D,  (12,0,13), None,                   'Deku Nuts (5)',                         ("Ganon's Castle MQ", "Master Quest", "Wonderitems",))),
+
     # Ganon's Castle Shared
     ("Ganons Tower Boss Key Chest",                                  ("Chest",        0x0A,  0x0B, None,                            'Boss Key (Ganons Castle)',              ("Ganon's Tower", "Vanilla Dungeons", "Master Quest", "Chests",))),
 
@@ -2545,6 +2548,7 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Fairy Pot",                                                    ("Drop",         None,  None, None,                            'Fairy',                                 None)),
     ("Free Fairies",                                                 ("Drop",         None,  None, None,                            'Fairy',                                 None)),
     ("Wall Fairy",                                                   ("Drop",         None,  None, None,                            'Fairy',                                 None)),
+    ("Bombable Fairy",                                               ("Drop",         None,  None, None,                            'Fairy',                                 None)),
     ("Butterfly Fairy",                                              ("Drop",         None,  None, None,                            'Fairy',                                 None)),
     ("Gossip Stone Fairy",                                           ("Drop",         None,  None, None,                            'Fairy',                                 None)),
     ("Bean Plant Fairy",                                             ("Drop",         None,  None, None,                            'Fairy',                                 None)),

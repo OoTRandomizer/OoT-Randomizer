@@ -6,7 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
 import argparse
 import json
 import re
-from subprocess import check_call as call
+from subprocess import check_call as call, CalledProcessError
 from rom_diff import create_diff
 from ntype import BigStream
 from crc import calculate_crc
@@ -49,7 +49,11 @@ if compile_c:
     clist.append(f'MIPS_BINUTILS_PREFIX={mips_binutils_prefix}')
     if dump_obj:
         clist.append('RUN_OBJDUMP=1')
-    call(clist)
+    try:
+        call(clist)
+    except CalledProcessError as e:
+        print(e.output)
+        exit(e.returncode)
 
 if not diff_only:
     os.chdir(run_dir + '/src')

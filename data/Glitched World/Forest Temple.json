@@ -38,8 +38,7 @@
             "Forest Temple Basement": "
                 (Forest_Temple_Jo_and_Beth and Forest_Temple_Amy_and_Meg) or forest_temple_shortcuts
                 or (glitch_forest_temple_basement and can_use(Hover_Boots) and Bombs and can_mega and can_live_dmg(1.0,True,False))",
-            "Forest Temple Falling Room": "can_hover or (can_use(Hover_Boots) and has_explosives and
-                can_live_dmg(0.5,False,True))"
+            "Forest Temple Falling Room": "can_hover or can_hovers_recoil"
         }
     },
     {
@@ -63,7 +62,7 @@
             "Forest Temple Outdoors High Balconies": "can_kill_blue_bubble",
             "Forest Temple NW Outdoors Freestandings": "logic_forest_courtyard_hearts and can_use(Boomerang)",
             # Low grav ?
-            "Forest Temple Outside Upper Ledge": "can_hover or can_megajump"
+            "Forest Temple Outside Upper Ledge": "can_hover or (can_megajump and glitch_clipping)"
         }
     },
     {

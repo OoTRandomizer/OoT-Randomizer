@@ -11,7 +11,7 @@
         "exits": {
             "Root Exits": "is_starting_age or Time_Travel",
             "HC Garden Skippable Locations": "skip_child_zelda",
-            "Beyond Door of Time Skippable Locations": "skip_reward_from_rauru",
+            "Beyond Door of Time Skippable Locations": "skip_reward_from_rauru != 'not_free'",
             # Hack to make ALR work if hideout entrances are unshuffled
             "GF Above Jail Child Locations": "shuffle_gerudo_fortress_heart_piece == 'remove' or not shuffle_hideout_entrances"
         }
@@ -1971,7 +1971,9 @@
                 or
                 (is_child and
                     ( (glitch_navi_dive and can_jumpslash)
-                    or (at_day and (can_isg or Nuts))
+                    or (at_day and glitch_botw_cucco_dive and
+                        (Nuts or (can_shield and (Sticks or Kokiri_Sword or can_use(Megaton_Hammer))))
+                        )
                     )
                 )
                 or
@@ -2771,9 +2773,7 @@
                 is_adult and (Hover_Boots or Hookshot or here(can_plant_bean) or plant_beans or (can_hover and can_use(Goron_Tunic)))",
             "DMC Upper Nearby": "is_adult and (here(can_plant_bean) or plant_beans)",
             # Check boulder color
-            "DMC Fire Temple Entrance": "
-                (is_child and shuffle_dungeon_entrances) or
-                (is_adult and (logic_fewer_tunic_requirements or Goron_Tunic))",
+            "DMC Fire Temple Entrance": "is_adult or shuffle_dungeon_entrances",
             "DMC Pierre Platform": "can_use(Distant_Scarecrow)"
         }
     },
@@ -3460,7 +3460,7 @@
         "region_name": "Kak Redead Grotto",
         "scene": "Kak Redead Grotto",
         "locations": {
-            "Kak ReDead Grotto Chest": "can_kill_redead"
+            "Kak Redead Grotto Chest": "can_kill_redead"
         },
         "exits": {
             "Kakariko Village": "True"

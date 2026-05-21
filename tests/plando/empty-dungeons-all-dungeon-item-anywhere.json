@@ -18,7 +18,8 @@
           "Shadow Temple",
           "Spirit Temple"
         ],
-        "shuffle_mapcompass":                      "keysanity",
+        "shuffle_map":                             "keysanity",
+        "shuffle_compass":                         "keysanity",
         "shuffle_smallkeys":                       "keysanity",
         "shuffle_bosskeys":                        "keysanity"
     }

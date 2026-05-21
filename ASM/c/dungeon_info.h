@@ -13,7 +13,8 @@ typedef struct {
         uint8_t has_map : 1;
     };
     uint8_t skulltulas;
-    char name[11];
+    char short_name[11];
+    char name[22];
     uint8_t silver_rupee_puzzles_vanilla[4];
     uint8_t silver_rupee_puzzles_mq[4];
 } dungeon_entry_t;
@@ -25,7 +26,7 @@ typedef struct {
 } boss_entry_t;
 
 extern int dungeon_count;
-extern dungeon_entry_t dungeons[14];
+extern dungeon_entry_t dungeons[15];
 
 void draw_dungeon_info(z64_disp_buf_t* db);
 void draw_world_info(z64_disp_buf_t* db);

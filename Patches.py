@@ -355,8 +355,22 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     line_len = 21
     version_str = "version " + __version__
-    if len(version_str) > line_len:
-        version_str = "ver. " + __version__
+    if version_str.endswith('.0 Release'):
+        if len(version_str) > line_len:
+            version_str = "version " + __version__[:-len('.0 Release')] + " Release"
+        if len(version_str) > line_len:
+            version_str = "ver. " + __version__[:-len('.0 Release')] + " Release"
+        if len(version_str) > line_len:
+            version_str = "v. " + __version__[:-len('.0 Release')] + " Release"
+        if len(version_str) > line_len:
+            version_str = "v" + __version__[:-len('.0 Release')] + " Release"
+    else:
+        if len(version_str) > line_len:
+            version_str = "ver. " + __version__
+        if len(version_str) > line_len:
+            version_str = "v. " + __version__
+        if len(version_str) > line_len:
+            version_str = "v" + __version__
     rom.write_bytes(rom.sym('VERSION_STRING_TXT'), make_bytes(version_str, 25))
 
     if world.settings.create_spoiler:
@@ -1015,10 +1029,12 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.write_int16s(0x21BD62C, new_gate_opening_guard)  # Adult Night
 
     # start with maps/compasses
-    if world.settings.shuffle_mapcompass == 'startwith':
+    if world.settings.shuffle_map == 'startwith':
+        for dungeon in ('deku', 'dodongo', 'jabu', 'forest', 'fire', 'water', 'spirit', 'shadow', 'botw', 'ice'):
+            save_context.addresses['dungeon_items'][dungeon]['map'].value = True
+    if world.settings.shuffle_compass == 'startwith':
         for dungeon in ('deku', 'dodongo', 'jabu', 'forest', 'fire', 'water', 'spirit', 'shadow', 'botw', 'ice'):
             save_context.addresses['dungeon_items'][dungeon]['compass'].value = True
-            save_context.addresses['dungeon_items'][dungeon]['map'].value = True
 
     # start with silver rupees
     if world.settings.shuffle_silver_rupees == 'remove':
@@ -1269,13 +1285,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
         if world.dungeon_mq['Spirit Temple']: # Patch Spirit MQ Lobby front right chest to use permanent switch flag 0x1F
             rom.write_byte(0x2b08ce4 + 13, 0x1F)
-
-        if not world.dungeon_mq['Bottom of the Well']:
-            # Collecting the final BotW basement silver rupee and activating the cutscene of the door unlocking while on the ladder causes a softlock.
-            # Move slightly the X coordinate of this actor so that it cannot be collected while climbing.
-            # This is a vanilla bug tracked at https://github.com/OoTRandomizer/OoT-Randomizer/issues/2004
-            # If and when that bug is fixed in rando, this displacement can be removed.
-            rom.write_int16(0x32E92C6, 0xFD78)
 
     # Write flag table data
     xflags_tables, alt_list = build_xflags_from_world(world)

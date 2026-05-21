@@ -1,6 +1,7 @@
 [
     {
         "region_name": "Ganons Castle Lobby",
+        "dungeon": "Ganons Castle",
         "exits": {
             "Castle Grounds From Ganons Castle": "True",
             "Ganons Castle Main": "
@@ -136,7 +137,9 @@
         "locations": {
             "Ganons Castle MQ Shadow Trial Silver Rupee Moving Platform": "True",
             "Ganons Castle MQ Shadow Trial Silver Rupee Bomb Flower": "True",
-            "Ganons Castle MQ Shadow Trial Silver Rupee First Beamos": "True"
+            "Ganons Castle MQ Shadow Trial Silver Rupee First Beamos": "True",
+            "Ganons Castle MQ Shadow Trial Explosives Wonderitem": "
+                Bow or has_explosives or Progressive_Strength_Upgrade or can_use(Dins_Fire) or can_gdv"
         },
         "exits": {
             "Ganons Castle Shadow Trial Second Gap": "Hover_Boots or has_fire_source or logic_shadow_trial_mq"
