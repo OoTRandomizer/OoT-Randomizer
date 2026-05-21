@@ -97,19 +97,19 @@ def load_spoiler(json_file: str) -> Any:
 
 
 @overload
-def generate_with_plandomizer(filename: str, live_copy: Literal[False] = False, max_attempts: int = 10) -> tuple[dict[str, Any], dict[str, Any]]:
+def generate_with_plandomizer(filename: str, live_copy: Literal[False] = False, max_attempts: int = 10, seed: str = 'TESTTESTTEST') -> tuple[dict[str, Any], dict[str, Any]]:
     pass
 
 
 @overload
-def generate_with_plandomizer(filename: str, live_copy: Literal[True], max_attempts: int = 10) -> tuple[dict[str, Any], Spoiler]:
+def generate_with_plandomizer(filename: str, live_copy: Literal[True], max_attempts: int = 10, seed: str = 'TESTTESTTEST') -> tuple[dict[str, Any], Spoiler]:
     pass
 
 
-def generate_with_plandomizer(filename: str, live_copy: bool = False, max_attempts: int = 10) -> tuple[dict[str, Any], Spoiler | dict[str, Any]]:
+def generate_with_plandomizer(filename: str, live_copy: bool = False, max_attempts: int = 10, seed: str = 'TESTTESTTEST') -> tuple[dict[str, Any], Spoiler | dict[str, Any]]:
     distribution_file = load_spoiler(os.path.join(test_dir, 'plando', filename + '.json'))
     try:
-        settings = load_settings(distribution_file['settings'], seed='TESTTESTTEST', filename=filename)
+        settings = load_settings(distribution_file['settings'], seed=seed, filename=filename)
     except KeyError:  # No settings dict in distribution file, create minimal consistent configuration
         settings = Settings({
             'enable_distribution_file': True,
@@ -392,7 +392,7 @@ class TestPlandomizer(unittest.TestCase):
                     'Ludicrous pool has regular junk items')
         filename = "plando-ludicrous-junk-locations"
         with self.subTest("location plando junk permission with ludicrous item pool"):
-            distribution_file, spoiler = generate_with_plandomizer(filename)
+            distribution_file, spoiler = generate_with_plandomizer(filename, seed='ITF1YFNEND')
             pool_set = {i for i, c in spoiler['item_pool'].items()}
             self.assertEqual(
                 {'Rupees (5)'},
