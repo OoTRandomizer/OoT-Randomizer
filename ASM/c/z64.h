@@ -57,6 +57,19 @@
 #define ITEM_ICON_HEIGHT 32
 #define ITEM_ICON_SIZE (ITEM_ICON_WIDTH * ITEM_ICON_HEIGHT * 4) // The size in bytes of an item icon
 
+typedef float MtxF_t[4][4];
+typedef union MtxF {
+    MtxF_t mf;
+    struct {
+        // Note: The order displayed here is the transpose of the order in which matrices are typically written.
+        // For example, [xw, yw, zw] is the translation part of the matrix, not [wx, wy, wz].
+        float xx, yx, zx, wx,
+              xy, yy, zy, wy,
+              xz, yz, zz, wz,
+              xw, yw, zw, ww;
+    };
+} MtxF;
+
 typedef struct {
   /* index of z64_col_type in scene file */
   uint16_t    type;
@@ -1005,7 +1018,10 @@ struct z64_actor_s
   z64_rot_t       rot_2;            /* 0x00B4 */
   int16_t         face;             /* 0x00BA */
   float           yOffset;          /* 0x00BC */
-  char            unk_0F_[0x0040];  /* 0x00C0 */
+  char            unk_0F_[0x0024];  /* 0x00C0 */
+  z64_xyzf_t      projectedPos;     /* 0x00E4 */
+  float           projectedW;       /* 0x00F0 */
+  char            unk_0Fb_[0x000C]; /* 0x00F4 */
   z64_xyzf_t      pos_4;            /* 0x0100 */
   uint16_t        unk_10_;          /* 0x010C */
   uint16_t        text_id;          /* 0x010E */
@@ -1465,9 +1481,13 @@ typedef struct {
   char             unk_15_[0x0D90];        /* 0x10A14 */
   z64_obj_ctxt_t   obj_ctxt;               /* 0x117A4 */
   int8_t           room_index;             /* 0x11CBC */
-  char             unk_16_[0x000B];        /* 0x11CBD */
-  void            *room_ptr;               /* 0x11CC8 */
-  char             unk_17_[0x00D4];        /* 0x11CCC */
+  char             unk_16_[0x0037];        /* 0x11CBD */
+  z64_getfile_t    roomDmaRequest;         /* 0x11CF4 */
+  OSMesgQueue      roomLoadQueue;          /* 0x11D14 */
+  OSMesg           roomLoadMsg;            /* 0x11D2C */
+  char             drawParams[4];          /* 0x11D30 */
+  char             unk_17_[0x002C];        /* 0x11D34 */
+  MtxF             viewProjectionMtxF;     /* 0x11D60 */
   float            billboard_mtx[4][4];    /* 0x11DA0 */
   char             unk_18_[0x0004];        /* 0x11DE0 */
   uint32_t         gameplay_frames;        /* 0x11DE4 */
