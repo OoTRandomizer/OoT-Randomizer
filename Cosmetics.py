@@ -107,6 +107,10 @@ def patch_tunic_colors(rom: Rom, settings: Settings, log: CosmeticsLog, symbols:
     tunic_color_list = Colors.get_tunic_colors()
     rainbow_error = None
 
+    # Clear all rainbow tunic bits so that it can be overridden.
+    if 'CFG_RAINBOW_TUNIC_ENABLED' in symbols:
+        rom.write_byte(symbols['CFG_RAINBOW_TUNIC_ENABLED'], 0)
+
     for tunic, tunic_setting, address in tunics:
         tunic_option = getattr(settings, tunic_setting)
 
