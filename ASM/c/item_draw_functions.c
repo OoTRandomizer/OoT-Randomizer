@@ -218,7 +218,7 @@ void draw_gi_bullet_bags(z64_game_t* game, uint32_t draw_id) {
 void draw_gi_small_rupees(z64_game_t* game, uint32_t draw_id) {
     z64_gfx_t* gfx = game->common.gfx;
 
-    scale_sys_matrix(0.7f, 0.7f, 0.7f, 1);
+    Matrix_Scale(0.7f, 0.7f, 0.7f, 1);
 
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -372,12 +372,12 @@ void draw_gi_blue_fire_candle(z64_game_t* game, uint32_t draw_id) {
                gen_double_tile(gfx,
                                0, 0, 0, 16, 32,
                                1, game->common.state_frames * 1, -(game->common.state_frames * 8), 16, 32));
-    duplicate_sys_matrix();
+    Matrix_Push();
     translate_sys_matrix(-8.0f, -2.0f, 0.0f, 1);
     update_sys_matrix(game->billboard_mtx);
     gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[1].dlist);
-    pop_sys_matrix();
+    Matrix_Pop();
 }
 
 void draw_gi_fairy_lantern(z64_game_t* game, uint32_t draw_id) {
@@ -394,11 +394,11 @@ void draw_gi_fairy_lantern(z64_game_t* game, uint32_t draw_id) {
                gen_double_tile(gfx,
                                0, 0, 0, 32, 32,
                                1, game->common.state_frames, -(game->common.state_frames * 6), 32, 32));
-    duplicate_sys_matrix();
+    Matrix_Push();
     update_sys_matrix(game->billboard_mtx);
     gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[2].dlist);
-    pop_sys_matrix();
+    Matrix_Pop();
 }
 
 void draw_gi_fairy(z64_game_t* game, uint32_t draw_id) {
@@ -409,7 +409,7 @@ void draw_gi_fairy(z64_game_t* game, uint32_t draw_id) {
                gen_double_tile(gfx,
                                0, 0, 0, 32, 32,
                                1, game->common.state_frames, -(game->common.state_frames * 6), 32, 32));
-    duplicate_sys_matrix();
+    Matrix_Push();
     update_sys_matrix(game->billboard_mtx);
     gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
     // Not sure how much of this is required but these are called from the bottle DL. Not including them causes it to draw weird
@@ -419,7 +419,7 @@ void draw_gi_fairy(z64_game_t* game, uint32_t draw_id) {
     gSPClearGeometryMode(gfx->poly_xlu.p++,G_CULL_BACK | G_FOG);
     gSPSetGeometryMode(gfx->poly_xlu.p++,G_LIGHTING | G_TEXTURE_GEN | G_TEXTURE_GEN_LINEAR);
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[0].dlist);
-    pop_sys_matrix();
+    Matrix_Pop();
 }
 
 void draw_gi_poe_bottles(z64_game_t* game, uint32_t draw_id) {
@@ -436,12 +436,12 @@ void draw_gi_poe_bottles(z64_game_t* game, uint32_t draw_id) {
                gen_double_tile(gfx,
                                0, 0, 0, 16, 32,
                                1, game->common.state_frames * 1, -(game->common.state_frames * 6), 16, 32));
-    duplicate_sys_matrix();
+    Matrix_Push();
     update_sys_matrix(game->billboard_mtx);
     gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[3].dlist);
     gSPDisplayList(gfx->poly_xlu.p++, item_draw_table[draw_id].args[2].dlist);
-    pop_sys_matrix();
+    Matrix_Pop();
 }
 
 void draw_gi_song_notes(z64_game_t* game, uint32_t draw_id) {
@@ -449,7 +449,7 @@ void draw_gi_song_notes(z64_game_t* game, uint32_t draw_id) {
     colorRGBA8_t env_color = item_draw_table[draw_id].args[1].color;
 
     if (item_draw_table[draw_id].args[2].dlist) {
-        scale_sys_matrix(1.5f, 1.5f, 1.5f, 1);
+        Matrix_Scale(1.5f, 1.5f, 1.5f, 1);
     }
 
     append_setup_dl_25_to_xlu(gfx);
@@ -477,7 +477,7 @@ void draw_gi_shrink_keys(z64_game_t* game, uint32_t draw_id) {
     colorRGBA8_t env_color = item_draw_table[draw_id].args[2].color;
 
     translate_sys_matrix(0, 5, 0, 1);
-    scale_sys_matrix(0.8f, 0.8f, 0.8f, 1);
+    Matrix_Scale(0.8f, 0.8f, 0.8f, 1);
 
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -497,7 +497,7 @@ void draw_gi_boss_keys(z64_game_t* game, uint32_t draw_id) {
     colorRGBA8_t env_color_key = item_draw_table[draw_id].args[5].color;
 
     translate_sys_matrix(0, 15, 0, 1);
-    scale_sys_matrix(1.25f, 1.25f, 1.25f, 1);
+    Matrix_Scale(1.25f, 1.25f, 1.25f, 1);
 
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -524,7 +524,7 @@ void draw_gi_boss_altered(z64_game_t* game, uint32_t draw_id) {
     colorRGBA8_t env_color_key = item_draw_table[draw_id].args[5].color;
     // Move and Resize
     translate_sys_matrix(0, 5, 0, 1);
-    scale_sys_matrix(0.8f, 0.8f, 0.8f, 1);
+    Matrix_Scale(0.8f, 0.8f, 0.8f, 1);
     // draw key
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -550,7 +550,7 @@ void draw_gi_boss_altflip(z64_game_t* game, uint32_t draw_id) {
     colorRGBA8_t env_color_key = item_draw_table[draw_id].args[5].color;
     // Move and Resize
     translate_sys_matrix(0, 5, 0, 1);
-    scale_sys_matrix(0.8f, 0.8f, 0.8f, 1);
+    Matrix_Scale(0.8f, 0.8f, 0.8f, 1);
     // draw key
     append_setup_dl_25_to_opa(gfx);
     gSPMatrix(gfx->poly_opa.p++, append_sys_matrix(gfx), G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
@@ -779,10 +779,10 @@ void draw_gi_magic_meter(z64_game_t* game, uint32_t draw_id) {
 void draw_gi_flame(z64_disp_buf_t* dl, z64_game_t *game, colorRGBA8_t prim, colorRGBA8_t env, z64_xyzf_t translation, z64_xyzf_t scale) {
     z64_gfx_t *gfx = game->common.gfx;
     static const uint32_t kFlameDlist = 0x52a10; // Offset of gEffFire1DL in gameplay_keep
-    duplicate_sys_matrix(); // Push the matrix stack. Do this so we can apply the smoke before the rest of the model
+    Matrix_Push(); // Push the matrix stack. Do this so we can apply the smoke before the rest of the model
     update_sys_matrix(game->billboard_mtx); // Set the rotation to use the billboard matrix
     translate_sys_matrix(translation.x, translation.y, translation.z, 1); // Translate by the amount specified
-    scale_sys_matrix(scale.x, scale.y, scale.z, 1); // Scale by the amount specified
+    Matrix_Scale(scale.x, scale.y, scale.z, 1); // Scale by the amount specified
     gSPMatrix(dl->p++, append_sys_matrix(gfx), G_MTX_NOPUSH | G_MTX_LOAD | G_MTX_MODELVIEW); // Apply the matrix
 
     // Draw the flame effect
@@ -795,7 +795,7 @@ void draw_gi_flame(z64_disp_buf_t* dl, z64_game_t *game, colorRGBA8_t prim, colo
             (-game->gameplay_frames & 0x7F) << 2, 0x20, 0x80));
 
     gSPDisplayList(dl->p++, 0x04000000 | kFlameDlist);
-    pop_sys_matrix(); // Pop the matrix stack
+    Matrix_Pop(); // Pop the matrix stack
 }
 
 /*  void draw_gi_opa_with_rainbow_flame(z64_game_t* game, uint32_t draw_id) {
@@ -835,7 +835,7 @@ void draw_ice_trap(z64_game_t* game, uint32_t draw_id) {
     static const float scale = 0.5f;
 
     translate_sys_matrix(0, -25.f, 0, 1);
-    scale_sys_matrix(scale, scale, scale, 1);
+    Matrix_Scale(scale, scale, scale, 1);
     append_setup_dl_25_to_xlu(gfx);
     gSPSegment(gfx->poly_xlu.p++, 0x08,
                gen_double_tile(gfx, G_TX_RENDERTILE, 0, (0 - game->common.state_frames) % 128, 32, 32, 1, 0, (game->common.state_frames * -2) % 128, 32, 32));

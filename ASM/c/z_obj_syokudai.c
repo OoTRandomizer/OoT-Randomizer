@@ -1,4 +1,5 @@
 #include "z64.h"
+#include "sys_matrix.h"
 
 typedef struct ObjSyokudai {
     /* 0x0000 */ z64_actor_t actor;
@@ -10,12 +11,6 @@ typedef struct ObjSyokudai {
     /* 0x01EC */ char lightInfo[0xE];
 } ObjSyokudai;
 
-extern void SkinMatrix_Vec3fMtxFMultXYZW(MtxF* mf, z64_xyzf_t* src, z64_xyzf_t* xyzDest, float* wDest);
-extern void Matrix_SetTranslateRotateYXZ(float translateX, float translateY, float translateZ, z64_rot_t* rot);
-extern void Matrix_Scale(float x, float y, float z, uint8_t mode);
-extern void Matrix_MultVec3f(z64_xyzf_t* src, z64_xyzf_t* dest);
-extern void Matrix_Push(void);
-extern void Matrix_Pop(void);
 extern void Lights_PointGlowSetInfo(char* info, int16_t x, int16_t y, int16_t z,
                                         uint8_t r, uint8_t g, uint8_t b, int16_t radius);
 

@@ -191,7 +191,7 @@ void draw_forest_hallway_chest_base() {
     get_chest_override((z64_actor_t*)&dummy_chest);
     if (dummy_chest.size == SMALL_CHEST) {
         // Just scaled the matrix by 0.01 so matrix is now scaled by 0.005
-        scale_sys_matrix(0.5f, 0.5f, 0.5f, 1);
+        Matrix_Scale(0.5f, 0.5f, 0.5f, 1);
     }
 
     draw_chest_base(&z64_game, (z64_actor_t*)&dummy_chest, &z64_game.common.gfx->poly_opa.p);
@@ -204,7 +204,7 @@ void draw_forest_hallway_chest_lid() {
     get_chest_override((z64_actor_t*)&dummy_chest);
     if (dummy_chest.size == SMALL_CHEST) {
         // Just scaled the matrix by 0.01 so matrix is now scaled by 0.005
-        scale_sys_matrix(0.5f, 0.5f, 0.5f, 1);
+        Matrix_Scale(0.5f, 0.5f, 0.5f, 1);
 
         // Put lid back onto the base when open or closed
         if (z64_game.chest_flags & 0x4000) {

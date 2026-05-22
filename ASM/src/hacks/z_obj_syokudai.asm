@@ -8,7 +8,7 @@
 ; Rotate the flameCollider if X/Z rotated torch + set new light pos
 ; Replaces: lh      v1,28(s0)
 ;           sw      v0,472(s0)
-.org 0x80908914             ; in ObjSyokudai_Draw
+.org 0x80908914             ; in ObjSyokudai_Init
     jal     ObjSyokudai_CallRotateFlameCollider
     nop
 
