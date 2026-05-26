@@ -33,7 +33,7 @@ int text_print(z64_disp_buf_t* db, const char* s, int left, int top) {
 }
 
 int draw_int(z64_disp_buf_t* db, int32_t number, int16_t left, int16_t top, colorRGBA8_t color) {
-    draw_int_size(db, number, left, top, color, 8, 16);
+    return draw_int_size(db, number, left, top, color, 8, 16);
 }
 
 // Helper function for drawing numbers to the HUD.

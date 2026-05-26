@@ -173,6 +173,7 @@ uint16_t bombchus_to_bag(z64_file_t* save, override_t override) {
             case GI_BOMBCHUS_10: return GI_BOMBCHU_BAG_10; // 10 pack
             case GI_BOMBCHUS_5: return GI_BOMBCHU_BAG_5; // 5 pack
             case GI_BOMBCHUS_20: return GI_BOMBCHU_BAG_20; // 20 pack
+            default: return GI_BOMBCHU_BAG_5;   // Should not happen
         }
     } else {
         // Subsequent chu packs stay as chu packs

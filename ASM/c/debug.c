@@ -365,6 +365,11 @@ bool get_flag(uint8_t flagtype, uint8_t flag) {
             return Flags_GetTempClear(&z64_game, flag);
         case 5:
             return Flags_GetCollectible(&z64_game, flag);
+        default:
+            char error_msg[256];
+            sprintf(error_msg, "%s line %d", __FILE__, __LINE__);
+            Fault_AddHungupAndCrashImpl("get_flag: flagtype not valid", error_msg);
+            return false;
     }
 }
 
@@ -703,7 +708,7 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                     break;
                 case 8: // Overlay
                     if (current_menu_indexes.sub_menu_index == 1) {
-                        uint8_t nbOverlays, currentOverlayTabIndex = 0;
+                        uint8_t nbOverlays = 0, currentOverlayTabIndex = 0;
                         for (int overlay_id = 0; overlay_id < 0x0192; overlay_id++) {
                             ActorOverlay overlay = gActorOverlayTable[overlay_id];
                              if (overlay.loadedRamAddr) {
@@ -1028,7 +1033,7 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                     if (current_menu_indexes.sub_menu_index == 1) {
                         uint8_t currentOverlayTab = current_menu_indexes.overlay_index / 12;
                         // Display overlay list in 12 by 12 pages.
-                        uint8_t nbOverlays, currentOverlayTabIndex = 0;
+                        uint8_t nbOverlays = 0, currentOverlayTabIndex = 0;
                         for (int overlay_id = 0; overlay_id < 0x0192; overlay_id++) {
                             ActorOverlay overlay = gActorOverlayTable[overlay_id];
                              if (overlay.loadedRamAddr) {

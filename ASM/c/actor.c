@@ -244,27 +244,15 @@ z64_actor_t* Player_SpawnEntry_Hack(void* actorCtx, ActorEntry* playerEntry, z64
 extern z64_actor_t* Actor_Spawn_Continue(void* actorCtx, z64_game_t* globalCtx, int16_t actorId, float posX, float posY, float posZ, int16_t rotX, int16_t rotY, int16_t rotZ, int16_t params);
 
 z64_actor_t* Actor_Spawn_Hook(void* actorCtx, z64_game_t* globalCtx, int16_t actorId, float posX, float posY, float posZ, int16_t rotX, int16_t rotY, int16_t rotZ, int16_t params) {
-    bool continue_spawn = true;
 
-    ActorEntry entry;
-    entry.id = actorId;
-    entry.params = params;
-    entry.pos.x = (int16_t)posX;
-    entry.pos.y = (int16_t)posY;
-    entry.pos.z = (int16_t)posZ;
-    entry.rot.x = rotX;
-    entry.rot.y = rotY;
-    entry.rot.z = rotZ;
-
-    if (continue_spawn) {
-        z64_actor_t* spawned = Actor_Spawn_Continue(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params);
-        if (spawned) {
-            if (spawn_actor_with_flag) {
-                Actor_StoreFlag(spawned, globalCtx, *spawn_actor_with_flag);
-                Actor_StoreChestType(spawned, globalCtx);
-            }
+    z64_actor_t* spawned = Actor_Spawn_Continue(actorCtx, globalCtx, actorId, posX, posY, posZ, rotX, rotY, rotZ, params);
+    if (spawned) {
+        if (spawn_actor_with_flag) {
+            Actor_StoreFlag(spawned, globalCtx, *spawn_actor_with_flag);
+            Actor_StoreChestType(spawned, globalCtx);
         }
         return spawned;
     }
+
     return NULL;
 }

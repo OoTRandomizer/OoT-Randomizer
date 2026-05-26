@@ -90,6 +90,9 @@ override_key_t get_override_search_key_by_newflag(xflag_t* flag) {
             .flag = flag->all,
         };
         return resolve_alternative_override(key);
+    } else {
+        // Should not get here
+        return (override_key_t){ 0 };
     }
 }
 
@@ -157,6 +160,8 @@ override_key_t get_override_search_key(z64_actor_t *actor, uint8_t scene, uint8_
             .flag = item_id,
         };
     }
+    // Should not get here
+    return (override_key_t){ 0 };
 }
 
 override_t lookup_override_by_key(override_key_t key) {
@@ -451,14 +456,12 @@ void handle_pending_items() {
 void get_item(z64_actor_t* from_actor, z64_link_t* link, int8_t incoming_item_id) {
     override_t override = { 0 };
     int incoming_negative = incoming_item_id < 0;
-    int8_t item_id = 0;
-    item_row_t* row;
+    int8_t item_id = ABS(incoming_item_id);
+    item_row_t* row = get_item_row(item_id);
 
     if (from_actor && incoming_item_id != 0) {
-        item_id = incoming_negative ? -incoming_item_id : incoming_item_id;
         // Set trade items as traded, but keep in inventory. The incoming item
         // ID will be the next sequential trade item, so use that as a reference.
-        row = get_item_row(item_id);
         if (row) {
             int16_t action_id = row->action_id;
             // Set adult trade item "traded" flags to prevent duping.
@@ -753,6 +756,7 @@ void Room_Change_Actor_Kill_Hack(z64_actor_t *actor) {
 
 // Hack in EnItem00_Init where it checks whether or not to kill the actor based on the collectible flag.
 // We use this point to determine if this is an overriden collectible and store that information in the actor.
+// return 1 if actor is killed, else 0
 bool Item00_KillActorIfFlagIsSet(z64_actor_t* actor) {
     EnItem00* this = (EnItem00*)actor;
     this->is_silver_rupee = false;
@@ -796,6 +800,8 @@ bool Item00_KillActorIfFlagIsSet(z64_actor_t* actor) {
         z64_ActorKill(actor);
         return 1;
     }
+
+    return 0;
 }
 
 // Check ammo counts for bombs/chus and drop correspondingly.
@@ -993,14 +999,14 @@ uint8_t item_give_collectible(uint8_t item, z64_link_t* link, z64_actor_t* from_
 
 void get_skulltula_token(z64_actor_t* token_actor) {
     override_t override = lookup_override(token_actor, 0, 0);
-    uint16_t item_id;
+    //uint16_t item_id;
     uint8_t player;
     if (override.key.all == 0) {
-        // Give a skulltula token if there is no override
-        item_id = GI_SKULL_TOKEN;
+        // Give a skulltula token if there is no override   // item_id currently not used
+        //item_id = GI_SKULL_TOKEN;
         player = PLAYER_ID;
     } else {
-        item_id = override.value.base.item_id;
+        //item_id = override.value.base.item_id;
         player = override.value.base.player;
     }
 

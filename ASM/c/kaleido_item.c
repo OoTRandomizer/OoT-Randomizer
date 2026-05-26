@@ -9,7 +9,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
     uint16_t i;
     uint16_t j;
     uint16_t cursor_item;
-    uint16_t cursor_slot;
+    uint16_t cursor_slot = pause_ctxt->cursor_slot[PAUSE_ITEM];
     uint16_t index;
     int16_t cursor_point;
     int16_t cursor_x;
@@ -32,7 +32,6 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
         old_cursor_point = pause_ctxt->cursor_point[PAUSE_ITEM];
 
         cursor_item = pause_ctxt->cursor_item[PAUSE_ITEM];
-        cursor_slot = pause_ctxt->cursor_slot[PAUSE_ITEM];
 
         if (pause_ctxt->cursor_special_pos == 0) {
             pause_ctxt->cursor_color_set = 4;

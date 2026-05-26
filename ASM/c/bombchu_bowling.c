@@ -54,7 +54,11 @@ int16_t select_bombchu_bowling_prize(int16_t prizeSelect) {
                 // currently functionally redundant when the flag is set.
                 prizeTemp = EXITEM_PURPLE_RUPEE_BOWLING;
                 break;
+            default:    // Shouldn't get here
+                prizeTemp = EXITEM_PURPLE_RUPEE_BOWLING;
+                break;
         }
+
     } else {
         // maintain renewable bombchus/bombs if extra shuffle is disabled
         if (!EXTRA_BOWLING_SHUFFLE) {
