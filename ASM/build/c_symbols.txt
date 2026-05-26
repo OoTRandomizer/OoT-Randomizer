@@ -904,6 +904,7 @@ SYMBOL TABLE:
 00019428 g     F .text	000000e4 FindHierarchy
 00000000         *UND*	00000000 CFG_RAINBOW_NAVI_PROP_INNER_ENABLED
 00019ea0 g     F .text	00000064 heart_container_draw
+80064508 g       *ABS*	00000000 Math_SmoothStepToS
 0002a620 g     O .data	00000004 spawn_actor_with_flag
 00011250 g     F .text	0000009c draw_gi_bombchu_and_masks
 00043024 g     O .data	000000c0 object_slots

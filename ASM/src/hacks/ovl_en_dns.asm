@@ -21,8 +21,12 @@
 ; Adds Y distance check to talking with business Deku Scrub (prevents buying in
 ; MQ Deku Tree from the water, but not being able to get the item)
 ;================================================================================
-; Replaces  lh      t6,182(s0)
-;           move    a0,s0
-.org 0x80a75504                   ; in EnDns_Idle
+; Replaces jal     Math_SmoothStepToS
+;          li      a3,2000
+;          lh      t6,182(s0)
+;          move    a0,s0
+.org 0x80a754fc                 ; in EnDns_Idle
     jal     EnDns_CheckYDist
-    lh      t6,182(s0)
+    nop
+    beqz    v0,0x80a75598       ; EnDns_Idle function return
+    move    a0,s0               ; displaced
