@@ -4,3 +4,4 @@
 /c/*.o
 armips*
 !.gitkeep
+!dmaTable.dat

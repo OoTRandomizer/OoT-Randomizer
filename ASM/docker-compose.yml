@@ -1,0 +1,31 @@
+name: ootr-dev
+
+services:
+  toolchain:
+    userns_mode: keep-id:uid=${DOCKER_UID:-1000},gid=${DOCKER_GID:-1000}
+    build:
+      context: .
+      args:
+        USERNAME: ootr
+        USER_UID: ${DOCKER_UID:-1000}
+        USER_GID: ${DOCKER_GID:-1000}
+    user: ${DOCKER_UID_GID:-}
+    volumes:
+      - ..:/app/OoT-Randomizer:cached,Z
+      - ./build:/app/OoT-Randomizer/ASM/build:consistent,Z
+      - ./roms:/app/OoT-Randomizer/ASM/roms:consistent,Z
+      - ../Output:/app/OoT-Randomizer/Output:consistent,Z
+      - ../data/generated:/app/OoT-Randomizer/data/generated:consistent,Z
+      - ../Logs:/app/OoT-Randomizer/Logs:consistent,Z
+    network_mode: host
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+    # Uncomment the next four lines if you will use a ptrace-based debugger like C++, Go, and Rust.
+    cap_add:
+      - SYS_PTRACE
+    security_opt:
+      - seccomp:unconfined
+
+    # Overrides default command so things don't shut down after the process ends.
+    command: python3 /app/OoT-Randomizer/ASM/build.py --mips-binutils-prefix=mips64-ultra-elf-

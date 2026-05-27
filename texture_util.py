@@ -180,7 +180,7 @@ def build_crate_ci8_patches() -> None:
     # load crate textures from rom
     object_kibako2_addr = 0x018B6000
     SIZE_CI4_32X128 = 4096
-    rom = Rom("ZOOTDEC.z64")
+    rom = Rom("ASM/roms/base.z64")
     crate_palette = load_palette(rom, object_kibako2_addr + 0x00, 16)
     crate_texture_rgba16 = ci4_to_rgba16(rom, object_kibako2_addr + 0x20, SIZE_CI4_32X128, crate_palette)
 
@@ -198,7 +198,7 @@ def build_pot_patches() -> None:
     # load pot textures from rom
     object_tsubo_side_addr = 0x01738000
     SIZE_32X64 = 2048
-    rom = Rom("ZOOTDEC.z64")
+    rom = Rom("ASM/roms/base.z64")
 
     pot_default_rgba16 = load_rgba16_texture_from_rom(rom, object_tsubo_side_addr, SIZE_32X64)
     pot_gold_rgba16 = load_rgba16_texture('pot_gold_rgba16.bin', SIZE_32X64)
@@ -224,7 +224,7 @@ def build_smallcrate_patches() -> None:
     object_kibako_texture_addr = 0xF7ECA0
 
     SIZE_32X64 = 2048
-    rom = Rom("ZOOTDEC.z64")
+    rom = Rom("ASM/roms/base.z64")
 
     # Load textures
     smallcrate_default_rgba16 = load_rgba16_texture_from_rom(rom, object_kibako_texture_addr, SIZE_32X64)
@@ -244,7 +244,7 @@ def build_chest_patches():
 
     SIZE_32X64 = 2048
     SIZE_32X32 = 1024
-    rom = Rom("ZOOTDEC.z64")
+    rom = Rom("ASM/roms/base.z64")
 
     # Load textures
     front_default_rgba16 = load_rgba16_texture_from_rom(rom, front_texture_addr, SIZE_32X64)
