@@ -2,16 +2,21 @@
 Player_CallUseDpadItem:
     addiu   sp,sp,-24
     sw      ra,16(sp)
-    jal     Player_UseDpadItem        ; return in v0: 1 if used D-pad item, else 0
     sw      v1,20(sp)                 ; needs to be saved
-    beqz    v0,@@DidntUseReturn       ; if didn't use item, continue normal function
-    lw      ra,16(sp)
-    b       @@DidUseReturn            ; else, go to 0x80832134 (end of calling function)
-    addi    ra,0x74
-@@DidntUseReturn:
-    lw      v1,20(sp)                 ; restore for continue function
+    sw      t3,24(sp)
+    jal     Player_UseDpadItem        ; Return in v0: 1 if used D-pad item, else 0
+    nop
+    beqzl   v0,@@DidntUse             ; If didn't use item, continue normal function
+    li      t0,0                      ; and return false (t0 because v0 used in caller)
+    b       @@Return                  ; If used, return true
+    li      t0,1                      ; = go to end of calling function
+@@DidntUse:
+    lw      v1,20(sp)
+    lw      t3,24(sp)
     move    a3,zero                   ; displaced
     li      a1,4                      ; displaced
-@@DidUseReturn:
+    lhu     a0,0(t3)                  ; displaced
+@@Return:
+    lw      ra,16(sp)
     jr      ra
     addiu   sp,sp,24

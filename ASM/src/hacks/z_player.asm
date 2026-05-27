@@ -1,4 +1,4 @@
-.headersize(0x808301c0 - 0xbcdb70)
+.headersize (0x808301c0 - 0xbcdb70)
 
 ;================================================================================
 ; Fixes softlock when starting cutscene while dismounting a ladder.
@@ -19,9 +19,13 @@
 ;================================================================================
 ; Replaces  move    a3,zero
 ;           li      a1,4
+;           lhu     a0,0(t3)
+;           lhu     v0,0(v1)
 .org 0x808320b8             ; in Player_ProcessItemButtons
     jal     Player_CallUseDpadItem
     nop
+    bnez    t0,0x80832134       ; used item - go to end of function
+    lhu     v0,0(v1)            ; branch target for loop
 
 ; Make D-pad down (0x400) cancel first person mode
 ; Replaces  andi    t8,t7,0xc01f
