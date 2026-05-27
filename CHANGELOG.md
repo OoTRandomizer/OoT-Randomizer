@@ -1,6 +1,6 @@
 # Dev
 
-_(No changes yet)_
+* Fix a crash that could occur on Wii VC when starting a cutscene while climbing a ladder.
 
 # 9.1
 
