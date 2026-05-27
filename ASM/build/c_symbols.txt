@@ -564,6 +564,7 @@ SYMBOL TABLE:
 00000000         *UND*	00000000 CFG_BOOM_TRAIL_OUTER_COLOR
 000232c4 g     O .data	000000d0 hideout_rooms
 00028821 g     O .data	00000001 world_display
+80027854 g       *ABS*	00000000 Npc_TrackPoint
 8002060c g       *ABS*	00000000 Flags_GetTreasure
 000246b0 g     O .data	00000010 key_rupee_clock_sprite
 800206c8 g       *ABS*	00000000 Flags_UnsetTempClear
