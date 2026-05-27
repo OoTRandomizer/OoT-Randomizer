@@ -4,8 +4,19 @@
 ; Fixes crashing when too many subcameras spawn, because the main camera pointer
 ; gets set to NULL (Spirit Temple mirror room etc)
 ;================================================================================
-; Replaces  bne a1,at,8009d248  (branch if camId not -1/NONE)
-;           sll v0,a1,0x10
+; Replaces  sll     a1,a1,0x10
+;           sra     a1,a1,0x10
+;           sw      ra,20(sp)
+;           move    a2,a0
+;           li      at,-1
+;           bne     a1,at,8009d248  (branch if camId not -1/NONE)
+;           sll     v0,a1,0x10
+
 .org 0x8009d238                    ; in Play_ClearCamera
-    jal   Play_ClearCameraAvoidMain
+    sw      ra,20(sp)
+    jal     Play_ClearCameraAvoidMain
+    move    a2,a0                   ; displaced
+    beq     t0,at,0x8009d274        ; camId MAIN, skip to end function
+    nop
+    beq     t0,at,0x8009d248        ; not MAIN/NONE, remove pointer
     nop
