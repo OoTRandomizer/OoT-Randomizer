@@ -1,4 +1,4 @@
-.headersize(0x800110a0 - 0x00a87000)
+.headersize (0x800110a0 - 0x00a87000)
 
 ;================================================================================
 ; Remote Hookshot part 2/2. Make PostLimbDrawGameplay stop updating hook rotation
@@ -12,11 +12,11 @@
 ;           li      at,17
 ;           bnel    v0,at,8007bed4
 ;           lb      t4,2130(s0)
-.org 0x8007bde0                         ; in Player_PostLimbDrawGameplay
-    lui     a0,0x800f
+.org 0x8007bde0             ; in Player_PostLimbDrawGameplay
+    lui     a0,0x800f                     ; Vector address
     addiu   a0,a0,31828
-    la      t8,REMOTE_HOOKSHOT_ENABLED  ; Load setting
-    jal     PlayerHookPostlimbCheck     ; Check setting and do appropriate Hookshot check
+    la      t8,REMOTE_HOOKSHOT_ENABLED    ; Load setting address (two instr)
+    jal     Player_PostLimbHookshotCheck  ; Check setting and do appropriate Hookshot check
     lb      at,(t8)
-    nop
+    beqz    v0,0x8007bed4                 ; Skip Hookshot postlimb part if not Hookshot
     nop
