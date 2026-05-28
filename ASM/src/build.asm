@@ -133,6 +133,7 @@ RANDO_CONTEXT:
 .include "en_dns.asm"
 .include "bg_gate_shutter.asm"
 .include "big_poe.asm"
+.include "engo2_biggoronidleclaimcheck.asm"
 .include "player_laddercutscenefix.asm"
 
 .align 0x10
