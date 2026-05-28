@@ -9,7 +9,7 @@ EnDns_CheckYDist:
     lwc1    $f0,148(s0)         ; EnDns Y distance to player
     abs.s   $f0,$f0             ; Absolute EnDns-player Y distance
     c.lt.s  $f0,$f4             ; Y distance < 100.0f?
-    bc1fl   @@Return            ; If yes, continue function
+    bc1tl   @@Return            ; If yes, continue function
     li      v0,1
     li      v0,0                ; Else, to return in caller
 @@Return:
