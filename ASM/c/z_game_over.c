@@ -14,7 +14,7 @@ void GameOver_RestoreBButton() {
 
             if (z64_file.buttonStatus[0] != 0 &&    // BTN_ENABLED
                 z64_file.buttonStatus[0] != ITEM_SWORD_KOKIRI) {
-                        
+
                 // Then, set temp B to B - else, no item
                 z64_file.button_items[0] = z64_file.buttonStatus[0];
             } else {
@@ -24,7 +24,7 @@ void GameOver_RestoreBButton() {
     } else {
         // If current B item isn't Kokiri sword, and temp B is not 0 or adult sword
         if (z64_file.button_items[0] != ITEM_SWORD_KOKIRI) {
-                    
+
             if (z64_file.buttonStatus[0] != 0 &&
                 z64_file.buttonStatus[0] != ITEM_SWORD_MASTER &&
                 z64_file.buttonStatus[0] != ITEM_SWORD_BGS &&
