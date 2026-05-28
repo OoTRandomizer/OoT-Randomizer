@@ -133,8 +133,8 @@ RANDO_CONTEXT:
 .include "en_dns.asm"
 .include "bg_gate_shutter.asm"
 .include "big_poe.asm"
-.include "player_ladder_cutscene.asm"
 .include "kaleido_gameoverfillmagic.asm"
+.include "player_laddercutscenefix.asm"
 
 .align 0x10
 .importobj "../build/bundle.o"
