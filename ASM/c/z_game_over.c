@@ -6,7 +6,7 @@
  * Kokiri sword equipped.
  */
 void GameOver_RestoreBButton() {
-    if(LINK_IS_ADULT) {
+    if (LINK_IS_ADULT) {
         // If current B item isn't an adult sword, and temp B is not 0 or Kokiri
         if (z64_file.button_items[0] != ITEM_SWORD_MASTER &&
             z64_file.button_items[0] != ITEM_SWORD_BGS &&
