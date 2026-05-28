@@ -1,8 +1,15 @@
 EnDntN_SlingshotFix:
-    li      t3,1                        ; t2 is EnDnNomal->spawnedItem
-    beql    t2,t3,@@EnDntSlingshotRet   ; If already spawned item,
-    addi    ra,0xC4                     ; 0x80b4f7d0 to exit function
-    lhu     t2,3826(v0)                 ; displaced
-@@EnDntSlingshotRet:
-    jr      ra                          ; Else, continue check at 0x80b4f70c
-    andi    t3,t2,0x2000                ; displaced
+    la      t0,SAVE_CONTEXT
+    lw      t1,4(t0)                    ; Link age
+    beqz    t1,@@DontGive               ; If adult, don't try to give
+    lhu     t2,3826(v0)                 ; Bullet Bag received getiteminf
+    andi    t3,t2,0x2000                ; Item received?
+    bnez    t3,@@DontGive               ; If received, don't try to give it again
+    lb      t2,615(s0)                  ; EnDnNomal->spawnedItem
+    beqzl   t2,@@Return                 ; If not already spawned item,
+    li      v0,1                        ; give it
+@@DontGive:
+    li      v0,0                        ; Adult or already got item
+@@Return:
+    jr      ra
+    nop

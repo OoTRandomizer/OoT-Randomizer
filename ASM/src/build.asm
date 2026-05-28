@@ -134,6 +134,7 @@ RANDO_CONTEXT:
 .include "bg_gate_shutter.asm"
 .include "big_poe.asm"
 .include "endntn_slingshotfix.asm"
+.include "player_laddercutscenefix.asm"
 
 .align 0x10
 .importobj "../build/bundle.o"
