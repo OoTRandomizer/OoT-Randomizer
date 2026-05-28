@@ -15,8 +15,12 @@
 ; Biggoron: In "idle" action function, if EnGo2->reverse is set, unset it and
 ; return without calling any functions further down (i.e. EnGo2_IsCameraModified)
 ;================================================================================
-; Replaces: lbu     t6,513(s0)
+; Replaces: lh      v1,28(s0)
+;           lbu     t6,513(s0)
 ;           li      at,1
-.org 0x80b5a76c     ; in EnGo2_Action_80A46B40
+;           andi    v1,v1,0x1f
+.org 0x80b5a768     ; in EnGo2_Action_80A46B40
     jal     EnGo2_BiggoronIdleClaimCheck
     lbu     t6,513(s0)      ; displaced
+    bnez    v0,0x80b5a8d8   ; to function end if reverse is set
+    andi    v1,v1,0x1f      ; displaced
