@@ -25,7 +25,7 @@ void EnBox_LoadObject(EnBox* this, z64_game_t* play) {
 
     if(!opened) {
         if (giId == GI_ICE_TRAP) {
-            Object_LoadExtra(play, OBJECT_FZ);  // Freezard object
+            Object_LoadExtra(play, OBJECT_FZ, 0);  // Freezard object
         }
     }
 }

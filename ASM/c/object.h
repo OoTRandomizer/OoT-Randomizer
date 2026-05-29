@@ -11,6 +11,6 @@ typedef struct RomFile {
 
 extern RomFile gObjectTable[];
 
-int16_t Object_LoadExtra(z64_game_t* play, int16_t objectId);
+int16_t Object_LoadExtra(z64_game_t* play, int16_t objectId, uint8_t syncDma);
 
 #endif
