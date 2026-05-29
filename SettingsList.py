@@ -4208,6 +4208,17 @@ class SettingInfos:
         shared         = True,
     )
 
+    easy_frame_advance = Checkbutton(
+        gui_text       = 'Easy Frame Advance',
+        gui_tooltip    = '''\
+            Continue holding the Start button when
+            unpausing to advance gameplay by one frame,
+            then pause again ("pause buffer")
+        ''',
+        default        = False,
+        shared         = True,
+    )
+
     item_pool_value = Combobox(
         gui_text       = 'Item Pool',
         default        = 'balanced',
