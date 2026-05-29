@@ -52,6 +52,7 @@ int16_t Object_LoadExtra(z64_game_t* play, int16_t objectId, uint8_t syncDma) {
         play->obj_ctxt.n_objects++;
 
         if (syncDma) {
+            play->obj_ctxt.objects[slot].id = objectId;    // Uninvert the id because it will get loaded now
             RomFile* objectFile = &gObjectTable[ABS(objectId)];    // Get object start pointer and size
             uint32_t size = objectFile->vromEnd - objectFile->vromStart;
             DmaMgr_RequestSync(newEntry->data, objectFile->vromStart, size);
