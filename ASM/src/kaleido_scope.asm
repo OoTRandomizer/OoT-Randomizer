@@ -7,7 +7,6 @@ KaleidoSetup_Update_HasPressedStart_Hook:
     sw      a3, 0x001C (sp)
 
     lui     a0, 0x8012
-    addiu   a0, a0, 0xBA00
 
     lw      a3, 0x001C (sp)
     lw      a2, 0x0018 (sp)
