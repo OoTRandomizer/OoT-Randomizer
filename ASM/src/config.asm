@@ -13,7 +13,7 @@
 COSMETIC_CONTEXT:
 
 COSMETIC_FORMAT_VERSION:
-.word 0x1F073FE2
+.word 0x1F073FE3
 CFG_MAGIC_COLOR:
 .halfword 0x0000, 0x00C8, 0x0000
 CFG_HEART_COLOR:
@@ -102,6 +102,14 @@ CFG_SONG_NAME_STATE:
 .area 0xA5A, 0
 CFG_SONG_NAMES:
 .endarea
+
+EASY_FRAME_BY_FRAME:
+.byte 0x00
+
+;==================================================================================================
+; End of Cosmetics Context
+;==================================================================================================
+
 CFG_SHOW_SETTING_INFO:
 .byte 0x00
 
@@ -260,8 +268,6 @@ CFG_DUNGEON_PRECOMPLETED:
 .endarea
 DOT_CONDITION:
 .byte 0x01
-EASY_FRAME_BY_FRAME:
-.byte 0x00
 .align 4
 
 ; These configuration values are given fixed addresses to aid auto-trackers.

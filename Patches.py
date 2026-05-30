@@ -2028,9 +2028,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         rom.revert_patch("TCG_SHUFFLE_PATCH_6")
         rom.revert_patch("TCG_SHUFFLE_PATCH_7")
 
-    if world.settings.easy_frame_advance:
-        rom.write_byte(rom.sym("EASY_FRAME_BY_FRAME"), 0x01)
-
     # Write numeric seed truncated to 32 bits for rng seeding
     # Overwritten with new seed every time a new rng value is generated
     rom.write_int32(rom.sym('RNG_SEED_INT'), spoiler.settings.numeric_seed & 0xFFFFFFFF)

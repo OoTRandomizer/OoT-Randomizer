@@ -1000,6 +1000,13 @@ def patch_song_names(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: d
     rom.write_bytes(symbols['CFG_SONG_NAMES'], bytes_to_write)
     log.display_custom_song_names = settings.display_custom_song_names
 
+def patch_pause_buffer(rom: Rom, settings: Settings, log: CosmeticsLog, symbols: dict[str, int]) -> None:
+    if settings.easy_frame_advance:
+        rom.write_byte(symbols['EASY_FRAME_BY_FRAME'], 0x01)
+    else:
+        rom.write_byte(symbols['EASY_FRAME_BY_FRAME'], 0x00)
+    log.easy_frame_advance = settings.easy_frame_advance
+
 legacy_cosmetic_data_headers: list[int] = [
     0x03481000,
     0x03480810,
@@ -1215,6 +1222,17 @@ patch_sets[0x1F073FE2] = {
         **patch_sets[0x1F073FE1]["symbols"],
         "CFG_SONG_NAME_STATE": 0x006C,
         "CFG_SONG_NAMES": 0x006D,
+    }
+}
+
+# 9.1.29
+patch_sets[0x1F073FE3] = {
+    "patches": patch_sets[0x1F073FE2]["patches"] + [
+        patch_pause_buffer,
+    ],
+    "symbols": {
+        **patch_sets[0x1F073FE2]["symbols"],
+        "EASY_FRAME_BY_FRAME": 0x0AC7,
     }
 }
 
