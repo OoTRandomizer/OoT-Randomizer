@@ -135,6 +135,7 @@ RANDO_CONTEXT:
 .include "big_poe.asm"
 .include "player_ladder_cutscene.asm"
 .include "enbox_callloadobject.asm"
+.include "object_checkmaxobjectspace.asm"
 
 .align 0x10
 .importobj "../build/bundle.o"

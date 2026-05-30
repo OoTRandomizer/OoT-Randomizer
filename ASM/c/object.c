@@ -40,7 +40,7 @@ int16_t Object_LoadExtra(z64_game_t* play, int16_t objectId, uint8_t syncDma) {
         }
     }
 
-    if(slot != -1) {
+    if (slot != -1) {
         // Take the found slot
         z64_mem_obj_t* newEntry = &play->obj_ctxt.objects[slot];    // The new object
         z64_mem_obj_t* lastEntry = &play->obj_ctxt.objects[play->obj_ctxt.n_objects-1]; // Previous last added object
@@ -48,14 +48,25 @@ int16_t Object_LoadExtra(z64_game_t* play, int16_t objectId, uint8_t syncDma) {
         uint32_t lastSize = lastObjectFile->vromEnd - lastObjectFile->vromStart;
         newEntry->data = (void*)ALIGN16((uintptr_t)lastEntry->data + lastSize); // Gives pointer to start for the new object data
 
-        func_800982FC(&play->obj_ctxt, slot, objectId); // Set up data for adding the object to the slot on next update
-        play->obj_ctxt.n_objects++;
+        // Set up data for adding the object to the slot on next update or now
+        if (func_800982FC(&play->obj_ctxt, slot, objectId) != NULL) {
+            play->obj_ctxt.n_objects++;
 
-        if (syncDma) {
-            play->obj_ctxt.objects[slot].id = objectId;    // Uninvert the id because it will get loaded now
-            RomFile* objectFile = &gObjectTable[ABS(objectId)];    // Get object start pointer and size
-            uint32_t size = objectFile->vromEnd - objectFile->vromStart;
-            DmaMgr_RequestSync(newEntry->data, objectFile->vromStart, size);
+            if (syncDma) {
+                play->obj_ctxt.objects[slot].id = objectId;    // Uninvert the id because it will get loaded now
+                RomFile* objectFile = &gObjectTable[objectId];    // Get object start pointer and size
+                uint32_t size = objectFile->vromEnd - objectFile->vromStart;
+                DmaMgr_RequestSync(newEntry->data, objectFile->vromStart, size);
+            }
+
+        } else { // Loading new object would exceed object space
+            #ifdef DEBUG_MODE
+                char msg[256];
+                sprintf(msg, "Obj %d slot %d", objectId, slot);
+                Fault_AddHungupAndCrashImpl("Object_LoadExtra: No memory", msg);
+            #endif
+
+            return -1;  // Don't crash non-debug mode for now but this should not happen!
         }
     }
 
