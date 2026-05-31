@@ -39,3 +39,13 @@
 .org 0x80848578
     jal     Player_HoverMatrixPop
     sw      v0,4(s0)
+
+;================================================================================
+; Prevent softlock if Hookshot actor cannot spawn when equipping
+; (memory shortage due to Hyrule Field glitch, child equip etc)
+;================================================================================
+; Replaces  lw      a1,60(sp)
+;           sw      v0,924(a1)
+.org 0x808319d4         ; in Player_InitHookshotIA (0x8038a374)
+     jal     Player_HookshotCheckActorSpawn
+     lw      a1,60(sp)       ; displaced (loads player)

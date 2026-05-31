@@ -2,6 +2,7 @@
 
 * Fix a crash that could occur on Wii VC when starting a cutscene while climbing a ladder.
 * Fix a visual bug where ice traps appear very large if Link is wearing the Bunny Hood or hovering using the Hover Boots.
+* Fix a vanilla bug where the player can become unable to move when the Hookshot is pulled but fails to load.
 
 # 9.1
 

@@ -2,6 +2,7 @@
 #include "objects.h"
 #include "item_effects.h"
 #include "actor.h"
+#include "player.h"
 
 extern uint16_t current_textbox_id;
 
@@ -480,7 +481,7 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                 if (input_local_copy.pad_pressed.a) {
                     z64_GiveItem(&z64_game, Z64_ITEM_BUNNY_HOOD);
                     if (z64_game.pause_ctxt.state == PAUSE_STATE_OFF) {
-                        z64_usebutton(&z64_game, &z64_link, Z64_ITEM_BUNNY_HOOD, 2);
+                        Player_UseItem(&z64_game, &z64_link, Z64_ITEM_BUNNY_HOOD);
                     }
                 }
             }

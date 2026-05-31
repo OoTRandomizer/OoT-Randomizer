@@ -135,6 +135,7 @@ RANDO_CONTEXT:
 .include "big_poe.asm"
 .include "player_laddercutscenefix.asm"
 .include "player_bunny_hover_matrix.asm"
+.include "player_hookshotcheckspawn.asm"
 
 .align 0x10
 .importobj "../build/bundle.o"
