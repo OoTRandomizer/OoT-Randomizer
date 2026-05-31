@@ -178,13 +178,19 @@ override_saria_song_check:
 ;==================================================================================================
 
 set_saria_song_flag:
-    lh      v0, 0xa4(t6)       ; v0 = scene
-    li      t0, SAVE_CONTEXT
-    lb      t1, 0x0EDF(t0)
-    ori     t1, t1, 0x80
-    sb      t1, 0x0EDF(t0)
-    jr      ra
+    lbu     t0,7532(a1)         ; play->csCtx.state
+    bnez    t0,@@Return         ; If not CS state idle, continue
+    li      t0,0x56             ; SFM scene id
+    lh      t1,164(a1)          ; play->sceneId
+    bnel    t0,t1,@@Return      ; If not SFM, continue
     nop
+    la      t0, SAVE_CONTEXT    ; If SFM and CS state idle = finished Saria's song CS
+    lb      t1, 0x0EDF(t0)
+    ori     t1, t1, 0x80        ; 0x80 Saria flag
+    sb      t1, 0x0EDF(t0)      ; Save item received flag
+@@Return:
+    jr      ra
+    move    a2,a1               ; displaced
 
 ;==================================================================================================
 
