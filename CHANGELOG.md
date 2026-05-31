@@ -5,6 +5,7 @@
 * Fix a vanilla bug where the player can become unable to move when the Hookshot is pulled but fails to load.
 * Fix a bug where the item on the `Song from Saria` location could be obtained multiple times by savewarping on the first frame after obtaining it, then returning to the location.
 * Fix a generator failure when a dungeon reward is selected as a random starting item and the Temple of Time altar is set to hint dungeon reward locations.
+* Fix a bug where overriding cosmetics could not override rainbow tunics.
 
 # 9.1
 
