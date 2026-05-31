@@ -740,6 +740,7 @@ SYMBOL TABLE:
 0001c1a4 g     F .text	00000054 countSetBitsRec
 000239d0 g     O .data	0000009c jabu_rooms
 0001fc70 g       .rodata	00000000 FONT_RESOURCE
+800aa6ec g       *ABS*	00000000 Matrix_Push
 00000000         *UND*	00000000 POTCRATE_GOLD_TEXTURE
 8038ef94 g       *ABS*	00000000 KaleidoScope_SetCursorVtx
 00042dec g     O .data	00000002 GANON_BOSS_KEY_CONDITION_COUNT
@@ -963,6 +964,7 @@ SYMBOL TABLE:
 0000024c g     F .text	0000008c get_newflag_override
 800d6218 g       *ABS*	00000000 Message_CloseTextbox
 0001d594 g     F .text	00000020 GetTradeItemIndex
+800aa724 g       *ABS*	00000000 Matrix_Pop
 00000000         *UND*	00000000 CFG_TUNIC_COLORS
 000281e0 g     O .data	000000bc bgm_sequence_ids
 0000136c g     F .text	000000fc draw_chest_base
