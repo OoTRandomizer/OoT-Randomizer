@@ -1246,6 +1246,7 @@
 80407308 player_ladder_cutscene
 8040731C @@player_ladder_return
 80407328 Play_ClearCameraAvoidMain
+80407340 @@CheckMain
 80407358 @@Return
 80407360 after_spawn_override_silver_rupee,00000018
 80407378 Actor_GetAdditionalData,00000008
