@@ -1,4 +1,4 @@
-Magic_SpellAddMagicTarget:          ; t0 is return value
+Magic_SpellAddMagicTarget:
     lh      at,5104(v1)             ; magicState
     lh      t0,5108(v1)             ; magicCapacity
     li      t9,9                    ; fill state
