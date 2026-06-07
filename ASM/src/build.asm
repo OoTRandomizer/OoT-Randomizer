@@ -136,6 +136,7 @@ RANDO_CONTEXT:
 .include "player_laddercutscenefix.asm"
 .include "player_bunny_hover_matrix.asm"
 .include "player_hookshotcheckspawn.asm"
+.include "magic_spelladdmagictarget.asm"
 
 .align 0x10
 .importobj "../build/bundle.o"
