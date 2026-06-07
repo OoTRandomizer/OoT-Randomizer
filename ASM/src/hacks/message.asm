@@ -17,6 +17,10 @@
 ;================================================================================
 ; Replaces: bnezl   t4,800e14a0
 ;           lw      t2,52(sp)
+;           lhu     v0,25336(t1)
+;           li      at,8289
 .org 0x800e13d8     ; in Message_Update
     jal     Message_GerudoCardMinimap
     lw      a0,96(sp)
+    bnezl   t4,0x800e14a0
+    lw      t2,52(sp)

@@ -30,13 +30,10 @@ EnGs_HitGossipStone:
     nop
 
 HyliaWater_SetupWaterFunction:
-    la      v1,SAVE_CONTEXT
-    lw      t6,4(v1)            ; Age
-    bnezl   t6,@@Return         ; Return if child
-    sw      t2,340(s0)          ; Set empty DoNothing as action function
-
     addiu   sp,sp,-24           ; Adult: spawn Gossip + set action function
     sw      ra,16(sp)
+    sh      a0,50(t9)           ; displaced
+    la      v1,SAVE_CONTEXT
     lhu     t5,0x0EDC(v1)       ; Check Morpha dead flag/used Water Temple blue warp
     andi    t5,t5,0x0400
     beqzl   t5,@@SpawnGossip    ; If Morpha not dead, still spawn Gossip +
@@ -49,11 +46,10 @@ HyliaWater_SetupWaterFunction:
     lw      a2,92(sp)           ; a2 play, old sp 68 + added 24
     jal     Actor_SpawnEntry
     addiu   a0,a2,0x1C24        ; a0 actorCtx
-    lw      ra,16(sp)
-    addiu   sp,sp,24
 @@Return:
+    lw      ra,16(sp)
     jr      ra
-    nop
+    addiu   sp,sp,24
 
 HyliaWater_WaterFunction:
     addiu   sp, sp, -0x28

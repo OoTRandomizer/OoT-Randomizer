@@ -12,7 +12,7 @@
         "length": 1
     },
     "APPLY_BONK_DAMAGE": {
-        "address": "034846CC",
+        "address": "034846C4",
         "length": 0
     },
     "AUDIOBANK_TABLE_EXTENDED": {
@@ -20,15 +20,15 @@
         "length": 2560
     },
     "AUDIO_THREAD_INFO": {
-        "address": "03484A90",
+        "address": "03484A88",
         "length": 24
     },
     "AUDIO_THREAD_INFO_MEM_SIZE": {
-        "address": "03484AAC",
+        "address": "03484AA4",
         "length": 4
     },
     "AUDIO_THREAD_INFO_MEM_START": {
-        "address": "03484AA8",
+        "address": "03484AA0",
         "length": 4
     },
     "AUDIO_THREAD_MEM_START": {
@@ -44,7 +44,7 @@
         "length": 4
     },
     "BONK_LAST_FRAME": {
-        "address": "03484618",
+        "address": "03484610",
         "length": 0
     },
     "CFG_ADULT_TRADE_SHUFFLE": {
@@ -76,7 +76,7 @@
         "length": 3
     },
     "CFG_BONK_DAMAGE": {
-        "address": "03484614",
+        "address": "03484608",
         "length": 2
     },
     "CFG_BOOM_TRAIL_INNER_COLOR": {
@@ -120,11 +120,11 @@
         "length": 6
     },
     "CFG_DAMAGE_MULTIPLYER": {
-        "address": "034845A4",
+        "address": "03484598",
         "length": 1
     },
     "CFG_DEADLY_BONKS": {
-        "address": "03484610",
+        "address": "03484604",
         "length": 4
     },
     "CFG_DISPLAY_DPAD": {
@@ -328,11 +328,11 @@
         "length": 1
     },
     "CHECK_FOR_BONK_CANCEL": {
-        "address": "0348467C",
+        "address": "03484674",
         "length": 0
     },
     "CHECK_ROOM_MESH_TYPE": {
-        "address": "034847AC",
+        "address": "034847A4",
         "length": 0
     },
     "CHEST_GILDED_TEXTURE": {
@@ -392,7 +392,7 @@
         "length": 4
     },
     "CURRENT_GROTTO_ID": {
-        "address": "03484952",
+        "address": "0348494A",
         "length": 1
     },
     "CURR_ACTOR_SPAWN_INDEX": {
@@ -440,7 +440,7 @@
         "length": 280
     },
     "EXTERN_DAMAGE_MULTIPLYER": {
-        "address": "034845A5",
+        "address": "03484599",
         "length": 1
     },
     "EXTRA_BOWLING_SHUFFLE": {
@@ -516,11 +516,11 @@
         "length": 4
     },
     "GROTTO_EXIT_LIST": {
-        "address": "03484910",
+        "address": "03484908",
         "length": 66
     },
     "GROTTO_LOAD_TABLE": {
-        "address": "0348488C",
+        "address": "03484884",
         "length": 132
     },
     "HIDEOUT_SHUFFLED": {
@@ -556,7 +556,7 @@
         "length": 1
     },
     "KING_DODONGO_BONKS": {
-        "address": "03484778",
+        "address": "03484770",
         "length": 0
     },
     "LACS_CONDITION": {
@@ -712,7 +712,7 @@
         "length": 4
     },
     "SET_BONK_FLAG": {
-        "address": "03484650",
+        "address": "03484648",
         "length": 0
     },
     "SHOW_CHEST_WITH_INVERTED_LENS": {
@@ -720,7 +720,7 @@
         "length": 0
     },
     "SHUFFLE_BEANS": {
-        "address": "034847E8",
+        "address": "034847E0",
         "length": 1
     },
     "SHUFFLE_CARPET_SALESMAN": {

@@ -2577,23 +2577,18 @@ skip_bombchu_bowling_prize_switch:
 
 .headersize (0x809cae60 - 0x00d5afe0)
 
-; For child, set DoNothing action function on scene init
-; Replaces: sw      t2,340(s0)
-;           b       809cb218 <BgSpot06Objects_Init+0x3b8>
-;           swc1    $f4,348(s0)
-.org 0x809cb1a4     ; in BgSpot06Objects_Init
-    swc1    $f4,348(s0) ; branch target
-    jal     HyliaWater_SetupWaterFunction
-    addi    ra,0x68
-
 ; For adult, spawn Gossip Stone and set action function depending on boss status
-; Replaces: b       809cb218
+; Replaces: lw      t9,40(t8)
+;           sh      a0,50(t9)
+;           b       809cb218
 ;           sw      t1,340(s0)
-.org 0x809cb16c     ; in BgSpot06Objects_Init
+.org 0x809cb164     ; in BgSpot06Objects_Init
     jal     HyliaWater_SetupWaterFunction
-    addi    ra,0xA4
+    lw      t9,40(t8)   ; displaced
+    b       0x809cb218
+    nop
 
-.headersize(0)
+.headersize (0)
 
 ; If hit water Gossip Stone, set flag to change level
 ; Replaces  jal     Message_StartTextbox

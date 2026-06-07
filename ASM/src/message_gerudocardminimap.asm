@@ -1,6 +1,5 @@
 Message_GerudoCardMinimap:
-    bnezl   t4,@@Return         ; displaced branching to 0x800e14a0
-    addi    ra,0xC0
+    bnez    t4,@@Return         ; displaced branching
     li      at,0x007B           ; Gerudo Card textId, v0 current textId
     bnel    v0,at,@@Return      ; If not card, continue as usual
     nop
@@ -18,5 +17,6 @@ Message_GerudoCardMinimap:
     lw      ra,16(sp)
     addiu   sp,sp,24
 @@Return:
+    lhu     v0,25336(t1)    ; displaced
     jr      ra
-    lw      t2,52(sp)
+    li      at,8289         ; displaced
