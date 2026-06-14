@@ -136,6 +136,8 @@ RANDO_CONTEXT:
 .include "player_laddercutscenefix.asm"
 .include "player_bunny_hover_matrix.asm"
 .include "player_hookshotcheckspawn.asm"
+.include "enge1_gtgcheckpermopen.asm"
+.include "gtggate_checkpermopen.asm"
 
 .align 0x10
 .importobj "../build/bundle.o"
