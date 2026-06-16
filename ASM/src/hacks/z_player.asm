@@ -49,3 +49,18 @@
 .org 0x808319d4         ; in Player_InitHookshotIA (0x8038a374)
      jal     Player_HookshotCheckActorSpawn
      lw      a1,60(sp)       ; displaced (loads player)
+
+;================================================================================
+; Prevent softlock if supersliding into cutscene by adding check in WaitForPutAway
+; for specific scene + csAction not none, to change into CS action function.
+; Which cutscenes are affected are thus specified in the function.
+;================================================================================
+; Replaces: lw      a2,24(sp)
+;           lw      a1,28(sp)
+;           lw      t8,1644(a2)
+;           move    a0,a2
+.org 0x808439c0         ; in Player_Action_WaitForPutAway
+    jal     Player_CSWaitPutAwaySoftlockFix
+    lw      a1,28(sp)           ; displaced
+    bnez    v0,0x80843a04       ; if CS, run afterPutAwayFunc to exit this action
+    lw      t8,1644(a2)         ; displaced; else, continue checks as usual
