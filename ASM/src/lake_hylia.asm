@@ -85,10 +85,15 @@ HyliaWater_WaterFunction:
     li      at, 0xC4A42000     ; at = water offset (-1313.0)
     lhu     t3, 0x0EE0(v0)
     andi    t4, t3, 0x0200     ;t3 = lake filled flag
+    lw      v0, 0x002C(sp)     ;v0 = global_context
+    lw      t8, 0x07C0(v0)     ;t8 = col_hdr
+    lw      t9, 0x0028(t8)     ;t9 = col_hdr.water
     beqz    t4, @@draining
     mtc1    at, f2
 
 @@filling:
+    li     at, 2203            ; set Gerudo waterbox zMin like vanilla
+    sh     at, 0x0014(t9)      ; set to 0x89b
     move   at, zero
     mtc1   at, f4              ;f4 = target displacement [0.00]
     lui    a2, 0x4080
@@ -98,18 +103,21 @@ HyliaWater_WaterFunction:
     c.lt.s f8, f4
     nop
     b      @@check_fill_max
-    addiu   t7, zero, 0xFBA7   ;t7 = FFFFFBA7 (-0x0459)
+    addiu   t7, zero, 0xFBA7   ;t7 = FFFFFBA7 (-0x0459) Gerudo water level
 
 @@draining:
+    li     at, 2153            ; set Gerudo waterbox zMin like vanilla
+    sh     at, 0x0014(t9)      ; set to 0x869
     lui    at, 0xC42A
-    mtc1   at, f4              ;f4 = target displacement [-680.00]
+    addiu  at, 0x2000
+    mtc1   at, f4              ;f4 = target displacement [-681.00]
     lui    a2, 0xC080
     mtc1   a2, f6              ;f6 = fill speed [-4.00]
     nop
     add.s  f8, f0, f6
     c.lt.s f4, f8
     nop
-    addiu   t7, zero, 0xFB57   ;t7 = FFFFFB57 (-0x04A9)
+    addiu   t7, zero, 0xFB57   ;t7 = FFFFFB57 (-0x04A9) Gerudo water level
 
 @@check_fill_max:
     ; if next fill level would pass the taget, then set to target
@@ -123,21 +131,29 @@ HyliaWater_WaterFunction:
     or      a0, s0, zero    ; restore
 
 @@skip_fill_update:
-    swc1    f4, 0x015C(s0)
-
+    swc1    f4,0x15c(s0)        ; set lake hylia water pos (separate actor variable)
+    ; set water actor y pos depending on lowest level or not
+    li      at,0xc42a2000       ; vanilla lowest water y position
+    mtc1    at,f6
+    c.eq.s  f4,f6               ; if water level = lowest
+    bc1t    @@DontChangeWater   ; don't use offset for actor y pos
+    add.s   f4,f4,f2            ; because this makes gerudo water not draw
+    b       @@UpdateWaterPos    ; but otherwise, use to draw rising/lowering
+    swc1    f4,0x28(s0)         ; actor y pos = offset waterbox surface pos
+@@DontChangeWater:
+    li      at,0xc4a42000       ; vanilla actor y pos
+    mtc1    at,f6
+    swc1    f6,0x28(s0)
+@@UpdateWaterPos:
     ; update water planes
-    add.s   f4, f4, f2
-    swc1    f4, 0x0028(s0)
     trunc.w.s   f16, f4
     mfc1    t1, f16            ;t1 = actor y-pos
-
     lw      v0, 0x002C(sp)     ;v0 = global_context
     lw      t8, 0x07C0(v0)     ;t8 = col_hdr
     lw      t9, 0x0028(t8)     ;t9 = col_hdr.water
-
     sh      t7, 0x0012(t9)     ;Water level when coming from Gerudo Valley
-    sh      t1, 0x0022(t9)     ;col_hdr.water[2].pos.y = actor y-pos
-    sh      t1, 0x0032(t9)     ;col_hdr.water[3].pos.y = actor y-pos
+    sh      t1, 0x0022(t9)     ;col_hdr.water[2].pos.y = main water surface1 = actor y-pos
+    sh      t1, 0x0032(t9)     ;col_hdr.water[3].pos.y = main water surface2 = actor y-pos
 
 @@return:
     lw      ra, 0x0024(sp)
