@@ -293,6 +293,20 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.write_int32s(0x14B9CB8, [0x00000000, 0x00000000, 0x00000000, 0x00000000])  # Boss Key (Key)
     rom.write_int32s(0x14B9F20, [0x00000000, 0x00000000, 0x00000000, 0x00000000])  # Boss Key (Gem)
 
+    if world.settings.climb_anywhere:
+        # Delete the check for SurfaceType_IsHookshotSurface from the hookshot actor
+        rom.write_int32(0xCADAF8, 0x00000000)
+        # Override default wall flags to add climbable surface flag
+        # See D_80119D90, SurfaceType wall properties in z_bgcheck.c in decomp
+        for idx in range(32):
+            if idx == 2:
+                # 3rd entry is for ladders, which have a different flag that
+                # centers link horizontally on the climbable surface
+                continue
+            wall_flags = rom.read_int32(0xB61F80 + idx * 4)
+            wall_flags = wall_flags | 0x00000008
+            rom.write_int32(0xB61F80 + idx*4, wall_flags)
+
     # Force language to be English in the event a Japanese rom was submitted
     rom.write_byte(0x3E, 0x45)
     rom.force_patch.append(0x3E)

@@ -395,6 +395,7 @@
             "text_shuffle",
             "damage_multiplier",
             "deadly_bonks",
+            "climb_anywhere",
             "starting_tod",
             "blue_fire_arrows",
             "fix_broken_drops",
