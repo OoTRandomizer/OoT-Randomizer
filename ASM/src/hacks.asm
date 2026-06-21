@@ -3509,8 +3509,8 @@ courtyard_guards_kill:
 .headersize(0x8092ACC0 - 0x00CC8430)
 ; Increase the size of DemoEffect actor to store override
 .org 0x8093019c
-; Replaces: .d32 0x00000190
-.d32 0x000001C0
+; Replaces: .dw 0x00000190
+.dw 0x000001C0
 
 ; Hook the function DemoEffect_DrawJewel
 .org 0x8092e3f8
