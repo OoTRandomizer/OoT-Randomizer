@@ -6,8 +6,44 @@ on:
     branches: [ "Dev" ]
 
 jobs:
-  test_assembly_build:
-    name: Build - Assembly
+  test_assembly_build_stable:
+    name: Build - Assembly - armips stable
+    runs-on: ubuntu-latest
+    container:
+      image: practicerom/practicerom-dev
+    strategy:
+      matrix:
+        python-version: ["3.x"]
+
+    steps:
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install armips dependencies
+        run: sudo apt-get update && sudo apt-get install -y cmake g++
+      - name: Lookup latest armips release
+        id: get_armips_release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LATEST_TAG=$(gh api repos/${{ github.repository }}/releases/latest | jq '.tag_name')
+          echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
+      - name: Checkout armips
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          repository: Kingcom/armips
+          ref: ${{ steps.get_armips_release.outputs.tag }}
+      - name: Build armips
+        run: mkdir build && cd build && cmake .. && cmake --build . --config Release && sudo mv armips /usr/local/bin/armips && cd ..
+      - uses: actions/checkout@v4
+      - name: Create fake base ROM
+        run: dd if=/dev/zero of=ASM/roms/base.z64 bs=64M count=1
+      - name: Run build scripts
+        run: python ASM/build.py --no-compile-c --mips-binutils-prefix mips64-ultra-elf-
+  test_assembly_build_head:
+    name: Build - Assembly - armips HEAD
     runs-on: ubuntu-latest
     container:
       image: practicerom/practicerom-dev
