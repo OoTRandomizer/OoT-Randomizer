@@ -9,8 +9,6 @@ jobs:
   test_assembly_build_stable:
     name: Build - Assembly - armips stable
     runs-on: ubuntu-latest
-    container:
-      image: practicerom/practicerom-dev
     strategy:
       matrix:
         python-version: ["3.x"]
