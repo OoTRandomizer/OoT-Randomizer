@@ -25,7 +25,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          LATEST_TAG=$(gh api repos/Kingcom/armips/releases/latest | jq '.tag_name')
+          LATEST_TAG=$(gh api repos/Kingcom/armips/releases/latest | jq -r '.tag_name')
           echo "tag=$LATEST_TAG" >> $GITHUB_OUTPUT
       - name: Checkout armips
         uses: actions/checkout@v4
