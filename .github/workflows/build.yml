@@ -6,8 +6,8 @@ on:
     branches: [ "Dev" ]
 
 jobs:
-  test_assembly_build:
-    name: Build - Assembly
+  test_assembly_build_head:
+    name: Build - Assembly - armips HEAD
     runs-on: ubuntu-latest
     container:
       image: practicerom/practicerom-dev
