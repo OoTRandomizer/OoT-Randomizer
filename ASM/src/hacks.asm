@@ -4063,6 +4063,19 @@ DemoEffect_DrawJewel_AfterHook:
 ; Add custom message control characters
 ;=========================================================================================
 
+; In Message_Decode at the last control code check (0x0A for new line)
+; Replaces
+;   addiu   at, r0, 0x000A
+;   bne     v0, at, 0x800DB32C
+.headersize (0x800110A0 - 0xA87000)
+.org 0x800DB314
+    j       Message_Decode_Control_Code_Hook_JP
+    nop
+
+;=========================================================================================
+; Add custom message control characters
+;=========================================================================================
+
 ; In Message_Decode at the last control code check (0x01 for new line)
 ; Replaces
 ;   addiu   at, r0, 0x0001

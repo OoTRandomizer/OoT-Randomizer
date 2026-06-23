@@ -3,12 +3,15 @@
 from __future__ import annotations
 import random
 from collections.abc import Callable, Iterable
-from typing import TYPE_CHECKING, Optional, Any
+from typing import TYPE_CHECKING, Optional, Any, Dict, Tuple, List
+from math import ceil
+import json
 
 from ItemList import REWARD_COLORS
 from HintList import misc_item_hint_table, misc_location_hint_table
 from TextBox import line_wrap
-from Utils import find_last
+from Utils import find_last, data_path
+from Language import Language
 
 if TYPE_CHECKING:
     from Rom import Rom
@@ -69,6 +72,53 @@ CONTROL_CODES: dict[int, tuple[str, int, Callable[[Any], str]]] = {
     0xF3: ('farores_wind_destination', 0, lambda _: '<farores_wind_destination>' ),
 }
 
+CONTROL_CHARS_JP: dict[str, tuple[str, str|int, int, int]] = {
+    '　': ('pad', '　', 0, 0x00),
+    '&': ('line-break', 0x0A, 0, 0x01),
+    '｝': ('end', '｝', 0, 0x02),
+    '^': ('box-break', '▼', 0, 0x04),
+    '#': ('color', 0x0B, 1, 0x05),
+    '☞': ('gap', 0x86C7, 1, 0x06),
+    '⇒': ('goto', '⇒', 2, 0x07),
+    '♂': ('instant', '♂', 0, 0x08),
+    '♀': ('un-instant', '♀', 0, 0x09),
+    '☜': ('keep-open', 0x86C8, 0, 0x0A),
+    '◆': ('event', '◆', 0, 0x0B),
+    '▲': ('box-break-delay', '▲', 1, 0x0C),
+    '◇': ('fade-out', '◇', 1, 0x0E),
+    '@': ('name', 0x874F, 0, 0x0F),
+    'Å': ('ocarina', 0x81F0, 0, 0x10),
+    '♭': ('sound', '♭', 2, 0x12),
+    '★': ('icon', '★', 1, 0x13),
+    '☝': ('speed', 0x86C9, 1, 0x14),
+    '〠': ('background', 0x86B3, 3, 0x15),
+    '大⃝': ('marathon', 0x8791, 0, 0x16),
+    '小⃝': ('race', 0x8792, 0, 0x17),
+    '㊘': ('points', 0x879B, 0, 0x18),
+    '♠': ('skulltula', 0x86A3, 0, 0x19),
+    '☆': ('unskippable', '☆', 0, 0x1A),
+    '⊂': ('two-choice', '⊂', 0, 0x1B),
+    '∈': ('three-choice', '∈', 0, 0x1C),
+    '♣': ('fish', 0x86A4, 0, 0x1D),
+    '♤': ('highscore', 0x869F, 1, 0x1E),
+    '■': ('time', '■', 0, 0x1F),
+    '㍓': ('silver_rupee', 0x87F0, 1, 0xF0),
+    '♧': ('key_count', 0x87F1, 1, 0xF1),
+    '☼': ('outgoing_item_filename', 0x87F2, 0, 0xF2),
+    '▷': ('farores_wind_destination', 0x87F3, 0, 0xF3),
+}
+
+CC_PARSE_JP: Dict[int, Tuple[str, int, Callable[[Any], str]]] = {}
+
+for _k, (name_jp, byte, ext_len_jp, code) in CONTROL_CHARS_JP.items():
+    byte_key = byte if isinstance(byte, int) else int.from_bytes(byte.encode("cp932"), 'big')
+    try:
+        print_fmt = CONTROL_CODES[code][2]
+    except KeyError:
+        raise ValueError(f"The Value respondes with {name_jp!r} doesn't exist in CONTROL_CODES[{code:#04x}]")
+    CC_PARSE_JP[byte_key] = (name_jp, ext_len_jp, print_fmt, _k)
+
+
 # Maps unicode characters to corresponding bytes in OOTR's character set.
 CHARACTER_MAP: dict[str, int] = {
     'Ⓐ': 0x9F,
@@ -116,11 +166,71 @@ SPECIAL_CHARACTERS: dict[int, str] = {
     0xAA: '[Control Stick]',
 }
 
+SCJP: dict[int, str] = {k + 0x8300: v for k, v in SPECIAL_CHARACTERS.items()}
+
+JP_SPECIAL_CHAR_GLYPHS: dict[int, str] = {
+    code: bytes([(code >> 8) & 0xFF, code & 0xFF]).decode("cp932")
+    for code in SCJP.keys()
+}
+
+JP_TOKEN_TO_GLYPH: dict[str, str] = {
+    token: JP_SPECIAL_CHAR_GLYPHS[code]
+    for code, token in SCJP.items()
+}
+
+def normalize_jp_controller_tokens(text: str) -> str:
+    for token in sorted(JP_TOKEN_TO_GLYPH.keys(), key=len, reverse=True):
+        text = text.replace(token, JP_TOKEN_TO_GLYPH[token])
+    return text
+
 REVERSE_MAP: list[str] = list(chr(x) for x in range(256))
 
 for char, byte in CHARACTER_MAP.items():
     SPECIAL_CHARACTERS.setdefault(byte, char)
     REVERSE_MAP[byte] = char
+
+_jp_char_map_path = data_path('generated/jp_char_map.otrx')
+_refresh_jp_char_map_cache = False
+
+try:
+    with open(_jp_char_map_path, mode="r", encoding="utf-8") as f:
+        CHARACTER_MAP_JP, REVERSE_MAP_JP = json.load(f)
+except Exception:
+    CHARACTER_MAP_JP = {}
+    for cp in range(0x110000):
+        ch = chr(cp)
+        try:
+            b = ch.encode("cp932")
+        except UnicodeEncodeError:
+            continue                       # skip characters not in the JP font
+
+        if len(b) == 1:                    # single-byte (same as US ASCII & half-width kana)
+            code = b[0]
+        else:                              # two-byte sequence: high byte first
+            code = (b[0] << 8) | b[1]
+        CHARACTER_MAP_JP[ch] = code
+
+    # 2. add the controller glyphs explicitly (Greek Α … Μ)
+    for sjis_code, token in SCJP.items():
+        glyph = bytes([(sjis_code >> 8) & 0xFF, sjis_code & 0xFF]).decode("cp932")
+        CHARACTER_MAP_JP[glyph] = sjis_code
+
+    REVERSE_MAP_JP: List[str] = ["\uFFFD"] * 0x10000     # default U+FFFD for gaps
+
+    #  regular characters …
+    for ch, code in CHARACTER_MAP_JP.items():
+        if code < 0x10000:
+            REVERSE_MAP_JP[code] = ch
+
+    #  … then override with tokens for special controller inputs
+    for code, token in SCJP.items():
+        if code < 0x10000:
+            REVERSE_MAP_JP[code] = token
+    json.dump([CHARACTER_MAP_JP, REVERSE_MAP_JP], open(data_path('generated/jp_char_map.otrx'), mode="w"))
+
+for code, token in SCJP.items():
+    if code < len(REVERSE_MAP_JP):
+        REVERSE_MAP_JP[code] = token
 
 # [0x0500,0x0560] (inclusive) are reserved for plandomakers
 GOSSIP_STONE_MESSAGES: list[int] = list(range(0x0401, 0x04FF))  # ids of the actual hints
@@ -128,441 +238,42 @@ GOSSIP_STONE_MESSAGES += [0x2053, 0x2054]  # shared initial stone messages
 TEMPLE_HINTS_MESSAGES: list[int] = [0x7057, 0x707A]  # dungeon reward hints from the temple of time pedestal
 GS_TOKEN_MESSAGES: list[int] = [0x00B4, 0x00B5]  # Get Gold Skulltula Token messages
 ERROR_MESSAGE: int = 0x0001
+IMPORTANT_ITEM_MESSAGES_IDS = [
+    6, 28, 29, 30, 42, 97, 98, 99, 100, 101,
+    124, 125, 126, 127, 135, 136, 137, 138,
+    139, 140, 142, 143, 146, 147, 148, 149,
+    155, 159, 160, 161, 162, 163, 165, 166,
+    169, 243, 36891, 36892, 36893, 36894,
+    36895, 36896, 36897, 36898, 36899, 36900,
+    36901, 36902, 36903, 36904, 36905, 36906,
+    36907, 36908, 36909, 36910, 36911, 36912,
+    36913, 36914, 36915, 36916, 36917, 36918,
+    36919, 36920, 36921, 36922, 36923, 36924,
+    36925, 36926, 36927, 36928, 36929, 36930,
+    36931, 36932, 36933, 36934, 36937, 36941,
+    36942, 36943, 36944, 36945, 36946, 36947,
+    36950, 36952, 36955, 36956, 36957, 36960,
+    36961, 36962, 36963, 36965, 36966, 36967,
+    36968, 36969, 36970, 36971, 36973, 36975,
+    36976, 36977, 36980, 36981, 36982, 36983,
+    36984, 36985, 36986, 36987, 36988, 36989,
+    36990, 36991, 36992, 36993, 36994, 36995,
+    36996, 36997, 36998, 36999, 37000, 37001, 37002
+    ]
 
 new_messages = [] # Used to keep track of new/updated messages to prevent duplicates. Clear it at the start of patches
 
-# messages for shorter item messages
-# ids are in the space freed up by move_shop_item_messages()
-ITEM_MESSAGES: list[tuple[int, str]] = [
-    (0x0001, "\x08\x06\x30\x05\x41TEXT ID ERROR!\x05\x40"),
-    (0x9001, "\x08\x13\x2DYou borrowed a \x05\x41Pocket Egg\x05\x40!\x01A Pocket Cucco will hatch from\x01it overnight. Be sure to give it\x01back."),
-    (0x0002, "\x08\x13\x2FYou returned the Pocket Cucco\x01and got \x05\x41Cojiro\x05\x40 in return!\x01Unlike other Cuccos, Cojiro\x01rarely crows."),
-    (0x0003, "\x08\x13\x30You got an \x05\x41Odd Mushroom\x05\x40!\x01It is sure to spoil quickly! Take\x01it to the Kakariko Potion Shop."),
-    (0x0004, "\x08\x13\x31You received an \x05\x41Odd Potion\x05\x40!\x01It may be useful for something...\x01Hurry to the Lost Woods!"),
-    (0x0005, "\x08\x13\x32You returned the Odd Potion \x01and got the \x05\x41Poacher's Saw\x05\x40!\x01The young punk guy must have\x01left this."),
-    (0x0007, "\x08\x13\x48You got a \x01\x05\x41Deku Seeds Bullet Bag\x05\x40.\x01This bag can hold up to \x05\x4640\x05\x40\x01slingshot bullets."),
-    (0x0008, "\x08\x13\x33You traded the Poacher's Saw \x01for a \x05\x41Broken Goron's Sword\x05\x40!\x01Visit Biggoron to get it repaired!"),
-    (0x0009, "\x08\x13\x34You checked in the Broken \x01Goron's Sword and received a \x01\x05\x41Prescription\x05\x40!\x01Go see King Zora!"),
-    (0x000A, "\x08\x13\x37The Biggoron's Sword...\x01You got a \x05\x41Claim Check \x05\x40for it!\x01You can't wait for the sword!"),
-    (0x000B, "\x08\x13\x2EYou got a \x05\x41Pocket Cucco, \x05\x40one\x01of Anju's prized hens! It fits \x01in your pocket."),
-    (0x000C, "\x08\x13\x3DYou got the \x05\x41Biggoron's Sword\x05\x40!\x01This blade was forged by a \x01master smith and won't break!"),
-    (0x000D, "\x08\x13\x35You used the Prescription and\x01received an \x05\x41Eyeball Frog\x05\x40!\x01Be quick and deliver it to Lake \x01Hylia!"),
-    (0x000E, "\x08\x13\x36You traded the Eyeball Frog \x01for the \x05\x41World's Finest Eye Drops\x05\x40!\x01Hurry! Take them to Biggoron!"),
-    (0x0010, "\x08\x13\x25You got a \x05\x41Skull Mask\x05\x40.\x01You feel like a monster while you\x01wear this mask!"),
-    (0x0011, "\x08\x13\x26You got a \x05\x41Spooky Mask\x05\x40.\x01You can scare many people\x01with this mask!"),
-    (0x0012, "\x08\x13\x24You got a \x05\x41Keaton Mask\x05\x40.\x01You'll be a popular guy with\x01this mask on!"),
-    (0x0013, "\x08\x13\x27You got a \x05\x41Bunny Hood\x05\x40.\x01The hood's long ears are so\x01cute!"),
-    (0x0014, "\x08\x13\x28You got a \x05\x41Goron Mask\x05\x40.\x01It will make your head look\x01big, though."),
-    (0x0015, "\x08\x13\x29You got a \x05\x41Zora Mask\x05\x40.\x01With this mask, you can\x01become one of the Zoras!"),
-    (0x0016, "\x08\x13\x2AYou got a \x05\x41Gerudo Mask\x05\x40.\x01This mask will make you look\x01like...a girl?"),
-    (0x0017, "\x08\x13\x2BYou got a \x05\x41Mask of Truth\x05\x40.\x01Show it to many people!"),
-    (0x0030, "\x08\x13\x06You found the \x05\x41Fairy Slingshot\x05\x40!"),
-    (0x0031, "\x08\x13\x03You found the \x05\x41Fairy Bow\x05\x40!"),
-    (0x0035, "\x08\x13\x0EYou found the \x05\x41Boomerang\x05\x40!"),
-    (0x0036, "\x08\x13\x0AYou found the \x05\x41Hookshot\x05\x40!\x01It's a spring-loaded chain that\x01you can cast out to hook things."),
-    (0x0038, "\x08\x13\x11You found the \x05\x41Megaton Hammer\x05\x40!\x01It's so heavy, you need to\x01use two hands to swing it!"),
-    (0x0039, "\x08\x13\x0FYou found the \x05\x41Lens of Truth\x05\x40!\x01Mysterious things are hidden\x01everywhere!"),
-    (0x003A, "\x08\x13\x08You found the \x05\x41Ocarina of Time\x05\x40!\x01It glows with a mystical light..."),
-    (0x003C, "\x08\x13\x67You received the \x05\x41Fire\x01Medallion\x05\x40!\x01Darunia awakens as a Sage and\x01adds his power to yours!"),
-    (0x003D, "\x08\x13\x68You received the \x05\x43Water\x01Medallion\x05\x40!\x01Ruto awakens as a Sage and\x01adds her power to yours!"),
-    (0x003E, "\x08\x13\x66You received the \x05\x42Forest\x01Medallion\x05\x40!\x01Saria awakens as a Sage and\x01adds her power to yours!"),
-    (0x003F, "\x08\x13\x69You received the \x05\x46Spirit\x01Medallion\x05\x40!\x01Nabooru awakens as a Sage and\x01adds her power to yours!"),
-    (0x0040, "\x08\x13\x6BYou received the \x05\x44Light\x01Medallion\x05\x40!\x01Rauru the Sage adds his power\x01to yours!"),
-    (0x0041, "\x08\x13\x6AYou received the \x05\x45Shadow\x01Medallion\x05\x40!\x01Impa awakens as a Sage and\x01adds her power to yours!"),
-    (0x0042, "\x08\x13\x14You got an \x05\x41Empty Bottle\x05\x40!\x01You can put something in this\x01bottle."),
-    (0x0048, "\x08\x13\x10You got a \x05\x41Magic Bean\x05\x40!\x01Find a suitable spot for a garden\x01and plant it."),
-    (0x9048, "\x08\x13\x10You got a \x05\x41Pack of Magic Beans\x05\x40!\x01Find suitable spots for a garden\x01and plant them."),
-    (0x004A, "\x08\x13\x07You received the \x05\x41Fairy Ocarina\x05\x40!\x01This is a memento from Saria."),
-    (0x004B, "\x08\x13\x3DYou got the \x05\x42Giant's Knife\x05\x40!\x01Hold it with both hands to\x01attack! It's so long, you\x01can't use it with a \x05\x44shield\x05\x40."),
-    (0x004E, "\x08\x13\x40You found the \x05\x44Mirror Shield\x05\x40!\x01The shield's polished surface can\x01reflect light or energy."),
-    (0x004F, "\x08\x13\x0BYou found the \x05\x41Longshot\x05\x40!\x01It's an upgraded Hookshot.\x01It extends \x05\x41twice\x05\x40 as far!"),
-    (0x0052, "\x08You got a \x05\x42Magic Jar\x05\x40!\x01Your Magic Meter is filled!"),
-    (0x0053, "\x08\x13\x45You got the \x05\x41Iron Boots\x05\x40!\x01So heavy, you can't run.\x01So heavy, you can't float."),
-    (0x0054, "\x08\x13\x46You got the \x05\x41Hover Boots\x05\x40!\x01With these mysterious boots\x01you can hover above the ground."),
-    (0x0056, "\x08\x13\x4BYou upgraded your quiver to a\x01\x05\x41Big Quiver\x05\x40!\x01Now you can carry more arrows-\x01\x05\x4640 \x05\x40in total!"),
-    (0x0057, "\x08\x13\x4CYou upgraded your quiver to\x01the \x05\x41Biggest Quiver\x05\x40!\x01Now you can carry to a\x01maximum of \x05\x4650\x05\x40 arrows!"),
-    (0x0058, "\x08\x13\x4DYou found a \x05\x41Bomb Bag\x05\x40!\x01You found \x05\x4120 Bombs\x05\x40 inside!"),
-    (0x0059, "\x08\x13\x4EYou got a \x05\x41Big Bomb Bag\x05\x40!\x01Now you can carry more \x01Bombs, up to a maximum of \x05\x4630\x05\x40!"),
-    (0x005A, "\x08\x13\x4FYou got the \x01\x05\x41Biggest Bomb Bag\x05\x40!\x01Now, you can carry up to \x01\x05\x4640\x05\x40 Bombs!"),
-    (0x005B, "\x08\x13\x51You found the \x05\x43Silver Gauntlets\x05\x40!\x01You feel the power to lift\x01big things with it!"),
-    (0x005C, "\x08\x13\x52You found the \x05\x43Golden Gauntlets\x05\x40!\x01You can feel even more power\x01coursing through your arms!"),
-    (0x005E, "\x08\x13\x56You got an \x05\x43Adult's Wallet\x05\x40!\x01Now you can hold\x01up to \x05\x46200\x05\x40 \x05\x46Rupees\x05\x40."),
-    (0x005F, "\x08\x13\x57You got a \x05\x43Giant's Wallet\x05\x40!\x01Now you can hold\x01up to \x05\x46500\x05\x40 \x05\x46Rupees\x05\x40."),
-    (0x0060, "\x08\x13\x77You found a \x05\x41Small Key\x05\x40!\x01This key will open a locked \x01door. You can use it only\x01in this dungeon."),
-    (0x0066, "\x08\x13\x76You found the \x05\x41Dungeon Map\x05\x40!\x01It's the map to this dungeon."),
-    (0x0067, "\x08\x13\x75You found the \x05\x41Compass\x05\x40!\x01Now you can see the locations\x01of many hidden things in the\x01dungeon!"),
-    (0x0068, "\x08\x13\x6FYou obtained the \x05\x41Stone of Agony\x05\x40!\x01If you equip a \x05\x44Rumble Pak\x05\x40, it\x01will react to nearby...secrets."),
-    (0x0069, "\x08\x13\x23You received \x05\x41Zelda's Letter\x05\x40!\x01Wow! This letter has Princess\x01Zelda's autograph!"),
-    (0x006C, "\x08\x13\x49Your \x05\x41Deku Seeds Bullet Bag \x01\x05\x40has become bigger!\x01This bag can hold \x05\x4650\x05\x41 \x05\x40bullets!"),
-    (0x006F, "\x08You got a \x05\x42Green Rupee\x05\x40!\x01That's \x05\x42one Rupee\x05\x40!"),
-    (0x0070, "\x08\x13\x04You got the \x05\x41Fire Arrow\x05\x40!\x01If you hit your target,\x01it will catch fire."),
-    (0x0071, "\x08\x13\x0CYou got the \x05\x43Ice Arrow\x05\x40!\x01If you hit your target,\x01it will freeze."),
-    (0x0072, "\x08\x13\x12You got the \x05\x44Light Arrow\x05\x40!\x01The light of justice\x01will smite evil!"),
-    (0x0079, "\x08\x13\x50You got the \x05\x41Goron's Bracelet\x05\x40!\x01Now you can pull up Bomb\x01Flowers."),
-    (0x007B, "\x08\x13\x70You obtained the \x05\x41Gerudo's \x01Membership Card\x05\x40!\x01You can get into the Gerudo's\x01training ground."),
-    (0x0080, "\x08\x13\x6CYou got the \x05\x42Kokiri's Emerald\x05\x40!\x01This is the Spiritual Stone of \x01Forest passed down by the\x01Great Deku Tree."),
-    (0x0081, "\x08\x13\x6DYou obtained the \x05\x41Goron's Ruby\x05\x40!\x01This is the Spiritual Stone of \x01Fire passed down by the Gorons!"),
-    (0x0082, "\x08\x13\x6EYou obtained \x05\x43Zora's Sapphire\x05\x40!\x01This is the Spiritual Stone of\x01Water passed down by the\x01Zoras!"),
-    (0x0090, "\x08\x13\x00Now you can pick up \x01many \x05\x41Deku Sticks\x05\x40!\x01You can carry up to \x05\x4620\x05\x40 of them!"),
-    (0x0091, "\x08\x13\x00You can now pick up \x01even more \x05\x41Deku Sticks\x05\x40!\x01You can carry up to \x05\x4630\x05\x40 of them!"),
-    (0x0098, "\x08\x13\x1AYou got \x05\x41Lon Lon Milk\x05\x40!\x01This milk is very nutritious!\x01There are two drinks in it."),
-    (0x0099, "\x08\x13\x1BYou found \x05\x41Ruto's Letter\x05\x40 in a\x01bottle! Show it to King Zora."),
-    (0x9099, "\x08\x13\x1BYou found \x05\x41a letter in a bottle\x05\x40!\x01You remove the letter from the\x01bottle, freeing it for other uses."),
-    (0x009A, "\x08\x13\x21You got a \x05\x41Weird Egg\x05\x40!\x01Feels like there's something\x01moving inside!"),
-    (0x9097, "\x08\x13\x2EYou got a \x05\x41Chicken, \x05\x40one\x01of Anju's prized hens! It fits \x01in your pocket."),
-    (0x00A4, "\x08\x13\x3BYou got the \x05\x42Kokiri Sword\x05\x40!\x01This is a hidden treasure of\x01the Kokiri."),
-    (0x00A7, "\x08\x13\x01Now you can carry\x01many \x05\x41Deku Nuts\x05\x40!\x01You can hold up to \x05\x4630\x05\x40 nuts!"),
-    (0x00A8, "\x08\x13\x01You can now carry even\x01more \x05\x41Deku Nuts\x05\x40! You can carry\x01up to \x05\x4640\x05\x41 \x05\x40nuts!"),
-    (0x00AD, "\x08\x13\x05You got \x05\x41Din's Fire\x05\x40!\x01Its fireball engulfs everything!"),
-    (0x00AE, "\x08\x13\x0DYou got \x05\x42Farore's Wind\x05\x40!\x01This is warp magic you can use!"),
-    (0x00AF, "\x08\x13\x13You got \x05\x43Nayru's Love\x05\x40!\x01Cast this to create a powerful\x01protective barrier."),
-    (0x00B5, "\x08You destroyed a \x05\x41Gold Skulltula\x05\x40.\x01You got a token proving you \x01destroyed it!"), #Unused
-    (0x00C2, "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01Collect four pieces total to get\x01another Heart Container."),
-    (0x90C2, "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01You are already at\x01maximum health."),
-    (0x00C3, "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01So far, you've collected two \x01pieces."),
-    (0x00C4, "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01Now you've collected three \x01pieces!"),
-    (0x00C5, "\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01You've completed another Heart\x01Container!"),
-    (0x00C6, "\x08\x13\x72You got a \x05\x41Heart Container\x05\x40!\x01Your maximum life energy is \x01increased by one heart."),
-    (0x90C6, "\x08\x13\x72You got a \x05\x41Heart Container\x05\x40!\x01You are already at\x01maximum health."),
-    (0x00C7, "\x08\x13\x74You got the \x05\x41Boss Key\x05\x40!\x01Now you can get inside the \x01chamber where the Boss lurks."),
-    (0x00CC, "\x08You got a \x05\x43Blue Rupee\x05\x40!\x01That's \x05\x43five Rupees\x05\x40!"),
-    (0x00CD, "\x08\x13\x53You got the \x05\x43Silver Scale\x05\x40!\x01You can dive deeper than you\x01could before."),
-    (0x00CE, "\x08\x13\x54You got the \x05\x43Golden Scale\x05\x40!\x01Now you can dive much\x01deeper than you could before!"),
-    (0x00DD, "\x08You mastered the secret sword\x01technique of the \x05\x41Spin Attack\x05\x40!"),
-    (0x00E4, "\x08You can now use \x05\x42Magic\x05\x40!"),
-    (0x00E5, "\x08Your \x05\x44defensive power\x05\x40 is enhanced!"),
-    (0x00E8, "\x08Your magic power has been \x01enhanced! Now you have twice\x01as much \x05\x41Magic Power\x05\x40!"),
-    (0x00E9, "\x08Your defensive power has been \x01enhanced! Damage inflicted by \x01enemies will be \x05\x41reduced by half\x05\x40."),
-    (0x00F0, "\x08You got a \x05\x41Red Rupee\x05\x40!\x01That's \x05\x41twenty Rupees\x05\x40!"),
-    (0x00F1, "\x08You got a \x05\x45Purple Rupee\x05\x40!\x01That's \x05\x45fifty Rupees\x05\x40!"),
-    (0x00F2, "\x08You got a \x05\x46Huge Rupee\x05\x40!\x01This Rupee is worth a whopping\x01\x05\x46two hundred Rupees\x05\x40!"),
-    (0x00F4, "\x08\x05\x44Loser!\x05\x40\x04\x08You found only \x05\x42one Rupee\x05\x40.\x01You are not very lucky."),
-    (0x00F5, "\x08\x05\x44Loser!\x05\x40\x04\x08You found \x05\x43five Rupees\x05\x40.\x01Even so, you are not very lucky."),
-    (0x00F6, "\x08\x05\x44Loser!\x05\x40\x04\x08You found \x05\x41twenty Rupees\x05\x40.\x01Your last selection was a mistake,\x01wasn't it! How frustrating!"),
-    (0x00F7, "\x08\x05\x41Winner!\x05\x40\x04\x08You found \x05\x46fifty Rupees\x05\x40.\x01You are a genuinely lucky guy!"),
-    (0x00FA, "\x08\x06\x49\x05\x41WINNER\x05\x40!\x04\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01Collect four pieces total to get\x01another Heart Container."),
-    (0x00FB, "\x08\x06\x49\x05\x41WINNER\x05\x40!\x04\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01So far, you've collected two \x01pieces."),
-    (0x00FC, "\x08\x06\x49\x05\x41WINNER\x05\x40!\x04\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01Now you've collected three \x01pieces!"),
-    (0x00FD, "\x08\x06\x49\x05\x41WINNER\x05\x40!\x04\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01You've completed another Heart\x01Container!"),
-    (0x90FA, "\x08\x06\x49\x05\x41WINNER\x05\x40!\x04\x08\x13\x73You got a \x05\x41Piece of Heart\x05\x40!\x01You are already at\x01maximum health."),
-    #(0x6074, "\x08Oh, that's too bad.\x04\x08If you change your mind, please\x01come back again!\x04\x08The mark that will lead you to the\x01Spirit Temple is the \x05\x41flag on\x01the left \x05\x40outside the shop."),
-    (0x9002, "\x08You are a \x05\x43FOOL\x05\x40!"),
-    (0x9003, "\x08You found a piece of the \x05\x41Triforce\x05\x40!"),
-    (0x9019, "\x08\x13\x09You found a \x05\x41Bombchu Bag\x05\x40!\x01It has some \x05\x41Bombchus\x05\x40 inside!\x01Find more in tall grass."),
-    (0x901A, "\x08You can't buy Bombchus without a\x01\x05\x41Bombchu Bag\x05\x40!"),
-    (0x908C, "\x08You got the\x01\x05\x41Ocarina A Button!\x05\x40\x01You can now play \x9F on the Ocarina!"),
-    (0x908D, "\x08You got the\x01\x05\x41Ocarina C-up Button!\x05\x40\x01You can now play \xA5 on the Ocarina!"),
-    (0x908E, "\x08You got the\x01\x05\x41Ocarina C-down Button!\x05\x40\x01You can now play \xA6 on the Ocarina!"),
-    (0x908F, "\x08You got the\x01\x05\x41Ocarina C-left Button!\x05\x40\x01You can now play \xA7 on the Ocarina!"),
-    (0x9090, "\x08You got the\x01\x05\x41Ocarina C-right Button!\x05\x40\x01You can now play \xA8 on the Ocarina!"),
-    (0x9091, "\x08\x06\x28You have learned the\x01\x06\x2F\x05\x42Minuet of Forest\x05\x40!"),
-    (0x9092, "\x08\x06\x28You have learned the\x01\x06\x37\x05\x41Bolero of Fire\x05\x40!"),
-    (0x9093, "\x08\x06\x28You have learned the\x01\x06\x29\x05\x43Serenade of Water\x05\x40!"),
-    (0x9094, "\x08\x06\x28You have learned the\x01\x06\x2D\x05\x46Requiem of Spirit\x05\x40!"),
-    (0x9095, "\x08\x06\x28You have learned the\x01\x06\x28\x05\x45Nocturne of Shadow\x05\x40!"),
-    (0x9096, "\x08\x06\x28You have learned the\x01\x06\x32\x05\x44Prelude of Light\x05\x40!"),
-    # 0x9098 unused
-    # 0x9099 used above
-    (0x909A, "\x08\x06\x15You've learned \x05\x43Zelda's Lullaby\x05\x40!"),
-    (0x909B, "\x08\x06\x11You've learned \x05\x41Epona's Song\x05\x40!"),
-    (0x909C, "\x08\x06\x14You've learned \x05\x42Saria's Song\x05\x40!"),
-    (0x909D, "\x08\x06\x0BYou've learned the \x05\x46Sun's Song\x05\x40!"),
-    (0x909E, "\x08\x06\x05You've learned the \x05\x44Song of Time\x05\x40!"),
-    (0x909F, "\x08You've learned the \x05\x45Song of Storms\x05\x40!"),
-    (0x90A0, "\x08\x13\x15You got a \x05\x41Red Potion\x05\x40!\x01It will restore your health"),
-    (0x90A1, "\x08\x13\x16You got a \x05\x42Green Potion\x05\x40!\x01It will restore your magic."),
-    (0x90A2, "\x08\x13\x17You got a \x05\x43Blue Potion\x05\x40!\x01It will recover your health\x01and magic."),
-    (0x90A3, "\x08\x13\x18You caught a \x05\x41Fairy\x05\x40 in a bottle!\x01It will revive you\x01the moment you run out of life \x01energy."),
-    (0x90A4, "\x08\x13\x19You got a \x05\x41Fish\x05\x40!\x01It looks so fresh and\x01delicious!"),
-    (0x90A5, "\x08\x13\x1CYou put a \x05\x44Blue Fire\x05\x40\x01into the bottle!\x01This is a cool flame you can\x01use on red ice."),
-    (0x90A6, "\x08\x13\x1DYou put a \x05\x41Bug \x05\x40in the bottle!\x01This kind of bug prefers to\x01live in small holes in the ground."),
-    (0x90A7, "\x08\x13\x1EYou put a \x05\x41Big Poe \x05\x40in a bottle!\x01Let's sell it at the \x05\x41Ghost Shop\x05\x40!\x01Something good might happen!"),
-    (0x90A8, "\x08\x13\x20You caught a \x05\x41Poe \x05\x40in a bottle!\x01Something good might happen!"),
-    (0x90A9, "\x08\x13\x02You got \x05\x41Bombs\x05\x40!\x01If you see something\x01suspicious, bomb it!"),
-    (0x90AA, "\x08\x13\x01You got a \x05\x41Deku Nut\x05\x40!"),
-    (0x90AB, "\x08\x13\x09You got \x05\x41Bombchus\x05\x40!"),
-    (0x90AC, "\x08\x13\x00You got a \x05\x41Deku Stick\x05\x40!"),
-    (0x90AD, "\x08\x13\x3EYou got a \x05\x44Deku Shield\x05\x40!"),
-    (0x90AE, "\x08\x13\x3FYou got a \x05\x44Hylian Shield\x05\x40!"),
-    (0x90AF, "\x08\x13\x42You got a \x05\x41Goron Tunic\x05\x40!\x01Going to a hot place? No worry!"),
-    (0x90B0, "\x08\x13\x43You got a \x05\x43Zora Tunic\x05\x40!\x01Wear it, and you won't drown\x01underwater."),
-    (0x90B1, "\x08You got a \x05\x45Recovery Heart\x05\x40!\x01Your life energy is recovered!"),
-    (0x90B2, "\x08You got a \x05\x46bundle of arrows\x05\x40!"),
-    (0x90B3, "\x08\x13\x58You got \x05\x41Deku Seeds\x05\x40!\x01Use these as bullets\x01for your Slingshot."),
-    (0x90B4, "\x08You found a \x05\x41fairy\x05\x40!\x01Your health has been restored!"),
-    (0x90B5, "\x08You found \x05\x43literally nothing\x05\x40!"),
-]
 
-IMPORTANT_ITEM_MESSAGES: list[tuple[int, str]] = [
-    (0x001C, "\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x41Fire Temple\x05\x40!\x09"),
-    (0x0006, "\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x42Forest Temple\x05\x40!\x09"),
-    (0x001D, "\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x43Water Temple\x05\x40!\x09"),
-    (0x001E, "\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x46Spirit Temple\x05\x40!\x09"),
-    (0x002A, "\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09"),
-    (0x0061, "\x13\x74\x08You got the \x05\x41Boss Key\x05\x40\x01for \x05\x41Ganon's Castle\x05\x40!\x09"),
-    (0x0062, "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x42Deku Tree\x05\x40!\x09"),
-    (0x0063, "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for \x05\x41Dodongo's Cavern\x05\x40!\x09"),
-    (0x0064, "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for \x05\x43Jabu Jabu's Belly\x05\x40!\x09"),
-    (0x0065, "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x42Forest Temple\x05\x40!\x09"),
-    (0x007C, "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x41Fire Temple\x05\x40!\x09"),
-    (0x007D, "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x43Water Temple\x05\x40!\x09"),
-    (0x007E, "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x46Spirit Temple\x05\x40!\x09"),
-    (0x007F, "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09"),
-    (0x0087, "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x44Ice Cavern\x05\x40!\x09"),
-    (0x0088, "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x42Deku Tree\x05\x40!\x09"),
-    (0x0089, "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for \x05\x41Dodongo's Cavern\x05\x40!\x09"),
-    (0x008A, "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for \x05\x43Jabu Jabu's Belly\x05\x40!\x09"),
-    (0x008B, "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x42Forest Temple\x05\x40!\x09"),
-    (0x008C, "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x41Fire Temple\x05\x40!\x09"),
-    (0x008E, "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x43Water Temple\x05\x40!\x09"),
-    (0x008F, "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x46Spirit Temple\x05\x40!\x09"),
-    (0x0092, "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x44Ice Cavern\x05\x40!\x09"),
-    (0x0093, "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x42Forest Temple\x05\x40!\x09"),
-    (0x0094, "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x41Fire Temple\x05\x40!\x09"),
-    (0x0095, "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x43Water Temple\x05\x40!\x09"),
-    (0x009B, "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09"),
-    (0x009F, "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Gerudo Training\x01Ground\x05\x40!\x09"),
-    (0x00A0, "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Thieves' Hideout\x05\x40!\x09"),
-    (0x00A1, "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for \x05\x41Ganon's Castle\x05\x40!\x09"),
-    (0x00A2, "\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09"),
-    (0x00A3, "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09"),
-    (0x00A5, "\x13\x76\x08You found the \x05\x41Dungeon Map\x05\x40\x01for the \x05\x45Bottom of the Well\x05\x40!\x09"),
-    (0x00A6, "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x46Spirit Temple\x05\x40!\x09"),
-    (0x00A9, "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x45Shadow Temple\x05\x40!\x09"),
-    (0x00B4, "\x08You got a \x05\x41Gold Skulltula Token\x05\x40!\x01You've collected \x05\x41\x19\x05\x40 tokens in total."),
-    (0x00F3, "\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for the \x05\x44Treasure Box Shop\x05\x40!\x09"),
-    # 0x9019 and 0x901A used above
-    # Silver Rupee Messages with count.
-    (0x901B, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01staircase room in \x05\x41Dodongo's Cavern\x05\x40!\x01You have found \x05\x41\xF0\x00\x05\x40 so far!\x09"),
-    (0x901C, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x44spinning scythe room\x05\x40 in the \x05\x44Ice\x01Cavern\x05\x40! You have found \x05\x41\xF0\x01\x05\x40 so far!\x09"),
-    (0x901D, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x43push block room\x05\x40 in the \x05\x44Ice Cavern\x05\x40!\x01You have found \x05\x41\xF0\x02\x05\x40 so far!\x09"),
-    (0x901E, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01basement in the \x05\x45Bottom of the Well\x05\x40!\x01You have found \x05\x41\xF0\x03\x05\x40 so far!\x09"),
-    (0x901F, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x42scythe shortcut room\x05\x40 in the \x05\x45Shadow\x01Temple\x05\x40! You have found \x05\x41\xF0\x04\x05\x40 so far!\x09"),
-    (0x9020, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x44invisible blade room\x05\x40 in the \x05\x45Shadow\x01Temple\x05\x40! You have found \x05\x41\xF0\x05\x05\x40 so far!\x09"),
-    (0x9021, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x46huge pit\x05\x40 in the \x05\x45Shadow Temple\x05\x40!\x01You have found \x05\x41\xF0\x06\x05\x40 so far!\x09"),
-    (0x9022, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01room with \x05\x45invisible spikes\x05\x40 in the\x01\x05\x45Shadow Temple\x05\x40!\x01You have found \x05\x41\xF0\x07\x05\x40 so far!\x09"),
-    (0x9023, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x46sloped room\x05\x40 in the \x05\x46Gerudo Training\x01Ground\x05\x40! You have found \x05\x41\xF0\x08\x05\x40 so far!\x09"),
-    (0x9024, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the \x05\x41lava\x01room\x05\x40 in the \x05\x46Gerudo Training Ground\x05\x40!\x01You have found \x05\x41\xF0\x09\x05\x40 so far!\x09"),
-    (0x9025, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x43water room\x05\x40 in the \x05\x46Gerudo Training\x01Ground\x05\x40! You have found \x05\x41\xF0\x0A\x05\x40 so far!\x09"),
-    (0x9026, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x41torch room\x05\x40 in the child side of the\x01\x05\x46Spirit Temple\x05\x40! You have found \x05\x41\xF0\x0B\x05\x40\x01so far!\x09"),
-    (0x9027, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x42boulder room\x05\x40 in the adult side of the\x01\x05\x46Spirit Temple\x05\x40! You have found \x05\x41\xF0\x0C\x05\x40\x01so far!\x09"),
-    (0x9028, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x44lobby and adult side\x05\x40 of the \x05\x46Spirit\x01Temple\x05\x40! You have found \x05\x41\xF0\x0D\x05\x40 so far!\x09"),
-    (0x9029, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the \x05\x46sun\x01block room\x05\x40 in the \x05\x46Spirit Temple\x05\x40!\x01You have found \x05\x41\xF0\x0E\x05\x40 so far!\x09"),
-    (0x902A, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x43climbable wall\x05\x40 in the \x05\x46Spirit Temple\x05\x40!\x01You have found \x05\x41\xF0\x0F\x05\x40 so far!\x09"),
-    (0x902B, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x46Spirit Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x01You have found \x05\x41\xF0\x10\x05\x40 so far!\x09"),
-    (0x902C, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x44Light Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x01You have found \x05\x41\xF0\x11\x05\x40 so far!\x09"),
-    (0x902D, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the \x05\x41Fire\x01Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x01You have found \x05\x41\xF0\x12\x05\x40 so far!\x09"),
-    (0x902E, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x45Shadow Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x01You have found \x05\x41\xF0\x13\x05\x40 so far!\x09"),
-    (0x902F, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x43Water Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x01You have found \x05\x41\xF0\x14\x05\x40 so far!\x09"),
-    (0x9030, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x42Forest Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x01You have found \x05\x41\xF0\x15\x05\x40 so far!\x09"),
-    # Silver Rupee messages when all have been collected. IDs are 0x16 after the base messages and calculated in resolve_text_id_silver_rupees. Also used for silver rupee pouches
-    (0x9031, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the staircase room in\x01\x05\x41Dodongo's Cavern\x05\x40!\x09"),
-    (0x9032, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x44spinning scythe room\x05\x40\x01in the \x05\x44Ice Cavern\x05\x40!\x09"),
-    (0x9033, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x43push block room\x05\x40 in\x01the \x05\x44Ice Cavern\x05\x40!\x09"),
-    (0x9034, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the basement in the\x01\x05\x45Bottom of the Well\x05\x40!\x09"),
-    (0x9035, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x42scythe shortcut room\x05\x40\x01in the \x05\x45Shadow Temple\x05\x40!\x09"),
-    (0x9036, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x44invisible blade room\x05\x40 in\x01the \x05\x45Shadow Temple\x05\x40!\x09"),
-    (0x9037, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46huge pit\x05\x40 in the\x01\x05\x45Shadow Temple\x05\x40!\x09"),
-    (0x9038, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the room with \x05\x45invisible\x01spikes\x05\x40 in the \x05\x45Shadow Temple\x05\x40!\x09"),
-    (0x9039, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46sloped room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40!\x09"),
-    (0x903A, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x41lava room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40!\x09"),
-    (0x903B, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x43water room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40!\x09"),
-    (0x903C, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x41torch room\x05\x40 in the\x01child side of the \x05\x46Spirit Temple\x05\x40!\x09"),
-    (0x903D, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x42boulder room\x05\x40 in the\x01adult side of the \x05\x46Spirit Temple\x05\x40!\x09"),
-    (0x903E, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x44lobby and adult side\x05\x40\x01of the \x05\x46Spirit Temple\x05\x40!\x09"),
-    (0x903F, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46sun block room\x05\x40 in the\x01\x05\x46Spirit Temple\x05\x40!\x09"),
-    (0x9040, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x43climbable wall\x05\x40 in the\x01\x05\x46Spirit Temple\x05\x40!\x09"),
-    (0x9041, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46Spirit Trial\x05\x40 in \x05\x41Ganon's\x01Castle\x05\x40!\x09"),
-    (0x9042, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x44Light Trial\x05\x40 in \x05\x41Ganon's\x01Castle\x05\x40!\x09"),
-    (0x9043, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x41Fire Trial\x05\x40 in \x05\x41Ganon's\x01Castle\x05\x40!\x09"),
-    (0x9044, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x45Shadow Trial\x05\x40 in\x01\x05\x41Ganon's Castle\x05\x40!\x09"),
-    (0x9045, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x43Water Trial\x05\x40 in\x01\x05\x41Ganon's Castle\x05\x40!\x09"),
-    (0x9046, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x42Forest Trial\x05\x40 in\x01\x05\x41Ganon's Castle\x05\x40!\x09"),
-    # 0x9048 used above
-    # Silver Rupee messages for MQ dungeons when all have been collected. Offset 0x2E from the base messages.
-    (0x9049, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the staircase room in\x01\x05\x41Dodongo's Cavern\x05\x40! The way to the\x01hanging bridge is open!\x09"),
-    # 0x904A, 0x904B, and 0x904C unused
-    (0x904D, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x42scythe shortcut room\x05\x40\x01in the \x05\x45Shadow Temple\x05\x40! Now you can\x01access the \x05\x42chest\x05\x40 there!\x09"),
-    (0x904E, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x44invisible blade room\x05\x40 in\x01the \x05\x45Shadow Temple\x05\x40! Now you can\x01access the \x05\x44chest\x05\x40 there!\x09"),
-    (0x904F, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46huge pit\x05\x40 in the\x01\x05\x45Shadow Temple\x05\x40! A \x05\x46chest\x05\x40 has\x01appeared!\x09"),
-    (0x9050, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the room with \x05\x45invisible\x01spikes\x05\x40 in the \x05\x45Shadow Temple\x05\x40! The\x01way to the \x05\x45Stalfos room\x05\x40 is open!\x09"),
-    (0x9051, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46sloped room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40! The way to\x01the room with the \x05\x46heavy block\x05\x40 is\x04open!\x09"),
-    (0x9052, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x41lava room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40! The way to\x01the \x05\x41water room\x05\x40 is open!\x09"),
-    (0x9053, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x43water room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40! A \x05\x43chest\x05\x40\x01has appeared!\x09"),
-    # 0x9054 and 0x9055 unused
-    (0x9056, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x44lobby and adult side\x05\x40\x01of the \x05\x46Spirit Temple\x05\x40! A \x05\x44chest\x05\x40 has\x01appeared!\x09"),
-    # 0x9057 unused
-    (0x9058, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x43climbable wall\x05\x40 in the\x01\x05\x46Spirit Temple\x05\x40! The way to the\x01\x05\x43upstairs\x05\x40 is open!\x09"),
-    # 0x9059 and 0x905A unused
-    (0x905B, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x41Fire Trial\x05\x40 in \x05\x41Ganon's\x01Castle\x05\x40! The way to the \x05\x41final room\x05\x40 is\x01open!\x09"),
-    (0x905C, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x45Shadow Trial\x05\x40 in\x01\x05\x41Ganon's Castle\x05\x40! The way to the \x05\x45final\x01room\x05\x40 is open!\x09"),
-    (0x905D, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x43Water Trial\x05\x40 in\x01\x05\x41Ganon's Castle\x05\x40! The way to the \x05\x43final\x01room\x05\x40 is open!\x09"),
-    # 0x905E unused
-    # Silver Rupee messages for non-MQ dungeons when all have been collected. Offset 0x44 from the base messages.
-    # 0x905F unused
-    (0x9060, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x44spinning scythe room\x05\x40\x01in the \x05\x44Ice Cavern\x05\x40! The way to the\x01\x05\x44map room\x05\x40 is open!\x09"),
-    (0x9061, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x43push block room\x05\x40 in\x01the \x05\x44Ice Cavern\x05\x40! The way to the \x05\x43final\x01room\x05\x40 is open!\x09"),
-    (0x9062, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the basement in the\x01\x05\x45Bottom of the Well\x05\x40! Now you can\x01get back to the upper level!\x09"),
-    (0x9063, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x42scythe shortcut room\x05\x40\x01in the \x05\x45Shadow Temple\x05\x40! Now you can\x01access the \x05\x42chest\x05\x40 there!\x09"),
-    # 0x9064 unused
-    (0x9065, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46huge pit\x05\x40 in the\x01\x05\x45Shadow Temple\x05\x40! The way to the\x01room with \x05\x46falling spikes\x05\x40 is open!\x09"),
-    (0x9066, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the room with \x05\x45invisible\x01spikes\x05\x40 in the \x05\x45Shadow Temple\x05\x40! The\x01way to the room with the \x05\x45giant pot\x05\x40\x04is open!\x09"),
-    (0x9067, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46sloped room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40! The way to\x01the room with the \x05\x46heavy block\x05\x40 is\x04open!\x09"),
-    (0x9068, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x41lava room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40! The way to\x01the \x05\x41water room\x05\x40 is open!\x09"),
-    (0x9069, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x43water room\x05\x40 in the\x01\x05\x46Gerudo Training Ground\x05\x40! A \x05\x43chest\x05\x40\x01has appeared!\x09"),
-    (0x906A, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x41torch room\x05\x40 in the\x01child side of the \x05\x46Spirit Temple\x05\x40! Now\x01the \x05\x41metal bridge\x05\x40 there is lowered!\x09"),
-    (0x906B, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x42boulder room\x05\x40 in the\x01adult side of the \x05\x46Spirit Temple\x05\x40! Now\x01you can access the \x05\x42chest\x05\x40 there!\x09"),
-    # 0x906C unused
-    (0x906D, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46sun block room\x05\x40 in the\x01\x05\x46Spirit Temple\x05\x40! The \x05\x46torch\x05\x40 has been\x01lit!\x09"),
-    # 0x906E unused
-    (0x906F, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x46Spirit Trial\x05\x40 in \x05\x41Ganon's\x01Castle\x05\x40! The way to the \x05\x46second room\x05\x40\x01is open!\x09"),
-    (0x9070, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x44Light Trial\x05\x40 in \x05\x41Ganon's\x01Castle\x05\x40! The way to the \x05\x44final room\x05\x40 is\x01open!\x09"),
-    (0x9071, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x41Fire Trial\x05\x40 in \x05\x41Ganon's\x01Castle\x05\x40! The way to the \x05\x41final room\x05\x40 is\x01open!\x09"),
-    # 0x9072 and 0x9073 unused
-    (0x9074, "\x08You have found all of the \x05\x44Silver\x01Rupees\x05\x40 for the \x05\x42Forest Trial\x05\x40 in\x01\x05\x41Ganon's Castle\x05\x40! The way to the \x05\x42final\x01room\x05\x40 is open!\x09"),
-    # Silver Rupee messages without count. Offset 0x5A from the base messages.
-    (0x9075, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01staircase room in \x05\x41Dodongo's Cavern\x05\x40!\x09"),
-    (0x9076, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x44spinning scythe room\x05\x40 in the \x05\x44Ice\x01Cavern\x05\x40!\x09"),
-    (0x9077, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x43push block room\x05\x40 in the \x05\x44Ice Cavern\x05\x40!\x09"),
-    (0x9078, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01basement in the \x05\x45Bottom of the Well\x05\x40!\x09"),
-    (0x9079, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x42scythe shortcut room\x05\x40 in the \x05\x45Shadow\x01Temple\x05\x40!\x09"),
-    (0x907A, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x44invisible blade room\x05\x40 in the \x05\x45Shadow\x01Temple\x05\x40!\x09"),
-    (0x907B, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x46huge pit\x05\x40 in the \x05\x45Shadow Temple\x05\x40!\x09"),
-    (0x907C, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01room with \x05\x45invisible spikes\x05\x40 in the\x01\x05\x45Shadow Temple\x05\x40!\x09"),
-    (0x907D, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x46sloped room\x05\x40 in the \x05\x46Gerudo Training\x01Ground\x05\x40!\x09"),
-    (0x907E, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the \x05\x41lava\x01room\x05\x40 in the \x05\x46Gerudo Training Ground\x05\x40!\x09"),
-    (0x907F, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x43water room\x05\x40 in the \x05\x46Gerudo Training\x01Ground\x05\x40!\x09"),
-    (0x9080, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x41torch room\x05\x40 in the child side of the\x01\x05\x46Spirit Temple\x05\x40!\x09"),
-    (0x9081, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x42boulder room\x05\x40 in the adult side of the\x01\x05\x46Spirit Temple\x05\x40!\x09"),
-    (0x9082, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x44lobby and adult side\x05\x40 of the \x05\x46Spirit\x01Temple\x05\x40!\x09"),
-    (0x9083, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the \x05\x46sun\x01block room\x05\x40 in the \x05\x46Spirit Temple\x05\x40!\x09"),
-    (0x9084, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x43climbable wall\x05\x40 in the \x05\x46Spirit Temple\x05\x40!\x09"),
-    (0x9085, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x46Spirit Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09"),
-    (0x9086, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x44Light Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09"),
-    (0x9087, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the \x05\x41Fire\x01Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09"),
-    (0x9088, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x45Shadow Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09"),
-    (0x9089, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x43Water Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09"),
-    (0x908A, "\x08You found a \x05\x44Silver Rupee\x05\x40 for the\x01\x05\x42Forest Trial\x05\x40 in \x05\x41Ganon's Castle\x05\x40!\x09"),
-]
-
-dungeon_names = [
-    None, # Unused Deku Tree
-    None, # Unused Dodongos Cavern
-    None, # Unused Jabu
-    "the \x05\x42Forest Temple\x05\x40",
-    "the \x05\x41Fire Temple\x05\x40",
-    "the \x05\x43Water Temple\x05\x40",
-    "the \x05\x46Spirit Temple\x05\x40",
-    "the \x05\x45Shadow Temple\x05\x40",
-    "the \x05\x45Bottom of the Well\x05\x40",
-    None, # Unused Ice Cavern
-    None, # Unused Ganons Castle Tower
-    "the \x05\x46Gerudo Training\x01Ground\x05\x40",
-    "the \x05\x46Thieves' Hideout\x05\x40",
-    "\x05\x41Ganon's Castle\x05\x40",
-    None, # Unused Tower Collapse
-    None, # Unused Castle Collapse
-    "the \x05\x44Treasure Box Shop\x05\x40",
-]
-
-i = 0x9101
-# Add small key messages starting at 0x9101
-# These are grouped in dungeon order as follows:
-#       0x9101 - Small key messages for the first one collected
-#       0x9112 - Small key messages containing the count
-#       0x9123 - Small key messages for collecting more than enough
-
-for dungeon_name in dungeon_names:
-    if dungeon_name is not None:
-        IMPORTANT_ITEM_MESSAGES.append((i, f"\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for {dungeon_name}!\x01It's your \x05\x41first\x05\x40 one!\x09"))
-    i += 1
-c = 0
-for dungeon_name in dungeon_names:
-    if dungeon_name is not None:
-        IMPORTANT_ITEM_MESSAGES.append((i, f"\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for {dungeon_name}!\x01You've collected \x05\x41" + "\xF1" + c.to_bytes(1, 'big').decode() + "\x05\x40 of them.\x09"))
-    i += 1
-    c += 1
-for dungeon_name in dungeon_names:
-    if dungeon_name is not None:
-        IMPORTANT_ITEM_MESSAGES.append((i, f"\x13\x77\x08You found a \x05\x41Small Key\x05\x40\x01for {dungeon_name}!\x01You already have enough keys.\x09"))
-    i += 1
-
-# Add key ring messages starting at 0x9200
-i = 0x9200
-for dungeon_name in dungeon_names:
-    if dungeon_name is not None:
-        IMPORTANT_ITEM_MESSAGES.append((i, f"\x13\x77\x08You found a \x05\x41Small Key Ring\x05\x40\x01for {dungeon_name}!\x09"))
-    i += 1
-
-key_rings_with_bk_dungeon_names = [
-    "the \x05\x42Forest Temple\x05\x40",
-    "the \x05\x41Fire Temple\x05\x40",
-    "the \x05\x43Water Temple\x05\x40",
-    "the \x05\x46Spirit Temple\x05\x40",
-    "the \x05\x45Shadow Temple\x05\x40"
-]
-for dungeon_name in key_rings_with_bk_dungeon_names:
-    IMPORTANT_ITEM_MESSAGES.append((i, f"\x13\x77\x08You found a \x05\x41Key Ring\x05\x40\x01for {dungeon_name}!\x09\x01It includes the \x05\x41Boss Key\x05\x40!"))
-    i += 1
-
-COLOR_MAP: dict[str, str] = {
-    'White':      '\x40',
-    'Red':        '\x41',
-    'Green':      '\x42',
-    'Blue':       '\x43',
-    'Light Blue': '\x44',
-    'Pink':       '\x45',
-    'Yellow':     '\x46',
-    'Black':      '\x47',
+COLOR_MAP: dict[str, list[str, str]] = {
+    'White':      ['\x40', "00"],
+    'Red':        ['\x41', "01"],
+    'Green':      ['\x42', "02"],
+    'Blue':       ['\x43', "03"],
+    'Light Blue': ['\x44', "04"],
+    'Pink':       ['\x45', "05"],
+    'Yellow':     ['\x46', "06"],
+    'Black':      ['\x47', "07"],
 }
-
-MISC_MESSAGES: list[tuple[int, tuple[str | bytearray, int]]] = [
-    (0x0032, ("\x08\x13\x02You got \x05\x41Bombs\x05\x40!\x01If you see something\x01suspicious, bomb it!", 0x23)),
-    (0x0033, ("\x08\x13\x09You got \x05\x41Bombchus\x05\x40!", 0x23)),
-    (0x0034, ("\x08\x13\x01You got a \x05\x41Deku Nut\x05\x40!", 0x23)),
-    (0x0037, ("\x08\x13\x00You got a \x05\x41Deku Stick\x05\x40!", 0x23)),
-    (0x003B, ("\x08You cast Farore's Wind!\x01\x1C\x05\x42Return to \xF3\x01Dispel the Warp Point\x01Exit\x05\x40", 0x23)),
-    (0x0043, ("\x08\x13\x15You got a \x05\x41Red Potion\x05\x40!\x01It will restore your health", 0x23)),
-    (0x0044, ("\x08\x13\x16You got a \x05\x42Green Potion\x05\x40!\x01It will restore your magic.", 0x23)),
-    (0x0045, ("\x08\x13\x17You got a \x05\x43Blue Potion\x05\x40!\x01It will recover your health\x01and magic.", 0x23)),
-    (0x0046, ("\x08\x13\x18You caught a \x05\x41Fairy\x05\x40 in a bottle!\x01It will revive you\x01the moment you run out of life \x01energy.", 0x23)),
-    (0x0047, ("\x08\x13\x19You got a \x05\x41Fish\x05\x40!\x01It looks so fresh and\x01delicious!", 0x23)),
-    (0x004C, ("\x08\x13\x3EYou got a \x05\x44Deku Shield\x05\x40!", 0x23)),
-    (0x004D, ("\x08\x13\x3FYou got a \x05\x44Hylian Shield\x05\x40!", 0x23)),
-    (0x0050, ("\x08\x13\x42You got a \x05\x41Goron Tunic\x05\x40!\x01Going to a hot place? No worry!", 0x23)),
-    (0x0051, ("\x08\x13\x43You got a \x05\x43Zora Tunic\x05\x40!\x01Wear it, and you won't drown\x01underwater.", 0x23)),
-    (0x0055, ("\x08You got a \x05\x45Recovery Heart\x05\x40!\x01Your life energy is recovered!", 0x23)),
-    (0x005D, ("\x08\x13\x1CYou put a \x05\x44Blue Fire\x05\x40\x01into the bottle!\x01This is a cool flame you can\x01use on red ice.", 0x23)),
-    (0x007A, ("\x08\x13\x1DYou put a \x05\x41Bug \x05\x40in the bottle!\x01This kind of bug prefers to\x01live in small holes in the ground.", 0x23)),
-    (0x0097, ("\x08\x13\x20You caught a \x05\x41Poe \x05\x40in a bottle!\x01Something good might happen!", 0x23)),
-    (0x00DC, ("\x08\x13\x58You got \x05\x41Deku Seeds\x05\x40!\x01Use these as bullets\x01for your Slingshot.", 0x23)),
-    (0x00E6, ("\x08You got a \x05\x46bundle of arrows\x05\x40!", 0x23)),
-    (0x00F9, ("\x08\x13\x1EYou put a \x05\x41Big Poe \x05\x40in a bottle!\x01Let's sell it at the \x05\x41Ghost Shop\x05\x40!\x01Something good might happen!", 0x23)),
-    (0x507B, (bytearray(
-            b"\x08I tell you, I saw him!\x04"
-            b"\x08I saw the ghostly figure of Damp\x96\x01"
-            b"the gravekeeper sinking into\x01"
-            b"his grave. It looked like he was\x01"
-            b"holding some kind of \x05\x41treasure\x05\x40!\x02"
-            ), 0x00)),
-    (0x0422, ("They say that once \x05\x41Morpha's Curse\x05\x40\x01is lifted, striking \x05\x42this stone\x05\x40 can\x01shift the tides of \x05\x44Lake Hylia\x05\x40.\x02", 0x23)),
-    (0x401C, ("Please find my dear \05\x41Princess Ruto\x05\x40\x01immediately... Zora!\x12\x68\x7A", 0x03)),
-    (0x9100, ("I am out of goods now.\x01Sorry!\x04The mark that will lead you to\x01the Spirit Temple is the \x05\x41flag on\x01the left \x05\x40outside the shop.\x01Be seeing you!\x02", 0x00)),
-    (0x0451, ("\x12\x68\x7AMweep\x07\x04\x52", 0x23)),
-    (0x0452, ("\x12\x68\x7AMweep\x07\x04\x53", 0x23)),
-    (0x0453, ("\x12\x68\x7AMweep\x07\x04\x54", 0x23)),
-    (0x0454, ("\x12\x68\x7AMweep\x07\x04\x55", 0x23)),
-    (0x0455, ("\x12\x68\x7AMweep\x07\x04\x56", 0x23)),
-    (0x0456, ("\x12\x68\x7AMweep\x07\x04\x57", 0x23)),
-    (0x0457, ("\x12\x68\x7AMweep\x07\x04\x58", 0x23)),
-    (0x0458, ("\x12\x68\x7AMweep\x07\x04\x59", 0x23)),
-    (0x0459, ("\x12\x68\x7AMweep\x07\x04\x5A", 0x23)),
-    (0x045A, ("\x12\x68\x7AMweep\x07\x04\x5B", 0x23)),
-    (0x045B, ("\x12\x68\x7AMweep", 0x23)),
-    (0x045C, ("Come back when you have\x01your own bow and you'll get the\x01\x05\x41real prize\x05\x40!\x0E\x78", 0x00)),
-    (0x045D, ("\x12\x68\x5F\x05\x44This game seems shady. Maybe\x01the \x05\x41eye of truth\x05\x44 will show the\x01way forward?\x0E\x78", 0x00)),
-    (0x6013, ("Hey, newcomer!\x04Want me to throw you in jail?\x01\x01\x1B\x05\x42No\x01Yes\x05\x40", 0x00)),
-]
 
 
 # convert byte array to an integer
@@ -581,6 +292,38 @@ def display_code_list(codes: list[TextCode]) -> str:
         message += str(code)
     return message
 
+def encode_text_string_jp(text: str) -> list[int]:
+    text = normalize_jp_controller_tokens(text)
+
+    result = []
+    c = ""
+    q = 0
+    it = iter(text)
+    for ch in it:
+        if q != 0:
+            c += ch
+            q -= 1
+            if len(c) == 4 or (q == 0 and c != ""):
+                result.append(int(f"{c}", 16))
+                c = ""
+            continue
+        if ch in CONTROL_CHARS_JP.keys():
+            _, h, q, _ = CONTROL_CHARS_JP[ch]
+            if q % 2 == 1:
+                c += "0C" if ch == "#" else "00"
+            q *= 2
+            if type(h) == int:
+                result.append(h)
+            else:
+                result.append(int.from_bytes(h.encode("cp932"), "big"))
+            continue
+        mapped = CHARACTER_MAP_JP.get(ch)
+        if mapped:
+            result.append(mapped)
+            continue
+        else:
+            result.append(int.from_bytes(ch.encode("cp932"), "big"))
+    return result
 
 def encode_text_string(text: str) -> list[int]:
     result = []
@@ -602,14 +345,27 @@ def encode_text_string(text: str) -> list[int]:
         raise ValueError(f"While encoding {text!r}: Unable to translate unicode character {ch!r} ({n}).  (Already decoded: {result!r})")
     return result
 
-
-def parse_control_codes(text: list[int] | bytearray | str) -> list[TextCode]:
-    if isinstance(text, list):
-        text_bytes = text
-    elif isinstance(text, bytearray):
-        text_bytes = list(text)
+def bytearray_to_list(text: bytearray, lang: int):
+    l = list(text)
+    if lang:
+        return l
     else:
-        text_bytes = encode_text_string(text)
+        return [hi * 0x100 + lo for hi, lo in zip(l[::2], l[1::2])]
+
+def form_list(text: list[int], lang: int):
+    if lang: return text
+    else:
+        if all([t<256*256 for t in text]):
+            return text
+        return [hi * 0x100 + lo for hi, lo in zip(text[::2], text[1::2])]
+
+def parse_control_codes(text: list[int] | bytearray | str, lang: int) -> list[TextCode]:
+    if isinstance(text, list):
+        text_bytes = form_list(text, lang)
+    elif isinstance(text, bytearray):
+        text_bytes = bytearray_to_list(text, lang)
+    else:
+        text_bytes = encode_text_string(text) if lang else encode_text_string_jp(text)
 
     text_codes = []
     index = 0
@@ -617,94 +373,134 @@ def parse_control_codes(text: list[int] | bytearray | str) -> list[TextCode]:
         next_char = text_bytes[index]
         data = 0
         index += 1
-        if next_char in CONTROL_CODES:
-            extra_bytes = CONTROL_CODES[next_char][1]
-            if extra_bytes > 0:
-                data = bytes_to_int(text_bytes[index: index + extra_bytes])
-                index += extra_bytes
-        text_code = TextCode(next_char, data)
+        if lang:
+            if next_char in CONTROL_CODES:
+                extra_bytes = CONTROL_CODES[next_char][1]
+                if extra_bytes > 0:
+                    data = bytes_to_int(text_bytes[index: index + extra_bytes])
+                    index += extra_bytes
+        else:
+            if next_char in CC_PARSE_JP:
+                extra_bytes = ceil(CC_PARSE_JP[next_char][1]/2)
+                if extra_bytes > 0:
+                    dt = []
+                    for x in text_bytes[index: index + extra_bytes]:
+                        dt += [x >> 8 & 0xFF, x & 0xFF]
+                    data = bytes_to_int(dt)
+                    index += extra_bytes
+        text_code = TextCode(next_char, data, lang)
         text_codes.append(text_code)
-        if text_code.code == 0x02:  # message end code
+        if text_code.code == [0x8170, 0x02][lang]:  # message end code
             break
-
     return text_codes
+
 
 
 # holds a single character or control code of a string
 class TextCode:
-    def __init__(self, code: int, data: int) -> None:
+    def __init__(self, code: int, data: int, lang: str|int) -> None:
         self.code: int = code
-        if code in CONTROL_CODES:
-            self.type = CONTROL_CODES[code][0]
+        self.lang: int = 0 if lang in ["jp", 0] else 1
+        self.get_control_codes()
+        if code in self.CC:
+            self.type = self.CC[code][0]
         else:
             self.type = 'character'
         self.data: int = data
 
+    def get_control_codes(self):
+        if self.lang:
+            self.CC=CONTROL_CODES
+            self.SP=SPECIAL_CHARACTERS
+            self.RM=REVERSE_MAP
+        else:
+            self.CC=CC_PARSE_JP
+            self.SP=SCJP
+            self.RM=REVERSE_MAP_JP
+
     def display(self) -> str:
-        if self.code in CONTROL_CODES:
-            return CONTROL_CODES[self.code][2](self.data)
-        elif self.code in SPECIAL_CHARACTERS:
-            return SPECIAL_CHARACTERS[self.code]
-        elif self.code >= 0x7F:
+        if self.code in self.CC:
+            sub=self.data
+            if self.CC[self.code][0] == "color" and not self.lang:
+                sub -= 0x0C00
+            return self.CC[self.code][2](sub)
+        elif self.code in self.SP:
+            return self.SP[self.code]
+        elif self.code >= 0x7F and self.lang:
             return '?'
         else:
-            return chr(self.code)
+            if self.code == 0x86D3:
+                return '?'
+            return chr(self.code) if self.lang else int_to_bytes(self.code, 2).decode("cp932")
 
     def get_python_string(self) -> str:
-        if self.code in CONTROL_CODES:
+        if self.code in self.CC:
             ret = ''
             data = self.data
-            for _ in range(0, CONTROL_CODES[self.code][1]):
-                ret = f'\\x{data & 0xFF:02X}{ret}'
-                data = data >> 8
-            ret = f'\\x{self.code:02X}{ret}'
+            for _ in range(0, self.CC[self.code][1]):
+                ret = f'\\x{data & 0xFF:02X}{ret}' if self.lang else f'\\x{data & 0xFFFF:04X}{ret}'
+                data >>= 16 // (self.lang+1)
+            ret = f'\\x{self.code:02X}{ret}' if self.lang else f'\\x{self.code:04X}{ret}'
             return ret
-        elif self.code in SPECIAL_CHARACTERS:
-            return f'\\x{self.code:02X}'
-        elif self.code >= 0x7F:
+        elif self.code in self.SP:
+            return f'\\x{self.code:02X}' if self.lang else f'\\x{self.code:04X}'
+        elif self.code >= 0x7F and self.lang:
             return '?'
         else:
-            return chr(self.code)
+            return chr(self.code) if self.lang else int_to_bytes(self.code, 2).decode("cp932")
 
     def get_string(self) -> str:
-        if self.code in CONTROL_CODES:
+        if self.code in self.CC:
             ret = ''
             subdata = self.data
-            for _ in range(0, CONTROL_CODES[self.code][1]):
-                ret = chr(subdata & 0xFF) + ret
-                subdata = subdata >> 8
-            ret = chr(self.code) + ret
-            return ret
+            if self.lang:
+                for _ in range(0, self.CC[self.code][1]):
+                    ret = chr(subdata & 0xFF) + ret
+                    subdata >>= 16 // (self.lang+1)
+                ret = chr(self.code) + ret
+                return ret
+            else:
+                name, ext_len, _, literal=self.CC[self.code]
+                if name == "color":
+                    subdata -= 0x0C00
+                width = ext_len * 2
+                return literal+f"{subdata:0{width}X}" if ext_len!=0 else literal
         else:
             # raise ValueError(repr(REVERSE_MAP))
-            return REVERSE_MAP[self.code]
+            return self.RM[self.code]
 
     def size(self) -> int:
-        size = 1
-        if self.code in CONTROL_CODES:
-            size += CONTROL_CODES[self.code][1]
+        if self.lang:
+            size = 1
+            if self.code in self.CC:
+                size += self.CC[self.code][1]
+        else:
+            size = 2
+            if self.code in self.CC:
+                size += ceil(self.CC[self.code][1]/2)*2
         return size
 
     # writes the code to the given offset, and returns the offset of the next byte
     def write(self, rom: Rom, text_start: int, offset: int) -> int:
-        rom.write_byte(text_start + offset, self.code)
+        rom.write_bytes(text_start + offset, list(map(int, int_to_bytes(self.code, 2 - self.lang))))
 
         extra_bytes = 0
-        if self.code in CONTROL_CODES:
-            extra_bytes = CONTROL_CODES[self.code][1]
+        if self.code in self.CC:
+            extra_bytes = self.CC[self.code][1] if self.lang else ceil(self.CC[self.code][1] / 2) * 2
             bytes_to_write = int_to_bytes(self.data, extra_bytes)
-            rom.write_bytes(text_start + offset + 1, bytes_to_write)
+            rom.write_bytes(text_start + offset + (2 - self.lang), bytes_to_write)
 
-        return offset + 1 + extra_bytes
+        return offset + (2 - self.lang) + extra_bytes
 
     __str__ = __repr__ = display
 
 
 # holds a single message, and all its data
 class Message:
-    def __init__(self, raw_text: list[int] | bytearray | str, index: int, id: int, opts: int, offset: int, length: int) -> None:
+    def __init__(self, raw_text: list[int] | bytearray | str, index: int, id: int, opts: int, offset: int, length: int, lang: str) -> None:
+        self.lang: int = 0 if lang == "jp" else 1
         if isinstance(raw_text, str):
-            raw_text = encode_text_string(raw_text)
+            raw_text = encode_text_string(raw_text) if self.lang else encode_text_string_jp(raw_text)
         elif not isinstance(raw_text, bytearray):
             raw_text = bytearray(raw_text)
 
@@ -749,46 +545,74 @@ class Message:
             ret = ret + code.get_python_string()
         return ret
 
+    def get_string(self, left_control: bool = False) -> str:
+        ret = ''
+        for code in self.text_codes:
+            if left_control and code.code in code.CC:
+                ret += code.get_python_string()
+            else:
+                ret = ret + code.get_string()
+        return ret
+
     # check if this is an unused message that just contains it's own id as text
     def is_id_message(self) -> bool:
-        if self.unpadded_length != 5 or self.id == 0xFFFC:
+        if (self.lang and self.unpadded_length != 5) or self.id == 0xFFFC:
             return False
-        for i in range(4):
-            code = self.text_codes[i].code
-            if not (
-                    code in range(ord('0'), ord('9')+1)
-                    or code in range(ord('A'), ord('F')+1)
-                    or code in range(ord('a'), ord('f')+1)
-            ):
+        i = 0
+        start_i = 0
+        while i - start_i < 4:
+            try:
+                code = self.text_codes[i].code
+            except IndexError:
                 return False
+            if self.lang:
+                if not (
+                        code in range(ord('0'), ord('9')+1)
+                        or code in range(ord('A'), ord('F')+1)
+                        or code in range(ord('a'), ord('f')+1)
+                ):
+                    return False
+            else:
+                # In Japanese, some id messages use control codes as well for the dev's tests
+                if code in CC_PARSE_JP.keys():
+                    start_i += 1
+                    i += 1
+                    continue
+                if not (
+                        code in range(0x824F, 0x8258+1) # ０ - ９
+                        or code in range(0x8260, 0x8265+1) # Ａ - Ｆ
+                        or code in range(0x8281, 0x8286+1) # ａ - ｆ
+                ):
+                    return False
+            i += 1
         return True
 
     def parse_text(self) -> None:
-        self.text_codes = parse_control_codes(self.raw_text)
+        self.text_codes = parse_control_codes(self.raw_text, self.lang)
 
         index = 0
         for text_code in self.text_codes:
             index += text_code.size()
-            if text_code.code == 0x02:  # message end code
+            if text_code.code == [0x8170, 0x02][self.lang]:  # message end code
                 break
-            if text_code.code == 0x07:  # goto
+            if text_code.code == [0x81CB, 0x07][self.lang]:  # goto
                 self.has_goto = True
                 self.ending = text_code
-            if text_code.code == 0x0A:  # keep-open
+            if text_code.code == [0x86C8, 0x0A][self.lang]:  # keep-open
                 self.has_keep_open = True
                 self.ending = text_code
-            if text_code.code == 0x0B:  # event
+            if text_code.code == [0x819F, 0x0B][self.lang]:  # event
                 self.has_event = True
                 self.ending = text_code
-            if text_code.code == 0x0E:  # fade out
+            if text_code.code == [0x819E, 0x0E][self.lang]:  # fade out
                 self.has_fade = True
                 self.ending = text_code
-            if text_code.code == 0x10:  # ocarina
+            if text_code.code == [0x81F0, 0x10][self.lang]:  # ocarina
                 self.has_ocarina = True
                 self.ending = text_code
-            if text_code.code == 0x1B:  # two choice
+            if text_code.code == [0x81BC, 0x1B][self.lang]:  # two choice
                 self.has_two_choice = True
-            if text_code.code == 0x1C:  # three choice
+            if text_code.code == [0x81B8, 0x1C][self.lang]:  # three choice
                 self.has_three_choice = True
         self.text = display_code_list(self.text_codes)
         self.unpadded_length = index
@@ -809,59 +633,153 @@ class Message:
 
     # applies whatever transformations we want to the dialogs
     def transform(self, replace_ending: bool = False, ending: Optional[TextCode] = None,
-                  always_allow_skip: bool = True, speed_up_text: bool = True) -> None:
-        ending_codes = [0x02, 0x07, 0x0A, 0x0B, 0x0E, 0x10]
-        box_breaks = [0x04, 0x0C]
-        slows_text = [0x08, 0x09, 0x14]
-        slow_icons = [0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x04, 0x02]
+                always_allow_skip: bool = True, speed_up_text: bool = True) -> None:
 
-        text_codes = []
-        instant_text_code = TextCode(0x08, 0)
+        ending_codes = [[0x8170, 0x81CB, 0x86C8, 0x819F, 0x819E, 0x81F0],
+                        [0x02,   0x07,   0x0A,   0x0B,   0x0E,   0x10]][self.lang]
+        box_breaks   = [[0x81A5, 0x81A3], [0x04, 0x0C]][self.lang]
+        slows_text   = [[0x8189, 0x818A, 0x86C9], [0x08, 0x09, 0x14]][self.lang]
+        slow_icons   = [0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x04, 0x02]
 
-        # # speed the text
+        end_code          = [0x8170, 0x02][self.lang]
+        jp_goto           = 0x81CB  # JP only
+        color_code        = [0x0B, 0x05][self.lang]
+        icon_code         = [0x819A, 0x13][self.lang]
+        space_or_pad_code = [0x8140, 0x20][self.lang]  # fullwidth space / ASCII space
+
+        def tc(code: int, data: int = 0) -> TextCode:
+            return TextCode(code, data, self.lang)
+
+        instant_allow_code   = [0x8189, 0x08][self.lang]  # ♂ allow instant text
+        instant_disallow_code = [0x818A, 0x09][self.lang]  # ♀ disallow instant text
+        instant_text_code   = tc(instant_allow_code, 0)
+        uninstant_text_code = tc(instant_disallow_code, 0)
+
+        default_color = [0x0C00, 0x40][self.lang]
+
+        ignores: list[int] = []
+        if always_allow_skip:
+            ignores += [[0x8199, 0x1A][self.lang]]
+        # ignore anything that slows down text
+        if speed_up_text:
+            ignores += slows_text  # includes existing speed codes too
+
+        # If we are replacing the ending, strip the trailing ending sequence from the *source* message first.
+        # This prevents cases like "... <disallow><goto> <disallow><keep open>" where the original trailing goto
+        # survives and the new ending is merely appended.
+        src_codes = self.text_codes
+        if replace_ending and src_codes:
+            ending_set = set(ending_codes) - {end_code}
+            peel_set = {space_or_pad_code, color_code, instant_allow_code, instant_disallow_code} | ending_set
+
+            tmp = list(src_codes)
+
+            # drop trailing end marker(s) if present
+            while tmp and tmp[-1].code == end_code:
+                tmp.pop()
+
+            # drop trailing "formatting/instant/ending" cluster
+            while tmp and tmp[-1].code in peel_set:
+                tmp.pop()
+
+            src_codes = tmp
+
+        out: list[TextCode] = []
+
+        # instant state tracking (so we can avoid useless duplicates except when we *must* re-assert)
+        last_instant: Optional[bool] = None  # True=allow, False=disallow
+
+        def emit_instant(allow: bool, force: bool = False) -> None:
+            nonlocal last_instant
+            if (not force) and (last_instant is not None) and (last_instant == allow):
+                return
+            out.append(tc(instant_allow_code if allow else instant_disallow_code, 0))
+            last_instant = allow
+
+        # current color tracking
+        current_color = default_color
+
+        # start: allow instant
         if (speed_up_text
-                and self.id != 0x4078  # long recording scarecrow message after playback
+            and self.id != 0x4078  # long recording scarecrow message after playback
         ):
-            text_codes.append(instant_text_code) # allow instant
+            emit_instant(True, force=True)
 
-        # write the message
-        for code in self.text_codes:
-            # ignore ending codes if it's going to be replaced
-            if replace_ending and code.code in ending_codes:
-                pass
-            # ignore the "make unskippable flag"
-            elif always_allow_skip and code.code == 0x1A:
-                pass
-            # ignore anything that slows down text
-            elif speed_up_text and code.code in slows_text:
-                pass
-            elif speed_up_text and code.code in box_breaks:
-                # some special cases for text that needs to be on a timer
+        # --- main rewrite ---
+        for code in src_codes:
+            if code.code == end_code:
+                break
+            if code.code in ignores:
+                continue
+
+            # colors: only drop exact duplicates (do NOT drop tail #00 by "empty all()" logic)
+            if code.code == color_code:
+                if code.data == current_color:
+                    continue
+                out.append(code)
+                current_color = code.data
+                continue
+
+            # JP goto: must be preceded by disallow when speed-up is enabled
+            if speed_up_text and (not self.lang) and code.code == jp_goto:
+                emit_instant(False)
+                out.append(code)
+                continue
+
+            # box breaks: remove delay, then re-assert instant (force)
+            if speed_up_text and code.code in box_breaks:
+                # special cases for text that needs to remain on a timer
                 if (self.id == 0x605A or  # twinrova transformation
                     self.id == 0x706C or  # rauru ending text
                     self.id == 0x70DD or  # ganondorf ending text
                     self.id in (0x706F, 0x7091, 0x7092, 0x7093, 0x7094, 0x7095, 0x7070)  # zelda ending text
                 ):
-                    text_codes.append(code)
-                    text_codes.append(instant_text_code)  # allow instant
+                    out.append(code)
+                    emit_instant(True, force=True)
                 else:
-                    text_codes.append(TextCode(0x04, 0))  # un-delayed break
-                    text_codes.append(instant_text_code)  # allow instant
-            elif speed_up_text and code.code == 0x13 and code.data in slow_icons:
-                text_codes.append(code)
-                text_codes.pop(find_last(text_codes, instant_text_code))  # remove last instance of instant text
-                text_codes.append(instant_text_code)  # allow instant
-            else:
-                text_codes.append(code)
+                    out.append(tc([0x81A5, 0x04][self.lang], 0))  # un-delayed break
+                    emit_instant(True, force=True)
+                continue
 
+            # slow icons: must re-assert instant *after* the icon (force)
+            if speed_up_text and code.code == icon_code and code.data in slow_icons:
+                out.append(code)
+                emit_instant(True, force=True)
+                continue
+
+            out.append(code)
+
+        # write/replace ending
         if replace_ending:
-            if ending:
-                if speed_up_text and ending.code == 0x10:  # ocarina
-                    text_codes.append(TextCode(0x09, 0))  # disallow instant text
-                text_codes.append(ending)  # write special ending
-            text_codes.append(TextCode(0x02, 0))  # write end code
+            # write ending if provided
+            if ending is not None:
+                ending = tc(ending.code, ending.data)  # clone
 
-        self.text_codes = text_codes
+                # Rule: if speed-up is enabled, disallow must be placed immediately before ending
+                if speed_up_text:
+                    emit_instant(False)
+
+                out.append(ending)
+
+                # Rule: final color must be #00 if non-default is active
+                if current_color != default_color:
+                    out.append(tc(color_code, default_color))
+                    current_color = default_color
+
+            else:
+                # no special ending: still enforce "disallow near the end" when speeding up
+                if speed_up_text:
+                    emit_instant(False)
+
+                # enforce final color reset if needed
+                if current_color != default_color:
+                    out.append(tc(color_code, default_color))
+                    current_color = default_color
+
+            # always terminate
+            out.append(tc(end_code, 0))
+
+        self.text_codes = out
 
     # writes a Message back into the rom, using the given index and offset to update the table
     # returns the offset of the next message
@@ -878,7 +796,7 @@ class Message:
             offset = code.write(rom, text_start, offset)
 
         while offset % 4 > 0:
-            offset = TextCode(0x00, 0).write(rom, text_start, offset) # pad to 4 byte align
+            offset = TextCode(0x00, 0, self.lang).write(rom, text_start, offset) # pad to 4 byte align
 
         return offset
 
@@ -888,9 +806,11 @@ class Message:
         if eng:
             table_start = ENG_TABLE_START
             text_start = ENG_TEXT_START
+            lang = "en"
         else:
             table_start = JPN_TABLE_START
             text_start = JPN_TEXT_START
+            lang = "jp"
         entry_offset = table_start + 8 * index
         entry = rom.read_bytes(entry_offset, 8)
         next = rom.read_bytes(entry_offset + 8, 8)
@@ -902,17 +822,28 @@ class Message:
 
         raw_text = rom.read_bytes(text_start + offset, length)
 
-        return cls(raw_text, index, id, opts, offset, length)
+        return cls(raw_text, index, id, opts, offset, length, lang)
 
     @classmethod
-    def from_string(cls, text: str, id: int = 0, opts: int = 0x00) -> Message:
-        bytes = text + "\x02"
-        return cls(bytes, 0, id, opts, 0, len(bytes) + 1)
+    def from_string(cls, text: str, lang: str, id: int = 0, opts: int = 0x00) -> Message:
+        bytes = text
+        if not text.endswith('｝' if lang == 'jp' else '\x02'):
+            bytes += '｝' if lang == 'jp' else '\x02'
+        length = len(bytes) + 1
+        if lang != "en":
+            length *= 2
+        return cls(bytes, 0, id, opts, 0, length, lang)
 
     @classmethod
-    def from_bytearray(cls, text: bytearray, id: int = 0, opts: int = 0x00) -> Message:
-        bytes = list(text) + [0x02]
-        return cls(bytes, 0, id, opts, 0, len(bytes) + 1)
+    def from_bytearray(cls, text: bytearray, lang: str, id: int = 0, opts: int = 0x00) -> Message:
+        lang_int = 0 if lang == "jp" else 1
+        bytes = bytearray_to_list(text, lang_int)
+        if bytes[-1] != [0x8170, 0x02][lang_int]:
+            bytes += [0x8170, 0x02][lang_int]
+        length = len(bytes) + 1
+        if lang != "en":
+            length *= 2
+        return cls(bytes, 0, id, opts, 0, length, lang)
 
     __str__ = __repr__ = display
 
@@ -921,19 +852,31 @@ class Message:
 # if the id does not exist in the list, then it will add it
 # Checks if the message being updated is a newly added message in order to prevent duplicates.
 # Use allow_duplicates=True if the same message is purposely updated multiple times
-def update_message_by_id(messages: list[Message], id: int, text: bytearray | str, opts: Optional[int] = None, allow_duplicates: bool = False):
+def update_message_by_id(messages: list[Message], id: int, text: bytearray | str, lang: Language, opts: Optional[int] = None, allow_duplicates: bool = False, force_left: bool = False, overwrite_existed: bool = False):
     # Check is we have previously added/modified this message.
-    if id in new_messages and not allow_duplicates:
-        raise Exception(f'Attempting to add duplicate message {hex(id)}')
+    if id in new_messages:
+        if overwrite_existed:
+            # Find the existing message and update it
+            for i, msg in enumerate(messages):
+                if msg.id == id:
+                    update_message_by_index(messages, i, text, lang, opts)
+                    return
+        if not allow_duplicates:
+            raise Exception(f'Attempting to add duplicate message {hex(id)}')
 
     new_messages.append(id)
     # get the message index
     index = next( (m.index for m in messages if m.id == id), -1)
+
+    # align the text when the proposed align text by the language isn't "Left"
+    if lang.lang_property["align_text"] != "Left" and not force_left:
+        text = line_wrap(text, lang.base, align=lang.lang_property["align_text"])
+
     # update if it was found
     if index >= 0:
-        update_message_by_index(messages, index, text, opts)
+        update_message_by_index(messages, index, text, lang, opts)
     else:
-        add_message(messages, text, id, opts)
+        add_message(messages, text, lang, id, opts)
 
 
 # Gets the message by its ID. Returns None if the index does not exist
@@ -947,23 +890,23 @@ def get_message_by_id(messages: list[Message], id: int) -> Optional[Message]:
 
 
 # wrapper for updating the text of a message, given its index in the list
-def update_message_by_index(messages: list[Message], index: int, text: bytearray | str, opts: Optional[int] = None) -> None:
+def update_message_by_index(messages: list[Message], index: int, text: bytearray | str, lang: Language, opts: Optional[int] = None) -> None:
     if opts is None:
         opts = messages[index].opts
 
     if isinstance(text, bytearray):
-        messages[index] = Message.from_bytearray(text, messages[index].id, opts)
+        messages[index] = Message.from_bytearray(text, lang.base, messages[index].id, opts)
     else:
-        messages[index] = Message.from_string(text, messages[index].id, opts)
+        messages[index] = Message.from_string(text, lang.base, messages[index].id, opts)
     messages[index].index = index
 
 
 # wrapper for adding a string message to a list of messages
-def add_message(messages: list[Message], text: bytearray | str, id: int = 0, opts: int = 0x00) -> None:
+def add_message(messages: list[Message], text: bytearray | str, lang: Language, id: int = 0, opts: int = 0x00) -> None:
     if isinstance(text, bytearray):
-        messages.append(Message.from_bytearray(text, id, opts))
+        messages.append(Message.from_bytearray(text, lang.base, id, opts))
     else:
-        messages.append(Message.from_string(text, id, opts))
+        messages.append(Message.from_string(text, lang.base, id, opts))
     messages[-1].index = len(messages) - 1
 
 
@@ -1096,49 +1039,47 @@ def move_shop_item_messages(messages: list[Message], shop_items: Iterable[ShopIt
             shop.purchase_message |= 0x8000
 
 
-def make_player_message(text: str) -> str:
-    player_text = '\x05\x42\xF2\x05\x40'
-    pronoun_mapping = {
-        "You have ": player_text + " ",
-        "You are ":  player_text + " is ",
-        "You've ":   player_text + " ",
-        "Your ":     player_text + "'s ",
-        "You ":      player_text + " ",
-
-        "you have ": player_text + " ",
-        "you are ":  player_text + " is ",
-        "you've ":   player_text + " ",
-        "your ":     player_text + "'s ",
-        "you ":      player_text + " ",
-    }
-
-    verb_mapping = {
-        'obtained ': 'got ',
-        'received ': 'got ',
-        'learned ':  'got ',
-        'borrowed ': 'got ',
-        'found ':    'got ',
-    }
-
+def make_player_message(text: str, lang: Language) -> str:
+    pronoun_mapping = lang.pronoun_mapping
+    verb_mapping = lang.verb_mapping
     new_text = text
+    you_index = -1
 
-    # Replace the first instance of a 'You' with the player name
-    lower_text = text.lower()
-    you_index = lower_text.find('you')
-    if you_index != -1:
-        for find_text, replace_text in pronoun_mapping.items():
-            # if the index do not match, then it is not the first 'You'
-            if text.find(find_text) == you_index:
-                new_text = new_text.replace(find_text, replace_text, 1)
-                break
+    # Replace the first instance of a player-directed phrase with the player name
+    if lang.search is not None and lang.base != "jp":
+        lower_text = text.lower()
 
-    # because names are longer, we shorten the verbs to they fit in the textboxes better
+        if isinstance(lang.search, str):
+            search_terms = [lang.search]
+        elif isinstance(lang.search, (list, tuple, set)):
+            search_terms = [s for s in lang.search if isinstance(s, str) and s]
+        else:
+            raise TypeError(f"Unsupported lang.search type: {type(lang.search)}")
+
+        matches: list[tuple[int, int, str]] = []
+        for term in search_terms:
+            idx = lower_text.find(term.lower())
+            if idx != -1:
+                # earliest match first, and for same position prefer longer match
+                matches.append((idx, -len(term), term))
+
+        if matches:
+            matches.sort()
+            you_index = matches[0][0]
+
+        if you_index != -1:
+            for find_text, replace_text in sorted(pronoun_mapping.items(), key=lambda x: len(x[0]), reverse=True):
+                if lower_text.find(find_text.lower()) == you_index:
+                    new_text = new_text.replace(find_text, replace_text, 1)
+                    break
+
+    # because names are longer, we shorten verbs so they fit in the textboxes better
     for find_text, replace_text in verb_mapping.items():
         new_text = new_text.replace(find_text, replace_text)
 
-    wrapped_text = line_wrap(new_text, False, False, False)
+    wrapped_text = line_wrap(new_text, lang.base, False, False, False)
     if wrapped_text != new_text:
-        new_text = line_wrap(new_text, True, False, False)
+        new_text = line_wrap(new_text, lang.base, True, False, False)
 
     return new_text
 
@@ -1146,15 +1087,19 @@ def make_player_message(text: str) -> str:
 # reduce item message sizes and add new item messages
 # make sure to call this AFTER move_shop_item_messages()
 def update_item_messages(messages: list[Message], world: World) -> None:
-    new_item_messages = ITEM_MESSAGES + IMPORTANT_ITEM_MESSAGES
-    for id, text in new_item_messages:
-        if world.settings.world_count > 1:
-            update_message_by_id(messages, id, make_player_message(text), 0x23)
-        else:
-            update_message_by_id(messages, id, text, 0x23)
+    lang = world.language
 
-    for id, (text, opt) in MISC_MESSAGES:
-        update_message_by_id(messages, id, text, opt)
+    new_item_messages = lang.ITEM_MESSAGES + lang.IMPORTANT_ITEM_MESSAGES
+    for item_message in new_item_messages:
+        id, text = item_message["id"], item_message["text"]
+        if world.settings.world_count > 1:
+            update_message_by_id(messages, id, make_player_message(text, lang), lang, 0x23)
+        else:
+            update_message_by_id(messages, id, text, lang, 0x23)
+
+    for misc_text in lang.MISC_MESSAGES:
+        id, text, opt = misc_text["id"], misc_text["text"], misc_text["box_type"]
+        update_message_by_id(messages, id, text, lang, opt)
 
 # run all keysanity related patching to add messages for dungeon specific items
 def add_item_messages(messages: list[Message], shop_items: Iterable[ShopItem], world: World) -> None:
@@ -1163,8 +1108,8 @@ def add_item_messages(messages: list[Message], shop_items: Iterable[ShopItem], w
 
 
 # reads each of the game's messages into a list of Message objects
-def read_messages(rom: Rom) -> list[Message]:
-    table_offset = ENG_TABLE_START
+def read_messages(rom: Rom, lang: Language) -> list[Message]:
+    table_offset = JPN_TABLE_START if lang.base == "jp" else ENG_TABLE_START
     index = 0
     messages = []
     while True:
@@ -1176,8 +1121,9 @@ def read_messages(rom: Rom) -> list[Message]:
             continue # this is only here to give an ending offset
         if id == 0xFFFF:
             break # this marks the end of the table
+        if lang.base == "jp" and id == 0xFFFC: break
 
-        messages.append(Message.from_rom(rom, index))
+        messages.append(Message.from_rom(rom, index, eng = lang.base != "jp"))
 
         index += 1
         table_offset += 8
@@ -1209,7 +1155,7 @@ def read_fffc_message(rom: Rom) -> Message:
 
 
 # write the messages back
-def repack_messages(rom: Rom, messages: list[Message], permutation: Optional[list[int]] = None,
+def repack_messages(rom: Rom, messages: list[Message], lang: str, permutation: Optional[list[int]] = None,
                     always_allow_skip: bool = True, speed_up_text: bool = True) -> None:
     rom.update_dmadata_record_by_key(ENG_TEXT_START, ENG_TEXT_START, ENG_TEXT_START + ENG_TEXT_SIZE_LIMIT)
     rom.update_dmadata_record_by_key(JPN_TEXT_START, JPN_TEXT_START, JPN_TEXT_START + JPN_TEXT_SIZE_LIMIT)
@@ -1235,9 +1181,21 @@ def repack_messages(rom: Rom, messages: list[Message], permutation: Optional[lis
         remember_id = new_message.id
         new_message.id = old_message.id
 
+        # For debugging: create the debug text file for checking the message transformations
+        # with open("message_debug.txt", "a+", encoding="utf-8") as debug_file:
+        #     debug_file.write(f"Writing message 0x{new_message.id:04X} at offset 0x{offset:06X}\n")
+        #     debug_file.write(f"Message opts: {new_message.opts}\n")
+        #     debug_file.write(f"Message original text: {old_message.get_string()}\n")
+        #     debug_file.write(f"Message non-transformed text: {new_message.get_string()}\n")
+
         # modify message, making it represent how we want it to be written
         if new_message.id != 0xFFFC:
             new_message.transform(True, old_message.ending, always_allow_skip, speed_up_text)
+
+        # For debugging: create the debug text file for checking the message transformations
+        # with open("message_debug.txt", "a+", encoding="utf-8") as debug_file:
+        #     debug_file.write(f"Message transformed text: {new_message.get_string()}\n")
+        #     debug_file.write(f"Message text codes: {' '.join(f'0x{x.code:04X}' for x in new_message.text_codes)}\n\n")
 
         # check if there is space to write the message
         message_size = new_message.size()
@@ -1295,7 +1253,6 @@ def repack_messages(rom: Rom, messages: list[Message], permutation: Optional[lis
         raise(TypeError("Message ID table is too large: 0x" + "{:x}".format(8 * (table_index + 1)) + " written / 0x" + "{:x}".format(EXTENDED_TABLE_SIZE) + " allowed."))
     rom.write_bytes(entry_offset, [0xFF, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
 
-
 # shuffles the messages in the game, making sure to keep various message types in their own group
 def shuffle_messages(messages: list[Message], except_hints: bool = True) -> list[int]:
     if not hasattr(shuffle_messages, "shop_item_messages"):
@@ -1307,7 +1264,7 @@ def shuffle_messages(messages: list[Message], except_hints: bool = True) -> list
         GOSSIP_STONE_MESSAGES + TEMPLE_HINTS_MESSAGES +
         [data['id'] for data in misc_item_hint_table.values()] +
         [data['id'] for data in misc_location_hint_table.values()] +
-        [message_id for (message_id, message) in IMPORTANT_ITEM_MESSAGES] + shuffle_messages.shop_item_messages +
+        [message_id for message_id in IMPORTANT_ITEM_MESSAGES_IDS] + shuffle_messages.shop_item_messages +
         shuffle_messages.scrubs_message_ids +
         [0x5036, 0x70F5] # Chicken count and poe count respectively
     )
@@ -1319,7 +1276,7 @@ def shuffle_messages(messages: list[Message], except_hints: bool = True) -> list
             GOSSIP_STONE_MESSAGES + TEMPLE_HINTS_MESSAGES +
             [data['id'] for data in misc_item_hint_table.values()] +
             [data['id'] for data in misc_location_hint_table.values()] +
-            [message_id for (message_id, message) in IMPORTANT_ITEM_MESSAGES] +
+            [message_id for message_id in IMPORTANT_ITEM_MESSAGES_IDS] +
             shuffle_messages.shop_item_messages +
             shuffle_messages.scrubs_message_ids +
             [0x5036, 0x70F5] # Chicken count and poe count respectively
@@ -1364,7 +1321,8 @@ def shuffle_messages(messages: list[Message], except_hints: bool = True) -> list
 # Update warp song text boxes for ER
 def update_warp_song_text(messages: list[Message], world: World) -> None:
     from Hints import HintArea
-
+    lang = world.language
+    lang_num = 1 if lang.base == "jp" else 0
     msg_list = {
         0x088D: 'Minuet of Forest Warp -> Sacred Forest Meadow',
         0x088E: 'Bolero of Fire Warp -> DMC Central Local',
@@ -1382,102 +1340,126 @@ def update_warp_song_text(messages: list[Message], world: World) -> None:
         if 'warp_songs_and_owls' in world.settings.misc_hints or not world.settings.warp_songs:
             destination = world.get_entrance(entr).connected_region
             destination_name = HintArea.at(destination)
-            color = COLOR_MAP[destination_name.color]
-            if destination_name.preposition(True) is not None:
-                destination_name = f'to {destination_name}'
+            color = COLOR_MAP[destination_name.color][lang_num]
+            if destination_name.preposition(lang, True) is not None:
+                destination_name = lang.format_from_id("PATCH_TEXTS.warp_to", {"destination_name": destination_name.display_name(lang)})
         else:
-            destination_name = 'to a mysterious place'
-            color = COLOR_MAP['White']
+            destination_name = lang.PATCH_TEXTS["warp_mysterious"]
+            color = COLOR_MAP['White'][lang_num]
 
-        new_msg = f"\x08\x05{color}Warp {destination_name}?\x05\40\x09\x01\x01\x1b\x05\x42OK\x01No\x05\40"
-        update_message_by_id(messages, id, new_msg)
+        new_msg = lang.format_from_id("PATCH_TEXTS.warp_msg", {"destination_name": destination_name, "color": color})
+        update_message_by_id(messages, id, new_msg, world.language)
 
     if world.settings.owl_drops:
         for id, entr in owl_messages.items():
             if 'warp_songs_and_owls' in world.settings.misc_hints:
                 destination = world.get_entrance(entr).connected_region
                 destination_name = HintArea.at(destination)
-                color = COLOR_MAP[destination_name.color]
-                if destination_name.preposition(True) is not None:
-                    destination_name = f'to {destination_name}'
+                color = COLOR_MAP[destination_name.color][lang_num]
+                if destination_name.preposition(lang, True) is not None:
+                    destination_name = lang.format_from_id("PATCH_TEXTS.warp_to", {"destination_name": destination_name.display_name(lang)})
             else:
-                destination_name = 'to a mysterious place'
-                color = COLOR_MAP['White']
+                destination_name = lang.PATCH_TEXTS["warp_mysterious"]
+                color = COLOR_MAP['White'][lang_num]
 
-            new_msg = f"Hold on to my talons! I'll fly you\x01\x08\x05{color}{destination_name}\x05\40\x09!"
-            update_message_by_id(messages, id, new_msg)
+            new_msg = lang.format_from_id("PATCH_TEXTS.warp_owl", {"destination_name": destination_name, "color": color})
+            update_message_by_id(messages, id, new_msg, world.language)
 
 def update_map_compass_messages(messages: list[Message], world: World):
-    from Hints import HintArea, GossipText
+    from Hints import GossipText, HintArea
     maps_exist = world.settings.shuffle_map != 'remove'
     compasses_exist = world.settings.shuffle_compass != 'remove'
     if world.settings.enhance_map_compass and (maps_exist or compasses_exist) and world.settings.world_count == 1:
-        dungeon_list = {
-            #                      dungeon name                      compass map  name of the entrance leading to the boss
-            'Deku Tree':          ("the \x05\x42Deku Tree",          0x62, 0x88, "Deku Tree Before Boss -> Queen Gohma Boss Room"),
-            'Dodongos Cavern':    ("\x05\x41Dodongo\'s Cavern",      0x63, 0x89, "Dodongos Cavern Before Boss -> King Dodongo Boss Room"),
-            'Jabu Jabus Belly':   ("\x05\x43Jabu Jabu\'s Belly",     0x64, 0x8a, "Jabu Jabus Belly Before Boss -> Barinade Boss Room"),
-            'Forest Temple':      ("the \x05\x42Forest Temple",      0x65, 0x8b, "Forest Temple Before Boss -> Phantom Ganon Boss Room"),
-            'Fire Temple':        ("the \x05\x41Fire Temple",        0x7c, 0x8c, "Fire Temple Before Boss -> Volvagia Boss Room"),
-            'Water Temple':       ("the \x05\x43Water Temple",       0x7d, 0x8e, "Water Temple Before Boss -> Morpha Boss Room"),
-            'Spirit Temple':      ("the \x05\x46Spirit Temple",      0x7e, 0x8f, "Shadow Temple Before Boss -> Bongo Bongo Boss Room"),
-            'Ice Cavern':         ("the \x05\x44Ice Cavern",         0x87, 0x92),
-            'Bottom of the Well': ("the \x05\x45Bottom of the Well", 0xa2, 0xa5),
-            'Shadow Temple':      ("the \x05\x45Shadow Temple",      0x7f, 0xa3, "Spirit Temple Before Boss -> Twinrova Boss Room"),
+        dungeon_id_list = {
+                #                      compass map
+                'Deku Tree':          (0x62,   0x88, "Deku Tree Before Boss -> Queen Gohma Boss Room"),
+                'Dodongos Cavern':    (0x63,   0x89, "Dodongos Cavern Before Boss -> King Dodongo Boss Room"),
+                'Jabu Jabus Belly':   (0x64,   0x8a, "Jabu Jabus Belly Before Boss -> Barinade Boss Room"),
+                'Forest Temple':      (0x65,   0x8b, "Forest Temple Before Boss -> Phantom Ganon Boss Room"),
+                'Fire Temple':        (0x7c,   0x8c, "Fire Temple Before Boss -> Volvagia Boss Room"),
+                'Water Temple':       (0x7d,   0x8e, "Water Temple Before Boss -> Morpha Boss Room"),
+                'Spirit Temple':      (0x7e,   0x8f, "Spirit Temple Before Boss -> Twinrova Boss Room"),
+                'Shadow Temple':      (0x7f,   0xa3, "Shadow Temple Before Boss -> Bongo Bongo Boss Room"),
+                'Bottom of the Well': (0xa2,   0xa5),
+                'Ice Cavern':         (0x87,   0x92),
+            }
+        lang = world.language
+        dungeon_list = {dungeon: (value["name"], value["gender"]) for dungeon, value in lang.dungeon_list.items() if value["has_map"]}
+        dungeon_textbox_list = {dungeon: (value["name"], value["gender"]) for dungeon, value in lang.dungeon_list.items()}
+        dungeon_entrances_list = {
+            "Deku Tree": "KF Outside Deku Tree -> Deku Tree Lobby",
+            "Dodongos Cavern": "Death Mountain -> Dodongos Cavern Beginning",
+            "Jabu Jabus Belly": "Zoras Fountain -> Jabu Jabus Belly Beginning",
+            "Forest Temple": "SFM Forest Temple Entrance Ledge -> Forest Temple Lobby",
+            "Fire Temple": "DMC Fire Temple Entrance -> Fire Temple Lower",
+            "Water Temple": "Lake Hylia -> Water Temple Lobby",
+            "Shadow Temple": "Graveyard Warp Pad Region -> Shadow Temple Entryway",
+            "Spirit Temple": "Desert Colossus -> Spirit Temple Lobby",
+            "Bottom of the Well": "Kakariko Village -> Bottom of the Well",
+            "Ice Cavern": "ZF Ice Ledge -> Ice Cavern Beginning",
+            "Gerudo Training Ground": "Gerudo Fortress -> Gerudo Training Ground Lobby",
+            "Ganons Castle": "Ganons Castle Ledge -> Ganons Castle Lobby",
         }
-        dungeon_entrances_list = [
-            "KF Outside Deku Tree -> Deku Tree Lobby", "Death Mountain -> Dodongos Cavern Beginning", "Zoras Fountain -> Jabu Jabus Belly Beginning",
-            "SFM Forest Temple Entrance Ledge -> Forest Temple Lobby", "DMC Fire Temple Entrance -> Fire Temple Lower", "Lake Hylia -> Water Temple Lobby",
-            "Graveyard Warp Pad Region -> Shadow Temple Entryway", "Desert Colossus -> Spirit Temple Lobby", "Kakariko Village -> Bottom of the Well",
-            "ZF Ice Ledge -> Ice Cavern Beginning", "Gerudo Fortress -> Gerudo Training Ground Lobby", "Ganons Castle Ledge -> Ganons Castle Lobby",
-        ]
 
-        dungeon_textbox_list = [
-            "the \x05\x42Deku Tree", "\x05\x41Dodongo\'s Cavern", "\x05\x43Jabu Jabu\'s Belly",
-            "the \x05\x42Forest Temple", "the \x05\x41Fire Temple", "the \x05\x43Water Temple",
-            "the \x05\x45Shadow Temple", "the \x05\x46Spirit Temple", "the \x05\x45Bottom of the Well",
-            "the \x05\x44Ice Cavern", '\x05\x46Gerudo Training Grounds', "\x05\x41Ganons Castle",
-        ]
-
-        dungeon_entrances = []
+        dungeon_entrances = {}
         if 'map_dungeon_location' in world.settings.enhance_map_compass and world.settings.shuffle_dungeon_entrances != 'off':
-            for dungeon_entrance in dungeon_entrances_list:
+            for original_location, dungeon_entrance in dungeon_entrances_list.items():
                 connected_region = world.get_entrance(dungeon_entrance).connected_region
-                dungeon_entrances.append(connected_region.name)
+                dungeon_entrances[original_location] = connected_region.name
 
-        boss_textboxes = {
-            'Queen Gohma Boss Room': "\x05\x41Queen Gohma",
-            'King Dodongo Boss Room': "\x05\x41King Dodongo",
-            'Barinade Boss Room': "\x05\x41Barinade",
-            'Phantom Ganon Boss Room': "\x05\x41Phantom Ganon",
-            'Volvagia Boss Room': "\x05\x41Volvagia",
-            'Morpha Boss Room': "\x05\x41Morpha",
-            'Bongo Bongo Boss Room': "\x05\x41Bongo Bongo",
-            'Twinrova Boss Room': "\x05\x41Twinrova",
-            'Ganons Castle Tower': "\x05\x41Ganondorf",
-        }
+        boss_textboxes = lang.boss_textboxes
 
         for dungeon in world.dungeons:
             if dungeon.name in ('Gerudo Training Ground', 'Ganons Castle'):
                 pass
             elif dungeon.name in ('Bottom of the Well', 'Ice Cavern') and maps_exist:
-                dungeon_name, compass_id, map_id = dungeon_list[dungeon.name]
+                dungeon_name, dungeon_gender = dungeon_list[dungeon.name]
+                compass_id, map_id = dungeon_id_list[dungeon.name]
                 if 'map_dungeon_location' in world.settings.enhance_map_compass and world.settings.shuffle_dungeon_entrances != 'off':
-                    dungeon_index = [i for i, c in enumerate(dungeon_entrances) if dungeon.name in c]
+                    dungeon_index = [i for i, c in dungeon_entrances.items() if dungeon.name in c]
                     if dungeon.name not in ('Dodongos Cavern', 'Jabu Jabus Belly'):
-                        dungeon_name = dungeon_name.split(' ', 1)[1] # Remove the "the" to make room.
+                        for prefix in lang.hintPrefixes:
+                            if dungeon_name.startswith(prefix):
+                                dungeon_name = dungeon_name.replace(prefix, '', 1)
+                                break
+                    dungeon_location = dungeon_textbox_list[dungeon_index[0]]
                     if 'map_mq' in world.settings.enhance_map_compass and (world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12):
-                        map_message = f"\x13\x76\x08You found the \x05\x41Map\x05\x40 for\x05{COLOR_MAP['Red'] + 'masterful' if world.dungeon_mq[dungeon.name] else COLOR_MAP['Green'] + 'ordinary'}\x05\x40\x01{dungeon_name}\x05\x40! This dungeon\x01is at {dungeon_textbox_list[dungeon_index[0]]}!\x05\x40\x09"
+                        map_message = lang.format_from_id(
+                            "PATCH_TEXTS.map_location_mq",
+                            {
+                                "dungeon_name": dungeon_name,
+                                "dungeon_state": lang.PATCH_TEXTS['masterful'] if world.dungeon_mq[dungeon.name] else lang.PATCH_TEXTS['ordinary'],
+                                "dungeon_gender": dungeon_gender,
+                                "dungeon_location": dungeon_location[0],
+                                "location_gender": dungeon_location[1],
+                            }
+                        )
                     else:
-                        map_message = f"\x13\x76\x08You found the \x05\x41Map\x05\x40 for\x01{dungeon_name}\x05\x40!\x01This dungeon is at \x01{dungeon_textbox_list[dungeon_index[0]]}!\x05\x40\x09"
-                    update_message_by_id(messages, map_id, map_message, allow_duplicates=True)
+                        map_message = lang.format_from_id(
+                            "PATCH_TEXTS.map_location",
+                            {
+                                "dungeon_name": dungeon_name,
+                                "dungeon_gender": dungeon_gender,
+                                "dungeon_location": dungeon_location[0],
+                                "location_gender": dungeon_location[1],
+                            }
+                        )
+                    update_message_by_id(messages, map_id, map_message, lang, allow_duplicates=True, force_left=True)
                 else:
                     if 'map_mq' in world.settings.enhance_map_compass:
-                        map_message = f"\x13\x76\x08You found the \x05\x41Map\x05\x40\x01for {dungeon_name}\x05\x40!\x01It\'s \x05{COLOR_MAP['Red'] + 'masterful' if world.dungeon_mq[dungeon.name] else COLOR_MAP['Green'] + 'ordinary'}\x05\x40!\x09"
+                        map_message = lang.format_from_id(
+                            "PATCH_TEXTS.map",
+                            {
+                                "dungeon_name": dungeon_name,
+                                "dungeon_state": lang.PATCH_TEXTS["masterful"] if world.dungeon_mq[dungeon.name] else lang.PATCH_TEXTS["ordinary"],
+                                "dungeon_gender": dungeon_gender
+                            })
+
                         if world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12:
-                            update_message_by_id(messages, map_id, map_message, allow_duplicates=True)
+                            update_message_by_id(messages, map_id, map_message, lang, allow_duplicates=True, force_left=True)
             else:
-                dungeon_name, compass_id, map_id, boss_entrance = dungeon_list[dungeon.name]
+                dungeon_name, dungeon_gender = dungeon_list[dungeon.name]
+                compass_id, map_id, boss_entrance = dungeon_id_list[dungeon.name]
                 if compasses_exist:
                     if 'compass_reward' in world.settings.enhance_map_compass:
                         if world.settings.shuffle_dungeon_rewards != 'dungeon':
@@ -1488,41 +1470,113 @@ def update_map_compass_messages(messages: list[Message], world: World):
                                     area = HintArea.ROOT
                                 else:
                                     area = HintArea.at(vanilla_reward_location)
-                                area = GossipText(area.text(world.settings.clearer_hints, preposition=True, use_2nd_person=True), [area.color], prefix='', capitalize=False)
+                                area = GossipText(area.text(lang, world.settings.clearer_hints, preposition=True, use_2nd_person=True), lang, [area.color], prefix='', capitalize=False)
                                 if 'compass_boss_location' in world.settings.enhance_map_compass and world.settings.shuffle_bosses != 'off':
                                     boss_room = world.get_entrance(boss_entrance).connected_region.name
                                     compass_message = f"\x13\x75\x08You found the \x05\x41Compass\x05\x40 for\x01{dungeon_name}\x05\x40! {boss_textboxes[boss_room]}\x05\x40\x01lurks, and the {vanilla_reward}\x01is {area}!\x09"
+                                    compass_message = lang.format_from_id(
+                                        "PATCH_TEXTS.compass_boss_area",
+                                        {
+                                            "dungeon_name": dungeon_name,
+                                            "dungeon_gender": dungeon_gender,
+                                            "area": area,
+                                            "boss_name": boss_textboxes[boss_room],
+                                            "vanilla_reward": world.language.hintTable[vanilla_reward]["clear_hint"]
+                                        }
+                                    )
                                 else:
-                                    compass_message = f"\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for {dungeon_name}\x05\x40!\x01The {vanilla_reward} can be found\x01{area}!\x09"
+                                    compass_message = lang.format_from_id(
+                                        "PATCH_TEXTS.compass_area",
+                                        {
+                                            "dungeon_name": dungeon_name,
+                                            "area": area,
+                                            "vanilla_reward": world.language.hintTable[vanilla_reward]["clear_hint"],
+                                            "dungeon_gender": dungeon_gender
+                                        }
+                                    )
                             else:
                                 boss_location = next(filter(lambda loc: loc.type == 'Boss', world.get_entrance(f'{dungeon} Before Boss -> {dungeon.vanilla_boss_name} Boss Room').connected_region.locations))
                                 dungeon_reward = boss_location.item.name
                                 if 'compass_boss_location' in world.settings.enhance_map_compass and world.settings.shuffle_bosses != 'off':
                                     boss_room = world.get_entrance(boss_entrance).connected_region.name
-                                    compass_message = f"\x13\x75\x08You found the \x05\x41Compass\x05\x40 for\x01{dungeon_name}\x05\x40!\x01In this dungeon, {boss_textboxes[boss_room]}\x05\x40\x01guards the \x05{COLOR_MAP[REWARD_COLORS[dungeon_reward]]}{dungeon_reward}\x05\x40!\x09"
+                                    compass_message = lang.format_from_id(
+                                        "PATCH_TEXTS.compass_boss_reward",
+                                        {
+                                            "dungeon_name": dungeon_name,
+                                            "color": COLOR_MAP[REWARD_COLORS[dungeon_reward]][1 if lang.base == "jp" else 0],
+                                            "boss_name": boss_textboxes[boss_room],
+                                            "dungeon_reward": world.language.hintTable[dungeon_reward]["clear_hint"],
+                                            "dungeon_gender": dungeon_gender
+                                        }
+                                    )
                                 else:
-                                    compass_message = f"\x13\x75\x08You found the \x05\x41Compass\x05\x40\x01for {dungeon_name}\x05\x40!\x01It holds the \x05{COLOR_MAP[REWARD_COLORS[dungeon_reward]]}{dungeon_reward}\x05\x40!\x09"
-                            update_message_by_id(messages, compass_id, compass_message, allow_duplicates=True)
+                                    compass_message = lang.format_from_id(
+                                        "PATCH_TEXTS.compass",
+                                        {
+                                            "dungeon_name": dungeon_name,
+                                            "color": COLOR_MAP[REWARD_COLORS[dungeon_reward]][1 if lang.base == "jp" else 0],
+                                            "dungeon_reward": world.language.hintTable[dungeon_reward]["clear_hint"],
+                                            "dungeon_gender": dungeon_gender
+                                        }
+                                    )
+                            update_message_by_id(messages, compass_id, compass_message, lang, allow_duplicates=True, force_left=True)
                         else:
                             if 'compass_boss_location' in world.settings.enhance_map_compass and world.settings.shuffle_bosses != 'off':
                                 boss_room = world.get_entrance(boss_entrance).connected_region.name
-                                compass_message = f"\x13\x75\x08You found the \x05\x41Compass\x05\x40 for\x01{dungeon_name}\x05\x40! In this dungeon,\x01{boss_textboxes[boss_room]}\x05\x40 lurks!\x09"
-                                update_message_by_id(messages, compass_id, compass_message, allow_duplicates=True)
+                                compass_message = lang.format_from_id(
+                                    "PATCH_TEXTS.compass_boss",
+                                    {
+                                        "dungeon_name": dungeon_name,
+                                        "boss_name": boss_textboxes[boss_room],
+                                        "dungeon_gender": dungeon_gender
+                                    }
+                                )
+                                update_message_by_id(messages, compass_id, compass_message, lang, allow_duplicates=True, force_left=True)
                     else:
                         if 'compass_boss_location' in world.settings.enhance_map_compass and world.settings.shuffle_bosses != 'off':
                             boss_room = world.get_entrance(boss_entrance).connected_region.name
-                            compass_message = f"\x13\x75\x08You found the \x05\x41Compass\x05\x40 for\x01{dungeon_name}\x05\x40! In this dungeon,\x01{boss_textboxes[boss_room]}\x05\x40 lurks!\x09"
-                            update_message_by_id(messages, compass_id, compass_message, allow_duplicates=True)
+                            compass_message = lang.format_from_id(
+                                "PATCH_TEXTS.compass_boss",
+                                {
+                                    "dungeon_name": dungeon_name,
+                                    "boss_name": boss_textboxes[boss_room],
+                                    "dungeon_gender": dungeon_gender
+                                }
+                            )
+                            update_message_by_id(messages, compass_id, compass_message, lang, allow_duplicates=True, force_left=True)
                 if maps_exist:
                     if 'map_dungeon_location' in world.settings.enhance_map_compass and world.settings.shuffle_dungeon_entrances != 'off':
                         dungeon_index = [i for i, c in enumerate(dungeon_entrances) if dungeon.name in c]
                         dungeon_name = dungeon_name.removeprefix('the ') # to make room
                         if 'map_mq' in world.settings.enhance_map_compass and (world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12):
-                            map_message = f"\x13\x76\x08You found the \x05\x41Map\x05\x40 for \x05{COLOR_MAP['Red'] + 'masterful' if world.dungeon_mq[dungeon.name] else COLOR_MAP['Green'] + 'ordinary'}\x05\x40\x01{dungeon_name}\x05\x40! This dungeon\x01is at {dungeon_textbox_list[dungeon_index[0]]}\x05\x40!\x09"
+                            map_message = lang.format_from_id(
+                                "PATCH_TEXTS.map_location_mq",
+                                {
+                                    "dungeon_name": dungeon_name,
+                                    "dungeon_state": lang.PATCH_TEXTS['masterful'] if world.dungeon_mq[dungeon.name] else lang.PATCH_TEXTS['ordinary'],
+                                    "dungeon_gender": dungeon_gender,
+                                    "dungeon_location": dungeon_location[0],
+                                    "location_gender": dungeon_location[1],
+                                }
+                            )
                         else:
-                            map_message = f"\x13\x76\x08You found the \x05\x41Map\x05\x40 for\x01{dungeon_name}\x05\x40! This dungeon is\x01at {dungeon_textbox_list[dungeon_index[0]]}\x05\x40!\x09"
-                        update_message_by_id(messages, map_id, map_message, allow_duplicates=True)
+                            map_message = lang.format_from_id(
+                                "PATCH_TEXTS.map_location",
+                                {
+                                    "dungeon_name": dungeon_name,
+                                    "dungeon_gender": dungeon_gender,
+                                    "dungeon_location": dungeon_location[0],
+                                    "location_gender": dungeon_location[1],
+                                }
+                            )
+                        update_message_by_id(messages, map_id, map_message, lang, allow_duplicates=True, force_left=True)
                     else:
                         if 'map_mq' in world.settings.enhance_map_compass and (world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12 and maps_exist):
-                            map_message = f"\x13\x76\x08You found the \x05\x41Map\x05\x40 for\x01{dungeon_name}\x05\x40!\x01It\'s \x05{COLOR_MAP['Red'] + 'masterful' if world.dungeon_mq[dungeon.name] else COLOR_MAP['Green'] + 'ordinary'}\x05\x40!\x09"
-                            update_message_by_id(messages, map_id, map_message, allow_duplicates=True)
+                            map_message = lang.format_from_id(
+                                "PATCH_TEXTS.map",
+                                {
+                                    "dungeon_name": dungeon_name,
+                                    "dungeon_state": lang.PATCH_TEXTS["masterful"] if world.dungeon_mq[dungeon.name] else lang.PATCH_TEXTS["ordinary"],
+                                    "dungeon_gender": dungeon_gender
+                                })
+                            update_message_by_id(messages, map_id, map_message, lang, allow_duplicates=True, force_left=True)
