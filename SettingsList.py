@@ -62,7 +62,6 @@ class SettingInfos:
         gui_tooltip    = '''\
             Sets the language used within the game.
         ''',
-        shared         = True,
     )
 
     # GUI Only Buttons/Text

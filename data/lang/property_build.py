@@ -535,7 +535,11 @@ ITEM_MESSAGES = [
         "id": 0x9096,
         "text": "\x08\x06\x28You have learned the\x01\x06\x32\x05\x44Prelude of Light\x05\x40!",
     },
-    # 0x9097 and 0x9098 unused
+    {
+        "id": 0x9097,
+        "text": "\x08\x13\x2EYou got a \x05\x41Chicken, \x05\x40one\x01of Anju's prized hens! It fits \x01in your pocket.",
+    },
+    # 0x9098 unused
     # 0x9099 used above
     {
         "id": 0x909A,

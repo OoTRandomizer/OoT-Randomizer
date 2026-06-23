@@ -1037,6 +1037,10 @@
             "text": "\b\u0013\u001bYou found \u0005ARuto's Letter\u0005@ in a\u0001bottle! Show it to King Zora."
         },
         {
+            "id": 37015,
+            "text": "\b\u0013.You got a \u0005AChicken, \u0005@one\u0001of Anju's prized hens! It fits \u0001in your pocket."
+        },
+        {
             "id": 37017,
             "text": "\b\u0013\u001bYou found \u0005Aa letter in a bottle\u0005@!\u0001You remove the letter from the\u0001bottle, freeing it for other uses."
         },
