@@ -4168,3 +4168,5 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/sound.asm"
 .include "hacks/z_player.asm"
 .include "hacks/z_en_sa.asm"
+.include "hacks/en_box.asm"
+.include "hacks/z_scene.asm"
