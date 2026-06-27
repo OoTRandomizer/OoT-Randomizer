@@ -3692,16 +3692,10 @@ PLAIN_TEXTS = []
 # Keys may be visible characters ("A"), symbolic names ("[C-Up]"), message bytes ("0x9F"),
 # or direct table slots ("index:143").  Values may be numbers or {"default": n, "ntsc": n, "pal": n}.
 CHAR_WIDTHS = {
-    "A":1,
-    "I":1,
-    "U":1,
-    "E":1,
-    "O":1,
-    "a":1,
-    "i":1,
-    "u":1,
-    "e":1,
-    "o":1,
+    # Example:
+    # "W": 15,
+    # "í": 8,
+    # "index:143": 14,
 }
 
 
