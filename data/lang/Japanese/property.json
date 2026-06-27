@@ -9532,7 +9532,8 @@
         "base": "jp",
         "description": "Play with Japanese language.\nNTSC rom needed",
         "display_name": "Japanese",
-        "align_text": "Center"
+        "align_text": "Center",
+        "wide_text_english_metrics": false
     },
     "misc_dual_hint_table": {
         "skull_mask, mask_of_truth": {

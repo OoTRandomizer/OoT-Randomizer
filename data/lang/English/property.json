@@ -9607,7 +9607,8 @@
         "align_text": "Left",
         "base": "en",
         "description": "Play with English language.",
-        "display_name": "English"
+        "display_name": "English",
+        "wide_text_english_metrics": false
     },
     "language_specific_replace_table": [],
     "misc_dual_hint_table": {
