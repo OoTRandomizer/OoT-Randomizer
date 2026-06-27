@@ -21,7 +21,8 @@ extern int32_t DmaMgr_RequestSync(void* ram, uintptr_t vrom, size_t size);
  * - If crashing, if async DMA ensure that the object is loaded before the actor
  * is trying to draw (try sync DMA). Ensure that there is actually object slot and space
  * available for new object before drawing or doing anything else that requires object.
- *
+ * - Also, some actors spawn an Effect_Ss that require an object (such as Extra,
+ * GMagma2, FhgFlash lightball) and may crash on room transition when object is unloaded.
  */
 int16_t Object_LoadExtra(z64_game_t* play, int16_t objectId, uint8_t syncDma) {
     uint8_t i;
@@ -66,6 +67,7 @@ int16_t Object_LoadExtra(z64_game_t* play, int16_t objectId, uint8_t syncDma) {
                 Fault_AddHungupAndCrashImpl("Object_LoadExtra: No memory", msg);
             #endif
 
+            play->obj_ctxt.objects[slot].id = 0; // Gets set by func_800982FC before space check - remove
             return -1;  // Don't crash non-debug mode for now but this should not happen!
         }
     }
