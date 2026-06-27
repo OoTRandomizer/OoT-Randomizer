@@ -57,7 +57,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.scan_dmadata_update()
 
     lang = world.language
-    
+
     # Patch the character widths for the selected language.
     def patch_language_char_widths(rom: Rom, lang: Language) -> None:
         """Write property.json:CHAR_WIDTHS to the ASM-side LANG_CHAR_WIDTHS table."""
@@ -85,7 +85,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             )
 
         rom.write_bytes(rom.sym("LANG_CHAR_WIDTHS"), packed)
-    
+
     patch_language_char_widths(rom, lang)
 
 
