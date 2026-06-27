@@ -360,3 +360,29 @@ CFG_BOSSES:
 .area 0x240, 0
 LANG_CHAR_WIDTHS:
 .endarea
+
+
+;==================================================================================================
+; Language wide character width override table
+;==================================================================================================
+; Used only by JP/wide text mode languages.
+; Runtime default width is fixed at 16 pixels. Only entries listed in property.json:CHAR_WIDTHS
+; are written here, using compact pseudo-variable-length entries:
+;   u16 code, u8 width, u8 reserved
+; LANG_WIDE_TEXT_ENGLISH_METRICS is written by Patches.py from
+; lang_property.wide_text_english_metrics. 0 = vanilla JP metrics, 1 = English-like metrics.
+
+.align 4
+LANG_WIDE_TEXT_ENGLISH_METRICS:
+.byte 0
+.byte 0, 0, 0
+
+.align 4
+LANG_WIDE_CHAR_WIDTH_COUNT:
+.halfword 0
+.halfword 0
+
+.align 4
+.area 0x500, 0
+LANG_WIDE_CHAR_WIDTH_OVERRIDES:
+.endarea

@@ -35,13 +35,36 @@ CONTROL_CHARS: dict[str, list[str]] = {
 TEXT_END: str = '\x02'
 
 
+def _lang_base(lang):
+    return lang if isinstance(lang, str) else getattr(lang, "base", lang)
+
+
+def _lang_is_wide_english_metrics(lang) -> bool:
+    if isinstance(lang, str):
+        return False
+    fn = getattr(lang, "uses_wide_english_metrics", None)
+    if callable(fn):
+        return bool(fn())
+    return bool(getattr(lang, "lang_property", {}).get("wide_text_english_metrics", False))
+
+
+def _wide_char_width_map(lang) -> dict[int, int]:
+    if isinstance(lang, str):
+        return {}
+    fn = getattr(lang, "get_wide_char_width_overrides", None)
+    if not callable(fn):
+        return {}
+    return dict(fn())
+
+
 hex_string_regex: re.Pattern = re.compile(r"\$\{((?:[0-9a-f][0-9a-f] ?)+)}", flags=re.IGNORECASE)
 
 
 def line_wrap(text: str, lang: str, strip_existing_lines: bool = False, strip_existing_boxes: bool = False, replace_control_chars: bool = True, align: str = "Left"):
     # Replace stand-in characters with their actual control code.
-    lang_index = 0 if lang == "jp" else 1
-    line_box = LINES_PER_BOX if lang_index else LINES_PER_BOX_JP
+    base = _lang_base(lang)
+    lang_index = 0 if base == "jp" else 1
+    line_box = LINES_PER_BOX if (lang_index or _lang_is_wide_english_metrics(lang)) else LINES_PER_BOX_JP
 
     skip_align = [0x81BC, 0x81B8, 0x819A]
     if replace_control_chars and lang_index:
@@ -121,8 +144,8 @@ def line_wrap(text: str, lang: str, strip_existing_lines: bool = False, strip_ex
             if any([tc.code in skip_align for tc in box_codes[index:]]) and not any([tc.code == 0x81A5 for tc in box_codes[index:]]):
                 align_box = "Left"
 
-            if calculate_width([box_codes[:index - 1]], lang_index) >= line_width and not lang_index:
-                _append_if_nonempty(words, calculate_align(box_codes[:index], lang_index, line_width, align_box))
+            if calculate_width([box_codes[:index - 1]], lang) >= line_width and not lang_index:
+                _append_if_nonempty(words, calculate_align(box_codes[:index], lang_index, line_width, align_box, lang))
                 box_codes = box_codes[index:]
                 if text_code.code == 0x81A5:
                     align_box = align
@@ -131,7 +154,7 @@ def line_wrap(text: str, lang: str, strip_existing_lines: bool = False, strip_ex
             # Find us a whole word.
             if text_code.code in break_any:
                 if index > 1:
-                    _append_if_nonempty(words, calculate_align(box_codes[:index - 1], lang_index, line_width, align_box))
+                    _append_if_nonempty(words, calculate_align(box_codes[:index - 1], lang_index, line_width, align_box, lang))
                 if text_code.code in break_word:
                     # If we have run into a line or box break, add it as a "word" as well.
                     words.append([text_code])
@@ -141,14 +164,14 @@ def line_wrap(text: str, lang: str, strip_existing_lines: bool = False, strip_ex
                 index = 0
                 continue
 
-            if not lang_index and calculate_width([box_codes[:index - 1]], lang_index) >= line_width:
-                _append_if_nonempty(words, calculate_align(box_codes[:index], lang_index, line_width, align_box))
+            if not lang_index and calculate_width([box_codes[:index - 1]], lang) >= line_width:
+                _append_if_nonempty(words, calculate_align(box_codes[:index], lang_index, line_width, align_box, lang))
                 box_codes = box_codes[index:]
                 index = 0
                 continue
 
             if index > 0 and index == len(box_codes):
-                _append_if_nonempty(words, calculate_align(box_codes, lang_index, line_width, align_box))
+                _append_if_nonempty(words, calculate_align(box_codes, lang_index, line_width, align_box, lang))
                 box_codes = []
                 align_box = align
 
@@ -170,7 +193,7 @@ def line_wrap(text: str, lang: str, strip_existing_lines: bool = False, strip_ex
                 break_char = True
 
             # Check the width of the line after adding one more word.
-            if end_index == len(words) or break_char or (calculate_width(words[start_index:end_index + 1], lang_index) >= line_width):
+            if end_index == len(words) or break_char or (calculate_width(words[start_index:end_index + 1], lang) >= line_width):
                 if line or lines:
                     lines.append(line)
                 start_index = end_index
@@ -192,7 +215,8 @@ def line_wrap(text: str, lang: str, strip_existing_lines: bool = False, strip_ex
 
 def calculate_width(words: list[list[TextCode]], lang: str|int):
     words_width = 0
-    lang_index = 1 if lang in ["en", 1] else 0
+    base = _lang_base(lang)
+    lang_index = 1 if base in ["en", 1] else 0
     CC = Messages.CONTROL_CODES if lang_index else Messages.CC_PARSE_JP
     for word in words:
         index = 0
@@ -202,13 +226,14 @@ def calculate_width(words: list[list[TextCode]], lang: str|int):
             if character.code in CC:
                 if character.code == [0x86C7, 0x06][lang_index]:
                     words_width += character.data
-            words_width += get_character_width(chr(character.code) if lang_index else character.code, lang_index)
-    spaces_width = get_character_width(' ', lang_index) * (len(words) - 1) if lang_index else 0
+            words_width += get_character_width(chr(character.code) if lang_index else character.code, lang)
+    spaces_width = get_character_width(' ', lang) * (len(words) - 1) if lang_index else 0
     return words_width + spaces_width
 
 
 def get_character_width(character: str|int, lang: str|int) -> int:
-    if lang in ["en", 1]:
+    base = _lang_base(lang)
+    if base in ["en", 1]:
         try:
             return character_table[character]
         except KeyError:
@@ -227,7 +252,10 @@ def get_character_width(character: str|int, lang: str|int) -> int:
             else:
                 return 0
         else:
-            # A sane default with the most common character width
+            overrides = _wide_char_width_map(lang)
+            if isinstance(character, int) and character in overrides:
+                return overrides[character]
+            # A sane default with the fixed runtime wide-character width.
             if character in character_table:
                 return character_table[character]
             return 16
@@ -252,7 +280,7 @@ def _append_if_nonempty(dst: list, chunk: list) -> None:
     if chunk:
         dst.append(chunk)
 
-def calculate_align(words, lang: int, line_width:int, align:str="Left"):
+def calculate_align(words, lang: int, line_width:int, align:str="Left", width_lang=None):
     if align == "Left":
         return words
 
@@ -265,7 +293,7 @@ def calculate_align(words, lang: int, line_width:int, align:str="Left"):
     if not _has_visible_glyph(words, lang):
         return words
 
-    h = calculate_width([words], lang)
+    h = calculate_width([words], width_lang if width_lang is not None else lang)
     g = line_width - h
     if g <= 0:
         return words

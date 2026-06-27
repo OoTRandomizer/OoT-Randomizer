@@ -47,6 +47,83 @@ uint16_t FILENAME_ENCODING_WIDE[256] = {
 extern uint8_t PLAYER_NAMES[256][8];
 extern uint8_t PLAYER_NAME_ID;
 uint16_t current_textbox_id;
+
+typedef struct WideCharWidthOverride {
+    uint16_t code;
+    uint8_t width;
+    uint8_t reserved;
+} WideCharWidthOverride;
+
+extern uint16_t LANG_WIDE_CHAR_WIDTH_COUNT;
+extern WideCharWidthOverride LANG_WIDE_CHAR_WIDTH_OVERRIDES[];
+extern uint8_t LANG_WIDE_TEXT_ENGLISH_METRICS;
+
+#define G_REG_EDITOR_PTR ((int16_t**)0x8011BA60)
+
+#define WIDE_TEXT_INIT_XPOS_REG_INDEX 0x580
+#define WIDE_TEXT_LINE_SPACING_REG_INDEX 0x582
+#define WIDE_TEXT_CHAR_SCALE_REG_INDEX 0x583
+
+uint16_t Message_GetWideCharWidth(uint16_t character) {
+    uint16_t count = LANG_WIDE_CHAR_WIDTH_COUNT;
+
+    for (uint16_t i = 0; i < count; i++) {
+        if (LANG_WIDE_CHAR_WIDTH_OVERRIDES[i].code == character) {
+            return LANG_WIDE_CHAR_WIDTH_OVERRIDES[i].width;
+        }
+    }
+
+    return 16;
+}
+
+uint16_t Message_GetWideCharScaledAdvance(uint16_t character, uint16_t textCharScale) {
+    return (uint16_t)(((uint32_t)Message_GetWideCharWidth(character) * (uint32_t)textCharScale) / 100U);
+}
+
+static int16_t Message_GetWideTextCharScaleValue(void) {
+    return (LANG_WIDE_TEXT_ENGLISH_METRICS != 0) ? 75 : 88;
+}
+
+static int16_t Message_GetWideTextLineSpacingValue(void) {
+    return (LANG_WIDE_TEXT_ENGLISH_METRICS != 0) ? 12 : 18;
+}
+
+static int16_t Message_GetWideTextInitXPosValue(void) {
+    return (LANG_WIDE_TEXT_ENGLISH_METRICS != 0) ? 65 : 50;
+}
+
+uint16_t Message_GetWideTextCharScale(void) {
+    return (uint16_t)Message_GetWideTextCharScaleValue();
+}
+
+uint16_t Message_GetWideTextLineSpacing(void) {
+    return (uint16_t)Message_GetWideTextLineSpacingValue();
+}
+
+uint16_t Message_GetWideTextInitXPos(void) {
+    return (uint16_t)Message_GetWideTextInitXPosValue();
+}
+
+void Message_ApplyJpTextMetrics(void) {
+    int16_t* regEditor = *G_REG_EDITOR_PTR;
+
+    if (regEditor == NULL) {
+        return;
+    }
+
+    regEditor[WIDE_TEXT_CHAR_SCALE_REG_INDEX] = Message_GetWideTextCharScaleValue();
+    regEditor[WIDE_TEXT_LINE_SPACING_REG_INDEX] = Message_GetWideTextLineSpacingValue();
+    regEditor[WIDE_TEXT_INIT_XPOS_REG_INDEX] = Message_GetWideTextInitXPosValue();
+}
+
+void Message_ApplyWideTextNewline(MessageContext* msgCtx) {
+    // Force wide-mode newline spacing to use the same runtime flag as the glyph metrics.
+    // This avoids depending on a possibly stale R_TEXT_LINE_SPACING value.
+    Message_ApplyJpTextMetrics();
+    msgCtx->textPosY += Message_GetWideTextLineSpacingValue();
+    msgCtx->textPosX = Message_GetWideTextInitXPosValue();
+}
+
 // Helper function for adding characters to the decoded message buffer
 void Message_AddCharacter(MessageContext* msgCtx, void* pFont, uint32_t* pDecodedBufPos, uint32_t* pCharTexIdx, uint8_t charToAdd) {
     uint32_t decodedBufPosVal = *pDecodedBufPos;

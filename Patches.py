@@ -49,6 +49,98 @@ else:
 OverrideEntry: TypeAlias = "tuple[int, int, int, int, int, int]"
 
 
+
+def patch_wide_text_english_metrics(rom, lang):
+    """Write the runtime flag consumed by Message_ApplyJpTextMetrics.
+
+    Older versions patched Message_OpenText immediates directly. That is brittle because
+    the ROM address changes when z_message_z_game_over.o shifts. The ASM hook now calls
+    a C helper and the language-specific setting is represented by this config byte.
+    """
+    symbol = "LANG_WIDE_TEXT_ENGLISH_METRICS"
+    if symbol not in rom.symbols:
+        raise RuntimeError(
+            "{} is missing from generated/symbols.json. "
+            "Add LANG_WIDE_TEXT_ENGLISH_METRICS to ASM/src/config.asm and rebuild the ASM payload first.".format(symbol)
+        )
+    enabled = 1 if getattr(lang, "uses_wide_english_metrics", lambda: False)() else 0
+    rom.write_byte(rom.sym(symbol), enabled)
+
+
+def patch_language_narrow_char_widths(rom, lang):
+    """Write non-wide property.json:CHAR_WIDTHS to the ASM-side LANG_CHAR_WIDTHS table."""
+    if not hasattr(lang, "get_char_widths"):
+        raise RuntimeError("Language.get_char_widths() is required for LANG_CHAR_WIDTHS patching")
+
+    if "LANG_CHAR_WIDTHS" not in rom.symbols:
+        raise RuntimeError(
+            "LANG_CHAR_WIDTHS is missing from generated/symbols.json. "
+            "Add the table to ASM/src/config.asm and rebuild the ASM payload first."
+        )
+
+    widths = lang.get_char_widths("ntsc")
+    if len(widths) != 144:
+        raise ValueError("LANG_CHAR_WIDTHS must contain 144 entries, got {}".format(len(widths)))
+
+    packed = b"".join(struct.pack(">f", float(width)) for width in widths)
+    if len(packed) != 0x240:
+        raise ValueError("LANG_CHAR_WIDTHS must be 0x240 bytes, got {:#x}".format(len(packed)))
+
+    table_size = rom.sym_length("LANG_CHAR_WIDTHS")
+    if table_size < len(packed):
+        raise RuntimeError(
+            "LANG_CHAR_WIDTHS area is too small: {:#x} < {:#x}".format(table_size, len(packed))
+        )
+
+    rom.write_bytes(rom.sym("LANG_CHAR_WIDTHS"), packed)
+
+
+def patch_language_wide_char_widths(rom, lang):
+    """Write compact wide-mode CHAR_WIDTHS overrides to ROM.
+
+    Runtime default width is fixed at 16. Only overrides are stored:
+      u16 code, u8 width, u8 reserved
+    """
+    if not hasattr(lang, "get_wide_char_width_overrides"):
+        raise RuntimeError("Language.get_wide_char_width_overrides() is required for wide CHAR_WIDTHS patching")
+
+    required = ("LANG_WIDE_CHAR_WIDTH_COUNT", "LANG_WIDE_CHAR_WIDTH_OVERRIDES")
+    for symbol in required:
+        if symbol not in rom.symbols:
+            raise RuntimeError(
+                "{} is missing from generated/symbols.json. "
+                "Add the wide character width table to ASM/src/config.asm and rebuild the ASM payload first.".format(symbol)
+            )
+
+    entries = lang.get_wide_char_width_overrides("ntsc")
+    max_entries = rom.sym_length("LANG_WIDE_CHAR_WIDTH_OVERRIDES") // 4
+    if len(entries) > max_entries:
+        raise RuntimeError(
+            "Too many wide CHAR_WIDTHS overrides: {} > {}. Increase LANG_WIDE_CHAR_WIDTH_OVERRIDES.".format(
+                len(entries), max_entries
+            )
+        )
+
+    packed = bytearray()
+    for code, width in entries:
+        packed.extend(struct.pack(">HBB", int(code), int(width), 0))
+
+    rom.write_int16(rom.sym("LANG_WIDE_CHAR_WIDTH_COUNT"), len(entries))
+    rom.write_bytes(rom.sym("LANG_WIDE_CHAR_WIDTH_OVERRIDES"), packed)
+
+    remaining = rom.sym_length("LANG_WIDE_CHAR_WIDTH_OVERRIDES") - len(packed)
+    if remaining > 0:
+        rom.write_bytes(rom.sym("LANG_WIDE_CHAR_WIDTH_OVERRIDES") + len(packed), bytes(remaining))
+
+
+def patch_language_char_widths(rom, lang):
+    if getattr(lang, "base", None) == "jp":
+        patch_language_wide_char_widths(rom, lang)
+    else:
+        patch_language_narrow_char_widths(rom, lang)
+    patch_wide_text_english_metrics(rom, lang)
+
+
 def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     with open(data_path('generated/rom_patch.txt'), 'r') as stream:
         for line in stream:
@@ -59,33 +151,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     lang = world.language
 
     # Patch the character widths for the selected language.
-    def patch_language_char_widths(rom: Rom, lang: Language) -> None:
-        """Write property.json:CHAR_WIDTHS to the ASM-side LANG_CHAR_WIDTHS table."""
-        if not hasattr(lang, "get_char_widths"):
-            raise RuntimeError("Language.get_char_widths() is required for LANG_CHAR_WIDTHS patching")
-
-        if "LANG_CHAR_WIDTHS" not in rom.symbols:
-            raise RuntimeError(
-                "LANG_CHAR_WIDTHS is missing from generated/symbols.json. "
-                "Add the table to ASM/src/config.asm and rebuild the ASM payload first."
-            )
-
-        widths = lang.get_char_widths("ntsc")
-        if len(widths) != 144:
-            raise ValueError(f"LANG_CHAR_WIDTHS must contain 144 entries, got {len(widths)}")
-
-        packed = b"".join(struct.pack(">f", float(width)) for width in widths)
-        if len(packed) != 0x240:
-            raise ValueError(f"LANG_CHAR_WIDTHS must be 0x240 bytes, got 0x{len(packed):X}")
-
-        table_size = rom.sym_length("LANG_CHAR_WIDTHS")
-        if table_size < len(packed):
-            raise RuntimeError(
-                f"LANG_CHAR_WIDTHS area is too small: 0x{table_size:X} < 0x{len(packed):X}"
-            )
-
-        rom.write_bytes(rom.sym("LANG_CHAR_WIDTHS"), packed)
-
     patch_language_char_widths(rom, lang)
 
 

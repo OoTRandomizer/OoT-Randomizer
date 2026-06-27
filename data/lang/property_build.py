@@ -5,7 +5,8 @@ from typing import Any
 # Property of the Language
 lang_property = {
     "base": "en", # base of the language [en, jp]
-    "display_name": "English", # Name that displayed as selection
+    "display_name": "English", # Name displayed in language selection
+    "wide_text_english_metrics": False,  # JP/wide text only: use English-like text height/line spacing
     "description": "Play with English language.", # Not implemented, it will be description which you can see while hovering above
     "align_text": "Left" # alignation of the texts [Left, Center, Right]
 }
@@ -3691,11 +3692,15 @@ PLAIN_TEXTS = []
 # This is written to property.json and consumed by Language.get_char_widths().
 # Keys may be visible characters ("A"), symbolic names ("[C-Up]"), message bytes ("0x9F"),
 # or direct table slots ("index:143").  Values may be numbers or {"default": n, "ntsc": n, "pal": n}.
+# base != "jp": narrow table keys may use "A", "0x9F", "index:143", etc.
+# base == "jp": wide table keys must be hex codepoints such as "0x824F".
+# Unlisted wide characters use fixed default width 16.
 CHAR_WIDTHS = {
     # Example:
     # "W": 15,
     # "í": 8,
     # "index:143": 14,
+    # "0x824F": 12,
 }
 
 

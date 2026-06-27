@@ -286,6 +286,12 @@ DEFAULT_CHAR_WIDTHS_PAL[CHAR_WIDTH_ORDER.index("î")] = 6
 
 CHAR_WIDTH_NAME_TO_INDEX = {name: i for i, name in enumerate(CHAR_WIDTH_ORDER)}
 
+
+# Wide/Japanese text mode character widths.
+# Runtime default is always 16 pixels; only overrides are written to ROM.
+WIDE_CHAR_DEFAULT_WIDTH = 16
+WIDE_CHAR_WIDTH_ENTRY_BYTES = 4
+
 class Language:
     def __init__(self, lang: str):
         with open(os.path.join(lang_path(lang), "property.json"), mode="r", encoding="utf-8") as f:
@@ -339,6 +345,11 @@ class Language:
         - a dict of per-character overrides, e.g. {"A": 12, "index:143": 14}
           Values may also be {"default": 12, "ntsc": 12, "pal": 6}.
         """
+        if self.uses_wide_text():
+            # Wide/Japanese mode uses get_wide_char_width_overrides() instead.
+            # Keep this function narrow-only so the ROM patcher can branch cleanly.
+            return self._default_char_widths(variant)
+
         widths = self._default_char_widths(variant)
         overrides = getattr(self, "CHAR_WIDTHS", None)
 
@@ -371,6 +382,70 @@ class Language:
             widths[index] = width
 
         return widths
+
+
+    def uses_wide_text(self):
+        return self.base == "jp"
+
+    def uses_wide_english_metrics(self):
+        return bool(self.lang_property.get("wide_text_english_metrics", False))
+
+    def _char_width_value_for_variant(self, key, value, variant):
+        if isinstance(value, dict):
+            variant_key = variant.lower()
+            value = value.get(variant_key, value.get("default"))
+            if value is None:
+                return None
+        width = int(value)
+        if width != float(value):
+            raise ValueError(f"CHAR_WIDTHS[{key!r}] must be an integer width, got {value!r}")
+        if not 0 <= width <= 32:
+            raise ValueError(f"CHAR_WIDTHS[{key!r}] must be between 0 and 32, got {width}")
+        return width
+
+    def _wide_char_width_key_to_code(self, key):
+        if isinstance(key, int):
+            code = key
+        elif isinstance(key, str):
+            key = key.strip()
+            if not key.lower().startswith("0x"):
+                raise ValueError(
+                    f"Wide/Japanese CHAR_WIDTHS keys must be hex strings such as '0x824F', got {key!r}"
+                )
+            code = int(key, 16)
+        else:
+            raise TypeError(f"Wide CHAR_WIDTHS key must be a hex string or int, got {type(key).__name__}")
+
+        if not 0 <= code <= 0xFFFF:
+            raise ValueError(f"Wide CHAR_WIDTHS code out of range: 0x{code:X}")
+        return code
+
+    def get_wide_char_width_overrides(self, variant="ntsc"):
+        """Return compact wide-mode CHAR_WIDTHS overrides as [(u16_code, u8_width), ...].
+
+        In wide/Japanese mode, CHAR_WIDTHS is intentionally pseudo-variable length:
+        - keys must be hex codepoints such as "0x824F"
+        - unlisted characters use the fixed runtime default width 16
+        - entries equal to the default are omitted to save ROM space
+        """
+        overrides = getattr(self, "CHAR_WIDTHS", None)
+        if overrides in (None, {}):
+            return []
+        if not isinstance(overrides, dict):
+            raise TypeError("Wide/Japanese CHAR_WIDTHS must be a dict of hex codepoint overrides")
+
+        entries = {}
+        for key, value in overrides.items():
+            width = self._char_width_value_for_variant(key, value, variant)
+            if width is None:
+                continue
+            code = self._wide_char_width_key_to_code(key)
+            if width == WIDE_CHAR_DEFAULT_WIDTH:
+                entries.pop(code, None)
+            else:
+                entries[code] = width
+
+        return sorted(entries.items())
 
     def _dict_get(self, obj, key):
         if isinstance(obj, (list, tuple)):
