@@ -57,6 +57,37 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.scan_dmadata_update()
 
     lang = world.language
+    
+    # Patch the character widths for the selected language.
+    def patch_language_char_widths(rom: Rom, lang: Language) -> None:
+        """Write property.json:CHAR_WIDTHS to the ASM-side LANG_CHAR_WIDTHS table."""
+        if not hasattr(lang, "get_char_widths"):
+            raise RuntimeError("Language.get_char_widths() is required for LANG_CHAR_WIDTHS patching")
+
+        if "LANG_CHAR_WIDTHS" not in rom.symbols:
+            raise RuntimeError(
+                "LANG_CHAR_WIDTHS is missing from generated/symbols.json. "
+                "Add the table to ASM/src/config.asm and rebuild the ASM payload first."
+            )
+
+        widths = lang.get_char_widths("ntsc")
+        if len(widths) != 144:
+            raise ValueError(f"LANG_CHAR_WIDTHS must contain 144 entries, got {len(widths)}")
+
+        packed = b"".join(struct.pack(">f", float(width)) for width in widths)
+        if len(packed) != 0x240:
+            raise ValueError(f"LANG_CHAR_WIDTHS must be 0x240 bytes, got 0x{len(packed):X}")
+
+        table_size = rom.sym_length("LANG_CHAR_WIDTHS")
+        if table_size < len(packed):
+            raise RuntimeError(
+                f"LANG_CHAR_WIDTHS area is too small: 0x{table_size:X} < 0x{len(packed):X}"
+            )
+
+        rom.write_bytes(rom.sym("LANG_CHAR_WIDTHS"), packed)
+    
+    patch_language_char_widths(rom, lang)
+
 
     # Binary patches of certain assets.
     bin_patches = [

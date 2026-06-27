@@ -1,5 +1,6 @@
 from __future__ import annotations
 import json
+from typing import Any
 
 # Property of the Language
 lang_property = {
@@ -3686,9 +3687,32 @@ search = "you"
 # Format: {"id": int, "text": str, "box_type": int}
 PLAIN_TEXTS = []
 
+# Per-language character width overrides.
+# This is written to property.json and consumed by Language.get_char_widths().
+# Keys may be visible characters ("A"), symbolic names ("[C-Up]"), message bytes ("0x9F"),
+# or direct table slots ("index:143").  Values may be numbers or {"default": n, "ntsc": n, "pal": n}.
+CHAR_WIDTHS = {
+    "A":1,
+    "I":1,
+    "U":1,
+    "E":1,
+    "O":1,
+    "a":1,
+    "i":1,
+    "u":1,
+    "e":1,
+    "o":1,
+}
+
+
+# Replace lang_info's string values' characters according to the replace_list
+# replace_list: [[old_char, new_char], ...]
+replace_list = []
+
 lang_info = {
     'lang_property': lang_property,
     'prefix': prefix,
+    'CHAR_WIDTHS': CHAR_WIDTHS,
     'ITEM_MESSAGES': ITEM_MESSAGES,
     "IMPORTANT_ITEM_MESSAGES": IMPORTANT_ITEM_MESSAGES,
     'MISC_MESSAGES': MISC_MESSAGES,
@@ -3743,8 +3767,7 @@ def replace_char_in_dict(d: dict, replace_list: list[list[str, str]]) -> dict:
 
     return replace_recursive(d)
 
-replace_list = []
 lang_info = replace_char_in_dict(lang_info, replace_list)
 
 
-json.dump(lang_info, open("property.json", mode="w+", encoding='utf-8', newline=''), ensure_ascii=False, indent=4, sort_keys=True)
+json.dump(lang_info, open("data/lang/property.json", mode="w+", encoding='utf-8', newline=''), ensure_ascii=False, indent=4, sort_keys=True)

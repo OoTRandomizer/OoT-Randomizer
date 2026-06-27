@@ -250,6 +250,42 @@ class _SafeExprEvaluator(ast.NodeVisitor):
         raise ValueError("Only method calls or allowed function calls are allowed")
 
 
+# Character width table used by the original message renderer.
+# The table is indexed as (message_character - 0x20), so it has 144 f32 entries.
+CHAR_WIDTH_TABLE_LENGTH = 144
+CHAR_WIDTH_TABLE_BYTES = CHAR_WIDTH_TABLE_LENGTH * 4
+
+CHAR_WIDTH_ORDER = (
+    [chr(i) for i in range(0x20, 0x7F)] +
+    [
+        "extra_space",
+        "À", "î", "Â", "Ä", "Ç", "È", "É", "Ê", "Ë", "Ï",
+        "Ô", "Ö", "Ù", "Û", "Ü", "ß",
+        "à", "á", "â", "ä", "ç", "è", "é", "ê", "ë", "ï",
+        "ô", "ö", "ù", "û", "ü",
+        "[A]", "[B]", "[C]", "[L]", "[R]", "[Z]",
+        "[C-Up]", "[C-Down]", "[C-Left]", "[C-Right]",
+        "▼", "[Control-Pad]", "[D-Pad]",
+        "index:140", "index:141", "index:142", "index:143",
+    ]
+)
+
+DEFAULT_CHAR_WIDTHS_NTSC = [
+    8, 8, 6, 9, 9, 14, 12, 3, 7, 7, 7, 9, 4, 6, 4, 9,
+    10, 5, 9, 9, 10, 9, 9, 9, 9, 9, 6, 6, 9, 11, 9, 11,
+    13, 12, 9, 11, 11, 8, 8, 12, 10, 4, 8, 10, 8, 13, 11, 13,
+    9, 13, 10, 10, 9, 10, 11, 15, 11, 10, 10, 7, 10, 7, 10, 9,
+    5, 8, 9, 8, 9, 9, 6, 9, 8, 4, 6, 8, 4, 12, 9, 9,
+    9, 9, 7, 8, 7, 8, 9, 12, 8, 9, 8, 7, 5, 7, 10, 10,
+    12, 12, 12, 12, 11, 8, 8, 8, 6, 6, 13, 13, 10, 10, 10, 9,
+    8, 8, 8, 8, 8, 9, 9, 9, 9, 6, 9, 9, 9, 9, 9, 14,
+    14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
+]
+DEFAULT_CHAR_WIDTHS_PAL = DEFAULT_CHAR_WIDTHS_NTSC.copy()
+DEFAULT_CHAR_WIDTHS_PAL[CHAR_WIDTH_ORDER.index("î")] = 6
+
+CHAR_WIDTH_NAME_TO_INDEX = {name: i for i, name in enumerate(CHAR_WIDTH_ORDER)}
+
 class Language:
     def __init__(self, lang: str):
         with open(os.path.join(lang_path(lang), "property.json"), mode="r", encoding="utf-8") as f:
@@ -265,6 +301,76 @@ class Language:
             for fname in os.listdir(lang_path(lang))
             if fname.lower().endswith(extensions)
         }
+
+
+    def _default_char_widths(self, variant: str = "ntsc") -> list[float]:
+        if variant.lower() == "pal":
+            return [float(x) for x in DEFAULT_CHAR_WIDTHS_PAL]
+        return [float(x) for x in DEFAULT_CHAR_WIDTHS_NTSC]
+
+    def _char_width_key_to_index(self, key) -> int:
+        if isinstance(key, int):
+            index = key
+        elif isinstance(key, str):
+            key = key.strip()
+            if key.startswith("index:"):
+                index = int(key.split(":", 1)[1], 0)
+            elif key.startswith("0x"):
+                # Message byte value. 0x20 maps to table index 0.
+                index = int(key, 16) - 0x20
+            elif len(key) == 1 and 0x20 <= ord(key) <= 0x7E:
+                index = ord(key) - 0x20
+            elif key in CHAR_WIDTH_NAME_TO_INDEX:
+                index = CHAR_WIDTH_NAME_TO_INDEX[key]
+            else:
+                raise ValueError(f"Unknown CHAR_WIDTHS key: {key!r}")
+        else:
+            raise TypeError(f"CHAR_WIDTHS key must be str or int, got {type(key).__name__}")
+
+        if not 0 <= index < CHAR_WIDTH_TABLE_LENGTH:
+            raise ValueError(f"CHAR_WIDTHS index out of range: {index}")
+        return index
+
+    def get_char_widths(self, variant: str = "ntsc") -> list[float]:
+        """Return the 144 f32 character widths used by the message renderer.
+
+        property.json may define CHAR_WIDTHS as either:
+        - a list of 144 numbers, replacing the whole table
+        - a dict of per-character overrides, e.g. {"A": 12, "index:143": 14}
+          Values may also be {"default": 12, "ntsc": 12, "pal": 6}.
+        """
+        widths = self._default_char_widths(variant)
+        overrides = getattr(self, "CHAR_WIDTHS", None)
+
+        if overrides in (None, {}):
+            return widths
+
+        if isinstance(overrides, list):
+            if len(overrides) != CHAR_WIDTH_TABLE_LENGTH:
+                raise ValueError(
+                    f"CHAR_WIDTHS list must contain {CHAR_WIDTH_TABLE_LENGTH} entries, "
+                    f"got {len(overrides)}"
+                )
+            width_items = enumerate(overrides)
+        elif isinstance(overrides, dict):
+            width_items = overrides.items()
+        else:
+            raise TypeError("CHAR_WIDTHS must be a list or dict")
+
+        variant_key = variant.lower()
+        for key, value in width_items:
+            if isinstance(value, dict):
+                value = value.get(variant_key, value.get("default"))
+                if value is None:
+                    continue
+
+            index = key if isinstance(overrides, list) else self._char_width_key_to_index(key)
+            width = float(value)
+            if not 0.0 <= width <= 32.0:
+                raise ValueError(f"CHAR_WIDTHS[{key!r}] must be between 0 and 32, got {width}")
+            widths[index] = width
+
+        return widths
 
     def _dict_get(self, obj, key):
         if isinstance(obj, (list, tuple)):

@@ -348,3 +348,15 @@ CFG_BOSSES:
 ; Bosses are listed twice, first 12 are sorted by the same order as the dungeon entrances (including the 3 with no bosses), then 9 in the usual dungeon order.
 
 .align 4
+
+;==================================================================================================
+; Language character width table
+;==================================================================================================
+; f32[144].  The front-end writes language-specific widths here from property.json:CHAR_WIDTHS.
+; The Message_DrawText hijack redirects the original sFontWidths load to this table.
+; Keep this after the existing configuration tables so older CFG_* addresses do not move.
+
+.align 4
+.area 0x240, 0
+LANG_CHAR_WIDTHS:
+.endarea
