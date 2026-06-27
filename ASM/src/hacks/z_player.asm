@@ -47,5 +47,15 @@
 ; Replaces  lw      a1,60(sp)
 ;           sw      v0,924(a1)
 .org 0x808319d4         ; in Player_InitHookshotIA (0x8038a374)
-     jal     Player_HookshotCheckActorSpawn
-     lw      a1,60(sp)       ; displaced (loads player)
+    jal     Player_HookshotCheckActorSpawn
+    lw      a1,60(sp)       ; displaced (loads player)
+
+;================================================================================
+; Prevent softlocking when pulling out Hookshot if player->actor.parent is set
+; but is not Hookshot actor
+;================================================================================
+; Replaces: jal     Player_HoldsHookshot
+;           move    a0,s0
+.org 0x80834764         ; in Player_UpdateUpperBody
+    jal     Player_UpperBodyCheckParent
+    move    a0,s0       ; displaced

@@ -18,6 +18,7 @@ Flags_GetCollectible = 0x800206E8;
 Flags_SetCollectible = 0x8002071C;
 Actor_SetColorFilter = 0x80027090;
 CutsceneFlags_Get = 0x8005991C;
+Player_HoldsHookshot = 0x80079bd4;
 z64_Gfx_SetupDL_42Opa = 0x8007E868;
 Matrix_Push = 0x800aa6ec;
 Matrix_Pop = 0x800aa724;
