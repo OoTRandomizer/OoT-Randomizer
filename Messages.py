@@ -1548,6 +1548,7 @@ def update_map_compass_messages(messages: list[Message], world: World):
                     if 'map_dungeon_location' in world.settings.enhance_map_compass and world.settings.shuffle_dungeon_entrances != 'off':
                         dungeon_index = [i for i, c in enumerate(dungeon_entrances) if dungeon.name in c]
                         dungeon_name = dungeon_name.removeprefix('the ') # to make room
+                        dungeon_location = dungeon_textbox_list[dungeon_index[0]]
                         if 'map_mq' in world.settings.enhance_map_compass and (world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12):
                             map_message = lang.format_from_id(
                                 "PATCH_TEXTS.map_location_mq",
