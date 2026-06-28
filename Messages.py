@@ -1416,13 +1416,13 @@ def update_map_compass_messages(messages: list[Message], world: World):
                 dungeon_name, dungeon_gender = dungeon_list[dungeon.name]
                 compass_id, map_id = dungeon_id_list[dungeon.name]
                 if 'map_dungeon_location' in world.settings.enhance_map_compass and world.settings.shuffle_dungeon_entrances != 'off':
-                    dungeon_index = [i for i, c in dungeon_entrances.items() if dungeon.name in c]
+                    dungeon_indexes = [i for i, c in dungeon_entrances.items() if dungeon.name in c]
                     if dungeon.name not in ('Dodongos Cavern', 'Jabu Jabus Belly'):
                         for prefix in lang.hintPrefixes:
                             if dungeon_name.startswith(prefix):
                                 dungeon_name = dungeon_name.replace(prefix, '', 1)
                                 break
-                    dungeon_location = dungeon_textbox_list[dungeon_index[0]]
+                    dungeon_location = dungeon_textbox_list[dungeon_indexes[0]]
                     if 'map_mq' in world.settings.enhance_map_compass and (world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12):
                         map_message = lang.format_from_id(
                             "PATCH_TEXTS.map_location_mq",
@@ -1546,9 +1546,8 @@ def update_map_compass_messages(messages: list[Message], world: World):
                             update_message_by_id(messages, compass_id, compass_message, lang, allow_duplicates=True, force_left=True)
                 if maps_exist:
                     if 'map_dungeon_location' in world.settings.enhance_map_compass and world.settings.shuffle_dungeon_entrances != 'off':
-                        dungeon_index = [i for i, c in enumerate(dungeon_entrances) if dungeon.name in c]
                         dungeon_name = dungeon_name.removeprefix('the ') # to make room
-                        dungeon_location = dungeon_textbox_list[dungeon_index[0]]
+                        dungeon_location = dungeon_textbox_list[dungeon.name]
                         if 'map_mq' in world.settings.enhance_map_compass and (world.settings.mq_dungeons_mode == 'random' or world.settings.mq_dungeons_count != 0 and world.settings.mq_dungeons_count != 12):
                             map_message = lang.format_from_id(
                                 "PATCH_TEXTS.map_location_mq",
