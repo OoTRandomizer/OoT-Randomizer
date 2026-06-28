@@ -1,0 +1,35 @@
+'use strict';
+
+const { contextBridge, ipcRenderer } = require('electron');
+
+contextBridge.exposeInMainWorld('ootrLanguageEditor', {
+  loadUi: () => ipcRenderer.invoke('ui:load'),
+  getLanguage: () => ipcRenderer.invoke('ui:get-language'),
+  setLanguage: language => ipcRenderer.invoke('ui:set-language', language),
+  loadDefaultProperty: () => ipcRenderer.invoke('property:default'),
+  openProperty: () => ipcRenderer.invoke('property:open'),
+  saveProperty: (data, currentPath) => ipcRenderer.invoke('property:save', data, currentPath),
+  savePropertyToPath: (data, filePath) => ipcRenderer.invoke('property:save-to-path', data, filePath),
+  writeTemp: payload => ipcRenderer.invoke('temp:write', payload),
+  openRom: title => ipcRenderer.invoke('rom:open', title),
+  openDirectory: title => ipcRenderer.invoke('dir:open', title),
+  loadPatchRanges: () => ipcRenderer.invoke('patch:ranges'),
+  generateDiffPatches: payload => ipcRenderer.invoke('patch:generate', payload),
+  exportSegment: payload => ipcRenderer.invoke('segment:export', payload),
+  exportSegments: payload => ipcRenderer.invoke('segment:export-many', payload),
+  onLanguageChanged: callback => ipcRenderer.on('language-changed', (_event, payload) => callback(payload)),
+  onMenuLoadProperty: callback => ipcRenderer.on('menu-load-property', callback),
+  onMenuLoadDefault: callback => ipcRenderer.on('menu-load-default', callback),
+  onMenuMergeDefaults: callback => ipcRenderer.on('menu-merge-defaults', callback),
+  onMenuSaveProperty: callback => ipcRenderer.on('menu-save-property', callback),
+  onMenuUndo: callback => ipcRenderer.on('menu-undo', callback),
+  onMenuRedo: callback => ipcRenderer.on('menu-redo', callback),
+  onMenuExportSegments: callback => ipcRenderer.on('menu-export-segments', (_event, payload) => callback(payload)),
+  onMenuGeneratePatches: callback => ipcRenderer.on('menu-generate-patches', (_event, payload) => callback(payload)),
+  onMenuSwitchTab: callback => ipcRenderer.on('menu-switch-tab', (_event, payload) => callback(payload)),
+  onMenuPasteEntry: callback => ipcRenderer.on('menu-paste-entry', (_event, payload) => callback(payload)),
+  onMenuCopyEntry: callback => ipcRenderer.on('menu-copy-entry', (_event, payload) => callback(payload)),
+  onMenuDeleteEntry: callback => ipcRenderer.on('menu-delete-entry', (_event, payload) => callback(payload)),
+  onMenuAddEntry: callback => ipcRenderer.on('menu-add-entry', (_event, payload) => callback(payload)),
+  onMenuApplyEditor: callback => ipcRenderer.on('menu-apply-editor', (_event, payload) => callback(payload)),
+});

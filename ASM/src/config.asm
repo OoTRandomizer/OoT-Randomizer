@@ -383,6 +383,6 @@ LANG_WIDE_CHAR_WIDTH_COUNT:
 .halfword 0
 
 .align 4
-.area 0x500, 0
+.area 0x1000, 0
 LANG_WIDE_CHAR_WIDTH_OVERRIDES:
 .endarea

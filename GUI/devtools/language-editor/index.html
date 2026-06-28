@@ -1,0 +1,835 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline';">
+  <title>OOTR Language Editor Developer Tool</title>
+  <style>
+    :root { color-scheme: dark; --bg:#17191d; --panel:#20242b; --panel2:#252b34; --text:#e9edf3; --muted:#aeb8c6; --line:#3a4250; --accent:#73b7ff; --danger:#ff7b7b; --ok:#74d99f; --warn:#ffd37a; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color:var(--text); background:var(--bg); }
+    button, input, select, textarea { font:inherit; }
+    button { background:#2f3744; color:var(--text); border:1px solid var(--line); border-radius:6px; padding:6px 10px; cursor:pointer; white-space:nowrap; }
+    button:hover { background:#384354; }
+    button.primary { background:#245d8f; border-color:#367fc1; }
+    input, select { width:100%; background:#15181d; color:var(--text); border:1px solid var(--line); border-radius:6px; padding:6px 8px; }
+    textarea { width:100%; height:100%; resize:vertical; background:#111419; color:var(--text); border:1px solid var(--line); border-radius:8px; padding:10px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:13px; line-height:1.45; tab-size:4; }
+    .app { height:100vh; display:grid; grid-template-rows:auto 1fr auto; }
+    header { display:flex; gap:10px; align-items:center; padding:10px 12px; border-bottom:1px solid var(--line); background:#111419; }
+    header h1 { font-size:16px; margin:0 12px 0 0; white-space:nowrap; }
+    .toolbar { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+    .status { color:var(--muted); font-size:12px; margin-left:auto; min-width:260px; text-align:right; }
+    main { min-height:0; display:grid; grid-template-columns:minmax(220px, 18vw) minmax(260px, 24vw) minmax(520px, 1fr); gap:1px; background:var(--line); overflow:hidden; }
+    .pane { min-height:0; min-width:180px; max-width:60vw; background:var(--panel); display:grid; grid-template-rows:auto auto 1fr; resize:horizontal; overflow:auto; }
+    .pane-title { padding:9px 10px; font-weight:700; border-bottom:1px solid var(--line); background:var(--panel2); }
+    .pane-tools { padding:8px; border-bottom:1px solid var(--line); display:grid; gap:8px; }
+    .list { min-height:0; overflow:auto; }
+    .row { display:grid; gap:4px; padding:8px 10px; border-bottom:1px solid rgba(255,255,255,.06); cursor:pointer; }
+    .row:hover { background:#2b323d; }
+    .row.active { background:#123553; outline:1px solid #2877b4; outline-offset:-1px; }
+    .row-title { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .row-sub { color:var(--muted); font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .editor-pane { min-height:0; background:var(--panel); display:grid; grid-template-rows:auto auto auto minmax(340px, 2fr) minmax(115px, .42fr) minmax(170px, .55fr); overflow:hidden; }
+    .meta { padding:8px 10px; border-bottom:1px solid var(--line); display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .meta .wide { grid-column:1 / -1; }
+    .special { display:none; grid-template-columns:1fr 1fr 1fr; gap:8px; padding:8px 10px; border-bottom:1px solid var(--line); background:#1b2028; }
+    .special.visible { display:grid; }
+    .editor-tabs { display:flex; gap:8px; align-items:center; padding:8px 10px; border-bottom:1px solid var(--line); background:var(--panel2); flex-wrap:wrap; }
+    .editor-tabs span { color:var(--muted); font-size:12px; }
+    .editor-box { min-height:0; padding:8px; display:grid; grid-template-rows:auto 1fr; gap:6px; resize:vertical; overflow:auto; }
+    .editor-tools { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+    .label { color:var(--muted); font-size:12px; }
+    .pill { display:inline-flex; align-items:center; border:1px solid var(--line); border-radius:999px; padding:2px 8px; color:var(--muted); background:#15181d; }
+    footer { padding:6px 10px; border-top:1px solid var(--line); background:#111419; color:var(--muted); font-size:12px; display:flex; justify-content:space-between; gap:12px; }
+    .error { color:var(--danger); }
+    .ok { color:var(--ok); }
+    .warn { color:var(--warn); }
+    .highlight-wrap { position:relative; min-height:0; height:100%; background:#111419; border:1px solid var(--line); border-radius:8px; overflow:hidden; }
+    .highlight-wrap textarea, .highlight-wrap pre { position:absolute; inset:0; margin:0; padding:10px; border:0; border-radius:8px; font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:13px; line-height:1.45; tab-size:4; white-space:pre-wrap; overflow:auto; }
+    .highlight-wrap pre { pointer-events:none; color:var(--text); background:#111419; }
+    .highlight-wrap textarea { color:rgba(255,255,255,0.18); caret-color:#ffffff; background:transparent; resize:none; }
+    .tok-control { color:#ffcf70; font-weight:700; }
+    .tok-color { color:#ff8fce; font-weight:700; }
+    .tok-placeholder { color:#86e1ff; font-weight:700; }
+    .tok-language { color:#b9f27d; font-weight:700; }
+    .tok-hint-color { color:#ff8fce; font-weight:700; }
+    .range-color { color:#ffd1ec; background:rgba(255,105,180,.12); border-bottom:1px dotted rgba(255,143,206,.8); }
+    .patch-panel { min-height:0; padding:8px; border-top:1px solid var(--line); background:#1b2028; overflow:auto; resize:vertical; }
+    .patch-panel summary { cursor:pointer; font-weight:700; margin-bottom:8px; }
+    .patch-grid { display:grid; grid-template-columns:1fr 1fr auto; gap:8px; align-items:end; }
+    .patch-grid .wide { grid-column:1 / -1; }
+    .patch-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; margin:8px 0; }
+    .patch-list { max-height:150px; overflow:auto; border:1px solid var(--line); border-radius:8px; background:#15181d; }
+    .patch-row { display:grid; grid-template-columns:28px minmax(130px, 1fr) minmax(130px, 1fr) minmax(150px, 1fr); gap:6px; align-items:center; padding:5px 7px; border-bottom:1px solid rgba(255,255,255,.06); }
+    .patch-row input[type="checkbox"] { width:auto; }
+    .patch-row input { padding:4px 6px; }
+    .patch-note { color:var(--muted); font-size:12px; }
+
+    .entry-ops { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+    .entry-ops button { padding:5px 6px; font-size:12px; }
+    #entryViewType { min-width:180px; }
+    .row-title .entry-id { color:var(--accent); font-weight:700; }
+    .row-title .entry-index { color:var(--muted); font-size:12px; margin-left:6px; }
+
+
+    /* Gapless mutual split layout and tabbed right pane */
+    main.workspace { min-height:0; display:flex; gap:0; background:var(--line); overflow:hidden; }
+    .pane { min-height:0; min-width:170px; max-width:none; background:var(--panel); display:grid; grid-template-rows:auto auto 1fr; resize:none; overflow:hidden; }
+    #sectionsPane { flex:0 0 250px; }
+    #entriesPane { flex:0 0 330px; }
+    #rightPane { flex:1 1 auto; min-width:420px; }
+    .splitter { flex:0 0 5px; min-width:5px; background:var(--line); cursor:col-resize; touch-action:none; }
+    .splitter:hover, .splitter.dragging { background:var(--accent); }
+    .editor-pane { min-height:0; background:var(--panel); display:flex; flex-direction:column; overflow:hidden; }
+    .editor-tabs { flex:0 0 auto; }
+    .right-tabs { flex:0 0 auto; display:flex; gap:0; border-bottom:1px solid var(--line); background:#15181d; overflow-x:auto; }
+    .tab-btn { border:0; border-right:1px solid var(--line); border-radius:0; background:#1b2028; padding:8px 12px; }
+    .tab-btn.active { background:#245d8f; color:#fff; }
+    .tab-panels { flex:1 1 auto; min-height:0; display:flex; overflow:hidden; }
+    .tab-panel { display:none; flex:1 1 auto; min-height:0; min-width:0; overflow:hidden; }
+    .tab-panel.active { display:flex; flex-direction:column; }
+    .editor-box { flex:1 1 auto; min-height:0; min-width:0; padding:8px; display:flex; flex-direction:column; gap:6px; resize:none; overflow:hidden; }
+    .editor-box textarea { min-height:0; flex:1 1 auto; resize:none; }
+    .highlight-wrap { flex:1 1 auto; min-height:0; height:auto; }
+    .patch-panel { flex:1 1 auto; min-height:0; padding:0; border-top:0; background:#1b2028; overflow:auto; resize:none; }
+    .patch-panel > .pane-title { position:sticky; top:0; z-index:1; }
+    .patch-grid { padding:8px; }
+    .patch-list { max-height:none; min-height:180px; }
+    .meta, .special { flex:0 0 auto; }
+    .list { min-height:0; overflow:auto; }
+
+
+    /* Typed field controls and CHAR_WIDTHS/table editors */
+    .typed-control-box { display:none; grid-template-columns:1fr 2fr; gap:8px; padding:8px 10px; border-bottom:1px solid var(--line); background:#181d24; align-items:center; }
+    .typed-control-box.visible { display:grid; }
+    .typed-control-box .label { align-self:center; }
+    .typed-control-box label { display:flex; gap:8px; align-items:center; color:var(--text); }
+    .typed-control-box input[type="checkbox"] { width:auto; }
+    .editor-hint { color:var(--muted); font-size:12px; padding:0 2px; }
+    .char-width-key { color:var(--accent); font-weight:700; }
+
+
+    /* Blue Fire raw segment presets and shortcut hint */
+    .segment-preset-list { border:1px solid var(--line); border-radius:8px; background:#15181d; overflow:hidden; }
+    .segment-preset-row { display:grid; grid-template-columns:28px minmax(180px, 1.1fr) minmax(170px, 1fr) minmax(90px, .5fr) minmax(90px, .5fr); gap:8px; align-items:center; padding:7px 8px; border-bottom:1px solid rgba(255,255,255,.06); }
+    .segment-preset-row:last-child { border-bottom:0; }
+    .segment-preset-row input[type="checkbox"] { width:auto; }
+    .segment-preset-title { font-weight:700; color:var(--accent); }
+    .segment-preset-meta { color:var(--muted); font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .shortcut-hint { color:var(--muted); font-size:12px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .shortcut-key { color:var(--accent); font-weight:700; }
+
+  </style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1 id="title">OOTR Language Editor Developer Tool</h1>
+    <div class="toolbar">
+      <button id="loadBtn" class="primary"></button>
+      <button id="defaultBtn"></button>
+      <button id="mergeBtn"></button>
+      <button id="saveBtn"></button>
+      <button id="applyBtn"></button>
+      <button id="undoBtn"></button>
+      <button id="redoBtn"></button>
+    </div>
+    <div id="status" class="status"></div>
+  </header>
+  <main id="workspace" class="workspace">
+    <section id="sectionsPane" class="pane nav-pane"><div id="sectionsTitle" class="pane-title"></div><div class="pane-tools"><input id="sectionSearch" type="search"></div><div id="sectionList" class="list"></div></section>
+    <div class="splitter" data-left="sectionsPane" data-right="entriesPane" title="Resize"></div>
+    <section id="entriesPane" class="pane nav-pane"><div id="entriesTitle" class="pane-title"></div><div class="pane-tools"><input id="entrySearch" type="search"><div class="entry-ops"><button id="addEntryBtn"></button><button id="deleteEntryBtn"></button><button id="copyEntryBtn"></button><button id="pasteEntryBtn"></button></div></div><div id="entryList" class="list"></div></section>
+    <div class="splitter" data-left="entriesPane" data-right="rightPane" title="Resize"></div>
+    <section id="rightPane" class="editor-pane">
+      <div class="meta">
+        <div><div id="selectedSectionLabel" class="label"></div><input id="selectedSection" readonly></div>
+        <div><div id="selectedEntryLabel" class="label"></div><input id="selectedEntry" readonly></div>
+        <div class="wide"><div id="noteLabel" class="label"></div><input id="sectionNote" readonly></div>
+        <div class="wide"><div id="entryTypeLabel" class="label"></div><select id="entryViewType"><option value="auto"></option><option value="stringDict"></option><option value="friendly"></option><option value="json"></option></select></div>
+      </div>
+      <div id="specialBox" class="special">
+        <div><div id="specialNameLabel" class="label"></div><input id="specialName"></div>
+        <div><div id="specialGenderLabel" class="label"></div><input id="specialGender"></div>
+        <div><div id="specialMapLabel" class="label"></div><label><input id="specialHasMap" type="checkbox" style="width:auto"> <span id="specialHasMapText"></span></label></div>
+      </div>
+      <div class="editor-tabs"><span id="modePill" class="pill"></span><span id="formatPill" class="pill"></span><span id="typePill" class="pill"></span></div>
+      <div class="right-tabs" role="tablist" aria-label="Editor tabs">
+        <button id="tabTextBtn" class="tab-btn active" data-tab="tabText" role="tab"></button>
+        <button id="tabRawBtn" class="tab-btn" data-tab="tabRaw" role="tab"></button>
+        <button id="tabSectionJsonBtn" class="tab-btn" data-tab="tabSectionJson" role="tab"></button>
+        <button id="tabPatchBtn" class="tab-btn" data-tab="tabPatch" role="tab"></button>
+      </div>
+      <div class="tab-panels">
+        <section id="tabText" class="tab-panel active" role="tabpanel">
+          <div class="editor-box"><div class="editor-tools"><span id="editorLabel" class="label"></span><button id="addLineBtn"></button><button id="removeLineBtn"></button></div><div class="highlight-wrap"><pre id="editorHighlight" aria-hidden="true"></pre><textarea id="editor" spellcheck="false"></textarea></div></div>
+        </section>
+        <section id="tabRaw" class="tab-panel" role="tabpanel">
+          <div class="editor-box"><div id="rawLabel" class="label"></div><textarea id="raw" readonly></textarea></div>
+        </section>
+        <section id="tabSectionJson" class="tab-panel" role="tabpanel">
+          <div class="editor-box"><div class="editor-tools"><span id="sectionJsonLabel" class="label"></span><button id="applySectionJsonBtn"></button></div><textarea id="sectionJson" spellcheck="false"></textarea></div>
+        </section>
+        <section id="tabPatch" class="tab-panel" role="tabpanel">
+          <div id="patchPanel" class="patch-panel">
+            <div id="patchTitle" class="pane-title">Patch maker</div>
+            <div class="patch-grid">
+              <div><div id="patchOriginalLabel" class="label">Original ROM</div><input id="patchOriginal" readonly></div>
+              <div><div id="patchModifiedLabel" class="label">Modified ROM</div><input id="patchModified" readonly></div>
+              <button id="patchPickRomsBtn">Select ROMs</button>
+              <div><div id="patchOutputLabel" class="label">Output folder</div><input id="patchOutput" readonly></div>
+              <div><div id="patchStatus" class="label">No patch generated.</div></div>
+              <button id="patchPickOutputBtn">Select output</button>
+              <div class="wide patch-actions"><button id="patchCheckAllBtn">Check all</button><button id="patchUncheckAllBtn">Uncheck all</button><button id="patchGenerateBtn" class="primary">Generate checked diff patches</button></div>
+              <div id="patchList" class="patch-list wide"></div>
+              <div class="wide patch-note" id="patchNote">Diff patch uses XOR over bin_patch ranges, then zlib compression.</div>
+              <div class="wide"><div id="segmentPresetLabel" class="label">Blue Fire raw segment presets</div><div id="segmentPresetList" class="segment-preset-list"></div></div>
+              <div class="wide patch-actions"><button id="segmentCheckBlueFireBtn">Check both Blue Fire segments</button><button id="segmentUncheckBlueFireBtn">Uncheck Blue Fire segments</button><button id="segmentExportCheckedBtn" class="primary">Export checked raw segments</button></div>
+              <div><div id="segmentStartLabel" class="label">Manual segment start</div><input id="segmentStart" value="0x8A1C00"></div>
+              <div><div id="segmentSizeLabel" class="label">Manual segment size</div><input id="segmentSize" value="0x400"></div>
+              <div><div id="segmentNameLabel" class="label">Manual segment filename</div><input id="segmentName" value="blue_fire_arrow_item_name_eng.ia4"></div>
+              <div class="wide patch-actions"><button id="segmentExportBtn">Export manual raw segment</button></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+  <footer><span id="fileLabel"></span><span id="shortcutHint" class="shortcut-hint"></span><span id="tempLabel"></span></footer>
+</div>
+<script>
+(() => {
+  const api = window.ootrLanguageEditor;
+  const state = { ui:{strings:{en:{}},languages:[{code:'en',label:'English'}]}, language:'en', defaultProperty:{}, property:{}, filePath:'', selectedSection:'', selectedEntryKey:'', undo:[], redo:[], dirty:false, patchRanges:{}, patchSelected:{}, patchOriginal:'', patchModified:'', patchOutput:'', entryClipboard:null, entryTypeOverrides:{}, segmentSelected:{} };
+  const $ = id => document.getElementById(id);
+  const el = Object.fromEntries(['title','loadBtn','defaultBtn','mergeBtn','saveBtn','applyBtn','undoBtn','redoBtn','status','sectionsTitle','sectionSearch','sectionList','entriesTitle','entrySearch','entryList','addEntryBtn','deleteEntryBtn','copyEntryBtn','pasteEntryBtn','selectedSectionLabel','selectedSection','selectedEntryLabel','selectedEntry','noteLabel','sectionNote','entryTypeLabel','entryViewType','specialBox','specialNameLabel','specialName','specialGenderLabel','specialGender','specialMapLabel','specialHasMap','specialHasMapText','modePill','formatPill','typePill','editorLabel','editor','editorHighlight','addLineBtn','removeLineBtn','rawLabel','raw','sectionJsonLabel','sectionJson','applySectionJsonBtn','tabTextBtn','tabRawBtn','tabSectionJsonBtn','tabPatchBtn','tabText','tabRaw','tabSectionJson','tabPatch','patchPanel','patchTitle','patchOriginalLabel','patchOriginal','patchModifiedLabel','patchModified','patchPickRomsBtn','patchOutputLabel','patchOutput','patchStatus','patchPickOutputBtn','patchCheckAllBtn','patchUncheckAllBtn','patchGenerateBtn','patchList','patchNote','segmentPresetLabel','segmentPresetList','segmentCheckBlueFireBtn','segmentUncheckBlueFireBtn','segmentExportCheckedBtn','segmentStartLabel','segmentStart','segmentSizeLabel','segmentSize','segmentNameLabel','segmentName','segmentExportBtn','fileLabel','shortcutHint','tempLabel'].map(id=>[id,$(id)]));
+  const MESSAGE_SECTIONS = new Set(['ITEM_MESSAGES','IMPORTANT_ITEM_MESSAGES','MISC_MESSAGES','PLAIN_TEXTS']);
+  const TEXT_ENTRY_SECTIONS = new Set(['PATCH_TEXTS','SHOP_TEXTS','hint_text']);
+  const GOAL_SECTIONS = new Set(['BOSS_GOAL_TABLE','REWARD_GOAL_TABLE']);
+  const HINT_LIKE_SECTIONS = new Set(['hintTable','BOSS_GOAL_TABLE','REWARD_GOAL_TABLE','hint_text','misc_item_hint_table','misc_location_hint_table','misc_dual_hint_table']);
+  const FIXED_DICT_SECTIONS = new Set(['misc_item_hint_table','misc_location_hint_table','misc_dual_hint_table']);
+  const MAPPING_SECTIONS = new Set(['pronoun_mapping','verb_mapping','region_list','trials']);
+  const PAIR_LIST_SECTIONS = new Set(['language_specific_replace_table']);
+  const TOP_ORDER = ['BOSS_GOAL_TABLE','CHAR_WIDTHS','IMPORTANT_ITEM_MESSAGES','ITEM_MESSAGES','MISC_MESSAGES','PATCH_TEXTS','PLAIN_TEXTS','REWARD_GOAL_TABLE','SHOP_TEXTS','boss_textboxes','dungeon_list','goal_place_textboxes','hintPrefixes','hintTable','hint_area_enum','hint_text','lang_property','language_specific_replace_table','misc_dual_hint_table','misc_item_hint_table','misc_location_hint_table','prefix','pronoun_mapping','region_list','trials','verb_mapping'];
+  const BLUE_FIRE_SEGMENT_PRESETS = [
+    { key:'blue_fire_arrow_item_name_jap.ia4', label:'Blue Fire Arrow item name JP', filename:'blue_fire_arrow_item_name_jap.ia4', start:'0x883000', size:'0x400' },
+    { key:'blue_fire_arrow_item_name_eng.ia4', label:'Blue Fire Arrow item name EN', filename:'blue_fire_arrow_item_name_eng.ia4', start:'0x8A1C00', size:'0x400' },
+  ];
+  const SHORTCUT_SUMMARY = 'Ctrl/Cmd+1-4 tabs · Ctrl/Cmd+Enter apply · Ctrl/Cmd+S export · Ctrl/Cmd+Shift+C/V entry copy/paste · Ctrl/Cmd+Alt+R export Blue Fire';
+  const sectionNotes = {
+    lang_property:'Language metadata section. This is exported as-is unless you edit the JSON directly.',
+    prefix:'Prefix section for Language-style text such as [prefix.definite.nominative.masculine]. Keep gender, case, and nested prefix rules intact.',
+    hintTable:'Hint table section. Entries contain vague_hint, clear_hint, and gender. Empty Vague Hint becomes null, one line becomes string, and multiple lines become a list.',
+    BOSS_GOAL_TABLE:'Boss/reward goal table section. Entries contain vague and clear names. #...# is shown as <color>...<color> in the editor.',
+    REWARD_GOAL_TABLE:'Boss/reward goal table section. Entries contain vague and clear names. #...# is shown as <color>...<color> in the editor.',
+    PATCH_TEXTS:'Patch text section. Placeholder tokens such as {color} are written for patch-time replacement. Control codes are shown as markup in the editor and as JSON escapes in the raw preview.',
+    SHOP_TEXTS:'Shop text section. Keep placeholder tokens and control characters exactly unless you intend to change game text behavior.',
+    CHAR_WIDTHS:'Character width overrides. Keys may be visible characters, symbolic names, hex byte strings, or table slots.',
+    dungeon_list:'Dungeon list section. The editor exposes name, gender, and has_map; has_map is stored as a boolean.',
+    pronoun_mapping:'Mapping section. Each entry is a fixed string-to-string replacement.',
+    verb_mapping:'Mapping section. Each entry is a fixed string-to-string replacement.',
+    region_list:'Mapping section. Each entry is a fixed string-to-string replacement.',
+    trials:'Mapping section. Each entry is a fixed string-to-string replacement.',
+  };
+
+  function t(text, params={}) { const table=state.ui.strings?.[state.language]||state.ui.strings?.en||{}; const en=state.ui.strings?.en||{}; let out=table[text]||en[text]||text; for (const [k,v] of Object.entries(params)) out=out.split(`{${k}}`).join(String(v)); return out; }
+  function setText(id,text){el[id].textContent=t(text)} function setPlaceholder(id,text){el[id].placeholder=t(text)}
+
+  function escapeHtml(text){ return String(text ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+  function highlightEditorText(text){
+    const token = /(<color(?:\s+[^>]+)?>|<[^>\n]+>|\{[^}\n]+\}|\[[^\]\n]+\]|#[^#\n]+#)/g;
+    let out='', last=0, colorOpen=false;
+    for(const m of text.matchAll(token)){
+      out += escapeHtml(text.slice(last, m.index));
+      const raw=m[0];
+      if(/^<color(?:\s+[^>]+)?>$/i.test(raw)){
+        if(colorOpen){ out += '</span><span class="tok-color">'+escapeHtml(raw)+'</span>'; colorOpen=false; }
+        else { out += '<span class="tok-color">'+escapeHtml(raw)+'</span><span class="range-color">'; colorOpen=true; }
+      } else if(/^<[^>\n]+>$/.test(raw)) out += '<span class="tok-control">'+escapeHtml(raw)+'</span>';
+      else if(/^\{/.test(raw)) out += '<span class="tok-placeholder">'+escapeHtml(raw)+'</span>';
+      else if(/^\[/.test(raw)) out += '<span class="tok-language">'+escapeHtml(raw)+'</span>';
+      else if(/^#/.test(raw)) out += '<span class="tok-hint-color">'+escapeHtml(raw)+'</span>';
+      last=m.index+raw.length;
+    }
+    out += escapeHtml(text.slice(last));
+    if(colorOpen) out += '</span>';
+    return out + '\n';
+  }
+  function updateHighlight(){ if(!el.editorHighlight) return; el.editorHighlight.innerHTML=highlightEditorText(el.editor.value); el.editorHighlight.scrollTop=el.editor.scrollTop; el.editorHighlight.scrollLeft=el.editor.scrollLeft; }
+
+  const clone = obj => JSON.parse(JSON.stringify(obj));
+  function deepMerge(base, override){ if(Array.isArray(base)){ return Array.isArray(override)?override:clone(base); } if(base&&typeof base==='object'){ const out={}; for(const k of Object.keys(base)) out[k]=clone(base[k]); if(override&&typeof override==='object'&&!Array.isArray(override)){ for(const [k,v] of Object.entries(override)) out[k]=deepMerge(out[k],v); } return out; } return override===undefined?base:override; }
+  function orderedProperty(data){ const out={}; for(const k of TOP_ORDER) if(Object.prototype.hasOwnProperty.call(data,k)) out[k]=data[k]; for(const k of Object.keys(data).sort()) if(!Object.prototype.hasOwnProperty.call(out,k)) out[k]=data[k]; return out; }
+  function buildExportProperty(){ return orderedProperty(deepMerge(state.defaultProperty, state.property)); }
+  function typeName(v){ if(Array.isArray(v)) return 'list'; if(v===null) return 'null'; return typeof v==='object'?'dict':typeof v; }
+  function noteFor(section){ return sectionNotes[section] || 'General property section. Keep the existing JSON shape unless the loading code requires a different schema.'; }
+  function modeFor(section,value){ if(MESSAGE_SECTIONS.has(section))return 'Message entry'; if(section==='hintTable')return 'Hint table entry'; if(GOAL_SECTIONS.has(section))return 'Goal name entry'; if(TEXT_ENTRY_SECTIONS.has(section))return 'Patch/shop/hint text entry'; if(section==='dungeon_list')return 'Dungeon entry'; if(MAPPING_SECTIONS.has(section))return 'Mapping entry'; if(PAIR_LIST_SECTIONS.has(section))return 'Mapping entry'; if(section==='prefix')return 'Prefix rule section'; if(Array.isArray(value))return 'List entry'; if(value&&typeof value==='object')return 'Dictionary entry'; return 'Scalar entry'; }
+  function formatFor(section,value){ if(section==='prefix')return 'field text'; if(MESSAGE_SECTIONS.has(section)||section==='hintTable'||GOAL_SECTIONS.has(section)||TEXT_ENTRY_SECTIONS.has(section)||section==='dungeon_list'||MAPPING_SECTIONS.has(section)||PAIR_LIST_SECTIONS.has(section)||FIXED_DICT_SECTIONS.has(section))return 'friendly text'; if(Array.isArray(value))return 'list text'; return 'JSON'; }
+  function snapshot(){return JSON.stringify({property:state.property,selectedSection:state.selectedSection,selectedEntryKey:state.selectedEntryKey});}
+  function restore(s){const r=JSON.parse(s); state.property=r.property||{}; state.selectedSection=r.selectedSection||Object.keys(state.property)[0]||''; state.selectedEntryKey=r.selectedEntryKey||''; renderAll();}
+  function pushUndo(){state.undo.push(snapshot()); if(state.undo.length>100)state.undo.shift(); state.redo.length=0;}
+  let tempTimer=null; function markDirty(){state.dirty=true; el.status.textContent=t('Unsaved changes'); clearTimeout(tempTimer); tempTimer=setTimeout(writeTemp,600);}
+  async function writeTemp(){try{const result=await api.writeTemp({savedAt:new Date().toISOString(),filePath:state.filePath,property:buildExportProperty(),draftText:el.editor.value,selectedSection:state.selectedSection,selectedEntryKey:state.selectedEntryKey}); el.tempLabel.textContent=t('TEMP saved: {path}',{path:result.filePath});}catch(e){el.tempLabel.textContent=t('TEMP save failed: {message}',{message:e.message});}}
+
+  const HEX2 = n => Number(n).toString(16).toUpperCase().padStart(2,'0'); const HEX4 = n => Number(n).toString(16).toUpperCase().padStart(4,'0'); const HEX6 = n => Number(n).toString(16).toUpperCase().padStart(6,'0');
+  const noArg = {0x00:'pad',0x02:'end',0x08:'allow instant text',0x09:'disallow instant text',0x0A:'keep open',0x0B:'event',0x0F:'name',0x10:'ocarina',0x16:'marathon time',0x17:'race time',0x18:'points',0x19:'skulltula count',0x1A:'text is unskippable',0x1B:'start two choice',0x1C:'start three choice',0x1D:'fish weight',0x1F:'current time',0xF2:'outgoing item filename',0xF3:'farores wind destination'};
+  function readPlaceholder(text,i){ if(text[i] !== '{') return null; let depth=0; for(let j=i;j<text.length;j++){ if(text[j]==='{') depth++; if(text[j]==='}'){ depth--; if(depth===0) return {text:text.slice(i,j+1), next:j+1}; } } return null; }
+  function readArg(text,i,n){ if(text[i]==='{'){const p=readPlaceholder(text,i); if(p) return {label:p.text, next:p.next};} let val=0; for(let k=0;k<n;k++) val=(val<<8)|(text.charCodeAt(i+k)||0); return {label:n===1?HEX2(val):(n===2?HEX4(val):HEX6(val)), next:i+n}; }
+  function textToMarkup(text){ if(typeof text!=='string') return text; let out=''; for(let i=0;i<text.length;){ const c=text.charCodeAt(i); if(c===0x01){out+='<line-break>';i++;continue;} if(c===0x04){out+='<box-break>';i++;continue;} if(c===0x05){const a=readArg(text,i+1,1); out+=`<color ${a.label}>`; i=a.next; continue;} if(c===0x06){const a=readArg(text,i+1,1); out+=`<gap ${a.label}>`; i=a.next; continue;} if(c===0x07){const a=readArg(text,i+1,2); out+=`<goto ${a.label}>`; i=a.next; continue;} if(c===0x0C){const a=readArg(text,i+1,1); out+=`<box-break-delay ${a.label}>`; i=a.next; continue;} if(c===0x0E){const a=readArg(text,i+1,1); out+=`<fade-out ${a.label}>`; i=a.next; continue;} if(c===0x12){const a=readArg(text,i+1,2); out+=`<sound ${a.label}>`; i=a.next; continue;} if(c===0x13){const a=readArg(text,i+1,1); out+=`<icon ${a.label}>`; i=a.next; continue;} if(c===0x14){const a=readArg(text,i+1,1); out+=`<speed ${a.label}>`; i=a.next; continue;} if(c===0x15){const a=readArg(text,i+1,3); out+=`<background ${a.label}>`; i=a.next; continue;} if(c===0x1E){const a=readArg(text,i+1,1); out+=`<high-score ${a.label}>`; i=a.next; continue;} if(c===0xF0){const a=readArg(text,i+1,1); out+=`<silver rupee count ${a.label}>`; i=a.next; continue;} if(c===0xF1){const a=readArg(text,i+1,1); out+=`<key count ${a.label}>`; i=a.next; continue;} if(noArg[c]){out+=`<${noArg[c]}>`;i++;continue;} if(c<0x20 || c>=0xF0){out+=`<ctrl ${HEX2(c)}>`;i++;continue;} out+=text[i++]; } return out; }
+  function argToChars(label,n){ label=label.trim(); if(label.startsWith('{')&&label.endsWith('}')) return label; const clean=label.replace(/^0x/i,''); let num=parseInt(clean,16); if(Number.isNaN(num)) return label; let out=''; for(let i=n-1;i>=0;i--) out+=String.fromCharCode((num>>(i*8))&0xff); return out; }
+  function markupToText(text){ if(typeof text!=='string') return text; const map={'line-break':'\x01','end':'\x02','box-break':'\x04','allow instant text':'\x08','disallow instant text':'\x09','keep open':'\x0A','event':'\x0B','name':'\x0F','ocarina':'\x10','marathon time':'\x16','race time':'\x17','points':'\x18','skulltula count':'\x19','text is unskippable':'\x1A','start two choice':'\x1B','start three choice':'\x1C','fish weight':'\x1D','current time':'\x1F','outgoing item filename':'\xF2','farores wind destination':'\xF3'}; return text.replace(/<([^>]+)>/g,(m,body)=>{const b=body.trim(); if(map[b])return map[b]; let mm=b.match(/^color\s+(.+)$/i); if(mm)return '\x05'+argToChars(mm[1],1); mm=b.match(/^gap\s+(.+)$/i); if(mm)return '\x06'+argToChars(mm[1],1); mm=b.match(/^goto\s+(.+)$/i); if(mm)return '\x07'+argToChars(mm[1],2); mm=b.match(/^box-break-delay\s+(.+)$/i); if(mm)return '\x0C'+argToChars(mm[1],1); mm=b.match(/^fade-out\s+(.+)$/i); if(mm)return '\x0E'+argToChars(mm[1],1); mm=b.match(/^sound\s+(.+)$/i); if(mm)return '\x12'+argToChars(mm[1],2); mm=b.match(/^icon\s+(.+)$/i); if(mm)return '\x13'+argToChars(mm[1],1); mm=b.match(/^speed\s+(.+)$/i); if(mm)return '\x14'+argToChars(mm[1],1); mm=b.match(/^background\s+(.+)$/i); if(mm)return '\x15'+argToChars(mm[1],3); mm=b.match(/^high-score\s+(.+)$/i); if(mm)return '\x1E'+argToChars(mm[1],1); mm=b.match(/^silver rupee count\s+(.+)$/i); if(mm)return '\xF0'+argToChars(mm[1],1); mm=b.match(/^key count\s+(.+)$/i); if(mm)return '\xF1'+argToChars(mm[1],1); mm=b.match(/^ctrl\s+([0-9A-Fa-f]{2})$/); if(mm)return String.fromCharCode(parseInt(mm[1],16)); return m; }); }
+  function hintColorToMarkup(s){ return typeof s==='string'?s.replace(/#([^#]+)#/g,'<color>$1<color>'):s; }
+  function markupToHintColor(s){ return typeof s==='string'?s.replace(/<color>(.*?)<color>/g,'#$1#'):s; }
+  function encodeFriendlyString(s, hintLike=false){ let out=textToMarkup(s??''); if(hintLike) out=hintColorToMarkup(out); return out; }
+  function decodeFriendlyString(s, hintLike=false){ let out=s??''; if(hintLike) out=markupToHintColor(out); return markupToText(out); }
+  function valueToFriendly(v,hintLike=false){ if(typeof v==='string')return encodeFriendlyString(v,hintLike); if(v===null||typeof v==='number'||typeof v==='boolean')return JSON.stringify(v); return JSON.stringify(v,null,4); }
+  function friendlyToValue(text, original, hintLike=false){ if(typeof original==='string')return decodeFriendlyString(text,hintLike); if(original===null){ const trim=text.trim(); if(trim==='')return null; try{return JSON.parse(trim)}catch{return decodeFriendlyString(text,hintLike)} } if(typeof original==='number'||typeof original==='boolean'||Array.isArray(original)||typeof original==='object')return JSON.parse(text); return decodeFriendlyString(text,hintLike); }
+
+  function sectionValue(){return state.property?.[state.selectedSection];}
+  function currentMode(){return modeFor(state.selectedSection, sectionValue());}
+  function entryKeys(value){ const s=state.selectedSection; if(s==='prefix')return ['prefix']; if(PAIR_LIST_SECTIONS.has(s)&&Array.isArray(value))return value.map((_x,i)=>String(i)); if(Array.isArray(value))return value.map((_x,i)=>String(i)); if(value&&typeof value==='object')return Object.keys(value); return ['value']; }
+  function entryValue(){ const v=sectionValue(); if(state.selectedSection==='prefix')return v; if(Array.isArray(v))return v[Number(state.selectedEntryKey||0)]; if(v&&typeof v==='object')return v[state.selectedEntryKey]; return v; }
+  function setEntryValue(newValue){ const v=sectionValue(); if(state.selectedSection==='prefix') state.property[state.selectedSection]=newValue; else if(Array.isArray(v)) v[Number(state.selectedEntryKey||0)] = newValue; else if(v&&typeof v==='object') v[state.selectedEntryKey]=newValue; else state.property[state.selectedSection]=newValue; }
+  function shortPreview(v){ if(v==null)return String(v); if(typeof v==='string')return textToMarkup(v).replace(/\s+/g,' ').slice(0,120); if(typeof v==='number'||typeof v==='boolean')return String(v); return `${typeName(v)} ${JSON.stringify(v).slice(0,120)}`; }
+
+  function block(name, value){return `[${name}]\n${value==null?'':String(value)}\n`;}
+  function renderVague(value){ if(value==null)return ''; if(Array.isArray(value))return value.map(x=>'- '+encodeFriendlyString(x,true)).join('\n'); return encodeFriendlyString(value,true); }
+  function parseMaybeNull(text){ const trim=text.trim(); return trim===''||trim.toLowerCase()==='none'||trim.toLowerCase()==='null'?null:decodeFriendlyString(trim,true); }
+  function parseVague(text){ const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(x=>x.length); if(lines.length===0)return null; const values=lines.map(x=>x.startsWith('-')?x.replace(/^[-*]\s*/, ''):x).map(x=>decodeFriendlyString(x,true)); return values.length===1?values[0]:values; }
+  function parseBlocks(text){ const res={}; let current=''; for(const line of text.split(/\r?\n/)){ const m=line.match(/^\[([^\]]+)\]\s*$/); if(m){current=m[1].trim(); res[current]='';} else if(current){res[current]+=(res[current]? '\n':'')+line;} } return res; }
+  function renderMessage(item){ return block('id', item?.id ?? '') + (Object.prototype.hasOwnProperty.call(item||{},'box_type')?block('box_type', item.box_type):'') + block('text', encodeFriendlyString(item?.text??'', false)); }
+  function parseMessage(text, original={}){ const b=parseBlocks(text); const out={...original}; if('id' in b && b.id.trim()!=='') out.id=Number(b.id.trim()); if('box_type' in b) { const bt=b.box_type.trim(); if(bt==='') delete out.box_type; else out.box_type=Number(bt); } out.text=decodeFriendlyString(b.text??'', false); return out; }
+  function renderHint(item){ return block('vague_hint', renderVague(item?.vague_hint)) + block('clear_hint', item?.clear_hint==null?'':encodeFriendlyString(item.clear_hint,true)) + block('gender', item?.gender??''); }
+  function parseHint(text, original={}){ const b=parseBlocks(text); return {...original, vague_hint:parseVague(b.vague_hint??''), clear_hint:parseMaybeNull(b.clear_hint??''), gender:parseMaybeNull(b.gender??'')}; }
+  function renderGoal(item){ return block('vague', encodeFriendlyString(item?.vague??'', true)) + block('clear', encodeFriendlyString(item?.clear??'', true)); }
+  function parseGoal(text, original={}){ const b=parseBlocks(text); return {...original, vague:decodeFriendlyString(b.vague??'', true), clear:decodeFriendlyString(b.clear??'', true)}; }
+  function renderDungeon(item){ return block('name', encodeFriendlyString(item?.name??'', false)) + block('gender', item?.gender??'') + block('has_map', item?.has_map?'true':'false'); }
+  function parseDungeon(text, original={}){ const b=parseBlocks(text); return {...original, name:decodeFriendlyString(b.name??'', false), gender:(b.gender??'').trim(), has_map:/^(true|1|yes|on)$/i.test((b.has_map??'').trim())}; }
+  function renderMapping(key, value){ return block('from', encodeFriendlyString(key,false)) + block('to', encodeFriendlyString(value??'', false)); }
+  function parseMapping(text, originalKey){ const b=parseBlocks(text); return {from:decodeFriendlyString((b.from??originalKey),false), to:decodeFriendlyString(b.to??'',false)}; }
+  function flattenObject(obj,prefix='',out=[]){ for(const [k,v] of Object.entries(obj||{})){ const p=prefix?`${prefix}/${k}`:k; if(v&&typeof v==='object'&&!Array.isArray(v)) flattenObject(v,p,out); else out.push([p,v]); } return out; }
+  function setPath(obj,path,value){ const parts=path.split('/'); let cur=obj; for(let i=0;i<parts.length-1;i++){ if(!cur[parts[i]]||typeof cur[parts[i]]!=='object'||Array.isArray(cur[parts[i]]))cur[parts[i]]={}; cur=cur[parts[i]]; } cur[parts[parts.length-1]]=value; }
+  function renderFixedDict(obj){ return flattenObject(obj).map(([p,v])=>`[field ${p}]\n${valueToFriendly(v,true)}\n`).join('\n'); }
+  function parseFixedDict(text, original={}){ const out=clone(original||{}); let current=null, buf=[]; const flush=()=>{ if(current){ const old=current.split('/').reduce((a,k)=>a&&a[k], original); let val; try{val=friendlyToValue(buf.join('\n'), old, true)}catch{val=decodeFriendlyString(buf.join('\n'), true)} setPath(out,current,val); } }; for(const line of text.split(/\r?\n/)){ const m=line.match(/^\[field\s+(.+)\]\s*$/); if(m){flush(); current=m[1].trim(); buf=[];} else if(current){buf.push(line);} } flush(); return out; }
+  function renderPairList(item){ if(Array.isArray(item)) return block('key', encodeFriendlyString(item[0]??'',false)) + block('as', encodeFriendlyString(item[1]??'',false)); return JSON.stringify(item,null,4); }
+  function parsePairList(text, original){ const b=parseBlocks(text); if('key' in b || 'as' in b) return [decodeFriendlyString(b.key??'',false), decodeFriendlyString(b.as??'',false)]; return JSON.parse(text); }
+  function renderValueEntry(value){ const hintLike=HINT_LIKE_SECTIONS.has(state.selectedSection); if(Array.isArray(value)) return value.map(x=>'- '+valueToFriendly(x,hintLike)).join('\n'); return valueToFriendly(value,hintLike); }
+  function parseValueEntry(text, original){ const hintLike=HINT_LIKE_SECTIONS.has(state.selectedSection); if(Array.isArray(original)){ const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean).map(x=>x.replace(/^[-*]\s*/,'')); return lines.map(x=>friendlyToValue(x, original[0]??'', hintLike)); } return friendlyToValue(text, original, hintLike); }
+  function renderPrefix(p){ const lines=[]; lines.push('[gender]'); for(const g of p?.gender||[])lines.push('- '+g); if(p?.case){lines.push('','[case]'); for(const c of p.case)lines.push('- '+c);} lines.push('','[prefix]'); for(const [path,v] of flattenObject(p?.prefix||{})) lines.push(`${path} = ${typeof v==='string'?encodeFriendlyString(v,false):JSON.stringify(v)}`); return lines.join('\n')+'\n'; }
+  function parsePrefix(text, original={}){ const out={gender:[], prefix:{}}; let mode=''; for(const raw of text.split(/\r?\n/)){ const line=raw.trim(); if(!line)continue; const head=line.match(/^\[([^\]]+)\]/); if(head){mode=head[1]; if(mode==='case')out.case=[]; continue;} if(mode==='gender'&&line.startsWith('-'))out.gender.push(line.replace(/^[-*]\s*/,'')); else if(mode==='case'&&line.startsWith('-'))out.case.push(line.replace(/^[-*]\s*/,'')); else if(mode==='prefix'){ const m=line.match(/^(.+?)\s*=\s*(.*)$/); if(m){ let val=m[2]; try{val=JSON.parse(val)}catch{val=decodeFriendlyString(val,false)} setPath(out.prefix,m[1].trim(),val); } } } if(!out.gender.length && original.gender)out.gender=clone(original.gender); return out; }
+  function renderEditorText(){ const section=state.selectedSection, value=entryValue(); if(MESSAGE_SECTIONS.has(section))return renderMessage(value||{}); if(section==='hintTable')return renderHint(value||{}); if(GOAL_SECTIONS.has(section))return renderGoal(value||{}); if(section==='dungeon_list')return renderDungeon(value||{}); if(MAPPING_SECTIONS.has(section))return renderMapping(state.selectedEntryKey, value); if(PAIR_LIST_SECTIONS.has(section))return renderPairList(value); if(FIXED_DICT_SECTIONS.has(section))return renderFixedDict(value||{}); if(section==='prefix')return renderPrefix(value||{}); return renderValueEntry(value); }
+  function parseEditorText(){ const section=state.selectedSection, original=entryValue(); if(MESSAGE_SECTIONS.has(section))return parseMessage(el.editor.value, original||{}); if(section==='hintTable')return parseHint(el.editor.value, original||{}); if(GOAL_SECTIONS.has(section))return parseGoal(el.editor.value, original||{}); if(section==='dungeon_list')return parseDungeon(el.editor.value, original||{}); if(MAPPING_SECTIONS.has(section))return parseMapping(el.editor.value, state.selectedEntryKey); if(PAIR_LIST_SECTIONS.has(section))return parsePairList(el.editor.value, original); if(FIXED_DICT_SECTIONS.has(section))return parseFixedDict(el.editor.value, original||{}); if(section==='prefix')return parsePrefix(el.editor.value, original||{}); return parseValueEntry(el.editor.value, original); }
+
+
+  function renderPatchRows(){
+    if(!el.patchList) return;
+    el.patchList.innerHTML='';
+    const keys=Object.keys(state.patchRanges||{});
+    for(const key of keys){
+      if(!(key in state.patchSelected)) state.patchSelected[key]=true;
+      const row=document.createElement('div'); row.className='patch-row';
+      const use=document.createElement('input'); use.type='checkbox'; use.checked=!!state.patchSelected[key]; use.onchange=()=>{state.patchSelected[key]=use.checked;};
+      const keyCell=document.createElement('div'); keyCell.textContent=key;
+      const name=document.createElement('input'); name.value=key; name.dataset.key=key;
+      const range=document.createElement('div'); const r=state.patchRanges[key]||[]; range.textContent=`${r[0]||''} - ${r[1]||''}`;
+      row.append(use,keyCell,name,range); el.patchList.appendChild(row);
+    }
+  }
+  function checkedPatchItems(){ return Array.from(el.patchList.querySelectorAll('.patch-row')).map(row=>({use:row.children[0].checked,key:row.children[1].textContent,filename:row.children[2].value.trim()})).filter(x=>x.use); }
+  async function pickRoms(){ const o=await api.openRom(t('Select original ROM')); if(o) {state.patchOriginal=o.filePath; el.patchOriginal.value=o.filePath;} const m=await api.openRom(t('Select modified ROM')); if(m) {state.patchModified=m.filePath; el.patchModified.value=m.filePath;} }
+  async function pickOutput(){ const d=await api.openDirectory(t('Select output folder')); if(d){state.patchOutput=d.filePath; el.patchOutput.value=d.filePath;} }
+  async function generatePatches(){ try{ const result=await api.generateDiffPatches({originalPath:state.patchOriginal,modifiedPath:state.patchModified,outputDir:state.patchOutput,items:checkedPatchItems()}); el.patchStatus.innerHTML=`<span class="ok">${t('Generated {count} patch files.',{count:result.written.length})}</span>`; }catch(e){el.patchStatus.innerHTML=`<span class="error">${t('Patch generation failed: {message}',{message:e.message})}</span>`;} }
+  async function exportSegment(){ try{ const rom=state.patchOriginal || state.patchModified; const result=await api.exportSegment({originalPath:rom,outputDir:state.patchOutput,filename:el.segmentName.value,start:el.segmentStart.value,size:el.segmentSize.value}); el.patchStatus.innerHTML=`<span class="ok">${t('Exported raw segment: {path}',{path:result.filePath})}</span>`; }catch(e){el.patchStatus.innerHTML=`<span class="error">${t('Segment export failed: {message}',{message:e.message})}</span>`;} }
+  function renderSegmentPresets(){
+    if(!el.segmentPresetList) return;
+    el.segmentPresetList.innerHTML='';
+    for(const preset of BLUE_FIRE_SEGMENT_PRESETS){
+      if(!(preset.key in state.segmentSelected)) state.segmentSelected[preset.key]=true;
+      const row=document.createElement('div'); row.className='segment-preset-row';
+      const use=document.createElement('input'); use.type='checkbox'; use.checked=!!state.segmentSelected[preset.key]; use.onchange=()=>{state.segmentSelected[preset.key]=use.checked;};
+      const title=document.createElement('div'); title.innerHTML=`<div class="segment-preset-title">${escapeHtml(t(preset.label))}</div><div class="segment-preset-meta">${escapeHtml(preset.filename)}</div>`;
+      const file=document.createElement('div'); file.className='segment-preset-meta'; file.textContent=preset.filename;
+      const start=document.createElement('div'); start.className='segment-preset-meta'; start.textContent=preset.start;
+      const size=document.createElement('div'); size.className='segment-preset-meta'; size.textContent=preset.size;
+      row.append(use,title,file,start,size); el.segmentPresetList.appendChild(row);
+    }
+  }
+  function checkBlueFireSegments(value){ for(const preset of BLUE_FIRE_SEGMENT_PRESETS) state.segmentSelected[preset.key]=value; renderSegmentPresets(); }
+  function checkedSegments(){ return BLUE_FIRE_SEGMENT_PRESETS.filter(p=>state.segmentSelected[p.key]); }
+  async function exportCheckedSegments(){
+    try{
+      const rom=state.patchOriginal || state.patchModified;
+      const items=checkedSegments();
+      const result=await api.exportSegments({originalPath:rom, outputDir:state.patchOutput, items});
+      el.patchStatus.innerHTML=`<span class="ok">${t('Exported {count} raw segments.',{count:result.written.length})}</span>`;
+    }catch(e){
+      el.patchStatus.innerHTML=`<span class="error">${t('Segment export failed: {message}',{message:e.message})}</span>`;
+    }
+  }
+  function checkAllPatches(value){ for(const key of Object.keys(state.patchRanges||{})) state.patchSelected[key]=value; renderPatchRows(); renderSegmentPresets(); }
+
+
+  function switchTab(tabId){
+    for (const id of ['tabText','tabRaw','tabSectionJson','tabPatch']) {
+      const panel = el[id];
+      const btn = el[id === 'tabText' ? 'tabTextBtn' : id === 'tabRaw' ? 'tabRawBtn' : id === 'tabSectionJson' ? 'tabSectionJsonBtn' : 'tabPatchBtn'];
+      if(panel) panel.classList.toggle('active', id === tabId);
+      if(btn) { btn.classList.toggle('active', id === tabId); btn.setAttribute('aria-selected', id === tabId ? 'true' : 'false'); }
+    }
+    state.activeTab = tabId;
+    if(tabId === 'tabSectionJson') renderSectionJson();
+  }
+  function renderSectionJson(){ if(el.sectionJson) el.sectionJson.value = JSON.stringify(sectionValue(), null, 4); }
+  function applySectionJson(){
+    try{
+      pushUndo();
+      state.property[state.selectedSection] = JSON.parse(el.sectionJson.value);
+      markDirty();
+      renderAll();
+      switchTab('tabSectionJson');
+      el.status.innerHTML = `<span class="ok">${t('Applied section JSON')}</span>`;
+    }catch(e){
+      el.status.innerHTML = `<span class="error">${t('Apply failed: {message}',{message:e.message})}</span>`;
+    }
+  }
+  function initTabs(){
+    for(const [btnId, tabId] of [['tabTextBtn','tabText'],['tabRawBtn','tabRaw'],['tabSectionJsonBtn','tabSectionJson'],['tabPatchBtn','tabPatch']]){
+      if(el[btnId]) el[btnId].onclick = () => switchTab(tabId);
+    }
+    switchTab(state.activeTab || 'tabText');
+  }
+  function initSplitters(){
+    document.querySelectorAll('.splitter').forEach(splitter => {
+      splitter.addEventListener('pointerdown', ev => {
+        ev.preventDefault();
+        splitter.classList.add('dragging');
+        const left = $(splitter.dataset.left);
+        const right = $(splitter.dataset.right);
+        const startX = ev.clientX;
+        const leftStart = left.getBoundingClientRect().width;
+        const rightStart = right.getBoundingClientRect().width;
+        const minLeft = 170;
+        const minRight = right.id === 'rightPane' ? 420 : 190;
+        const onMove = e => {
+          const dx = e.clientX - startX;
+          let newLeft = Math.max(minLeft, leftStart + dx);
+          let newRight = Math.max(minRight, rightStart - dx);
+          const total = leftStart + rightStart;
+          if(newLeft + newRight > total){
+            if(newLeft === minLeft) newRight = total - newLeft;
+            else newLeft = total - newRight;
+          }
+          left.style.flex = `0 0 ${newLeft}px`;
+          if(right.id !== 'rightPane') right.style.flex = `0 0 ${newRight}px`;
+          else right.style.flex = `1 1 ${newRight}px`;
+        };
+        const onUp = () => { window.removeEventListener('pointermove', onMove); window.removeEventListener('pointerup', onUp); splitter.classList.remove('dragging'); };
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp, {once:true});
+      });
+    });
+  }
+
+  function renderStaticText(){ document.documentElement.lang=state.language; document.title=t('OOTR Language Editor Developer Tool'); setText('title','OOTR Language Editor Developer Tool'); setText('loadBtn','Load completed property.json...'); setText('defaultBtn','Load default template'); setText('mergeBtn','Merge missing defaults'); setText('saveBtn','Export property.json...'); setText('applyBtn','Apply editor'); setText('undoBtn','Undo'); setText('redoBtn','Redo'); setText('sectionsTitle','Sections'); setText('entriesTitle','Entries'); setText('selectedSectionLabel','Selected section'); setText('selectedEntryLabel','Selected entry'); setText('noteLabel','Section note'); setText('editorLabel','Text editor'); setText('rawLabel','Raw write-form JSON preview'); setText('sectionJsonLabel','Section JSON editor'); setText('applySectionJsonBtn','Apply section JSON'); setText('tabTextBtn','Text editor'); setText('tabRawBtn','Raw preview'); setText('tabSectionJsonBtn','Section JSON'); setText('tabPatchBtn','Patch maker'); setText('addLineBtn','Add list line'); setText('removeLineBtn','Remove last list line'); setText('specialNameLabel','name'); setText('specialGenderLabel','gender'); setText('specialMapLabel','has_map'); setText('specialHasMapText','has_map'); setPlaceholder('sectionSearch','Search sections'); setPlaceholder('entrySearch','Search entries'); setText('patchTitle','Patch maker'); setText('patchOriginalLabel','Original ROM'); setText('patchModifiedLabel','Modified ROM'); setText('patchPickRomsBtn','Select ROMs'); setText('patchOutputLabel','Output folder'); setText('patchPickOutputBtn','Select output'); setText('patchCheckAllBtn','Check all'); setText('patchUncheckAllBtn','Uncheck all'); setText('patchGenerateBtn','Generate checked diff patches'); setText('patchNote','Diff patch uses XOR over bin_patch ranges, then zlib compression.'); if(!el.patchStatus.textContent || el.patchStatus.textContent==='No patch generated.') setText('patchStatus','No patch generated.'); setText('segmentPresetLabel','Blue Fire raw segment presets'); setText('segmentCheckBlueFireBtn','Check both Blue Fire segments'); setText('segmentUncheckBlueFireBtn','Uncheck Blue Fire segments'); setText('segmentExportCheckedBtn','Export checked raw segments'); setText('segmentStartLabel','Manual segment start'); setText('segmentSizeLabel','Manual segment size'); setText('segmentNameLabel','Manual segment filename'); setText('segmentExportBtn','Export manual raw segment'); if(el.shortcutHint) el.shortcutHint.innerHTML = t(SHORTCUT_SUMMARY).replace(/Ctrl\/Cmd|Alt|Shift|Enter|Backspace|1-4/g, '<span class="shortcut-key">$&</span>'); }
+  function renderSections(){ const filter=el.sectionSearch.value.toLowerCase(); const sections=Object.keys(state.property||{}).filter(k=>k.toLowerCase().includes(filter)); el.sectionList.innerHTML=''; for(const section of sections){ const value=state.property[section]; const row=document.createElement('div'); row.className='row'+(section===state.selectedSection?' active':''); row.innerHTML='<div class="row-title"></div><div class="row-sub"></div>'; row.children[0].textContent=section; row.children[1].textContent=`${typeName(value)} · ${entryKeys(value).length}`; row.onclick=()=>{state.selectedSection=section; const keys=entryKeys(value); state.selectedEntryKey=keys[0]||'value'; renderAll();}; el.sectionList.appendChild(row);} }
+  function renderEntries(){ const value=sectionValue(); const filter=el.entrySearch.value.toLowerCase(); const keys=entryKeys(value).filter(key=>key.toLowerCase().includes(filter)||shortPreview(Array.isArray(value)?value[Number(key)]:(value&&typeof value==='object'?value[key]:value)).toLowerCase().includes(filter)); if(!keys.includes(state.selectedEntryKey))state.selectedEntryKey=keys[0]||''; el.entryList.innerHTML=''; for(const key of keys){ const item=state.selectedSection==='prefix'?value:(Array.isArray(value)?value[Number(key)]:(value&&typeof value==='object'?value[key]:value)); const row=document.createElement('div'); row.className='row'+(key===state.selectedEntryKey?' active':''); row.innerHTML='<div class="row-title"></div><div class="row-sub"></div>'; row.children[0].textContent=key; row.children[1].textContent=shortPreview(item); row.onclick=()=>{state.selectedEntryKey=key; renderEntries(); renderEditor();}; el.entryList.appendChild(row);} }
+  function renderSpecial(){ const item=entryValue(); const show=state.selectedSection==='dungeon_list'&&item&&typeof item==='object'; el.specialBox.classList.toggle('visible',show); if(show){el.specialName.value=textToMarkup(item.name||''); el.specialGender.value=item.gender||''; el.specialHasMap.checked=!!item.has_map;} }
+  function renderEditor(){ const value=sectionValue(), selected=entryValue(); const mode=modeFor(state.selectedSection,value); const format=formatFor(state.selectedSection,value); el.selectedSection.value=state.selectedSection||''; el.selectedEntry.value=state.selectedEntryKey||''; el.sectionNote.value=t(noteFor(state.selectedSection)); el.modePill.textContent=t('Mode: {mode}',{mode:t(mode)}); el.formatPill.textContent=t('Format: {format}',{format:t(format)}); el.typePill.textContent=`Type: ${typeName(selected)}`; el.editor.value=renderEditorText(); updateHighlight(); el.raw.value=JSON.stringify(selected,null,4); renderSectionJson(); el.fileLabel.textContent=state.filePath?t('File: {path}',{path:state.filePath}):t('No property.json loaded'); renderSpecial(); }
+  function renderAll(){ renderStaticText(); renderSections(); renderEntries(); renderEditor(); renderPatchRows(); renderSegmentPresets(); }
+
+  async function loadDefault(){ pushUndo(); state.property=clone(state.defaultProperty); state.filePath=''; state.selectedSection=Object.keys(state.property)[0]||''; state.selectedEntryKey=entryKeys(sectionValue())[0]||''; state.dirty=false; renderAll(); el.status.innerHTML=`<span class="ok">${t('Default template loaded.')}</span>`; }
+  function mergeDefaults(){ pushUndo(); state.property=deepMerge(state.defaultProperty,state.property); state.selectedSection=state.selectedSection||Object.keys(state.property)[0]||''; state.selectedEntryKey=state.selectedEntryKey||entryKeys(sectionValue())[0]||''; markDirty(); renderAll(); el.status.innerHTML=`<span class="ok">${t('Missing default entries merged.')}</span>`; }
+  async function loadProperty(){ try{ const result=await api.openProperty(); if(!result)return; pushUndo(); state.property=deepMerge(state.defaultProperty,result.data||{}); state.filePath=result.filePath; state.selectedSection=Object.keys(state.property)[0]||''; state.selectedEntryKey=entryKeys(sectionValue())[0]||''; state.dirty=false; renderAll(); el.status.innerHTML=`<span class="ok">${t('Loaded property.json and merged missing defaults.')}</span>`; }catch(e){el.status.innerHTML=`<span class="error">${t('Load failed: {message}',{message:e.message})}</span>`;} }
+  async function saveProperty(){ try{ const data=buildExportProperty(); const result=await api.saveProperty(data,state.filePath||'property.json'); if(!result)return; state.filePath=result.filePath; state.dirty=false; renderEditor(); el.status.innerHTML=`<span class="ok">${t('Exported complete property.json')}</span>`; }catch(e){el.status.innerHTML=`<span class="error">${t('Export failed: {message}',{message:e.message})}</span>`;} }
+  function applyEditor(){ try{ const parsed=parseEditorText(); pushUndo(); if(MAPPING_SECTIONS.has(state.selectedSection)){ const section=sectionValue(); if(parsed.from!==state.selectedEntryKey){ delete section[state.selectedEntryKey]; state.selectedEntryKey=parsed.from; } section[state.selectedEntryKey]=parsed.to; } else setEntryValue(parsed); markDirty(); renderAll(); el.status.innerHTML=`<span class="ok">${t('Applied editor value')}</span>`; }catch(e){el.status.innerHTML=`<span class="error">${t('Apply failed: {message}',{message:e.message})}</span>`;} }
+  function undo(){ if(!state.undo.length)return; state.redo.push(snapshot()); restore(state.undo.pop()); markDirty(); }
+  function redo(){ if(!state.redo.length)return; state.undo.push(snapshot()); restore(state.redo.pop()); markDirty(); }
+  function addLine(){ const start=el.editor.selectionStart, end=el.editor.selectionEnd; const add='\n- new item'; el.editor.setRangeText(add,start,end,'end'); el.editor.focus(); updateHighlight(); }
+  function removeLine(){ const lines=el.editor.value.split(/\r?\n/); for(let i=lines.length-1;i>=0;i--){ if(/^\s*[-*]\s+/.test(lines[i])){lines.splice(i,1); break;} } el.editor.value=lines.join('\n'); updateHighlight(); }
+  function syncSpecialToEditor(){ if(state.selectedSection!=='dungeon_list')return; const text=block('name',el.specialName.value)+block('gender',el.specialGender.value)+block('has_map',el.specialHasMap.checked?'true':'false'); el.editor.value=text; updateHighlight(); }
+
+
+
+  // Entry IDs, entry operations, and selectable entry display types.
+  function formatMessageId(value){ const n=Number(value); return Number.isFinite(n)?`0x${HEX4(n & 0xFFFF)}`:String(value ?? ''); }
+  function parseMessageId(value){ const s=String(value ?? '').trim(); if(!s) return 0; const n=Number(s); if(Number.isFinite(n)) return n; const h=s.match(/^0x([0-9A-Fa-f]+)$/); if(h) return parseInt(h[1],16); const d=parseInt(s,10); return Number.isFinite(d)?d:0; }
+  function itemHasId(item){ return item && typeof item==='object' && !Array.isArray(item) && Object.prototype.hasOwnProperty.call(item,'id'); }
+  function entryItemForKey(value,key){ if(state.selectedSection==='prefix') return value; if(Array.isArray(value)) return value[Number(key||0)]; if(value&&typeof value==='object') return value[key]; return value; }
+  function displayEntryName(key,item){ if(itemHasId(item)) return formatMessageId(item.id); if(state.selectedSection==='prefix') return 'prefix'; return String(key ?? ''); }
+  function displaySelectedEntry(key,item){ const name=displayEntryName(key,item); return name===String(key)?name:`${name}  (#${key})`; }
+  function isPlainStringDict(value){ return !!value && typeof value==='object' && !Array.isArray(value) && Object.values(value).every(v=>typeof v==='string'); }
+  function overrideKey(){ return `${state.selectedSection}\u001F${state.selectedEntryKey}`; }
+  function selectedEntryType(){ return state.entryTypeOverrides[overrideKey()] || 'auto'; }
+  function setSelectedEntryType(type){ if(!type || type==='auto') delete state.entryTypeOverrides[overrideKey()]; else state.entryTypeOverrides[overrideKey()] = type; }
+  function effectiveEntryType(section,value){ const manual=selectedEntryType(); if(manual && manual!=='auto') return manual; if(isPlainStringDict(value)) return 'stringDict'; return 'auto'; }
+  function editorTypeLabel(type){ return ({auto:'Auto', stringDict:'String dictionary', friendly:'Friendly value', json:'JSON'}[type] || type); }
+  function renderStringDict(obj){ return Object.entries(obj||{}).map(([k,v])=>`${decodeFriendlyString(String(k), false)} => ${encodeFriendlyString(String(v ?? ''), HINT_LIKE_SECTIONS.has(state.selectedSection))}`).join('\n') + (Object.keys(obj||{}).length ? '\n' : ''); }
+  function parseStringDict(text){ const out={}; for(const raw of text.split(/\r?\n/)){ const line=raw.trim(); if(!line || line.startsWith('#')) continue; const idx=line.indexOf('=>'); if(idx<0) throw new Error(t('Dictionary line must use key => value: {line}',{line:raw})); const key=decodeFriendlyString(line.slice(0,idx).trim(), false); const val=decodeFriendlyString(line.slice(idx+2).trim(), HINT_LIKE_SECTIONS.has(state.selectedSection)); out[key]=val; } return out; }
+
+  function renderMessage(item){ return block('id', formatMessageId(item?.id ?? 0)) + (Object.prototype.hasOwnProperty.call(item||{},'box_type')?block('box_type', item.box_type):'') + block('text', encodeFriendlyString(item?.text??'', false)); }
+  function parseMessage(text, original={}){ const b=parseBlocks(text); const out={...original}; if('id' in b && b.id.trim()!=='') out.id=parseMessageId(b.id.trim()); if('box_type' in b) { const bt=b.box_type.trim(); if(bt==='') delete out.box_type; else out.box_type=Number(bt); } out.text=decodeFriendlyString(b.text??'', false); return out; }
+
+  function renderEditorText(){ const section=state.selectedSection, value=entryValue(); const kind=effectiveEntryType(section,value); if(kind==='json') return JSON.stringify(value,null,4); if(kind==='stringDict') return renderStringDict(value||{}); if(kind==='friendly') return renderValueEntry(value); if(MESSAGE_SECTIONS.has(section))return renderMessage(value||{}); if(section==='hintTable')return renderHint(value||{}); if(GOAL_SECTIONS.has(section))return renderGoal(value||{}); if(section==='dungeon_list')return renderDungeon(value||{}); if(MAPPING_SECTIONS.has(section))return renderMapping(state.selectedEntryKey, value); if(PAIR_LIST_SECTIONS.has(section))return renderPairList(value); if(FIXED_DICT_SECTIONS.has(section))return renderFixedDict(value||{}); if(section==='prefix')return renderPrefix(value||{}); return renderValueEntry(value); }
+  function parseEditorText(){ const section=state.selectedSection, original=entryValue(); const kind=effectiveEntryType(section,original); if(kind==='json') return JSON.parse(el.editor.value); if(kind==='stringDict') return parseStringDict(el.editor.value); if(kind==='friendly') return parseValueEntry(el.editor.value, original); if(MESSAGE_SECTIONS.has(section))return parseMessage(el.editor.value, original||{}); if(section==='hintTable')return parseHint(el.editor.value, original||{}); if(GOAL_SECTIONS.has(section))return parseGoal(el.editor.value, original||{}); if(section==='dungeon_list')return parseDungeon(el.editor.value, original||{}); if(MAPPING_SECTIONS.has(section))return parseMapping(el.editor.value, state.selectedEntryKey); if(PAIR_LIST_SECTIONS.has(section))return parsePairList(el.editor.value, original); if(FIXED_DICT_SECTIONS.has(section))return parseFixedDict(el.editor.value, original||{}); if(section==='prefix')return parsePrefix(el.editor.value, original||{}); return parseValueEntry(el.editor.value, original); }
+  function applyEditor(){ try{ const parsed=parseEditorText(); pushUndo(); if(MAPPING_SECTIONS.has(state.selectedSection) && selectedEntryType()==='auto'){ const section=sectionValue(); if(parsed.from!==state.selectedEntryKey){ delete section[state.selectedEntryKey]; state.selectedEntryKey=parsed.from; } section[state.selectedEntryKey]=parsed.to; } else setEntryValue(parsed); markDirty(); renderAll(); el.status.innerHTML=`<span class="ok">${t('Applied editor value')}</span>`; }catch(e){el.status.innerHTML=`<span class="error">${t('Apply failed: {message}',{message:e.message})}</span>`;} }
+
+  function nextMessageId(section){ const v=state.property?.[section]; let max=-1; if(Array.isArray(v)) for(const item of v) if(itemHasId(item)){ const n=Number(item.id); if(Number.isFinite(n)) max=Math.max(max,n); } return max+1; }
+  function makeUniqueKey(obj, base='new_entry'){ let key=base, i=1; while(Object.prototype.hasOwnProperty.call(obj,key)) key=`${base}_${i++}`; return key; }
+  function defaultEntryForSection(section,current){ if(MESSAGE_SECTIONS.has(section)){ const out={id:nextMessageId(section), text:''}; if(current && Object.prototype.hasOwnProperty.call(current,'box_type')) out.box_type=current.box_type; return out; } if(section==='hintTable') return {vague_hint:null, clear_hint:'', gender:''}; if(GOAL_SECTIONS.has(section)) return {vague:'', clear:''}; if(section==='dungeon_list') return {name:'', gender:'', has_map:false}; if(PAIR_LIST_SECTIONS.has(section)) return ['','']; if(isPlainStringDict(current)) return {'new_key':'new value'}; if(Array.isArray(current)) return []; if(current && typeof current==='object') return {}; if(typeof current==='number') return 0; if(typeof current==='boolean') return false; return ''; }
+  function addEntry(){ const v=sectionValue(); if(state.selectedSection==='prefix'){ el.status.innerHTML=`<span class="error">${t('Cannot add entry to this section.')}</span>`; return; } pushUndo(); if(Array.isArray(v)){ const idx=Math.max(0, Number(state.selectedEntryKey||0)); const item=defaultEntryForSection(state.selectedSection, entryValue()); v.splice(Math.min(idx+1, v.length), 0, item); state.selectedEntryKey=String(Math.min(idx+1, v.length-1)); } else if(v&&typeof v==='object'){ const key=makeUniqueKey(v); v[key]=defaultEntryForSection(state.selectedSection, entryValue()); state.selectedEntryKey=key; } else { state.property[state.selectedSection]=[defaultEntryForSection(state.selectedSection, v)]; state.selectedEntryKey='0'; } markDirty(); renderAll(); el.status.innerHTML=`<span class="ok">${t('Added entry.')}</span>`; }
+  function deleteEntry(){ const v=sectionValue(); if(state.selectedSection==='prefix'){ el.status.innerHTML=`<span class="error">${t('Cannot delete this entry.')}</span>`; return; } pushUndo(); if(Array.isArray(v)){ const idx=Number(state.selectedEntryKey||0); if(idx>=0 && idx<v.length) v.splice(idx,1); state.selectedEntryKey=String(Math.min(idx, Math.max(0,v.length-1))); } else if(v&&typeof v==='object'){ delete v[state.selectedEntryKey]; state.selectedEntryKey=Object.keys(v)[0]||''; } else { state.property[state.selectedSection]=null; state.selectedEntryKey='value'; } markDirty(); renderAll(); el.status.innerHTML=`<span class="ok">${t('Deleted entry.')}</span>`; }
+  async function copyEntry(){ const item=entryValue(); state.entryClipboard=clone(item); const payload=JSON.stringify({ootrLanguageEditorEntry:true, section:state.selectedSection, value:item}, null, 2); try{ await navigator.clipboard?.writeText(payload); }catch{} el.status.innerHTML=`<span class="ok">${t('Copied entry to clipboard.')}</span>`; }
+  async function readClipboardEntry(){ try{ const txt=await navigator.clipboard?.readText?.(); if(txt){ const parsed=JSON.parse(txt); if(parsed && parsed.ootrLanguageEditorEntry) return parsed.value; return parsed; } }catch{} return state.entryClipboard==null?null:clone(state.entryClipboard); }
+  async function pasteEntry(){ const pasted=await readClipboardEntry(); if(pasted==null){ el.status.innerHTML=`<span class="error">${t('No copied entry to paste.')}</span>`; return; } const v=sectionValue(); pushUndo(); const item=clone(pasted); if(Array.isArray(v)){ if(itemHasId(item)) item.id=nextMessageId(state.selectedSection); const idx=Math.max(0, Number(state.selectedEntryKey||0)); v.splice(Math.min(idx+1, v.length), 0, item); state.selectedEntryKey=String(Math.min(idx+1, v.length-1)); } else if(v&&typeof v==='object'){ const base=itemHasId(item)?formatMessageId(item.id).replace(/^0x/,'entry_'):state.selectedEntryKey||'pasted_entry'; const key=makeUniqueKey(v, base); v[key]=item; state.selectedEntryKey=key; } else { state.property[state.selectedSection]=item; state.selectedEntryKey='value'; } markDirty(); renderAll(); el.status.innerHTML=`<span class="ok">${t('Pasted entry.')}</span>`; }
+
+  function renderEntries(){ const value=sectionValue(); const filter=el.entrySearch.value.toLowerCase(); const keys=entryKeys(value).filter(key=>{ const item=entryItemForKey(value,key); const name=displayEntryName(key,item); return String(key).toLowerCase().includes(filter)||name.toLowerCase().includes(filter)||shortPreview(item).toLowerCase().includes(filter); }); if(!keys.includes(state.selectedEntryKey))state.selectedEntryKey=keys[0]||''; el.entryList.innerHTML=''; for(const key of keys){ const item=entryItemForKey(value,key); const row=document.createElement('div'); row.className='row'+(key===state.selectedEntryKey?' active':''); row.innerHTML='<div class="row-title"></div><div class="row-sub"></div>'; const name=displayEntryName(key,item); if(itemHasId(item) && name!==String(key)) row.children[0].innerHTML=`<span class="entry-id">${escapeHtml(name)}</span><span class="entry-index">#${escapeHtml(key)}</span>`; else row.children[0].textContent=name; row.children[1].textContent=shortPreview(item); row.title=name===String(key)?name:`${name} (#${key})`; row.onclick=()=>{state.selectedEntryKey=key; renderEntries(); renderEditor();}; el.entryList.appendChild(row);} }
+  function renderEditor(){ const value=sectionValue(), selected=entryValue(); const mode=modeFor(state.selectedSection,value); const format=formatFor(state.selectedSection,value); const effective=effectiveEntryType(state.selectedSection, selected); el.selectedSection.value=state.selectedSection||''; el.selectedEntry.value=displaySelectedEntry(state.selectedEntryKey, selected); el.sectionNote.value=t(noteFor(state.selectedSection)); if(el.entryViewType){ el.entryViewType.value=selectedEntryType(); } el.modePill.textContent=t('Mode: {mode}',{mode:t(mode)}); el.formatPill.textContent=t('Format: {format}',{format:t(format)}); el.typePill.textContent=t('Editor type: {type}',{type:t(editorTypeLabel(effective))}) + ` · Type: ${typeName(selected)}`; el.editor.value=renderEditorText(); updateHighlight(); el.raw.value=JSON.stringify(selected,null,4); renderSectionJson(); el.fileLabel.textContent=state.filePath?t('File: {path}',{path:state.filePath}):t('No property.json loaded'); renderSpecial(); }
+  function renderStaticText(){ document.documentElement.lang=state.language; document.title=t('OOTR Language Editor Developer Tool'); setText('title','OOTR Language Editor Developer Tool'); setText('loadBtn','Load completed property.json...'); setText('defaultBtn','Load default template'); setText('mergeBtn','Merge missing defaults'); setText('saveBtn','Export property.json...'); setText('applyBtn','Apply editor'); setText('undoBtn','Undo'); setText('redoBtn','Redo'); setText('sectionsTitle','Sections'); setText('entriesTitle','Entries'); setText('addEntryBtn','Add entry'); setText('deleteEntryBtn','Delete entry'); setText('copyEntryBtn','Copy entry'); setText('pasteEntryBtn','Paste entry'); setText('selectedSectionLabel','Selected section'); setText('selectedEntryLabel','Selected entry'); setText('noteLabel','Section note'); setText('entryTypeLabel','Entry editor type'); if(el.entryViewType){ const labels={auto:'Auto', stringDict:'String dictionary', friendly:'Friendly value', json:'JSON'}; for(const opt of el.entryViewType.options) opt.textContent=t(labels[opt.value]||opt.value); } setText('editorLabel','Text editor'); setText('rawLabel','Raw write-form JSON preview'); setText('sectionJsonLabel','Section JSON editor'); setText('applySectionJsonBtn','Apply section JSON'); setText('tabTextBtn','Text editor'); setText('tabRawBtn','Raw preview'); setText('tabSectionJsonBtn','Section JSON'); setText('tabPatchBtn','Patch maker'); setText('addLineBtn','Add list line'); setText('removeLineBtn','Remove last list line'); setText('specialNameLabel','name'); setText('specialGenderLabel','gender'); setText('specialMapLabel','has_map'); setText('specialHasMapText','has_map'); setPlaceholder('sectionSearch','Search sections'); setPlaceholder('entrySearch','Search entries'); setText('patchTitle','Patch maker'); setText('patchOriginalLabel','Original ROM'); setText('patchModifiedLabel','Modified ROM'); setText('patchPickRomsBtn','Select ROMs'); setText('patchOutputLabel','Output folder'); setText('patchPickOutputBtn','Select output'); setText('patchCheckAllBtn','Check all'); setText('patchUncheckAllBtn','Uncheck all'); setText('patchGenerateBtn','Generate checked diff patches'); setText('patchNote','Diff patch uses XOR over bin_patch ranges, then zlib compression.'); if(!el.patchStatus.textContent || el.patchStatus.textContent==='No patch generated.') setText('patchStatus','No patch generated.'); setText('segmentPresetLabel','Blue Fire raw segment presets'); setText('segmentCheckBlueFireBtn','Check both Blue Fire segments'); setText('segmentUncheckBlueFireBtn','Uncheck Blue Fire segments'); setText('segmentExportCheckedBtn','Export checked raw segments'); setText('segmentStartLabel','Manual segment start'); setText('segmentSizeLabel','Manual segment size'); setText('segmentNameLabel','Manual segment filename'); setText('segmentExportBtn','Export manual raw segment'); if(el.shortcutHint) el.shortcutHint.innerHTML = t(SHORTCUT_SUMMARY).replace(/Ctrl\/Cmd|Alt|Shift|Enter|Backspace|1-4/g, '<span class="shortcut-key">$&</span>'); }
+
+
+  function isEditableTarget(ev){
+    const t=ev.target;
+    if(!t) return false;
+    const tag=(t.tagName||'').toLowerCase();
+    return tag==='textarea' || tag==='input' || tag==='select' || t.isContentEditable;
+  }
+  function handleShortcut(ev){
+    const key=String(ev.key||'').toLowerCase();
+    const mod=ev.ctrlKey||ev.metaKey;
+    const editable=isEditableTarget(ev);
+    if(!mod && key==='escape'){
+      if(document.activeElement===el.sectionSearch){ el.sectionSearch.value=''; renderSections(); ev.preventDefault(); }
+      else if(document.activeElement===el.entrySearch){ el.entrySearch.value=''; renderEntries(); ev.preventDefault(); }
+      return;
+    }
+    if(!mod) return;
+    if(key==='c' || key==='x' || key==='v' || key==='a'){
+      if(editable && !ev.shiftKey) return; // native text editing shortcuts
+    }
+    if(key==='s') { ev.preventDefault(); saveProperty(); return; }
+    if(key==='o') { ev.preventDefault(); loadProperty(); return; }
+    if(key==='z' && !ev.shiftKey) { ev.preventDefault(); undo(); return; }
+    if((key==='y') || (key==='z' && ev.shiftKey)) { ev.preventDefault(); redo(); return; }
+    if(key==='enter') { ev.preventDefault(); applyEditor(); return; }
+    if(['1','2','3','4'].includes(key)) { ev.preventDefault(); switchTab(['tabText','tabRaw','tabSectionJson','tabPatch'][Number(key)-1]); return; }
+    if(key==='f' && !ev.shiftKey) { ev.preventDefault(); el.sectionSearch.focus(); el.sectionSearch.select(); return; }
+    if(key==='f' && ev.shiftKey) { ev.preventDefault(); el.entrySearch.focus(); el.entrySearch.select(); return; }
+    if(!editable && key==='n') { ev.preventDefault(); addEntry(); return; }
+    if(!editable && (key==='backspace' || key==='delete')) { ev.preventDefault(); deleteEntry(); return; }
+    if(!editable && ev.shiftKey && key==='c') { ev.preventDefault(); copyEntry(); return; }
+    if(!editable && ev.shiftKey && key==='v') { ev.preventDefault(); pasteEntry(); return; }
+    if(ev.altKey && key==='p') { ev.preventDefault(); switchTab('tabPatch'); generatePatches(); return; }
+    if(ev.altKey && key==='r') { ev.preventDefault(); switchTab('tabPatch'); exportCheckedSegments(); return; }
+  }
+
+  async function init(){ state.ui=await api.loadUi(); state.language=await api.getLanguage(); state.defaultProperty=await api.loadDefaultProperty(); state.patchRanges=await api.loadPatchRanges(); state.property=clone(state.defaultProperty); state.selectedSection=Object.keys(state.property)[0]||''; state.selectedEntryKey=entryKeys(sectionValue())[0]||''; renderAll(); initTabs(); initSplitters(); api.onLanguageChanged(p=>{ const section=state.selectedSection, entry=state.selectedEntryKey, draft=el.editor.value; state.language=p.language||'en'; renderAll(); state.selectedSection=section; state.selectedEntryKey=entry; el.editor.value=draft; updateHighlight(); renderAll(); }); api.onMenuLoadProperty(loadProperty); api.onMenuLoadDefault(loadDefault); api.onMenuMergeDefaults(mergeDefaults); api.onMenuSaveProperty(saveProperty); api.onMenuUndo(undo); api.onMenuRedo(redo); if(api.onMenuApplyEditor)api.onMenuApplyEditor(applyEditor); if(api.onMenuAddEntry)api.onMenuAddEntry(addEntry); if(api.onMenuDeleteEntry)api.onMenuDeleteEntry(deleteEntry); if(api.onMenuCopyEntry)api.onMenuCopyEntry(copyEntry); if(api.onMenuPasteEntry)api.onMenuPasteEntry(pasteEntry); if(api.onMenuSwitchTab)api.onMenuSwitchTab(p=>switchTab(p?.tab||'tabText')); if(api.onMenuGeneratePatches)api.onMenuGeneratePatches(()=>{switchTab('tabPatch');generatePatches();}); if(api.onMenuExportSegments)api.onMenuExportSegments(()=>{switchTab('tabPatch');exportCheckedSegments();}); el.loadBtn.onclick=loadProperty; el.defaultBtn.onclick=loadDefault; el.mergeBtn.onclick=mergeDefaults; el.saveBtn.onclick=saveProperty; el.applyBtn.onclick=applyEditor; if(el.addEntryBtn)el.addEntryBtn.onclick=addEntry; if(el.deleteEntryBtn)el.deleteEntryBtn.onclick=deleteEntry; if(el.copyEntryBtn)el.copyEntryBtn.onclick=copyEntry; if(el.pasteEntryBtn)el.pasteEntryBtn.onclick=pasteEntry; if(el.entryViewType)el.entryViewType.onchange=()=>{setSelectedEntryType(el.entryViewType.value); renderEditor();}; el.applySectionJsonBtn.onclick=applySectionJson; el.undoBtn.onclick=undo; el.redoBtn.onclick=redo; el.sectionSearch.oninput=renderSections; el.entrySearch.oninput=renderEntries; el.addLineBtn.onclick=addLine; el.removeLineBtn.onclick=removeLine; el.patchPickRomsBtn.onclick=pickRoms; el.patchPickOutputBtn.onclick=pickOutput; el.patchGenerateBtn.onclick=generatePatches; el.segmentExportBtn.onclick=exportSegment; if(el.segmentCheckBlueFireBtn)el.segmentCheckBlueFireBtn.onclick=()=>checkBlueFireSegments(true); if(el.segmentUncheckBlueFireBtn)el.segmentUncheckBlueFireBtn.onclick=()=>checkBlueFireSegments(false); if(el.segmentExportCheckedBtn)el.segmentExportCheckedBtn.onclick=exportCheckedSegments; el.patchCheckAllBtn.onclick=()=>checkAllPatches(true); el.patchUncheckAllBtn.onclick=()=>checkAllPatches(false); renderPatchRows(); renderSegmentPresets(); for(const id of ['specialName','specialGender','specialHasMap'])el[id].addEventListener('input',syncSpecialToEditor); el.editor.addEventListener('input',()=>{ updateHighlight(); try{const parsed=parseEditorText(); el.raw.value=JSON.stringify(parsed,null,4);}catch{el.raw.value=el.editor.value;} }); el.editor.addEventListener('scroll',updateHighlight); window.addEventListener('keydown',handleShortcut); }
+
+  // ---------------------------------------------------------------------------
+  // Property type schema, typed controls, CHAR_WIDTHS editor,
+  // and hex formatting for message box_type.
+  // ---------------------------------------------------------------------------
+  const V16_FIELD_SCHEMAS = {
+    lang_property: {
+      base: { type: 'select', options: ['en', 'jp'], label: 'base' },
+      align_text: { type: 'select', options: ['Left', 'Center', 'Right'], label: 'align_text' },
+      wide_text_english_metrics: { type: 'bool', label: 'wide_text_english_metrics' },
+      display_name: { type: 'text', label: 'display_name' },
+      description: { type: 'textarea', label: 'description' }
+    }
+  };
+  const V16_SCHEMA_SECTION_DEFAULTS = {
+    lang_property: {
+      base: 'en',
+      display_name: 'English',
+      wide_text_english_metrics: false,
+      description: 'Play with English language.',
+      align_text: 'Left'
+    },
+    CHAR_WIDTHS: {}
+  };
+  function v16EnsureSchema(target){
+    if(!target || typeof target !== 'object') return target;
+    for(const [section, defaults] of Object.entries(V16_SCHEMA_SECTION_DEFAULTS)){
+      if(!target[section] || typeof target[section] !== 'object' || Array.isArray(target[section])) target[section] = clone(defaults);
+      else for(const [k,v] of Object.entries(defaults)) if(!Object.prototype.hasOwnProperty.call(target[section], k)) target[section][k] = clone(v);
+    }
+    return target;
+  }
+  const _v16_deepMerge = deepMerge;
+  deepMerge = function(base, override){ return v16EnsureSchema(_v16_deepMerge(base, override)); };
+  const _v16_orderedProperty = orderedProperty;
+  orderedProperty = function(obj){ return v16EnsureSchema(_v16_orderedProperty(obj)); };
+
+  function formatBoxType(value){ const n=Number(value); return Number.isFinite(n)?`0x${HEX2(n & 0xFF)}`:String(value ?? ''); }
+  function parseFlexibleInt(value, fallback=0){
+    const s=String(value ?? '').trim();
+    if(!s) return fallback;
+    if(/^0x[0-9A-Fa-f]+$/.test(s)) return parseInt(s.slice(2),16);
+    const n=Number(s);
+    return Number.isFinite(n) ? n : fallback;
+  }
+  renderMessage = function(item){
+    return block('id', formatMessageId(item?.id ?? 0))
+      + (Object.prototype.hasOwnProperty.call(item||{},'box_type') ? block('box_type', formatBoxType(item.box_type)) : '')
+      + block('text', encodeFriendlyString(item?.text ?? '', false));
+  };
+  parseMessage = function(text, original={}){
+    const b=parseBlocks(text); const out={...original};
+    if('id' in b && b.id.trim()!=='') out.id=parseMessageId(b.id.trim());
+    if('box_type' in b) { const bt=b.box_type.trim(); if(bt==='') delete out.box_type; else out.box_type=parseFlexibleInt(bt, original.box_type ?? 0); }
+    out.text=decodeFriendlyString(b.text ?? '', false);
+    return out;
+  };
+
+  function v16ParseLooseJsonValue(raw){
+    const s=String(raw ?? '').trim();
+    if(s==='') return '';
+    if(/^[-+]?\d+(?:\.\d+)?$/.test(s)) return Number(s);
+    if(/^(true|false)$/i.test(s)) return /^true$/i.test(s);
+    if(/^null$/i.test(s)) return null;
+    let j=s;
+    if(/[\{\[]/.test(j[0] || '')){
+      try { return JSON.parse(j); } catch {}
+      try { return JSON.parse(j.replace(/([{,]\s*)([A-Za-z_][A-Za-z0-9_\-]*)(\s*:)/g, '$1"$2"$3')); } catch {}
+    }
+    return decodeFriendlyString(s, false);
+  }
+  function v16ValueToPairText(v){
+    if(typeof v === 'number' || typeof v === 'boolean' || v === null) return JSON.stringify(v);
+    if(typeof v === 'string') return encodeFriendlyString(v, false);
+    return JSON.stringify(v);
+  }
+  function renderCharWidths(obj){
+    const entries=Object.entries(obj || {});
+    if(!entries.length) return '# key => width\n# W => 15\n# index:143 => 14\n# 0x824F => {"default":12,"ntsc":12,"pal":12}\n';
+    return entries.map(([k,v]) => `${k} => ${v16ValueToPairText(v)}`).join('\n') + '\n';
+  }
+  function parseCharWidths(text){
+    const out={};
+    for(const raw of String(text||'').split(/\r?\n/)){
+      const line=raw.trim();
+      if(!line || line.startsWith('#')) continue;
+      const idx=line.indexOf('=>');
+      if(idx<0) throw new Error(t('Dictionary line must use key => value: {line}',{line:raw}));
+      const key=line.slice(0,idx).trim();
+      if(!key) continue;
+      out[key]=v16ParseLooseJsonValue(line.slice(idx+2).trim());
+    }
+    return out;
+  }
+
+  const _v16_entryKeys = entryKeys;
+  entryKeys = function(value){ if(state.selectedSection === 'CHAR_WIDTHS') return ['CHAR_WIDTHS']; return _v16_entryKeys(value); };
+  const _v16_entryValue = entryValue;
+  entryValue = function(){ if(state.selectedSection === 'CHAR_WIDTHS') return sectionValue() || {}; return _v16_entryValue(); };
+  const _v16_setEntryValue = setEntryValue;
+  setEntryValue = function(newValue){ if(state.selectedSection === 'CHAR_WIDTHS') { state.property.CHAR_WIDTHS = newValue && typeof newValue === 'object' && !Array.isArray(newValue) ? newValue : {}; return; } _v16_setEntryValue(newValue); };
+  const _v16_displayEntryName = displayEntryName;
+  displayEntryName = function(key,item){ if(state.selectedSection === 'CHAR_WIDTHS') return 'CHAR_WIDTHS'; return _v16_displayEntryName(key,item); };
+
+  const _v16_effectiveEntryType = effectiveEntryType;
+  effectiveEntryType = function(section,value){ if(section === 'CHAR_WIDTHS') return 'charWidths'; return _v16_effectiveEntryType(section,value); };
+  const _v16_editorTypeLabel = editorTypeLabel;
+  editorTypeLabel = function(type){ return type === 'charWidths' ? 'CHAR_WIDTHS table' : _v16_editorTypeLabel(type); };
+  const _v16_renderEditorText = renderEditorText;
+  renderEditorText = function(){ if(state.selectedSection === 'CHAR_WIDTHS') return renderCharWidths(sectionValue() || {}); return _v16_renderEditorText(); };
+  const _v16_parseEditorText = parseEditorText;
+  parseEditorText = function(){ if(state.selectedSection === 'CHAR_WIDTHS') return parseCharWidths(el.editor.value); return _v16_parseEditorText(); };
+
+  const _v16_addEntry = addEntry;
+  addEntry = function(){
+    if(state.selectedSection === 'CHAR_WIDTHS'){
+      pushUndo();
+      if(!state.property.CHAR_WIDTHS || typeof state.property.CHAR_WIDTHS !== 'object' || Array.isArray(state.property.CHAR_WIDTHS)) state.property.CHAR_WIDTHS = {};
+      let k='new_char'; let i=1; while(Object.prototype.hasOwnProperty.call(state.property.CHAR_WIDTHS,k)) k=`new_char_${i++}`;
+      state.property.CHAR_WIDTHS[k]=8;
+      state.selectedEntryKey='CHAR_WIDTHS'; markDirty(); renderAll();
+      el.status.innerHTML=`<span class="ok">${t('Added entry.')}</span>`; return;
+    }
+    return _v16_addEntry();
+  };
+  const _v16_deleteEntry = deleteEntry;
+  deleteEntry = function(){
+    if(state.selectedSection === 'CHAR_WIDTHS'){
+      pushUndo(); state.property.CHAR_WIDTHS={}; state.selectedEntryKey='CHAR_WIDTHS'; markDirty(); renderAll();
+      el.status.innerHTML=`<span class="ok">${t('Deleted entry.')}</span>`; return;
+    }
+    return _v16_deleteEntry();
+  };
+
+  function v16ScalarSchema(section,key,value){
+    const schema = V16_FIELD_SCHEMAS[section]?.[key];
+    if(schema) return schema;
+    if(typeof value === 'boolean') return {type:'bool', label:key};
+    return null;
+  }
+  function v16EnsureTypedControlBox(){
+    let box=document.getElementById('typedControlBox');
+    if(box) return box;
+    box=document.createElement('div'); box.id='typedControlBox'; box.className='typed-control-box';
+    const right=document.getElementById('rightPane');
+    const special=document.getElementById('specialBox');
+    right.insertBefore(box, special.nextSibling);
+    return box;
+  }
+  function v16SetScalarEntry(value){
+    pushUndo();
+    setEntryValue(value);
+    markDirty();
+    renderEntries();
+    renderEditor();
+  }
+  function v16RenderTypedControl(){
+    const box=v16EnsureTypedControlBox();
+    const section=state.selectedSection, key=state.selectedEntryKey, value=entryValue();
+    const schema=v16ScalarSchema(section,key,value);
+    if(!schema){ box.classList.remove('visible'); box.innerHTML=''; return; }
+    box.classList.add('visible'); box.innerHTML='';
+    const label=document.createElement('div'); label.className='label'; label.textContent=t(schema.label || key || 'Value'); box.appendChild(label);
+    let control;
+    if(schema.type === 'bool'){
+      const wrap=document.createElement('label');
+      control=document.createElement('input'); control.type='checkbox'; control.checked=!!value;
+      const span=document.createElement('span'); span.textContent=t(value ? 'true' : 'false');
+      control.addEventListener('change',()=>v16SetScalarEntry(control.checked));
+      wrap.appendChild(control); wrap.appendChild(span); box.appendChild(wrap);
+    } else if(schema.type === 'select'){
+      control=document.createElement('select');
+      for(const optValue of schema.options || []){ const opt=document.createElement('option'); opt.value=optValue; opt.textContent=t(optValue); control.appendChild(opt); }
+      control.value=String(value ?? '');
+      control.addEventListener('change',()=>v16SetScalarEntry(control.value));
+      box.appendChild(control);
+    } else if(schema.type === 'textarea'){
+      control=document.createElement('textarea'); control.style.minHeight='72px'; control.value=String(value ?? '');
+      control.addEventListener('change',()=>v16SetScalarEntry(control.value)); box.appendChild(control);
+    } else {
+      control=document.createElement('input'); control.value=String(value ?? '');
+      control.addEventListener('change',()=>v16SetScalarEntry(control.value)); box.appendChild(control);
+    }
+  }
+  const _v16_renderEditor = renderEditor;
+  renderEditor = function(){ _v16_renderEditor(); v16RenderTypedControl(); };
+
+  const _v16_renderStaticText = renderStaticText;
+  renderStaticText = function(){
+    _v16_renderStaticText();
+    if(el.entryViewType){ const extra={charWidths:'CHAR_WIDTHS table'}; for(const opt of el.entryViewType.options) opt.textContent=t(({auto:'Auto', stringDict:'String dictionary', friendly:'Friendly value', json:'JSON', ...extra})[opt.value]||opt.value); }
+  };
+
+  const _v16_loadDefault = loadDefault;
+  loadDefault = function(){ _v16_loadDefault(); v16EnsureSchema(state.property); renderAll(); };
+
+
+  // ---------------------------------------------------------------------------
+  // language_specific_replace_table defaults/editor guidance and
+  //       section count fix after selecting CHAR_WIDTHS.
+  // ---------------------------------------------------------------------------
+  const V18_LANGUAGE_SPECIFIC_REPLACE_EXAMPLES = [
+    ['in dem', 'im'],
+    ['  ', ' '],
+    ['<allow instant text> ', '<allow instant text>']
+  ];
+  function v18EnsureLanguageReplaceTable(target){
+    if(!target || typeof target !== 'object') return target;
+    if(!Object.prototype.hasOwnProperty.call(target, 'language_specific_replace_table')) {
+      target.language_specific_replace_table = [];
+    } else if(!Array.isArray(target.language_specific_replace_table)) {
+      target.language_specific_replace_table = [];
+    }
+    return target;
+  }
+  const _v18_deepMerge = deepMerge;
+  deepMerge = function(base, override){ return v18EnsureLanguageReplaceTable(_v18_deepMerge(base, override)); };
+  const _v18_orderedProperty = orderedProperty;
+  orderedProperty = function(obj){ return v18EnsureLanguageReplaceTable(_v18_orderedProperty(obj)); };
+  const _v18_loadDefault = loadDefault;
+  loadDefault = function(){ _v18_loadDefault(); v18EnsureLanguageReplaceTable(state.property); renderAll(); };
+  const _v18_mergeDefaults = mergeDefaults;
+  mergeDefaults = function(){ _v18_mergeDefaults(); v18EnsureLanguageReplaceTable(state.property); renderAll(); };
+
+  function v18SectionEntryKeys(section, value){
+    if(section === 'CHAR_WIDTHS') return ['CHAR_WIDTHS'];
+    if(section === 'prefix') return ['prefix'];
+    if(PAIR_LIST_SECTIONS.has(section) && Array.isArray(value)) return value.map((_x,i)=>String(i));
+    if(Array.isArray(value)) return value.map((_x,i)=>String(i));
+    if(value && typeof value === 'object') return Object.keys(value);
+    return ['value'];
+  }
+  function v18SectionEntryCount(section, value){
+    if(section === 'CHAR_WIDTHS') return Object.keys(value || {}).length;
+    if(section === 'prefix') return 1;
+    if(Array.isArray(value)) return value.length;
+    if(value && typeof value === 'object') return Object.keys(value).length;
+    return value === undefined ? 0 : 1;
+  }
+  renderSections = function(){
+    const filter=el.sectionSearch.value.toLowerCase();
+    const sections=Object.keys(state.property||{}).filter(k=>k.toLowerCase().includes(filter));
+    el.sectionList.innerHTML='';
+    for(const section of sections){
+      const value=state.property[section];
+      const row=document.createElement('div');
+      row.className='row'+(section===state.selectedSection?' active':'');
+      row.innerHTML='<div class="row-title"></div><div class="row-sub"></div>';
+      row.children[0].textContent=section;
+      row.children[1].textContent=`${typeName(value)} · ${v18SectionEntryCount(section,value)}`;
+      row.onclick=()=>{
+        state.selectedSection=section;
+        const keys=v18SectionEntryKeys(section,value);
+        state.selectedEntryKey=keys[0]||'';
+        renderAll();
+      };
+      el.sectionList.appendChild(row);
+    }
+  };
+
+  function v18FormatPairItem(item){
+    if(Array.isArray(item)) {
+      return `${encodeFriendlyString(item[0] ?? '', false)} => ${encodeFriendlyString(item[1] ?? '', false)}`;
+    }
+    return JSON.stringify(item, null, 4);
+  }
+  function v18ParsePairLine(text, original){
+    const line = String(text || '').trim();
+    if(!line || line.startsWith('#')) return Array.isArray(original) ? original : ['', ''];
+    const idx = line.indexOf('=>');
+    if(idx >= 0) return [decodeFriendlyString(line.slice(0, idx).trim(), false), decodeFriendlyString(line.slice(idx + 2).trim(), false)];
+    return parsePairList(text, original);
+  }
+  const _v18_renderPairList = renderPairList;
+  renderPairList = function(item){
+    if(state.selectedSection === 'language_specific_replace_table') {
+      if(Array.isArray(item)) return v18FormatPairItem(item) + '\n';
+      return '# Language specific text replace table\n# Format: source => replacement\n# Example:\n# source text => replacement text\n';
+    }
+    return _v18_renderPairList(item);
+  };
+  const _v18_parsePairList = parsePairList;
+  parsePairList = function(text, original){
+    if(state.selectedSection === 'language_specific_replace_table') return v18ParsePairLine(text, original);
+    return _v18_parsePairList(text, original);
+  };
+  const _v18_defaultEntryForSection = defaultEntryForSection;
+  defaultEntryForSection = function(section, current){
+    if(section === 'language_specific_replace_table') {
+      const table = state.property?.language_specific_replace_table;
+      const idx = Array.isArray(table) ? table.length : 0;
+      return clone(V18_LANGUAGE_SPECIFIC_REPLACE_EXAMPLES[Math.min(idx, V18_LANGUAGE_SPECIFIC_REPLACE_EXAMPLES.length - 1)] || ['', '']);
+    }
+    return _v18_defaultEntryForSection(section, current);
+  };
+  const _v18_renderEditor = renderEditor;
+  renderEditor = function(){
+    _v18_renderEditor();
+    if(state.selectedSection === 'language_specific_replace_table' && Array.isArray(sectionValue()) && sectionValue().length === 0){
+      el.typePill.textContent = t('Editor type: {type}', {type:t('Language-specific replacement table')}) + ' · Type: list';
+      el.raw.value = JSON.stringify([], null, 4);
+    }
+  };
+
+
+  init();
+})();
+</script>
+</body>
+</html>
