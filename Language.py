@@ -10,6 +10,7 @@ import json
 import os
 import re
 import unicodedata
+from copy import deepcopy
 from functools import reduce
 from typing import TypedDict
 
@@ -251,20 +252,78 @@ class _SafeExprEvaluator(ast.NodeVisitor):
 
 
 class Language:
-    def __init__(self, lang: str):
+    FALLBACK_LANG = "English"
+
+    @staticmethod
+    def _load_property_file(lang: str) -> dict:
         with open(os.path.join(lang_path(lang), "property.json"), mode="r", encoding="utf-8") as f:
-            message = json.load(f)
+            return json.load(f)
+
+    @classmethod
+    def _merge_with_fallback(cls, fallback, override):
+        """Return fallback recursively overlaid by override.
+
+        Missing dict keys and missing list entries are kept from the fallback
+        language.  Existing override values, including empty strings and null,
+        are treated as intentional translations.
+        """
+        if isinstance(fallback, dict) and isinstance(override, dict):
+            merged = {k: deepcopy(v) for k, v in fallback.items()}
+            for key, value in override.items():
+                if key in merged:
+                    merged[key] = cls._merge_with_fallback(merged[key], value)
+                else:
+                    merged[key] = deepcopy(value)
+            return merged
+
+        if isinstance(fallback, list) and isinstance(override, list):
+            merged = []
+            for index in range(max(len(fallback), len(override))):
+                if index < len(fallback) and index < len(override):
+                    merged.append(cls._merge_with_fallback(fallback[index], override[index]))
+                elif index < len(override):
+                    merged.append(deepcopy(override[index]))
+                else:
+                    merged.append(deepcopy(fallback[index]))
+            return merged
+
+        return deepcopy(override)
+
+    @classmethod
+    def _load_property_with_fallback(cls, lang: str) -> dict:
+        if lang == cls.FALLBACK_LANG:
+            return cls._load_property_file(lang)
+
+        fallback_message = cls._load_property_file(cls.FALLBACK_LANG)
+
+        try:
+            message = cls._load_property_file(lang)
+        except FileNotFoundError:
+            return fallback_message
+
+        return cls._merge_with_fallback(fallback_message, message)
+
+    @staticmethod
+    def _collect_language_data(lang: str, extensions: tuple[str, ...]) -> dict[str, str]:
+        path = lang_path(lang)
+        if not os.path.isdir(path):
+            return {}
+        return {
+            fname: os.path.join(path, fname)
+            for fname in os.listdir(path)
+            if fname.lower().endswith(extensions)
+        }
+
+    def __init__(self, lang: str):
+        message = self._load_property_with_fallback(lang)
 
         self.__dict__.update(message)
         self.base = self.lang_property["base"]
 
         extensions = (".bin", ".ia4", ".zobj")
         self.path = lang_path(lang)
-        self.data = {
-            fname: os.path.join(lang_path(lang), fname)
-            for fname in os.listdir(lang_path(lang))
-            if fname.lower().endswith(extensions)
-        }
+        self.data = self._collect_language_data(self.FALLBACK_LANG, extensions)
+        self.data.update(self._collect_language_data(lang, extensions))
 
     def _dict_get(self, obj, key):
         if isinstance(obj, (list, tuple)):
