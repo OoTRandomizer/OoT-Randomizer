@@ -179,15 +179,28 @@ index:143 => 14
 
 Values may be numbers or JSON objects.
 
-### `language_specific_replace_table`
+### `replace_table`
 
-This section is edited as a replacement table.
+This section stores language-wide text replacement rules. Each rule is saved as an object with `from` and `to` strings. In the editor, each entry is edited as a block:
 
 ```text
-from text => to text
+[from]
+source text
+
+[to]
+replacement text
 ```
 
-Use it for language-specific cleanup, contraction, spacing, or replacement rules that should be applied consistently.
+When creating or editing an entry, you may also paste multiple arrow-style rules. Saving that draft creates multiple `replace_table` entries at once:
+
+```text
+a => 0x819F
+A => 0x81A0
+```
+
+The replacement pass is intended for cleanup, contraction, spacing, or other language-wide text normalization. All rules are applied simultaneously against the original text, so a result produced by one rule is not processed again by another rule in the same pass. For example, `A => B` and `B => C` changes `ABCD` into `BCCD`, not `CCCD`.
+
+Shift-JIS byte tokens are supported in `from` and `to`. A value written as `0xNN`, `0xNNNN`, `sjis:0xNNNN`, or `shift-jis:0xNNNN` is decoded as Shift-JIS bytes before the rule is applied. `replace_table` is plain text replacement data; control codes are not authored or converted inside this section. Text control codes already present in game text are protected during replacement so ordinary character rules do not rewrite control-code bytes or their arguments.
 
 ### `hintTable`
 
@@ -223,8 +236,12 @@ The entry list supports:
 - Delete entry
 - Copy entry
 - Paste entry
+- Duplicate entry
+- Move entry up/down
+- Sort by ID
+- Multi-select entries with Shift+Click and Ctrl/Cmd+Click
 
-When an entry with an `id` is pasted, the tool can assign a new ID to avoid direct duplication.
+When entries with IDs are pasted or duplicated, the tool asks for new IDs before insertion. Multiple selected entries can be copied, pasted, duplicated, deleted, moved, or reordered together.
 
 ## Shortcuts
 
@@ -253,9 +270,14 @@ Entry actions:
 
 ```text
 Ctrl/Cmd+N                  Add entry
-Ctrl/Cmd+Shift+C            Copy entry
-Ctrl/Cmd+Shift+V            Paste entry
-Ctrl/Cmd+Backspace/Delete   Delete entry
+Ctrl/Cmd+Shift+C            Copy selected entry/entries
+Ctrl/Cmd+Shift+V            Paste copied entry/entries
+Ctrl/Cmd+Shift+D            Duplicate selected entry/entries
+Ctrl/Cmd+Shift+A            Select all visible entries
+Ctrl/Cmd+Backspace/Delete   Delete selected entry/entries
+Ctrl/Cmd+Alt+Up             Move selected entry/entries up
+Ctrl/Cmd+Alt+Down           Move selected entry/entries down
+Esc                         Reduce multi-selection to the active entry
 ```
 
 Tabs:
@@ -309,6 +331,9 @@ Supported UI languages:
 - Français
 - Deutsch
 - Русский
+- 简体中文
+- 繁體中文
+- 한국어
 
 Use the app menu:
 
@@ -328,3 +353,51 @@ Before committing edited language data:
 ## Scope
 
 This tool is for language maintenance only. It does not generate seeds, does not replace the main GUI, and does not change the repository's normal randomizer workflow.
+
+
+## Entry save and ID editing
+
+Use **Save entry** to write the current Text editor contents back into the selected entry without exporting the whole property file. ID-based entries show an **Entry ID** field in hexadecimal form. Use **Apply ID** to change that ID after adding, pasting, or duplicating an entry. When an ID-based entry is duplicated or pasted, the tool asks for the new ID before inserting the entry.
+
+Useful shortcuts:
+
+- `Ctrl/Cmd+Shift+S`: Save entry
+- `Ctrl/Cmd+Shift+D`: Duplicate entry
+- `Ctrl/Cmd+Alt+I`: Apply ID
+
+
+## Editing safety and validation
+
+The editor includes several safeguards for language maintenance work. Use **Save entry** to commit the current entry text into the in-memory property data before switching entries or exporting. When an edited entry still has an unsaved draft, the tool warns before changing context.
+
+For message-like entries, the **Entry ID** field accepts hexadecimal IDs such as `0x00F3`. Use **Next ID** to fill the next available ID, **Apply ID** to commit it, and **Validate** to check for duplicate IDs or invalid fields. Entry lists can be moved up or down and sorted by ID when every entry in the section has an ID.
+
+The text editor also includes local find and replace controls for the current entry. These only modify the editor draft; use **Save entry** or **Apply editor** after replacing text.
+
+## Editing safety tools
+
+The editor includes additional safeguards for language maintenance:
+
+- Entry copy, paste, and duplication can assign a new unique ID before insertion.
+- Entry rows in list-style sections can be reordered by drag and drop. If several rows are selected, dragging one selected row moves the selected group together.
+- The bulk text replacement tool can replace text in the current entry, current section, or all text sections while preserving message control codes.
+- Language metadata, character widths, and replacement lists are kept separate during editing and export. Top-level sections are removed from nested entries if they appear in the wrong place.
+- The UI language menu also includes Simplified Chinese, Traditional Chinese, and Korean.
+
+
+## Global entry text replacement
+
+Use **Edit > Replace text in all entries...** to open a separate replacement window for all editable entries. Enter the source text and replacement text there, then run the replacement after confirming the detected match count. Control-code bytes are protected during replacement so that color, icon, sound, jump, and other control arguments are not modified as ordinary text. The shortcut is `Ctrl/Cmd + Alt + Shift + R`.
+
+
+## Language properties panel
+
+`lang_property` is edited in the dedicated Language properties panel above the section list. It is not shown as a normal section because it controls the whole language file.
+
+The panel provides fixed choices for `base` (`en` or `jp`) and `align_text` (`Left`, `Center`, or `Right`), plus fields for `display_name`, `description`, and `wide_text_english_metrics`. These values are still exported under the top-level `lang_property` key in `property.json`.
+
+## macOS stability notes
+
+On macOS, this tool avoids native modal child windows for editor confirmations and global text replacement. Confirmation panels are rendered inside the main editor window so that closing the panels does not create or destroy additional Electron BrowserWindow instances.
+
+The tool also disables renderer accessibility support and hardware acceleration at startup. This is intended to avoid macOS AppKit accessibility cleanup crashes in older Electron runtimes while preserving the editor's normal file loading, saving, and language-editing behavior.

@@ -292,11 +292,62 @@ CHAR_WIDTH_NAME_TO_INDEX = {name: i for i, name in enumerate(CHAR_WIDTH_ORDER)}
 WIDE_CHAR_DEFAULT_WIDTH = 16
 WIDE_CHAR_WIDTH_ENTRY_BYTES = 4
 
+
+# Text control codes must be protected while replace_table is applied.
+# The value is the total byte/character length of the code sequence inside the
+# decoded Python string, including argument bytes that may look like ordinary
+# printable letters.
+_TEXT_CONTROL_CODE_LENGTHS = {
+    0x00: 1,  # pad
+    0x01: 1,  # line break
+    0x02: 1,  # end
+    0x04: 1,  # box break
+    0x05: 2,  # color + color id
+    0x06: 2,  # gap + size
+    0x07: 3,  # goto + u16
+    0x08: 1,  # instant
+    0x09: 1,  # un-instant
+    0x0A: 1,  # keep open
+    0x0B: 1,  # event
+    0x0C: 2,  # box break delay + frames
+    0x0E: 2,  # fade out + frames
+    0x0F: 1,  # player name
+    0x10: 1,  # ocarina
+    0x12: 3,  # sound + u16
+    0x13: 2,  # icon + icon id
+    0x14: 2,  # speed/control argument
+}
+_REPLACE_PROTECT_START = "\uE000"
+_REPLACE_PROTECT_END = "\uE001"
+
+_SJIS_CODEPOINT_RE = re.compile(r'(?i)\A(?:sjis:|shift-jis:)?0x([0-9a-f]{2}|[0-9a-f]{4})\Z')
+
+def _decode_sjis_codepoint_token(value: str) -> str:
+    """Decode replace_table values such as 0x819F as Shift-JIS bytes.
+
+    This is intentionally narrow: only a whole value in the form 0xNN or
+    0xNNNN is treated as a Shift-JIS byte sequence. Other strings containing
+    those characters remain literal text.
+    """
+    text = str(value)
+    match = _SJIS_CODEPOINT_RE.fullmatch(text.strip())
+    if not match:
+        return text
+    hex_text = match.group(1)
+    try:
+        raw = bytes.fromhex(hex_text)
+        return raw.decode('shift_jis')
+    except (ValueError, UnicodeDecodeError):
+        # Keep invalid values literal so a bad property file does not make the
+        # language loader unusable. The editor validator reports these instead.
+        return text
+
 class Language:
     def __init__(self, lang: str):
         with open(os.path.join(lang_path(lang), "property.json"), mode="r", encoding="utf-8") as f:
             message = json.load(f)
 
+        self._normalize_replace_table(message)
         self.__dict__.update(message)
         self.base = self.lang_property["base"]
 
@@ -308,6 +359,106 @@ class Language:
             if fname.lower().endswith(extensions)
         }
 
+
+    def _normalize_replace_table(self, message: dict) -> None:
+        """Normalize the optional language-wide replacement table.
+
+        Current property.json files should use replace_table as a list of
+        {"from": str, "to": str} objects. Older files using replace_list or
+        language_specific_replace_table are accepted as input and rewritten in
+        memory as replace_table.
+        """
+        replace_table = message.get("replace_table", None)
+        if replace_table is None:
+            replace_table = message.get("replace_list", message.get("language_specific_replace_table", []))
+        if replace_table is None:
+            replace_table = []
+        if isinstance(replace_table, dict):
+            replace_table = [
+                {"from": str(k), "to": str(v)}
+                for k, v in replace_table.items()
+            ]
+        normalized = []
+        if isinstance(replace_table, list):
+            for item in replace_table:
+                if isinstance(item, dict):
+                    normalized.append({
+                        "from": str(item.get("from", "")),
+                        "to": str(item.get("to", "")),
+                    })
+                elif isinstance(item, (list, tuple)) and len(item) >= 2:
+                    normalized.append({"from": str(item[0]), "to": str(item[1])})
+        message["replace_table"] = normalized
+        message.pop("replace_list", None)
+        message.pop("language_specific_replace_table", None)
+
+    def _protect_text_control_codes(self, text: str, tokens: list[str]) -> str:
+        out = []
+        i = 0
+        while i < len(text):
+            ch = text[i]
+            code = ord(ch)
+            if code < 0x20:
+                length = _TEXT_CONTROL_CODE_LENGTHS.get(code, 1)
+                seq = text[i:min(len(text), i + length)]
+                token = f"{_REPLACE_PROTECT_START}{len(tokens)}{_REPLACE_PROTECT_END}"
+                tokens.append(seq)
+                out.append(token)
+                i += len(seq)
+                continue
+            out.append(ch)
+            i += 1
+        return "".join(out)
+
+    def _restore_text_control_codes(self, text: str, tokens: list[str]) -> str:
+        for i, seq in enumerate(tokens):
+            text = text.replace(f"{_REPLACE_PROTECT_START}{i}{_REPLACE_PROTECT_END}", seq)
+        return text
+
+    def _contains_text_control_code(self, text: str) -> bool:
+        return any(ord(ch) < 0x20 for ch in text)
+
+    def _apply_replace_table(self, text: str) -> str:
+        entries = getattr(self, "replace_table", []) or []
+        if not entries:
+            return text
+
+        tokens: list[str] = []
+        protected = self._protect_text_control_codes(text, tokens)
+
+        # Apply all replacement rules simultaneously against the original
+        # protected text. Replacement output must not be processed again by
+        # later rules. For example, A=>B and B=>C turns ABCD into BCCD, not CCCD.
+        rules: list[tuple[str, str, int]] = []
+        seen: set[str] = set()
+        for order, item in enumerate(entries):
+            if not isinstance(item, dict):
+                continue
+            src = _decode_sjis_codepoint_token(str(item.get("from", "")))
+            dst = _decode_sjis_codepoint_token(str(item.get("to", "")))
+            if not src or src in seen:
+                continue
+            # Do not allow replacement rules to match or create text control
+            # codes. replace_table is a text replacement table, not a control-code
+            # authoring mechanism. This prevents rules such as A => B from
+            # corrupting color control codes like \x05A, and also prevents
+            # replacement output from injecting control bytes.
+            if self._contains_text_control_code(src) or self._contains_text_control_code(dst):
+                continue
+            rules.append((src, dst, order))
+            seen.add(src)
+
+        if not rules:
+            return self._restore_text_control_codes(protected, tokens)
+
+        # If multiple rules can match at the same location, prefer the longest
+        # source string, then the earlier replace_table entry for stable results.
+        rules.sort(key=lambda item: (-len(item[0]), item[2]))
+        replacement_by_source = {src: dst for src, dst, _ in rules}
+        pattern = re.compile("|".join(re.escape(src) for src, _, _ in rules))
+        protected = pattern.sub(lambda m: replacement_by_source[m.group(0)], protected)
+
+        return self._restore_text_control_codes(protected, tokens)
 
     def _default_char_widths(self, variant: str = "ntsc") -> list[float]:
         if variant.lower() == "pal":
@@ -732,10 +883,7 @@ class Language:
         get = self._replace_placeholders(text, external or {}, for_expr=False)
         get = re.sub(r'\\([\[\]\{\}])', r'\1', get)
 
-        for a, k in self.language_specific_replace_table:
-            get = get.replace(a, k)
-
-        return get
+        return self._apply_replace_table(get)
 
     def format_from_id(self, id: str, external: dict = None):
         keys = id.split('.')
