@@ -4,9 +4,13 @@
 ;Doing it this way prevents the Bomb OI glitch that the OoT devs added in 1.1 and onwards.
 
 empty_bomb:
-   sw      t5, 0x066C(v0) ;displaced
-   sb      r0, 0x141(v0)  ;Action Parameter 1
-   sb      r0, 0x144(v0)  ;Action Parameter 2
+   li      at,CFG_BOMB_OI  ; if bomb OI enabled, don't run
+   bnez    at,@@Return
+   nop
+   sb      r0, 0x141(v0)  ;heldItemAction
+   sb      r0, 0x144(v0)  ;itemAction
    li      t6, 0xFE
-   jr      ra
    sb      t6, 0x142(v0)  ;Last Held Item ID
+@@Return:
+   jr      ra
+   sw      t5, 0x066C(v0) ;displaced, stateflags1

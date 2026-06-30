@@ -49,3 +49,45 @@
 .org 0x808319d4         ; in Player_InitHookshotIA (0x8038a374)
      jal     Player_HookshotCheckActorSpawn
      lw      a1,60(sp)       ; displaced (loads player)
+
+;================================================================================
+; Bomb OI
+;================================================================================
+; Replaces: move    s0,a0
+;           move    s1,a1
+;           sw      ra,28(sp)
+.org 0x8083377c     ; Player_UpperAction_CarryActor
+    sw      ra,28(sp)   ; displaced
+    jal     Player_CarryActorSetUpperIA
+    move    s0,a0       ; displaced
+
+; Replaces: sw      a0,40(sp)
+;           lw      v1,924(s0)
+;           move    a0,s0
+;           beqzl   v1,808303fc
+;           lw      ra,28(sp)
+;           jal     Player_HoldsHookshot
+;           sw      v1,36(sp)
+;           bnez    v0,808303f8
+.org 0x80830390     ; Player_DetachHeldActor
+    jal     Player_DetachActorCheckBomb
+    sw      a0,40(sp)       ; displaced
+    bnez    v0,@@Branch
+    nop
+    b       0x808303b4      ; run function normally
+    nop
+@@Branch:
+    jr      t9      ; branch to explosives check or return depending on setting
+    nop
+
+; Replaces: li      at,-2049
+;           move    a0,s0
+;           and     t7,t6,at
+;           jal     Player_GetExplosiveHeld
+;           sw      t7,1644(s0)
+.org 0x808303c8     ; Player_DetachHeldActor
+    li      at,-2049    ; change order of instructions to allow branching from higher up
+    and     t7,t6,at
+    sw      t7,1644(s0)
+    jal     Player_GetExplosiveHeld
+    move    a0,s0

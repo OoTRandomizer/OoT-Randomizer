@@ -1984,6 +1984,15 @@ class SettingInfos:
         },
     )
 
+    enable_bomb_oi = Checkbutton(
+        gui_text       = 'Enable bomb OI',
+        gui_tooltip    = '''\
+            Enables bomb OI as in 1.1/1.2.
+        ''',
+        default        = False,
+        shared         = True,
+    )
+
     shuffle_song_items = Combobox(
         gui_text       = 'Shuffle Songs',
         default        = 'song',
