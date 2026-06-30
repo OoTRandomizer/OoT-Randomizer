@@ -4661,6 +4661,401 @@
   };
 
 
+
+  // ROM PLAIN_TEXTS extraction, non-property memo workspace, context menu,
+  // and control-code authoring helpers.
+  if(!state.memo) state.memo = localStorage.getItem('ootr-language-editor-memo') || '';
+  if(!state.workPath) state.workPath = '';
+  let plainExtractorRomPath = '';
+
+  function installExtendedFeatureStyle(){
+    if($('extendedFeatureStyle')) return;
+    const style=document.createElement('style'); style.id='extendedFeatureStyle';
+    style.textContent = `
+      .memo-panel { display:grid; grid-template-rows:auto 1fr; gap:8px; height:100%; min-height:360px; }
+      .memo-note { color:var(--muted); font-size:calc(12px * var(--ui-text-scale)); }
+      #memoEditor { min-height:320px; height:100%; resize:vertical; }
+      .plain-extract-panel { margin-top:14px; border:1px solid var(--line); border-radius:10px; background:var(--panel3); padding:12px; display:grid; gap:10px; }
+      .plain-extract-grid { display:grid; grid-template-columns:minmax(180px,1.4fr) repeat(3,minmax(130px,.7fr)); gap:10px; align-items:end; }
+      .plain-extract-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+      .plain-extract-status { color:var(--muted); font-size:calc(12px * var(--ui-text-scale)); }
+      @media (max-width: 1100px){ .plain-extract-grid { grid-template-columns:1fr 1fr; } }
+      @media (max-width: 760px){ .plain-extract-grid { grid-template-columns:1fr; } }
+      .editor-context-menu, .control-suggest-popup { position:fixed; z-index:10020; min-width:220px; border:1px solid var(--line); border-radius:10px; background:var(--popup-bg); box-shadow:0 16px 40px var(--shadow-color); padding:6px; display:none; }
+      .editor-context-menu.visible, .control-suggest-popup.visible { display:block; }
+      .ctx-row, .control-suggest-row { display:flex; justify-content:space-between; align-items:center; gap:14px; padding:7px 9px; border-radius:7px; color:var(--text); cursor:pointer; }
+      .ctx-heading { padding:6px 9px 3px; color:var(--muted); font-size:calc(11px * var(--ui-text-scale)); font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+      .ctx-disabled { opacity:.45; pointer-events:none; }
+      .ctx-row:hover, .control-suggest-row:hover, .control-suggest-row.active { background:var(--suggest-active-bg); }
+      .ctx-sep { height:1px; margin:5px 4px; background:var(--line); }
+      .ctx-shortcut { color:var(--muted); font-size:calc(11px * var(--ui-text-scale)); }
+      .control-suggest-token { color:var(--control-token); font-family:var(--editor-font); }
+      .control-suggest-desc { color:var(--muted); overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+      .control-help-pills { display:flex; flex-wrap:wrap; gap:6px; padding:6px 0; color:var(--muted); }
+      .control-help-pills span { border:1px solid var(--line); border-radius:999px; padding:3px 7px; background:var(--pill-bg); }
+    `;
+    document.head.appendChild(style);
+  }
+
+  function ensureMemoTab(){
+    if($('tabMemo')) return;
+    const tabs = document.querySelector('.right-tabs');
+    const panels = document.querySelector('.tab-panels');
+    if(!tabs || !panels) return;
+    const btn=document.createElement('button'); btn.id='tabMemoBtn'; btn.className='tab-btn'; btn.dataset.tab='tabMemo'; btn.type='button'; btn.role='tab'; btn.textContent=t('Memo');
+    tabs.appendChild(btn);
+    const panel=document.createElement('section'); panel.id='tabMemo'; panel.className='tab-panel'; panel.role='tabpanel';
+    panel.innerHTML = `<div class="editor-box memo-panel"><div><div class="label">${escapeHtml(t('Memo'))}</div><div class="memo-note">${escapeHtml(t('Memo is kept out of property.json. It is saved only inside a work file.'))}</div></div><textarea id="memoEditor" spellcheck="false"></textarea></div>`;
+    panels.appendChild(panel);
+    el.tabMemoBtn = btn; el.tabMemo = panel; el.memoEditor = $('memoEditor');
+    btn.onclick = () => switchTab('tabMemo');
+    el.memoEditor.value = state.memo || '';
+    el.memoEditor.addEventListener('input', () => { state.memo = el.memoEditor.value; localStorage.setItem('ootr-language-editor-memo', state.memo); });
+  }
+
+  const _extSwitchTab = switchTab;
+  switchTab = function(tabId){
+    ensureMemoTab();
+    if(tabId === 'tabMemo'){
+      for (const id of ['tabText','tabRaw','tabSectionJson','tabPatch','tabMemo']) {
+        const panel = $(id);
+        const btn = $(id === 'tabText' ? 'tabTextBtn' : id === 'tabRaw' ? 'tabRawBtn' : id === 'tabSectionJson' ? 'tabSectionJsonBtn' : id === 'tabPatch' ? 'tabPatchBtn' : 'tabMemoBtn');
+        if(panel) panel.classList.toggle('active', id === tabId);
+        if(btn){ btn.classList.toggle('active', id === tabId); btn.setAttribute('aria-selected', id === tabId ? 'true' : 'false'); }
+      }
+      state.activeTab = tabId;
+      if(el.memoEditor) el.memoEditor.value = state.memo || '';
+      return;
+    }
+    _extSwitchTab(tabId);
+    if($('tabMemo')){ $('tabMemo').classList.remove('active'); $('tabMemoBtn')?.classList.remove('active'); }
+  };
+
+  const _extInitTabs = initTabs;
+  initTabs = function(){ ensureMemoTab(); _extInitTabs(); if(el.tabMemoBtn) el.tabMemoBtn.onclick=()=>switchTab('tabMemo'); };
+
+  function workFilePayload(){
+    return { format:'ootr-language-editor-work', version:1, savedAt:new Date().toISOString(), property:buildExportProperty(), memo:state.memo || '', selectedSection:state.selectedSection || '', selectedEntryKey:state.selectedEntryKey || '' };
+  }
+  async function openWorkFile(){
+    try{
+      const result = await api.openWorkFile?.();
+      if(!result) return;
+      const data = result.data || {};
+      const property = data.property || data.data || data;
+      pushUndo();
+      state.property = deepMerge(state.defaultProperty, property || {});
+      state.memo = String(data.memo || '');
+      state.workPath = result.filePath || '';
+      if(el.memoEditor) el.memoEditor.value = state.memo;
+      localStorage.setItem('ootr-language-editor-memo', state.memo);
+      state.filePath = data.propertyPath || state.filePath || '';
+      state.selectedSection = data.selectedSection && state.property[data.selectedSection] !== undefined ? data.selectedSection : Object.keys(state.property)[0] || '';
+      state.selectedEntryKey = data.selectedEntryKey || entryKeys(sectionValue())[0] || '';
+      state.dirty = false;
+      renderAll();
+      el.status.innerHTML = `<span class="ok">${escapeHtml(t('Opened work file: {path}', {path:state.workPath}))}</span>`;
+    }catch(e){ el.status.innerHTML = `<span class="error">${escapeHtml(t('Open work file failed: {message}', {message:e.message}))}</span>`; }
+  }
+  async function saveWorkFile(){
+    try{
+      if(el.memoEditor) state.memo = el.memoEditor.value;
+      const result = await api.saveWorkFile?.(workFilePayload(), state.workPath || 'language-editor.ootr-lang-work.json');
+      if(!result) return;
+      state.workPath = result.filePath || state.workPath;
+      el.status.innerHTML = `<span class="ok">${escapeHtml(t('Saved work file: {path}', {path:state.workPath}))}</span>`;
+    }catch(e){ el.status.innerHTML = `<span class="error">${escapeHtml(t('Save work file failed: {message}', {message:e.message}))}</span>`; }
+  }
+
+  function ensurePlainTextExtractorPanel(){
+    if($('plainExtractPanel')) return;
+    const patchPanel = $('patchPanel');
+    if(!patchPanel) return;
+    const panel=document.createElement('div'); panel.id='plainExtractPanel'; panel.className='plain-extract-panel';
+    panel.innerHTML = `
+      <div class="pane-title">${escapeHtml(t('ROM to PLAIN_TEXTS'))}</div>
+      <div class="plain-extract-grid">
+        <div><div class="label">${escapeHtml(t('Decompressed ROM'))}</div><input id="plainRomPath" readonly></div>
+        <div><div class="label">${escapeHtml(t('Table HEX address'))}</div><input id="plainTableAddress" value="0xB849EC"></div>
+        <div><div class="label">${escapeHtml(t('Text HEX address'))}</div><input id="plainTextAddress" value="0x92D000"></div>
+        <div><div class="label">${escapeHtml(t('Terminator entry ID HEX'))}</div><input id="plainTerminatorId" value="0xFFFF"></div>
+      </div>
+      <div class="plain-extract-actions">
+        <button id="plainPickRomBtn" type="button">${escapeHtml(t('Select ROM'))}</button>
+        <button id="plainReplaceBtn" type="button" class="primary">${escapeHtml(t('Replace PLAIN_TEXTS'))}</button>
+        <button id="plainAppendBtn" type="button">${escapeHtml(t('Append to PLAIN_TEXTS'))}</button>
+      </div>
+      <div id="plainExtractStatus" class="plain-extract-status">${escapeHtml(t('This extractor reads every message until the configured terminator entry ID. It accepts an already-decompressed ROM only.'))}</div>`;
+    patchPanel.appendChild(panel);
+    el.plainRomPath = $('plainRomPath'); el.plainTableAddress = $('plainTableAddress'); el.plainTextAddress = $('plainTextAddress'); el.plainTerminatorId = $('plainTerminatorId'); el.plainPickRomBtn = $('plainPickRomBtn'); el.plainReplaceBtn = $('plainReplaceBtn'); el.plainAppendBtn = $('plainAppendBtn'); el.plainExtractStatus = $('plainExtractStatus');
+    el.plainPickRomBtn.onclick = async () => { const r=await api.openRom?.(t('Select decompressed ROM')); if(r?.filePath){ plainExtractorRomPath=r.filePath; el.plainRomPath.value=r.filePath; } };
+    el.plainReplaceBtn.onclick = () => runPlainTextExtraction(false);
+    el.plainAppendBtn.onclick = () => runPlainTextExtraction(true);
+  }
+  async function runPlainTextExtraction(append){
+    try{
+      const result = await api.extractPlainTextsFromRom?.({ romPath:plainExtractorRomPath || el.plainRomPath?.value || state.patchOriginal || state.patchModified, tableAddress:el.plainTableAddress.value, textAddress:el.plainTextAddress.value, terminatorId:el.plainTerminatorId?.value || '0xFFFF', base:activeTextBase() });
+      const entries = Array.isArray(result?.entries) ? result.entries : [];
+      pushUndo();
+      if(!Array.isArray(state.property.PLAIN_TEXTS)) state.property.PLAIN_TEXTS = [];
+      state.property.PLAIN_TEXTS = append ? state.property.PLAIN_TEXTS.concat(entries) : entries;
+      state.selectedSection = 'PLAIN_TEXTS'; state.selectedEntryKey = entryKeys(state.property.PLAIN_TEXTS)[0] || '0';
+      markDirty(); renderAll(); switchTab('tabText');
+      if(el.plainExtractStatus) el.plainExtractStatus.innerHTML = `<span class="ok">${escapeHtml(t('Extracted {count} PLAIN_TEXTS entries.', {count:entries.length}))}</span>`;
+      el.status.innerHTML = `<span class="ok">${escapeHtml(t('Extracted {count} PLAIN_TEXTS entries.', {count:entries.length}))}</span>`;
+    }catch(e){ const msg=t('PLAIN_TEXTS extraction failed: {message}', {message:e.message}); if(el.plainExtractStatus) el.plainExtractStatus.innerHTML=`<span class="error">${escapeHtml(msg)}</span>`; el.status.innerHTML=`<span class="error">${escapeHtml(msg)}</span>`; }
+  }
+
+  const CONTROL_SNIPPETS = [
+    ['<line-break>', 'new line'], ['<box-break>', 'box break'], ['<color white>', 'white text'], ['<color red>', 'red text'], ['<color green>', 'green text'], ['<color blue>', 'blue text'], ['<color light-blue>', 'light-blue text'], ['<color pink>', 'pink text'], ['<color yellow>', 'yellow text'], ['<color black>', 'black text'], ['<name>', 'player name'], ['<icon 00>', 'item icon'], ['<sound 0000>', 'sound effect'], ['<gap 20>', 'text gap'], ['<goto 0000>', 'goto message'], ['<speed 00>', 'text speed'], ['<background 00 00 00>', 'background'], ['<keep open>', 'keep box open'], ['<event>', 'event close'], ['<start two choice>', 'two-choice prompt'], ['<start three choice>', 'three-choice prompt']
+  ];
+  function ensureControlSuggestPopup(){ let box=$('controlSuggestPopup'); if(box) return box; box=document.createElement('div'); box.id='controlSuggestPopup'; box.className='control-suggest-popup'; document.body.appendChild(box); return box; }
+  function currentControlQuery(){
+    const text=el.editor?.value||''; const pos=el.editor?.selectionStart||0; const before=text.slice(0,pos); const open=before.lastIndexOf('<'); const close=before.lastIndexOf('>');
+    if(open < 0 || close > open) return null; const q=before.slice(open+1); if(q.includes('\n') || q.includes('[')) return null; return {open,pos,q};
+  }
+  function insertEditorSnippet(snippet, replaceCtx=null){
+    const target=el.editor; if(!target) return; const text=target.value; const ctx=replaceCtx || {open:target.selectionStart, pos:target.selectionEnd};
+    target.value = text.slice(0, ctx.open) + snippet + text.slice(ctx.pos); const next=ctx.open+snippet.length; target.setSelectionRange(next,next); target.dispatchEvent(new Event('input',{bubbles:true})); updateHighlight(); setSmartTarget('text');
+  }
+  function updateControlSuggestions(){
+    const box=ensureControlSuggestPopup(); const ctx=currentControlQuery(); if(!ctx){ box.classList.remove('visible'); return; }
+    const q=ctx.q.toLowerCase(); const rows=CONTROL_SNIPPETS.filter(([snip,desc]) => snip.toLowerCase().includes(q) || desc.toLowerCase().includes(q)).slice(0,16);
+    if(!rows.length){ box.classList.remove('visible'); return; }
+    box.innerHTML = rows.map(([snip,desc],i)=>`<div class="control-suggest-row${i===0?' active':''}" data-snippet="${escapeHtml(snip)}"><span class="control-suggest-token">${escapeHtml(snip)}</span><span class="control-suggest-desc">${escapeHtml(desc)}</span></div>`).join('');
+    const rect=el.editor.getBoundingClientRect(); box.style.left=Math.max(8, Math.min(rect.left+30, window.innerWidth-360))+'px'; box.style.top=Math.max(8, Math.min(rect.top+72, window.innerHeight-300))+'px'; box.classList.add('visible');
+    for(const row of box.querySelectorAll('.control-suggest-row')) row.addEventListener('mousedown', ev=>{ ev.preventDefault(); insertEditorSnippet(row.getAttribute('data-snippet')||'', currentControlQuery() || ctx); box.classList.remove('visible'); });
+  }
+  function bindControlAuthoring(){
+    if(!el.editor || el.editor.dataset.controlAuthorBound) return; el.editor.dataset.controlAuthorBound='1';
+    el.editor.addEventListener('input', updateControlSuggestions);
+    el.editor.addEventListener('keyup', updateControlSuggestions);
+    el.editor.addEventListener('click', updateControlSuggestions);
+    el.editor.addEventListener('keydown', ev=>{
+      const box=ensureControlSuggestPopup();
+      if(box.classList.contains('visible') && (ev.key==='Tab' || ev.key==='Enter')){ const row=box.querySelector('.control-suggest-row.active') || box.querySelector('.control-suggest-row'); if(row){ ev.preventDefault(); insertEditorSnippet(row.getAttribute('data-snippet')||'', currentControlQuery()); box.classList.remove('visible'); return; } }
+      if(ev.key==='>' || ev.key==='Escape') setTimeout(()=>box.classList.remove('visible'),0);
+      if(!ev.altKey || ev.ctrlKey || ev.metaKey) return;
+      const colorMap = {'0':'<color white>','1':'<color red>','2':'<color green>','3':'<color blue>','4':'<color light-blue>','5':'<color pink>','6':'<color yellow>','7':'<color black>'};
+      let snippet='';
+      if(ev.key === 'Enter' && ev.shiftKey) snippet='<box-break>';
+      else if(ev.key === 'Enter') snippet='<line-break>';
+      else if(colorMap[ev.key]) snippet=colorMap[ev.key];
+      else if(String(ev.key).toLowerCase()==='n') snippet='<name>';
+      else if(String(ev.key).toLowerCase()==='i') snippet='<icon 00>';
+      else if(String(ev.key).toLowerCase()==='s') snippet='<sound 0000>';
+      if(snippet){ ev.preventDefault(); insertEditorSnippet(snippet); }
+    });
+    document.addEventListener('mousedown', ev=>{ const box=ensureControlSuggestPopup(); if(!box.contains(ev.target) && ev.target!==el.editor) box.classList.remove('visible'); });
+  }
+
+  function contextMenuHeading(label){ return {heading:label}; }
+  function fieldForContext(target, sourceElement){
+    if(sourceElement && (sourceElement.tagName === 'TEXTAREA' || sourceElement.tagName === 'INPUT')) return sourceElement;
+    const map = { text:'editor', raw:'raw', sectionJson:'sectionJson', memo:'memoEditor', section:'sectionSearch', entry:'entrySearch', patch:'plainTableAddress', language:'langDisplayName' };
+    return $(map[target] || '') || el.editor;
+  }
+  async function copyFieldSelection(field){
+    if(!field) return smartCopy();
+    const text = typeof field.selectionStart === 'number' && field.selectionStart !== field.selectionEnd
+      ? field.value.slice(field.selectionStart, field.selectionEnd)
+      : field.value;
+    if(navigator.clipboard?.writeText) await navigator.clipboard.writeText(text || '');
+    else { field.focus(); document.execCommand('copy'); }
+  }
+  async function pasteIntoField(field){
+    if(!field) return smartPaste();
+    let text = '';
+    if(navigator.clipboard?.readText) text = await navigator.clipboard.readText();
+    else { field.focus(); document.execCommand('paste'); return; }
+    const start = typeof field.selectionStart === 'number' ? field.selectionStart : field.value.length;
+    const end = typeof field.selectionEnd === 'number' ? field.selectionEnd : start;
+    field.value = field.value.slice(0,start) + text + field.value.slice(end);
+    const next = start + text.length;
+    if(field.setSelectionRange) field.setSelectionRange(next,next);
+    field.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+  function duplicateFieldSelection(field){
+    if(!field) return smartDuplicate();
+    const start = typeof field.selectionStart === 'number' ? field.selectionStart : field.value.length;
+    const end = typeof field.selectionEnd === 'number' ? field.selectionEnd : start;
+    const text = start !== end ? field.value.slice(start,end) : field.value;
+    field.value = field.value.slice(0,end) + text + field.value.slice(end);
+    const next = end + text.length;
+    if(field.setSelectionRange) field.setSelectionRange(next,next);
+    field.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+  function selectAllField(field){ if(field?.select){ field.focus(); field.select(); } }
+  function clearField(field){ if(field){ field.value=''; field.dispatchEvent(new Event('input',{bubbles:true})); } }
+  function commonContextRows(target, sourceElement){
+    const field = fieldForContext(target, sourceElement);
+    return [
+      contextMenuHeading('Common'),
+      {label:'Copy', shortcut:'Ctrl/Cmd+C', fn:()=> target === 'section' ? smartCopySection() : target === 'entry' ? copyEntry() : target === 'text' ? smartCopy() : copyFieldSelection(field)},
+      {label:'Paste', shortcut:'Ctrl/Cmd+V', fn:()=> target === 'section' ? smartPasteSection() : target === 'entry' ? pasteEntry() : target === 'text' ? smartPaste() : pasteIntoField(field)},
+      {label:'Duplicate', shortcut:'Ctrl/Cmd+D', fn:()=> target === 'section' ? smartDuplicateSection() : target === 'entry' ? duplicateEntry() : target === 'text' ? smartDuplicate() : duplicateFieldSelection(field)},
+      {sep:true},
+      {label:'Select all', shortcut:'Ctrl/Cmd+A', fn:()=>selectAllField(field)},
+    ];
+  }
+  function contextMenuRows(target, sourceElement=null){
+    const rows=[];
+    const add=(label, shortcut, fn)=>rows.push({label,shortcut,fn});
+    const sep=()=>rows.push({sep:true});
+    const heading=(label)=>rows.push(contextMenuHeading(label));
+    rows.push(...commonContextRows(target, sourceElement));
+    sep();
+    if(target==='text'){
+      heading('Text editor');
+      add('Apply editor', 'Ctrl/Cmd+Enter', applyEditor);
+      add('Save entry', 'Ctrl/Cmd+Shift+S', saveEntry);
+      add('Validate entry', 'Ctrl/Cmd+Shift+Enter', validateCurrentEntry);
+      sep();
+      heading('Insert control code');
+      for(const [snip, desc] of CONTROL_SNIPPETS.slice(0,16)) add(`${snip} — ${desc}`, '', ()=>insertEditorSnippet(snip));
+    }else if(target==='section'){
+      heading('Section');
+      add('Merge missing defaults', '', mergeDefaults);
+      add('Validate property', '', validateProperty);
+      add('Load completed property.json...', 'Ctrl/Cmd+O', loadProperty);
+      add('Export property.json...', 'Ctrl/Cmd+S', saveProperty);
+    }else if(target==='entry'){
+      heading('Entry');
+      add('Add entry', 'Ctrl/Cmd+N', addEntry);
+      add('Delete entry', 'Ctrl/Cmd+Backspace', deleteEntry);
+      add('Move up', 'Ctrl/Cmd+Alt+↑', ()=>moveEntry(-1));
+      add('Move down', 'Ctrl/Cmd+Alt+↓', ()=>moveEntry(1));
+      add('Sort by ID', '', sortEntriesById);
+      add('Validate entry', 'Ctrl/Cmd+Shift+Enter', validateCurrentEntry);
+    }else if(target==='raw'){
+      heading('Raw preview');
+      add('Refresh raw preview', '', renderEditor);
+      add('Copy raw preview', '', ()=>copyFieldSelection(el.raw));
+    }else if(target==='sectionJson'){
+      heading('Section JSON');
+      add('Apply section JSON', 'Ctrl/Cmd+Enter', applySectionJson);
+      add('Copy section JSON', '', ()=>copyFieldSelection(el.sectionJson));
+      add('Clear section JSON editor', '', ()=>clearField(el.sectionJson));
+    }else if(target==='language'){
+      heading('Language properties');
+      add('Apply language properties', '', applyLangPropertyPanel);
+      add('Reset language properties', '', resetLangPropertyPanel);
+      add('Focus text editor', '', ()=>{ if(typeof focusTextMode === 'function') focusTextMode(); else el.editor?.focus(); });
+    }else if(target==='patch'){
+      heading('Patch / ROM tools');
+      add('Select ROMs', '', pickRoms);
+      add('Select output folder', '', pickOutput);
+      add('Extract PLAIN_TEXTS from ROM', 'Ctrl/Cmd+Alt+T', ()=>{ ensurePlainTextExtractorPanel(); runPlainTextExtraction(false); });
+      add('Append PLAIN_TEXTS from ROM', '', ()=>{ ensurePlainTextExtractorPanel(); runPlainTextExtraction(true); });
+      add('Generate checked diff patches', '', generatePatches);
+      add('Export checked raw segments', '', exportCheckedSegments);
+    }else if(target==='memo'){
+      heading('Memo');
+      add('Save work file...', 'Ctrl/Cmd+Shift+S', saveWorkFile);
+      add('Open work file...', '', openWorkFile);
+      add('Clear memo', '', ()=>clearField(el.memoEditor));
+      add('Close memo panel', 'Ctrl/Cmd+5', ()=>$('memoWorkspacePanel')?.classList.remove('visible'));
+    }
+    return rows;
+  }
+  function showContextMenu(ev, target){
+    ev.preventDefault(); ev.stopPropagation(); setSmartTarget(target === 'sectionJson' || target === 'raw' || target === 'memo' ? 'text' : target);
+    let box=$('editorContextMenu'); if(!box){ box=document.createElement('div'); box.id='editorContextMenu'; box.className='editor-context-menu'; document.body.appendChild(box); }
+    const rows=contextMenuRows(target, ev.target); box.innerHTML='';
+    for(const item of rows){
+      if(item.sep){ const d=document.createElement('div'); d.className='ctx-sep'; box.appendChild(d); continue; }
+      if(item.heading){ const h=document.createElement('div'); h.className='ctx-heading'; h.textContent=t(item.heading); box.appendChild(h); continue; }
+      const r=document.createElement('div'); r.className='ctx-row'; r.innerHTML=`<span>${escapeHtml(t(item.label))}</span><span class="ctx-shortcut">${escapeHtml(item.shortcut||'')}</span>`;
+      r.addEventListener('mousedown', e=>{ e.preventDefault(); box.classList.remove('visible'); item.fn?.(); }); box.appendChild(r);
+    }
+    box.style.left=Math.max(8, Math.min(ev.clientX, window.innerWidth-300))+'px'; box.style.top=Math.max(8, Math.min(ev.clientY, window.innerHeight-420))+'px'; box.classList.add('visible');
+  }
+  function bindContextTarget(id, target){
+    const node=$(id);
+    if(node && !node.dataset.contextBound){ node.dataset.contextBound='1'; node.addEventListener('contextmenu', ev=>showContextMenu(ev,target)); }
+  }
+  function bindContextMenus(){
+    bindContextTarget('sectionList','section'); bindContextTarget('sectionSearch','section'); bindContextTarget('sectionsPane','section');
+    bindContextTarget('entryList','entry'); bindContextTarget('entrySearch','entry'); bindContextTarget('entriesPane','entry');
+    bindContextTarget('editor','text'); bindContextTarget('specialBox','text'); bindContextTarget('specialName','text'); bindContextTarget('specialGender','text');
+    bindContextTarget('raw','raw'); bindContextTarget('sectionJson','sectionJson');
+    bindContextTarget('langPropertyPanel','language'); bindContextTarget('patchPanel','patch'); bindContextTarget('memoWorkspacePanel','memo'); bindContextTarget('memoEditor','memo');
+    document.addEventListener('mousedown', ev=>{ const box=$('editorContextMenu'); if(box && !box.contains(ev.target)) box.classList.remove('visible'); }, {capture:true});
+  }
+
+  const _extRenderStaticText2 = renderStaticText;
+  renderStaticText = function(){
+    _extRenderStaticText2();
+    if($('tabMemoBtn')) $('tabMemoBtn').textContent=t('Memo');
+    if(el.memoEditor && !el.memoEditor.value && state.memo) el.memoEditor.value=state.memo;
+    if(el.shortcutHint) el.shortcutHint.innerHTML = t('Ctrl/Cmd+1-4 tabs · Ctrl/Cmd+5 memo · Alt+Enter line · Alt+Shift+Enter box · Alt+0-7 color · right-click context menu').replace(/Ctrl\/Cmd|Alt|Shift|Enter|0-7|1-4|5/g, '<span class="shortcut-key">$&</span>');
+  };
+  const _extRenderAll2 = renderAll;
+  renderAll = function(){ _extRenderAll2(); ensureMemoTab(); ensurePlainTextExtractorPanel(); bindControlAuthoring(); bindContextMenus(); };
+  const _extInit2 = init;
+  init = async function(){
+    installExtendedFeatureStyle(); ensureMemoTab(); ensurePlainTextExtractorPanel();
+    await _extInit2();
+    ensureMemoTab(); ensurePlainTextExtractorPanel(); bindControlAuthoring(); bindContextMenus();
+    if(api.onMenuOpenWorkFile) api.onMenuOpenWorkFile(openWorkFile);
+    if(api.onMenuSaveWorkFile) api.onMenuSaveWorkFile(saveWorkFile);
+    if(api.onMenuExtractPlainTexts) api.onMenuExtractPlainTexts(()=>{ switchTab('tabPatch'); ensurePlainTextExtractorPanel(); $('plainTableAddress')?.focus(); });
+  };
+
+
+  // Memo is a separate workspace panel, not an editor tab.
+  function ensureMemoWorkspacePanel(){
+    let panel = $('memoWorkspacePanel');
+    if(panel){ el.memoEditor = $('memoEditor'); return panel; }
+    const style=document.createElement('style');
+    style.textContent = `
+      .memo-workspace-panel { position:fixed; right:18px; bottom:46px; width:min(520px, calc(100vw - 36px)); height:min(440px, calc(100vh - 120px)); min-width:260px; min-height:180px; z-index:10030; border:1px solid var(--line); border-radius:12px; background:var(--panel); box-shadow:0 18px 50px var(--shadow-color); display:none; grid-template-rows:auto 1fr; resize:both; overflow:hidden; }
+      .memo-workspace-panel.visible { display:grid; }
+      .memo-workspace-header { display:flex; gap:8px; align-items:center; justify-content:space-between; padding:8px 10px; border-bottom:1px solid var(--line); background:var(--panel2); }
+      .memo-workspace-title { font-weight:700; }
+      .memo-workspace-body { min-height:0; padding:8px; display:grid; grid-template-rows:auto 1fr; gap:6px; }
+      .memo-workspace-note { color:var(--muted); font-size:calc(12px * var(--ui-text-scale)); }
+      #memoEditor { min-height:0; height:100%; resize:none; }
+    `;
+    document.head.appendChild(style);
+    panel=document.createElement('aside');
+    panel.id='memoWorkspacePanel';
+    panel.className='memo-workspace-panel';
+    panel.innerHTML = `<div class="memo-workspace-header"><div class="memo-workspace-title">${escapeHtml(t('Memo'))}</div><button id="memoCloseBtn" type="button">×</button></div><div class="memo-workspace-body"><div class="memo-workspace-note">${escapeHtml(t('Memo is kept out of property.json. It is saved only inside a work file.'))}</div><textarea id="memoEditor" spellcheck="false"></textarea></div>`;
+    document.body.appendChild(panel);
+    el.memoWorkspacePanel = panel;
+    el.memoEditor = $('memoEditor');
+    el.memoEditor.value = state.memo || localStorage.getItem('ootr-language-editor-memo') || '';
+    state.memo = el.memoEditor.value;
+    el.memoEditor.addEventListener('input', () => { state.memo = el.memoEditor.value; localStorage.setItem('ootr-language-editor-memo', state.memo); });
+    $('memoCloseBtn').onclick = () => panel.classList.remove('visible');
+    return panel;
+  }
+  function showMemoWorkspacePanel(){ const panel=ensureMemoWorkspacePanel(); if(el.memoEditor && state.memo !== undefined) el.memoEditor.value = state.memo || ''; panel.classList.add('visible'); setTimeout(()=>el.memoEditor?.focus(), 0); }
+  function toggleMemoWorkspacePanel(){ const panel=ensureMemoWorkspacePanel(); if(panel.classList.contains('visible')) panel.classList.remove('visible'); else showMemoWorkspacePanel(); }
+  ensureMemoTab = ensureMemoWorkspacePanel;
+  const _memoSwitchTab = switchTab;
+  switchTab = function(tabId){
+    if(tabId === 'tabMemo') { showMemoWorkspacePanel(); return; }
+    _memoSwitchTab(tabId);
+  };
+  const _memoRenderStaticText = renderStaticText;
+  renderStaticText = function(){
+    _memoRenderStaticText();
+    if($('memoWorkspacePanel')){
+      const title = document.querySelector('.memo-workspace-title');
+      if(title) title.textContent = t('Memo');
+      const note = document.querySelector('.memo-workspace-note');
+      if(note) note.textContent = t('Memo is kept out of property.json. It is saved only inside a work file.');
+    }
+  };
+  const _memoBindShortcut = handleShortcut;
+  handleShortcut = function(ev){
+    if((ev.ctrlKey || ev.metaKey) && !ev.altKey && !ev.shiftKey && ev.key === '5') { ev.preventDefault(); toggleMemoWorkspacePanel(); return; }
+    _memoBindShortcut(ev);
+  };
+
+
   init();
 })();
 </script>

@@ -24,7 +24,10 @@ OoT-Randomizer/
         language_editor_ui.json
   data/
     lang/
+      English/
+        property.json
       README.md
+  HintList.py
 ```
 
 The application files live under `GUI/devtools/language-editor/` so the main GUI source remains untouched. This README lives in `data/lang/` so language maintainers can find the tool documentation near the language assets.
@@ -79,7 +82,9 @@ Ctrl/Cmd+O  Load property.json
 Ctrl/Cmd+S  Export property.json
 ```
 
-When a file is loaded, missing known sections and known language metadata fields can be filled from the embedded default template. Exported JSON keeps a stable top-level section order where possible.
+When a file is loaded, missing known sections and known language metadata fields can be filled from `data/lang/English/property.json`. The tool does not embed the default property data in JavaScript. Exported JSON keeps a stable top-level section order where possible.
+
+`hintTable` entry ordering is read from the repository `HintList.py` at runtime, so the editor follows the same order used by hint generation without maintaining a copied order list inside the UI code.
 
 ## Entry names and numeric display
 
@@ -401,3 +406,80 @@ The panel provides fixed choices for `base` (`en` or `jp`) and `align_text` (`Le
 On macOS, this tool avoids native modal child windows for editor confirmations and global text replacement. Confirmation panels are rendered inside the main editor window so that closing the panels does not create or destroy additional Electron BrowserWindow instances.
 
 The tool also disables renderer accessibility support and hardware acceleration at startup. This is intended to avoid macOS AppKit accessibility cleanup crashes in older Electron runtimes while preserving the editor's normal file loading, saving, and language-editing behavior.
+
+
+## Language base conversion
+
+When **Language base** is changed between `en` and `jp`, the editor converts only text control codes to the selected base representation. Ordinary text characters are left unchanged.
+
+
+### Control code color names
+
+The editor normalizes text color control codes to shared names such as `<color red>`, `<color green>`, `<color blue>`, and `<color yellow>`. This avoids differences between English and Japanese internal control-code encodings. Numeric color arguments are accepted only in the `00` to `47` range; values outside that range, such as `BA`, are treated as ordinary text rather than color control arguments.
+
+
+## Color control codes
+
+The editor displays colors with shared names such as `<color red>`. English text writes color arguments as `0x40` through `0x47`, while Japanese text writes color arguments as `0x00` through `0x07`. Changing the language base converts only the control-code representation; normal text is kept unchanged.
+
+
+## UI visibility toggles
+
+The editor shows collapse toggles above each major region. They can hide non-essential regions to give the Text editor more space. These toggles only affect the editor layout and do not change `property.json`.
+
+Available toggles:
+
+- Language properties
+- Sections
+- Entries
+- Details / mode hints
+- Text editor tools
+
+The workspace also keeps a compact top toggle bar for Sections, Entries, Details, and Text tools, so a hidden region can always be restored from above the workspace. The Language properties toggle remains above the Language properties panel.
+
+## Editor UI notes
+
+- `pronoun_mapping` and `verb_mapping` are treated as strict language-owned mappings. Default English replacement pairs are removed on load, merge, and export unless they were changed into custom values.
+- `hintTable` is displayed and exported in the same key order as `HintList.py` so the editor order matches the runtime hint traversal order.
+- In the Text editor, typing `[` opens a property-path suggestion list built from the current property data. Closing with `]` hides it. External placeholders inside a path, such as `{position}`, are highlighted because they are supplied at runtime.
+- Each major UI region has a local collapse button in its title, shown as `▼ Name` or `▶ Name`, so the Text editor can be given more space without changing `property.json`.
+- `IMPORTANT_ITEM_MESSAGES` has a quick preset panel for boss keys, maps, compasses, and generated key/key-ring message series in the runtime message order.
+
+
+## Developer view preferences
+
+Use **View > Increase UI text size**, **View > Decrease UI text size**, or **View > Reset UI text size** to scale the editor text. The same actions are available with `Ctrl/Cmd + Plus`, `Ctrl/Cmd + Minus`, and `Ctrl/Cmd + 0`.
+
+Use **View > UI theme** to switch between `Light`, `Dark`, `Link`, `Zelda`, `Ganon`, `Triforce`, `Kakariko`, and `OoT`. The default theme is `Dark`. These preferences are stored in local editor settings and are not written to `property.json`.
+
+Theme palettes are defined in `GUI/devtools/language-editor/theme.json`. Edit that file to adjust colors or add a new developer-only theme without touching the main HTML source.
+
+## Smart copy / paste / duplicate
+
+The Entries toolbar is intentionally compact. Only `+`, `−`, `↑`, and `↓` remain visible there; copy, paste, duplicate, sort, and validation actions are available from the menu and shortcuts so the entry list has more room.
+
+`Ctrl/Cmd + C`, `Ctrl/Cmd + V`, and `Ctrl/Cmd + D` operate on the last clicked editor region:
+
+- Last clicked section list: copy, paste, or duplicate the whole section.
+- Last clicked entry list: copy, paste, or duplicate the selected entry or selected entry group.
+- Last clicked text editor: copy, paste, or duplicate the selected text. If no text is selected, copy uses the whole text field and duplicate duplicates the current line.
+
+Language property Apply and Reset buttons use two-line labels so their full meaning remains visible in narrow layouts.
+
+`CHAR_WIDTHS` is edited as individual key/value entries. The Text editor also accepts multiple `key => width` lines at once, for example `W => 15` and `index:143 => 14`, so character-width rows can be added in batches.
+
+## Additional developer workflow features
+
+### ROM to PLAIN_TEXTS extractor
+
+The Patch maker tab includes a ROM to PLAIN_TEXTS panel. It reads an already-decompressed ROM only. Select the ROM, enter the message table ROM offset, text data ROM offset, and terminator entry ID as hexadecimal values, then choose either Replace PLAIN_TEXTS or Append to PLAIN_TEXTS. The extractor reads until the configured terminator entry ID instead of using a manual count. For a decompressed NTSC 1.0 English ROM, the default addresses are table `0xB849EC`, text `0x92D000`, and terminator `0xFFFF`. For nonstandard or language-patched ROMs, set the terminator ID used by that ROM, such as `0xFFFC` when appropriate.
+
+The extractor reads 8-byte message table records, uses the 24-bit text offset from each record, derives each message length from the next table record, removes the message end code, and writes the result as PLAIN_TEXTS message entries with id, box_type, and text fields.
+
+### Work memo and work files
+
+The Memo panel is a separate floating workspace area for temporary translation or editing notes. Memo text is not exported into property.json. To keep memo text between sessions, use File > Save work file. Work files store the current property data plus the memo in a separate editor-only JSON format.
+
+### Context menus and control-code input
+
+Right-click the section list, entry list, text editor, raw preview, section JSON editor, language properties, patch panel, or memo panel to open a context menu for that area. Each context menu contains common edit actions plus area-specific actions such as section merge/validation, entry add/delete/move, text control-code insertion, section JSON apply, ROM extraction, and memo work-file actions. In the text editor, type `<` to open control-code suggestions. Common shortcuts are also available: Alt+Enter inserts a line break marker, Alt+Shift+Enter inserts a box break marker, and Alt+0 through Alt+7 insert color markers.

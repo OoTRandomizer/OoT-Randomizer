@@ -258,9 +258,11 @@ function buildMenu() {
     { label: t('File'), submenu: [
       { label: t('Load completed property.json...'), accelerator: 'CmdOrCtrl+O', click: () => send('menu-load-property') },
       { label: t('Load default template'), click: () => send('menu-load-default') },
+      { label: t('Open work file...'), accelerator: 'CmdOrCtrl+Alt+O', click: () => send('menu-open-work-file') },
       { label: t('Merge missing defaults'), click: () => send('menu-merge-defaults') },
       { type: 'separator' },
       { label: t('Export property.json...'), accelerator: 'CmdOrCtrl+S', click: () => send('menu-save-property') },
+      { label: t('Save work file...'), accelerator: 'CmdOrCtrl+Alt+S', click: () => send('menu-save-work-file') },
       { type: 'separator' },
       { label: t('Quit'), accelerator: process.platform === 'darwin' ? 'CmdOrCtrl+Q' : undefined, click: () => { if (mainWindow && !mainWindow.isDestroyed()) mainWindow.close(); } },
     ]},
@@ -296,6 +298,7 @@ function buildMenu() {
       { label: t('Raw preview'), accelerator: 'CmdOrCtrl+2', click: () => send('menu-switch-tab', { tab: 'tabRaw' }) },
       { label: t('Section JSON'), accelerator: 'CmdOrCtrl+3', click: () => send('menu-switch-tab', { tab: 'tabSectionJson' }) },
       { label: t('Patch maker'), accelerator: 'CmdOrCtrl+4', click: () => send('menu-switch-tab', { tab: 'tabPatch' }) },
+      { label: t('Memo'), accelerator: 'CmdOrCtrl+5', click: () => send('menu-switch-tab', { tab: 'tabMemo' }) },
       { type: 'separator' },
       { label: t('Increase UI text size'), accelerator: 'CmdOrCtrl+Plus', click: () => send('menu-ui-zoom-in') },
       { label: t('Decrease UI text size'), accelerator: 'CmdOrCtrl+-', click: () => send('menu-ui-zoom-out') },
@@ -309,6 +312,7 @@ function buildMenu() {
     { label: t('Tools'), submenu: [
       { label: t('Generate checked diff patches'), accelerator: 'CmdOrCtrl+Alt+P', click: () => send('menu-generate-patches') },
       { label: t('Export checked raw segments'), accelerator: 'CmdOrCtrl+Alt+R', click: () => send('menu-export-segments') },
+      { label: t('Extract PLAIN_TEXTS from ROM'), accelerator: 'CmdOrCtrl+Alt+T', click: () => send('menu-extract-plain-texts') },
     ]},
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
@@ -441,6 +445,186 @@ function rawSegment(originalPath, start, size) {
   const end = s + n;
   if (original.length < end) throw new Error(`ROM is smaller than requested segment end 0x${end.toString(16).toUpperCase()}.`);
   return original.subarray(s, end);
+}
+
+
+function parseFlexibleHex(value, name) {
+  const text = String(value ?? '').trim();
+  if (!text) throw new Error(`${name} is required.`);
+  const normalized = text.startsWith('$') ? `0x${text.slice(1)}` : text;
+  const n = Number.parseInt(normalized, 0);
+  if (!Number.isFinite(n) || n < 0) throw new Error(`${name} must be a positive hex address.`);
+  return n;
+}
+
+function isLikelyDecompressedRom(buffer) {
+  // Decompressed OoT ROMs are larger than the 0x2000000 compressed image.
+  // Keep the extractor intentionally conservative; it does not call the external
+  // decompressor and only reads already-expanded data.
+  return buffer && buffer.length > 0x2000000;
+}
+
+function resolveMessagePointer(pointer, textAddress, romSize) {
+  if (pointer >= 0 && pointer < romSize) return pointer;
+  const low24 = pointer & 0x00FFFFFF;
+  const candidate = textAddress + low24;
+  if (candidate >= 0 && candidate < romSize) return candidate;
+  if (low24 >= 0 && low24 < romSize) return low24;
+  throw new Error(`Message pointer 0x${pointer.toString(16).toUpperCase()} does not resolve inside the ROM.`);
+}
+
+function readEnglishMessageBytes(buffer, start, hardEnd) {
+  const out = [];
+  const limit = Math.min(buffer.length, hardEnd || (start + 0x4000));
+  for (let i = start; i < limit; i++) {
+    const byte = buffer[i];
+    if (byte === 0x02) break;
+    out.push(byte);
+  }
+  return out;
+}
+
+function decodeEnglishMessageBytes(bytes) {
+  const chunk = 0x4000;
+  let out = '';
+  for (let i = 0; i < bytes.length; i += chunk) {
+    out += String.fromCharCode(...bytes.slice(i, i + chunk));
+  }
+  return out;
+}
+
+function readUInt24BE(buffer, offset) {
+  return (buffer[offset] << 16) | (buffer[offset + 1] << 8) | buffer[offset + 2];
+}
+
+function detectPlainTextBase(payload, tableAddress, textAddress) {
+  const requested = String(payload?.base || payload?.lang || '').trim().toLowerCase();
+  if (requested === 'jp' || requested === 'jpn' || requested === 'japanese') return 'jp';
+  if (requested === 'en' || requested === 'eng' || requested === 'english') return 'en';
+  // Standard NTSC-1.0 message areas from Messages.py. Keep this only as an
+  // address heuristic; custom HEX addresses still work and default to English.
+  if (tableAddress === 0xB808AC || textAddress === 0x8EB000) return 'jp';
+  return 'en';
+}
+
+const JP_CONTROL_READ = new Map([
+  [0x8140, { literal: '　', args: 0 }],
+  [0x000A, { literal: '&', args: 0 }],
+  [0x8170, { literal: '｝', args: 0, end: true }],
+  [0x81A5, { literal: '^', args: 0 }],
+  [0x000B, { literal: '#', args: 1, subtract: 0x0C00 }],
+  [0x86C7, { literal: '☞', args: 1 }],
+  [0x81CB, { literal: '⇒', args: 2 }],
+  [0x8189, { literal: '♂', args: 0 }],
+  [0x818A, { literal: '♀', args: 0 }],
+  [0x86C8, { literal: '☜', args: 0 }],
+  [0x819F, { literal: '◆', args: 0 }],
+  [0x81A3, { literal: '▲', args: 1 }],
+  [0x819E, { literal: '◇', args: 1 }],
+  [0x874F, { literal: '@', args: 0 }],
+  [0x81F0, { literal: 'Å', args: 0 }],
+  [0x81F3, { literal: '♭', args: 2 }],
+  [0x819A, { literal: '★', args: 1 }],
+  [0x86C9, { literal: '☝', args: 1 }],
+  [0x86B3, { literal: '〠', args: 3 }],
+  [0x8791, { literal: '大⃝', args: 0 }],
+  [0x8792, { literal: '小⃝', args: 0 }],
+  [0x879B, { literal: '㊘', args: 0 }],
+  [0x86A3, { literal: '♠', args: 0 }],
+  [0x81A6, { literal: '☆', args: 0 }],
+  [0x81BC, { literal: '⊂', args: 0 }],
+  [0x81B8, { literal: '∈', args: 0 }],
+  [0x86A4, { literal: '♣', args: 0 }],
+  [0x869F, { literal: '♤', args: 1 }],
+  [0x81A1, { literal: '■', args: 0 }],
+  [0x87F0, { literal: '㍓', args: 1 }],
+  [0x87F1, { literal: '♧', args: 1 }],
+  [0x87F2, { literal: '☼', args: 0 }],
+  [0x87F3, { literal: '▷', args: 0 }],
+]);
+
+let shiftJisDecoder = null;
+function decodeShiftJisWord(word) {
+  try {
+    if (!shiftJisDecoder) shiftJisDecoder = new TextDecoder('shift_jis', { fatal: false });
+    if (word <= 0xFF) return shiftJisDecoder.decode(Buffer.from([word]));
+    return shiftJisDecoder.decode(Buffer.from([(word >> 8) & 0xFF, word & 0xFF]));
+  } catch (_error) {
+    return word <= 0xFF ? String.fromCharCode(word) : `\\x${word.toString(16).toUpperCase().padStart(4, '0')}`;
+  }
+}
+
+function decodeJapaneseMessageBytes(buffer, start, hardEnd) {
+  const limit = Math.min(buffer.length, hardEnd || (start + 0x8000));
+  let out = '';
+  for (let i = start; i + 1 < limit;) {
+    const word = buffer.readUInt16BE(i);
+    i += 2;
+    const control = JP_CONTROL_READ.get(word);
+    if (control) {
+      if (control.end) break;
+      out += control.literal;
+      for (let a = 0; a < control.args && i + 1 < limit; a++) {
+        let arg = buffer.readUInt16BE(i);
+        i += 2;
+        if (typeof control.subtract === 'number') arg -= control.subtract;
+        out += arg.toString(16).toUpperCase().padStart(2, '0');
+      }
+      continue;
+    }
+    out += decodeShiftJisWord(word);
+  }
+  return out;
+}
+
+function extractPlainTextsFromRom(payload) {
+  const romPath = normalizeRomPath(payload?.romPath);
+  if (!romPath) throw new Error('ROM path is required.');
+  const tableAddress = parseFlexibleHex(payload?.tableAddress, 'Table address');
+  const textAddress = parseFlexibleHex(payload?.textAddress, 'Text address');
+  const terminatorId = payload?.terminatorId === undefined || payload?.terminatorId === null || String(payload.terminatorId).trim() === ''
+    ? 0xFFFF
+    : parseFlexibleHex(payload.terminatorId, 'Terminator entry ID') & 0xFFFF;
+  const buffer = fs.readFileSync(romPath);
+  if (!isLikelyDecompressedRom(buffer)) {
+    throw new Error('This extractor only accepts an already-decompressed ROM. Decompress the ROM first, then retry.');
+  }
+  if (tableAddress >= buffer.length || textAddress >= buffer.length) throw new Error('Table or text address is outside the ROM.');
+  const base = detectPlainTextBase(payload, tableAddress, textAddress);
+  const entries = [];
+  let index = 0;
+  let skippedSentinels = 0;
+  let terminatorFound = null;
+  while (true) {
+    const entryOffset = tableAddress + index * 8;
+    if (entryOffset + 8 > buffer.length) break;
+    const id = buffer.readUInt16BE(entryOffset);
+    if (id === terminatorId) {
+      terminatorFound = id;
+      break;
+    }
+    const opts = buffer[entryOffset + 2];
+    const offset = readUInt24BE(buffer, entryOffset + 5);
+    const nextOffset = entryOffset + 16 <= buffer.length ? readUInt24BE(buffer, entryOffset + 13) : offset + (base === 'jp' ? 0x8000 : 0x4000);
+    if (id !== 0xFFFD) {
+      const textStart = textAddress + offset;
+      const textEnd = nextOffset > offset ? textAddress + nextOffset : textStart + (base === 'jp' ? 0x8000 : 0x4000);
+      if (textStart >= 0 && textStart < buffer.length) {
+        const text = base === 'jp'
+          ? decodeJapaneseMessageBytes(buffer, textStart, textEnd)
+          : decodeEnglishMessageBytes(readEnglishMessageBytes(buffer, textStart, textEnd));
+        entries.push({ id, box_type: opts, text });
+      }
+    } else {
+      skippedSentinels += 1;
+    }
+    index += 1;
+    if (index > 0x8000) throw new Error('Message table terminator was not found before the safety limit. Check the table HEX address and Terminator entry ID.');
+  }
+  if (terminatorFound === null) {
+    throw new Error(`Message table terminator 0x${terminatorId.toString(16).toUpperCase().padStart(4, '0')} was not found. Check the table HEX address or use the terminator used by this ROM/language patch.`);
+  }
+  return { entries, count: entries.length, tableEntriesRead: index, skippedSentinels, terminatorId, terminatorFound, source: romPath, tableAddress, textAddress, base };
 }
 
 ipcMain.handle('ui:load', () => uiData);
@@ -577,6 +761,38 @@ ipcMain.handle('segment:export', async (_event, payload) => {
   fs.mkdirSync(path.dirname(outPath), { recursive: true });
   fs.writeFileSync(outPath, rawSegment(originalPath, start, size));
   return { filePath: outPath };
+});
+
+
+ipcMain.handle('rom:extract-plain-texts', async (_event, payload) => extractPlainTextsFromRom(payload));
+
+ipcMain.handle('work:open', async () => {
+  const result = await dialog.showOpenDialog(mainWindow, {
+    title: t('Open work file...'),
+    filters: [
+      { name: 'OOTR language editor work file', extensions: ['ootr-lang-work.json', 'json'] },
+      { name: t('All files'), extensions: ['*'] },
+    ],
+    properties: ['openFile'],
+  });
+  if (result.canceled || !result.filePaths.length) return null;
+  const filePath = result.filePaths[0];
+  const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  return { filePath, data };
+});
+
+ipcMain.handle('work:save', async (_event, payload, currentPath) => {
+  const result = await dialog.showSaveDialog(mainWindow, {
+    title: t('Save work file...'),
+    defaultPath: currentPath || 'language-editor.ootr-lang-work.json',
+    filters: [
+      { name: 'OOTR language editor work file', extensions: ['ootr-lang-work.json', 'json'] },
+      { name: t('All files'), extensions: ['*'] },
+    ],
+  });
+  if (result.canceled || !result.filePath) return null;
+  fs.writeFileSync(result.filePath, JSON.stringify(payload, null, 2) + '\n', 'utf8');
+  return { filePath: result.filePath };
 });
 
 app.whenReady().then(() => {
