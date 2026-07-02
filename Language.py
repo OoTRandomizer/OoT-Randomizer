@@ -321,9 +321,32 @@ class Language:
         self.base = self.lang_property["base"]
 
         extensions = (".bin", ".ia4", ".zobj")
+        self.lang = lang
         self.path = lang_path(lang)
-        self.data = self._collect_language_data(self.FALLBACK_LANG, extensions)
-        self.data.update(self._collect_language_data(lang, extensions))
+        # Do not globally fall back binary/texture/object data files.
+        # Register only files that actually exist in the selected language.
+        # Individual patch sites that need a fallback should resolve it explicitly.
+        self.data = self._collect_language_data(lang, extensions)
+
+    def blue_fire_arrow_item_name_path(self) -> str:
+        """Return the Blue Fire Arrow item-name texture for this language base.
+
+        This is intentionally the only lang.data-style asset fallback.
+        Use the selected language's matching-base file when present; otherwise
+        fall back to Japanese for jp-base languages and English for all others.
+        """
+        if self.base == "jp":
+            filename = "blue_fire_arrow_item_name_jap.ia4"
+            fallback_lang = "Japanese"
+        else:
+            filename = "blue_fire_arrow_item_name_eng.ia4"
+            fallback_lang = self.FALLBACK_LANG
+
+        local_file = self.data.get(filename)
+        if local_file is not None and os.path.isfile(local_file):
+            return local_file
+
+        return os.path.join(lang_path(fallback_lang), filename)
 
     def _dict_get(self, obj, key):
         if isinstance(obj, (list, tuple)):
