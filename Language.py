@@ -259,13 +259,57 @@ class Language:
         with open(os.path.join(lang_path(lang), "property.json"), mode="r", encoding="utf-8") as f:
             return json.load(f)
 
+    @staticmethod
+    def _is_id_list(value) -> bool:
+        """Return True for property lists whose entries can be merged by id.
+
+        Ordinary translation-choice lists must never be padded from the fallback
+        language, because that can mix English options into another language.
+        Lists whose entries are dictionaries with an ``id`` field are treated as
+        keyed records instead: existing ids are overlaid and missing ids are
+        filled from the fallback language.
+        """
+        return (
+            isinstance(value, list)
+            and len(value) > 0
+            and all(isinstance(item, dict) and "id" in item for item in value)
+        )
+
+    @classmethod
+    def _merge_id_list_with_fallback(cls, fallback: list, override: list) -> list:
+        """Merge a list of ``{"id": ...}`` dictionaries by id.
+
+        The selected language controls the visible order for translated entries.
+        Fallback-only records are appended afterward in fallback order.
+        """
+        fallback_by_id = {item["id"]: item for item in fallback}
+        override_ids = set()
+        merged = []
+
+        for item in override:
+            item_id = item["id"]
+            override_ids.add(item_id)
+            if item_id in fallback_by_id:
+                merged.append(cls._merge_with_fallback(fallback_by_id[item_id], item))
+            else:
+                merged.append(deepcopy(item))
+
+        for item in fallback:
+            if item["id"] not in override_ids:
+                merged.append(deepcopy(item))
+
+        return merged
+
     @classmethod
     def _merge_with_fallback(cls, fallback, override):
         """Return fallback recursively overlaid by override.
 
-        Missing dict keys and missing list entries are kept from the fallback
-        language.  Existing override values, including empty strings and null,
-        are treated as intentional translations.
+        Dicts are merged by key. Lists are normally replaced wholesale by the
+        selected language to prevent fallback-language strings from being mixed
+        into translated choice lists. The one exception is a list of dictionaries
+        with an ``id`` field, which is merged by id so missing records can still
+        be filled from the fallback language. Existing override values,
+        including empty strings and null, are treated as intentional translations.
         """
         if isinstance(fallback, dict) and isinstance(override, dict):
             merged = {k: deepcopy(v) for k, v in fallback.items()}
@@ -277,15 +321,9 @@ class Language:
             return merged
 
         if isinstance(fallback, list) and isinstance(override, list):
-            merged = []
-            for index in range(max(len(fallback), len(override))):
-                if index < len(fallback) and index < len(override):
-                    merged.append(cls._merge_with_fallback(fallback[index], override[index]))
-                elif index < len(override):
-                    merged.append(deepcopy(override[index]))
-                else:
-                    merged.append(deepcopy(fallback[index]))
-            return merged
+            if cls._is_id_list(fallback) and (cls._is_id_list(override) or len(override) == 0):
+                return cls._merge_id_list_with_fallback(fallback, override)
+            return deepcopy(override)
 
         return deepcopy(override)
 
