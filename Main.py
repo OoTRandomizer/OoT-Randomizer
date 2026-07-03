@@ -32,11 +32,6 @@ from World import World
 from version import __version__
 
 
-def _attempt_rng_seed(settings: Settings, attempt: int) -> int:
-    """Return a deterministic retry seed independent of failed-attempt RNG use."""
-    seed_material = f"{settings.numeric_seed}:{attempt}".encode("utf-8")
-    return int.from_bytes(hashlib.sha256(seed_material).digest(), byteorder="big")
-
 def main(settings: Settings, max_attempts: int = 10) -> Spoiler:
     clear_hint_exclusion_cache()
     logger = logging.getLogger('')
@@ -45,16 +40,8 @@ def main(settings: Settings, max_attempts: int = 10) -> Spoiler:
     rom = resolve_settings(settings)
 
     max_attempts = max(max_attempts, 1)
-    generation_rng_state = random.getstate()
     spoiler = None
     for attempt in range(1, max_attempts + 1):
-        if attempt == 1:
-            random.setstate(generation_rng_state)
-        else:
-            # Do not let the amount of random work performed by a failed attempt
-            # influence the next attempt. This keeps ER/fill retries stable even
-            # when unrelated setup code changes.
-            random.seed(_attempt_rng_seed(settings, attempt))
         try:
             spoiler = generate(settings)
             break
