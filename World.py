@@ -66,7 +66,14 @@ class World:
         self.distribution: WorldDistribution = settings.distribution.world_dists[world_id]
 
         # language property...
-        self.language: Language = Language(settings.language)
+        # Language loading/fallback must not perturb generation RNG. Entrance
+        # and item placement are fixed-seed tests, so even unrelated random
+        # consumption during language setup can change ER/fill outcomes.
+        language_rng_state = random.getstate()
+        try:
+            self.language: Language = Language(settings.language)
+        finally:
+            random.setstate(language_rng_state)
 
         # rename a few attributes...
         self.keysanity: bool = settings.shuffle_smallkeys in ('keysanity', 'remove', 'any_dungeon', 'overworld', 'regional')
