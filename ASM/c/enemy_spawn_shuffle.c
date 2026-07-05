@@ -247,7 +247,7 @@ bool spawn_override_enemy_spawn_shuffle(ActorEntry *actorEntry, z64_game_t *glob
                 if (CFG_ENEMY_SPAWN_SHUFFLE == CFG_ENEMY_SPAWN_SHUFFLE_STANDARD) {
                     enemy_spawn_table_entry *table_entry = &(enemy_spawn_table[i]);
                     bool continue_spawn = true;
-                    
+
                     continue_spawn &= flags_getsoul(table_entry->index) & get_soul_enabled(table_entry->index);
                     curr_room_enemies_inhibited |= !continue_spawn;
                     return continue_spawn;

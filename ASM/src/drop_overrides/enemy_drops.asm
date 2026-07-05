@@ -25,11 +25,10 @@ or  a3, r0, r0
 jal actor_spawn_clear_check_hack
 or  a1, r0, v1
 ; Check the return value of our hack. 1 means return null, 0 means continue spawning the actor
-; 
+;
 lw  s0, 0x28(sp)
 lw  ra, 0x20(sp)
 ;li  a2, 0xFFFF
 ;sh  a2, CURR_ACTOR_SPAWN_INDEX
 jr  ra
 addiu   sp, sp, 0x30
-

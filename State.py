@@ -202,7 +202,7 @@ class State:
     def has_soul(self, enemy: str, **kwargs) -> bool:
         # Get the spot (this can be a location, an entrance (region transition), or an Event)
         spot = kwargs['spot']
-        
+
         if self.world.settings.shuffle_enemy_spawns == 'regional': # Regional soul shuffle so determine the region soul from the spot's parent region's scene
             scene = None
             # Other types of locations we need to be a bit creative

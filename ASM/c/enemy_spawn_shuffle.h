@@ -108,7 +108,7 @@ typedef struct enemy_spawn_table_entry {
 
 typedef struct regional_enemy_spawn_table_entry{
     uint8_t* scene_group;
-    uint8_t scene_group_length; 
+    uint8_t scene_group_length;
 } regional_enemy_spawn_table_entry;
 
 typedef struct soul_menu_info {

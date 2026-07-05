@@ -62,7 +62,7 @@
                     (Small_Key_Shadow_Temple, 5) or
                     ((Small_Key_Shadow_Temple, 4) and (logic_lens_shadow_platform or can_use(Lens_of_Truth))))",
             "Shadow Temple Guillotine Hallway": "
-                has_explosives and 
+                has_explosives and
                 (((Small_Key_Shadow_Temple, 1) and not shadow_temple_shortcuts) or
                     (Small_Key_Shadow_Temple, 5) or
                     ((Small_Key_Shadow_Temple, 4) and Longshot and (logic_lens_shadow_platform or can_use(Lens_of_Truth))))",

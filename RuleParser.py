@@ -350,7 +350,7 @@ class Rule_AST_Transformer(ast.NodeTransformer):
     def make_call(self, node: ast.AST, name: str, args: list[Any], keywords: list[ast.keyword]) -> ast.Call:
         if not hasattr(State, name):
             raise Exception('Parse Error: No such function State.%s' % name, self.current_spot.name, ast.dump(node, False))
-        
+
         return ast.Call(
             func=ast.Attribute(
                 value=ast.Name(id='state', ctx=ast.Load()),

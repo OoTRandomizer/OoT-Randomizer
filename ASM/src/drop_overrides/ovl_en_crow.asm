@@ -21,7 +21,7 @@ en_crow_respawn_hack:
     lw      ra, 0x10(sp)
     jr      ra
     addiu   sp, sp, 0x30
-    
+
 @en_crow_return_to_func:
 ; Continue on in the function. Need to set up RAs on the stack properly.
     lw      at, 0x10(sp) ; Get the original return address from the stack
@@ -31,7 +31,7 @@ en_crow_respawn_hack:
     lw      v0, 0x20(sp)
 
     addiu   sp, sp, 0x30
-    ; Replaced code 
+    ; Replaced code
     addiu   sp, sp, -0x18
     sw      at, 0x14(sp) ; Put the original return address in the right place on the stack.
     or      a2, a0, r0
