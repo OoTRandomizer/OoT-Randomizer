@@ -1037,10 +1037,6 @@
             "text": "\b\u0013\u001bYou found \u0005ARuto's Letter\u0005@ in a\u0001bottle! Show it to King Zora."
         },
         {
-            "id": 37015,
-            "text": "\b\u0013.You got a \u0005AChicken, \u0005@one\u0001of Anju's prized hens! It fits \u0001in your pocket."
-        },
-        {
             "id": 37017,
             "text": "\b\u0013\u001bYou found \u0005Aa letter in a bottle\u0005@!\u0001You remove the letter from the\u0001bottle, freeing it for other uses."
         },
@@ -1253,6 +1249,10 @@
             "text": "\b\u0006(You have learned the\u0001\u00062\u0005DPrelude of Light\u0005@!"
         },
         {
+            "id": 37015,
+            "text": "\b\u0013.You got a \u0005AChicken, \u0005@one\u0001of Anju's prized hens! It fits \u0001in your pocket."
+        },
+        {
             "id": 37018,
             "text": "\b\u0006\u0015You've learned \u0005CZelda's Lullaby\u0005@!"
         },
@@ -1363,6 +1363,282 @@
         {
             "id": 37045,
             "text": "\bYou found \u0005Cliterally nothing\u0005@!"
+        },
+        {
+            "id": 37632,
+            "text": "\bYou found the \u0005AStalfos Souls\u0005@!"
+        },
+        {
+            "id": 37633,
+            "text": "\bYou found the \u0005AOctorok Souls\u0005@!"
+        },
+        {
+            "id": 37634,
+            "text": "\bYou found the \u0005AWallmaster Souls\u0005@!"
+        },
+        {
+            "id": 37635,
+            "text": "\bYou found the \u0005ADodongo Souls\u0005@!"
+        },
+        {
+            "id": 37636,
+            "text": "\bYou found the \u0005AKeese Souls\u0005@!"
+        },
+        {
+            "id": 37637,
+            "text": "\bYou found the \u0005ATektite Souls\u0005@!"
+        },
+        {
+            "id": 37638,
+            "text": "\bYou found the \u0005APeahat Souls\u0005@!"
+        },
+        {
+            "id": 37639,
+            "text": "\bYou found the \u0005ALizalfos and Dinalfos Souls\u0005@!"
+        },
+        {
+            "id": 37640,
+            "text": "\bYou found the \u0005AGohma Larvae Souls\u0005@!"
+        },
+        {
+            "id": 37641,
+            "text": "\bYou found the \u0005AShabom Souls\u0005@!"
+        },
+        {
+            "id": 37642,
+            "text": "\bYou found the \u0005ABaby Dodongo Souls\u0005@!"
+        },
+        {
+            "id": 37643,
+            "text": "\bYou found the \u0005ABiri and Bari Souls\u0005@!"
+        },
+        {
+            "id": 37644,
+            "text": "\bYou found the \u0005ATailpasaran Souls\u0005@!"
+        },
+        {
+            "id": 37645,
+            "text": "\bYou found the \u0005ASkulltula Souls\u0005@!"
+        },
+        {
+            "id": 37646,
+            "text": "\bYou found the \u0005ATorch Slug Souls\u0005@!"
+        },
+        {
+            "id": 37647,
+            "text": "\bYou found the \u0005AMoblin Souls\u0005@!"
+        },
+        {
+            "id": 37648,
+            "text": "\bYou found the \u0005AArmos Souls\u0005@!"
+        },
+        {
+            "id": 37649,
+            "text": "\bYou found the \u0005ADeku Baba Souls\u0005@!"
+        },
+        {
+            "id": 37650,
+            "text": "\bYou found the \u0005ADeku Scrub Souls\u0005@!"
+        },
+        {
+            "id": 37651,
+            "text": "\bYou found the \u0005ABubble Souls\u0005@!"
+        },
+        {
+            "id": 37652,
+            "text": "\bYou found the \u0005ABeamos Souls\u0005@!"
+        },
+        {
+            "id": 37653,
+            "text": "\bYou found the \u0005AFloormaster Souls\u0005@!"
+        },
+        {
+            "id": 37654,
+            "text": "\bYou found the \u0005ARedead and Gibdo Souls\u0005@!"
+        },
+        {
+            "id": 37655,
+            "text": "\bYou found the \u0005ASkullwalltula Souls\u0005@!"
+        },
+        {
+            "id": 37656,
+            "text": "\bYou found the \u0005AFlare Dancer Souls\u0005@!"
+        },
+        {
+            "id": 37657,
+            "text": "\bYou found the \u0005ADead hand Souls\u0005@!"
+        },
+        {
+            "id": 37658,
+            "text": "\bYou found the \u0005AShell Blade Souls\u0005@!"
+        },
+        {
+            "id": 37659,
+            "text": "\bYou found the \u0005ALike-like Souls\u0005@!"
+        },
+        {
+            "id": 37660,
+            "text": "\bYou found the \u0005ASpike Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37661,
+            "text": "\bYou found the \u0005AAnubis Souls\u0005@!"
+        },
+        {
+            "id": 37662,
+            "text": "\bYou found the \u0005AIron Knuckle Souls\u0005@!"
+        },
+        {
+            "id": 37663,
+            "text": "\bYou found the \u0005ASkull Kid Souls\u0005@!"
+        },
+        {
+            "id": 37664,
+            "text": "\bYou found the \u0005AFlying Pot Souls\u0005@!"
+        },
+        {
+            "id": 37665,
+            "text": "\bYou found the \u0005AFreezard Souls\u0005@!"
+        },
+        {
+            "id": 37666,
+            "text": "\bYou found the \u0005AStinger Souls\u0005@!"
+        },
+        {
+            "id": 37667,
+            "text": "\bYou found the \u0005AWolfos Souls\u0005@!"
+        },
+        {
+            "id": 37668,
+            "text": "\bYou found the \u0005AGuay Souls\u0005@!"
+        },
+        {
+            "id": 37669,
+            "text": "\bYou found the \u0005ASoul of Queen Gohma\u0005@!"
+        },
+        {
+            "id": 37670,
+            "text": "\bYou found the \u0005ASoul of King Dodongo\u0005@!"
+        },
+        {
+            "id": 37671,
+            "text": "\bYou found the \u0005ASoul of Barinade\u0005@!"
+        },
+        {
+            "id": 37672,
+            "text": "\bYou found the \u0005ASoul of Phantom Ganon\u0005@!"
+        },
+        {
+            "id": 37673,
+            "text": "\bYou found the \u0005ASoul of Volvagia\u0005@!"
+        },
+        {
+            "id": 37674,
+            "text": "\bYou found the \u0005ASoul of Morpha\u0005@!"
+        },
+        {
+            "id": 37675,
+            "text": "\bYou found the \u0005ASoul of Bongo Bongo\u0005@!"
+        },
+        {
+            "id": 37676,
+            "text": "\bYou found the \u0005ASoul of Twinrova\u0005@!"
+        },
+        {
+            "id": 37677,
+            "text": "\bYou found the \u0005AJabu Jabu Tentacle Souls\u0005@!"
+        },
+        {
+            "id": 37678,
+            "text": "\bYou found \u0005ADark Link's Soul\u0005@!"
+        },
+        {
+            "id": 37679,
+            "text": "\bYou found the \u0005ADeku Tree Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37680,
+            "text": "\bYou found the \u0005ADodongos Cavern Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37681,
+            "text": "\bYou found the \u0005AJabu Jabu's Belly Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37682,
+            "text": "\bYou found the \u0005AForest Temple Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37683,
+            "text": "\bYou found the \u0005AFire Temple Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37684,
+            "text": "\bYou found the \u0005AWater Temple Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37685,
+            "text": "\bYou found the \u0005AShadow Temple Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37686,
+            "text": "\bYou found the \u0005ASpirit Temple Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37687,
+            "text": "\bYou found the \u0005ABottom of the Well Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37688,
+            "text": "\bYou found the \u0005AIce Cavern Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37689,
+            "text": "\bYou found the \u0005AGerudo Training Ground Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37690,
+            "text": "\bYou found the \u0005AGanons Castle Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37691,
+            "text": "\bYou found the \u0005AForest Region Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37692,
+            "text": "\bYou found the \u0005AHyrule Field Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37693,
+            "text": "\bYou found the \u0005ALake Hylia Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37694,
+            "text": "\bYou found the \u0005AGerudo Region Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37695,
+            "text": "\bYou found the \u0005AMarket Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37696,
+            "text": "\bYou found the \u0005AKakariko Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37697,
+            "text": "\bYou found the \u0005AGoron Region Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37698,
+            "text": "\bYou found the \u0005AZora Region Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37699,
+            "text": "\bYou found the \u0005ALon Lon Ranch Enemy Souls\u0005@!"
+        },
+        {
+            "id": 37700,
+            "text": "\bYou found the \u0005AGrotto Enemy Souls\u0005@!"
         }
     ],
     "MISC_MESSAGES": [
@@ -2932,6 +3208,20 @@
             "gender": null,
             "vague_hint": "When evil rules all, an awakening&voice from the Sacred Realm will&call those destined to be Sages,&who dwell in the \u0005Afive temples\u0005@."
         },
+        "Anubis Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Anubis"
+            ]
+        },
+        "Armos Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Armos"
+            ]
+        },
         "Arrows (10)": {
             "clear_hint": "Arrows (10 pieces)",
             "gender": "no_gender",
@@ -2956,6 +3246,13 @@
                 "a few sharp shafts"
             ]
         },
+        "Baby Dodongo Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Baby Dodongo"
+            ]
+        },
         "Barinade": {
             "clear_hint": "#Barinade# holds",
             "gender": null,
@@ -2971,12 +3268,33 @@
             "gender": null,
             "vague_hint": "the #Bio-Electric Anemone# holds...^"
         },
+        "Barinade Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the soul of Barinade"
+            ]
+        },
+        "Beamos Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Beamos"
+            ]
+        },
         "Biggoron Sword": {
             "clear_hint": "the Biggoron Sword",
             "gender": "no_gender",
             "vague_hint": [
                 "the biggest blade",
                 "a colossal cleaver"
+            ]
+        },
+        "Biri and Bari Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Biri and Bari"
             ]
         },
         "Blue Fire Arrows": {
@@ -3083,6 +3401,13 @@
             "clear_hint": "#Bongo Bongo# holds...^",
             "gender": null,
             "vague_hint": "the #Phantom Shadow Beast# holds...^"
+        },
+        "Bongo Bongo Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the soul of Bongo Bongo"
+            ]
         },
         "Boomerang": {
             "clear_hint": "the Boomerang",
@@ -3384,6 +3709,13 @@
             "gender": null,
             "vague_hint": "the #Eye of Truth in the well# reveals"
         },
+        "Bottom of the Well Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of Bottom of the Well"
+            ]
+        },
         "Bottom of the Well Underwater Front Chest": {
             "clear_hint": null,
             "gender": null,
@@ -3407,6 +3739,13 @@
             "gender": "no_gender",
             "vague_hint": [
                 "a shattered slicer"
+            ]
+        },
+        "Bubble Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Bubble"
             ]
         },
         "Bunny Hood": {
@@ -3722,6 +4061,27 @@
             "gender": null,
             "vague_hint": "#hole flooded with rain on a mountain# holds"
         },
+        "Dark Link Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the soul of the Dark Link"
+            ]
+        },
+        "Dead hand Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Dead hand"
+            ]
+        },
+        "Deku Baba Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Deku Baba"
+            ]
+        },
         "Deku Nut Capacity": {
             "clear_hint": "Deku Nut Capacity",
             "gender": "no_gender",
@@ -3746,6 +4106,13 @@
                 "some nuts",
                 "some flashbangs",
                 "some scrub spit"
+            ]
+        },
+        "Deku Scrub Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Deku Scrub"
             ]
         },
         "Deku Seeds (30)": {
@@ -3922,6 +4289,13 @@
             "gender": null,
             "vague_hint": "the #treasure guarded by a scrub# in the Deku Tree is"
         },
+        "Deku Tree Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of Deku Tree"
+            ]
+        },
         "Desert Colossus -> Colossus Great Fairy Fountain": {
             "clear_hint": null,
             "gender": null,
@@ -3939,6 +4313,13 @@
                 "an inferno",
                 "a heat wave",
                 "a red ball"
+            ]
+        },
+        "Dodongo Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Dodongo"
             ]
         },
         "Dodongos Cavern": {
@@ -4105,6 +4486,13 @@
             "clear_hint": null,
             "gender": null,
             "vague_hint": "a #muddy wall in Dodongo's Cavern# hides"
+        },
+        "Dodongos Cavern Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of Dodongos Cavern"
+            ]
         },
         "Dodongos Cavern Upper Business Scrubs": {
             "clear_hint": null,
@@ -4382,10 +4770,45 @@
             "gender": null,
             "vague_hint": "a #scarecrow atop the volcano# hides"
         },
+        "Fire Temple Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of Fire Temple"
+            ]
+        },
         "Fire Temple Volvagia Heart": {
             "clear_hint": "#Volvagia# holds",
             "gender": null,
             "vague_hint": "the #Subterranean Lava Dragon# holds"
+        },
+        "Flare Dancer Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Flare Dancer"
+            ]
+        },
+        "Floormaster Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Floormaster"
+            ]
+        },
+        "Flying Pot Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Flying Pot"
+            ]
+        },
+        "Forest Area Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of the Forest region"
+            ]
         },
         "Forest Medallion": {
             "clear_hint": "the Forest Medallion",
@@ -4541,7 +4964,7 @@
             "gender": null,
             "vague_hint": "#high in a courtyard# within the Forest Temple is"
         },
-        "Forest Temple MQ Redead Chest": {
+        "Forest Temple MQ ReDead Chest": {
             "clear_hint": null,
             "gender": null,
             "vague_hint": "deep in the forest #undead guard a chest# containing"
@@ -4576,10 +4999,24 @@
             "gender": null,
             "vague_hint": "#Joelle# guards"
         },
+        "Forest Temple Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of Forest Temple"
+            ]
+        },
         "Forest Temple Well Chest": {
             "clear_hint": null,
             "gender": null,
             "vague_hint": "a #sunken chest deep in the woods# contains"
+        },
+        "Freezard Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Freezard"
+            ]
         },
         "GC Darunias Joy": {
             "clear_hint": "#Darunia's dance# leads to",
@@ -4834,6 +5271,13 @@
                 "a dungeon's master pass"
             ]
         },
+        "Ganondorf Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the soul of Ganondorf"
+            ]
+        },
         "Ganons Castle": {
             "clear_hint": "inside Ganon's Castle",
             "gender": null,
@@ -5019,6 +5463,13 @@
             "gender": null,
             "vague_hint": "#deep in the test of darkness# lies"
         },
+        "Ganons Castle Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of Ganon's Castle"
+            ]
+        },
         "Ganons Castle Spirit Trial Chests": {
             "clear_hint": null,
             "gender": null,
@@ -5053,6 +5504,13 @@
             "clear_hint": null,
             "gender": null,
             "vague_hint": "the #Evil King# hoards"
+        },
+        "Gerudo Area Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of the Gerudo region"
+            ]
         },
         "Gerudo Fortress -> Gerudo Training Ground Lobby": {
             "clear_hint": null,
@@ -5267,6 +5725,13 @@
             "gender": null,
             "vague_hint": "thieves #blind four faces# to find"
         },
+        "Gerudo Training Ground Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of Gerudo Training Ground"
+            ]
+        },
         "Gerudo Training Ground Stalfos Chest": {
             "clear_hint": null,
             "gender": null,
@@ -5288,6 +5753,13 @@
                 "a breakable cleaver"
             ]
         },
+        "Gohma Larvae Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Gohma Larvae"
+            ]
+        },
         "Gold Skulltula Token": {
             "clear_hint": "a Gold Skulltula Token",
             "gender": "no_gender",
@@ -5296,6 +5768,13 @@
                 "an arachnid chip",
                 "spider remains",
                 "one percent of a curse"
+            ]
+        },
+        "Goron Area Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of the Goron region"
             ]
         },
         "Goron Mask": {
@@ -5409,6 +5888,20 @@
             "clear_hint": null,
             "gender": null,
             "vague_hint": "at the #back of the Graveyard#, there is"
+        },
+        "Grottos Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of the Grottos"
+            ]
+        },
+        "Guay Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Guay"
+            ]
         },
         "HC GS Storms Grotto": {
             "clear_hint": null,
@@ -5615,6 +6108,13 @@
             "gender": null,
             "vague_hint": "a #storm near the castle# reveals"
         },
+        "Hyrule Field Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of Hyrule Field"
+            ]
+        },
         "Ice Arrows": {
             "clear_hint": "the Ice Arrows",
             "gender": "no_gender",
@@ -5709,6 +6209,13 @@
             "gender": null,
             "vague_hint": "#winds of ice# surround"
         },
+        "Ice Cavern Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of Ice Cavern"
+            ]
+        },
         "Ice Trap": {
             "clear_hint": "an Ice Trap",
             "gender": "no_gender",
@@ -5724,6 +6231,20 @@
             "vague_hint": [
                 "sink shoes",
                 "clank cleats"
+            ]
+        },
+        "Iron Knuckle Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Iron Knuckle"
+            ]
+        },
+        "Jabu Jabu Tentacle Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Jabu Jabu Tentacles"
             ]
         },
         "Jabu Jabus Belly": {
@@ -5858,6 +6379,13 @@
             "clear_hint": "a #slimy thing# guards",
             "gender": null,
             "vague_hint": "#tentacle trouble# in a deity's belly guards"
+        },
+        "Jabu Jabus Belly Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of Jabu Jabu's Belly"
+            ]
         },
         "KF GS Bean Patch": {
             "clear_hint": null,
@@ -6226,12 +6754,12 @@
             "gender": null,
             "vague_hint": "a #potion seller# offers"
         },
-        "Kak Redead Grotto": {
+        "Kak ReDead Grotto": {
             "clear_hint": null,
             "gender": "no_gender",
             "vague_hint": "#ReDeads# guarding a chest"
         },
-        "Kak Redead Grotto Chest": {
+        "Kak ReDead Grotto Chest": {
             "clear_hint": null,
             "gender": null,
             "vague_hint": "#zombies beneath the earth# guard"
@@ -6256,6 +6784,13 @@
             "gender": null,
             "vague_hint": "on a #windmill ledge# lies"
         },
+        "Kakariko Area Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of Kakariko Village"
+            ]
+        },
         "Kakariko Village -> Bottom of the Well": {
             "clear_hint": null,
             "gender": null,
@@ -6266,6 +6801,13 @@
             "gender": "no_gender",
             "vague_hint": [
                 "the famous façade"
+            ]
+        },
+        "Keese Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Keese"
             ]
         },
         "KeyError": {
@@ -6290,6 +6832,13 @@
             "clear_hint": "#King Dodongo# holds...^",
             "gender": null,
             "vague_hint": "the #Infernal Dinosaur# holds...^"
+        },
+        "King Dodongo Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the soul of King Dodongo"
+            ]
         },
         "King Zora Items": {
             "clear_hint": null,
@@ -6584,6 +7133,13 @@
             "gender": null,
             "vague_hint": "deep #under a vast lake#, one can find"
         },
+        "Lake Hylia Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of Lake Hylia"
+            ]
+        },
         "Lens of Truth": {
             "clear_hint": "the Lens of Truth",
             "gender": "no_gender",
@@ -6611,6 +7167,27 @@
                 "a sagely power frozen in time",
                 "an old man's sagely power",
                 "a yellow disc"
+            ]
+        },
+        "Like Like Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Like Like"
+            ]
+        },
+        "Lizalfos and Dinalfos Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Lizalfos and Dinalfos"
+            ]
+        },
+        "Lon Lon Ranch Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of Lon Lon Ranch"
             ]
         },
         "Magic Bean": {
@@ -6728,6 +7305,13 @@
             "clear_hint": "catching #Big Poes# leads to",
             "gender": null,
             "vague_hint": "#ghost hunters# will be rewarded with"
+        },
+        "Market Area Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of Market"
+            ]
         },
         "Market Bazaar": {
             "clear_hint": null,
@@ -6973,6 +7557,13 @@
                 "a silvered surface"
             ]
         },
+        "Moblin Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Moblin"
+            ]
+        },
         "Morpha": {
             "clear_hint": "#Morpha# holds",
             "gender": null,
@@ -6987,6 +7578,13 @@
             "clear_hint": "#Morpha# holds...^",
             "gender": null,
             "vague_hint": "the #Giant Aquatic Amoeba# holds...^"
+        },
+        "Morpha Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the soul of  Morpha"
+            ]
         },
         "Nayrus Love": {
             "clear_hint": "Nayru's Love",
@@ -7074,6 +7672,13 @@
                 "a high note"
             ]
         },
+        "Octorok Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Octorok"
+            ]
+        },
         "Odd Mushroom": {
             "clear_hint": "an Odd Mushroom",
             "gender": "no_gender",
@@ -7086,6 +7691,13 @@
             "gender": "no_gender",
             "vague_hint": [
                 "Granny's goodies"
+            ]
+        },
+        "Peahat Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Peahat"
             ]
         },
         "Phantom Ganon": {
@@ -7102,6 +7714,13 @@
             "clear_hint": "#Phantom Ganon# holds...^",
             "gender": null,
             "vague_hint": "the #Evil Spirit from Beyond# holds...^"
+        },
+        "Phantom Ganon Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the soul of Phantom Ganon"
+            ]
         },
         "Piece of Heart": {
             "clear_hint": "a Piece of Heart",
@@ -7206,6 +7825,13 @@
             "gender": null,
             "vague_hint": "the #Parasitic Armored Arachnid# holds...^"
         },
+        "Queen Gohma Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the soul of Queen Gohma"
+            ]
+        },
         "Recovery Heart": {
             "clear_hint": "a Recovery Heart",
             "gender": "no_gender",
@@ -7213,6 +7839,13 @@
                 "a free heal",
                 "a hearty meal",
                 "a Band-Aid"
+            ]
+        },
+        "Redead and Gibdo Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Redead and Gibdo"
             ]
         },
         "Requiem of Spirit": {
@@ -7348,6 +7981,13 @@
                 "a song of a damp ditch",
                 "a blue spark trail",
                 "the lake's lyric"
+            ]
+        },
+        "Shabom Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Shabom"
             ]
         },
         "Shadow Medallion": {
@@ -7619,6 +8259,13 @@
             "gender": null,
             "vague_hint": "a room containing #a single skull-shaped pot# holds...^"
         },
+        "Shadow Temple Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of Shadow Temple"
+            ]
+        },
         "Shadow Temple Spike Walls Left Chest": {
             "clear_hint": null,
             "gender": null,
@@ -7663,6 +8310,13 @@
             "clear_hint": "amidst flames in #Kakariko Village#, Sheik gives",
             "gender": null,
             "vague_hint": "a #ravaged village# mourns with"
+        },
+        "Shell Blade Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Shell blade"
+            ]
         },
         "Silver Rupee (Bottom of the Well Basement)": {
             "clear_hint": "a Silver Rupee for the Bottom of the Well",
@@ -8024,11 +8678,32 @@
                 "a priced artifact"
             ]
         },
+        "Skull Kid Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Skull Kid"
+            ]
+        },
         "Skull Mask": {
             "clear_hint": "the Skull Mask",
             "gender": "no_gender",
             "vague_hint": [
                 "the fleshless façade"
+            ]
+        },
+        "Skulltula Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Skulltula"
+            ]
+        },
+        "Skullwalltula Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Skullwalltula"
             ]
         },
         "Slingshot": {
@@ -8296,6 +8971,13 @@
             "vague_hint": [
                 "a song 7 years long",
                 "the tune of ages"
+            ]
+        },
+        "Spike Enemy Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Spike Enemy"
             ]
         },
         "Spirit Medallion": {
@@ -8572,6 +9254,13 @@
             "gender": null,
             "vague_hint": "the treasure #sought by Nabooru# is"
         },
+        "Spirit Temple Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of Spirit Temple"
+            ]
+        },
         "Spirit Temple Statue Room Hand Chest": {
             "clear_hint": null,
             "gender": null,
@@ -8609,6 +9298,20 @@
                 "the frightening façade"
             ]
         },
+        "Stalfos Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Stalfos"
+            ]
+        },
+        "Stinger Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Stinger"
+            ]
+        },
         "Stone of Agony": {
             "clear_hint": "the Stone of Agony",
             "gender": "no_gender",
@@ -8640,6 +9343,20 @@
                 "the keys to becoming a winner"
             ]
         },
+        "Tailpasaran Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Tailpasaran"
+            ]
+        },
+        "Tektite Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Tektite"
+            ]
+        },
         "Temple of Time": {
             "clear_hint": null,
             "gender": "no_gender",
@@ -8654,6 +9371,13 @@
             "clear_hint": "beyond the #Door of Time# waits",
             "gender": null,
             "vague_hint": "#coming of age# grants"
+        },
+        "Torch Slug Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Torch Slug"
+            ]
         },
         "Triforce Piece": {
             "clear_hint": "a Piece of the Triforce",
@@ -8679,6 +9403,13 @@
             "gender": null,
             "vague_hint": "the #Sorceress Sisters# hold...^"
         },
+        "Twinrova Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of Twinrova"
+            ]
+        },
         "Validation Line": {
             "clear_hint": null,
             "gender": null,
@@ -8698,6 +9429,20 @@
             "clear_hint": "#Volvagia# holds...^",
             "gender": null,
             "vague_hint": "the #Subterranean Lava Dragon# holds...^"
+        },
+        "Volvagia Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the soul of Volvagia"
+            ]
+        },
+        "Wallmaster Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Wallmaster"
+            ]
         },
         "Wasteland Bombchu Salesman": {
             "clear_hint": null,
@@ -8889,6 +9634,13 @@
             "gender": null,
             "vague_hint": "#chests past a shadowy fight# in the Water Temple hold...^"
         },
+        "Water Temple Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of Water Temple"
+            ]
+        },
         "Water Temple Torches Chest": {
             "clear_hint": null,
             "gender": null,
@@ -8899,6 +9651,13 @@
             "gender": "no_gender",
             "vague_hint": [
                 "a chicken dilemma"
+            ]
+        },
+        "Wolfos Soul": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the souls of the Wolfos"
             ]
         },
         "ZD Chest": {
@@ -9137,6 +9896,13 @@
                 "a triforce tune"
             ]
         },
+        "Zora Area Souls": {
+            "clear_hint": null,
+            "gender": "no_gender",
+            "vague_hint": [
+                "the enemy souls of the Zora region"
+            ]
+        },
         "Zora Mask": {
             "clear_hint": "the Zora Mask",
             "gender": "no_gender",
@@ -9212,7 +9978,6 @@
             "vague_hint": "kept in a big chest #inside its tower#"
         }
     },
-    "language_specific_replace_table": [],
     "hint_area_enum": {
         "BOTTOM_OF_THE_WELL": {
             "clear_prep": "at",
@@ -9609,6 +10374,7 @@
         "description": "Play with English language.",
         "display_name": "English"
     },
+    "language_specific_replace_table": [],
     "misc_dual_hint_table": {
         "skull_mask, mask_of_truth": {
             "location_fallback": "\u0005B\u0006=Forest Stage\u0004\u0001\u0005@\u0006\u0014We are waiting to see your\u0001\u00062beautiful face!\u0001\u0006(Win fabulous prizes!",
