@@ -572,8 +572,6 @@ class World:
         savewarps_to_connect = []
 
         for region in region_json:
-            if 'scene' not in region and 'dungeon' not in region:
-                print(region['region_name'])
             new_region = Region(self, region['region_name'])
             if 'scene' in region:
                 new_region.scene = region['scene']
