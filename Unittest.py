@@ -571,7 +571,7 @@ class TestPlandomizer(unittest.TestCase):
     def test_fix_broken_drops(self):
         # Setting off
         distribution_file, spoiler = generate_with_plandomizer("plando-fix-broken-drops-off")
-        spheres = spoiler[':playthrough'].values() 
+        spheres = spoiler[':playthrough'].values()
         self.assertEqual(len([sphere for sphere in spheres if 'Child Spirit Temple Anubis Room Deku Shield Pot' in sphere]), 0)
 
         # No deku shield available, fail to generate
@@ -579,7 +579,7 @@ class TestPlandomizer(unittest.TestCase):
 
         # Deku shield available only via spirit shield pot
         distribution_file, spoiler = generate_with_plandomizer("plando-fix-broken-drops-good")
-        spheres = spoiler[':playthrough'].values() 
+        spheres = spoiler[':playthrough'].values()
         self.assertEqual(len([sphere for sphere in spheres if 'Child Spirit Temple Anubis Room Deku Shield Pot' in sphere]), 1)
 
 
