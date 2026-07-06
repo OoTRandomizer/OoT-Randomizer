@@ -571,14 +571,16 @@ class TestPlandomizer(unittest.TestCase):
     def test_fix_broken_drops(self):
         # Setting off
         distribution_file, spoiler = generate_with_plandomizer("plando-fix-broken-drops-off")
-        self.assertEqual(len([sphere for sphere in spoiler[':playthrough'].values() if 'Child Spirit Temple Beyond Metal Bridges Deku Shield Pot' in sphere]), 0)
+        spheres = spoiler[':playthrough'].values() 
+        self.assertEqual(len([sphere for sphere in spheres if 'Child Spirit Temple Anubis Room Deku Shield Pot' in sphere]), 0)
 
         # No deku shield available, fail to generate
         self.assertRaises(ShuffleError, lambda : generate_with_plandomizer("plando-fix-broken-drops-bad", max_attempts=1))
 
         # Deku shield available only via spirit shield pot
         distribution_file, spoiler = generate_with_plandomizer("plando-fix-broken-drops-good")
-        self.assertEqual(len([sphere for sphere in spoiler[':playthrough'].values() if 'Child Spirit Temple Beyond Metal Bridges Deku Shield Pot' in sphere]), 1)
+        spheres = spoiler[':playthrough'].values() 
+        self.assertEqual(len([sphere for sphere in spheres if 'Child Spirit Temple Anubis Room Deku Shield Pot' in sphere]), 1)
 
 
 class TestHints(unittest.TestCase):

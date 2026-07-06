@@ -162,8 +162,8 @@
         "region_name": "Dodongos Cavern Upper Lizalfos",
         "dungeon": "Dodongos Cavern",
         "locations": {
-            "Dodongos Cavern Lizalfos Upper Recovery Heart 1": "True",
-            "Dodongos Cavern Lizalfos Upper Recovery Heart 2": "True"
+            "Dodongos Cavern Upper Lizalfos Recovery Heart 1": "True",
+            "Dodongos Cavern Upper Lizalfos Recovery Heart 2": "True"
         },
         "exits": {
             "Dodongos Cavern Before Upper Lizalfos": "can_kill_lizalfos",
