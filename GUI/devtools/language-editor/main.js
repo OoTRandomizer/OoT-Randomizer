@@ -19,8 +19,10 @@ app.disableHardwareAcceleration();
 const TOOL_DIR = __dirname;
 const UI_JSON_NAME = 'language_editor_ui.json';
 const THEME_JSON_NAME = 'theme.json';
+const CN_CHARMAP_JSON_NAME = 'charmap.chn.json';
 const UI_JSON_PATH = path.join(TOOL_DIR, UI_JSON_NAME);
 const THEME_JSON_PATH = path.join(TOOL_DIR, THEME_JSON_NAME);
+const CN_CHARMAP_JSON_PATH = path.join(TOOL_DIR, CN_CHARMAP_JSON_NAME);
 const REPO_ROOT = path.resolve(TOOL_DIR, '../../..');
 const DEFAULT_PROPERTY_PATH = path.join(REPO_ROOT, 'data', 'lang', 'English', 'property.json');
 const HINT_LIST_PATH = path.join(REPO_ROOT, 'HintList.py');
@@ -138,6 +140,7 @@ let currentLanguage = 'en';
 let currentUiTheme = 'dark';
 let themeData = { default: 'dark', order: ['dark'], themes: { dark: { label: 'Dark', colorScheme: 'dark', variables: {} } } };
 let defaultPropertyCache = null;
+let cnCharmapReverseCache = null;
 
 function loadUiData() {
   try {
@@ -499,6 +502,7 @@ function readUInt24BE(buffer, offset) {
 
 function detectPlainTextBase(payload, tableAddress, textAddress) {
   const requested = String(payload?.base || payload?.lang || '').trim().toLowerCase();
+  if (requested === 'cn' || requested === 'chn' || requested === 'zh' || requested === 'zh-cn' || requested === 'ique' || requested === 'chinese') return 'cn';
   if (requested === 'jp' || requested === 'jpn' || requested === 'japanese') return 'jp';
   if (requested === 'en' || requested === 'eng' || requested === 'english') return 'en';
   // Standard NTSC-1.0 message areas from Messages.py. Keep this only as an
@@ -577,6 +581,64 @@ function decodeJapaneseMessageBytes(buffer, start, hardEnd) {
   return out;
 }
 
+function loadCnCharmapReverse() {
+  if (cnCharmapReverseCache) return cnCharmapReverseCache;
+  let data = null;
+  try {
+    data = JSON.parse(fs.readFileSync(CN_CHARMAP_JSON_PATH, 'utf8'));
+  } catch (error) {
+    throw new Error(`CN charmap is missing or invalid: ${error.message}`);
+  }
+  const raw = data && typeof data === 'object' && data.codeToChar && typeof data.codeToChar === 'object' ? data.codeToChar : data;
+  const map = new Map();
+  for (const [key, value] of Object.entries(raw || {})) {
+    const code = parseInt(String(key).replace(/^0x/i, ''), 16);
+    if (Number.isFinite(code)) map.set(code, String(value));
+  }
+  cnCharmapReverseCache = map;
+  return cnCharmapReverseCache;
+}
+
+const EN_CONTROL_ARG_LENGTHS = new Map([
+  [0x00, 0], [0x01, 0], [0x02, 0], [0x04, 0], [0x05, 1], [0x06, 1], [0x07, 2],
+  [0x08, 0], [0x09, 0], [0x0A, 0], [0x0B, 0], [0x0C, 1], [0x0E, 1], [0x0F, 0],
+  [0x10, 0], [0x12, 2], [0x13, 1], [0x14, 1], [0x15, 3], [0x16, 0], [0x17, 0],
+  [0x18, 0], [0x19, 0], [0x1A, 0], [0x1B, 0], [0x1C, 0], [0x1D, 0], [0x1E, 1],
+  [0x1F, 0], [0xF0, 1], [0xF1, 1], [0xF2, 0], [0xF3, 0],
+]);
+
+function decodeChineseMessageBytes(buffer, start, hardEnd) {
+  const map = loadCnCharmapReverse();
+  const limit = Math.min(buffer.length, hardEnd || (start + 0x8000));
+  let out = '';
+  for (let i = start; i < limit;) {
+    const byte = buffer[i++];
+    if (byte === 0x02) break;
+    if (EN_CONTROL_ARG_LENGTHS.has(byte)) {
+      out += String.fromCharCode(byte);
+      const argCount = EN_CONTROL_ARG_LENGTHS.get(byte) || 0;
+      for (let a = 0; a < argCount && i < limit; a++) out += String.fromCharCode(buffer[i++]);
+      continue;
+    }
+    if (byte >= 0x80 && i < limit) {
+      const word = (byte << 8) | buffer[i];
+      if (map.has(word)) {
+        out += map.get(word);
+        i += 1;
+        continue;
+      }
+    }
+    if (map.has(byte)) {
+      out += map.get(byte);
+    } else if (byte >= 0x20 && byte <= 0x7E) {
+      out += String.fromCharCode(byte);
+    } else {
+      out += `\\x${byte.toString(16).toUpperCase().padStart(2, '0')}`;
+    }
+  }
+  return out;
+}
+
 function extractPlainTextsFromRom(payload) {
   const romPath = normalizeRomPath(payload?.romPath);
   if (!romPath) throw new Error('ROM path is required.');
@@ -605,14 +667,16 @@ function extractPlainTextsFromRom(payload) {
     }
     const opts = buffer[entryOffset + 2];
     const offset = readUInt24BE(buffer, entryOffset + 5);
-    const nextOffset = entryOffset + 16 <= buffer.length ? readUInt24BE(buffer, entryOffset + 13) : offset + (base === 'jp' ? 0x8000 : 0x4000);
+    const nextOffset = entryOffset + 16 <= buffer.length ? readUInt24BE(buffer, entryOffset + 13) : offset + (base === 'jp' || base === 'cn' ? 0x8000 : 0x4000);
     if (id !== 0xFFFD) {
       const textStart = textAddress + offset;
-      const textEnd = nextOffset > offset ? textAddress + nextOffset : textStart + (base === 'jp' ? 0x8000 : 0x4000);
+      const textEnd = nextOffset > offset ? textAddress + nextOffset : textStart + (base === 'jp' || base === 'cn' ? 0x8000 : 0x4000);
       if (textStart >= 0 && textStart < buffer.length) {
         const text = base === 'jp'
           ? decodeJapaneseMessageBytes(buffer, textStart, textEnd)
-          : decodeEnglishMessageBytes(readEnglishMessageBytes(buffer, textStart, textEnd));
+          : base === 'cn'
+            ? decodeChineseMessageBytes(buffer, textStart, textEnd)
+            : decodeEnglishMessageBytes(readEnglishMessageBytes(buffer, textStart, textEnd));
         entries.push({ id, box_type: opts, text });
       }
     } else {
@@ -657,13 +721,13 @@ ipcMain.handle('property:save', async (_event, data, currentPath) => {
     filters: [{ name: 'JSON', extensions: ['json'] }, { name: t('All files'), extensions: ['*'] }],
   });
   if (result.canceled || !result.filePath) return null;
-  fs.writeFileSync(result.filePath, JSON.stringify(data, null, 4) + '\n', 'utf8');
+  fs.writeFileSync(result.filePath, JSON.stringify(data, null, 4), 'utf8');
   return { filePath: result.filePath };
 });
 
 ipcMain.handle('property:save-to-path', async (_event, data, filePath) => {
   if (!filePath) return null;
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 4) + '\n', 'utf8');
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 4), 'utf8');
   return { filePath };
 });
 

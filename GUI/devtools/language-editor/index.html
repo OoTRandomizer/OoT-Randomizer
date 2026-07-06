@@ -469,9 +469,9 @@
   const noArg = {0x00:'pad',0x02:'end',0x08:'allow instant text',0x09:'disallow instant text',0x0A:'keep open',0x0B:'event',0x0F:'name',0x10:'ocarina',0x16:'marathon time',0x17:'race time',0x18:'points',0x19:'skulltula count',0x1A:'text is unskippable',0x1B:'start two choice',0x1C:'start three choice',0x1D:'fish weight',0x1F:'current time',0xF2:'outgoing item filename',0xF3:'farores wind destination'};
   function readPlaceholder(text,i){ if(text[i] !== '{') return null; let depth=0; for(let j=i;j<text.length;j++){ if(text[j]==='{') depth++; if(text[j]==='}'){ depth--; if(depth===0) return {text:text.slice(i,j+1), next:j+1}; } } return null; }
   function readArg(text,i,n){ if(text[i]==='{'){const p=readPlaceholder(text,i); if(p) return {label:p.text, next:p.next};} let val=0; for(let k=0;k<n;k++) val=(val<<8)|(text.charCodeAt(i+k)||0); return {label:n===1?HEX2(val):(n===2?HEX4(val):HEX6(val)), next:i+n}; }
-  function textToMarkup(text){ if(typeof text!=='string') return text; let out=''; for(let i=0;i<text.length;){ const c=text.charCodeAt(i); if(c===0x01){out+='<line-break>';i++;continue;} if(c===0x04){out+='<box-break>';i++;continue;} if(c===0x05){const a=readArg(text,i+1,1); out+=`<color ${a.label}>`; i=a.next; continue;} if(c===0x06){const a=readArg(text,i+1,1); out+=`<gap ${a.label}>`; i=a.next; continue;} if(c===0x07){const a=readArg(text,i+1,2); out+=`<goto ${a.label}>`; i=a.next; continue;} if(c===0x0C){const a=readArg(text,i+1,1); out+=`<box-break-delay ${a.label}>`; i=a.next; continue;} if(c===0x0E){const a=readArg(text,i+1,1); out+=`<fade-out ${a.label}>`; i=a.next; continue;} if(c===0x12){const a=readArg(text,i+1,2); out+=`<sound ${a.label}>`; i=a.next; continue;} if(c===0x13){const a=readArg(text,i+1,1); out+=`<icon ${a.label}>`; i=a.next; continue;} if(c===0x14){const a=readArg(text,i+1,1); out+=`<speed ${a.label}>`; i=a.next; continue;} if(c===0x15){const a=readArg(text,i+1,3); out+=`<background ${a.label}>`; i=a.next; continue;} if(c===0x1E){const a=readArg(text,i+1,1); out+=`<high-score ${a.label}>`; i=a.next; continue;} if(c===0xF0){const a=readArg(text,i+1,1); out+=`<silver rupee count ${a.label}>`; i=a.next; continue;} if(c===0xF1){const a=readArg(text,i+1,1); out+=`<key count ${a.label}>`; i=a.next; continue;} if(noArg[c]){out+=`<${noArg[c]}>`;i++;continue;} if(c<0x20 || c>=0xF0){out+=`<ctrl ${HEX2(c)}>`;i++;continue;} out+=text[i++]; } return out; }
+  function textToMarkup(text){ if(typeof text!=='string') return text; let out=''; for(let i=0;i<text.length;){ const c=text.charCodeAt(i); if(c===0x01){out+='\n';i++;continue;} if(c===0x04){out+='<box-break>';i++;continue;} if(c===0x05){const a=readArg(text,i+1,1); const cn={40:'white',41:'red',42:'green',43:'blue',44:'light-blue',45:'pink',46:'yellow',47:'black'}; out+=`<color ${cn[a.label]||a.label}>`; i=a.next; continue;} if(c===0x06){const a=readArg(text,i+1,1); out+=`<gap ${a.label}>`; i=a.next; continue;} if(c===0x07){const a=readArg(text,i+1,2); out+=`<goto ${a.label}>`; i=a.next; continue;} if(c===0x0C){const a=readArg(text,i+1,1); out+=`<box-break-delay ${a.label}>`; i=a.next; continue;} if(c===0x0E){const a=readArg(text,i+1,1); out+=`<fade-out ${a.label}>`; i=a.next; continue;} if(c===0x12){const a=readArg(text,i+1,2); out+=`<sound ${a.label}>`; i=a.next; continue;} if(c===0x13){const a=readArg(text,i+1,1); out+=`<icon ${a.label}>`; i=a.next; continue;} if(c===0x14){const a=readArg(text,i+1,1); out+=`<speed ${a.label}>`; i=a.next; continue;} if(c===0x15){const a=readArg(text,i+1,3); out+=`<background ${a.label}>`; i=a.next; continue;} if(c===0x1E){const a=readArg(text,i+1,1); out+=`<high-score ${a.label}>`; i=a.next; continue;} if(c===0xF0){const a=readArg(text,i+1,1); out+=`<silver rupee count ${a.label}>`; i=a.next; continue;} if(c===0xF1){const a=readArg(text,i+1,1); out+=`<key count ${a.label}>`; i=a.next; continue;} if(noArg[c]){out+=`<${noArg[c]}>`;i++;continue;} if(c<0x20 || c>=0xF0){out+=`<ctrl ${HEX2(c)}>`;i++;continue;} out+=text[i++]; } return out; }
   function argToChars(label,n){ label=label.trim(); if(label.startsWith('{')&&label.endsWith('}')) return label; const clean=label.replace(/^0x/i,''); let num=parseInt(clean,16); if(Number.isNaN(num)) return label; let out=''; for(let i=n-1;i>=0;i--) out+=String.fromCharCode((num>>(i*8))&0xff); return out; }
-  function markupToText(text){ if(typeof text!=='string') return text; const map={'line-break':'\x01','end':'\x02','box-break':'\x04','allow instant text':'\x08','disallow instant text':'\x09','keep open':'\x0A','event':'\x0B','name':'\x0F','ocarina':'\x10','marathon time':'\x16','race time':'\x17','points':'\x18','skulltula count':'\x19','text is unskippable':'\x1A','start two choice':'\x1B','start three choice':'\x1C','fish weight':'\x1D','current time':'\x1F','outgoing item filename':'\xF2','farores wind destination':'\xF3'}; return text.replace(/<([^>]+)>/g,(m,body)=>{const b=body.trim(); if(map[b])return map[b]; let mm=b.match(/^color\s+(.+)$/i); if(mm)return '\x05'+argToChars(mm[1],1); mm=b.match(/^gap\s+(.+)$/i); if(mm)return '\x06'+argToChars(mm[1],1); mm=b.match(/^goto\s+(.+)$/i); if(mm)return '\x07'+argToChars(mm[1],2); mm=b.match(/^box-break-delay\s+(.+)$/i); if(mm)return '\x0C'+argToChars(mm[1],1); mm=b.match(/^fade-out\s+(.+)$/i); if(mm)return '\x0E'+argToChars(mm[1],1); mm=b.match(/^sound\s+(.+)$/i); if(mm)return '\x12'+argToChars(mm[1],2); mm=b.match(/^icon\s+(.+)$/i); if(mm)return '\x13'+argToChars(mm[1],1); mm=b.match(/^speed\s+(.+)$/i); if(mm)return '\x14'+argToChars(mm[1],1); mm=b.match(/^background\s+(.+)$/i); if(mm)return '\x15'+argToChars(mm[1],3); mm=b.match(/^high-score\s+(.+)$/i); if(mm)return '\x1E'+argToChars(mm[1],1); mm=b.match(/^silver rupee count\s+(.+)$/i); if(mm)return '\xF0'+argToChars(mm[1],1); mm=b.match(/^key count\s+(.+)$/i); if(mm)return '\xF1'+argToChars(mm[1],1); mm=b.match(/^ctrl\s+([0-9A-Fa-f]{2})$/); if(mm)return String.fromCharCode(parseInt(mm[1],16)); return m; }); }
+  function markupToText(text){ if(typeof text!=='string') return text; const map={'line-break':'\x01','end':'\x02','box-break':'\x04','allow instant text':'\x08','disallow instant text':'\x09','keep open':'\x0A','event':'\x0B','name':'\x0F','ocarina':'\x10','marathon time':'\x16','race time':'\x17','points':'\x18','skulltula count':'\x19','text is unskippable':'\x1A','start two choice':'\x1B','start three choice':'\x1C','fish weight':'\x1D','current time':'\x1F','outgoing item filename':'\xF2','farores wind destination':'\xF3'}; return text.replace(/<([^>]+)>/g,(m,body)=>{const b=body.trim(); if(map[b])return map[b]; let mm=b.match(/^color\s+(.+)$/i); if(mm)return '\x05'+argToChars(mm[1],1); mm=b.match(/^gap\s+(.+)$/i); if(mm)return '\x06'+argToChars(mm[1],1); mm=b.match(/^goto\s+(.+)$/i); if(mm)return '\x07'+argToChars(mm[1],2); mm=b.match(/^box-break-delay\s+(.+)$/i); if(mm)return '\x0C'+argToChars(mm[1],1); mm=b.match(/^fade-out\s+(.+)$/i); if(mm)return '\x0E'+argToChars(mm[1],1); mm=b.match(/^sound\s+(.+)$/i); if(mm)return '\x12'+argToChars(mm[1],2); mm=b.match(/^icon\s+(.+)$/i); if(mm)return '\x13'+argToChars(mm[1],1); mm=b.match(/^speed\s+(.+)$/i); if(mm)return '\x14'+argToChars(mm[1],1); mm=b.match(/^background\s+(.+)$/i); if(mm)return '\x15'+argToChars(mm[1],3); mm=b.match(/^high-score\s+(.+)$/i); if(mm)return '\x1E'+argToChars(mm[1],1); mm=b.match(/^silver rupee count\s+(.+)$/i); if(mm)return '\xF0'+argToChars(mm[1],1); mm=b.match(/^key count\s+(.+)$/i); if(mm)return '\xF1'+argToChars(mm[1],1); mm=b.match(/^ctrl\s+([0-9A-Fa-f]{2})$/); if(mm)return String.fromCharCode(parseInt(mm[1],16)); return m; }).replace(/\r\n?/g,'\n').replace(/\n/g,'\x01'); }
   function hintColorToMarkup(s){ return typeof s==='string'?s.replace(/#([^#]+)#/g,'<color>$1<color>'):s; }
   function markupToHintColor(s){ return typeof s==='string'?s.replace(/<color>(.*?)<color>/g,'#$1#'):s; }
   function encodeFriendlyString(s, hintLike=false){ let out=textToMarkup(s??''); if(hintLike) out=hintColorToMarkup(out); return out; }
@@ -490,7 +490,7 @@
   function renderVague(value){ if(value==null)return ''; if(Array.isArray(value))return value.map(x=>'- '+encodeFriendlyString(x,true)).join('\n'); return encodeFriendlyString(value,true); }
   function parseMaybeNull(text){ const trim=text.trim(); return trim===''||trim.toLowerCase()==='none'||trim.toLowerCase()==='null'?null:decodeFriendlyString(trim,true); }
   function parseVague(text){ const lines=text.split(/\r?\n/).map(x=>x.trim()).filter(x=>x.length); if(lines.length===0)return null; const values=lines.map(x=>x.startsWith('-')?x.replace(/^[-*]\s*/, ''):x).map(x=>decodeFriendlyString(x,true)); return values.length===1?values[0]:values; }
-  function parseBlocks(text){ const res={}; let current=''; for(const line of text.split(/\r?\n/)){ const m=line.match(/^\[([^\]]+)\]\s*$/); if(m){current=m[1].trim(); res[current]='';} else if(current){res[current]+=(res[current]? '\n':'')+line;} } return res; }
+  function parseBlocks(text){ const res={}; let current=''; const lines=String(text ?? '').replace(/\r\n?/g,'\n').split('\n'); if(lines.length && lines[lines.length-1]==='') lines.pop(); for(const line of lines){ const m=line.match(/^\[([^\]]+)\]\s*$/); if(m){current=m[1].trim(); res[current]='';} else if(current){res[current]+=(res[current]? '\n':'')+line;} } return res; }
   function renderMessage(item){ return block('id', item?.id ?? '') + (Object.prototype.hasOwnProperty.call(item||{},'box_type')?block('box_type', item.box_type):'') + block('text', encodeFriendlyString(item?.text??'', false)); }
   function parseMessage(text, original={}){ const b=parseBlocks(text); const out={...original}; if('id' in b && b.id.trim()!=='') out.id=Number(b.id.trim()); if('box_type' in b) { const bt=b.box_type.trim(); if(bt==='') delete out.box_type; else out.box_type=Number(bt); } out.text=decodeFriendlyString(b.text??'', false); return out; }
   function renderHint(item){ return block('vague_hint', renderVague(item?.vague_hint)) + block('clear_hint', item?.clear_hint==null?'':encodeFriendlyString(item.clear_hint,true)) + block('gender', item?.gender??''); }
@@ -3157,7 +3157,7 @@
     for(let i=0; i<text.length;){
       const parsed = readBaseControlAt(text, i, base, hintLike);
       if(parsed){
-        out += parsed.def.args ? `<${parsed.def.enName} ${parsed.arg}>` : `<${parsed.def.enName}>`;
+        out += parsed.def.key === 'line-break' ? '\n' : (parsed.def.args ? `<${parsed.def.enName} ${parsed.arg}>` : `<${parsed.def.enName}>`);
         i = parsed.next;
         continue;
       }
@@ -3168,21 +3168,55 @@
     }
     return out;
   }
+
+  function parseMarkupControlBodyForBase(body){
+    const raw = String(body ?? '').trim();
+    if(!raw) return null;
+    const lower = raw.toLowerCase();
+
+    // First prefer an exact full-name match. This is required for no-argument
+    // controls whose names contain spaces, such as <allow instant text> and
+    // <disallow instant text>. Splitting on the first space would otherwise
+    // look for a non-existent control named "allow" or "disallow".
+    const exact = BASE_CONTROL_BY_NAME.get(lower);
+    if(exact) return {def:exact, arg:''};
+
+    // Then parse argument-bearing controls by the longest known control name.
+    // This keeps names with spaces working too, e.g. <silver rupee count 01>.
+    const candidates = [];
+    for(const def of BASE_CONTROL_DEFS){
+      for(const name of [def.enName, def.key]){
+        const normalized = String(name || '').trim();
+        if(!normalized) continue;
+        candidates.push({name:normalized, lower:normalized.toLowerCase(), def});
+      }
+    }
+    candidates.sort((a,b)=>b.lower.length-a.lower.length);
+    for(const c of candidates){
+      if(!c.def.args) continue;
+      if(lower.startsWith(c.lower + ' ')){
+        return {def:c.def, arg:raw.slice(c.name.length).trim()};
+      }
+    }
+    return null;
+  }
+
   function markupToTextForBase(text, base){
     if(typeof text !== 'string') return text;
-    return text.replace(/<([^>]+)>/g, (m, body) => {
+    const lineBreakDef = BASE_CONTROL_BY_NAME.get('line-break');
+    const lineBreakControl = lineBreakDef ? writeBaseControl(lineBreakDef, '', base) : '\x01';
+    const converted = text.replace(/<([^>]+)>/g, (m, body) => {
       const b = body.trim();
       let mm = b.match(/^ctrl\s+([0-9A-Fa-f]{2})$/);
       if(mm && base === 'en') return String.fromCharCode(parseInt(mm[1], 16));
-      let name = b;
-      let arg = '';
-      mm = b.match(/^(.+?)\s+(.+)$/);
-      if(mm){ name = mm[1].trim(); arg = mm[2].trim(); }
-      const def = BASE_CONTROL_BY_NAME.get(name.toLowerCase());
-      if(!def) return m;
+      const parsed = parseMarkupControlBodyForBase(b);
+      if(!parsed) return m;
+      const {def, arg} = parsed;
       if(def.args && !arg) return m;
-      return writeBaseControl(def, arg, base);
+      const written = writeBaseControl(def, arg, base);
+      return written == null ? m : written;
     });
+    return converted.replace(/\r\n?/g,'\n').replace(/\n/g,lineBreakControl);
   }
   function convertTextControlCodesBetweenBases(text, fromBase, toBase, hintLike=false){
     if(typeof text !== 'string' || fromBase === toBase) return text;
@@ -3353,6 +3387,14 @@
 
   readBaseControlAt = function(text, i, base, hintLike=false){
     if(typeof text !== 'string') return null;
+    const enColorDef = BASE_CONTROL_BY_NAME.get('color');
+    if(enColorDef && text.charCodeAt(i) === enColorDef.en && i + 1 < text.length){
+      const physical = text.charCodeAt(i + 1);
+      if(0x40 <= physical && physical <= 0x47){
+        const colorName = COLOR_INDEX_TO_NAME[physical - 0x40] || HEX2(physical);
+        return {def:enColorDef, arg:colorName, next:i+2};
+      }
+    }
     if(base === 'jp'){
       for(const [literal, def] of BASE_CONTROL_BY_JP.entries()){
         if(!text.startsWith(literal, i)) continue;
@@ -3417,7 +3459,7 @@
     for(let i=0; i<text.length;){
       const parsed = readBaseControlAt(text, i, base, hintLike);
       if(parsed){
-        out += parsed.def.args ? `<${parsed.def.enName} ${parsed.arg}>` : `<${parsed.def.enName}>`;
+        out += parsed.def.key === 'line-break' ? '\n' : (parsed.def.args ? `<${parsed.def.enName} ${parsed.arg}>` : `<${parsed.def.enName}>`);
         i = parsed.next;
         continue;
       }
@@ -3431,20 +3473,20 @@
 
   markupToTextForBase = function(text, base){
     if(typeof text !== 'string') return text;
-    return text.replace(/<([^>]+)>/g, (m, body) => {
+    const lineBreakDef = BASE_CONTROL_BY_NAME.get('line-break');
+    const lineBreakControl = lineBreakDef ? (writeBaseControl(lineBreakDef, '', base) || '\x01') : '\x01';
+    const converted = text.replace(/<([^>]+)>/g, (m, body) => {
       const b = body.trim();
       let mm = b.match(/^ctrl\s+([0-9A-Fa-f]{2})$/);
       if(mm && base === 'en') return String.fromCharCode(parseInt(mm[1], 16));
-      let name = b;
-      let arg = '';
-      mm = b.match(/^(.+?)\s+(.+)$/);
-      if(mm){ name = mm[1].trim(); arg = mm[2].trim(); }
-      const def = BASE_CONTROL_BY_NAME.get(name.toLowerCase());
-      if(!def) return m;
+      const parsed = parseMarkupControlBodyForBase(b);
+      if(!parsed) return m;
+      const {def, arg} = parsed;
       if(def.args && !arg) return m;
       const written = writeBaseControl(def, arg, base);
       return written == null ? m : written;
     });
+    return converted.replace(/\r\n?/g,'\n').replace(/\n/g,lineBreakControl);
   };
 
   convertTextControlCodesBetweenBases = function(text, fromBase, toBase, hintLike=false){
@@ -3756,10 +3798,10 @@
   function importantBuildText(preset){
     const item = `${importantColorMarkup('red')}${preset.item}<color white>`;
     const target = `${importantColorMarkup(preset.color)}${preset.target}<color white>`;
-    if(preset.type === 'boss') return `<icon ${preset.icon}><allow instant text>You got the ${item}<line-break>for ${target}!<disallow instant text>`;
-    if(preset.type === 'compass') return `<icon ${preset.icon}><allow instant text>You found the ${item}<line-break>for ${target}!<disallow instant text>`;
-    if(preset.type === 'map') return `<icon ${preset.icon}><allow instant text>You found the ${item}<line-break>for ${target}!<disallow instant text>`;
-    return `<icon 77><allow instant text>You found a ${item}<line-break>for ${target}!<disallow instant text>`;
+    if(preset.type === 'boss') return `<icon ${preset.icon}><allow instant text>You got the ${item}\nfor ${target}!<disallow instant text>`;
+    if(preset.type === 'compass') return `<icon ${preset.icon}><allow instant text>You found the ${item}\nfor ${target}!<disallow instant text>`;
+    if(preset.type === 'map') return `<icon ${preset.icon}><allow instant text>You found the ${item}\nfor ${target}!<disallow instant text>`;
+    return `<icon 77><allow instant text>You found a ${item}\nfor ${target}!<disallow instant text>`;
   }
   function ensureImportantQuickWidget(){
     let box = $('importantQuickWidget');
@@ -3810,10 +3852,10 @@
     const make = (id, target, color, kind, countIndex=0) => {
       const targetMarkup = `${importantColorMarkup(color)}${target}<color white>`;
       const keyMarkup = `${importantColorMarkup('red')}Small Key<color white>`;
-      if(kind === 'first') return {id, text:`<icon 77><allow instant text>You found a ${keyMarkup}<line-break>for ${targetMarkup}!<line-break>It's your <color red>first<color white> one!<disallow instant text>`};
-      if(kind === 'count') return {id, text:`<icon 77><allow instant text>You found a ${keyMarkup}<line-break>for ${targetMarkup}!<line-break>You've collected <color red><key count ${HEX2(countIndex)}><color white> of them.<disallow instant text>`};
-      if(kind === 'enough') return {id, text:`<icon 77><allow instant text>You found a ${keyMarkup}<line-break>for ${targetMarkup}!<line-break>You already have enough keys.<disallow instant text>`};
-      return {id, text:`<icon 77><allow instant text>You found a <color red>Small Key Ring<color white><line-break>for ${targetMarkup}!<disallow instant text>`};
+      if(kind === 'first') return {id, text:`<icon 77><allow instant text>You found a ${keyMarkup}\nfor ${targetMarkup}!\nIt's your <color red>first<color white> one!<disallow instant text>`};
+      if(kind === 'count') return {id, text:`<icon 77><allow instant text>You found a ${keyMarkup}\nfor ${targetMarkup}!\nYou've collected <color red><key count ${HEX2(countIndex)}><color white> of them.<disallow instant text>`};
+      if(kind === 'enough') return {id, text:`<icon 77><allow instant text>You found a ${keyMarkup}\nfor ${targetMarkup}!\nYou already have enough keys.<disallow instant text>`};
+      return {id, text:`<icon 77><allow instant text>You found a <color red>Small Key Ring<color white>\nfor ${targetMarkup}!<disallow instant text>`};
     };
     for(let pass=0; pass<4; pass++){
       let id = pass === 0 ? 0x9101 : pass === 1 ? 0x9112 : pass === 2 ? 0x9123 : 0x9200;
@@ -3830,7 +3872,7 @@
     for(const d of IMPORTANT_DUNGEON_ORDER.filter(x=>x && ['Forest Temple','Fire Temple','Water Temple','Spirit Temple','Shadow Temple'].includes(x.target))){
       const id = 0x9200 + IMPORTANT_DUNGEON_ORDER.length + generated.filter(x=>x.id >= 0x9200 + IMPORTANT_DUNGEON_ORDER.length).length;
       const targetMarkup = `${importantColorMarkup(d.color)}${d.target}<color white>`;
-      if(!existing.has(id)) generated.push({id, text:`<icon 77><allow instant text>You found a <color red>Key Ring<color white><line-break>for ${targetMarkup}!<disallow instant text><line-break>It includes the <color red>Boss Key<color white>!`});
+      if(!existing.has(id)) generated.push({id, text:`<icon 77><allow instant text>You found a <color red>Key Ring<color white>\nfor ${targetMarkup}!<disallow instant text>\nIt includes the <color red>Boss Key<color white>!`});
     }
     for(const entry of generated) state.property.IMPORTANT_ITEM_MESSAGES.push({id:entry.id, text:decodeFriendlyString(entry.text, false)});
     state.property.IMPORTANT_ITEM_MESSAGES.sort((a,b)=>Number(a.id||0)-Number(b.id||0));
@@ -4676,7 +4718,7 @@
       .memo-note { color:var(--muted); font-size:calc(12px * var(--ui-text-scale)); }
       #memoEditor { min-height:320px; height:100%; resize:vertical; }
       .plain-extract-panel { margin-top:14px; border:1px solid var(--line); border-radius:10px; background:var(--panel3); padding:12px; display:grid; gap:10px; }
-      .plain-extract-grid { display:grid; grid-template-columns:minmax(180px,1.4fr) repeat(3,minmax(130px,.7fr)); gap:10px; align-items:end; }
+      .plain-extract-grid { display:grid; grid-template-columns:minmax(180px,1.4fr) repeat(4,minmax(120px,.7fr)); gap:10px; align-items:end; }
       .plain-extract-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
       .plain-extract-status { color:var(--muted); font-size:calc(12px * var(--ui-text-scale)); }
       @media (max-width: 1100px){ .plain-extract-grid { grid-template-columns:1fr 1fr; } }
@@ -4776,6 +4818,7 @@
       <div class="pane-title">${escapeHtml(t('ROM to PLAIN_TEXTS'))}</div>
       <div class="plain-extract-grid">
         <div><div class="label">${escapeHtml(t('Decompressed ROM'))}</div><input id="plainRomPath" readonly></div>
+        <div><div class="label">${escapeHtml(t('Language base'))}</div><select id="plainExtractBase"><option value="en">EN</option><option value="jp">JP</option><option value="cn">CN / iQue</option></select></div>
         <div><div class="label">${escapeHtml(t('Table HEX address'))}</div><input id="plainTableAddress" value="0xB849EC"></div>
         <div><div class="label">${escapeHtml(t('Text HEX address'))}</div><input id="plainTextAddress" value="0x92D000"></div>
         <div><div class="label">${escapeHtml(t('Terminator entry ID HEX'))}</div><input id="plainTerminatorId" value="0xFFFF"></div>
@@ -4785,29 +4828,39 @@
         <button id="plainReplaceBtn" type="button" class="primary">${escapeHtml(t('Replace PLAIN_TEXTS'))}</button>
         <button id="plainAppendBtn" type="button">${escapeHtml(t('Append to PLAIN_TEXTS'))}</button>
       </div>
-      <div id="plainExtractStatus" class="plain-extract-status">${escapeHtml(t('This extractor reads every message until the configured terminator entry ID. It accepts an already-decompressed ROM only.'))}</div>`;
+      <div id="plainExtractStatus" class="plain-extract-status">${escapeHtml(t('This extractor reads every message until the configured terminator entry ID. EN/JP/CN decoding is local to this ROM import and does not change Language properties.'))}</div>`;
     patchPanel.appendChild(panel);
-    el.plainRomPath = $('plainRomPath'); el.plainTableAddress = $('plainTableAddress'); el.plainTextAddress = $('plainTextAddress'); el.plainTerminatorId = $('plainTerminatorId'); el.plainPickRomBtn = $('plainPickRomBtn'); el.plainReplaceBtn = $('plainReplaceBtn'); el.plainAppendBtn = $('plainAppendBtn'); el.plainExtractStatus = $('plainExtractStatus');
+    el.plainRomPath = $('plainRomPath'); el.plainExtractBase = $('plainExtractBase'); el.plainTableAddress = $('plainTableAddress'); el.plainTextAddress = $('plainTextAddress'); el.plainTerminatorId = $('plainTerminatorId'); el.plainPickRomBtn = $('plainPickRomBtn'); el.plainReplaceBtn = $('plainReplaceBtn'); el.plainAppendBtn = $('plainAppendBtn'); el.plainExtractStatus = $('plainExtractStatus');
+    if(el.plainExtractBase && !el.plainExtractBase.dataset.bound){
+      el.plainExtractBase.dataset.bound='1';
+      el.plainExtractBase.addEventListener('change', () => {
+        const base = el.plainExtractBase.value;
+        if(base === 'en' && el.plainTableAddress.value === '0xB808AC' && el.plainTextAddress.value === '0x8EB000'){ el.plainTableAddress.value='0xB849EC'; el.plainTextAddress.value='0x92D000'; }
+        if(base === 'jp' && el.plainTableAddress.value === '0xB849EC' && el.plainTextAddress.value === '0x92D000'){ el.plainTableAddress.value='0xB808AC'; el.plainTextAddress.value='0x8EB000'; }
+      });
+    }
     el.plainPickRomBtn.onclick = async () => { const r=await api.openRom?.(t('Select decompressed ROM')); if(r?.filePath){ plainExtractorRomPath=r.filePath; el.plainRomPath.value=r.filePath; } };
     el.plainReplaceBtn.onclick = () => runPlainTextExtraction(false);
     el.plainAppendBtn.onclick = () => runPlainTextExtraction(true);
   }
   async function runPlainTextExtraction(append){
     try{
-      const result = await api.extractPlainTextsFromRom?.({ romPath:plainExtractorRomPath || el.plainRomPath?.value || state.patchOriginal || state.patchModified, tableAddress:el.plainTableAddress.value, textAddress:el.plainTextAddress.value, terminatorId:el.plainTerminatorId?.value || '0xFFFF', base:activeTextBase() });
+      const result = await api.extractPlainTextsFromRom?.({ romPath:plainExtractorRomPath || el.plainRomPath?.value || state.patchOriginal || state.patchModified, tableAddress:el.plainTableAddress.value, textAddress:el.plainTextAddress.value, terminatorId:el.plainTerminatorId?.value || '0xFFFF', base:el.plainExtractBase?.value || activeTextBase() });
       const entries = Array.isArray(result?.entries) ? result.entries : [];
       pushUndo();
       if(!Array.isArray(state.property.PLAIN_TEXTS)) state.property.PLAIN_TEXTS = [];
       state.property.PLAIN_TEXTS = append ? state.property.PLAIN_TEXTS.concat(entries) : entries;
       state.selectedSection = 'PLAIN_TEXTS'; state.selectedEntryKey = entryKeys(state.property.PLAIN_TEXTS)[0] || '0';
       markDirty(); renderAll(); switchTab('tabText');
-      if(el.plainExtractStatus) el.plainExtractStatus.innerHTML = `<span class="ok">${escapeHtml(t('Extracted {count} PLAIN_TEXTS entries.', {count:entries.length}))}</span>`;
-      el.status.innerHTML = `<span class="ok">${escapeHtml(t('Extracted {count} PLAIN_TEXTS entries.', {count:entries.length}))}</span>`;
+      const baseLabel = String(result?.base || el.plainExtractBase?.value || '').toUpperCase();
+      const okMsg = t('Extracted {count} PLAIN_TEXTS entries.', {count:entries.length}) + (baseLabel ? ` [${baseLabel}]` : '');
+      if(el.plainExtractStatus) el.plainExtractStatus.innerHTML = `<span class="ok">${escapeHtml(okMsg)}</span>`;
+      el.status.innerHTML = `<span class="ok">${escapeHtml(okMsg)}</span>`;
     }catch(e){ const msg=t('PLAIN_TEXTS extraction failed: {message}', {message:e.message}); if(el.plainExtractStatus) el.plainExtractStatus.innerHTML=`<span class="error">${escapeHtml(msg)}</span>`; el.status.innerHTML=`<span class="error">${escapeHtml(msg)}</span>`; }
   }
 
   const CONTROL_SNIPPETS = [
-    ['<line-break>', 'new line'], ['<box-break>', 'box break'], ['<color white>', 'white text'], ['<color red>', 'red text'], ['<color green>', 'green text'], ['<color blue>', 'blue text'], ['<color light-blue>', 'light-blue text'], ['<color pink>', 'pink text'], ['<color yellow>', 'yellow text'], ['<color black>', 'black text'], ['<name>', 'player name'], ['<icon 00>', 'item icon'], ['<sound 0000>', 'sound effect'], ['<gap 20>', 'text gap'], ['<goto 0000>', 'goto message'], ['<speed 00>', 'text speed'], ['<background 00 00 00>', 'background'], ['<keep open>', 'keep box open'], ['<event>', 'event close'], ['<start two choice>', 'two-choice prompt'], ['<start three choice>', 'three-choice prompt']
+    ['<box-break>', 'box break'], ['<color white>', 'white text'], ['<color red>', 'red text'], ['<color green>', 'green text'], ['<color blue>', 'blue text'], ['<color light-blue>', 'light-blue text'], ['<color pink>', 'pink text'], ['<color yellow>', 'yellow text'], ['<color black>', 'black text'], ['<name>', 'player name'], ['<icon 00>', 'item icon'], ['<sound 0000>', 'sound effect'], ['<gap 20>', 'text gap'], ['<goto 0000>', 'goto message'], ['<speed 00>', 'text speed'], ['<background 00 00 00>', 'background'], ['<keep open>', 'keep box open'], ['<event>', 'event close'], ['<start two choice>', 'two-choice prompt'], ['<start three choice>', 'three-choice prompt']
   ];
   function ensureControlSuggestPopup(){ let box=$('controlSuggestPopup'); if(box) return box; box=document.createElement('div'); box.id='controlSuggestPopup'; box.className='control-suggest-popup'; document.body.appendChild(box); return box; }
   function currentControlQuery(){
@@ -4839,7 +4892,7 @@
       const colorMap = {'0':'<color white>','1':'<color red>','2':'<color green>','3':'<color blue>','4':'<color light-blue>','5':'<color pink>','6':'<color yellow>','7':'<color black>'};
       let snippet='';
       if(ev.key === 'Enter' && ev.shiftKey) snippet='<box-break>';
-      else if(ev.key === 'Enter') snippet='<line-break>';
+      else if(ev.key === 'Enter') snippet='\n';
       else if(colorMap[ev.key]) snippet=colorMap[ev.key];
       else if(String(ev.key).toLowerCase()==='n') snippet='<name>';
       else if(String(ev.key).toLowerCase()==='i') snippet='<icon 00>';
@@ -5053,6 +5106,608 @@
   handleShortcut = function(ev){
     if((ev.ctrlKey || ev.metaKey) && !ev.altKey && !ev.shiftKey && ev.key === '5') { ev.preventDefault(); toggleMemoWorkspacePanel(); return; }
     _memoBindShortcut(ev);
+  };
+
+
+  // ---------------------------------------------------------------------------
+  // v5: stable hintTable empty formatting and whole-property section isolation.
+  // ---------------------------------------------------------------------------
+  function v5IsPlainObject(value){ return !!value && typeof value === 'object' && !Array.isArray(value); }
+  function v5Clone(value){ try { return clone(value); } catch { return JSON.parse(JSON.stringify(value)); } }
+  function v5KnownSectionNames(property){
+    const names = new Set();
+    try { if(Array.isArray(TOP_ORDER)) for(const k of TOP_ORDER) names.add(String(k)); } catch {}
+    try { if(TOP_LEVEL_SECTION_NAMES) for(const k of TOP_LEVEL_SECTION_NAMES) names.add(String(k)); } catch {}
+    for(const source of [state?.defaultProperty, state?.property, property]){
+      if(source && typeof source === 'object' && !Array.isArray(source)) for(const k of Object.keys(source)) names.add(String(k));
+    }
+    ['lang_property','CHAR_WIDTHS','replace_table','language_specific_replace_table','replace_list'].forEach(k=>names.add(k));
+    try { for(const k of names) TOP_LEVEL_SECTION_NAMES.add(k); } catch {}
+    return names;
+  }
+  function v5IsEmptySectionValue(value){
+    if(value == null) return true;
+    if(Array.isArray(value)) return value.length === 0;
+    if(v5IsPlainObject(value)) return Object.keys(value).length === 0;
+    if(typeof value === 'string') return value.length === 0;
+    return false;
+  }
+  function v5MergeSectionValue(existing, incoming){
+    if(v5IsEmptySectionValue(existing)) return v5Clone(incoming);
+    if(v5IsEmptySectionValue(incoming)) return existing;
+    if(Array.isArray(existing) && Array.isArray(incoming)){
+      if(typeof completeHasIdEntries === 'function' && typeof completeMergeArrayById === 'function' && completeHasIdEntries(existing.concat(incoming))) return completeMergeArrayById(existing, incoming);
+      const out = existing.slice();
+      const seen = new Set(out.map(item=>JSON.stringify(item)));
+      for(const item of incoming){ const key = JSON.stringify(item); if(!seen.has(key)){ seen.add(key); out.push(v5Clone(item)); } }
+      return out;
+    }
+    if(v5IsPlainObject(existing) && v5IsPlainObject(incoming)){
+      const out = v5Clone(existing);
+      for(const [k,v] of Object.entries(incoming)){
+        if(!Object.prototype.hasOwnProperty.call(out, k) || v5IsEmptySectionValue(out[k])) out[k] = v5Clone(v);
+        else if(v5IsPlainObject(out[k]) && v5IsPlainObject(v)) out[k] = v5MergeSectionValue(out[k], v);
+        else if(Array.isArray(out[k]) && Array.isArray(v)) out[k] = v5MergeSectionValue(out[k], v);
+      }
+      return out;
+    }
+    return existing;
+  }
+  function v5IsolateKnownSections(property){
+    if(!property || typeof property !== 'object' || Array.isArray(property)) return property;
+    const known = v5KnownSectionNames(property);
+    const promoted = {};
+    const walk = (value, ownerSection) => {
+      if(Array.isArray(value)) return value.map(item => walk(item, ownerSection));
+      if(!v5IsPlainObject(value)) return value;
+      const out = {};
+      for(const [key, child] of Object.entries(value)){
+        if(known.has(key) && key !== ownerSection){
+          promoted[key] = Object.prototype.hasOwnProperty.call(promoted, key) ? v5MergeSectionValue(promoted[key], child) : v5Clone(child);
+          continue;
+        }
+        out[key] = walk(child, ownerSection);
+      }
+      return out;
+    };
+    for(const section of Object.keys(property)){
+      if(known.has(section)) property[section] = walk(property[section], section);
+    }
+    for(const [section, value] of Object.entries(promoted)){
+      property[section] = Object.prototype.hasOwnProperty.call(property, section) ? v5MergeSectionValue(property[section], value) : v5Clone(value);
+    }
+    return property;
+  }
+  function v5CleanValueForSection(section, value){
+    const tmp = {[section]: v5Clone(value)};
+    v5IsolateKnownSections(tmp);
+    for(const [key, promoted] of Object.entries(tmp)){
+      if(key === section) continue;
+      state.property[key] = Object.prototype.hasOwnProperty.call(state.property || {}, key) ? v5MergeSectionValue(state.property[key], promoted) : v5Clone(promoted);
+    }
+    return tmp[section];
+  }
+
+  renderVague = function(value){
+    if(value == null || value === '') return '- ';
+    if(Array.isArray(value)){
+      const list = value.length ? value : [''];
+      return list.map(x => '- ' + encodeFriendlyString(x ?? '', true)).join('\n');
+    }
+    return encodeFriendlyString(value, true);
+  };
+  parseVague = function(text){
+    const lines = String(text ?? '').replace(/\r\n?/g, '\n').split('\n');
+    while(lines.length && lines[lines.length - 1] === '') lines.pop();
+    const values = [];
+    for(const raw of lines){
+      const trimmed = raw.trim();
+      if(!trimmed) continue;
+      if(/^[-*](?:\s*.*)?$/.test(trimmed)){
+        const body = trimmed.replace(/^[-*]\s*/, '');
+        if(body) values.push(decodeFriendlyString(body, true));
+      } else {
+        values.push(decodeFriendlyString(trimmed, true));
+      }
+    }
+    if(values.length === 0) return null;
+    return values.length === 1 ? values[0] : values;
+  };
+  renderHint = function(item){
+    return block('vague_hint', renderVague(item?.vague_hint))
+      + block('clear_hint', item?.clear_hint == null ? '' : encodeFriendlyString(item.clear_hint, true))
+      + block('gender', item?.gender ?? '');
+  };
+  parseHint = function(text, original={}){
+    const b = parseBlocks(text);
+    return {...original, vague_hint:parseVague(b.vague_hint ?? ''), clear_hint:parseMaybeNull(b.clear_hint ?? ''), gender:parseMaybeNull(b.gender ?? '')};
+  };
+
+  const _v5SanitizeEditorProperty = sanitizeEditorProperty;
+  sanitizeEditorProperty = function(property){
+    const isolatedBefore = v5IsolateKnownSections(property);
+    const out = _v5SanitizeEditorProperty(isolatedBefore);
+    return v5IsolateKnownSections(out);
+  };
+  const _v5CompleteMergeLoadedProperty = typeof completeMergeLoadedProperty === 'function' ? completeMergeLoadedProperty : null;
+  if(_v5CompleteMergeLoadedProperty){
+    completeMergeLoadedProperty = function(defaultProperty, loadedProperty){
+      const cleanDefault = v5IsolateKnownSections(v5Clone(defaultProperty || {}));
+      const cleanLoaded = v5IsolateKnownSections(v5Clone(loadedProperty || {}));
+      return sanitizeEditorProperty(_v5CompleteMergeLoadedProperty(cleanDefault, cleanLoaded));
+    };
+  }
+  const _v5SetEntryValue = setEntryValue;
+  setEntryValue = function(newValue){
+    const section = state.selectedSection;
+    const clean = v5CleanValueForSection(section, newValue);
+    const result = _v5SetEntryValue(clean);
+    sanitizeEditorProperty(state.property);
+    return result;
+  };
+  const _v5ApplySectionJson = applySectionJson;
+  applySectionJson = function(){
+    try{
+      pushUndo();
+      const parsed = JSON.parse(el.sectionJson.value);
+      state.property[state.selectedSection] = v5CleanValueForSection(state.selectedSection, parsed);
+      sanitizeEditorProperty(state.property);
+      markDirty();
+      renderAll();
+      switchTab('tabSectionJson');
+      el.status.innerHTML = `<span class="ok">${t('Applied section JSON')}</span>`;
+    }catch(e){
+      el.status.innerHTML = `<span class="error">${t('Apply failed: {message}', {message:e.message})}</span>`;
+    }
+  };
+  const _v5BuildExportProperty = buildExportProperty;
+  buildExportProperty = function(){
+    sanitizeEditorProperty(state.property);
+    const out = _v5BuildExportProperty();
+    return sanitizeEditorProperty(out);
+  };
+  const _v5LoadProperty = loadProperty;
+  loadProperty = async function(){
+    const r = await _v5LoadProperty();
+    sanitizeEditorProperty(state.property);
+    renderAll();
+    return r;
+  };
+  const _v5LoadDefault = loadDefault;
+  loadDefault = async function(){
+    const r = await _v5LoadDefault();
+    sanitizeEditorProperty(state.property);
+    renderAll();
+    return r;
+  };
+  const _v5MergeDefaults = mergeDefaults;
+  mergeDefaults = function(){
+    const r = _v5MergeDefaults();
+    sanitizeEditorProperty(state.property);
+    renderAll();
+    return r;
+  };
+  if(typeof openWorkFile === 'function'){
+    const _v5OpenWorkFile = openWorkFile;
+    openWorkFile = async function(){
+      const r = await _v5OpenWorkFile();
+      sanitizeEditorProperty(state.property);
+      renderAll();
+      return r;
+    };
+  }
+
+
+  // ---------------------------------------------------------------------------
+  // v6: entry-field aware parsing and conservative section guards.
+  // ---------------------------------------------------------------------------
+  // Do not treat every bracket-only line as a structural editor block.
+  // Only the field names valid for the current entry editor are headers;
+  // language syntax such as [prefix...] remains ordinary entry text.
+  parseBlocks = function(text, allowedFields=null){
+    const allowed = allowedFields ? new Set(allowedFields.map(String)) : null;
+    const res = {};
+    let current = '';
+    const lines = String(text ?? '').replace(/\r\n?/g, '\n').split('\n');
+    while(lines.length && lines[lines.length - 1] === '') lines.pop();
+    for(const line of lines){
+      const m = line.match(/^\[([^\]]+)\]\s*$/);
+      const key = m ? m[1].trim() : '';
+      if(m && (!allowed || allowed.has(key))){
+        current = key;
+        if(!Object.prototype.hasOwnProperty.call(res, current)) res[current] = '';
+      } else if(current){
+        res[current] += (res[current] ? '\n' : '') + line;
+      }
+    }
+    return res;
+  };
+  const v6ParseEntryBlocks = (text, fields) => parseBlocks(text, fields);
+
+  renderVague = function(value){
+    if(value == null || value === '') return '- ';
+    if(Array.isArray(value)){
+      const list = value.length ? value : [''];
+      return list.map(x => '- ' + encodeFriendlyString(x ?? '', true)).join('\n');
+    }
+    return encodeFriendlyString(value, true);
+  };
+  parseVague = function(text){
+    const lines = String(text ?? '').replace(/\r\n?/g, '\n').split('\n');
+    while(lines.length && lines[lines.length - 1] === '') lines.pop();
+    const values = [];
+    for(const raw of lines){
+      const trimmed = raw.trim();
+      if(!trimmed) continue;
+      if(/^[-*](?:\s*.*)?$/.test(trimmed)){
+        const body = trimmed.replace(/^[-*]\s*/, '');
+        if(body.trim() !== '') values.push(decodeFriendlyString(body, true));
+      } else {
+        values.push(decodeFriendlyString(trimmed, true));
+      }
+    }
+    if(values.length === 0) return null;
+    return values.length === 1 ? values[0] : values;
+  };
+  parseMessage = function(text, original={}){
+    const b = v6ParseEntryBlocks(text, ['id','box_type','text']);
+    const out = {...original};
+    if('id' in b && b.id.trim() !== '') out.id = typeof parseMessageId === 'function' ? parseMessageId(b.id.trim()) : Number(b.id.trim());
+    if('box_type' in b){ const bt = b.box_type.trim(); if(bt === '') delete out.box_type; else out.box_type = Number(bt); }
+    out.text = decodeFriendlyString(b.text ?? '', false);
+    return out;
+  };
+  parseHint = function(text, original={}){
+    const b = v6ParseEntryBlocks(text, ['vague_hint','clear_hint','gender']);
+    return {...original, vague_hint:parseVague(b.vague_hint ?? ''), clear_hint:parseMaybeNull(b.clear_hint ?? ''), gender:parseMaybeNull(b.gender ?? '')};
+  };
+  parseGoal = function(text, original={}){
+    const b = v6ParseEntryBlocks(text, ['vague','clear']);
+    return {...original, vague:decodeFriendlyString(b.vague ?? '', true), clear:decodeFriendlyString(b.clear ?? '', true)};
+  };
+  parseDungeon = function(text, original={}){
+    const b = v6ParseEntryBlocks(text, ['name','gender','has_map']);
+    return {...original, name:decodeFriendlyString(b.name ?? '', false), gender:(b.gender ?? '').trim(), has_map:/^(true|1|yes|on)$/i.test((b.has_map ?? '').trim())};
+  };
+  parseMapping = function(text, originalKey){
+    const b = v6ParseEntryBlocks(text, ['from','to']);
+    return {from:decodeFriendlyString((b.from ?? originalKey), false), to:decodeFriendlyString(b.to ?? '', false)};
+  };
+  parsePairList = function(text, original){
+    const b = v6ParseEntryBlocks(text, ['key','as']);
+    if('key' in b || 'as' in b) return [decodeFriendlyString(b.key ?? '', false), decodeFriendlyString(b.as ?? '', false)];
+    return JSON.parse(text);
+  };
+
+  function v6PlainClone(value){ return value === undefined ? undefined : JSON.parse(JSON.stringify(value)); }
+  function v6IsPlainObject(value){ return !!value && typeof value === 'object' && !Array.isArray(value); }
+  function v6NormalizeReplaceTableValue(value){
+    if(typeof finalNormalizeReplaceTableValue === 'function') return finalNormalizeReplaceTableValue(value);
+    if(typeof normalizeReplaceTableValue === 'function') return normalizeReplaceTableValue(value);
+    if(value == null) return [];
+    if(Array.isArray(value)) return value.map(item=>Array.isArray(item) ? {from:String(item[0] ?? ''), to:String(item[1] ?? '')} : (item && typeof item === 'object' ? {from:String(item.from ?? ''), to:String(item.to ?? '')} : {from:String(item), to:''}));
+    if(v6IsPlainObject(value)) return Object.entries(value).map(([from,to])=>({from:String(from), to:String(to ?? '')}));
+    return [];
+  }
+  function v6SanitizeSectionValue(section, value){
+    if(section === 'replace_table' || section === 'language_specific_replace_table' || section === 'replace_list') return v6NormalizeReplaceTableValue(value);
+    if(section === 'lang_property' && typeof sanitizeLangPropertyValue === 'function') return sanitizeLangPropertyValue(value);
+    if(section === 'lang_property' && typeof normalizeLangPropertyPanelValue === 'function') return normalizeLangPropertyPanelValue(value);
+    if(section === 'CHAR_WIDTHS' && typeof sanitizeCharWidthsValue === 'function') return sanitizeCharWidthsValue(value);
+    return value;
+  }
+  sanitizeSectionValueFinal = v6SanitizeSectionValue;
+  // Previous v5 isolation promoted/deleted any nested key matching a section name.
+  // Keep entries opaque: nested dictionaries/lists remain entry data, not sections.
+  scrubNestedSectionKeys = function(value){ return value; };
+  v5IsolateKnownSections = function(property){ return property; };
+  v5CleanValueForSection = function(section, value){ return v6SanitizeSectionValue(section, value); };
+
+  sanitizeEditorProperty = function(property){
+    if(!property || typeof property !== 'object' || Array.isArray(property)) return property;
+    if(Object.prototype.hasOwnProperty.call(property, 'language_specific_replace_table') && !Object.prototype.hasOwnProperty.call(property, 'replace_table')){
+      property.replace_table = v6NormalizeReplaceTableValue(property.language_specific_replace_table);
+    }
+    if(Object.prototype.hasOwnProperty.call(property, 'replace_list') && (!Object.prototype.hasOwnProperty.call(property, 'replace_table') || !Array.isArray(property.replace_table) || property.replace_table.length === 0)){
+      property.replace_table = v6NormalizeReplaceTableValue(property.replace_list);
+    }
+    delete property.language_specific_replace_table;
+    delete property.replace_list;
+    if(Object.prototype.hasOwnProperty.call(property, 'replace_table')) property.replace_table = v6NormalizeReplaceTableValue(property.replace_table);
+    else property.replace_table = [];
+    if(Object.prototype.hasOwnProperty.call(property, 'lang_property')) property.lang_property = v6SanitizeSectionValue('lang_property', property.lang_property);
+    if(Object.prototype.hasOwnProperty.call(property, 'CHAR_WIDTHS')) property.CHAR_WIDTHS = v6SanitizeSectionValue('CHAR_WIDTHS', property.CHAR_WIDTHS);
+    try { if(typeof finalBlockDefaultMappings === 'function') finalBlockDefaultMappings(property); } catch {}
+    try { if(typeof finalOrderHintTableInProperty === 'function') finalOrderHintTableInProperty(property); } catch {}
+    return property;
+  };
+  function v6PlainDeepMerge(base, override, section=''){
+    if(override === undefined) return v6PlainClone(base);
+    if(section === 'replace_table') return v6NormalizeReplaceTableValue(override);
+    if(Array.isArray(base) || Array.isArray(override)){
+      if(Array.isArray(base) && Array.isArray(override) && typeof completeHasIdEntries === 'function' && typeof completeMergeArrayById === 'function' && completeHasIdEntries(base.concat(override))) return completeMergeArrayById(base, override);
+      return v6PlainClone(Array.isArray(override) ? override : base);
+    }
+    if(v6IsPlainObject(base) && v6IsPlainObject(override)){
+      const out = v6PlainClone(base);
+      for(const [k,v] of Object.entries(override)) out[k] = v6PlainDeepMerge(out[k], v, section);
+      return out;
+    }
+    return v6PlainClone(override);
+  }
+  function v6CompleteMergeLoadedProperty(defaultProperty, loadedProperty){
+    const defaults = defaultProperty || {};
+    const loaded = loadedProperty || {};
+    const out = {};
+    const sections = new Set([...Object.keys(defaults), ...Object.keys(loaded)]);
+    sections.delete('language_specific_replace_table');
+    sections.delete('replace_list');
+    for(const section of sections){
+      if(typeof COMPLETE_REPLACE_SECTIONS !== 'undefined' && COMPLETE_REPLACE_SECTIONS.has(section)) out[section] = Object.prototype.hasOwnProperty.call(loaded, section) ? v6PlainClone(loaded[section] || {}) : {};
+      else out[section] = v6PlainDeepMerge(defaults[section], loaded[section], section);
+    }
+    if(Object.prototype.hasOwnProperty.call(loaded, 'language_specific_replace_table') && !Object.prototype.hasOwnProperty.call(loaded, 'replace_table')) out.replace_table = v6NormalizeReplaceTableValue(loaded.language_specific_replace_table);
+    if(Object.prototype.hasOwnProperty.call(loaded, 'replace_list') && !Object.prototype.hasOwnProperty.call(loaded, 'replace_table')) out.replace_table = v6NormalizeReplaceTableValue(loaded.replace_list);
+    return sanitizeEditorProperty(out);
+  }
+  completeMergeLoadedProperty = v6CompleteMergeLoadedProperty;
+  function v6KnownTopLevelSections(){
+    const names = new Set();
+    try { for(const k of TOP_ORDER) names.add(String(k)); } catch {}
+    for(const source of [state?.defaultProperty, state?.property]) if(source && typeof source === 'object' && !Array.isArray(source)) for(const k of Object.keys(source)) names.add(String(k));
+    ['lang_property','CHAR_WIDTHS','replace_table','language_specific_replace_table','replace_list'].forEach(k=>names.add(k));
+    return names;
+  }
+  function v6LooksLikeWholePropertyObject(obj){
+    if(!v6IsPlainObject(obj)) return false;
+    const known = v6KnownTopLevelSections();
+    const keys = Object.keys(obj);
+    if(keys.length < 2) return false;
+    const knownCount = keys.filter(k=>known.has(k)).length;
+    return knownCount >= 2 || (knownCount >= 1 && keys.some(k=>k !== state.selectedSection && known.has(k)));
+  }
+  function v6SetEntrySelectionFirst(){
+    state.selectedSection = state.selectedSection && state.property && Object.prototype.hasOwnProperty.call(state.property, state.selectedSection) ? state.selectedSection : (Object.keys(state.property || {})[0] || '');
+    const keys = entryKeys(sectionValue()).filter(Boolean);
+    state.selectedEntryKey = keys.includes(state.selectedEntryKey) ? state.selectedEntryKey : (keys[0] || '');
+    if(typeof setEntrySelection === 'function') setEntrySelection([state.selectedEntryKey].filter(Boolean), state.selectedEntryKey);
+  }
+  setEntryValue = function(newValue){
+    const section = state.selectedSection;
+    const value = v6SanitizeSectionValue(section, newValue);
+    const v = sectionValue();
+    if(section === 'prefix') state.property[section] = value;
+    else if(section === 'CHAR_WIDTHS') state.property.CHAR_WIDTHS = value;
+    else if(section === 'lang_property'){
+      if(state.selectedEntryKey && state.selectedEntryKey !== 'lang_property' && state.selectedEntryKey !== 'value'){
+        if(!v6IsPlainObject(state.property.lang_property)) state.property.lang_property = {};
+        state.property.lang_property[state.selectedEntryKey] = value;
+      } else state.property.lang_property = value;
+    }
+    else if(section === 'replace_table') state.property.replace_table = v6NormalizeReplaceTableValue(value);
+    else if(Array.isArray(v)) v[Number(state.selectedEntryKey || 0)] = value;
+    else if(v && typeof v === 'object') v[state.selectedEntryKey] = value;
+    else state.property[section] = value;
+    sanitizeEditorProperty(state.property);
+  };
+  applySectionJson = function(){
+    try{
+      const parsed = JSON.parse(el.sectionJson.value);
+      if(v6LooksLikeWholePropertyObject(parsed)) throw new Error(t('Section JSON looks like a whole property file. Load it as property.json instead of applying it inside one section.'));
+      pushUndo();
+      state.property[state.selectedSection] = v6SanitizeSectionValue(state.selectedSection, parsed);
+      sanitizeEditorProperty(state.property);
+      markDirty();
+      renderAll();
+      switchTab('tabSectionJson');
+      el.status.innerHTML = `<span class="ok">${t('Applied section JSON')}</span>`;
+    }catch(e){
+      el.status.innerHTML = `<span class="error">${t('Apply failed: {message}', {message:e.message})}</span>`;
+    }
+  };
+  buildExportProperty = function(){
+    if(el.langPropertyPanel && typeof readLangPropertyPanel === 'function') state.property.lang_property = readLangPropertyPanel();
+    const merged = v6CompleteMergeLoadedProperty(state.defaultProperty || {}, state.property || {});
+    const ordered = orderedProperty(merged);
+    return sanitizeEditorProperty(ordered);
+  };
+  loadProperty = async function(){
+    try{
+      if(typeof commitEditorBeforeLeaving === 'function' && !commitEditorBeforeLeaving()) return;
+      if(state.dirty){
+        let ok = true;
+        if(typeof showInlineChoiceDialog === 'function'){
+          ok = await showInlineChoiceDialog({title:t('Unsaved changes'), message:t('The current property has unsaved changes. Continue?'), buttons:[{label:t('Cancel'), value:false}, {label:t('Continue'), value:true, primary:true}], cancelValue:false});
+        } else ok = window.confirm(t('The current property has unsaved changes. Continue?'));
+        if(!ok) return;
+      }
+      const result = await api.openProperty();
+      if(!result) return;
+      pushUndo();
+      state.property = v6CompleteMergeLoadedProperty(state.defaultProperty, result.data || {});
+      state.filePath = result.filePath;
+      v6SetEntrySelectionFirst();
+      state.dirty = false;
+      renderAll();
+      if(typeof resetEditorBaseline === 'function') resetEditorBaseline();
+      el.status.innerHTML = `<span class="ok">${t('Loaded property.json and merged missing defaults.')}</span>`;
+    }catch(e){ el.status.innerHTML = `<span class="error">${t('Load failed: {message}', {message:e.message})}</span>`; }
+  };
+  loadDefault = async function(){
+    if(typeof commitEditorBeforeLeaving === 'function' && !commitEditorBeforeLeaving()) return;
+    pushUndo();
+    state.property = sanitizeEditorProperty(v6PlainClone(state.defaultProperty || {}));
+    state.filePath = '';
+    state.selectedSection = Object.keys(state.property)[0] || '';
+    v6SetEntrySelectionFirst();
+    state.dirty = false;
+    renderAll();
+    if(typeof resetEditorBaseline === 'function') resetEditorBaseline();
+    el.status.innerHTML = `<span class="ok">${t('Default template loaded.')}</span>`;
+  };
+  mergeDefaults = function(){
+    if(typeof commitEditorBeforeLeaving === 'function' && !commitEditorBeforeLeaving()) return;
+    pushUndo();
+    state.property = v6CompleteMergeLoadedProperty(state.defaultProperty, state.property || {});
+    v6SetEntrySelectionFirst();
+    markDirty();
+    renderAll();
+    el.status.innerHTML = `<span class="ok">${t('Missing default entries merged.')}</span>`;
+  };
+  saveProperty = async function(){
+    try{
+      const data = buildExportProperty();
+      const result = await api.saveProperty(data, state.filePath || 'property.json');
+      if(!result) return;
+      state.filePath = result.filePath;
+      state.dirty = false;
+      renderEditor();
+      if(typeof resetEditorBaseline === 'function') resetEditorBaseline();
+      el.status.innerHTML = `<span class="ok">${t('Exported complete property.json')}</span>`;
+    }catch(e){ el.status.innerHTML = `<span class="error">${t('Export failed: {message}', {message:e.message})}</span>`; }
+  };
+
+
+  // ---------------------------------------------------------------------------
+  // v7: section isolation without entry-format conversion.
+  // ---------------------------------------------------------------------------
+  // v6 correctly made entry parsers field-aware.  This pass restores the old
+  // top-level section isolation, but only at section-container boundaries:
+  // - direct child keys that look like real top-level sections are moved back to root;
+  // - normal entry objects, strings, lists, and language syntax remain opaque.
+  function v7SectionAliases(key){
+    if(key === 'language_specific_replace_table' || key === 'replace_list') return 'replace_table';
+    return key;
+  }
+  function v7KnownSections(){
+    const names = new Set();
+    try { for(const k of TOP_ORDER || []) names.add(String(k)); } catch {}
+    try { for(const k of TOP_LEVEL_SECTION_NAMES || []) names.add(String(k)); } catch {}
+    for(const src of [state?.defaultProperty, state?.property]){
+      if(src && typeof src === 'object' && !Array.isArray(src)) for(const k of Object.keys(src)) names.add(String(k));
+    }
+    ['lang_property','CHAR_WIDTHS','replace_table','language_specific_replace_table','replace_list'].forEach(k=>names.add(k));
+    return names;
+  }
+  function v7PlainObject(value){ return !!value && typeof value === 'object' && !Array.isArray(value); }
+  function v7HasAnyKey(obj, keys){ return v7PlainObject(obj) && keys.some(k=>Object.prototype.hasOwnProperty.call(obj,k)); }
+  function v7SectionPayloadLooksValid(section, value){
+    section = v7SectionAliases(section);
+    if(section === 'replace_table') return Array.isArray(value) || v7PlainObject(value);
+    if(section === 'CHAR_WIDTHS' || section === 'lang_property' || section === 'prefix') return v7PlainObject(value);
+    if(MESSAGE_SECTIONS.has(section)){
+      if(Array.isArray(value)) return value.every(x=>!x || (v7PlainObject(x) && (Object.prototype.hasOwnProperty.call(x,'id') || Object.prototype.hasOwnProperty.call(x,'text'))));
+      if(v7PlainObject(value)) return Object.values(value).some(x=>v7PlainObject(x) && (Object.prototype.hasOwnProperty.call(x,'id') || Object.prototype.hasOwnProperty.call(x,'text')));
+      return false;
+    }
+    if(section === 'hintTable'){
+      if(!v7PlainObject(value)) return false;
+      const vals = Object.values(value);
+      return vals.length === 0 || vals.some(x=>v7HasAnyKey(x, ['vague_hint','clear_hint','gender']));
+    }
+    if(GOAL_SECTIONS.has(section)){
+      if(!v7PlainObject(value)) return false;
+      const vals = Object.values(value);
+      return vals.length === 0 || vals.some(x=>v7HasAnyKey(x, ['vague','clear']));
+    }
+    if(section === 'dungeon_list'){
+      if(!v7PlainObject(value) && !Array.isArray(value)) return false;
+      const vals = Array.isArray(value) ? value : Object.values(value);
+      return vals.length === 0 || vals.some(x=>v7HasAnyKey(x, ['name','gender','has_map']));
+    }
+    if(TEXT_ENTRY_SECTIONS.has(section) || FIXED_DICT_SECTIONS.has(section) || MAPPING_SECTIONS.has(section)) return v7PlainObject(value) || Array.isArray(value);
+    return Array.isArray(value) || v7PlainObject(value);
+  }
+  function v7ValueEmpty(value){
+    if(value == null) return true;
+    if(typeof value === 'string') return value.length === 0;
+    if(Array.isArray(value)) return value.length === 0;
+    if(v7PlainObject(value)) return Object.keys(value).length === 0;
+    return false;
+  }
+  function v7MergeSectionPayload(section, current, incoming){
+    section = v7SectionAliases(section);
+    if(v7ValueEmpty(current)) return v6PlainClone(incoming);
+    if(v7ValueEmpty(incoming)) return current;
+    if(section === 'replace_table') return v6NormalizeReplaceTableValue(current).concat(v6NormalizeReplaceTableValue(incoming));
+    if(Array.isArray(current) && Array.isArray(incoming)){
+      try{
+        if(typeof completeHasIdEntries === 'function' && typeof completeMergeArrayById === 'function' && completeHasIdEntries(current.concat(incoming))) return completeMergeArrayById(current, incoming);
+      }catch{}
+      const out = v6PlainClone(current);
+      const seen = new Set(out.map(x=>JSON.stringify(x)));
+      for(const item of incoming){ const key = JSON.stringify(item); if(!seen.has(key)){ out.push(v6PlainClone(item)); seen.add(key); } }
+      return out;
+    }
+    if(v7PlainObject(current) && v7PlainObject(incoming)) return v6PlainDeepMerge(current, incoming, section);
+    return current;
+  }
+  function v7LooksLikePropertyObject(value){
+    if(!v7PlainObject(value)) return false;
+    const known = v7KnownSections();
+    const keys = Object.keys(value);
+    const hits = keys.filter(k=>known.has(k) && v7SectionPayloadLooksValid(k, value[k]));
+    return hits.length >= 2;
+  }
+  function v7PullSectionsFromContainer(root, container, ownerSection, extracted){
+    if(!v7PlainObject(container)) return;
+    const known = v7KnownSections();
+    for(const [rawKey, rawValue] of Object.entries([...Object.entries(container)].reduce((o,[k,v])=>{o[k]=v;return o;},{}))){
+      if(!known.has(rawKey) || rawKey === ownerSection) continue;
+      const key = v7SectionAliases(rawKey);
+      if(v7SectionPayloadLooksValid(rawKey, rawValue)){
+        extracted[key] = v7MergeSectionPayload(key, extracted[key], rawValue);
+        delete container[rawKey];
+      } else if(v7LooksLikePropertyObject(rawValue)){
+        for(const [nestedKey, nestedValue] of Object.entries(rawValue)){
+          if(known.has(nestedKey) && nestedKey !== ownerSection && v7SectionPayloadLooksValid(nestedKey, nestedValue)){
+            const nk = v7SectionAliases(nestedKey);
+            extracted[nk] = v7MergeSectionPayload(nk, extracted[nk], nestedValue);
+            delete rawValue[nestedKey];
+          }
+        }
+      }
+    }
+  }
+  function v7IsolateTopLevelSections(property){
+    if(!v7PlainObject(property)) return property;
+    const extracted = {};
+    const rootKeys = Object.keys(property);
+    for(const section of rootKeys){
+      if(section === 'language_specific_replace_table' || section === 'replace_list') continue;
+      const value = property[section];
+      // Only inspect the section container itself.  Do not recurse into entries.
+      if(v7PlainObject(value)) v7PullSectionsFromContainer(property, value, section, extracted);
+    }
+    if(Object.keys(extracted).length){
+      for(const [section, value] of Object.entries(extracted)){
+        property[section] = v7MergeSectionPayload(section, property[section], value);
+      }
+    }
+    return property;
+  }
+  const _v7BaseSanitizeEditorProperty = sanitizeEditorProperty;
+  sanitizeEditorProperty = function(property){
+    const isolated = v7IsolateTopLevelSections(property);
+    return _v7BaseSanitizeEditorProperty(isolated);
+  };
+  const _v7BaseCompleteMergeLoadedProperty = completeMergeLoadedProperty;
+  completeMergeLoadedProperty = function(defaultProperty, loadedProperty){
+    const cleanDefault = sanitizeEditorProperty(v6PlainClone(defaultProperty || {}));
+    const cleanLoaded = sanitizeEditorProperty(v6PlainClone(loadedProperty || {}));
+    return sanitizeEditorProperty(_v7BaseCompleteMergeLoadedProperty(cleanDefault, cleanLoaded));
+  };
+  const _v7BaseBuildExportProperty = buildExportProperty;
+  buildExportProperty = function(){
+    sanitizeEditorProperty(state.property);
+    const out = _v7BaseBuildExportProperty();
+    return sanitizeEditorProperty(out);
+  };
+  const _v7BaseSetEntryValue = setEntryValue;
+  setEntryValue = function(newValue){
+    const result = _v7BaseSetEntryValue(newValue);
+    sanitizeEditorProperty(state.property);
+    return result;
   };
 
 
