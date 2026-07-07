@@ -1518,7 +1518,7 @@ typedef struct {
   char             unk_26_[0x00FC];        /* 0x1241C */
 } z64_game_t; // 0x12518
 
-static_assert(sizeof(z64_game_t) == 0x11E60, "Size of z64_game_t has changed");
+static_assert(sizeof(z64_game_t) == 0x12518, "Size of z64_game_t has changed");
 
 typedef struct {
   char              unk_00_[0x01D8];          /* 0x00000 */

@@ -2566,19 +2566,24 @@ skip_bombchu_bowling_prize_switch:
 ;==================================================================================================
 ; Add ability to control Lake Hylia's water level
 ;==================================================================================================
-
 .headersize (0x809cae60 - 0x00d5afe0)
 
-; For adult, spawn Gossip Stone and set action function depending on boss status
-; Replaces: lw      t9,40(t8)
-;           sh      a0,50(t9)
-;           b       809cb218
-;           sw      t1,340(s0)
-.org 0x809cb164     ; in BgSpot06Objects_Init
+; Replaces: li      t5,48
+;           addiu   v1,v1,-23088
+;           sw      t5,4(s0)
+;           lw      t6,4(v1)
+.org 0x809cb0d8 ; in BgSpot06Objects_Init
     jal     HyliaWater_SetupWaterFunction
-    lw      t9,40(t8)   ; displaced
-    b       0x809cb218
+    addiu   v1,-23088       ; displaced
+    bnez    v0,0x809cb218   ; if water action func set, skip rest, else run child/etc
     nop
+
+; Make the lock position follow water level
+; Replaces: lw      a0,24(sp)
+;           lh      v0,346(a0)
+.org 0x809cbb50 ; in BgSpot06Objects_LockFloat
+    jal     HyliaWater_LockPosition
+    lw      a0,24(sp)   ; displaced
 
 .headersize (0)
 

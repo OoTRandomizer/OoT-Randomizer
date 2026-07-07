@@ -32,24 +32,45 @@ EnGs_HitGossipStone:
 HyliaWater_SetupWaterFunction:
     addiu   sp,sp,-24           ; Adult: spawn Gossip + set action function
     sw      ra,16(sp)
-    sh      a0,50(t9)           ; displaced
+    li      t5,48               ; displaced
+    sw      t5,4(s0)            ; displaced
+    lw      t6,4(v1)            ; link age, v1 player
+    bnezl   t6,@@Return         ; if child, resume usual func
+    move    v0,zero
+
+    sw      t6,24(sp)           ; needed if Morpha flag not set
     la      v1,SAVE_CONTEXT
     lhu     t5,0x0EDC(v1)       ; Check Morpha dead flag/used Water Temple blue warp
     andi    t5,t5,0x0400
     beqzl   t5,@@SpawnGossip    ; If Morpha not dead, still spawn Gossip +
-    sw      t1,340(s0)          ; set DoNothing as action function (from t1 for adult)
+    move    v0,zero             ; continue func as usual
 
     la      t2,HyliaWater_WaterFunction
     sw      t2,340(s0)          ; If defeated, set water level control action function
+    li      v0,1                ; don't run rest of water plane init
+
+    lhu     t8,0x0ee0(v1)       ; water level flag
+    andi    t8,t8,0x200
+    bnezl   t8,@@SetLevel
+    move    at,zero             ; high level 0.0f
+    lui     at,0xc42a           ; low level -681.0f
+    addiu   at,0x2000
+@@SetLevel:
+    mtc1    at,f4
+    swc1    f4,0x15c(s0)        ; lakeHyliaWaterLevel
 @@SpawnGossip:
     la      a1,HyliaWater_GossipActorEntry
     lw      a2,92(sp)           ; a2 play, old sp 68 + added 24
+    sw      v0,20(sp)           ; spawnentry returns Actor*, need to save our return
     jal     Actor_SpawnEntry
     addiu   a0,a2,0x1C24        ; a0 actorCtx
+    lw      v0,20(sp)
+    lw      t6,24(sp)           ; restored if Morpha flag not set
 @@Return:
     lw      ra,16(sp)
     jr      ra
     addiu   sp,sp,24
+
 
 HyliaWater_WaterFunction:
     addiu   sp, sp, -0x28
@@ -160,3 +181,14 @@ HyliaWater_WaterFunction:
     lw      s0, 0x0020(sp)
     jr      ra
     addiu   sp, sp, 0x0028
+
+HyliaWater_LockPosition:
+    la      a1,GLOBAL_CONTEXT
+    lw      t8,0x7C0(a1)    ; collisionctx
+    lw      t9,0x28(t8)     ; waterboxes
+    lh      t1,0x22(t9)     ; main water surface1 y pos
+    mtc1    t1,$f10
+    cvt.s.w $f8,$f10        ; convert from s16 to f32
+    swc1    $f8,12(a0)      ; set waterbox y pos as lock home pos
+    jr      ra
+    lh      v0,346(a0)      ; displaced
