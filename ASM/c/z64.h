@@ -2,6 +2,7 @@
 #define Z64_H
 #include <stdint.h>
 #include <n64.h>
+#include <assert.h>
 #include "z64_math.h"
 #include "color.h"
 #include "z64collision_check.h"
@@ -805,6 +806,8 @@ typedef struct {
                                             /* 0x1450 */
 } z64_file_t;
 
+static_assert(sizeof(z64_file_t) == 0x1450, "Size of z64_file_t has changed");
+
 typedef struct {
   uint8_t* readBuff;  /* 0x00 */
 } SramContext; // size = 0x4
@@ -1028,6 +1031,39 @@ struct z64_actor_s
 };
 
 typedef struct {
+  /* file loading params */
+  uint32_t      vrom_addr;
+  void         *dram_addr;
+  uint32_t      size;
+  /* unknown, seem to be unused */
+  void         *unk_00_;
+  uint32_t      unk_01_;
+  uint32_t      unk_02_;
+  /* completion notification params */
+  OSMesgQueue  *notify_queue;
+  OSMesg        notify_message;
+} z64_getfile_t;
+
+/* object structs */
+typedef struct {
+  int16_t       id;
+  void         *data;
+  z64_getfile_t getfile;
+  OSMesgQueue   load_mq;
+  OSMesg        load_m;
+} z64_mem_obj_t;
+
+typedef struct {
+  void         *obj_space_start;
+  void         *obj_space_end;
+  uint8_t       n_objects;
+  uint8_t       n_spawned_objects;
+  uint8_t       keep_index;
+  uint8_t       skeep_index;
+  z64_mem_obj_t objects[19];
+} z64_obj_ctxt_t;
+
+typedef struct {
     /* 0x00 */ uint16_t   id;
     /* 0x02 */ z64_xyz_t  pos;
     /* 0x08 */ z64_xyz_t  rot;
@@ -1038,7 +1074,12 @@ typedef struct {
   z64_actor_t  common;               /* 0x0000 */
   char         unk_00_[0x0013];      /* 0x013C */
   uint8_t      current_mask;         /* 0x014F */
-  char         unk_01_[0x02D4];      /* 0x0150 */
+  char         unk_01_[0x0014];      /* 0x0150 */
+  z64_getfile_t giObjectDmaRequest;  /* 0x0164 */
+  OSMesgQueue  giObjectLoadQueue;    /* 0x0184 */
+  OSMesg       giObjectLoadMsg;      /* 0x019C */
+  void*        giObjectSegment;      /* 0x01A0 */
+  char         unk_01b_[0x0280];     /* 0x01A4 */
   int8_t       incoming_item_id;     /* 0x0424 */
   char         unk_02_[0x0003];      /* 0x0425 */
   z64_actor_t* incoming_item_actor;  /* 0x0428 */
@@ -1064,6 +1105,8 @@ typedef struct {
   int16_t      drop_distance;        /* 0x0886 */
                                      /* 0x0888 */
 } z64_link_t;
+
+static_assert(sizeof(z64_link_t) == 0x0888, "Size of z64_link_t has changed");
 
 typedef struct DynaPolyActor {
   z64_actor_t  actor;    /* 0x000 */
@@ -1111,39 +1154,6 @@ typedef struct {
   uint32_t        unk_01_;                /* 0x00A0 */
                                           /* 0x00A4 */
 } z64_ctxt_t;
-
-typedef struct {
-  /* file loading params */
-  uint32_t      vrom_addr;
-  void         *dram_addr;
-  uint32_t      size;
-  /* unknown, seem to be unused */
-  void         *unk_00_;
-  uint32_t      unk_01_;
-  uint32_t      unk_02_;
-  /* completion notification params */
-  OSMesgQueue  *notify_queue;
-  OSMesg        notify_message;
-} z64_getfile_t;
-
-/* object structs */
-typedef struct {
-  int16_t       id;
-  void         *data;
-  z64_getfile_t getfile;
-  OSMesgQueue   load_mq;
-  OSMesg        load_m;
-} z64_mem_obj_t;
-
-typedef struct {
-  void         *obj_space_start;
-  void         *obj_space_end;
-  uint8_t       n_objects;
-  uint8_t       n_spawned_objects;
-  uint8_t       keep_index;
-  uint8_t       skeep_index;
-  z64_mem_obj_t objects[19];
-} z64_obj_ctxt_t;
 
 typedef struct {
   uint8_t       code;
@@ -1438,7 +1448,12 @@ typedef struct {
   int8_t           cutscene_state;         /* 0x01D6C */
   char             unk_0F_[0x036B];        /* 0x01D6D */
   MessageContext   msgContext;             /* 0x020D8 */
-  char             unk_12_[0x0246];        /* 0x104EC */
+  char             unk_12_[0x0134];        /* 0x104EC */
+  uint8_t*         parameterSegment;       /* 0x10620 */
+  uint8_t*         doActionSegment;        /* 0x10624 */
+  uint8_t*         iconItemSegment;        /* 0x10628 */
+  uint8_t*         mapSegment;             /* 0x1062C */
+  char             unk_12b_[0x0102];       /* 0x10630 */
   struct {
     uint16_t       unk_00_;
     uint16_t       fadeout;
@@ -1471,9 +1486,12 @@ typedef struct {
   char             unk_15_[0x0D90];        /* 0x10A14 */
   z64_obj_ctxt_t   obj_ctxt;               /* 0x117A4 */
   int8_t           room_index;             /* 0x11CBC */
-  char             unk_16_[0x000B];        /* 0x11CBD */
-  void            *room_ptr;               /* 0x11CC8 */
-  char             unk_17_[0x00D4];        /* 0x11CCC */
+  char             unk_16_[0x0037];        /* 0x11CBD */
+  z64_getfile_t    roomDmaRequest;         /* 0x11CF4 */
+  OSMesgQueue      roomLoadQueue;          /* 0x11D14 */
+  OSMesg           roomLoadMsg;            /* 0x11D2C */
+  char             drawParams[4];          /* 0x11D30 */
+  char             unk_17_[0x006c];        /* 0x11D34 */
   float            billboard_mtx[4][4];    /* 0x11DA0 */
   char             unk_18_[0x0004];        /* 0x11DE0 */
   uint32_t         gameplay_frames;        /* 0x11DE4 */
@@ -1500,6 +1518,7 @@ typedef struct {
   char             unk_26_[0x00FC];        /* 0x1241C */
 } z64_game_t; // 0x12518
 
+static_assert(sizeof(z64_game_t) == 0x12518, "Size of z64_game_t has changed");
 
 typedef struct {
   char              unk_00_[0x01D8];          /* 0x00000 */
@@ -2485,5 +2504,7 @@ extern void Fault_AddHungupAndCrashImpl(const char* msg1, const char* msg2);
 extern int32_t sprintf(char* dst, char* fmt, ...);
 extern int32_t CutsceneFlags_Get(void* play, int16_t flag);
 extern int32_t DemoKankyo_CutsceneFlags_Get_Hook(void* play, int16_t flag);
+extern int32_t DmaMgr_RequestAsync(z64_getfile_t* req, void* ram, uintptr_t vrom,
+                  size_t size, uint32_t unk, OSMesgQueue* queue, OSMesg msg);
 
 #endif

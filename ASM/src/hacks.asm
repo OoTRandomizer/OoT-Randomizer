@@ -2566,15 +2566,31 @@ skip_bombchu_bowling_prize_switch:
 ;==================================================================================================
 ; Add ability to control Lake Hylia's water level
 ;==================================================================================================
-.orga 0xD5B264
-    jal Check_Fill_Lake
+.headersize (0x809cae60 - 0x00d5afe0)
 
-.orga 0xD5B660
-    j   Fill_Lake_Destroy
+; Replaces: li      t5,48
+;           addiu   v1,v1,-23088
+;           sw      t5,4(s0)
+;           lw      t6,4(v1)
+.org 0x809cb0d8 ; in BgSpot06Objects_Init
+    jal     HyliaWater_SetupWaterFunction
+    addiu   v1,-23088       ; displaced
+    bnez    v0,0x809cb218   ; if water action func set, skip rest, else run child/etc
     nop
 
-.orga 0xEE7E4C
-    jal Hit_Gossip_Stone
+; Make the lock position follow water level
+; Replaces: lw      a0,24(sp)
+;           lh      v0,346(a0)
+.org 0x809cbb50 ; in BgSpot06Objects_LockFloat
+    jal     HyliaWater_LockPosition
+    lw      a0,24(sp)   ; displaced
+
+.headersize (0)
+
+; If hit water Gossip Stone, set flag to change level
+; Replaces  jal     Message_StartTextbox
+.orga 0xEE7E4C      ; 0x80B6C72C in func_80A4E910
+    jal EnGs_HitGossipStone
 
 .orga 0x26C10E3
     .byte 0xFF ; Set generic grotto text ID to load from grotto ID
@@ -4167,6 +4183,7 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/ovl_en_okarina_tag.asm"
 .include "hacks/sound.asm"
 .include "hacks/z_player.asm"
+.include "hacks/z_map_exp.asm"
 .include "hacks/z_en_sa.asm"
 .include "hacks/en_box.asm"
 .include "hacks/z_scene.asm"
