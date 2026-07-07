@@ -17,7 +17,7 @@ typedef void (*EnBoxActionFunc)(struct EnBox*, z64_game_t*);
 typedef struct EnBox
 {
     /* 0x0000 */ DynaPolyActor dyna;
-    /* 0x0154 */ uint8_t skelanime[0x44];
+    /* 0x0154 */ SkelAnime skelAnime;
     /* 0x0198 */ int32_t unk_198; // related to animation delays for types 3 and 8
     /* 0x019C */ int32_t sub_cam_id;
     /* 0x01A0 */ float unk_1A0; // 0-1, rotation-related, apparently unused (in z_en_box.c at least)

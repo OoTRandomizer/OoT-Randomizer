@@ -135,6 +135,10 @@ RANDO_CONTEXT:
 .include "big_poe.asm"
 .include "message_gerudocardminimap.asm"
 .include "player_laddercutscenefix.asm"
+.include "player_bunny_hover_matrix.asm"
+.include "player_hookshotcheckspawn.asm"
+.include "enbox_callloadobject.asm"
+.include "object_checkmaxobjectspace.asm"
 
 .align 0x10
 .importobj "../build/bundle.o"

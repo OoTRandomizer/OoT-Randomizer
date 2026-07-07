@@ -42,6 +42,7 @@
 #define NA_SE_SY_SET_FIRE_ARROW 0x483E
 
 #define FONT_CHAR_TEX_SIZE ((16 * 16) / 2) // 16x16 I4 texture
+#define MESSAGE_WIDE_CHAR_ZERO 0x824F // wide character for 0
 
 #define OFFSETOF(structure, member) ((size_t)&(((structure*)0)->member))
 
@@ -1309,7 +1310,10 @@ typedef struct {
     /* 0xE300 */ int32_t      msgLength; // original name : "msg_data"
     /* 0xE304 */ uint8_t      msgMode; // original name: "msg_mode"
     /* 0xE305 */ char         unk_E305[0x1];
-    /* 0xE306 */ uint8_t      msgBufDecoded[200]; // decoded message buffer, may be smaller than this
+    /* 0xE306 */ union {
+        uint8_t      msgBufDecoded[200]; // decoded message buffer, may be smaller than this
+        uint16_t     msgBufDecodedWide[100]; // decoded message buffer, may be smaller than this
+    };
     /* 0xE3CE */ uint16_t     msgBufPos; // original name : "rdp"
     /* 0xE3D0 */ uint16_t     unk_E3D0; // unused, only ever set to 0
     /* 0xE3D2 */ uint16_t     textDrawPos; // draw all decoded characters up to this buffer position
@@ -1374,6 +1378,11 @@ typedef enum {
     /* 0x15 */ CAM_MODE_MAX,
 } CameraModeType;
 
+typedef struct ActorListEntry {
+    /* 0x00 */ int32_t length; // number of actors loaded of this category
+    /* 0x04 */ z64_actor_t* head; // pointer to head of the linked list of this category (most recent actor added)
+} ActorListEntry; // size = 0x08
+
 /* game context */
 typedef struct {
   z64_ctxt_t       common;                 /* 0x00000 */
@@ -1409,10 +1418,7 @@ typedef struct {
   z64_actor_ctxt_t actor_ctxt;             /* 0x01C24 */
   uint8_t          n_actors_loaded;        /* 0x01C2C */
   char             unk_0A_[0x0003];        /* 0x01C2D */
-  struct {
-    uint32_t       length;
-    z64_actor_t   *first;
-  }                actor_list[12];         /* 0x01C30 */
+  ActorListEntry   actorLists[12];         /* 0x01C30 */  // index is actor category
   char             unk_0B_[0x0038];        /* 0x01C90 */
   z64_actor_t     *arrow_actor;            /* 0x01CC8 */
   z64_actor_t     *target_actor;           /* 0x01CCC */
@@ -1507,8 +1513,10 @@ typedef struct {
   uint8_t          shootingGalleryStatus;  /* 0x11E5C */
   uint8_t          bombchuBowlingStatus;   /* 0x11E5D */
   uint8_t          fadeout_transition;     /* 0x11E5E */
-                                           /* 0x11E5F */
-} z64_game_t;
+  char             unk_25_[0x05BC];        /* 0x11E5F */
+  uint8_t          transitionMode;         /* 0x1241B */
+  char             unk_26_[0x00FC];        /* 0x1241C */
+} z64_game_t; // 0x12518
 
 static_assert(sizeof(z64_game_t) == 0x11E60, "Size of z64_game_t has changed");
 
@@ -1936,7 +1944,15 @@ typedef enum {
     /* 4 */ PAUSE_BG_PRERENDER_MAX,
 } PauseBgPreRenderState;
 
-
+typedef struct SkelAnime {
+    /* 0x00 */ char known_1_[0x08];
+    /* 0x08 */ void* animation; // Can be an AnimationHeader or LinkAnimationHeader.
+    /* 0x0C */ float startFrame; // In mode ANIMMODE_LOOP_PARTIAL*, start of partial loop.
+    /* 0x10 */ float endFrame; // In mode ANIMMODE_ONCE*, Update returns true when curFrame is equal to this. In mode ANIMMODE_LOOP_PARTIAL*, end of partial loop.
+    /* 0x14 */ float animLength; // Total number of frames in the current animation.
+    /* 0x18 */ float curFrame; // Current frame in the animation
+    /* 0x1C */ char known_2_[0x28];
+} SkelAnime; // size = 0x44
 
 /* helper macros */
 #define LINK_IS_ADULT (z64_file.link_age == 0)
@@ -2026,6 +2042,7 @@ typedef enum {
 #define Message_ContinueTextbox_addr            0x800DCE80
 #define PlaySFX_addr                            0x800646F0
 #define z64_ScalePitchAndTempo_addr             0x800C64A0
+#define Font_LoadCharWide_addr                  0x8005BC90
 #define Font_LoadChar_addr                      0x8005BCE4
 #define GetItem_Draw_addr                       0x800570C0
 #define z64_Audio_GetActiveSeqId_addr           0x800CAB18
@@ -2107,6 +2124,7 @@ typedef int32_t (*z64_ActorOfferGetItem_proc)(z64_actor_t* actor, z64_game_t* ga
 typedef void(*z64_RandSeed_proc) (uint32_t seed);
 typedef float(*z64_Rand_ZeroOne_proc)();
 typedef void(*Font_LoadChar_proc)(void* font, uint8_t character, uint16_t codePointIndex);
+typedef void(*Font_LoadCharWide_proc)(void* font, uint16_t character, uint16_t button);
 
 typedef void(*Interface_LoadItemIcon1_proc) (z64_game_t* game, uint16_t button);
 
@@ -2215,6 +2233,7 @@ typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawn
 
 #define PlaySFX ((PlaySFX_proc)PlaySFX_addr)
 #define Font_LoadChar ((Font_LoadChar_proc)Font_LoadChar_addr)
+#define Font_LoadCharWide ((Font_LoadCharWide_proc)Font_LoadCharWide_addr)
 #define GetItem_Draw            ((GetItem_Draw_proc)GetItem_Draw_addr)
 
 /* macros */

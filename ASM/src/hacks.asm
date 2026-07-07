@@ -1391,14 +1391,6 @@ nop
 .orga 0xD12F78
     li  t7, 0
 
-;li v1, 5
-.orga 0xE29388
-    j   override_saria_song_check
-
-;lh v0, 0xa4(t6)       ; v0 = scene
-.orga 0xE2A044
-    jal  set_saria_song_flag
-
 ; li a1, 3
 .orga 0xDB532C
     jal override_song_of_time
@@ -3528,8 +3520,8 @@ courtyard_guards_kill:
 .headersize(0x8092ACC0 - 0x00CC8430)
 ; Increase the size of DemoEffect actor to store override
 .org 0x8093019c
-; Replaces: .d32 0x00000190
-.d32 0x000001C0
+; Replaces: .dw 0x00000190
+.dw 0x000001C0
 
 ; Hook the function DemoEffect_DrawJewel
 .org 0x8092e3f8
@@ -4082,6 +4074,19 @@ DemoEffect_DrawJewel_AfterHook:
 ; Add custom message control characters
 ;=========================================================================================
 
+; In Message_Decode at the last control code check (0x0A for new line)
+; Replaces
+;   addiu   at, r0, 0x000A
+;   bne     v0, at, 0x800DB32C
+.headersize (0x800110A0 - 0xA87000)
+.org 0x800DB314
+    j       Message_Decode_Control_Code_Hook_JP
+    nop
+
+;=========================================================================================
+; Add custom message control characters
+;=========================================================================================
+
 ; In Message_Decode at the last control code check (0x01 for new line)
 ; Replaces
 ;   addiu   at, r0, 0x0001
@@ -4174,3 +4179,6 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/sound.asm"
 .include "hacks/z_player.asm"
 .include "hacks/z_map_exp.asm"
+.include "hacks/z_en_sa.asm"
+.include "hacks/en_box.asm"
+.include "hacks/z_scene.asm"

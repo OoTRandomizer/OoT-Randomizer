@@ -2,6 +2,7 @@ from __future__ import annotations
 import random
 from collections.abc import Callable, Collection
 from typing import TYPE_CHECKING, Optional, Any
+from Language import Language
 
 if TYPE_CHECKING:
     from World import World
@@ -48,8 +49,10 @@ class Multi:
         self.locations: list[str] = locations
 
 
-def get_hint(name: str, clearer_hint: bool = False) -> Hint:
-    text_options, clear_text, hint_type = hintTable[name]
+def get_hint(name: str, lang: Language, clearer_hint: bool = False) -> Hint:
+    lang_table = lang.hintTable[name]
+    text_options, clear_text = lang_table["vague_hint"], lang_table["clear_hint"]
+    hint_type = hintTable[name][2]
     if clearer_hint:
         if clear_text is None:
             return Hint(name, text_options, hint_type, 0)
@@ -67,7 +70,7 @@ def get_hint_group(group: str, world: World) -> list[Hint]:
     ret = []
     for name in hintTable:
 
-        hint = get_hint(name, world.settings.clearer_hints)
+        hint = get_hint(name, world.language, world.settings.clearer_hints)
 
         if hint.name in world.always_hints and group == 'always':
             hint.type = 'always'
@@ -122,7 +125,7 @@ def get_hint_group(group: str, world: World) -> list[Hint]:
 def get_required_hints(world: World) -> list[Hint]:
     ret = []
     for name in hintTable:
-        hint = get_hint(name)
+        hint = get_hint(name, world.language)
         if 'always' in hint.type or hint.name in conditional_always and conditional_always[hint.name](world):
             ret.append(hint)
     return ret
@@ -133,7 +136,7 @@ def get_upgrade_hint_list(world: World, locations: list[str]) -> list[Hint]:
     ret = []
     for name in multiTable:
         if name not in hint_exclusions(world):
-            hint = get_hint(name, world.settings.clearer_hints)
+            hint = get_hint(name, world.language, world.settings.clearer_hints)
             multi = get_multi(name)
 
             if len(locations) < len(multi.locations) and all(location in multi.locations for location in locations) and (hint.name not in conditional_sometimes.keys() or conditional_sometimes[hint.name](world)):
@@ -1965,29 +1968,16 @@ misc_dual_hint_table: dict[str, dict[str, Any]] = {
 # Separate table for goal names to avoid duplicates in the hint table.
 # Link's Pocket will always be an empty goal, but it's included here to
 # prevent key errors during the dungeon reward lookup.
-BOSS_GOAL_TABLE: dict[str, tuple[str, str, str]] = {
-    'Queen Gohma':                                              ("path to the #Spider#", "path to #Queen Gohma#", "Green"),
-    'King Dodongo':                                             ("path to the #Dinosaur#", "path to #King Dodongo#", "Red"),
-    'Barinade':                                                 ("path to the #Tentacle#", "path to #Barinade#", "Blue"),
-    'Phantom Ganon':                                            ("path to the #Puppet#", "path to #Phantom Ganon#", "Green"),
-    'Volvagia':                                                 ("path to the #Dragon#", "path to #Volvagia#", "Red"),
-    'Morpha':                                                   ("path to the #Amoeba#", "path to #Morpha#", "Blue"),
-    'Bongo Bongo':                                              ("path to the #Hands#", "path to #Bongo Bongo#", "Pink"),
-    'Twinrova':                                                 ("path to the #Witches#", "path to #Twinrova#", "Yellow"),
-    'ToT Reward from Rauru':                                    ("path of #time#", "path of #time#", "Light Blue"),
-}
-
-# If dungeon rewards are shuffled, we don't use boss names for their goals.
-REWARD_GOAL_TABLE: dict[str, tuple[str, str]] = {
-    'Kokiri Emerald':                                           ("path to a #tree's farewell#", "path to the #Kokiri Emerald#"),
-    'Goron Ruby':                                               ("path to the #Gorons' hidden treasure#", "path to the #Goron Ruby#"),
-    'Zora Sapphire':                                            ("path to an #engagement ring#", "path to the #Zora Sapphire#"),
-    'Light Medallion':                                          ("path to #an old man's sagely power#", "path to the #Light Medallion#"),
-    'Forest Medallion':                                         ("path to #a Kokiri's sagely power#", "path to the #Forest Medallion#"),
-    'Fire Medallion':                                           ("path to #a Goron's sagely power#", "path to the #Fire Medallion#"),
-    'Water Medallion':                                          ("path to #a Zora's sagely power#", "path to the #Water Medallion#"),
-    'Shadow Medallion':                                         ("path to #a Sheikah's sagely power#", "path to the #Shadow Medallion#"),
-    'Spirit Medallion':                                         ("path to #a Gerudo's sagely power#", "path to the #Spirit Medallion#"),
+BOSS_GOAL_COLOR: dict[str, str] = {
+    'Queen Gohma':                                              "Green",
+    'King Dodongo':                                             "Red",
+    'Barinade':                                                 "Blue",
+    'Phantom Ganon':                                            "Green",
+    'Volvagia':                                                 "Red",
+    'Morpha':                                                   "Blue",
+    'Bongo Bongo':                                              "Pink",
+    'Twinrova':                                                 "Yellow",
+    'ToT Reward from Rauru':                                    "Light Blue",
 }
 
 
@@ -2010,7 +2000,7 @@ def hint_exclusions(world: World, clear_cache: bool = False) -> list[str]:
 
     location_hints = []
     for name in hintTable:
-        hint = get_hint(name, world.settings.clearer_hints)
+        hint = get_hint(name, world.language, world.settings.clearer_hints)
         if any(item in hint.type for item in
                 ['always',
                  'dual_always',

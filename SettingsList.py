@@ -3,6 +3,7 @@ import difflib
 import json
 from collections.abc import Iterable
 from typing import TYPE_CHECKING, Optional, Any
+import os
 
 import Colors
 from Hints import hint_dist_list, hint_dist_tips, gossipLocations
@@ -16,7 +17,7 @@ from SettingTypes import SettingInfo, SettingInfoStr, SettingInfoList, SettingIn
     SearchBox
 import Sounds
 import StartingItems
-from Utils import data_path
+from Utils import data_path, lang_path
 
 if TYPE_CHECKING:
     from Entrance import Entrance
@@ -34,6 +35,14 @@ settings_versioning = [
     ),
 ]
 
+def get_language() -> dict[str, str]:
+    return {
+        lang: lang
+        for lang in os.listdir(lang_path())
+        if os.path.isdir(os.path.join(lang_path(), lang))
+        and os.path.isfile(os.path.join(lang_path(), lang, 'property.json'))
+    }
+
 class SettingInfos:
     # Internal & Non-GUI Settings
     aliases = SettingInfoList(None, None, False)
@@ -45,6 +54,15 @@ class SettingInfos:
     generating_patch_file = Checkbutton(None)
     output_file = SettingInfoStr(None, None)
     seed = SettingInfoStr(None, None)
+
+    language = Combobox(
+        gui_text       = 'Language',
+        default        = 'English',
+        choices        = get_language(),
+        gui_tooltip    = '''\
+            Sets the language used within the game.
+        ''',
+    )
 
     # GUI Only Buttons/Text
 
