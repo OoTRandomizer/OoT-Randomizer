@@ -1043,7 +1043,6 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         world.randomized_starting_items[selected_item] = world.randomized_starting_items.get(selected_item, 0) + 1
         pool.remove(selected_item)
         pool.extend(get_junk_item())
-    add_random_starting_items_ammo(world.randomized_starting_items)
     for item, count in world.randomized_starting_items.items():
         if item in REWARD_COLORS and count > 0:
             world.hinted_dungeon_reward_locations[item] = None
@@ -1136,10 +1135,3 @@ def configure_random_starting_items_pool(world: World, pool: list[str]) -> list[
         exclude_list.extend(ItemInfo.junk_weight)
 
     return sorted({item for item in pool if item not in exclude_list and ItemInfo.items[item].type != 'Shop'}) # give each item the same weight regardless of how many copies there are
-
-
-def add_random_starting_items_ammo(randomized_starting_items: dict[str, int]) -> None:
-    for item in StartingItems.inventory.values():
-        if item.item_name in randomized_starting_items and item.ammo:
-            for ammo, qty in item.ammo.items():
-                randomized_starting_items[ammo] = qty[randomized_starting_items[item.item_name] - 1]

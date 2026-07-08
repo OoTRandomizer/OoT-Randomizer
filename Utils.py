@@ -35,7 +35,6 @@ def local_path(path: str = '') -> str:
 
     return os.path.join(local_path.cached_path, path)
 
-
 def data_path(path: str = '') -> str:
     if not hasattr(data_path, "cached_path"):
         data_path.cached_path = None
@@ -49,6 +48,9 @@ def data_path(path: str = '') -> str:
     data_path.cached_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
 
     return os.path.join(data_path.cached_path, path)
+
+def lang_path(path: str = '') -> str:
+    return data_path(os.path.join('lang', path))
 
 
 def default_output_path(path: str) -> str:

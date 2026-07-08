@@ -98,7 +98,7 @@ void update_bombchu_trail_colors()
     colorRGB8_t rainbow_color_outer_start = get_rainbow_color(frames, BOMBCHU_CYCLE_FRAMES_OUTER);
     colorRGB8_t rainbow_color_outer_end = get_rainbow_color(frames + 2 * BOMBCHU_CYCLE_FRAMES_OUTER, BOMBCHU_CYCLE_FRAMES_OUTER);
 
-    z64_actor_t* explosive = z64_game.actor_list[ACTORTYPE_EXPLOSIVES].first;
+    z64_actor_t* explosive = z64_game.actorLists[ACTORTYPE_EXPLOSIVES].head;
     while (explosive != NULL)
     {
         if (explosive->main_proc != NULL && explosive->actor_id == 0xDA) // En_Bom_Chu

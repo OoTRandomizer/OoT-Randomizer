@@ -947,7 +947,7 @@ def check_entrances_compatibility(entrance: Entrance, target: Entrance, rollback
                 try:
                     placed_entrance = rollback[0]
                     if entrance.type == placed_entrance.type and HintArea.at(placed_entrance.connected_region) == hint_area:
-                        raise EntranceShuffleError(f'Another {entrance.type} entrance already leads to {hint_area}')
+                        raise EntranceShuffleError(f'Another {entrance.type} entrance already leads to {hint_area.name}')
                 except HintAreaNotFound:
                     pass
 
@@ -1070,7 +1070,7 @@ def validate_world(world: World, worlds: list[World], entrance_placed: Optional[
                 try:
                     entrance2 = placed_one_way_entrances[idx2][0]
                     if entrance1.type == entrance2.type and hint_area1 == HintArea.at(entrance2.connected_region):
-                        raise EntranceShuffleError(f'Multiple {entrance1.type} entrances lead to {hint_area1}')
+                        raise EntranceShuffleError(f'Multiple {entrance1.type} entrances lead to {hint_area1.name}')
                 except HintAreaNotFound:
                     pass
 

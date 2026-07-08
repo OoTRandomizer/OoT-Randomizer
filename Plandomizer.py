@@ -1050,10 +1050,6 @@ class WorldDistribution:
                 continue
             save_context.give_item(world, name, record.count)
 
-    def give_randomized_items(self, world: World, save_context: SaveContext) -> None:
-        for item, count in world.randomized_starting_items.items():
-            save_context.give_item(world, item, count)
-
     def get_starting_item(self, item: str) -> int:
         items = self.starting_items
         if item in items:
@@ -1081,6 +1077,9 @@ class WorldDistribution:
 
     def configure_effective_starting_items(self, worlds: list[World], world: World) -> None:
         items = {item_name: record.copy() for item_name, record in self.starting_items.items()}
+
+        for item, count in world.randomized_starting_items.items():
+            add_starting_item_with_ammo(items, item, count)
 
         if world.settings.start_with_rupees:
             add_starting_item_with_ammo(items, 'Rupees', 999)
@@ -1387,7 +1386,7 @@ class Distribution:
                                 world_dist.goal_locations[cat_name][goal_text] = {loc.name: LocationRecord.from_item(loc.item).to_json() for loc in locations}
                             else:
                                 world_dist.goal_locations[cat_name][goal_text]['from World ' + str(location_world + 1)] = {loc.name: LocationRecord.from_item(loc.item).to_json() for loc in locations}
-            world_dist.barren_regions = list(map(str, world.empty_areas))
+            world_dist.barren_regions = [area.name for area in world.empty_areas]
             world_dist.gossip_stones = {}
             for loc in spoiler.hints[world.id]:
                 hint = GossipRecord(spoiler.hints[world.id][loc].to_json())
