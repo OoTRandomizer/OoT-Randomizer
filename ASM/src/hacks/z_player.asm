@@ -1,4 +1,22 @@
-.headersize (0x808301c0 - 0xbcdb70)
+.headersize(0x808301c0 - 0xbcdb70)
+
+;==================================================================================
+; 1. Fixes Epona spawning on water when exiting into a water entrance while riding.
+; 2. Prevents Link from swimming when entering Domain to Lake when low water.
+;==================================================================================
+; Replaces      sub.s   $f10,$f6,$f8
+;               move    a0,s1
+;               move    a1,s0
+;               swc1    $f10,40(sp)
+;               lw      t8,1640(s0)
+;               lwc1    $f16,36(t8)
+.org 0x8083aa1c                     ; in Player_SetStartingMovement
+    sub.s   $f12,$f6,$f8            ; (waterbox Y surface - player Y) = ySurface
+    move    s7,a2                   ; store Player_Action_StartModeWater address
+    jal     Player_CallCheckEponaWater
+    swc1    $f12,40(sp)             ; store new ySurface (restored in end of jal to $f10)
+    bnez    v0,0x8083aa98           ; not swim entry
+    nop
 
 ;================================================================================
 ; Fixes softlock when starting cutscene while dismounting a ladder.
