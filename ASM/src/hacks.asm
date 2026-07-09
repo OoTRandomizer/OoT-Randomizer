@@ -4170,3 +4170,4 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/z_en_sa.asm"
 .include "hacks/en_box.asm"
 .include "hacks/z_scene.asm"
+.include "cow_nosering.asm"
