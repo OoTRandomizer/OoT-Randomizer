@@ -4,7 +4,7 @@
 ;Doing it this way prevents the Bomb OI glitch that the OoT devs added in 1.1 and onwards.
 
 empty_bomb:
-   li      at,CFG_BOMB_OI  ; if bomb OI enabled, don't run
+   lb      at,CFG_BOMB_OI  ; if bomb OI enabled, don't run
    bnez    at,@@Return
    nop
    sb      r0, 0x141(v0)  ;heldItemAction

@@ -51,8 +51,16 @@
      lw      a1,60(sp)       ; displaced (loads player)
 
 ;================================================================================
-; Bomb OI
+; Backport Bomb OI
+; 1. Restore first part of CarryActor upper action function
+; 2. Make the explosives part of DetachHeldActor always run for bomb OI:
+; a) in start of function, check for setting and choose which address to jump to
+; later when returned to the function (the entire heldActor + Hookshot check is
+; moved to the function)
+; b) reorder the transition between pre-check and explosives check to allow jump
+; 3) Don't run old rando empty bomb fix if setting enabled (see empty bomb)
 ;================================================================================
+; 1)
 ; Replaces: move    s0,a0
 ;           move    s1,a1
 ;           sw      ra,28(sp)
@@ -61,6 +69,7 @@
     jal     Player_CarryActorSetUpperIA
     move    s0,a0       ; displaced
 
+; 2a)
 ; Replaces: sw      a0,40(sp)
 ;           lw      v1,924(s0)
 ;           move    a0,s0
@@ -72,14 +81,15 @@
 .org 0x80830390     ; Player_DetachHeldActor
     jal     Player_DetachActorCheckBomb
     sw      a0,40(sp)       ; displaced
-    bnez    v0,@@Branch
-    nop
-    b       0x808303b4      ; run function normally
+    bnez    v0,@@Branch     ; if no heldActor, or heldActor is Hookshot
+    nop                     ; then return if normal, if bomb OI run explosives check
+    b       0x808303b4      ; if have heldActor - run function normally
     nop
 @@Branch:
-    jr      t9      ; branch to explosives check or return depending on setting
+    jr      t9      ; branch to explosives check "1.1" or return, depending on setting
     nop
 
+; 2b)
 ; Replaces: li      at,-2049
 ;           move    a0,s0
 ;           and     t7,t6,at
