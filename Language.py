@@ -10,6 +10,7 @@ import json
 import os
 import re
 import unicodedata
+from copy import deepcopy
 from functools import reduce
 from typing import TypedDict
 
@@ -343,21 +344,140 @@ def _decode_sjis_codepoint_token(value: str) -> str:
         return text
 
 class Language:
-    def __init__(self, lang: str):
+    FALLBACK_LANG = "English"
+
+    @staticmethod
+    def _load_property_file(lang: str) -> dict:
         with open(os.path.join(lang_path(lang), "property.json"), mode="r", encoding="utf-8") as f:
-            message = json.load(f)
+            return json.load(f)
+
+    @staticmethod
+    def _is_id_list(value) -> bool:
+        """Return True for property lists whose entries can be merged by id.
+
+        Ordinary translation-choice lists must never be padded from the fallback
+        language, because that can mix English options into another language.
+        Lists whose entries are dictionaries with an ``id`` field are treated as
+        keyed records instead: existing ids are overlaid and missing ids are
+        filled from the fallback language.
+        """
+        return (
+            isinstance(value, list)
+            and len(value) > 0
+            and all(isinstance(item, dict) and "id" in item for item in value)
+        )
+
+    @classmethod
+    def _merge_id_list_with_fallback(cls, fallback: list, override: list) -> list:
+        """Merge a list of ``{"id": ...}`` dictionaries by id.
+
+        The selected language controls the visible order for translated entries.
+        Fallback-only records are appended afterward in fallback order.
+        """
+        fallback_by_id = {item["id"]: item for item in fallback}
+        override_ids = set()
+        merged = []
+
+        for item in override:
+            item_id = item["id"]
+            override_ids.add(item_id)
+            if item_id in fallback_by_id:
+                merged.append(cls._merge_with_fallback(fallback_by_id[item_id], item))
+            else:
+                merged.append(deepcopy(item))
+
+        for item in fallback:
+            if item["id"] not in override_ids:
+                merged.append(deepcopy(item))
+
+        return merged
+
+    @classmethod
+    def _merge_with_fallback(cls, fallback, override):
+        """Return fallback recursively overlaid by override.
+
+        Dicts are merged by key. Lists are normally replaced wholesale by the
+        selected language to prevent fallback-language strings from being mixed
+        into translated choice lists. The one exception is a list of dictionaries
+        with an ``id`` field, which is merged by id so missing records can still
+        be filled from the fallback language. Existing override values,
+        including empty strings and null, are treated as intentional translations.
+        """
+        if isinstance(fallback, dict) and isinstance(override, dict):
+            merged = {k: deepcopy(v) for k, v in fallback.items()}
+            for key, value in override.items():
+                if key in merged:
+                    merged[key] = cls._merge_with_fallback(merged[key], value)
+                else:
+                    merged[key] = deepcopy(value)
+            return merged
+
+        if isinstance(fallback, list) and isinstance(override, list):
+            if cls._is_id_list(fallback) and (cls._is_id_list(override) or len(override) == 0):
+                return cls._merge_id_list_with_fallback(fallback, override)
+            return deepcopy(override)
+
+        return deepcopy(override)
+
+    @classmethod
+    def _load_property_with_fallback(cls, lang: str) -> dict:
+        if lang == cls.FALLBACK_LANG:
+            return cls._load_property_file(lang)
+
+        fallback_message = cls._load_property_file(cls.FALLBACK_LANG)
+
+        try:
+            message = cls._load_property_file(lang)
+        except FileNotFoundError:
+            return fallback_message
+
+        return cls._merge_with_fallback(fallback_message, message)
+
+    @staticmethod
+    def _collect_language_data(lang: str, extensions: tuple[str, ...]) -> dict[str, str]:
+        path = lang_path(lang)
+        if not os.path.isdir(path):
+            return {}
+        return {
+            fname: os.path.join(path, fname)
+            for fname in os.listdir(path)
+            if fname.lower().endswith(extensions)
+        }
+
+    def __init__(self, lang: str):
+        message = self._load_property_with_fallback(lang)
 
         self._normalize_replace_table(message)
         self.__dict__.update(message)
         self.base = self.lang_property["base"]
 
         extensions = (".bin", ".ia4", ".zobj")
+        self.lang = lang
         self.path = lang_path(lang)
-        self.data = {
-            fname: os.path.join(lang_path(lang), fname)
-            for fname in os.listdir(lang_path(lang))
-            if fname.lower().endswith(extensions)
-        }
+        # Do not globally fall back binary/texture/object data files.
+        # Register only files that actually exist in the selected language.
+        # Individual patch sites that need a fallback should resolve it explicitly.
+        self.data = self._collect_language_data(lang, extensions)
+
+    def blue_fire_arrow_item_name_path(self) -> str:
+        """Return the Blue Fire Arrow item-name texture for this language base.
+
+        This is intentionally the only lang.data-style asset fallback.
+        Use the selected language's matching-base file when present; otherwise
+        fall back to Japanese for jp-base languages and English for all others.
+        """
+        if self.base == "jp":
+            filename = "blue_fire_arrow_item_name_jap.ia4"
+            fallback_lang = "Japanese"
+        else:
+            filename = "blue_fire_arrow_item_name_eng.ia4"
+            fallback_lang = self.FALLBACK_LANG
+
+        local_file = self.data.get(filename)
+        if local_file is not None and os.path.isfile(local_file):
+            return local_file
+
+        return os.path.join(lang_path(fallback_lang), filename)
 
 
     def _normalize_replace_table(self, message: dict) -> None:

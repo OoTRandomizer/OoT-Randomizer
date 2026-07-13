@@ -1973,7 +1973,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             bfa_message = make_player_message(bfa_message, lang)
         update_message_by_id(messages, 0x0071, bfa_message, lang, 0x23, allow_duplicates=True)
 
-        with open(lang.data['blue_fire_arrow_item_name_jap.ia4' if lang.base == "jp" else 'blue_fire_arrow_item_name_eng.ia4'], 'rb') as stream:
+        with open(lang.blue_fire_arrow_item_name_path(), 'rb') as stream:
             bfa_name_bytes = stream.read()
             rom.write_bytes(0x883000 if lang.base == "jp" else 0x8A1C00, bfa_name_bytes)
 
