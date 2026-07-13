@@ -348,3 +348,85 @@ CFG_BOSSES:
 ; Bosses are listed twice, first 12 are sorted by the same order as the dungeon entrances (including the 3 with no bosses), then 9 in the usual dungeon order.
 
 .align 4
+
+;==================================================================================================
+; Language character width table
+;==================================================================================================
+; f32[144].  The front-end writes language-specific widths here from property.json:CHAR_WIDTHS.
+; The Message_DrawText hijack redirects the original sFontWidths load to this table.
+; Keep this after the existing configuration tables so older CFG_* addresses do not move.
+
+.align 4
+.area 0x240, 0
+LANG_CHAR_WIDTHS:
+.endarea
+
+
+;==================================================================================================
+; Language wide character width override table
+;==================================================================================================
+; Used only by JP/wide text mode languages.
+; Runtime default width is fixed at 16 pixels. Only entries listed in property.json:CHAR_WIDTHS
+; are written here, using compact pseudo-variable-length entries:
+;   u16 code, u8 width, u8 reserved
+; LANG_WIDE_TEXT_ENGLISH_METRICS is written by Patches.py from
+; lang_property.wide_text_english_metrics. 0 = vanilla JP metrics, 1 = English-like metrics.
+
+.align 4
+LANG_WIDE_TEXT_ENGLISH_METRICS:
+.byte 0
+.byte 0, 0, 0
+
+.align 4
+LANG_WIDE_CHAR_WIDTH_COUNT:
+.halfword 0
+.halfword 0
+
+.align 4
+.area 0x1000, 0
+LANG_WIDE_CHAR_WIDTH_OVERRIDES:
+.endarea
+
+
+;==================================================================================================
+; Localized D-pad pause-menu text
+;==================================================================================================
+; Fixed-size u16 slots keep the ASM interface stable across languages.
+;   LANG_DPAD_TEXT_WIDE = 0: the low byte contains an ASCII character.
+;   LANG_DPAD_TEXT_WIDE = 1: the value is a Shift-JIS code for Font_LoadCharWide.
+; Every slot includes a zero terminator. Dynamic tables are filled per seed by Patches.py.
+
+.align 4
+LANG_DPAD_TEXT_WIDE:
+.byte 0
+.byte 0, 0, 0
+
+; Entrance, Dungeon, Boss, Area, MQ, Normal.
+.area 6 * 13 * 2, 0
+LANG_DPAD_LABELS:
+.endarea
+
+; Matches dungeons[] and bosses[] in ASM/c/dungeon_info.c.
+.area 15 * 12 * 2, 0
+LANG_DPAD_DUNGEON_NAMES:
+.endarea
+
+.area 9 * 10 * 2, 0
+LANG_DPAD_BOSS_NAMES:
+.endarea
+
+; Per-seed localized area and boss names.
+.area 9 * 24 * 2, 0
+LANG_DPAD_REWARD_AREAS:
+.endarea
+
+.area 12 * 12 * 2, 0
+LANG_DPAD_DUNGEON_ENTRANCES:
+.endarea
+
+.area 21 * 12 * 2, 0
+LANG_DPAD_BOSSES:
+.endarea
+
+; The next included file begins with MIPS instructions.
+.align 4

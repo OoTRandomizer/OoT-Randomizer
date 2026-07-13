@@ -37,6 +37,45 @@
             "vague": "path to the #Dragon#"
         }
     },
+    "CHAR_WIDTHS": {},
+    "dpad_menu": {
+        "labels": {
+            "entrance": "Entrance",
+            "dungeon": "Dungeon",
+            "boss": "Boss",
+            "area": "Area",
+            "mq": "MQ",
+            "normal": "Normal"
+        },
+        "dungeons": [
+            "Deku",
+            "Dodongo",
+            "Jabu",
+            "Forest",
+            "Fire",
+            "Water",
+            "Shadow",
+            "Spirit",
+            "BotW",
+            "Ice",
+            "Hideout",
+            "GTG",
+            "Tower",
+            "Ganon",
+            "Chest Game"
+        ],
+        "bosses": [
+            "Gohma",
+            "KD",
+            "Bari",
+            "PG",
+            "Volv",
+            "Morpha",
+            "Bongo",
+            "Twin",
+            "Ganon"
+        ]
+    },
     "IMPORTANT_ITEM_MESSAGES": [
         {
             "id": 28,
@@ -9213,6 +9252,7 @@
         }
     },
     "language_specific_replace_table": [],
+    "replace_table": [],
     "hint_area_enum": {
         "BOTTOM_OF_THE_WELL": {
             "clear_prep": "at",
@@ -9607,7 +9647,8 @@
         "align_text": "Left",
         "base": "en",
         "description": "Play with English language.",
-        "display_name": "English"
+        "display_name": "English",
+        "wide_text_english_metrics": false
     },
     "misc_dual_hint_table": {
         "skull_mask, mask_of_truth": {

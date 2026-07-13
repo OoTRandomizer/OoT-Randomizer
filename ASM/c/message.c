@@ -47,6 +47,298 @@ uint16_t FILENAME_ENCODING_WIDE[256] = {
 extern uint8_t PLAYER_NAMES[256][8];
 extern uint8_t PLAYER_NAME_ID;
 uint16_t current_textbox_id;
+
+// ============================================================================
+// Language message layout: CHAR_WIDTHS and JP/wide English-like metrics
+// ============================================================================
+// Keep all helpers used by ASM/src/hacks/message.asm together. The hooks only
+// redirect control flow; width lookup and runtime layout decisions live here.
+
+typedef struct WideCharWidthOverride {
+    uint16_t code;
+    uint8_t width;
+    uint8_t reserved;
+} WideCharWidthOverride;
+
+extern uint16_t LANG_WIDE_CHAR_WIDTH_COUNT;
+extern WideCharWidthOverride LANG_WIDE_CHAR_WIDTH_OVERRIDES[];
+extern uint8_t LANG_WIDE_TEXT_ENGLISH_METRICS;
+
+// OoTR targets US NTSC 1.0. gRegEditor's pointer holder is at 0x8011BA00 in
+// that revision. The commonly referenced JP NTSC 1.0 map places it at
+// 0x8011BA60, which is not valid for this patch target.
+#define G_REG_EDITOR_PTR ((void**)0x8011BA00)
+#define REG_EDITOR_DATA_OFFSET 0x14
+
+// RegEditor.data uses BASE_REG(group, reg) indices. gRegEditor points to the
+// RegEditor structure itself, so Message_GetRegEditor() advances past the five
+// leading s32 fields before these indices are applied.
+#define WIDE_TEXT_INIT_XPOS_REG_INDEX 0x576       // XREG(54)
+#define WIDE_TEXT_INIT_YPOS_REG_INDEX 0x577       // XREG(55)
+#define WIDE_TEXT_LINE_SPACING_REG_INDEX 0x578    // XREG(56)
+#define WIDE_TEXT_CHAR_SCALE_REG_INDEX 0x579      // XREG(57)
+#define WIDE_TEXT_CHOICE_XPOS_REG_INDEX 0x582     // XREG(66)
+#define WIDE_TEXT_CHOICE_YPOS_0_REG_INDEX 0x583   // XREG(67)
+#define WIDE_TEXT_CHOICE_YPOS_1_REG_INDEX 0x584   // XREG(68)
+#define WIDE_TEXT_CHOICE_YPOS_2_REG_INDEX 0x585   // XREG(69)
+#define WIDE_TEXTBOX_Y_TARGET_REG_INDEX 0x589     // XREG(73)
+
+// US NTSC 1.0 address of Message_HandleChoiceSelection. The corresponding
+// symbol in the default JP decomp map is 0x30 bytes later.
+#define MESSAGE_HANDLE_CHOICE_SELECTION_VANILLA_ADDR 0x800D6290
+
+#define MESSAGE_WIDE_NEWLINE 0x000A
+#define MESSAGE_WIDE_TWO_CHOICE 0x81BC
+#define MESSAGE_WIDE_THREE_CHOICE 0x81B8
+
+#define WIDE_TEXT_JP_ICON_OFFSET_32 54
+#define WIDE_TEXT_JP_ICON_OFFSET_24 50
+#define WIDE_TEXT_EN_ICON_OFFSET_32 74
+#define WIDE_TEXT_EN_ICON_OFFSET_24 72
+
+uint16_t Message_GetWideCharWidth(uint16_t character) {
+    uint16_t count = LANG_WIDE_CHAR_WIDTH_COUNT;
+
+    for (uint16_t i = 0; i < count; i++) {
+        if (LANG_WIDE_CHAR_WIDTH_OVERRIDES[i].code == character) {
+            return LANG_WIDE_CHAR_WIDTH_OVERRIDES[i].width;
+        }
+    }
+
+    return 16;
+}
+
+uint16_t Message_GetWideCharScaledAdvance(uint16_t character, uint16_t textCharScale) {
+    return (uint16_t)(((uint32_t)Message_GetWideCharWidth(character) * (uint32_t)textCharScale) / 100U);
+}
+
+static int16_t Message_GetWideTextCharScaleValue(void) {
+    return (LANG_WIDE_TEXT_ENGLISH_METRICS != 0) ? 75 : 88;
+}
+
+static int16_t Message_GetWideTextLineSpacingValue(void) {
+    return (LANG_WIDE_TEXT_ENGLISH_METRICS != 0) ? 12 : 18;
+}
+
+static int16_t Message_GetWideTextInitXPosValue(void) {
+    return (LANG_WIDE_TEXT_ENGLISH_METRICS != 0) ? 65 : 50;
+}
+
+uint16_t Message_GetWideTextCharScale(void) {
+    return (uint16_t)Message_GetWideTextCharScaleValue();
+}
+
+uint16_t Message_GetWideTextLineSpacing(void) {
+    return (uint16_t)Message_GetWideTextLineSpacingValue();
+}
+
+uint16_t Message_GetWideTextInitXPos(void) {
+    return (uint16_t)Message_GetWideTextInitXPosValue();
+}
+
+static int16_t* Message_GetRegEditor(void) {
+    void* regEditor = *G_REG_EDITOR_PTR;
+
+    if (regEditor == NULL) {
+        return NULL;
+    }
+
+    return (int16_t*)((uint8_t*)regEditor + REG_EDITOR_DATA_OFFSET);
+}
+
+static int16_t Message_GetCurrentWideTextInitXPosValue(void) {
+    int16_t* regEditor = Message_GetRegEditor();
+
+    if (regEditor == NULL) {
+        return Message_GetWideTextInitXPosValue();
+    }
+
+    return regEditor[WIDE_TEXT_INIT_XPOS_REG_INDEX];
+}
+
+void Message_ApplyJpTextDrawMetrics(void) {
+    int16_t* regEditor = Message_GetRegEditor();
+
+    if (regEditor == NULL) {
+        return;
+    }
+
+    regEditor[WIDE_TEXT_CHAR_SCALE_REG_INDEX] = Message_GetWideTextCharScaleValue();
+    regEditor[WIDE_TEXT_LINE_SPACING_REG_INDEX] = Message_GetWideTextLineSpacingValue();
+}
+
+void Message_ApplyJpTextMetrics(void) {
+    int16_t* regEditor = Message_GetRegEditor();
+
+    if (regEditor == NULL) {
+        return;
+    }
+
+    Message_ApplyJpTextDrawMetrics();
+    regEditor[WIDE_TEXT_INIT_XPOS_REG_INDEX] = Message_GetWideTextInitXPosValue();
+}
+
+static int16_t Message_GetWideItemIconXOffset(uint16_t itemId) {
+    bool useEnglishIconMetrics;
+
+    // Vanilla Message_LoadItemIcon selects one of two language-indexed tables:
+    //   32px icons: JP=54, EN=74
+    //   24px icons: JP=50, EN=72
+    // JP text using English-like metrics also uses the English text origin, so
+    // its icon must use the English offset as well.
+    useEnglishIconMetrics = (z64_file.language != 0) || (LANG_WIDE_TEXT_ENGLISH_METRICS != 0);
+
+    if (useEnglishIconMetrics) {
+        return (itemId >= ITEM_MEDALLION_FOREST) ? WIDE_TEXT_EN_ICON_OFFSET_24 : WIDE_TEXT_EN_ICON_OFFSET_32;
+    }
+
+    return (itemId >= ITEM_MEDALLION_FOREST) ? WIDE_TEXT_JP_ICON_OFFSET_24 : WIDE_TEXT_JP_ICON_OFFSET_32;
+}
+
+int16_t Message_GetItemIcon32XOffsetRuntime(void) {
+    return Message_GetWideItemIconXOffset(0);
+}
+
+int16_t Message_GetItemIcon24XOffsetRuntime(void) {
+    return Message_GetWideItemIconXOffset(ITEM_MEDALLION_FOREST);
+}
+
+static void Message_ApplyWideTextChoiceCursorMetrics(void) {
+    int16_t* regEditor = Message_GetRegEditor();
+    int16_t textBoxYTarget;
+
+    if (regEditor == NULL) {
+        return;
+    }
+
+    textBoxYTarget = regEditor[WIDE_TEXTBOX_Y_TARGET_REG_INDEX];
+
+    // The replaced JP initialization block also writes XREG(66).
+    regEditor[WIDE_TEXT_CHOICE_XPOS_REG_INDEX] = 48;
+
+    if ((z64_file.language == 0) && (LANG_WIDE_TEXT_ENGLISH_METRICS != 0)) {
+        // JP decode/layout with English-like 12px line spacing.
+        regEditor[WIDE_TEXT_CHOICE_YPOS_0_REG_INDEX] = textBoxYTarget + 7;
+        regEditor[WIDE_TEXT_CHOICE_YPOS_1_REG_INDEX] = textBoxYTarget + 19;
+        regEditor[WIDE_TEXT_CHOICE_YPOS_2_REG_INDEX] = textBoxYTarget + 31;
+    } else if (z64_file.language == 0) {
+        // Vanilla JP 18px spacing.
+        regEditor[WIDE_TEXT_CHOICE_YPOS_0_REG_INDEX] = textBoxYTarget + 7;
+        regEditor[WIDE_TEXT_CHOICE_YPOS_1_REG_INDEX] = textBoxYTarget + 25;
+        regEditor[WIDE_TEXT_CHOICE_YPOS_2_REG_INDEX] = textBoxYTarget + 43;
+    } else {
+        // Defensive fallback if this helper is reused outside the JP branch.
+        regEditor[WIDE_TEXT_CHOICE_YPOS_0_REG_INDEX] = textBoxYTarget + 20;
+        regEditor[WIDE_TEXT_CHOICE_YPOS_1_REG_INDEX] = textBoxYTarget + 32;
+        regEditor[WIDE_TEXT_CHOICE_YPOS_2_REG_INDEX] = textBoxYTarget + 44;
+    }
+}
+
+void Message_ApplyWideTextChoiceCursorInitMetrics(void) {
+    Message_ApplyWideTextChoiceCursorMetrics();
+}
+
+static bool Message_GetWideEnglishChoiceCursorY(MessageContext* msgCtx, char numChoices, int16_t* cursorY) {
+    int16_t* regEditor;
+    int16_t lineSpacing;
+    int16_t textInitY;
+    uint16_t expectedChoiceCode;
+    uint16_t decodedLength;
+    uint16_t choiceControlLine;
+    uint16_t i;
+    uint8_t selectedLine;
+    bool foundChoiceCode;
+
+    if ((z64_file.language != 0) || (LANG_WIDE_TEXT_ENGLISH_METRICS == 0)) {
+        return false;
+    }
+
+    // Vanilla passes 1 for two-choice and 2 for three-choice messages.
+    if ((numChoices != 1) && (numChoices != 2)) {
+        return false;
+    }
+
+    regEditor = Message_GetRegEditor();
+    if (regEditor == NULL) {
+        return false;
+    }
+
+    expectedChoiceCode = (numChoices == 1) ? MESSAGE_WIDE_TWO_CHOICE : MESSAGE_WIDE_THREE_CHOICE;
+    decodedLength = msgCtx->decodedTextLen;
+    if (decodedLength > 100) {
+        decodedLength = 100;
+    }
+
+    // Count rendered lines before the choice control. This supports messages that
+    // place explanatory text above the choices instead of assuming fixed rows.
+    choiceControlLine = 0;
+    foundChoiceCode = false;
+    for (i = 0; i < decodedLength; i++) {
+        uint16_t code = msgCtx->msgBufDecodedWide[i];
+
+        if (code == expectedChoiceCode) {
+            foundChoiceCode = true;
+            break;
+        }
+        if (code == MESSAGE_WIDE_NEWLINE) {
+            choiceControlLine++;
+        }
+    }
+
+    if (!foundChoiceCode) {
+        return false;
+    }
+
+    selectedLine = msgCtx->choiceIndex;
+    if (selectedLine > (uint8_t)numChoices) {
+        selectedLine = (uint8_t)numChoices;
+    }
+
+    textInitY = regEditor[WIDE_TEXT_INIT_YPOS_REG_INDEX];
+    lineSpacing = regEditor[WIDE_TEXT_LINE_SPACING_REG_INDEX];
+    if ((lineSpacing <= 0) || (lineSpacing > 32)) {
+        lineSpacing = Message_GetWideTextLineSpacingValue();
+    }
+
+    // The arrow texture is drawn one pixel below the glyph baseline.
+    *cursorY = textInitY + ((choiceControlLine + selectedLine) * lineSpacing) + 1;
+    return true;
+}
+
+void Message_HandleChoiceSelection_WideAware(z64_game_t* play, char numChoices) {
+    typedef void (*MessageHandleChoiceSelectionFunc)(z64_game_t* play, char numChoices);
+    MessageContext* msgCtx = &play->msgContext;
+    int16_t* regEditor;
+    int16_t cursorY;
+
+    // Preserve vanilla input, clamping, sounds, and fallback cursor behavior.
+    ((MessageHandleChoiceSelectionFunc)MESSAGE_HANDLE_CHOICE_SELECTION_VANILLA_ADDR)(play, numChoices);
+
+    regEditor = Message_GetRegEditor();
+    if (regEditor == NULL) {
+        return;
+    }
+
+    if (Message_GetWideEnglishChoiceCursorY(msgCtx, numChoices, &cursorY)) {
+        msgCtx->textPosX = regEditor[WIDE_TEXT_CHOICE_XPOS_REG_INDEX];
+        msgCtx->textPosY = cursorY;
+    }
+}
+
+void Message_ApplyWideTextNewline(MessageContext* msgCtx) {
+    // Do not reset R_TEXT_INIT_XPOS here. Vanilla changes it for some control-code
+    // layouts, and resetting it makes line 2+ start at a different X position.
+    Message_ApplyJpTextDrawMetrics();
+    msgCtx->textPosY += Message_GetWideTextLineSpacingValue();
+    msgCtx->textPosX = Message_GetCurrentWideTextInitXPosValue();
+
+    // Preserve the normal JP continuation indent, but avoid applying it a second
+    // time to item-icon messages in the wide English-metrics hybrid mode.
+    if (msgCtx->choiceNum == 2) {
+        msgCtx->textPosX += 32;
+    }
+}
+
 // Helper function for adding characters to the decoded message buffer
 void Message_AddCharacter(MessageContext* msgCtx, void* pFont, uint32_t* pDecodedBufPos, uint32_t* pCharTexIdx, uint8_t charToAdd) {
     uint32_t decodedBufPosVal = *pDecodedBufPos;

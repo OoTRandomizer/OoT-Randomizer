@@ -20,7 +20,7 @@ from Hints import GossipText, HintArea, write_gossip_stone_hints, build_altar_hi
 from Item import Item
 from ItemList import REWARD_COLORS
 from ItemPool import reward_list, song_list, trade_items, child_trade_items
-from Language import Language
+from Language import CHAR_WIDTH_TABLE_BYTES, CHAR_WIDTH_TABLE_LENGTH, DPAD_LABEL_KEYS, Language
 from Location import Location, DisableType
 from LocationList import business_scrubs
 from Messages import read_messages, update_message_by_id, read_shop_items, update_warp_song_text, \
@@ -49,6 +49,257 @@ else:
 OverrideEntry: TypeAlias = "tuple[int, int, int, int, int, int]"
 
 
+# -----------------------------------------------------------------------------
+# Multilingual runtime tables
+# -----------------------------------------------------------------------------
+# Language.py owns the property schema and validation. This section performs the
+# matching ROM serialization at the two patch lifecycle points where the required
+# data is available:
+#
+#   1. patch_rom() writes language-static character widths, metrics, and D-pad
+#      labels immediately after the generated ASM patch is applied.
+#   2. configure_dungeon_info() writes seed-dependent area, entrance, and boss
+#      names after shuffle destinations are known.
+#
+# Keeping these helpers together in Patches.py makes the complete ROM patch flow
+# visible without a one-function forwarding module. The fixed slot sizes must
+# stay synchronized with ASM/src/config.asm.
+
+_DPAD_LABEL_SLOT = 13
+_DPAD_DUNGEON_SLOT = 12
+_DPAD_BOSS_SLOT = 10
+_DPAD_REWARD_AREA_SLOT = 24
+_DPAD_ENTRANCE_SLOT = 12
+_DPAD_DYNAMIC_BOSS_SLOT = 12
+
+
+def _require_language_symbol(rom: Rom, symbol: str) -> int:
+    """Return a generated ASM symbol or explain how to regenerate it."""
+    if symbol not in rom.symbols:
+        raise RuntimeError(
+            f"{symbol} is missing from data/generated/symbols.json. "
+            "Rebuild the ASM payload after updating ASM/src/config.asm."
+        )
+    return rom.sym(symbol)
+
+
+def _write_language_symbol_area(rom: Rom, symbol: str, data: bytes) -> None:
+    """Write one fixed-size language table and clear its unused capacity."""
+    address = _require_language_symbol(rom, symbol)
+    capacity = rom.sym_length(symbol)
+    if len(data) > capacity:
+        raise RuntimeError(
+            f"{symbol} is too small: needs {len(data):#x} bytes, has {capacity:#x}"
+        )
+
+    rom.write_bytes(address, data)
+    if len(data) < capacity:
+        rom.write_bytes(address + len(data), bytes(capacity - len(data)))
+
+
+def _patch_narrow_char_widths(rom: Rom, lang: Language) -> None:
+    widths = lang.get_char_widths("ntsc")
+    if len(widths) != CHAR_WIDTH_TABLE_LENGTH:
+        raise ValueError(
+            f"CHAR_WIDTHS must contain {CHAR_WIDTH_TABLE_LENGTH} entries, "
+            f"got {len(widths)}"
+        )
+
+    packed = b"".join(struct.pack(">f", float(width)) for width in widths)
+    if len(packed) != CHAR_WIDTH_TABLE_BYTES:
+        raise AssertionError(
+            f"Packed narrow width table is {len(packed):#x}, "
+            f"expected {CHAR_WIDTH_TABLE_BYTES:#x}"
+        )
+    _write_language_symbol_area(rom, "LANG_CHAR_WIDTHS", packed)
+
+
+def _patch_wide_char_widths(rom: Rom, lang: Language) -> None:
+    entries = lang.get_wide_char_width_overrides("ntsc")
+    _require_language_symbol(rom, "LANG_WIDE_CHAR_WIDTH_OVERRIDES")
+    capacity = rom.sym_length("LANG_WIDE_CHAR_WIDTH_OVERRIDES") // 4
+    if len(entries) > capacity:
+        raise RuntimeError(
+            f"Too many wide CHAR_WIDTHS overrides: {len(entries)} > {capacity}"
+        )
+
+    packed = b"".join(
+        struct.pack(">HBB", int(code), int(width), 0)
+        for code, width in entries
+    )
+    rom.write_int16(
+        _require_language_symbol(rom, "LANG_WIDE_CHAR_WIDTH_COUNT"),
+        len(entries),
+    )
+    _write_language_symbol_area(rom, "LANG_WIDE_CHAR_WIDTH_OVERRIDES", packed)
+
+
+def _patch_language_message_layout(rom: Rom, lang: Language) -> None:
+    """Write character-width data and the JP/wide English-metrics switch."""
+    if lang.uses_wide_text():
+        _patch_wide_char_widths(rom, lang)
+    else:
+        _patch_narrow_char_widths(rom, lang)
+
+    rom.write_byte(
+        _require_language_symbol(rom, "LANG_WIDE_TEXT_ENGLISH_METRICS"),
+        int(lang.uses_wide_english_metrics()),
+    )
+
+
+def _encode_dpad_codepoints(text: str, lang: Language) -> list[int]:
+    """Encode one D-pad label using the same rules as generated messages."""
+    if not isinstance(text, str):
+        raise TypeError(
+            f"D-pad menu text must be a string, got {type(text).__name__}"
+        )
+
+    text = lang.format_from_text(text)
+    if not lang.uses_wide_text():
+        try:
+            return list(text.encode("ascii"))
+        except UnicodeEncodeError as error:
+            raise ValueError(
+                f"Non-ASCII D-pad text requires a jp-base language: {text!r}"
+            ) from error
+
+    codes: list[int] = []
+    for character in text:
+        if character == " ":
+            character = "　"
+        elif "!" <= character <= "~":
+            character = chr(ord(character) + 0xFEE0)
+
+        encoded = character.encode("cp932")
+        if len(encoded) != 2:
+            raise ValueError(
+                "Each wide D-pad character must map to one two-byte "
+                f"Shift-JIS glyph: {character!r}"
+            )
+        codes.append(int.from_bytes(encoded, "big"))
+    return codes
+
+
+def _pack_dpad_strings(
+    strings: Iterable[str],
+    slot_chars: int,
+    lang: Language,
+) -> bytes:
+    """Pack zero-terminated D-pad strings into fixed-width u16 slots."""
+    packed = bytearray()
+    for text in strings:
+        codes = _encode_dpad_codepoints(text, lang)
+        if len(codes) >= slot_chars:
+            raise ValueError(
+                f"D-pad text {text!r} uses {len(codes)} characters; "
+                f"maximum is {slot_chars - 1}"
+            )
+
+        codes.append(0)
+        codes.extend([0] * (slot_chars - len(codes)))
+        for code in codes:
+            packed.extend(struct.pack(">H", code))
+    return bytes(packed)
+
+
+def _patch_language_dpad_menu(rom: Rom, lang: Language) -> None:
+    """Write language-static D-pad labels, dungeon names, and boss names."""
+    menu = lang.get_dpad_menu()
+    rom.write_byte(
+        _require_language_symbol(rom, "LANG_DPAD_TEXT_WIDE"),
+        int(lang.uses_wide_text()),
+    )
+
+    labels = menu["labels"]
+    _write_language_symbol_area(
+        rom,
+        "LANG_DPAD_LABELS",
+        _pack_dpad_strings(
+            (labels[key] for key in DPAD_LABEL_KEYS),
+            _DPAD_LABEL_SLOT,
+            lang,
+        ),
+    )
+    _write_language_symbol_area(
+        rom,
+        "LANG_DPAD_DUNGEON_NAMES",
+        _pack_dpad_strings(menu["dungeons"], _DPAD_DUNGEON_SLOT, lang),
+    )
+    _write_language_symbol_area(
+        rom,
+        "LANG_DPAD_BOSS_NAMES",
+        _pack_dpad_strings(menu["bosses"], _DPAD_BOSS_SLOT, lang),
+    )
+
+
+def _patch_language_runtime(rom: Rom, lang: Language) -> None:
+    """Write every language-static table at the start of ROM patching."""
+    _patch_language_message_layout(rom, lang)
+    _patch_language_dpad_menu(rom, lang)
+
+
+def _patch_dpad_seed_tables(
+    rom: Rom,
+    lang: Language,
+    reward_areas: Iterable[str],
+    dungeon_entrances: Iterable[str],
+    bosses: Iterable[str],
+) -> None:
+    """Write names that depend on the completed entrance and boss shuffle."""
+    _write_language_symbol_area(
+        rom,
+        "LANG_DPAD_REWARD_AREAS",
+        _pack_dpad_strings(reward_areas, _DPAD_REWARD_AREA_SLOT, lang),
+    )
+    _write_language_symbol_area(
+        rom,
+        "LANG_DPAD_DUNGEON_ENTRANCES",
+        _pack_dpad_strings(dungeon_entrances, _DPAD_ENTRANCE_SLOT, lang),
+    )
+    _write_language_symbol_area(
+        rom,
+        "LANG_DPAD_BOSSES",
+        _pack_dpad_strings(bosses, _DPAD_DYNAMIC_BOSS_SLOT, lang),
+    )
+
+
+def _localized_hint_area_name(
+    area: HintArea,
+    lang: Language,
+    *,
+    prefer_shorter: bool,
+) -> str:
+    """Select one name from the requested language without cross-language mixing."""
+    method_names = (
+        ("shorter_name", "short_name")
+        if prefer_shorter
+        else ("short_name", "shorter_name")
+    )
+    for method_name in method_names:
+        try:
+            value = getattr(area, method_name)(lang)
+        except KeyError:
+            continue
+        if isinstance(value, str) and value:
+            return value
+
+    language_name = getattr(lang, "lang", None) or getattr(lang, "base", "unknown")
+    raise ValueError(
+        f"Hint area {area.name} has no D-pad name in language {language_name}"
+    )
+
+
+def _pack_legacy_dpad_ascii(text: str, slot_bytes: int) -> bytes:
+    """Maintain the historical one-byte CFG_* mirrors for compatibility."""
+    encoded = text.encode("ascii")
+    if len(encoded) >= slot_bytes:
+        raise ValueError(
+            f"Legacy D-pad text {text!r} uses {len(encoded)} bytes; "
+            f"maximum is {slot_bytes - 1}"
+        )
+    return encoded.ljust(slot_bytes - 1, b"\0") + b"\0"
+
+
 def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     with open(data_path('generated/rom_patch.txt'), 'r') as stream:
         for line in stream:
@@ -57,6 +308,11 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     rom.scan_dmadata_update()
 
     lang = world.language
+
+    # Language runtime tables are written together before any feature-specific
+    # patching. Seed-dependent D-pad names are added later by
+    # configure_dungeon_info(), once entrance and boss destinations are known.
+    _patch_language_runtime(rom, lang)
 
     # Binary patches of certain assets.
     bin_patches = [
@@ -2673,6 +2929,7 @@ def configure_dungeon_info(rom: Rom, world: World) -> None:
 
     dungeon_rewards = [0xff] * 14
     dungeon_reward_areas = bytearray()
+    localized_reward_areas: list[str] = []
     dungeon_reward_worlds = []
     if world.dungeon_rewards_hinted:
         for reward in REWARD_COLORS:
@@ -2681,12 +2938,13 @@ def configure_dungeon_info(rom: Rom, world: World) -> None:
                 area = HintArea.ROOT
             else:
                 area = HintArea.at(location)
-            # Some languages uses full wide characters which cannot be translated via ascii
-            # For that, use English version for now if the language is full wide
-            try:
-                dungeon_reward_areas += area.short_name(world.language).encode('ascii').ljust(0x16) + b'\0'
-            except:
-                dungeon_reward_areas += area.short_name(default_lang).encode('ascii').ljust(0x16) + b'\0'
+            localized_reward_areas.append(
+                _localized_hint_area_name(area, world.language, prefer_shorter=False)
+            )
+            # Preserve the original one-byte CFG table as an English compatibility
+            # mirror. The localized runtime reads LANG_DPAD_REWARD_AREAS instead.
+            legacy_area = _localized_hint_area_name(area, default_lang, prefer_shorter=False)
+            dungeon_reward_areas += _pack_legacy_dpad_ascii(legacy_area, 0x17)
             dungeon_reward_worlds.append((world.id if location is None else location.world.id) + 1)
             if location is not None and location.world.id == world.id and area.is_dungeon:
                 dungeon_rewards[codes.index(area.dungeon_name)] = boss_reward_index(location.item)
@@ -2705,16 +2963,18 @@ def configure_dungeon_info(rom: Rom, world: World) -> None:
 
     dungeon_info = []
     dungeon_entrances = bytearray()
+    localized_dungeon_entrances: list[str] = []
     boss_index = []
     if 'map_dungeon_location' in world.settings.enhance_map_compass and world.settings.shuffle_dungeon_entrances != 'off':
         dungeon_info.append(1)
         for dungeon_entrance in dungeon_entrances_list:
             connected_region = world.get_entrance(dungeon_entrance).connected_region
             area = HintArea.at(connected_region)
-            try:
-                dungeon_entrances += area.shorter_name(world.language).encode('ascii').ljust(0x8) + b'\0'
-            except:
-                dungeon_entrances += area.shorter_name(default_lang).encode('ascii').ljust(0x8) + b'\0'
+            localized_dungeon_entrances.append(
+                _localized_hint_area_name(area, world.language, prefer_shorter=True)
+            )
+            legacy_entrance = _localized_hint_area_name(area, default_lang, prefer_shorter=True)
+            dungeon_entrances += _pack_legacy_dpad_ascii(legacy_entrance, 0x9)
             if (area in [HintArea.GERUDO_TRAINING_GROUND, HintArea.ICE_CAVERN, HintArea.BOTTOM_OF_THE_WELL]):
                 boss_index.append(-1)
             else:
@@ -2742,19 +3002,26 @@ def configure_dungeon_info(rom: Rom, world: World) -> None:
                        'Bongo Bongo Boss Room', 'Twinrova Boss Room', 'Ganons Castle Tower']
 
     bosses = bytearray()
+    localized_bosses: list[str] = []
+    localized_boss_names = world.language.get_dpad_menu()["bosses"]
     if 'compass_boss_location' in world.settings.enhance_map_compass and world.settings.shuffle_bosses != 'off':
         dungeon_info.append(1)
         # For the Dpad left menu, we want each boss on the same line as the corresponding dungeon.
         for index in boss_index:
             if index < 0:
-                bosses += "-".encode('ascii').ljust(0x8) + b'\0'
+                localized_bosses.append("-")
+                bosses += _pack_legacy_dpad_ascii("-", 0x9)
             else:
                 connected_region = world.get_entrance(bosses_entrances_list[index]).connected_region
-                bosses += boss_short_names[connected_region.name].encode('ascii').ljust(0x8) + b'\0'
+                connected_index = boss_lobby_list.index(connected_region.name)
+                localized_bosses.append(localized_boss_names[connected_index])
+                bosses += _pack_legacy_dpad_ascii(boss_short_names[connected_region.name], 0x9)
         # But on Dpad right, we just list by the dungeons in their usual order.
         for boss_entrance in bosses_entrances_list:
             connected_region = world.get_entrance(boss_entrance).connected_region
-            bosses += boss_short_names[connected_region.name].encode('ascii').ljust(0x8) + b'\0'
+            connected_index = boss_lobby_list.index(connected_region.name)
+            localized_bosses.append(localized_boss_names[connected_index])
+            bosses += _pack_legacy_dpad_ascii(boss_short_names[connected_region.name], 0x9)
     else:
         dungeon_info.append(0)
 
@@ -2774,7 +3041,7 @@ def configure_dungeon_info(rom: Rom, world: World) -> None:
     for dungeon_entrance in dungeon_entrances_list:
         connected_region = world.get_entrance(dungeon_entrance).connected_region
         area = HintArea.at(connected_region)
-        dungeon_info.append(dungeon_map_index[area.shorter_name(default_lang)])
+        dungeon_info.append(dungeon_map_index[_localized_hint_area_name(area, default_lang, prefer_shorter=True)])
 
     # Mixed pools
     # In this case, the dungeon location should point to the world area instead.
@@ -2824,6 +3091,16 @@ def configure_dungeon_info(rom: Rom, world: World) -> None:
     rom.write_bytes(rom.sym('CFG_DUNGEON_BOSS_INFO'), dungeon_info)
     rom.write_bytes(rom.sym('CFG_DUNGEON_ENTRANCES'), dungeon_entrances)
     rom.write_bytes(rom.sym('CFG_BOSSES'), bosses)
+
+    # The localized u16 tables mirror the same seed data without changing the
+    # historical CFG_* layout used by older payloads and external tools.
+    _patch_dpad_seed_tables(
+        rom,
+        world.language,
+        localized_reward_areas,
+        localized_dungeon_entrances,
+        localized_bosses,
+    )
 
 
 # Patch rupee towers (circular patterns of rupees) to include their flag in their actor initialization data z rotation.

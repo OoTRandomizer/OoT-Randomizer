@@ -28,6 +28,24 @@ typedef struct {
 extern int dungeon_count;
 extern dungeon_entry_t dungeons[15];
 
+// Language-owned D-pad labels and fixed name tables. Slot dimensions mirror
+// ASM/src/config.asm and the multilingual runtime-table section in Patches.py.
+typedef enum {
+    DPAD_LABEL_ENTRANCE = 0,
+    DPAD_LABEL_DUNGEON,
+    DPAD_LABEL_BOSS,
+    DPAD_LABEL_AREA,
+    DPAD_LABEL_MQ,
+    DPAD_LABEL_NORMAL,
+} dpad_label_t;
+
+extern uint16_t LANG_DPAD_LABELS[6][13];
+extern uint16_t LANG_DPAD_DUNGEON_NAMES[15][12];
+extern uint16_t LANG_DPAD_BOSS_NAMES[9][10];
+extern uint16_t LANG_DPAD_REWARD_AREAS[9][24];
+extern uint16_t LANG_DPAD_DUNGEON_ENTRANCES[12][12];
+extern uint16_t LANG_DPAD_BOSSES[21][12];
+
 void draw_dungeon_info(z64_disp_buf_t* db);
 void draw_world_info(z64_disp_buf_t* db);
 void draw_silver_rupee_count(z64_game_t* globalCtx, z64_disp_buf_t* db);

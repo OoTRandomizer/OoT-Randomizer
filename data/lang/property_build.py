@@ -1,12 +1,15 @@
 from __future__ import annotations
 import json
+from typing import Any
 
 # Property of the Language
 lang_property = {
     "base": "en", # base of the language [en, jp]
-    "display_name": "English", # Name that displayed as selection
-    "description": "Play with English language.", # Not implemented, it will be description which you can see while hovering above
-    "align_text": "Left" # alignation of the texts [Left, Center, Right]
+    "display_name": "English", # Name displayed in language selection
+    "description": "Play with English language.", # Description shown by language selectors
+    "align_text": "Left", # Text alignment [Left, Center, Right]
+    # JP/wide only: use English-like scale, line spacing, icon position, and choice cursor metrics.
+    "wide_text_english_metrics": False,
 }
 
 # DON'T CHANGE THESE VV
@@ -3682,12 +3685,48 @@ verb_mapping = {
 
 search = "you"
 
+# -----------------------------------------------------------------------------
+# Runtime language rendering data
+# -----------------------------------------------------------------------------
+# Narrow languages may use visible characters, symbolic names, message bytes, or
+# table indices. JP/wide languages use Shift-JIS codepoints such as "0x824F".
+# Unlisted wide characters keep the runtime default width 16.
+CHAR_WIDTHS = {}
+
+# Fixed labels and names used by the D-pad pause-menu overlay. List order matches
+# dungeons[] and bosses[] in ASM/c/dungeon_info.c.
+dpad_menu = {
+    "labels": {
+        "entrance": "Entrance",
+        "dungeon": "Dungeon",
+        "boss": "Boss",
+        "area": "Area",
+        "mq": "MQ",
+        "normal": "Normal",
+    },
+    "dungeons": [
+        "Deku", "Dodongo", "Jabu", "Forest", "Fire", "Water", "Shadow", "Spirit",
+        "BotW", "Ice", "Hideout", "GTG", "Tower", "Ganon", "Chest Game",
+    ],
+    "bosses": ["Gohma", "KD", "Bari", "PG", "Volv", "Morpha", "Bongo", "Twin", "Ganon"],
+}
+
+# Current language-wide replacement schema. Historical
+# language_specific_replace_table remains accepted by Language.py.
+replace_table = []
+
 # Extra texts that is included in game (Other than English and Japanese needs these)
 # Format: {"id": int, "text": str, "box_type": int}
 PLAIN_TEXTS = []
 
 lang_info = {
+    # Metadata and runtime rendering configuration first.
     'lang_property': lang_property,
+    'CHAR_WIDTHS': CHAR_WIDTHS,
+    'dpad_menu': dpad_menu,
+    'replace_table': replace_table,
+
+    # Translation sections.
     'prefix': prefix,
     'ITEM_MESSAGES': ITEM_MESSAGES,
     "IMPORTANT_ITEM_MESSAGES": IMPORTANT_ITEM_MESSAGES,

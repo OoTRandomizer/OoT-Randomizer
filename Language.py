@@ -22,6 +22,80 @@ class ItemMessage(TypedDict):
     text: str
 
 
+# -----------------------------------------------------------------------------
+# Language rendering configuration
+# -----------------------------------------------------------------------------
+# Keep the property-file schema and validation rules in this module. ROM packing
+# is serialized by the multilingual runtime-table section in Patches.py, while
+# TextBox.py consumes the same public methods for Python-side wrapping. This gives
+# every layer one source of truth.
+
+# The original non-wide renderer indexes this f32 table with (character - 0x20).
+CHAR_WIDTH_TABLE_LENGTH = 144
+CHAR_WIDTH_TABLE_BYTES = CHAR_WIDTH_TABLE_LENGTH * 4
+CHAR_WIDTH_ORDER = (
+    [chr(i) for i in range(0x20, 0x7F)]
+    + [
+        "extra_space",
+        "À", "î", "Â", "Ä", "Ç", "È", "É", "Ê", "Ë", "Ï",
+        "Ô", "Ö", "Ù", "Û", "Ü", "ß",
+        "à", "á", "â", "ä", "ç", "è", "é", "ê", "ë", "ï",
+        "ô", "ö", "ù", "û", "ü",
+        "[A]", "[B]", "[C]", "[L]", "[R]", "[Z]",
+        "[C-Up]", "[C-Down]", "[C-Left]", "[C-Right]",
+        "▼", "[Control-Pad]", "[D-Pad]",
+        "index:140", "index:141", "index:142", "index:143",
+    ]
+)
+CHAR_WIDTH_NAME_TO_INDEX = {name: index for index, name in enumerate(CHAR_WIDTH_ORDER)}
+
+DEFAULT_CHAR_WIDTHS_NTSC = [
+    8, 8, 6, 9, 9, 14, 12, 3, 7, 7, 7, 9, 4, 6, 4, 9,
+    10, 5, 9, 9, 10, 9, 9, 9, 9, 9, 6, 6, 9, 11, 9, 11,
+    13, 12, 9, 11, 11, 8, 8, 12, 10, 4, 8, 10, 8, 13, 11, 13,
+    9, 13, 10, 10, 9, 10, 11, 15, 11, 10, 10, 7, 10, 7, 10, 9,
+    5, 8, 9, 8, 9, 9, 6, 9, 8, 4, 6, 8, 4, 12, 9, 9,
+    9, 9, 7, 8, 7, 8, 9, 12, 8, 9, 8, 7, 5, 7, 10, 10,
+    12, 12, 12, 12, 11, 8, 8, 8, 6, 6, 13, 13, 10, 10, 10, 9,
+    8, 8, 8, 8, 8, 9, 9, 9, 9, 6, 9, 9, 9, 9, 9, 14,
+    14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14, 14,
+]
+DEFAULT_CHAR_WIDTHS_PAL = DEFAULT_CHAR_WIDTHS_NTSC.copy()
+DEFAULT_CHAR_WIDTHS_PAL[CHAR_WIDTH_ORDER.index("î")] = 6
+
+# Wide/Japanese text uses a fixed 16-pixel default and stores only overrides.
+WIDE_CHAR_DEFAULT_WIDTH = 16
+
+DPAD_LABEL_KEYS = ("entrance", "dungeon", "boss", "area", "mq", "normal")
+DPAD_DUNGEON_COUNT = 15
+DPAD_BOSS_COUNT = 9
+
+# Control-code arguments can contain printable bytes. Protect the complete control
+# sequence before applying language-wide textual replacements.
+_TEXT_CONTROL_CODE_LENGTHS = {
+    0x00: 1, 0x01: 1, 0x02: 1, 0x04: 1, 0x05: 2, 0x06: 2,
+    0x07: 3, 0x08: 1, 0x09: 1, 0x0A: 1, 0x0B: 1, 0x0C: 2,
+    0x0E: 2, 0x0F: 1, 0x10: 1, 0x12: 3, 0x13: 2, 0x14: 2,
+}
+_REPLACE_PROTECT_START = "\uE000"
+_REPLACE_PROTECT_END = "\uE001"
+_SJIS_CODEPOINT_RE = re.compile(r'(?i)\A(?:sjis:|shift-jis:)?0x([0-9a-f]{2}|[0-9a-f]{4})\Z')
+
+
+def _decode_sjis_codepoint_token(value: str) -> str:
+    """Decode a whole ``0xNN``/``0xNNNN`` value as Shift-JIS when valid."""
+    text = str(value)
+    match = _SJIS_CODEPOINT_RE.fullmatch(text.strip())
+    if not match:
+        return text
+    try:
+        return bytes.fromhex(match.group(1)).decode('shift_jis')
+    except (ValueError, UnicodeDecodeError):
+        # Keep invalid authoring data literal. The editor validator reports it,
+        # while loading the rest of the language remains possible.
+        return text
+
+
 def half_to_full_width(s: str) -> str:
     out = []
     for ch in s:
@@ -353,7 +427,17 @@ class Language:
         }
 
     def __init__(self, lang: str):
+        # Keep the raw selected-language document for sections that must be
+        # accepted as an all-or-nothing unit (notably dpad_menu). The normal
+        # merged document continues to provide the existing English fallback for
+        # all other language data.
+        try:
+            self._source_property = self._load_property_file(lang)
+        except FileNotFoundError:
+            self._source_property = {}
+
         message = self._load_property_with_fallback(lang)
+        self._normalize_replace_table(message, self._source_property)
 
         self.__dict__.update(message)
         self.base = self.lang_property["base"]
@@ -365,6 +449,267 @@ class Language:
         # Register only files that actually exist in the selected language.
         # Individual patch sites that need a fallback should resolve it explicitly.
         self.data = self._collect_language_data(lang, extensions)
+
+    # -------------------------------------------------------------------------
+    # Language-wide text replacement
+    # -------------------------------------------------------------------------
+
+    @staticmethod
+    def _normalize_replace_table(message: dict, source_property: dict | None = None) -> None:
+        """Expose old replacement schemas through the current ``replace_table``.
+
+        Accepted inputs are the current list of ``{"from", "to"}`` objects, the
+        historical list of pairs, or the historical mapping. Legacy properties
+        remain in memory for compatibility with code outside this feature.
+        """
+        # Prefer an explicitly authored section in the selected language. This
+        # prevents the fallback language's empty replace_table from masking an
+        # older selected-language language_specific_replace_table.
+        authored = source_property or {}
+        if "replace_table" in authored:
+            source = authored.get("replace_table")
+        elif "replace_list" in authored:
+            source = authored.get("replace_list")
+        elif "language_specific_replace_table" in authored:
+            source = authored.get("language_specific_replace_table")
+        else:
+            source = message.get("replace_table")
+            if source is None:
+                source = message.get("replace_list")
+            if source is None:
+                source = message.get("language_specific_replace_table", [])
+        if source is None:
+            source = []
+
+        if isinstance(source, dict):
+            source = [{"from": key, "to": value} for key, value in source.items()]
+
+        normalized = []
+        if isinstance(source, list):
+            for item in source:
+                if isinstance(item, dict):
+                    normalized.append({
+                        "from": str(item.get("from", "")),
+                        "to": str(item.get("to", "")),
+                    })
+                elif isinstance(item, (list, tuple)) and len(item) >= 2:
+                    normalized.append({"from": str(item[0]), "to": str(item[1])})
+        message["replace_table"] = normalized
+
+    @staticmethod
+    def _contains_text_control_code(text: str) -> bool:
+        return any(ord(character) < 0x20 for character in text)
+
+    @staticmethod
+    def _protect_text_control_codes(text: str) -> tuple[str, list[str]]:
+        tokens: list[str] = []
+        output: list[str] = []
+        index = 0
+        while index < len(text):
+            code = ord(text[index])
+            if code < 0x20:
+                length = _TEXT_CONTROL_CODE_LENGTHS.get(code, 1)
+                sequence = text[index:min(len(text), index + length)]
+                output.append(f"{_REPLACE_PROTECT_START}{len(tokens)}{_REPLACE_PROTECT_END}")
+                tokens.append(sequence)
+                index += len(sequence)
+            else:
+                output.append(text[index])
+                index += 1
+        return "".join(output), tokens
+
+    @staticmethod
+    def _restore_text_control_codes(text: str, tokens: list[str]) -> str:
+        for index, sequence in enumerate(tokens):
+            token = f"{_REPLACE_PROTECT_START}{index}{_REPLACE_PROTECT_END}"
+            text = text.replace(token, sequence)
+        return text
+
+    def _apply_replace_table(self, text: str) -> str:
+        """Apply all textual replacement rules simultaneously.
+
+        A replacement result is never processed by a later rule in the same
+        pass. At the same position, the longest source wins and declaration order
+        breaks ties. Control codes and their arguments are outside this feature.
+        """
+        protected, tokens = self._protect_text_control_codes(text)
+        rules: list[tuple[str, str, int]] = []
+        seen_sources: set[str] = set()
+
+        for order, item in enumerate(getattr(self, "replace_table", []) or []):
+            if not isinstance(item, dict):
+                continue
+            source = _decode_sjis_codepoint_token(item.get("from", ""))
+            replacement = _decode_sjis_codepoint_token(item.get("to", ""))
+            if not source or source in seen_sources:
+                continue
+            if self._contains_text_control_code(source) or self._contains_text_control_code(replacement):
+                continue
+            rules.append((source, replacement, order))
+            seen_sources.add(source)
+
+        if rules:
+            rules.sort(key=lambda rule: (-len(rule[0]), rule[2]))
+            replacement_by_source = {source: replacement for source, replacement, _ in rules}
+            pattern = re.compile("|".join(re.escape(source) for source, _, _ in rules))
+            protected = pattern.sub(lambda match: replacement_by_source[match.group(0)], protected)
+
+        return self._restore_text_control_codes(protected, tokens)
+
+    # -------------------------------------------------------------------------
+    # Character widths and wide-text metrics
+    # -------------------------------------------------------------------------
+
+    def uses_wide_text(self) -> bool:
+        return self.base == "jp"
+
+    def uses_wide_english_metrics(self) -> bool:
+        return self.uses_wide_text() and bool(
+            self.lang_property.get("wide_text_english_metrics", False)
+        )
+
+    @staticmethod
+    def _default_char_widths(variant: str) -> list[float]:
+        defaults = DEFAULT_CHAR_WIDTHS_PAL if variant.lower() == "pal" else DEFAULT_CHAR_WIDTHS_NTSC
+        return [float(width) for width in defaults]
+
+    @staticmethod
+    def _narrow_char_width_key_to_index(key: str | int) -> int:
+        if isinstance(key, int):
+            index = key
+        elif isinstance(key, str):
+            normalized = key.strip()
+            if normalized.startswith("index:"):
+                index = int(normalized.split(":", 1)[1], 0)
+            elif normalized.startswith("0x"):
+                index = int(normalized, 16) - 0x20
+            elif len(normalized) == 1 and 0x20 <= ord(normalized) <= 0x7E:
+                index = ord(normalized) - 0x20
+            elif normalized in CHAR_WIDTH_NAME_TO_INDEX:
+                index = CHAR_WIDTH_NAME_TO_INDEX[normalized]
+            else:
+                raise ValueError(f"Unknown CHAR_WIDTHS key: {key!r}")
+        else:
+            raise TypeError(f"CHAR_WIDTHS key must be str or int, got {type(key).__name__}")
+
+        if not 0 <= index < CHAR_WIDTH_TABLE_LENGTH:
+            raise ValueError(f"CHAR_WIDTHS index out of range: {index}")
+        return index
+
+    @staticmethod
+    def _width_for_variant(key, value, variant: str):
+        if isinstance(value, dict):
+            value = value.get(variant.lower(), value.get("default"))
+            if value is None:
+                return None
+        width = float(value)
+        if not 0.0 <= width <= 32.0:
+            raise ValueError(f"CHAR_WIDTHS[{key!r}] must be between 0 and 32, got {width}")
+        return width
+
+    def get_char_widths(self, variant: str = "ntsc") -> list[float]:
+        """Return the complete 144-entry table for non-wide languages."""
+        widths = self._default_char_widths(variant)
+        overrides = getattr(self, "CHAR_WIDTHS", None)
+        if overrides in (None, {}):
+            return widths
+        if self.uses_wide_text():
+            # The ROM patcher uses get_wide_char_width_overrides() for this base.
+            return widths
+
+        if isinstance(overrides, list):
+            if len(overrides) != CHAR_WIDTH_TABLE_LENGTH:
+                raise ValueError(
+                    f"CHAR_WIDTHS list must contain {CHAR_WIDTH_TABLE_LENGTH} entries, "
+                    f"got {len(overrides)}"
+                )
+            items = enumerate(overrides)
+        elif isinstance(overrides, dict):
+            items = overrides.items()
+        else:
+            raise TypeError("CHAR_WIDTHS must be a list or object")
+
+        for key, value in items:
+            width = self._width_for_variant(key, value, variant)
+            if width is None:
+                continue
+            index = key if isinstance(overrides, list) else self._narrow_char_width_key_to_index(key)
+            widths[index] = width
+        return widths
+
+    @staticmethod
+    def _wide_char_width_key_to_code(key: str | int) -> int:
+        if isinstance(key, int):
+            code = key
+        elif isinstance(key, str) and key.strip().lower().startswith("0x"):
+            code = int(key.strip(), 16)
+        else:
+            raise ValueError(
+                f"Wide/Japanese CHAR_WIDTHS keys must be hex codepoints such as '0x824F', got {key!r}"
+            )
+        if not 0 <= code <= 0xFFFF:
+            raise ValueError(f"Wide CHAR_WIDTHS code out of range: 0x{code:X}")
+        return code
+
+    def get_wide_char_width_overrides(self, variant: str = "ntsc") -> list[tuple[int, int]]:
+        """Return compact ``(Shift-JIS code, width)`` overrides for wide text."""
+        overrides = getattr(self, "CHAR_WIDTHS", None)
+        if overrides in (None, {}):
+            return []
+        if not isinstance(overrides, dict):
+            raise TypeError("Wide/Japanese CHAR_WIDTHS must be an object of hex-code overrides")
+
+        entries: dict[int, int] = {}
+        for key, value in overrides.items():
+            width_value = self._width_for_variant(key, value, variant)
+            if width_value is None:
+                continue
+            width = int(width_value)
+            if width != width_value:
+                raise ValueError(f"CHAR_WIDTHS[{key!r}] must be an integer in wide mode")
+            code = self._wide_char_width_key_to_code(key)
+            if width == WIDE_CHAR_DEFAULT_WIDTH:
+                entries.pop(code, None)
+            else:
+                entries[code] = width
+        return sorted(entries.items())
+
+    # -------------------------------------------------------------------------
+    # D-pad pause-menu language data
+    # -------------------------------------------------------------------------
+
+    def get_dpad_menu(self) -> dict:
+        """Return one complete D-pad menu without cross-language partial merges."""
+        selected_menu = self._source_property.get("dpad_menu")
+        if selected_menu in (None, {}):
+            selected_menu = self._load_property_file(self.FALLBACK_LANG).get("dpad_menu")
+        if not isinstance(selected_menu, dict):
+            raise TypeError("dpad_menu must be an object")
+
+        labels = selected_menu.get("labels")
+        if not isinstance(labels, dict):
+            raise TypeError("dpad_menu.labels must be an object")
+        missing = [key for key in DPAD_LABEL_KEYS if not isinstance(labels.get(key), str)]
+        if missing:
+            raise ValueError(
+                "dpad_menu.labels must define the complete label group; missing: "
+                + ", ".join(missing)
+            )
+
+        dungeons = selected_menu.get("dungeons")
+        bosses = selected_menu.get("bosses")
+        if not isinstance(dungeons, list) or len(dungeons) != DPAD_DUNGEON_COUNT:
+            raise ValueError(f"dpad_menu.dungeons must contain exactly {DPAD_DUNGEON_COUNT} strings")
+        if not isinstance(bosses, list) or len(bosses) != DPAD_BOSS_COUNT:
+            raise ValueError(f"dpad_menu.bosses must contain exactly {DPAD_BOSS_COUNT} strings")
+        if not all(isinstance(value, str) for value in dungeons + bosses):
+            raise TypeError("dpad_menu dungeon and boss names must be strings")
+
+        return {
+            "labels": {key: labels[key] for key in DPAD_LABEL_KEYS},
+            "dungeons": list(dungeons),
+            "bosses": list(bosses),
+        }
 
     def blue_fire_arrow_item_name_path(self) -> str:
         """Return the Blue Fire Arrow item-name texture for this language base.
@@ -671,10 +1016,7 @@ class Language:
         get = self._replace_placeholders(text, external or {}, for_expr=False)
         get = re.sub(r'\\([\[\]\{\}])', r'\1', get)
 
-        for a, k in self.language_specific_replace_table:
-            get = get.replace(a, k)
-
-        return get
+        return self._apply_replace_table(get)
 
     def format_from_id(self, id: str, external: dict = None):
         keys = id.split('.')
