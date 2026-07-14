@@ -1985,9 +1985,13 @@ class SettingInfos:
     )
 
     enable_bomb_oi = Checkbutton(
-        gui_text       = 'Enable bomb OI',
+        gui_text       = 'Enable bomb OI glitch (Ocarina items)',
         gui_tooltip    = '''\
-            Enables bomb OI as in 1.1/1.2.
+            Enables the bomb Ocarina items (OI) glitch which was
+            introduced into the game in versions after NTSC 1.0.
+            This glitch allows you to play the Ocarina after having
+            a bomb explode in your hands while running and using
+            a cutscene item, even without an Ocarina in inventory.
         ''',
         default        = False,
         shared         = True,
