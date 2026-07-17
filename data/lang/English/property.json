@@ -39,6 +39,8 @@
     },
     "CHAR_WIDTHS": {},
     "dpad_menu": {
+        "font_width_scale": 1.0,
+        "font_intensity_boost": 5,
         "labels": {
             "entrance": "Entrance",
             "dungeon": "Dungeon",

@@ -3696,6 +3696,12 @@ CHAR_WIDTHS = {}
 # Fixed labels and names used by the D-pad pause-menu overlay. List order matches
 # dungeons[] and bosses[] in ASM/c/dungeon_info.c.
 dpad_menu = {
+    # Horizontal multiplier for the normal message font. 1.0 keeps the font's
+    # original 1:1 texture aspect; CHAR_WIDTHS still controls each advance.
+    "font_width_scale": 1.0,
+    # Add 0-15 to each non-zero I4 texel after loading. 0 keeps the source
+    # texture unchanged; 4 is a moderate white/opacity boost for small text.
+    "font_intensity_boost": 4,
     "labels": {
         "entrance": "Entrance",
         "dungeon": "Dungeon",

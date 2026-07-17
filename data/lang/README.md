@@ -67,9 +67,27 @@ Contains six labels, exactly 15 dungeon names, and exactly 9 boss names. The
 complete section falls back to English only when it is absent. A partial section
 is rejected so translated and English menu information cannot be mixed.
 
-JP/wide D-pad text is stored as Shift-JIS `u16` glyph codes and rendered through
-the wide font loader. Seed-dependent entrance, boss-destination, and reward-area
-names come from the selected language's hint-area data.
+`font_width_scale` is a horizontal multiplier for localized D-pad text and
+accepts values from `0.5` to `2.0`. `1.0` keeps the normal 16x16 message-font
+aspect, `0.9` makes glyphs 10% narrower, and `1.2` makes them 20% wider.
+
+`font_intensity_boost` is an integer from `0` to `15`. It is added to every
+non-zero I4 texture value after a glyph is loaded, with the result clamped to
+`15`. Zero pixels remain transparent, so the setting makes antialiased pixels
+whiter and more opaque without expanding the glyph outline. `0` preserves the
+source font and `4` is the current default.
+
+D-pad glyphs are drawn once at the requested line height. Use `font_width_scale` for horizontal scaling and `font_intensity_boost` for brighter, more opaque non-zero I4 pixels.
+
+Both narrow and JP/wide languages use the normal in-game message font. Narrow
+characters are loaded with `Font_LoadChar`; wide Shift-JIS characters use
+`Font_LoadCharWide`. `CHAR_WIDTHS` supplies the natural per-character advance in
+both modes, and `font_width_scale` is then applied to the drawn glyph and advance.
+Layout columns are measured from the resulting strings instead of assuming a
+fixed width per character.
+
+Seed-dependent entrance, boss-destination, and reward-area names come from the
+selected language's hint-area data.
 
 ### `replace_table`
 

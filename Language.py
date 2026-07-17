@@ -69,6 +69,10 @@ WIDE_CHAR_DEFAULT_WIDTH = 16
 DPAD_LABEL_KEYS = ("entrance", "dungeon", "boss", "area", "mq", "normal")
 DPAD_DUNGEON_COUNT = 15
 DPAD_BOSS_COUNT = 9
+DPAD_FONT_WIDTH_SCALE_MIN = 0.5
+DPAD_FONT_WIDTH_SCALE_MAX = 2.0
+DPAD_FONT_INTENSITY_BOOST_MIN = 0
+DPAD_FONT_INTENSITY_BOOST_MAX = 15
 
 # Control-code arguments can contain printable bytes. Protect the complete control
 # sequence before applying language-wide textual replacements.
@@ -696,6 +700,26 @@ class Language:
                 + ", ".join(missing)
             )
 
+        width_scale = selected_menu.get("font_width_scale", 1.0)
+        if isinstance(width_scale, bool) or not isinstance(width_scale, (int, float)):
+            raise TypeError("dpad_menu.font_width_scale must be a number")
+        width_scale = float(width_scale)
+        if not DPAD_FONT_WIDTH_SCALE_MIN <= width_scale <= DPAD_FONT_WIDTH_SCALE_MAX:
+            raise ValueError(
+                "dpad_menu.font_width_scale must be between "
+                f"{DPAD_FONT_WIDTH_SCALE_MIN} and {DPAD_FONT_WIDTH_SCALE_MAX}"
+            )
+
+        intensity_boost = selected_menu.get("font_intensity_boost", 0)
+        if isinstance(intensity_boost, bool) or not isinstance(intensity_boost, int):
+            raise TypeError("dpad_menu.font_intensity_boost must be an integer")
+        if not DPAD_FONT_INTENSITY_BOOST_MIN <= intensity_boost <= DPAD_FONT_INTENSITY_BOOST_MAX:
+            raise ValueError(
+                "dpad_menu.font_intensity_boost must be between "
+                f"{DPAD_FONT_INTENSITY_BOOST_MIN} and {DPAD_FONT_INTENSITY_BOOST_MAX}"
+            )
+
+
         dungeons = selected_menu.get("dungeons")
         bosses = selected_menu.get("bosses")
         if not isinstance(dungeons, list) or len(dungeons) != DPAD_DUNGEON_COUNT:
@@ -706,6 +730,8 @@ class Language:
             raise TypeError("dpad_menu dungeon and boss names must be strings")
 
         return {
+            "font_width_scale": width_scale,
+            "font_intensity_boost": intensity_boost,
             "labels": {key: labels[key] for key in DPAD_LABEL_KEYS},
             "dungeons": list(dungeons),
             "bosses": list(bosses),

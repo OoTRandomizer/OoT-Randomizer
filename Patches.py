@@ -26,7 +26,7 @@ from LocationList import business_scrubs
 from Messages import read_messages, update_message_by_id, read_shop_items, update_warp_song_text, \
         write_shop_items, remove_unused_messages, make_player_message, \
         add_item_messages, repack_messages, shuffle_messages, \
-        get_message_by_id, TextCode, new_messages, COLOR_MAP, update_map_compass_messages
+        get_message_by_id, TextCode, new_messages, CHARACTER_MAP, COLOR_MAP, update_map_compass_messages
 from OcarinaSongs import patch_songs
 from MQ import patch_files, File, update_dmadata, insert_space, add_relocations
 from Rom import Rom
@@ -156,12 +156,16 @@ def _encode_dpad_codepoints(text: str, lang: Language) -> list[int]:
 
     text = lang.format_from_text(text)
     if not lang.uses_wide_text():
-        try:
-            return list(text.encode("ascii"))
-        except UnicodeEncodeError as error:
-            raise ValueError(
-                f"Non-ASCII D-pad text requires a jp-base language: {text!r}"
-            ) from error
+        codes: list[int] = []
+        for character in text:
+            code = CHARACTER_MAP.get(character)
+            if code is None or not 0x20 <= code < 0x20 + CHAR_WIDTH_TABLE_LENGTH:
+                raise ValueError(
+                    "Narrow D-pad text must use characters available in the "
+                    f"normal message font: {character!r} in {text!r}"
+                )
+            codes.append(code)
+        return codes
 
     codes: list[int] = []
     for character in text:
@@ -209,6 +213,23 @@ def _patch_language_dpad_menu(rom: Rom, lang: Language) -> None:
         _require_language_symbol(rom, "LANG_DPAD_TEXT_WIDE"),
         int(lang.uses_wide_text()),
     )
+
+    # 1.0 means the normal font width. The renderer applies this Q8.8
+    # multiplier to both the drawn glyph and its CHAR_WIDTHS-based advance.
+    width_scale_q8_8 = int(round(menu["font_width_scale"] * 0x100))
+    rom.write_int16(
+        _require_language_symbol(rom, "LANG_DPAD_FONT_WIDTH_SCALE_Q8_8"),
+        width_scale_q8_8,
+    )
+
+    # The message font is I4. Increasing each non-zero nibble makes grey
+    # antialiasing pixels both whiter and more opaque without expanding the
+    # glyph outline. A value of zero preserves the source texture exactly.
+    rom.write_byte(
+        _require_language_symbol(rom, "LANG_DPAD_FONT_INTENSITY_BOOST"),
+        menu["font_intensity_boost"],
+    )
+
 
     labels = menu["labels"]
     _write_language_symbol_area(

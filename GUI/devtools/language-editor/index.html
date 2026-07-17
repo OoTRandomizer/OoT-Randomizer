@@ -1518,7 +1518,7 @@
     PATCH_TEXTS:'Patch text section. Placeholder tokens such as {color} are written for patch-time replacement. Control codes are shown as markup in the editor and as JSON escapes in the raw preview.',
     SHOP_TEXTS:'Shop text section. Keep placeholder tokens and control characters exactly unless you intend to change game text behavior.',
     CHAR_WIDTHS:'Character width overrides. Keys may be visible characters, symbolic names, hex byte strings, or table slots.',
-    dpad_menu:'Localized D-Pad pause-menu labels and names. Keep labels, dungeons, and bosses as separate complete groups; the editor never merges them with another section or language.',
+    dpad_menu:'Localized D-Pad pause-menu labels and names. font_width_scale multiplies width, and font_intensity_boost (0-15) makes non-zero I4 pixels whiter. Keep labels, dungeons, and bosses as complete groups.',
     dungeon_list:'Dungeon list section. The editor exposes name, gender, and has_map; has_map is stored as a boolean.',
     pronoun_mapping:'Mapping section. Each entry is a fixed string-to-string replacement.',
     verb_mapping:'Mapping section. Each entry is a fixed string-to-string replacement.',
@@ -6843,6 +6843,16 @@
     if(!menu || (PropertyWorkspace.isPlainObject(menu) && Object.keys(menu).length === 0)) return [];
     if(!PropertyWorkspace.isPlainObject(menu)) return [t('dpad_menu must be an object.')];
     const issues = [];
+    const widthScale = menu.font_width_scale;
+    if(widthScale !== undefined &&
+       (typeof widthScale !== 'number' || !Number.isFinite(widthScale) || widthScale < 0.5 || widthScale > 2.0)) {
+      issues.push(t('dpad_menu.font_width_scale must be a number from 0.5 to 2.0.'));
+    }
+    const intensityBoost = menu.font_intensity_boost;
+    if(intensityBoost !== undefined &&
+       (!Number.isInteger(intensityBoost) || intensityBoost < 0 || intensityBoost > 15)) {
+      issues.push(t('dpad_menu.font_intensity_boost must be an integer from 0 to 15.'));
+    }
     const labels = menu.labels;
     const labelKeys = ['entrance','dungeon','boss','area','mq','normal'];
     if(!PropertyWorkspace.isPlainObject(labels) || labelKeys.some(key => typeof labels[key] !== 'string')) {

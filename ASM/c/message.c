@@ -2,6 +2,7 @@
 #include "stdbool.h"
 #include "save.h"
 #include "dungeon_info.h"
+#include "text.h"
 
 #define MSG_BUF_WIDE (font->msgBufWide)
 
@@ -54,14 +55,6 @@ uint16_t current_textbox_id;
 // Keep all helpers used by ASM/src/hacks/message.asm together. The hooks only
 // redirect control flow; width lookup and runtime layout decisions live here.
 
-typedef struct WideCharWidthOverride {
-    uint16_t code;
-    uint8_t width;
-    uint8_t reserved;
-} WideCharWidthOverride;
-
-extern uint16_t LANG_WIDE_CHAR_WIDTH_COUNT;
-extern WideCharWidthOverride LANG_WIDE_CHAR_WIDTH_OVERRIDES[];
 extern uint8_t LANG_WIDE_TEXT_ENGLISH_METRICS;
 
 // OoTR targets US NTSC 1.0. gRegEditor's pointer holder is at 0x8011BA00 in
@@ -97,15 +90,7 @@ extern uint8_t LANG_WIDE_TEXT_ENGLISH_METRICS;
 #define WIDE_TEXT_EN_ICON_OFFSET_24 72
 
 uint16_t Message_GetWideCharWidth(uint16_t character) {
-    uint16_t count = LANG_WIDE_CHAR_WIDTH_COUNT;
-
-    for (uint16_t i = 0; i < count; i++) {
-        if (LANG_WIDE_CHAR_WIDTH_OVERRIDES[i].code == character) {
-            return LANG_WIDE_CHAR_WIDTH_OVERRIDES[i].width;
-        }
-    }
-
-    return 16;
+    return (uint16_t)text_language_wide_source_width(character);
 }
 
 uint16_t Message_GetWideCharScaledAdvance(uint16_t character, uint16_t textCharScale) {

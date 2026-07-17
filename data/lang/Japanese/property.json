@@ -39,6 +39,8 @@
     },
     "CHAR_WIDTHS": {},
     "dpad_menu": {
+        "font_width_scale": 0.75,
+        "font_intensity_boost": 2,
         "labels": {
             "entrance": "入り口",
             "dungeon": "ダンジョン",

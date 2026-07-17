@@ -392,14 +392,29 @@ LANG_WIDE_CHAR_WIDTH_OVERRIDES:
 ; Localized D-pad pause-menu text
 ;==================================================================================================
 ; Fixed-size u16 slots keep the ASM interface stable across languages.
-;   LANG_DPAD_TEXT_WIDE = 0: the low byte contains an ASCII character.
+;   LANG_DPAD_TEXT_WIDE = 0: the low byte is a normal message-font character.
 ;   LANG_DPAD_TEXT_WIDE = 1: the value is a Shift-JIS code for Font_LoadCharWide.
 ; Every slot includes a zero terminator. Dynamic tables are filled per seed by Patches.py.
 
 .align 4
 LANG_DPAD_TEXT_WIDE:
 .byte 0
-.byte 0, 0, 0
+.byte 0
+
+; Horizontal scale for the normal message font in unsigned Q8.8.
+; 0x0100 is 1.0 (no horizontal scaling), 0x00C0 is 0.75, and 0x0140 is 1.25.
+; The same multiplier is used for glyph drawing and CHAR_WIDTHS-based advances.
+LANG_DPAD_FONT_WIDTH_SCALE_Q8_8:
+.halfword 0x0100
+
+; Added to every non-zero I4 intensity nibble after a D-pad glyph is loaded.
+; 0 preserves the source texture, while higher values make antialiased pixels
+; whiter and more opaque. Values are clamped to the I4 maximum of 15.
+LANG_DPAD_FONT_INTENSITY_BOOST:
+.byte 4
+
+; Reserved byte keeps the following localized string tables aligned.
+.byte 0
 
 ; Entrance, Dungeon, Boss, Area, MQ, Normal.
 .area 6 * 13 * 2, 0
