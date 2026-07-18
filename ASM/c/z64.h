@@ -780,7 +780,8 @@ typedef struct {
   char            unk_14_[0x000A];          /* 0x13D6 */
   int8_t          seq_index;                /* 0x13E0 */
   int8_t          night_sfx;                /* 0x13E1 */
-  char            unk_15_[0x0012];          /* 0x13E2 */
+  uint8_t         buttonStatus[5];          /* 0x13E2 */
+  char            unk_15_[0x000D];          /* 0x13E7 */
   uint16_t        magic_meter_size;         /* 0x13F4 */
   char            unk_16_[0x0004];          /* 0x13F6 */
   uint16_t        event_inf[4];             /* 0x13FA */
