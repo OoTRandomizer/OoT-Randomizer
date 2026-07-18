@@ -20,7 +20,7 @@
             "Shadow Temple MQ Truth Spinner Small Wooden Crate 4": "True"
         },
         "exits": {
-            "Shadow Temple First Beamos": "
+            "Shadow Temple First Beamos Region": "
                 shadow_temple_shortcuts or can_use(Fire_Arrows) or Hover_Boots or
                 (logic_shadow_mq_gap and Longshot)",
             "Shadow Temple Whispering Walls Front": "has_explosives and (Small_Key_Shadow_Temple, 6)"
@@ -66,7 +66,7 @@
         }
     },
     {
-        "region_name": "Shadow Temple First Beamos",
+        "region_name": "Shadow Temple First Beamos Region",
         "dungeon": "Shadow Temple",
         "locations": {
             "Shadow Temple MQ Map Chest": "(Silver_Rupee_Shadow_Temple_Scythe_Shortcut, 5)",

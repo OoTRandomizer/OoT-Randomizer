@@ -83,7 +83,8 @@
             "Ice Cavern GS Heart Piece Room": "can_use(Hookshot) or can_use(Boomerang)",
             "Ice Cavern GS Push Block Room": "
                 can_use(Hookshot) or can_use(Boomerang) or
-                (logic_ice_block_gs and can_use(Hover_Boots))"
+                (logic_ice_block_gs and can_use(Hover_Boots))",
+            "Blue Fire": "has_bottle"
         },
         "exits": {
             "Ice Cavern End": "(Silver_Rupee_Ice_Cavern_Push_Block, 5)"
