@@ -80,7 +80,7 @@
         "region_name": "Gerudo Training Ground Water Room Entrance",
         "dungeon": "Gerudo Training Ground",
         "locations": {
-            "Gerudo Training Ground MQ Lava Room Middle Red Bubble": "has_soul(Bubble) and (Magic_Meter or Bow)"
+            "Gerudo Training Ground MQ Lava Room Middle Red Bubble": "can_kill_red_bubble"
         },
         "exits": {
             "Gerudo Training Ground Lava Room Door": "Longshot",
@@ -110,7 +110,7 @@
         "region_name": "Gerudo Training Ground Lava Room Back Bubble",
         "dungeon": "Gerudo Training Ground",
         "locations": {
-            "Gerudo Training Ground MQ Lava Room Back Red Bubble": "has_soul(Bubble) and (Magic_Meter or Bow)"
+            "Gerudo Training Ground MQ Lava Room Back Red Bubble": "can_kill_red_bubble"
         }
     },
     {

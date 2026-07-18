@@ -53,7 +53,10 @@
             "Ice Cavern MQ Compass Room Freezard 1": "has_soul(Freezard)",
             "Ice Cavern MQ Compass Room Freezard 2": "has_soul(Freezard)",
             "Ice Cavern MQ Compass Room Freezard 3": "has_soul(Freezard)",
-            "Ice Cavern MQ GS Red Ice": "can_play(Song_of_Time) or logic_ice_mq_red_ice_gs"
+            "Ice Cavern MQ GS Red Ice": "
+                can_play(Song_of_Time) or (blue_fire_arrows and can_use(Blue_Fire_Arrows)) or
+                logic_ice_mq_red_ice_gs",
+            "Blue Fire": "has_bottle"
         }
     },
     {
@@ -67,7 +70,8 @@
             "Ice Cavern MQ GS Ice Block": "is_adult or can_child_attack",
             "Ice Cavern MQ GS Scarecrow": "
                 is_adult and
-                (can_use(Scarecrow) or (Hover_Boots and Longshot) or logic_ice_mq_scarecrow)"
+                (can_use(Scarecrow) or (Hover_Boots and Longshot) or logic_ice_mq_scarecrow)",
+            "Blue Fire": "has_bottle and can_play(Song_of_Time)"
         },
         "exits": {
             "Ice Cavern End": "is_adult"

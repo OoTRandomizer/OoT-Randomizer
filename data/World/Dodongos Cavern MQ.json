@@ -53,10 +53,8 @@
             "Dodongos Cavern MQ Staircase Pot 3": "True",
             "Dodongos Cavern MQ Staircase Pot 4": "True",
             "Dodongos Cavern MQ Staircase Withered Deku Baba": "can_kill_withered_deku_baba",
-            "Dodongos Cavern MQ Staircase Beamos 1": "
-                has_soul(Beamos) and (has_explosives or Progressive_Strength_Upgrade)",
-            "Dodongos Cavern MQ Staircase Beamos 2": "
-                has_soul(Beamos) and (has_explosives or Progressive_Strength_Upgrade)",
+            "Dodongos Cavern MQ Staircase Beamos 1": "can_kill_beamos_with_bomb_flower",
+            "Dodongos Cavern MQ Staircase Beamos 2": "can_kill_beamos_with_bomb_flower",
             "Dodongos Cavern MQ Staircase Silver Rupee Beamos": "True",
             "Dodongos Cavern MQ Staircase Silver Rupee Lower Crate": "True",
             "Dodongos Cavern MQ Song of Time Block Room Skullwalltula": "
@@ -74,12 +72,12 @@
                 (is_adult or (can_play(Song_of_Time) and can_child_damage) or has_bombchus)",
             "Dodongos Cavern MQ GS Song of Time Block Room": "
                 can_play(Song_of_Time) and (is_adult or can_child_attack)",
-            "Deku Baba Sticks": "has_soul(Deku_Baba) and (is_adult or Kokiri_Sword or Boomerang)"
+            "Deku Baba Sticks": "can_kill_withered_deku_baba"
         },
         "exits": {
             "Dodongos Cavern Upper Staircase": "
-                has_explosives or Progressive_Strength_Upgrade or
-                can_use(Dins_Fire) or (logic_dc_staircase and can_use(Bow))"
+                here(has_explosives or Progressive_Strength_Upgrade or
+                can_use(Dins_Fire) or (logic_dc_staircase and can_use(Bow)))"
         }
     },
     {
@@ -208,8 +206,10 @@
             "Dodongos Cavern MQ Torch Puzzle Room Pot Corner": "True",
             "Dodongos Cavern MQ After Upper Lizalfos Crate 1": "True",
             "Dodongos Cavern MQ After Upper Lizalfos Crate 2": "True",
-            "Dodongos Cavern MQ After Upper Lizalfos Keese 1": "can_kill_keese_stationary",
-            "Dodongos Cavern MQ After Upper Lizalfos Keese Near Bomb Flower": "has_soul(Keese)"
+            "Dodongos Cavern MQ After Upper Lizalfos Keese Near Bomb Flower": "
+                has_soul(Keese) and (is_adult or Kokiri_Sword or Sticks or Slingshot or Boomerang or
+                    has_explosives or (Nuts and Progressive_Strength_Upgrade))",
+            "Dodongos Cavern MQ After Upper Lizalfos Keese Lower Ledge": "has_soul(Keese)"
         },
         "exits": {
             "Dodongos Cavern Lower Right Side": "Progressive_Strength_Upgrade and can_take_damage",
@@ -231,7 +231,9 @@
             "Dodongos Cavern MQ Right Side Pot 3": "True",
             "Dodongos Cavern MQ Right Side Pot 4": "True",
             "Dodongos Cavern MQ Right Side Skulltula": "has_soul(Skulltula)",
-            "Dodongos Cavern MQ Right Side Keese": "can_kill_keese"
+            "Dodongos Cavern MQ Right Side Keese": "
+                has_soul(Keese) and (is_adult or Kokiri_Sword or Sticks or Slingshot or Boomerang or
+                    (Nuts and (has_explosives or Progressive_Strength_Upgrade)))"
         },
         "exits": {
             "Dodongos Cavern Hall Before Lower Lizalfos": "

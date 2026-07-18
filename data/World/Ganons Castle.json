@@ -89,11 +89,11 @@
         "region_name": "Ganons Castle Water Trial Block Push",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Castle Water Trial Fairy Pot Drop": " True",
-            "Fairy Pot": "True"
+            "Ganons Castle Water Trial Fairy Pot": "True",
+            "Fairy Pot": "has_bottle"
         },
         "exits": {
-            "Ganons Castle Water Trial Ending": "Blue_Fire and can_use(Megaton_Hammer)"
+            "Ganons Castle Water Trial Ending": "can_use(Megaton_Hammer)"
         }
     },
     {
@@ -114,13 +114,15 @@
             "Ganons Castle Shadow Trial Front Chest": "
                 is_child or can_use(Fire_Arrows) or Hookshot or Hover_Boots or can_play(Song_of_Time)",
             "Ganons Castle Shadow Trial Green Bubble": "
-                has_soul(Bubble) and (can_use(Bow) or can_use(Slingshot))",
+                has_soul(Bubble) and (can_use(Bow) or can_use(Slingshot) or
+                    (can_use(Longshot) and can_use(Dins_Fire) and Nuts))",
             "Ganons Castle Shadow Trial Like Like": "
                 has_soul(Like_Like) and (can_use(Longshot) or can_use(Bow) or can_use(Slingshot))"
         },
         "exits": {
             "Ganons Castle Shadow Trial First Gap": "
-                (can_use(Longshot) and has_soul(Like_Like)) or can_use(Fire_Arrows)"
+                (can_use(Longshot) and (can_use(Dins_Fire) or has_soul(Like_Like))) or
+                can_use(Fire_Arrows)"
         }
     },
     {
@@ -131,7 +133,8 @@
             "Ganons Castle Shadow Trial Like Like Pot 2": "True"
         },
         "exits": {
-            "Ganons Castle Shadow Trial Second Gap": "Hover_Boots or has_fire_source"
+            "Ganons Castle Shadow Trial Second Gap": "
+                can_use(Fire_Arrows) or Hover_Boots or (has_soul(Like_Like) and can_use(Dins_Fire))"
         }
     },
     {
@@ -178,11 +181,11 @@
                 has_soul(Torch_Slug) and
                 (is_adult or (logic_fire_trial_slug_rupee and (Sticks or Kokiri_Sword)))",
             "Ganons Castle Fire Trial Red Bubble 1": "
-                has_soul(Bubble) and can_use(Goron_Tunic) and Hover_Boots and (Magic_Meter or Bow)",
+                can_kill_red_bubble and can_use(Goron_Tunic) and Hover_Boots",
             "Ganons Castle Fire Trial Red Bubble 2": "
-                has_soul(Bubble) and can_use(Goron_Tunic) and Hover_Boots and (Magic_Meter or Bow)",
+                can_kill_red_bubble and can_use(Goron_Tunic) and Hover_Boots",
             "Ganons Castle Fire Trial Red Bubble 3": "
-                has_soul(Bubble) and can_use(Goron_Tunic) and Hover_Boots and (Magic_Meter or Bow)",
+                can_kill_red_bubble and can_use(Goron_Tunic) and Hover_Boots",
             "Ganons Castle Fire Trial Deepest Red Bubble": "
                 has_soul(Bubble) and can_use(Goron_Tunic) and Hover_Boots and
                 (Magic_Meter or Bombs or Biggoron_Sword)"
@@ -217,6 +220,8 @@
             "Ganons Castle Light Trial Invisible Enemies Chest": "
                 has_soul(Keese) and has_soul(Skulltula) and
                 (logic_lens_castle or can_use(Lens_of_Truth))",
+            "Ganons Castle Light Trial Lullaby Chest": "
+                (Small_Key_Ganons_Castle, 1) and can_play(Zeldas_Lullaby)",
             "Ganons Castle Light Trial Invisible Keese 1": "
                 has_soul(Keese) and (logic_lens_castle or can_use(Lens_of_Truth))",
             "Ganons Castle Light Trial Invisible Keese 2": "
@@ -224,9 +229,7 @@
             "Ganons Castle Light Trial Invisible Keese 3": "
                 has_soul(Keese) and (logic_lens_castle or can_use(Lens_of_Truth))",
             "Ganons Castle Light Trial Invisible Skulltula": "
-                has_soul(Skulltula) and (logic_lens_castle or can_use(Lens_of_Truth))",
-            "Ganons Castle Light Trial Lullaby Chest": "
-                (Small_Key_Ganons_Castle, 1) and can_play(Zeldas_Lullaby)"
+                has_soul(Skulltula) and (logic_lens_castle or can_use(Lens_of_Truth))"
         },
         "exits": {
             "Ganons Castle Light Trial Boulder Room": "(Small_Key_Ganons_Castle, 2)"
