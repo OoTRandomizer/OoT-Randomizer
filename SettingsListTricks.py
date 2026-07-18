@@ -429,7 +429,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
         'tags'    : ("Gerudo Valley", "Overworld", "Adult", "Wonderitems",),
         'tooltip' : '''\
                     Riding the bean makes it a lot easier to
-                    reach the exact position of the item.
+                    reach the exact positions of the items.
                     '''},
     'Gerudo Valley Crate PoH as Adult with Hover Boots': {
         'name'    : 'logic_valley_crate_hovers',
@@ -605,15 +605,12 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     The Bow can be used to knock down the stairs
                     with two well-timed shots.
                     '''},
-    'Dodongo\'s Cavern Child Slingshot Skips': {
-        'name'    : 'logic_dc_slingshot_skip',
-        'tags'    : ("Dodongo's Cavern", "Vanilla Dungeons", "Child",),
+    'Dodongo\'s Cavern Flame Circle Skips': {
+        'name'    : 'logic_dc_flame_circle_skip',
+        'tags'    : ("Dodongo's Cavern", "Vanilla Dungeons", "Child", "Adult",),
         'tooltip' : '''\
-                    With precise platforming, child can cross the
+                    With precise platforming, you can cross the
                     platforms while the flame circles are there.
-                    When enabling this trick, it's recommended that
-                    you also enable the Adult variant: "Dodongo's
-                    Cavern Spike Trap Room Jump without Hover Boots".
                     '''},
     'Dodongo\'s Cavern Two Scrub Room with Strength': {
         'name'    : 'logic_dc_scrub_room',
@@ -874,7 +871,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     Shoot the vines in the well as low and as far to
                     the right as possible, and then immediately swim
                     under the ceiling to the right. This can only be
-                    required if Forest Temple is in it's Master Quest
+                    required if Forest Temple is in its Master Quest
                     form, or if enemy souls are shuffled.
                     '''},
     'Skip Forest Temple MQ Block Puzzle with Bombchu': {
@@ -1615,7 +1612,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     Hover Boots can again be used to obtain the Token,
                     all without Hookshot or Boomerang.
                     '''},
-    'Ice Cavern MQ Red Ice GS without Song of Time': {
+    'Ice Cavern MQ Red Ice GS without Song of Time or Blue Fire Arrows': {
         'name'    : 'logic_ice_mq_red_ice_gs',
         'tags'    : ("Ice Cavern MQ", "Gold Skulltulas", "Master Quest", "Adult",),
         'tooltip' : '''\
@@ -1739,7 +1736,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
         'tooltip' : '''\
                     To jump to the platform with the Torch Slug as child requires
                     that the sinking platform be almost as high as possible. This
-                    trick is only relevant if the Ganon's Castle entrance are is
+                    trick is only relevant if the Ganon's Castle entrance is
                     shuffled, the Fewer Tunic Requirements trick is enabled, and
                     either Enemy Drops or Silver Rupees are shuffled.
                     '''},
