@@ -146,7 +146,7 @@
         },
         "exits": {
             "Dodongos Cavern Before Upper Lizalfos": "
-                (is_child and (Slingshot or logic_dc_slingshot_skip or can_mega)) or
+                (is_child and (Slingshot or logic_dc_flame_circle_skip or can_mega)) or
                 can_use(Bow) or (is_adult and can_groundjump)"
         }
     },
