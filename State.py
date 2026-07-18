@@ -131,6 +131,18 @@ class State:
                     return False
         return True
 
+    def had_day_start(self, **kwargs) -> bool:
+        stod = self.world.settings.starting_tod
+        # These are all between 6:30 and 18:00
+        if (stod == 'default' or        # 10
+            stod == 'sunrise' or        # 6.5
+            stod == 'morning' or        # 9
+            stod == 'noon' or           # 12
+            stod == 'afternoon'):       # 15
+            return True
+        else:
+            return False
+
     def had_night_start(self, **kwargs) -> bool:
         stod = self.world.settings.starting_tod
         # These are all not between 6:30 and 18:00
@@ -159,7 +171,6 @@ class State:
             return (hearts < 6) or fairy or nl
         else:
             return False
-
 
     # Use the guarantee_hint rule defined in json.
     def guarantee_hint(self) -> bool:
