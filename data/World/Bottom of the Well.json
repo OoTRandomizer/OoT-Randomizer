@@ -132,11 +132,11 @@
             "Bottom of the Well East Inner Room Keese 1": "can_kill_keese_stationary",
             "Bottom of the Well East Inner Room Keese 2": "
                 has_soul(Keese) and
-                (is_adult or Kokiri_Sword or Sticks or Slingshot or
+                (Kokiri_Sword or Sticks or Slingshot or
                     Boomerang or Bombs or (Nuts and has_bombchus))",
             "Bottom of the Well East Inner Room Keese 3": "
                 has_soul(Keese) and
-                (is_adult or Kokiri_Sword or Sticks or Slingshot or
+                (Kokiri_Sword or Sticks or Slingshot or
                     Boomerang or Bombs or (Nuts and has_bombchus))",
             "Bottom of the Well East Inner Room Keese 4": "can_kill_keese",
             "Bottom of the Well GS West Inner Room": "Boomerang",
