@@ -84,6 +84,34 @@ extern int8_t CFG_DUNGEON_PRECOMPLETED[14];
 extern extended_savecontext_static_t extended_savectx;
 extern silver_rupee_data_t silver_rupee_vars[0x16][2];
 
+static int dpad_max_text_width(
+    const uint16_t* table,
+    int count,
+    int slotChars,
+    int height
+) {
+    int maxWidth = 0;
+    for (int i = 0; i < count; i++) {
+        int width = text_measure_lang_size(table + (i * slotChars), height);
+        if (width > maxWidth) {
+            maxWidth = width;
+        }
+    }
+    return maxWidth;
+}
+
+static int dpad_column_width(
+    const uint16_t* label,
+    const uint16_t* table,
+    int count,
+    int slotChars,
+    int height
+) {
+    int labelWidth = text_measure_lang_size(label, height);
+    int contentWidth = dpad_max_text_width(table, count, slotChars, height);
+    return labelWidth > contentWidth ? labelWidth : contentWidth;
+}
+
 void draw_background(z64_disp_buf_t* db, int bg_left, int bg_top, int bg_width, int bg_height) {
     gDPSetCombineMode(db->p++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
     gDPSetPrimColor(db->p++, 0, 0, 0x00, 0x00, 0x00, 0xD0);
@@ -221,27 +249,40 @@ void draw_world_info(z64_disp_buf_t* db) {
             show_dungeon_info = 1;
 
             // Set up dimensions
-            int font_width = 6;
             int font_height = 11;
             int padding = 1;
+            int columnGap = 2 * padding;
             int rows = 13;
-            int boss_width = show_bosses ?
-                ((8 * font_width) + padding) :
-                0;
-            int bg_width = show_dungeons ?
-                10 * 2 * font_width + boss_width :
-                10 * font_width + boss_width;
+            int entranceWidth = dpad_column_width(
+                LANG_DPAD_LABELS[DPAD_LABEL_ENTRANCE],
+                &LANG_DPAD_DUNGEON_NAMES[0][0], 15, 12, font_height
+            );
+            int dungeonWidth = dpad_column_width(
+                LANG_DPAD_LABELS[DPAD_LABEL_DUNGEON],
+                &LANG_DPAD_DUNGEON_ENTRANCES[0][0], 12, 12, font_height
+            );
+            int bossWidth = dpad_column_width(
+                LANG_DPAD_LABELS[DPAD_LABEL_BOSS],
+                &LANG_DPAD_BOSSES[0][0], 12, 12, font_height
+            );
+            int contentWidth = entranceWidth;
+            if (show_dungeons) {
+                contentWidth += columnGap + dungeonWidth;
+            }
+            if (show_bosses) {
+                contentWidth += columnGap + bossWidth;
+            }
+            int bg_width = contentWidth + (2 * padding);
             int bg_height = (rows * font_height) + ((rows + 1) * padding);
             int bg_left = (Z64_SCREEN_WIDTH - bg_width) / 2;
             int bg_top = (Z64_SCREEN_HEIGHT - bg_height) / 2;
 
             int start_top = bg_top + padding + 1;
             uint16_t left = bg_left + padding;
-            uint16_t left_dungeon = 0;
-            if (show_dungeons) {
-                left_dungeon = left + 60;
-            }
-            uint16_t left_boss = show_dungeons ? left + 2*60 : left + 60;
+            uint16_t left_dungeon = left + entranceWidth + columnGap;
+            uint16_t left_boss = show_dungeons ?
+                left_dungeon + dungeonWidth + columnGap :
+                left + entranceWidth + columnGap;
 
             // Draw background
             gDPSetCombineMode(db->p++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
@@ -267,12 +308,12 @@ void draw_world_info(z64_disp_buf_t* db) {
             gDPSetPrimColor(db->p++, 0, 0, 120, 255, 100, 0xFF);
 
             // Draw the legend at the top.
-            text_print_size(db, "Entrance", left, start_top, font_width, font_height);
+            text_print_lang_height(db, LANG_DPAD_LABELS[DPAD_LABEL_ENTRANCE], left, start_top, font_height);
             if (show_dungeons) {
-                text_print_size(db, "Dungeon", left_dungeon, start_top, font_width, font_height);
+                text_print_lang_height(db, LANG_DPAD_LABELS[DPAD_LABEL_DUNGEON], left_dungeon, start_top, font_height);
             }
             if (show_bosses) {
-                text_print_size(db, "Boss", left_boss, start_top, font_width, font_height);
+                text_print_lang_height(db, LANG_DPAD_LABELS[DPAD_LABEL_BOSS], left_boss, start_top, font_height);
             }
             gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
             // Draw the list of dungeons entrances.
@@ -283,9 +324,9 @@ void draw_world_info(z64_disp_buf_t* db) {
                     continue;
                 }
                 gDPPipeSync(db->p++);
-                dungeon_entry_t dungeon = i == 12 ? dungeons[i + 1] : dungeons[i];
+                uint8_t dungeon_index = i == 12 ? i + 1 : i;
                 top += font_height + padding;
-                text_print_size(db, dungeon.short_name, left, top, font_width, font_height);
+                text_print_lang_height(db, LANG_DPAD_DUNGEON_NAMES[dungeon_index], left, top, font_height);
             }
 
             // Draw the list of dungeons interiors.
@@ -294,12 +335,12 @@ void draw_world_info(z64_disp_buf_t* db) {
                     uint16_t top = start_top + ((font_height + padding) * (i + 1)) + 1;
                     if (CFG_DUNGEON_BOSS_INFO[i + 2] > 10 || z64_file.dungeon_items[CFG_DUNGEON_BOSS_INFO[i + 2]].map) {
                         gDPPipeSync(db->p++);
-                        text_print_size(db, CFG_DUNGEON_ENTRANCES[i], left_dungeon, top, font_width, font_height);
+                        text_print_lang_height(db, LANG_DPAD_DUNGEON_ENTRANCES[i], left_dungeon, top, font_height);
                         // If boss ER is also on, display the boss on the same line as the actual dungeon.
                         if (show_bosses) {
                             if (CFG_DUNGEON_BOSS_INFO[i + 2] > 10 || z64_file.dungeon_items[CFG_DUNGEON_BOSS_INFO[i + 2]].compass) {
                                 gDPPipeSync(db->p++);
-                                text_print_size(db, CFG_BOSSES[i], left_boss, top, font_width, font_height);
+                                text_print_lang_height(db, LANG_DPAD_BOSSES[i], left_boss, top, font_height);
                             }
                         }
                     }
@@ -310,18 +351,26 @@ void draw_world_info(z64_disp_buf_t* db) {
             show_dungeon_info = 1;
 
             // Set up dimensions
-            int font_width = 6;
             int font_height = 11;
             int padding = 1;
+            int columnGap = 2 * padding;
             int rows = 10;
-            int bg_width = 10 * 2 * font_width;
+            int dungeonWidth = dpad_column_width(
+                LANG_DPAD_LABELS[DPAD_LABEL_DUNGEON],
+                &LANG_DPAD_DUNGEON_NAMES[0][0], 15, 12, font_height
+            );
+            int bossWidth = dpad_column_width(
+                LANG_DPAD_LABELS[DPAD_LABEL_BOSS],
+                &LANG_DPAD_BOSSES[12][0], 9, 12, font_height
+            );
+            int bg_width = dungeonWidth + columnGap + bossWidth + (2 * padding);
             int bg_height = (rows * font_height) + ((rows + 1) * padding);
             int bg_left = (Z64_SCREEN_WIDTH - bg_width) / 2;
             int bg_top = (Z64_SCREEN_HEIGHT - bg_height) / 2;
 
             int start_top = bg_top + padding + 1;
             uint16_t left = bg_left + padding;
-            uint16_t left_area = left + 60;
+            uint16_t left_area = left + dungeonWidth + columnGap;
 
             // Draw background
             gDPSetCombineMode(db->p++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
@@ -347,8 +396,8 @@ void draw_world_info(z64_disp_buf_t* db) {
             gDPSetPrimColor(db->p++, 0, 0, 120, 255, 100, 0xFF);
 
             // Draw the legend at the top.
-            text_print_size(db, "Dungeon", left, start_top, font_width, font_height);
-            text_print_size(db, "Boss", left_area, start_top, font_width, font_height);
+            text_print_lang_height(db, LANG_DPAD_LABELS[DPAD_LABEL_DUNGEON], left, start_top, font_height);
+            text_print_lang_height(db, LANG_DPAD_LABELS[DPAD_LABEL_BOSS], left_area, start_top, font_height);
             gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
             // Draw the list of dungeons entrances.
             uint16_t top = start_top;
@@ -358,9 +407,9 @@ void draw_world_info(z64_disp_buf_t* db) {
                     continue;
                 }
                 gDPPipeSync(db->p++);
-                dungeon_entry_t dungeon = i == 12 ? dungeons[i + 1] : dungeons[i];
+                uint8_t dungeon_index = i == 12 ? i + 1 : i;
                 top += font_height + padding;
-                text_print_size(db, dungeon.short_name, left, top, font_width, font_height);
+                text_print_lang_height(db, LANG_DPAD_DUNGEON_NAMES[dungeon_index], left, top, font_height);
             }
             // List of bosses, located in CFG_BOSSES after the first list of 12 for the dpad left menu.
             for (uint8_t i = 0; i < rows - 1; i++) {
@@ -370,7 +419,7 @@ void draw_world_info(z64_disp_buf_t* db) {
                 }
                 gDPPipeSync(db->p++);
                 uint16_t top = start_top + ((font_height + padding) * (i + 1));
-                text_print_size(db, CFG_BOSSES[12 + i], left_area, top, font_width, font_height);
+                text_print_lang_height(db, LANG_DPAD_BOSSES[12 + i], left_area, top, font_height);
             }
         }
     }
@@ -389,18 +438,26 @@ void draw_world_info(z64_disp_buf_t* db) {
             show_dungeon_info = 1;
 
             // Set up dimensions
-            int font_width = 6;
             int font_height = 11;
             int padding = 1;
+            int columnGap = 2 * padding;
             int rows = 13;
-            int bg_width = 10 * 2 * font_width;
+            int dungeonWidth = dpad_column_width(
+                LANG_DPAD_LABELS[DPAD_LABEL_DUNGEON],
+                &LANG_DPAD_DUNGEON_NAMES[0][0], 15, 12, font_height
+            );
+            int areaWidth = dpad_column_width(
+                LANG_DPAD_LABELS[DPAD_LABEL_AREA],
+                &LANG_DPAD_DUNGEON_ENTRANCES[0][0], 12, 12, font_height
+            );
+            int bg_width = dungeonWidth + columnGap + areaWidth + (2 * padding);
             int bg_height = (rows * font_height) + ((rows + 1) * padding);
             int bg_left = (Z64_SCREEN_WIDTH - bg_width) / 2;
             int bg_top = (Z64_SCREEN_HEIGHT - bg_height) / 2;
 
             int start_top = bg_top + padding + 1;
             uint16_t left = bg_left + padding;
-            uint16_t left_area = left + 60;
+            uint16_t left_area = left + dungeonWidth + columnGap;
 
             // Draw background
             gDPSetCombineMode(db->p++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
@@ -426,8 +483,8 @@ void draw_world_info(z64_disp_buf_t* db) {
             gDPSetPrimColor(db->p++, 0, 0, 120, 255, 100, 0xFF);
 
             // Draw the legend at the top.
-            text_print_size(db, "Dungeon", left, start_top, font_width, font_height);
-            text_print_size(db, "Area", left_area, start_top, font_width, font_height);
+            text_print_lang_height(db, LANG_DPAD_LABELS[DPAD_LABEL_DUNGEON], left, start_top, font_height);
+            text_print_lang_height(db, LANG_DPAD_LABELS[DPAD_LABEL_AREA], left_area, start_top, font_height);
             gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
             // Draw the list of dungeons.
             uint16_t top = start_top;
@@ -437,9 +494,8 @@ void draw_world_info(z64_disp_buf_t* db) {
                 if (i == 10) {
                     continue;
                 }
-                dungeon_entry_t dungeon = dungeons[i];
                 top += font_height + padding;
-                text_print_size(db, dungeon.short_name, left, top, font_width, font_height);
+                text_print_lang_height(db, LANG_DPAD_DUNGEON_NAMES[i], left, top, font_height);
             }
             // Draw the area each dungeon is located in.
             for (uint8_t i = 0; i < rows - 1; i++) {
@@ -449,25 +505,33 @@ void draw_world_info(z64_disp_buf_t* db) {
                     continue;
                 }
                 uint16_t top = start_top + ((font_height + padding) * (i + 1)) + 1;
-                text_print_size(db, CFG_DUNGEON_ENTRANCES[i], left_area, top, font_width, font_height);
+                text_print_lang_height(db, LANG_DPAD_DUNGEON_ENTRANCES[i], left_area, top, font_height);
             }
         }
         if (boss_display) {
             show_dungeon_info = 1;
 
             // Set up dimensions
-            int font_width = 6;
             int font_height = 11;
             int padding = 1;
+            int columnGap = 2 * padding;
             int rows = 10;
-            int bg_width = 10 * 2 * font_width;
+            int bossWidth = dpad_column_width(
+                LANG_DPAD_LABELS[DPAD_LABEL_BOSS],
+                &LANG_DPAD_BOSS_NAMES[0][0], 9, 10, font_height
+            );
+            int areaWidth = dpad_column_width(
+                LANG_DPAD_LABELS[DPAD_LABEL_AREA],
+                &LANG_DPAD_BOSSES[0][0], 9, 12, font_height
+            );
+            int bg_width = bossWidth + columnGap + areaWidth + (2 * padding);
             int bg_height = (rows * font_height) + ((rows + 1) * padding);
             int bg_left = (Z64_SCREEN_WIDTH - bg_width) / 2;
             int bg_top = (Z64_SCREEN_HEIGHT - bg_height) / 2;
 
             int start_top = bg_top + padding + 1;
             uint16_t left = bg_left + padding;
-            uint16_t left_area = left + 60;
+            uint16_t left_area = left + bossWidth + columnGap;
 
             // Draw background
             gDPSetCombineMode(db->p++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
@@ -493,16 +557,15 @@ void draw_world_info(z64_disp_buf_t* db) {
             gDPSetPrimColor(db->p++, 0, 0, 120, 255, 100, 0xFF);
 
             // Draw the legend at the top.
-            text_print_size(db, "Boss", left, start_top, font_width, font_height);
-            text_print_size(db, "Area", left_area, start_top, font_width, font_height);
+            text_print_lang_height(db, LANG_DPAD_LABELS[DPAD_LABEL_BOSS], left, start_top, font_height);
+            text_print_lang_height(db, LANG_DPAD_LABELS[DPAD_LABEL_AREA], left_area, start_top, font_height);
             gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
             // Draw the list of bosses.
             uint16_t top = start_top;
             for (uint8_t i = 0; i < rows - 1; i++) {
                 gDPPipeSync(db->p++);
-                boss_entry_t boss = bosses[i];
                 top += font_height + padding;
-                text_print_size(db, boss.name, left, top, font_width, font_height);
+                text_print_lang_height(db, LANG_DPAD_BOSS_NAMES[i], left, top, font_height);
             }
             // Draw the area each boss is located in.
             for (uint8_t i = 0; i < rows - 1; i++) {
@@ -512,7 +575,7 @@ void draw_world_info(z64_disp_buf_t* db) {
                     continue;
                 }
                 uint16_t top = start_top + ((font_height + padding) * (i + 1));
-                text_print_size(db, CFG_BOSSES[i], left_area, top, font_width, font_height);
+                text_print_lang_height(db, LANG_DPAD_BOSSES[i], left_area, top, font_height);
             }
         }
     }
@@ -552,15 +615,25 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
         int font_height = 11;
         int padding = 1;
         int rows = SHUFFLE_CHEST_GAME == 1 ? 14 : 13;
-        int mq_width = show_mq ?
-            ((6 * font_width) + padding) :
-            0;
+        int dungeonNameWidth = dpad_max_text_width(
+            &LANG_DPAD_DUNGEON_NAMES[0][0], 15, 12, font_height
+        );
+        int mqLabelWidth = text_measure_lang_size(
+            LANG_DPAD_LABELS[DPAD_LABEL_MQ], font_height
+        );
+        int normalLabelWidth = text_measure_lang_size(
+            LANG_DPAD_LABELS[DPAD_LABEL_NORMAL], font_height
+        );
+        if (normalLabelWidth > mqLabelWidth) {
+            mqLabelWidth = normalLabelWidth;
+        }
+        int mq_width = show_mq ? mqLabelWidth + padding : 0;
         int silver_width = CFG_DUNGEON_INFO_SILVER_RUPEES ?
             icon_size + (7 * font_width) + (12 * padding) :
             0;
         int bg_width =
             (6 * icon_size) +
-            ((SHUFFLE_CHEST_GAME == 1 ? 14 : 11) * font_width) +
+            dungeonNameWidth +
             (8 * padding) +
             mq_width +
             silver_width;
@@ -653,7 +726,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
             int top = start_top + ((icon_size + padding) * i) + 1;
             if (empty) {
                 gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0x7F);
-                uint16_t sizeRectangle = text_print_size(db, d->short_name, left, top, font_width, font_height) - left;
+                uint16_t sizeRectangle = text_print_lang_height(db, LANG_DPAD_DUNGEON_NAMES[d - dungeons], left, top, font_height) - left;
                 gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xBF);
                 gDPSetCombineMode(db->p++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
                 gSPTextureRectangle(db->p++,
@@ -665,11 +738,11 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
                 gDPSetCombineMode(db->p++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
             } else {
                 gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
-                text_print_size(db, d->short_name, left, top, font_width, font_height);
+                text_print_lang_height(db, LANG_DPAD_DUNGEON_NAMES[d - dungeons], left, top, font_height);
             }
         }
 
-        left += ((SHUFFLE_CHEST_GAME == 1 ? 11 : 8) * font_width) + padding;
+        left += dungeonNameWidth + padding;
 
         // Draw keys
 
@@ -790,12 +863,13 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
                         !z64_file.dungeon_items[d->index].map) {
                     continue;
                 }
-                char* str = CFG_DUNGEON_IS_MQ[d->index] ? "MQ" : "Normal";
+                const uint16_t* str = CFG_DUNGEON_IS_MQ[d->index] ?
+                    LANG_DPAD_LABELS[DPAD_LABEL_MQ] : LANG_DPAD_LABELS[DPAD_LABEL_NORMAL];
                 int top = start_top + ((icon_size + padding) * i) + 1;
-                text_print_size(db, str, left, top, font_width, font_height);
+                text_print_lang_height(db, str, left, top, font_height);
             }
 
-            left += (6 * font_width) + padding;
+            left += mqLabelWidth + padding;
         }
 
         if (CFG_DUNGEON_INFO_SILVER_RUPEES) {
@@ -879,9 +953,12 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
         int icon_size = 16;
         int padding = 1;
         int rows = 9;
+        int rewardAreaWidth = dpad_max_text_width(
+            &LANG_DPAD_REWARD_AREAS[0][0], 9, 24, font_sprite.tile_h
+        );
         int bg_width =
             (1 * icon_size) +
-            (0x16 * font_sprite.tile_w) +
+            rewardAreaWidth +
             (3 * padding);
         if (CFG_DUNGEON_INFO_REWARD_WORLDS_ENABLE) {
             bg_width += 5 * font_sprite.tile_w;
@@ -1004,11 +1081,11 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
                     continue;
                 }
                 int top = start_top + ((icon_size + padding) * i) + 1;
-                text_print(db, CFG_DUNGEON_REWARD_AREAS[i], left, top);
+                text_print_lang(db, LANG_DPAD_REWARD_AREAS[i], left, top);
             }
         }
 
-        left += (0x16 * font_sprite.tile_w) + padding;
+        left += rewardAreaWidth + padding;
     } else if (pad_held.dr) {
         show_dungeon_info = 1;
         // Set up dimensions
@@ -1016,9 +1093,12 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
         int icon_size = 16;
         int padding = 1;
         int rows = SHUFFLE_CHEST_GAME == 1 ? 10 : 9;
+        int dungeonNameWidth = dpad_max_text_width(
+            &LANG_DPAD_DUNGEON_NAMES[0][0], 15, 12, font_sprite.tile_h
+        );
         int bg_width =
             (1 * icon_size) +
-            ((SHUFFLE_CHEST_GAME ? 15 : 12) * font_sprite.tile_w) +
+            dungeonNameWidth +
             (4 * padding);
         if (CFG_DUNGEON_INFO_SILVER_RUPEES) {
             bg_width += icon_size + (8 * font_sprite.tile_w) + (16 * padding);
@@ -1040,10 +1120,10 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
         for (int i = 0; i < rows; i++) {
             dungeon_entry_t* d = &(dungeons[d_right_dungeon_idx(i)]); // skip Deku/DC/Jabu/Ice/Tower dynamically
             int top = start_top + ((icon_size + padding) * i) + 1;
-            text_print(db, d->short_name, left, top);
+            text_print_lang(db, LANG_DPAD_DUNGEON_NAMES[d - dungeons], left, top);
         }
 
-        left += ((SHUFFLE_CHEST_GAME == 1 ? 11 : 8) * font_sprite.tile_w) + padding;
+        left += dungeonNameWidth + padding;
 
         // Draw keys
 
@@ -1181,12 +1261,22 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
         int icon_size = 16;
         int padding = 1;
         int rows = 12;
-        int mq_width = show_mq ?
-            ((6 * font_sprite.tile_w) + padding) :
-            0;
+        int dungeonNameWidth = dpad_max_text_width(
+            &LANG_DPAD_DUNGEON_NAMES[0][0], 15, 12, font_sprite.tile_h
+        );
+        int mqLabelWidth = text_measure_lang_size(
+            LANG_DPAD_LABELS[DPAD_LABEL_MQ], font_sprite.tile_h
+        );
+        int normalLabelWidth = text_measure_lang_size(
+            LANG_DPAD_LABELS[DPAD_LABEL_NORMAL], font_sprite.tile_h
+        );
+        if (normalLabelWidth > mqLabelWidth) {
+            mqLabelWidth = normalLabelWidth;
+        }
+        int mq_width = show_mq ? mqLabelWidth + padding : 0;
         int bg_width =
             (3 * icon_size) +
-            (8 * font_sprite.tile_w) +
+            dungeonNameWidth +
             (8 * padding) +
             mq_width;
         int bg_height = (rows * icon_size) + ((rows + 1) * padding);
@@ -1214,7 +1304,7 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
             int top = start_top + ((icon_size + padding) * i) + 1;
             if (empty) {
                 gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0x7F);
-                uint16_t sizeRectangle = text_print(db, d->short_name, left, top) - left;
+                uint16_t sizeRectangle = text_print_lang(db, LANG_DPAD_DUNGEON_NAMES[d - dungeons], left, top) - left;
                 gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xBF);
                 gDPSetCombineMode(db->p++, G_CC_PRIMITIVE, G_CC_PRIMITIVE);
                 gSPTextureRectangle(db->p++,
@@ -1226,11 +1316,11 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
                 gDPSetCombineMode(db->p++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
             } else {
                 gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
-                text_print(db, d->short_name, left, top);
+                text_print_lang(db, LANG_DPAD_DUNGEON_NAMES[d - dungeons], left, top);
             }
         }
 
-        left += (8 * font_sprite.tile_w) + padding;
+        left += dungeonNameWidth + padding;
 
         // Draw maps and compasses
 
@@ -1321,9 +1411,10 @@ void draw_dungeon_info(z64_disp_buf_t* db) {
                         !z64_file.dungeon_items[d->index].map) {
                     continue;
                 }
-                char* str = CFG_DUNGEON_IS_MQ[d->index] ? "MQ" : "Normal";
+                const uint16_t* str = CFG_DUNGEON_IS_MQ[d->index] ?
+                    LANG_DPAD_LABELS[DPAD_LABEL_MQ] : LANG_DPAD_LABELS[DPAD_LABEL_NORMAL];
                 int top = start_top + ((icon_size + padding) * i) + 1;
-                text_print(db, str, left, top);
+                text_print_lang(db, str, left, top);
             }
 
             left += icon_size + padding;

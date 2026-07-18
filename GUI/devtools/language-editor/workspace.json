@@ -1,0 +1,923 @@
+{
+  "schemaVersion": 1,
+  "name": "OoTR Language Editor workspace",
+  "description": "Declarative UI configuration. It controls presentation only and is never exported to property.json.",
+  "features": [
+    {
+      "id": "property-editing",
+      "description": "Edit language sections and entries without changing their schema boundaries."
+    },
+    {
+      "id": "change-review",
+      "description": "Import selected changes and inspect Git-style differences against the current baseline."
+    },
+    {
+      "id": "dock-layout",
+      "description": "Move, tab, resize, persist, and reset editor regions without changing property.json."
+    },
+    {
+      "id": "entry-status",
+      "description": "Show added, modified, and deleted entries continuously until the next property export."
+    },
+    {
+      "id": "memo-window",
+      "description": "Keep notes in a separate floating window and in work files, never in property.json."
+    },
+    {
+      "id": "rom-tools",
+      "description": "Extract text, export segments, and generate binary patch data from ROM files."
+    }
+  ],
+  "panels": [
+    {
+      "id": "sections",
+      "title": "Sections",
+      "role": "navigation"
+    },
+    {
+      "id": "entries",
+      "title": "Entries",
+      "role": "navigation"
+    },
+    {
+      "id": "details",
+      "title": "Details",
+      "role": "information"
+    },
+    {
+      "id": "textTools",
+      "title": "Text tools",
+      "role": "editing-tools"
+    },
+    {
+      "id": "textEditor",
+      "title": "Text editor",
+      "role": "editor"
+    },
+    {
+      "id": "rawPreview",
+      "title": "Raw preview",
+      "role": "preview"
+    },
+    {
+      "id": "sectionJson",
+      "title": "Section JSON",
+      "role": "editor"
+    },
+    {
+      "id": "patchMaker",
+      "title": "Patch maker",
+      "role": "tool"
+    }
+  ],
+  "defaultLayout": {
+    "version": 1,
+    "root": {
+      "type": "split",
+      "id": "root",
+      "direction": "row",
+      "sizes": [
+        0.18,
+        0.24,
+        0.58
+      ],
+      "children": [
+        {
+          "type": "tabs",
+          "id": "group-sections",
+          "panels": [
+            "sections"
+          ],
+          "active": "sections"
+        },
+        {
+          "type": "tabs",
+          "id": "group-entries",
+          "panels": [
+            "entries"
+          ],
+          "active": "entries"
+        },
+        {
+          "type": "split",
+          "id": "split-editor",
+          "direction": "column",
+          "sizes": [
+            0.19,
+            0.17,
+            0.64
+          ],
+          "children": [
+            {
+              "type": "tabs",
+              "id": "group-details",
+              "panels": [
+                "details"
+              ],
+              "active": "details"
+            },
+            {
+              "type": "tabs",
+              "id": "group-text-tools",
+              "panels": [
+                "textTools"
+              ],
+              "active": "textTools"
+            },
+            {
+              "type": "tabs",
+              "id": "group-editors",
+              "panels": [
+                "textEditor",
+                "rawPreview",
+                "sectionJson",
+                "patchMaker"
+              ],
+              "active": "textEditor"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "interaction": {
+    "centerTabFraction": 0.8,
+    "minimumSplitFraction": 0.05,
+    "layoutStorageKey": "ootrLanguageEditor.dockLayout.v1",
+    "memoStorageKey": "ootr-language-editor-memo"
+  },
+  "changeView": {
+    "statuses": [
+      {
+        "operation": "add",
+        "symbol": "A",
+        "label": "Added since baseline"
+      },
+      {
+        "operation": "modify",
+        "symbol": "M",
+        "label": "Modified since baseline"
+      },
+      {
+        "operation": "delete",
+        "symbol": "D",
+        "label": "Deleted since baseline"
+      }
+    ],
+    "baseline": "The loaded property or the last successful property export."
+  },
+  "styles": [
+    {
+      "id": "changes",
+      "description": "Git-style change browser and import review.",
+      "rules": [
+        {
+          "selector": ".change-workspace-panel",
+          "declarations": {
+            "position": "fixed",
+            "inset": "56px 16px 16px auto",
+            "width": "min(920px, calc(100vw - 32px))",
+            "min-width": "560px",
+            "z-index": "80",
+            "display": "none",
+            "grid-template-rows": "auto auto minmax(0, 1fr) auto",
+            "overflow": "hidden",
+            "border": "1px solid var(--line)",
+            "border-radius": "10px",
+            "background": "var(--panel)",
+            "box-shadow": "0 16px 44px rgba(0, 0, 0, .45)"
+          }
+        },
+        {
+          "selector": ".change-workspace-panel.visible",
+          "declarations": {
+            "display": "grid"
+          }
+        },
+        {
+          "selector": ".change-workspace-header,\n.change-workspace-actions",
+          "declarations": {
+            "display": "flex",
+            "gap": "8px",
+            "align-items": "center",
+            "flex-wrap": "wrap",
+            "padding": "9px 10px",
+            "border-bottom": "1px solid var(--line)",
+            "background": "var(--panel2)"
+          }
+        },
+        {
+          "selector": ".change-workspace-header strong",
+          "declarations": {
+            "margin-right": "auto"
+          }
+        },
+        {
+          "selector": ".change-workspace-source",
+          "declarations": {
+            "min-width": "0",
+            "overflow": "hidden",
+            "color": "var(--muted)",
+            "font-size": "12px",
+            "text-overflow": "ellipsis",
+            "white-space": "nowrap"
+          }
+        },
+        {
+          "selector": ".change-workspace-body",
+          "declarations": {
+            "min-height": "0",
+            "display": "grid",
+            "grid-template-columns": "minmax(260px, .8fr) minmax(340px, 1.2fr)",
+            "gap": "1px",
+            "background": "var(--line)"
+          }
+        },
+        {
+          "selector": ".change-list,\n.change-diff",
+          "declarations": {
+            "min-height": "0",
+            "overflow": "auto",
+            "background": "var(--panel)"
+          }
+        },
+        {
+          "selector": ".change-row",
+          "declarations": {
+            "display": "grid",
+            "grid-template-columns": "28px 28px minmax(0, 1fr)",
+            "gap": "7px",
+            "align-items": "center",
+            "padding": "7px 9px",
+            "border-bottom": "1px solid var(--row-border)",
+            "cursor": "pointer"
+          }
+        },
+        {
+          "selector": ".change-row:hover",
+          "declarations": {
+            "background": "var(--hover-bg)"
+          }
+        },
+        {
+          "selector": ".change-row.active",
+          "declarations": {
+            "background": "var(--active-bg)",
+            "outline": "1px solid var(--accent)",
+            "outline-offset": "-1px"
+          }
+        },
+        {
+          "selector": ".change-row input",
+          "declarations": {
+            "width": "auto"
+          }
+        },
+        {
+          "selector": ".change-status-letter",
+          "declarations": {
+            "font-family": "var(--editor-font)",
+            "font-weight": "800",
+            "text-align": "center"
+          }
+        },
+        {
+          "selector": ".change-status-add",
+          "declarations": {
+            "color": "var(--ok)"
+          }
+        },
+        {
+          "selector": ".change-status-modify",
+          "declarations": {
+            "color": "var(--warn)"
+          }
+        },
+        {
+          "selector": ".change-status-delete",
+          "declarations": {
+            "color": "var(--danger)"
+          }
+        },
+        {
+          "selector": ".change-path",
+          "declarations": {
+            "min-width": "0"
+          }
+        },
+        {
+          "selector": ".change-path-main,\n.change-path-sub",
+          "declarations": {
+            "overflow": "hidden",
+            "text-overflow": "ellipsis",
+            "white-space": "nowrap"
+          }
+        },
+        {
+          "selector": ".change-path-sub",
+          "declarations": {
+            "color": "var(--muted)",
+            "font-size": "12px"
+          }
+        },
+        {
+          "selector": ".change-empty",
+          "declarations": {
+            "padding": "18px",
+            "color": "var(--muted)"
+          }
+        },
+        {
+          "selector": ".change-diff pre",
+          "declarations": {
+            "min-height": "100%",
+            "margin": "0",
+            "padding": "10px 0",
+            "background": "var(--editor-bg)",
+            "font-family": "var(--editor-font)",
+            "font-size": "12px",
+            "line-height": "1.45",
+            "white-space": "pre"
+          }
+        },
+        {
+          "selector": ".change-diff-line",
+          "declarations": {
+            "display": "block",
+            "padding": "0 10px"
+          }
+        },
+        {
+          "selector": ".change-diff-line.header",
+          "declarations": {
+            "color": "var(--muted)",
+            "font-weight": "700"
+          }
+        },
+        {
+          "selector": ".change-diff-line.add",
+          "declarations": {
+            "background": "rgba(80, 190, 120, .16)",
+            "color": "var(--ok)"
+          }
+        },
+        {
+          "selector": ".change-diff-line.delete",
+          "declarations": {
+            "background": "rgba(220, 90, 90, .16)",
+            "color": "var(--danger)"
+          }
+        },
+        {
+          "selector": ".change-workspace-footer",
+          "declarations": {
+            "padding": "7px 10px",
+            "color": "var(--muted)",
+            "font-size": "12px",
+            "border-top": "1px solid var(--line)",
+            "background": "var(--chrome-bg)"
+          }
+        }
+      ],
+      "media": [
+        {
+          "query": "(max-width: 760px)",
+          "rules": [
+            {
+              "selector": ".change-workspace-panel",
+              "declarations": {
+                "inset": "56px 8px 8px",
+                "width": "auto",
+                "min-width": "0"
+              }
+            },
+            {
+              "selector": ".change-workspace-body",
+              "declarations": {
+                "grid-template-columns": "1fr",
+                "grid-template-rows": "minmax(170px, .8fr) minmax(220px, 1.2fr)"
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dock",
+      "description": "Docking, resizing, drop indicators, and entry change badges.",
+      "rules": [
+        {
+          "selector": "main.workspace.dock-enabled",
+          "declarations": {
+            "display": "block",
+            "width": "100%",
+            "height": "100%",
+            "min-height": "0",
+            "overflow": "hidden",
+            "background": "var(--line)"
+          }
+        },
+        {
+          "selector": "#dockRoot",
+          "declarations": {
+            "display": "block",
+            "width": "100%",
+            "height": "100%",
+            "min-height": "0",
+            "overflow": "hidden"
+          }
+        },
+        {
+          "selector": ".dock-workspace, .dock-split, .dock-split-item, .dock-group, .dock-panel-host",
+          "declarations": {
+            "min-width": "0",
+            "min-height": "0"
+          }
+        },
+        {
+          "selector": ".dock-workspace",
+          "declarations": {
+            "width": "100%",
+            "height": "100%",
+            "overflow": "hidden"
+          }
+        },
+        {
+          "selector": ".dock-split",
+          "declarations": {
+            "display": "flex",
+            "width": "100%",
+            "height": "100%",
+            "background": "var(--splitter-bg)"
+          }
+        },
+        {
+          "selector": ".dock-split-row",
+          "declarations": {
+            "flex-direction": "row"
+          }
+        },
+        {
+          "selector": ".dock-split-column",
+          "declarations": {
+            "flex-direction": "column"
+          }
+        },
+        {
+          "selector": ".dock-split-item",
+          "declarations": {
+            "position": "relative",
+            "flex": "1 1 0",
+            "overflow": "hidden"
+          }
+        },
+        {
+          "selector": ".dock-split-item > .dock-split, .dock-split-item > .dock-group",
+          "declarations": {
+            "position": "absolute",
+            "inset": "0",
+            "width": "auto",
+            "height": "auto"
+          }
+        },
+        {
+          "selector": ".dock-group",
+          "declarations": {
+            "position": "relative",
+            "display": "grid",
+            "grid-template-rows": "auto minmax(0,1fr)",
+            "width": "100%",
+            "height": "100%",
+            "background": "var(--panel)",
+            "border": "1px solid var(--line)",
+            "overflow": "hidden"
+          }
+        },
+        {
+          "selector": ".dock-tabs",
+          "declarations": {
+            "display": "flex",
+            "align-items": "stretch",
+            "min-height": "34px",
+            "overflow-x": "auto",
+            "background": "var(--panel2)",
+            "border-bottom": "1px solid var(--line)"
+          }
+        },
+        {
+          "selector": ".dock-tab",
+          "declarations": {
+            "flex": "0 0 auto",
+            "border": "0",
+            "border-right": "1px solid var(--line)",
+            "border-radius": "0",
+            "padding": "7px 11px",
+            "background": "var(--tab-bg)",
+            "cursor": "grab"
+          }
+        },
+        {
+          "selector": ".dock-tab.active",
+          "declarations": {
+            "background": "var(--tab-active-bg)",
+            "color": "var(--button-active-text)",
+            "font-weight": "700"
+          }
+        },
+        {
+          "selector": ".dock-tab.dragging",
+          "declarations": {
+            "opacity": ".45",
+            "cursor": "grabbing"
+          }
+        },
+        {
+          "selector": ".dock-panel-host",
+          "declarations": {
+            "position": "relative",
+            "overflow": "hidden",
+            "background": "var(--panel)"
+          }
+        },
+        {
+          "selector": ".dock-panel-content",
+          "declarations": {
+            "width": "100% !important",
+            "height": "100% !important",
+            "max-width": "none !important",
+            "min-width": "0 !important",
+            "min-height": "0 !important",
+            "margin": "0 !important",
+            "resize": "none !important"
+          }
+        },
+        {
+          "selector": ".dock-panel-host > .pane",
+          "declarations": {
+            "display": "grid"
+          }
+        },
+        {
+          "selector": ".dock-panel-host > .tab-panel",
+          "declarations": {
+            "display": "flex !important",
+            "flex-direction": "column"
+          }
+        },
+        {
+          "selector": ".dock-panel-host > #dockDetailsPanel, .dock-panel-host > #dockTextToolsPanel",
+          "declarations": {
+            "display": "block",
+            "overflow": "auto"
+          }
+        },
+        {
+          "selector": ".dock-panel-host > #dockTextToolsPanel",
+          "declarations": {
+            "padding": "8px"
+          }
+        },
+        {
+          "selector": ".dock-panel-host > #dockTextToolsPanel .editor-tools",
+          "declarations": {
+            "display": "flex",
+            "gap": "8px",
+            "align-items": "center",
+            "flex-wrap": "wrap"
+          }
+        },
+        {
+          "selector": ".dock-panel-host > #tabText .editor-box",
+          "declarations": {
+            "height": "100%",
+            "grid-template-rows": "1fr"
+          }
+        },
+        {
+          "selector": ".dock-panel-host > #tabText .special.visible",
+          "declarations": {
+            "flex": "0 0 auto"
+          }
+        },
+        {
+          "selector": ".dock-panel-host > #tabRaw .editor-box, .dock-panel-host > #tabSectionJson .editor-box",
+          "declarations": {
+            "height": "100%"
+          }
+        },
+        {
+          "selector": ".dock-panel-host > #tabPatch",
+          "declarations": {
+            "overflow": "auto"
+          }
+        },
+        {
+          "selector": ".dock-panel-host > #sectionsPane > .pane-title, .dock-panel-host > #entriesPane > .pane-title",
+          "declarations": {
+            "display": "none"
+          }
+        },
+        {
+          "selector": ".dock-resizer",
+          "declarations": {
+            "position": "relative",
+            "z-index": "20",
+            "flex": "0 0 6px",
+            "touch-action": "none",
+            "background": "var(--splitter-bg)",
+            "outline": "none"
+          }
+        },
+        {
+          "selector": ".dock-resizer::after",
+          "declarations": {
+            "content": "\"\"",
+            "position": "absolute",
+            "inset": "0",
+            "background": "transparent",
+            "transition": "background .12s ease"
+          }
+        },
+        {
+          "selector": ".dock-resizer-row",
+          "declarations": {
+            "cursor": "col-resize"
+          }
+        },
+        {
+          "selector": ".dock-resizer-column",
+          "declarations": {
+            "cursor": "row-resize"
+          }
+        },
+        {
+          "selector": ".dock-resizer-row::after",
+          "declarations": {
+            "left": "2px",
+            "right": "2px"
+          }
+        },
+        {
+          "selector": ".dock-resizer-column::after",
+          "declarations": {
+            "top": "2px",
+            "bottom": "2px"
+          }
+        },
+        {
+          "selector": ".dock-resizer:hover::after, .dock-resizer:focus-visible::after, .dock-resizer.dragging::after",
+          "declarations": {
+            "background": "var(--accent)"
+          }
+        },
+        {
+          "selector": "body.dock-resizing-row, body.dock-resizing-row *",
+          "declarations": {
+            "cursor": "col-resize !important",
+            "user-select": "none !important"
+          }
+        },
+        {
+          "selector": "body.dock-resizing-column, body.dock-resizing-column *",
+          "declarations": {
+            "cursor": "row-resize !important",
+            "user-select": "none !important"
+          }
+        },
+        {
+          "selector": ".dock-drop-target",
+          "declarations": {
+            "isolation": "isolate"
+          }
+        },
+        {
+          "selector": ".dock-drop-overlay",
+          "declarations": {
+            "position": "absolute",
+            "z-index": "50",
+            "pointer-events": "none",
+            "background": "transparent",
+            "border": "0",
+            "box-shadow": "none"
+          }
+        },
+        {
+          "selector": ".dock-drop-center",
+          "declarations": {
+            "inset": "0",
+            "border": "3px solid var(--accent)",
+            "box-shadow": "inset 0 0 10px color-mix(in srgb, var(--accent) 28%, transparent)"
+          }
+        },
+        {
+          "selector": ".dock-drop-left",
+          "declarations": {
+            "left": "0",
+            "top": "0",
+            "bottom": "0",
+            "width": "0",
+            "border-left": "4px solid var(--accent)"
+          }
+        },
+        {
+          "selector": ".dock-drop-right",
+          "declarations": {
+            "right": "0",
+            "top": "0",
+            "bottom": "0",
+            "width": "0",
+            "border-right": "4px solid var(--accent)"
+          }
+        },
+        {
+          "selector": ".dock-drop-top",
+          "declarations": {
+            "left": "0",
+            "right": "0",
+            "top": "0",
+            "height": "0",
+            "border-top": "4px solid var(--accent)"
+          }
+        },
+        {
+          "selector": ".dock-drop-bottom",
+          "declarations": {
+            "left": "0",
+            "right": "0",
+            "bottom": "0",
+            "height": "0",
+            "border-bottom": "4px solid var(--accent)"
+          }
+        },
+        {
+          "selector": "#dockDetailsPanel .meta",
+          "declarations": {
+            "display": "grid",
+            "grid-template-columns": "1fr 1fr",
+            "gap": "8px",
+            "border": "0",
+            "padding": "10px"
+          }
+        },
+        {
+          "selector": "#dockDetailsPanel .meta .wide",
+          "declarations": {
+            "grid-column": "1 / -1"
+          }
+        },
+        {
+          "selector": "#entryTypeLabel, #entryViewType, .editor-tabs, #detailsCollapseHeader, #textToolsCollapseHeader",
+          "declarations": {
+            "display": "none !important"
+          }
+        },
+        {
+          "selector": "#entryIdBox",
+          "declarations": {
+            "margin-bottom": "8px"
+          }
+        },
+        {
+          "selector": ".entry-change-summary",
+          "declarations": {
+            "display": "flex",
+            "gap": "8px",
+            "align-items": "center",
+            "min-height": "25px",
+            "padding": "4px 8px",
+            "color": "var(--muted)",
+            "font-size": "calc(12px * var(--ui-text-scale))",
+            "border-bottom": "1px solid var(--line)",
+            "background": "var(--panel3)"
+          }
+        },
+        {
+          "selector": ".entry-change-summary strong",
+          "declarations": {
+            "color": "var(--text)"
+          }
+        },
+        {
+          "selector": ".entry-change-badge",
+          "declarations": {
+            "display": "inline-flex",
+            "align-items": "center",
+            "justify-content": "center",
+            "min-width": "20px",
+            "height": "20px",
+            "margin-right": "6px",
+            "padding": "0 5px",
+            "border-radius": "5px",
+            "font-size": "11px",
+            "font-weight": "800",
+            "border": "1px solid currentColor"
+          }
+        },
+        {
+          "selector": ".entry-change-add",
+          "declarations": {
+            "color": "var(--ok)"
+          }
+        },
+        {
+          "selector": ".entry-change-modify",
+          "declarations": {
+            "color": "var(--warn)"
+          }
+        },
+        {
+          "selector": ".entry-change-delete",
+          "declarations": {
+            "color": "var(--danger)"
+          }
+        },
+        {
+          "selector": ".row.entry-deleted",
+          "declarations": {
+            "opacity": ".78",
+            "cursor": "default",
+            "background": "color-mix(in srgb, var(--danger) 8%, transparent)"
+          }
+        },
+        {
+          "selector": ".row.entry-deleted .row-title",
+          "declarations": {
+            "text-decoration": "line-through"
+          }
+        },
+        {
+          "selector": ".section-change-count",
+          "declarations": {
+            "color": "var(--warn)",
+            "font-weight": "700"
+          }
+        },
+        {
+          "selector": "#viewToolbarLabel, #toggleSectionsBtn, #toggleEntriesBtn, #toggleDetailsBtn, #toggleTextToolsBtn, #focusTextBtn, #workspaceRegionBar,\n#collapsedSectionsTab, #collapsedEntriesTab",
+          "declarations": {
+            "display": "none !important"
+          }
+        },
+        {
+          "selector": "#resetViewBtn",
+          "declarations": {
+            "display": "inline-flex !important"
+          }
+        },
+        {
+          "selector": "body.hide-sections #sectionsPane, body.hide-entries #entriesPane",
+          "declarations": {
+            "display": "grid !important"
+          }
+        },
+        {
+          "selector": "body.hide-details #dockDetailsPanel, body.hide-text-tools #dockTextToolsPanel",
+          "declarations": {
+            "display": "block !important"
+          }
+        },
+        {
+          "selector": "#sectionsPane",
+          "declarations": {
+            "grid-template-rows": "auto minmax(0,1fr) !important"
+          }
+        },
+        {
+          "selector": "#entriesPane",
+          "declarations": {
+            "grid-template-rows": "auto auto minmax(0,1fr) !important"
+          }
+        },
+        {
+          "selector": "#sectionsPane > .pane-tools, #entriesPane > .pane-tools",
+          "declarations": {
+            "grid-row": "1"
+          }
+        },
+        {
+          "selector": "#sectionsPane > .list",
+          "declarations": {
+            "grid-row": "2",
+            "min-height": "0",
+            "overflow": "auto"
+          }
+        },
+        {
+          "selector": "#entriesPane > .entry-change-summary",
+          "declarations": {
+            "grid-row": "2"
+          }
+        },
+        {
+          "selector": "#entriesPane > .list",
+          "declarations": {
+            "grid-row": "3",
+            "min-height": "0",
+            "overflow": "auto"
+          }
+        }
+      ],
+      "media": []
+    }
+  ]
+}

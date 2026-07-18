@@ -868,9 +868,11 @@ def update_message_by_id(messages: list[Message], id: int, text: bytearray | str
     # get the message index
     index = next( (m.index for m in messages if m.id == id), -1)
 
-    # align the text when the proposed align text by the language isn't "Left"
-    if lang.lang_property["align_text"] != "Left" and not force_left:
-        text = line_wrap(text, lang.base, align=lang.lang_property["align_text"])
+    # Pass the complete Language object so wrapping uses the same CHAR_WIDTHS and
+    # wide-text metrics that are written to the ROM runtime tables.
+    align_text = lang.lang_property.get("align_text", "Left")
+    if align_text != "Left" and not force_left:
+        text = line_wrap(text, lang, align=align_text)
 
     # update if it was found
     if index >= 0:
@@ -1077,9 +1079,9 @@ def make_player_message(text: str, lang: Language) -> str:
     for find_text, replace_text in verb_mapping.items():
         new_text = new_text.replace(find_text, replace_text)
 
-    wrapped_text = line_wrap(new_text, lang.base, False, False, False)
+    wrapped_text = line_wrap(new_text, lang, False, False, False)
     if wrapped_text != new_text:
-        new_text = line_wrap(new_text, lang.base, True, False, False)
+        new_text = line_wrap(new_text, lang, True, False, False)
 
     return new_text
 

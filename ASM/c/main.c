@@ -55,6 +55,8 @@ void before_game_state_update() {
 }
 
 void after_game_state_update() {
+    text_language_cache_tick();
+
     // Checks if the prerender screen is being drawn before drawing new HUD things.
     // Else this will cause graphical and/or lag issues on some emulators when pausing.
     if (R_PAUSE_BG_PRERENDER_STATE != PAUSE_BG_PRERENDER_PROCESS) {
