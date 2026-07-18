@@ -92,7 +92,7 @@
             or (_is_child_item(item) and is_child and item)
             or (_is_swappable_adult(item) and can_equip_swap_adult and item)
             or (_is_swappable_child(item) and can_equip_swap_child and item)
-            or (_adult_slingshot(item) and is_adult and Bow and can_equip_swap_adult)",
+            or (_adult_slingshot(item) and is_adult and Bow and can_equip_swap_adult and item)",
     "_is_magic_item(item)": "item == Dins_Fire or item == Farores_Wind or item == Nayrus_Love or item == Lens_of_Truth",
     "_is_adult_item(item)": "item == Bow or item == Megaton_Hammer or item == Iron_Boots or item == Hover_Boots or item == Hookshot or item == Longshot or item == Silver_Gauntlets or item == Golden_Gauntlets or item == Goron_Tunic or item == Zora_Tunic or item == Scarecrow or item == Distant_Scarecrow or item == Mirror_Shield",
     "_is_child_item(item)": "item == Slingshot or item == Boomerang or item == Kokiri_Sword or item == Sticks or item == Deku_Shield",
