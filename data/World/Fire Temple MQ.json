@@ -119,7 +119,7 @@
             "Fire Temple MQ GS Big Lava Room Open Door": "True",
             "Fairy Pot": "
                 has_bottle and has_fire_source and (Bow or logic_fire_mq_bk_chest) and
-                (Hookshot or (logic_fire_song_of_time and shuffle_pots != 'All' and shuffle_pots != 'Dungeons Only'))"
+                (Hookshot or (logic_fire_song_of_time and shuffle_pots != 'all' and shuffle_pots != 'dungeons'))"
         },
         "exits": {
             "Fire Temple Elevator Room": "Goron_Tunic and (Small_Key_Fire_Temple, 2)"
@@ -243,7 +243,7 @@
             "Fire Temple MQ Shoot Torch On Wall Room Small Wooden Crate 3": "True",
             "Fire Temple MQ Shoot Torch On Wall Room Small Wooden Crate 4": "True",
             "Fire Temple MQ Shoot Torch On Wall Room Small Wooden Crate 5": "True",
-            "Fire Temple MQ Shoot Torch on Wall Room Hookshot Wonderitem": "Hookshot"
+            "Fire Temple MQ Shoot Torch On Wall Room Hookshot Wonderitem": "Hookshot"
         },
         "exits": {
             "Fire Temple Narrow Path Room": "True",
@@ -265,7 +265,6 @@
             "Fire Temple Flame Maze Side Room": "
                 can_play(Song_of_Time) or Hover_Boots or logic_fire_mq_flame_maze",
             "Fire Temple Before Upper Flare Dancer": "Hookshot or logic_fire_mq_flame_maze",
-            "Fire Temple Near Boss": "True",
             "Fire Temple Before Boss": "True"
         }
     },

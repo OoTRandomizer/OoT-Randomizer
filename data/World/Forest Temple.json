@@ -64,7 +64,7 @@
             "Forest Temple GS Level Island Courtyard": "
                 can_use(Longshot) or
                 at('Forest Temple Outside Upper Ledge', can_use(Hookshot) or can_use(Boomerang))",
-            "Deku Baba Sticks": "has_soul(Deku_Baba) and (is_adult or Kokiri_Sword or Boomerang)",
+            "Deku Baba Sticks": "can_kill_withered_deku_baba",
             "Deku Baba Nuts": "
                 has_soul(Deku_Baba) and
                 (is_adult or Slingshot or Sticks or has_explosives or Kokiri_Sword or can_use(Dins_Fire))"
@@ -116,7 +116,7 @@
             "Forest Temple GS Raised Island Courtyard": "
                 can_use(Hookshot) or (logic_forest_outdoor_east_gs and can_use(Boomerang)) or
                 at('Forest Temple Falling Room', can_use(Bow) or can_use(Dins_Fire) or has_explosives)",
-            "Deku Baba Sticks": "has_soul(Deku_Baba) and (is_adult or Kokiri_Sword or Boomerang)",
+            "Deku Baba Sticks": "can_kill_withered_deku_baba",
             "Deku Baba Nuts": "
                 has_soul(Deku_Baba) and
                 (is_adult or Slingshot or Sticks or has_explosives or Kokiri_Sword or can_use(Dins_Fire))"

@@ -29,7 +29,8 @@
                     can_use(Boomerang) or can_use(Slingshot) or has_bombchus)",
             "Forest Temple MQ First Room Skulltula": "
                 has_soul(Skulltula) and
-                (is_adult or Bombs or Sticks or can_use(Dins_Fire) or Kokiri_Sword or Slingshot)",
+                (is_adult or Bombs or Sticks or can_use(Dins_Fire) or Kokiri_Sword or
+                    Slingshot or (has_bombchus and (Nuts or Boomerang)))",
             "Forest Temple MQ First Hallway Skulltula 1": "can_kill_skulltula",
             "Forest Temple MQ First Hallway Skulltula 2": "can_kill_skulltula",
             "Forest Temple MQ First Hallway Skulltula 3": "can_kill_skulltula",
@@ -213,7 +214,7 @@
                     (can_play(Song_of_Time) or (can_use(Hover_Boots) and logic_forest_door_frame)))",
             "Forest Temple MQ GS Well": "
                 (can_use(Iron_Boots) and can_use(Hookshot)) or can_use(Bow) or can_use(Slingshot)",
-            "Deku Baba Sticks": "has_soul(Deku_Baba) and (is_adult or Kokiri_Sword or Boomerang)",
+            "Deku Baba Sticks": "can_kill_withered_deku_baba",
             "Deku Baba Nuts": "
                 has_soul(Deku_Baba) and
                 (is_adult or Slingshot or Sticks or has_explosives or Kokiri_Sword or can_use(Dins_Fire))"
@@ -223,7 +224,8 @@
                 can_use(Hookshot) and
                 (can_use(Longshot) or can_use(Hover_Boots) or can_play(Song_of_Time) or
                     logic_forest_vines)",
-            "Forest Temple NE Outdoors Ledge": "can_use(Longshot)"
+            "Forest Temple NE Outdoors Ledge": "can_use(Longshot)",
+            "Forest Temple NW Outdoors": "can_use(Iron_Boots) or (Progressive_Scale, 2)"
         }
     },
     {

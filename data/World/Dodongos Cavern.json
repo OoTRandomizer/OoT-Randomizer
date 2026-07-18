@@ -16,12 +16,9 @@
         "locations": {
             "Dodongos Cavern Map Chest": "can_blast_or_smash or Progressive_Strength_Upgrade",
             "Dodongos Cavern Deku Scrub Lobby": "can_stun_deku or Progressive_Strength_Upgrade",
-            "Dodongos Cavern Beamos Left Side": "
-                has_soul(Beamos) and (has_explosives or Progressive_Strength_Upgrade)",
-            "Dodongos Cavern Beamos Center": "
-                has_soul(Beamos) and (has_explosives or Progressive_Strength_Upgrade)",
-            "Dodongos Cavern Beamos Right Side": "
-                has_soul(Beamos) and (has_explosives or Progressive_Strength_Upgrade)",
+            "Dodongos Cavern Beamos Left Side": "can_kill_beamos_with_bomb_flower",
+            "Dodongos Cavern Beamos Center": "can_kill_beamos_with_bomb_flower",
+            "Dodongos Cavern Beamos Right Side": "can_kill_beamos_with_bomb_flower",
             "Dodongos Cavern Upper Bridge Keese 1": "
                 has_soul(Keese) and (is_adult or Kokiri_Sword or Sticks or Slingshot or Boomerang or
                     (Nuts and (has_explosives or Progressive_Strength_Upgrade)))",
@@ -158,11 +155,17 @@
                 can_use(Boomerang) or at('Dodongos Cavern Far Bridge', True)",
             "Dodongos Cavern Staircase Skullwalltula": "has_soul(Skullwalltula)",
             "Dodongos Cavern Climb Switch Room Armos 1": "
-                has_soul(Armos) and (has_explosives or Progressive_Strength_Upgrade)",
+                has_soul(Armos) and
+                (is_adult or Sticks or has_explosives or Progressive_Strength_Upgrade or
+                    ((Nuts or Boomerang) and (Kokiri_Sword or Slingshot)))",
             "Dodongos Cavern Climb Switch Room Armos 2": "
-                has_soul(Armos) and (has_explosives or Progressive_Strength_Upgrade)",
+                has_soul(Armos) and
+                (is_adult or Sticks or has_explosives or Progressive_Strength_Upgrade or
+                    ((Nuts or Boomerang) and (Kokiri_Sword or Slingshot)))",
             "Dodongos Cavern Climb Switch Room Armos 3": "
-                has_soul(Armos) and (has_explosives or Progressive_Strength_Upgrade)",
+                has_soul(Armos) and
+                (is_adult or Sticks or has_explosives or Progressive_Strength_Upgrade or
+                    ((Nuts or Boomerang) and (Kokiri_Sword or Slingshot)))",
             "Dodongos Cavern Climb Switch Room Keese 1": "
                 has_soul(Keese) and (is_adult or Kokiri_Sword or Sticks or Slingshot or Boomerang or
                     (Nuts and (has_explosives or Progressive_Strength_Upgrade)))",
@@ -186,7 +189,7 @@
         },
         "exits": {
             "Dodongos Cavern Before Upper Lizalfos": "
-                (is_child and (Slingshot or logic_dc_slingshot_skip)) or can_use(Bow)"
+                can_use(Slingshot) or can_use(Bow) or can_use(Hover_Boots) or logic_dc_flame_circle_skip"
         }
     },
     {
@@ -228,7 +231,8 @@
         },
         "exits": {
             "Dodongos Cavern Mouth": "has_explosives",
-            "Dodongos Cavern Upper Lizalfos": "True"
+            "Dodongos Cavern Upper Lizalfos": "True",
+            "Dodongos Cavern Climb": "True"
         }
     },
     {
@@ -250,7 +254,6 @@
     {
         "region_name": "Dodongos Cavern Back Side Room",
         "dungeon": "Dodongos Cavern",
-        "savewarp": "Death Mountain -> Dodongos Cavern Beginning",
         "locations": {
             "Dodongos Cavern Back Room Armos": "has_soul(Armos)",
             "Dodongos Cavern GS Back Room": "True"

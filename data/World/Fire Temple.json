@@ -82,24 +82,16 @@
             "Fire Temple Big Lava Room Keese 2": "can_use(Goron_Tunic) and has_soul(Keese)",
             "Fire Temple Big Lava Room Keese 3": "can_use(Goron_Tunic) and has_soul(Keese)",
             "Fire Temple Big Lava Room Keese 4": "can_use(Goron_Tunic) and has_soul(Keese)",
-            "Fire Temple Big Lava Room Red Bubble 1": "
-                can_use(Goron_Tunic) and has_soul(Bubble) and (Magic_Meter or Bow)",
+            "Fire Temple Big Lava Room Red Bubble 1": "can_kill_red_bubble and can_use(Goron_Tunic)",
             "Fire Temple Big Lava Room Red Bubble 2": "
                 can_use(Goron_Tunic) and has_soul(Bubble) and Magic_Meter",
-            "Fire Temple Big Lava Room Red Bubble 3": "
-                can_use(Goron_Tunic) and has_soul(Bubble) and (Magic_Meter or Bow)",
-            "Fire Temple Big Lava Room Red Bubble 4": "
-                can_use(Goron_Tunic) and has_soul(Bubble) and (Magic_Meter or Bow)",
-            "Fire Temple Big Lava Room Red Bubble 5": "
-                can_use(Goron_Tunic) and has_soul(Bubble) and (Magic_Meter or Bow)",
-            "Fire Temple Big Lava Room Red Bubble 6": "
-                can_use(Goron_Tunic) and has_soul(Bubble) and (Magic_Meter or Bow)",
-            "Fire Temple Big Lava Room Red Bubble 7": "
-                can_use(Goron_Tunic) and has_soul(Bubble) and (Magic_Meter or Bow)",
-            "Fire Temple Big Lava Room Red Bubble 8": "
-                can_use(Goron_Tunic) and has_soul(Bubble) and (Magic_Meter or Bow)",
-            "Fire Temple Big Lava Room Red Bubble 9": "
-                can_use(Goron_Tunic) and has_soul(Bubble) and (Magic_Meter or Bow)"
+            "Fire Temple Big Lava Room Red Bubble 3": "can_kill_red_bubble and can_use(Goron_Tunic)",
+            "Fire Temple Big Lava Room Red Bubble 4": "can_kill_red_bubble and can_use(Goron_Tunic)",
+            "Fire Temple Big Lava Room Red Bubble 5": "can_kill_red_bubble and can_use(Goron_Tunic)",
+            "Fire Temple Big Lava Room Red Bubble 6": "can_kill_red_bubble and can_use(Goron_Tunic)",
+            "Fire Temple Big Lava Room Red Bubble 7": "can_kill_red_bubble and can_use(Goron_Tunic)",
+            "Fire Temple Big Lava Room Red Bubble 8": "can_kill_red_bubble and can_use(Goron_Tunic)",
+            "Fire Temple Big Lava Room Red Bubble 9": "can_kill_red_bubble and can_use(Goron_Tunic)"
         },
         "exits": {
             "Fire Temple Elevator Room": "
