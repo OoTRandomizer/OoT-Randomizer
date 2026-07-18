@@ -353,6 +353,10 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     if world.settings.free_bombchu_drops:
         rom.write_int32(rom.sym('FREE_BOMBCHU_DROPS'), 1)
 
+    if world.settings.enable_bomb_oi:
+        symbol = rom.sym('CFG_BOMB_OI')
+        rom.write_byte(symbol, 0x01)
+
     # show seed info on file select screen
     def make_bytes(txt: str, size: int) -> list[int]:
         bytes = list(ord(c) for c in txt[:size-1]) + [0] * size

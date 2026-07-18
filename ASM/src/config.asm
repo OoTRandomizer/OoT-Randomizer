@@ -260,6 +260,8 @@ CFG_DUNGEON_PRECOMPLETED:
 .endarea
 DOT_CONDITION:
 .byte 0x01
+CFG_BOMB_OI:
+.byte 0x00
 .align 4
 
 ; These configuration values are given fixed addresses to aid auto-trackers.

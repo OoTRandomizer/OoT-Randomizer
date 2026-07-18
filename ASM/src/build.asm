@@ -138,6 +138,7 @@ RANDO_CONTEXT:
 .include "player_hookshotcheckspawn.asm"
 .include "enbox_callloadobject.asm"
 .include "object_checkmaxobjectspace.asm"
+.include "player_bomboi.asm"
 
 .align 0x10
 .importobj "../build/bundle.o"
