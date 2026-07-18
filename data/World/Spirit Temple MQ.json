@@ -53,8 +53,7 @@
             "Spirit Temple MQ Map Chest": "True",
             "Spirit Temple MQ Map Room Keese 1": "
                 has_soul(Keese) and
-                (Nuts or Slingshot or Boomerang or
-                    (can_use(Dins_Fire) and (Kokiri_Sword or Sticks or (Nuts and has_explosives))))",
+                (Nuts or Slingshot or Boomerang or (can_use(Dins_Fire) and (Kokiri_Sword or Sticks)))",
             "Spirit Temple MQ Map Room Keese 2": "
                 has_soul(Keese) and (Nuts or Slingshot or Boomerang or Bombs or can_use(Dins_Fire))",
             "Spirit Temple MQ Map Room Keese 3": "
@@ -96,7 +95,9 @@
             "Spirit Temple MQ After Gate Gibdo 1": "True",
             "Spirit Temple MQ After Gate Gibdo 2": "True",
             "Spirit Temple MQ Child Stalfos Fight Stalfos": "can_kill_stalfos",
-            "Fairy Pot": "has_bottle and Kokiri_Sword"
+            "Fairy Pot": "
+                has_bottle and Kokiri_Sword and
+                (has_soul(Stalfos) or Boomerang or (shuffle_pots != 'all' and shuffle_pots != 'dungeons'))"
         }
     },
     {
@@ -134,7 +135,7 @@
             "Spirit Temple MQ Silver Block Hallway Chest": "
                 can_use(Slingshot) and (Small_Key_Spirit_Temple, 7) and
                 here(has_fire_source or
-                   (logic_spirit_mq_frozen_eye and can_use(Bow) and can_play(Song_of_Time)))",
+                    (logic_spirit_mq_frozen_eye and can_use(Bow) and can_play(Song_of_Time)))",
             "Spirit Temple Silver Gauntlets Chest": "
                 has_soul(Iron_Knuckle) and
                 (((Small_Key_Spirit_Temple, 7) and

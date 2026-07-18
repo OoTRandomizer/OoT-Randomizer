@@ -32,11 +32,11 @@
             "Nut Pot": "True"
         },
         "exits": {
-            "Shadow Temple First Beamos": "Hover_Boots"
+            "Shadow Temple First Beamos Region": "Hover_Boots"
         }
     },
     {
-        "region_name": "Shadow Temple First Beamos",
+        "region_name": "Shadow Temple First Beamos Region",
         "dungeon": "Shadow Temple",
         "locations": {
             "Shadow Temple Compass Chest": "has_soul(Redead_and_Gibdo)",
@@ -121,10 +121,6 @@
             "Shadow Temple Falling Spikes Upper Pot 1": "logic_shadow_umbrella or Progressive_Strength_Upgrade",
             "Shadow Temple Falling Spikes Upper Pot 2": "logic_shadow_umbrella or Progressive_Strength_Upgrade",
             "Shadow Temple GS Falling Spikes Room": "logic_shadow_umbrella_gs or Hookshot"
-        },
-        "exits": {
-            "Shadow Temple Invisible Spikes": "
-                (Small_Key_Shadow_Temple, 2) and (logic_lens_shadow_platform or can_use(Lens_of_Truth))"
         }
     },
     {
@@ -164,16 +160,23 @@
     {
         "region_name": "Shadow Temple Wind Tunnel",
         "dungeon": "Shadow Temple",
+        "exits": {
+            "Shadow Temple Wind Tunnel Locations": "
+                not shadow_temple_shortcuts or (Small_Key_Shadow_Temple, 5) or
+                (has_soul(Redead_and_Gibdo) and has_soul(Flying_Pot))",
+            "Shadow Temple After Wind": "True",
+            # Reverse Shadow assumes 4 keys at both ends, so no need to check keys here
+            "Shadow Temple Invisible Spikes": "Hookshot"
+        }
+    },
+    {
+        "region_name": "Shadow Temple Wind Tunnel Locations",
+        "dungeon": "Shadow Temple",
         "locations": {
             "Shadow Temple Wind Hint Chest": "True",
             "Shadow Temple Wind Tunnel Skulltula": "has_soul(Skulltula) and Hookshot",
             "Shadow Temple Wind Hint ReDead Left": "has_soul(Redead_and_Gibdo)",
             "Shadow Temple Wind Hint ReDead Right": "has_soul(Redead_and_Gibdo)"
-        },
-        "exits": {
-            "Shadow Temple After Wind": "True",
-            # Reverse Shadow assumes 4 keys at both ends, so no need to check keys here
-            "Shadow Temple Invisible Spikes": "Hookshot"
         }
     },
     {

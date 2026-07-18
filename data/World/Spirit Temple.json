@@ -40,29 +40,25 @@
             "Spirit Temple Child Bridge Stalfos": "can_kill_stalfos",
             "Spirit Temple Child Bridge Green Bubble": "can_kill_green_bubble",
             "Spirit Temple Child Early Torches Keese 1": "
-                has_soul(Keese) and
-                (Boomerang or Slingshot or has_explosives or (Nuts and Sticks) or
-                    (can_use(Dins_Fire) and (Kokiri_Sword or Sticks)) or
-                    at('Child Spirit Temple Beyond Right Bridge', Nuts and Kokiri_Sword) or
-                    (Silver_Rupee_Spirit_Temple_Child_Early_Torches, 5))",
+                Boomerang or Slingshot or has_explosives or (Nuts and Sticks) or
+                (can_use(Dins_Fire) and (Kokiri_Sword or Sticks)) or
+                at('Child Spirit Temple Beyond Right Bridge', Nuts and Kokiri_Sword) or
+                (Silver_Rupee_Spirit_Temple_Child_Early_Torches, 5)",
             "Spirit Temple Child Early Torches Keese 2": "
-                has_soul(Keese) and
-                (Boomerang or Slingshot or has_explosives or (Nuts and Sticks) or
-                    (can_use(Dins_Fire) and (Kokiri_Sword or Sticks)) or
-                    at('Child Spirit Temple Beyond Right Bridge', Nuts and Kokiri_Sword) or
-                    (Silver_Rupee_Spirit_Temple_Child_Early_Torches, 5))",
+                Boomerang or Slingshot or has_explosives or (Nuts and Sticks) or
+                (can_use(Dins_Fire) and (Kokiri_Sword or Sticks)) or
+                at('Child Spirit Temple Beyond Right Bridge', Nuts and Kokiri_Sword) or
+                (Silver_Rupee_Spirit_Temple_Child_Early_Torches, 5)",
             "Spirit Temple Child Early Torches Keese 3": "
-                has_soul(Keese) and
-                (Boomerang or Slingshot or has_explosives or (Nuts and Sticks) or
-                    (can_use(Dins_Fire) and (Kokiri_Sword or Sticks)) or
-                    at('Child Spirit Temple Beyond Right Bridge', Nuts and Kokiri_Sword) or
-                    (Silver_Rupee_Spirit_Temple_Child_Early_Torches, 5))",
+                Boomerang or Slingshot or has_explosives or (Nuts and Sticks) or
+                (can_use(Dins_Fire) and (Kokiri_Sword or Sticks)) or
+                at('Child Spirit Temple Beyond Right Bridge', Nuts and Kokiri_Sword) or
+                (Silver_Rupee_Spirit_Temple_Child_Early_Torches, 5)",
             "Spirit Temple Child Early Torches Keese 4": "
-                has_soul(Keese) and
-                (Boomerang or Slingshot or has_explosives or (Nuts and Sticks) or
-                    (can_use(Dins_Fire) and (Kokiri_Sword or Sticks)) or
-                    at('Child Spirit Temple Beyond Right Bridge', Nuts and Kokiri_Sword) or
-                    (Silver_Rupee_Spirit_Temple_Child_Early_Torches, 5))",
+                Boomerang or Slingshot or has_explosives or (Nuts and Sticks) or
+                (can_use(Dins_Fire) and (Kokiri_Sword or Sticks)) or
+                at('Child Spirit Temple Beyond Right Bridge', Nuts and Kokiri_Sword) or
+                (Silver_Rupee_Spirit_Temple_Child_Early_Torches, 5)",
             "Spirit Temple GS Metal Fence": "
                 Boomerang or
                 at('Child Spirit Temple Beyond Right Bridge',
@@ -114,7 +110,7 @@
             "Spirit Temple Child Early Torches Silver Rupee Bottom Left": "True",
             "Spirit Temple Child Early Torches Silver Rupee Top Left": "True",
             "Spirit Temple Child Early Torches Silver Rupee Near Torch": "True",
-            "Spirit Temple Child Early Torches Fire Keese": "can_kill_keese",
+            "Spirit Temple Child Early Torches Fire Keese": "True",
             "Spirit Temple Child Early Torches Wallmaster": "can_kill_wallmaster"
         },
         "exits" : {
@@ -219,9 +215,7 @@
                     Sticks or Kokiri_Sword or has_projectile(child) or can_use(Dins_Fire))",
             "Spirit Temple Child Climb Skullwalltula Bomb Wall Left": "
                 has_soul(Skullwalltula) and
-                    ((is_child and has_projectile(child) and
-                        (Small_Key_Spirit_Temple, 5)) or
-                    (is_adult and
+                    ((is_adult and
                         ((Small_Key_Spirit_Temple, 3) or spirit_temple_shortcuts or
                         ((Small_Key_Spirit_Temple, 2) and free_bombchu_drops))) or
                     has_projectile(child) or can_use(Dins_Fire))",
@@ -336,8 +330,8 @@
                         (Small_Key_Spirit_Temple, 3)))",
             "Spirit Temple Statue Room Adult Side Armos": "
                 has_soul(Armos) and
-                    (at('Adult Spirit Temple Climb', True) or (spirit_temple_shortcuts and Bow) or
-                    has_explosives or ((Small_Key_Spirit_Temple, 2) and Silver_Gauntlets and free_bombchu_drops))",
+                    (at('Adult Spirit Temple Climb', True) or (spirit_temple_shortcuts and Bow) or has_explosives or
+                    (not spirit_temple_shortcuts and (Small_Key_Spirit_Temple, 2) and free_bombchu_drops))",
             "Spirit Temple GS Lobby": "
                 (is_child and logic_spirit_lobby_gs and Boomerang and
                     (Small_Key_Spirit_Temple, 5)) or
