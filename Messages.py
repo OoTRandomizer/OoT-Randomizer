@@ -642,7 +642,6 @@ class Message:
         slow_icons   = [0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x04, 0x02]
 
         end_code          = [0x8170, 0x02][self.lang]
-        jp_goto           = 0x81CB  # JP only
         color_code        = [0x0B, 0x05][self.lang]
         icon_code         = [0x819A, 0x13][self.lang]
         space_or_pad_code = [0x8140, 0x20][self.lang]  # fullwidth space / ASCII space
@@ -652,9 +651,6 @@ class Message:
 
         instant_allow_code   = [0x8189, 0x08][self.lang]  # ♂ allow instant text
         instant_disallow_code = [0x818A, 0x09][self.lang]  # ♀ disallow instant text
-        instant_text_code   = tc(instant_allow_code, 0)
-        uninstant_text_code = tc(instant_disallow_code, 0)
-
         default_color = [0x0C00, 0x40][self.lang]
 
         ignores: list[int] = []
@@ -712,18 +708,22 @@ class Message:
             if code.code in ignores:
                 continue
 
+            # Track authored QuickText codes when the global speed-up rewrite is
+            # disabled.  When speed-up is enabled these codes are already filtered
+            # through `ignores` and the generated state is tracked instead.
+            if code.code == instant_allow_code:
+                emit_instant(True)
+                continue
+            if code.code == instant_disallow_code:
+                emit_instant(False)
+                continue
+
             # colors: only drop exact duplicates (do NOT drop tail #00 by "empty all()" logic)
             if code.code == color_code:
                 if code.data == current_color:
                     continue
                 out.append(code)
                 current_color = code.data
-                continue
-
-            # JP goto: must be preceded by disallow when speed-up is enabled
-            if speed_up_text and (not self.lang) and code.code == jp_goto:
-                emit_instant(False)
-                out.append(code)
                 continue
 
             # box breaks: remove delay, then re-assert instant (force)
@@ -755,8 +755,7 @@ class Message:
             if ending is not None:
                 ending = tc(ending.code, ending.data)  # clone
 
-                # Rule: if speed-up is enabled, disallow must be placed immediately before ending
-                if speed_up_text:
+                if speed_up_text and ending.code == [0x81F0, 0x10][self.lang]:
                     emit_instant(False)
 
                 out.append(ending)
@@ -767,10 +766,6 @@ class Message:
                     current_color = default_color
 
             else:
-                # no special ending: still enforce "disallow near the end" when speeding up
-                if speed_up_text:
-                    emit_instant(False)
-
                 # enforce final color reset if needed
                 if current_color != default_color:
                     out.append(tc(color_code, default_color))
