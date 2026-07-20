@@ -326,16 +326,18 @@ bool Message_Decode_Additional_Control_Codes(uint8_t currChar, uint32_t* pDecode
     }
 }
 
+// The ASM trampoline stores s5/s4 as full 32-bit values before passing their
+// stack addresses here. Keep the pointer types aligned with that ABI.
 bool Message_Decode_Additional_Control_Codes_JP(
     uint16_t      currCharWide,
-    int16_t*     pDecodedBufPos,
-    int32_t*     pCharTexIdx
+    int16_t*      pDecodedBufPos,
+    int32_t*      pCharTexIdx
 ) {
     MessageContext* msgCtx = &z64_game.msgContext;
     Font*           font   = &msgCtx->font;
 
     if (currCharWide == MESSAGE_WIDE_QUICKTEXT_ENABLE) {
-        Message_PrimeWideQuickTextBoundary(msgCtx, *pDecodedBufPos);
+        Message_PrimeWideQuickTextBoundary(msgCtx, *((uint32_t*)pDecodedBufPos));
     }
 
     if (currCharWide == 0x87F0) {
@@ -344,7 +346,7 @@ bool Message_Decode_Additional_Control_Codes_JP(
         uint8_t puzzle = MSG_BUF_WIDE[msgCtx->msgBufPos] & 0xFF;
         uint8_t count  = extended_savectx.silver_rupee_counts[puzzle];
 
-        Message_AddIntegerWide(msgCtx, font, pDecodedBufPos, pCharTexIdx, count);
+        Message_AddIntegerWide(msgCtx, font, (uint32_t*)pDecodedBufPos, (uint32_t*)pCharTexIdx, count);
         (*pDecodedBufPos)--;
         return true;
 
@@ -356,7 +358,7 @@ bool Message_Decode_Additional_Control_Codes_JP(
         uint8_t dungeon = MSG_BUF_WIDE[msgCtx->msgBufPos] & 0xFF;
         uint8_t count   = (z64_file.scene_flags[dungeon].unk_00_ >> 16) & 0xFF;
 
-        Message_AddIntegerWide(msgCtx, font, pDecodedBufPos, pCharTexIdx, count);
+        Message_AddIntegerWide(msgCtx, font, (uint32_t*)pDecodedBufPos, (uint32_t*)pCharTexIdx, count);
         (*pDecodedBufPos)--;
         return true;
 
@@ -365,7 +367,7 @@ bool Message_Decode_Additional_Control_Codes_JP(
     if (currCharWide == 0x87F2) {
         // Outgoing item filename
         Message_AddFileNameWide(
-            msgCtx, font, pDecodedBufPos, pCharTexIdx,
+            msgCtx, font, (uint32_t*)pDecodedBufPos, (uint32_t*)pCharTexIdx,
             PLAYER_NAMES[PLAYER_NAME_ID]
         );
         (*pDecodedBufPos)--;
@@ -401,7 +403,7 @@ bool Message_Decode_Additional_Control_Codes_JP(
                  (entrance ==   0x54C)            )    name = dungeons[12].name;
         else                                               name = "WARP";
 
-        Message_AddStringWide(msgCtx, font, pDecodedBufPos, pCharTexIdx, name);
+        Message_AddStringWide(msgCtx, font, (uint32_t*)pDecodedBufPos, (uint32_t*)pCharTexIdx, name);
         (*pDecodedBufPos)--;
         return true;
     }
