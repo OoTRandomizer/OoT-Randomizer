@@ -1,3 +1,19 @@
+; MessageContext offsets relative to PlayState. Keep these synchronized with
+; ASM/c/z64.h when the structure changes:
+;   PlayState.msgContext             = 0x20D8
+;   MessageContext.textId            = 0xE2F8
+;   MessageContext.msgBufDecodedWide = 0xE306
+;   MessageContext.decodedTextLen    = 0xE3D4
+;   MessageContext.textboxEndType    = 0xE3E4
+.definelabel PLAY_MSGCTX_TEXT_ID_OFFSET,          0x000103D0
+.definelabel PLAY_MSGCTX_DECODED_WIDE_OFFSET,    0x000103DE
+.definelabel PLAY_MSGCTX_DECODED_LEN_OFFSET,     0x000104AC
+.definelabel PLAY_MSGCTX_END_TYPE_OFFSET,        0x000104BC
+.definelabel MESSAGE_WIDE_END_VALUE,              0x8170
+.definelabel MESSAGE_WIDE_TEXTID_VALUE,           0x81CB
+.definelabel TEXTBOX_ENDTYPE_HAS_NEXT_VALUE,      0x0030
+.definelabel MESSAGE_DECODED_WIDE_CAPACITY,       0x0064
+
 ; Manipulates the save context language bit based
 ; on the segment value for the requested text ID.
 ; Message lookup is moved here from the vanilla
@@ -16,6 +32,61 @@ set_message_file_to_search:
     ; we can safely store $ra.
     sw      t0, 0x002C($sp)
 
+    ; Japanese QUICKTEXT_ENABLE scanning does not recognize TEXTID as a
+    ; boundary. For an instant message ending directly in TEXTID, the scan
+    ; reaches the END sentinel placed after the destination and leaves
+    ; textDrawPos one word too far ahead. Message_ContinueTextbox would then
+    ; receive END (0x8170) instead of the destination text ID.
+    ;
+    ; Message_OpenText has not reset the previous decoded message at this hook.
+    ; For a Japanese TEXTID terminator, decodedTextLen points to the canonical
+    ; destination ID. Recover it only for the exact invalid-ID signature and
+    ; verify the decoded layout before changing any state.
+    ori     t1, r0, MESSAGE_WIDE_END_VALUE
+    bne     a1, t1, @message_id_ready
+    nop
+
+    lui     t1, hi(SAVE_CONTEXT + 0x1409)
+    lbu     t1, lo(SAVE_CONTEXT + 0x1409)(t1) ; gSaveContext.language: 0 = JP
+    bnez    t1, @message_id_ready
+    nop
+
+    ; The previous textbox must have ended with TEXTID/HAS_NEXT.
+    lui     t1, hi(PLAY_MSGCTX_END_TYPE_OFFSET)
+    addu    t1, t1, a0
+    lbu     t2, lo(PLAY_MSGCTX_END_TYPE_OFFSET)(t1)
+    ori     t3, r0, TEXTBOX_ENDTYPE_HAS_NEXT_VALUE
+    bne     t2, t3, @message_id_ready
+    nop
+
+    ; decodedTextLen is a uint16 word index into msgBufDecodedWide[100].
+    lui     t1, hi(PLAY_MSGCTX_DECODED_LEN_OFFSET)
+    addu    t1, t1, a0
+    lhu     t2, lo(PLAY_MSGCTX_DECODED_LEN_OFFSET)(t1)
+    beqz    t2, @message_id_ready
+    sltiu   t3, t2, MESSAGE_DECODED_WIDE_CAPACITY
+    beqz    t3, @message_id_ready
+    sll     t2, t2, 0x01
+
+    ; Require TEXTID immediately before the canonical destination.
+    lui     t1, hi(PLAY_MSGCTX_DECODED_WIDE_OFFSET)
+    addu    t1, t1, a0
+    addiu   t1, t1, lo(PLAY_MSGCTX_DECODED_WIDE_OFFSET)
+    addu    t1, t1, t2
+    lhu     t2, -0x0002(t1)
+    ori     t3, r0, MESSAGE_WIDE_TEXTID_VALUE
+    bne     t2, t3, @message_id_ready
+    nop
+    lhu     a1, 0x0000(t1)
+
+    ; Message_OpenText already copied the bad argument to both locations. Keep
+    ; the stack local and MessageContext synchronized with the recovered ID.
+    sh      a1, 0x0046(sp)
+    lui     t1, hi(PLAY_MSGCTX_TEXT_ID_OFFSET)
+    addu    t1, t1, a0
+    sh      a1, lo(PLAY_MSGCTX_TEXT_ID_OFFSET)(t1)
+
+@message_id_ready:
     ; Message lookup saves to the stack without
     ; changing the stack pointer. Save to an
     ; unused variable to avoid changing the stack.
@@ -72,6 +143,10 @@ Message_Decode_Control_Code_Hook_JP:
     nop
 
 ;— New JP Control Codes go here —
+;
+; This hook also sees QUICKTEXT_ENABLE. The C helper primes the unused decoded
+; buffer tail with END, leaving a deterministic boundary after a final TEXTID
+; argument without inserting a visible QUICKTEXT_DISABLE control.
 
 @not_newline_jp:
     addiu   sp, sp, -0x50
