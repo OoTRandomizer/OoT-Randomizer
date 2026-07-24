@@ -10,6 +10,7 @@
 #include "en_wonderitem.h"
 #include "scene.h"
 #include "en_item00.h"
+#include "en_wood02.h"
 
 extern uint8_t POTCRATE_TEXTURES_MATCH_CONTENTS;
 extern uint16_t CURR_ACTOR_SPAWN_INDEX;
@@ -61,13 +62,17 @@ void Actor_After_UpdateAll_Hack(z64_actor_t* actor, z64_game_t* game) {
     // Add additional actor hacks here. These get called shortly after the call to actor_init
     // Hacks are responsible for checking that they are the correct actor.
     EnWonderitem_AfterInitHack(actor, game);
+    EnWood02_AfterInitHack(actor, game);
     CURR_ACTOR_SPAWN_INDEX = 0; // reset CURR_ACTOR_SPAWN_INDEX
 }
 
-// For pots/crates/beehives, store the flag in the new space in the actor instance.
+// For pots/crates/beehives/trees, store the flag in the new space in the actor instance.
 // Flag consists of the room #, scene setup, and the actor index
 void Actor_StoreFlag(z64_actor_t* actor, z64_game_t* game, xflag_t flag) {
     ActorAdditionalData* extra = Actor_GetAdditionalData(actor);
+    if (actor->actor_id == EN_WOOD02) {
+        flag = EnWood02_NormalizeFlag(flag);
+    }
     flag = resolve_alternative_flag(&flag);
     if (CURR_ACTOR_SPAWN_INDEX) {
         extra->actor_id = CURR_ACTOR_SPAWN_INDEX;
@@ -82,6 +87,7 @@ void Actor_StoreFlag(z64_actor_t* actor, z64_game_t* game, xflag_t flag) {
         case OBJ_KIBAKO2:
         case EN_ITEM00:
         case EN_WONDER_ITEM:
+        case EN_WOOD02:
         {
             // For these actors, only store the flag if there is a valid override
             if (override.key.all) {
@@ -103,7 +109,7 @@ void Actor_StoreFlag(z64_actor_t* actor, z64_game_t* game, xflag_t flag) {
     }
 }
 
-// For pots/crates/beehives, store the flag in the new space in the actor instance.
+// For pots/crates/beehives/trees, store the flag in the new space in the actor instance.
 // Flag consists of the room #, scene setup, and the actor index
 void Actor_StoreFlagByIndex(z64_actor_t* actor, z64_game_t* game, uint16_t actor_index) {
     // Zeroize extra data;
@@ -124,7 +130,7 @@ override_t get_newflag_override(xflag_t* flag) {
     return (override_t) { 0 };
 }
 
-// For pots/crates/beehives match contents, determine the override and store the chest type in new space in the actor instance
+// For pots/crates/beehives/trees match contents, determine the override and store the chest type in new space in the actor instance
 // So we don't have to hit the override table every frame.
 void Actor_StoreChestType(z64_actor_t* actor, z64_game_t* game) {
     uint8_t* pChestType = NULL;
@@ -142,20 +148,23 @@ void Actor_StoreChestType(z64_actor_t* actor, z64_game_t* game) {
     } else if (actor->actor_id == OBJ_KIBAKO) { // Small wooden crates
         override = get_newflag_override(flag);
         pChestType = &(((ObjKibako*)actor)->chest_type);
-    } else if (actor->actor_id == OBJ_COMB) {
+    } else if (actor->actor_id == OBJ_COMB) { // Honeycombs
         override = get_newflag_override(flag);
         pChestType = &(((ObjComb*)actor)->chest_type);
+    } else if (actor->actor_id == EN_WOOD02) { // Bonkable Trees
+        override = get_newflag_override(flag);
+        pChestType = &(Actor_GetAdditionalData(actor)->chest_type);
     }
     if (override.key.all != 0 && pChestType != NULL) { // If we don't have an override key, then either this item doesn't have an override entry, or it has already been collected.
         if (POTCRATE_TEXTURES_MATCH_CONTENTS == PTMC_UNCHECKED && override.key.all > 0) { // For "unchecked" PTMC setting: Check if we have an override which means it wasn't collected.
             *pChestType = GILDED_CHEST;
         } else if (POTCRATE_TEXTURES_MATCH_CONTENTS == PTMC_CONTENTS) {
-            uint16_t item_id = resolve_upgrades(override);
-            item_row_t* row = get_item_row(override.value.looks_like_item_id);
-            if (row == NULL) {
-                row = get_item_row(override.value.base.item_id);
+            uint16_t item_id = override.value.looks_like_item_id;
+            if (item_id == 0) {
+                item_id = resolve_upgrades(override);
             }
-            *pChestType = row->chest_type;
+            item_row_t* row = get_item_row(item_id);
+            *pChestType = row != NULL ? row->chest_type : 0;
         } else {
             *pChestType = 0;
         }
@@ -263,6 +272,7 @@ z64_actor_t* Actor_Spawn_Hook(void* actorCtx, z64_game_t* globalCtx, int16_t act
                 Actor_StoreFlag(spawned, globalCtx, *spawn_actor_with_flag);
                 Actor_StoreChestType(spawned, globalCtx);
             }
+            EnWood02_AfterInitHack(spawned, globalCtx);
         }
         return spawned;
     }

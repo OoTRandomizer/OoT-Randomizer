@@ -207,6 +207,7 @@
             "shuffle_crates",
             "shuffle_empty_crates",
             "shuffle_cows",
+            "shuffle_trees",
             "shuffle_beehives",
             "shuffle_wonderitems",
             "shuffle_kokiri_sword",

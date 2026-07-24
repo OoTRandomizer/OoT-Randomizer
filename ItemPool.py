@@ -792,6 +792,14 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
                 shuffle_item = False
                 location.disabled = DisableType.DISABLED
 
+        # Trees
+        elif location.type == 'Tree':
+            if world.settings.shuffle_trees:
+                shuffle_item = True
+            else:
+                shuffle_item = False
+                location.disabled = DisableType.DISABLED
+
         # Beehives
         elif location.type == 'Beehive':
             if world.settings.shuffle_beehives:
