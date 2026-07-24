@@ -110,7 +110,7 @@ int d_right_dungeon_idx(int i) {
 
 // When in a silver rupee room, draw the silver rupee count for that room.
 void draw_silver_rupee_count(z64_game_t* globalCtx, z64_disp_buf_t* db) {
-    if (!CFG_DUNGEON_INFO_SILVER_RUPEES) return;
+    if (!CFG_DUNGEON_INFO_SILVER_RUPEES || show_dungeon_info) return;
 
     uint8_t scene = globalCtx->scene_index;
     uint8_t room = globalCtx->room_index;
