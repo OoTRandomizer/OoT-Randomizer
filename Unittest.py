@@ -19,7 +19,7 @@ from Fill import ShuffleError
 from Hints import HintArea, build_misc_item_hints
 from Item import ItemInfo
 from ItemPool import remove_junk_items, remove_junk_ludicrous_items, ludicrous_items_base, ludicrous_items_extended, trade_items, ludicrous_exclusions
-from LocationList import location_is_viewable
+from LocationList import location_is_viewable, location_table
 from Main import main, resolve_settings, build_world_graphs
 from Messages import Message, read_messages, shuffle_messages
 from Settings import Settings, get_preset_files
@@ -344,6 +344,80 @@ class TestPlandomizer(unittest.TestCase):
         for filename in filenames:
             with self.subTest(filename):
                 generate_with_plandomizer(filename)
+
+    def test_tree_shuffle_locations(self):
+        tree_locations = {name: data for name, data in location_table.items() if data[0] == 'Tree'}
+        child_field = {name for name in tree_locations if name.startswith('HF Child Tree ')}
+        adult_field = {name for name in tree_locations if name.startswith('HF Adult Tree ')}
+
+        self.assertEqual(99, len(tree_locations))
+        self.assertEqual(47, len(child_field))
+        self.assertEqual(41, len(adult_field))
+        self.assertIn('Market Child Tree', tree_locations)
+        self.assertIn('Kak Child Tree', tree_locations)
+        self.assertIn('Kak Adult Tree', tree_locations)
+        self.assertEqual(8, sum(name.startswith('HC Child Tree ') for name in tree_locations))
+
+        # Tree Shuffle never shares an actor flag through subflags
+        identity_owners = {}
+        for name, data in tree_locations.items():
+            defaults = data[2] if isinstance(data[2], list) else [data[2]]
+            for default in defaults:
+                if len(default) == 3:
+                    default = (*default, 0)
+                self.assertEqual(0, default[3], name)
+                identity = (data[1], *default)
+                self.assertNotIn(identity, identity_owners, f'{name} shares an identity with {identity_owners.get(identity)}')
+                identity_owners[identity] = name
+
+        child_primaries = []
+        for index in range(1, 48):
+            default = tree_locations[f'HF Child Tree {index}'][2]
+            primary = default[0] if isinstance(default, list) else default
+            if len(primary) == 3:
+                primary = (*primary, 0)
+            child_primaries.append(primary)
+        self.assertEqual([(0, 0, flag, 0) for flag in range(0x80, 0xAF)], child_primaries)
+
+        adult_primaries = []
+        for index in range(1, 42):
+            default = tree_locations[f'HF Adult Tree {index}'][2]
+            primary = default[0] if isinstance(default, list) else default
+            if len(primary) == 3:
+                primary = (*primary, 0)
+            adult_primaries.append(primary)
+        self.assertEqual([(0, 2, flag, 0) for flag in range(0x80, 0xA9)], adult_primaries)
+
+        self.assertEqual([(0, 0, 46, 0), (0, 1, 40, 0)], tree_locations['Kak Child Tree'][2])
+        self.assertEqual([(0, 2, 33, 0), (0, 3, 31, 0)], tree_locations['Kak Adult Tree'][2])
+
+        # Verify that every primary tree identity resolves to a distinct bit
+        from SceneFlags import build_room_xflags
+        primary_trees_by_room = defaultdict(list)
+        for name, data in tree_locations.items():
+            primary = data[2][0] if isinstance(data[2], list) else data[2]
+            if len(primary) == 3:
+                primary = (*primary, 0)
+            room, setup, actor_id, subflag = primary
+            primary_trees_by_room[(data[1], setup, room)].append((actor_id, subflag, name))
+
+        for room_key, room_trees in primary_trees_by_room.items():
+            room_xflags, _ = build_room_xflags([(actor_id, subflag) for actor_id, subflag, _ in room_trees])
+            running_offset = 0
+            actor_offsets = {}
+            for actor_id, delta in enumerate(room_xflags):
+                running_offset += delta
+                if delta:
+                    actor_offsets[actor_id] = running_offset - 1
+
+            used_offsets = {}
+            for actor_id, subflag, name in room_trees:
+                bit_offset = actor_offsets[actor_id] + subflag
+                self.assertNotIn(bit_offset, used_offsets, f'{name} shares an xflag bit with {used_offsets.get(bit_offset)} in {room_key}')
+                used_offsets[bit_offset] = name
+
+        _, spoiler = generate_with_plandomizer("plando-trees")
+        self.assertTrue(tree_locations.keys() <= spoiler['locations'].keys())
 
     def test_boss_item_list(self):
         filenames = [

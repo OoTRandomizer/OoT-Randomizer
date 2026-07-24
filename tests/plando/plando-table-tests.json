@@ -73,6 +73,7 @@
     "shuffle_crates":                          "all",
     "shuffle_empty_crates":                    true,
     "shuffle_cows":                            false,
+    "shuffle_trees":                           true,
     "shuffle_beehives":                        true,
     "shuffle_wonderitems":                     true,
     "shuffle_kokiri_sword":                    true,

@@ -2413,6 +2413,24 @@ class SettingInfos:
         },
     )
 
+    shuffle_trees = Checkbutton(
+        gui_text       = 'Shuffle Trees',
+        gui_tooltip    = '''\
+            Enabling this will add 99 bonkable trees to the location pool,
+            including trees that normally drop nothing.
+
+            Day and night share the same tree checks, while child and adult
+            trees are separate locations. The first bonk drops the shuffled item.
+            After collection, later visits use the tree's normal refill behavior.
+            Dynamically spawned tree clusters are tracked as separate locations.
+        ''',
+        default        = False,
+        shared         = True,
+        gui_params     = {
+            'randomize_key': 'randomize_settings',
+        },
+    )
+
     shuffle_beehives = Checkbutton(
         gui_text       = 'Shuffle Beehives',
         gui_tooltip    = '''\
@@ -3946,7 +3964,7 @@ class SettingInfos:
     )
 
     correct_potcrate_appearances = Combobox(
-        gui_text       = 'Pot, Crate, & Beehive Appearance Matches Contents',
+        gui_text       = 'Pot, Crate, Beehive, & Tree Appearance Matches Contents',
         default        = 'textures_unchecked',
         choices        = {
             'off':                'Off',
@@ -3954,11 +3972,13 @@ class SettingInfos:
             'textures_unchecked': 'Texture (Unchecked)',
         },
         gui_tooltip    = '''\
-            If enabled, pot/crate textures, and beehive wiggling will reflect its contents.
+            If enabled, pot/crate textures, beehive wiggling, and tree leaf colors
+            will reflect its contents.
 
-            Off - Pots, crates, and beehives will appear as vanilla.
+            Off - Pots, crates, beehives, and trees will appear as vanilla.
 
-            Texture (Match Content) - Pot and crate textures will reflect the contents.
+            Texture (Match Content) - Pot and crate textures and tree leaf colors
+            will reflect the contents.
             Golden Pots/crates will contain major items.
             Pots/crates with keys on them will contain small keys.
             Pots/crates containing boss keys will use a variation of the boss key chest texture.
@@ -3966,11 +3986,14 @@ class SettingInfos:
             All other items will use the original texture.
             The texture will revert to the original texture once the item is collected.
             Beehives containing non-junk items will wiggle until collected.
+            Trees use gold leaves for major items, light-blue leaves for small
+            keys, orange leaves for boss keys, purple leaves for Gold Skulltula
+            Tokens, and pink leaves for heart items.
 
             Texture (Unchecked) - All pots/crates containing shuffled items
-            will appear with a golden texture. The texture will revert to the
-            original texture once the item is collected.
-            Beehives will wiggle until their item is collected.
+            will appear with a golden texture, and shuffled trees will use gold
+            leaves. The texture will revert to the original texture once the
+            item is collected. Beehives will wiggle until their item is collected.
         ''',
         shared         = True,
         disable        = {
