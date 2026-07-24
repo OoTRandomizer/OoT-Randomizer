@@ -14,6 +14,7 @@
 * Collecting an item while simultaneously receiving a Triforce Piece from another player in multiworld no longer turns the collected item into a Gerudo Mask or blue rupee.
 * Fix a logic bug where the `Equip Swap` glitch didn't check if the slingshot was available.
 * Fix silver rupee counter not displaying in Ganon's castle.
+* Fix silver rupee counter overlapping D-pad dungeon info menus.
 
 # 9.1
 
