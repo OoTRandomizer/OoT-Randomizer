@@ -8,7 +8,7 @@
 #include "item_effects.h"
 #include "save.h"
 
-int dungeon_count = 13;
+int dungeon_count = 14;
 
 dungeon_entry_t dungeons[] = {
     {  0, 0, 0, 0, 1, 0x0F, "Deku",       "Deku Tree",          {-1, -1, -1, -1}, {-1, -1, -1, -1} },

@@ -13,6 +13,7 @@
 * Fix a visual bug where ice traps from most chests were missing the frost cloud coming out of the chest.
 * Collecting an item while simultaneously receiving a Triforce Piece from another player in multiworld no longer turns the collected item into a Gerudo Mask or blue rupee.
 * Fix a logic bug where the `Equip Swap` glitch didn't check if the slingshot was available.
+* Fix silver rupee counter not displaying in Ganon's castle.
 
 # 9.1
 
