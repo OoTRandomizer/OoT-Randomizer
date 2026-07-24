@@ -3986,9 +3986,9 @@ class SettingInfos:
             All other items will use the original texture.
             The texture will revert to the original texture once the item is collected.
             Beehives containing non-junk items will wiggle until collected.
-            Trees use gold leaves for major items, light-blue leaves for small
-            keys, orange leaves for boss keys, purple leaves for Gold Skulltula
-            Tokens, and pink leaves for heart items.
+            Trees use blue leaves for major items, light-blue leaves for small
+            keys, yellow leaves for boss keys, purple leaves for Gold Skulltula
+            Tokens, pink leaves for heart items and green leaves for others.
 
             Texture (Unchecked) - All pots/crates containing shuffled items
             will appear with a golden texture, and shuffled trees will use gold
