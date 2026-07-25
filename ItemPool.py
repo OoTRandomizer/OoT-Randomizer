@@ -323,6 +323,85 @@ ocarina_buttons: tuple[str, ...] = (
 
 normal_bottles: list[str] = [bottle for bottle in sorted(ItemInfo.bottles) if bottle not in ('Deliver Letter', 'Sell Big Poe')] + ['Bottle with Big Poe']
 reward_list: list[str] = [item.name for item in sorted([i for n, i in ItemInfo.items.items() if i.type == 'DungeonReward'], key=lambda x: x.special['item_id'])]
+
+enemy_souls_core: list[str] = [
+    'Stalfos Soul',
+    'Octorok Soul',
+    'Wallmaster Soul',
+    'Dodongo Soul',
+    'Keese Soul',
+    'Tektite Soul',
+    'Peahat Soul',
+    'Lizalfos and Dinalfos Soul',
+    'Gohma Larvae Soul',
+    'Shabom Soul',
+    'Baby Dodongo Soul',
+    'Biri and Bari Soul',
+    'Tailpasaran Soul',
+    'Skulltula Soul',
+    'Torch Slug Soul',
+    'Moblin Soul',
+    'Armos Soul',
+    'Deku Baba Soul',
+    'Deku Scrub Soul',
+    'Bubble Soul',
+    'Beamos Soul',
+    'Floormaster Soul',
+    'Redead and Gibdo Soul',
+    'Skullwalltula Soul',
+    'Flare Dancer Soul',
+    'Dead hand Soul',
+    'Shell Blade Soul',
+    'Like Like Soul',
+    'Spike Enemy Soul',
+    'Anubis Soul',
+    'Iron Knuckle Soul',
+    'Skull Kid Soul',
+    'Flying Pot Soul',
+    'Freezard Soul',
+    'Stinger Soul',
+    'Wolfos Soul',
+    'Guay Soul',
+    'Jabu Jabu Tentacle Soul',
+    'Dark Link Soul',
+]
+
+enemy_souls_bosses: list[str] = [
+    'Queen Gohma Soul',
+    'King Dodongo Soul',
+    'Barinade Soul',
+    'Phantom Ganon Soul',
+    'Volvagia Soul',
+    'Morpha Soul',
+    'Bongo Bongo Soul',
+    'Twinrova Soul',
+]
+
+region_souls: list[str] = [
+    'Deku Tree Souls',
+    'Dodongos Cavern Souls',
+    'Jabu Jabus Belly Souls',
+    'Forest Temple Souls',
+    'Fire Temple Souls',
+    'Water Temple Souls',
+    'Shadow Temple Souls',
+    'Spirit Temple Souls',
+    'Bottom of the Well Souls',
+    'Ice Cavern Souls',
+    'Gerudo Training Ground Souls',
+    'Ganons Castle Souls',
+    'Forest Area Souls',
+    'Hyrule Field Souls',
+    'Lake Hylia Souls',
+    'Gerudo Area Souls',
+    'Market Area Souls',
+    'Kakariko Area Souls',
+    'Goron Area Souls',
+    'Zora Area Souls',
+    'Lon Lon Ranch Souls',
+    'Grottos Souls',
+]
+
 song_list: list[str] = [item.name for item in sorted([i for n, i in ItemInfo.items.items() if i.type == 'Song'], key=lambda x: x.index if x.index is not None else 0)]
 junk_pool_base: list[tuple[str, int]] = [(item, weight) for (item, weight) in sorted(ItemInfo.junk_weight.items()) if weight > 0]
 remove_junk_items: list[str] = [item for (item, weight) in sorted(ItemInfo.junk_weight.items()) if weight >= 0]
@@ -543,11 +622,24 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
             pending_junk_pool.extend(song_list)
         if world.settings.shuffle_individual_ocarina_notes:
             pending_junk_pool.extend(ocarina_buttons)
+        if world.settings.shuffle_enemy_spawns == 'all':
+            pending_junk_pool.extend(enemy_souls_core + enemy_souls_bosses)
+        elif world.settings.shuffle_enemy_spawns == 'bosses':
+            pending_junk_pool.extend(enemy_souls_bosses)
+        elif world.settings.shuffle_enemy_spawns == 'regional':
+            pending_junk_pool.extend(region_souls)
 
     if world.settings.triforce_hunt:
         pending_junk_pool.extend(['Triforce Piece'] * world.settings.triforce_count_per_world)
     if world.settings.shuffle_individual_ocarina_notes:
         pending_junk_pool.extend(ocarina_buttons)
+
+    if world.settings.shuffle_enemy_spawns == 'all':
+        pending_junk_pool.extend(enemy_souls_core + enemy_souls_bosses)
+    elif world.settings.shuffle_enemy_spawns == 'bosses':
+        pending_junk_pool.extend(enemy_souls_bosses)
+    elif world.settings.shuffle_enemy_spawns == 'regional':
+        pending_junk_pool.extend(region_souls)
 
     # Use the vanilla items in the world's locations when appropriate.
     vanilla_items_processed = Counter()
@@ -803,6 +895,13 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
         # Wonderitems
         elif location.type == 'Wonderitem':
             if world.settings.shuffle_wonderitems:
+                shuffle_item = True
+            else:
+                shuffle_item = False
+                location.disabled = DisableType.DISABLED
+        # Enemy Drops
+        elif location.type == 'EnemyDrop':
+            if world.settings.shuffle_enemy_drops:
                 shuffle_item = True
             else:
                 shuffle_item = False
@@ -1072,6 +1171,10 @@ def get_pool_core(world: World) -> tuple[list[str], dict[str, Item]]:
             and (ItemInfo.items[item].type != 'DungeonReward' or world.settings.shuffle_dungeon_rewards not in ('vanilla', 'reward'))
         ]
         duplicate_candidates.extend(ludicrous_items_base)
+        if world.settings.shuffle_enemy_spawns == 'all':
+            duplicate_candidates.extend(enemy_souls_core + enemy_souls_bosses)
+        elif world.settings.shuffle_enemy_spawns == 'bosses':
+            duplicate_candidates.extend(enemy_souls_bosses)
         junk_items = [
             item for item in pool
             if item not in duplicate_candidates

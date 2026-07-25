@@ -177,7 +177,7 @@ scenes = [
     "Fairy's Fountain",
     "Great Fairy's Fountain (Spells)",
     "Grottos",
-    "Grave (Redead)",
+    "Grave (ReDead)",
     "Grave (Fairy's Fountain)",
     "Royal Family's Tomb",
     "Shooting Gallery",
@@ -359,16 +359,3 @@ def process_pot(actor_bytes):
         'variable': hex(variable),
         'item_id': item_dict[item_id],
     }
-
-#rom = Rom('ZOOTDEC.z64')
-rom = Rom('zeloot_mqdebug.z64')
-pots = get_crates(rom)
-
-for pot in pots:
-    print(f'{pot}: {pots[pot]}')
-
-#rom = Rom('../zeloot_mqdebug.z64')
-#wonderitems = get_wonderitems(rom)
-
-#for wonderitem in wonderitems:
-    #print(f'{wonderitem}: {wonderitems[wonderitem]}')

@@ -84,7 +84,7 @@
         "region_name": "Ganons Castle Water Trial Block Push",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Castle Water Trial Fairy Pot Drop": " True",
+            "Ganons Castle Water Trial Fairy Pot": "True",
             "Fairy Pot": "True"
         },
         "exits": {

@@ -2,6 +2,10 @@
     {
         "region_name": "Fire Temple Lower",
         "dungeon": "Fire Temple",
+        "locations": {
+            "Fire Temple Lobby Keese 1": "can_kill_keese",
+            "Fire Temple Lobby Keese 2": "can_kill_keese"
+        },
         "exits": {
             "DMC Fire Temple Entrance": "True",
             "Fire Temple Near Boss": "logic_fewer_tunic_requirements or can_use(Goron_Tunic)",
@@ -9,7 +13,7 @@
                 (Small_Key_Fire_Temple, 2) and
                 (logic_fewer_tunic_requirements or can_use(Goron_Tunic))",
             "Fire Temple Lower Locked Door": "
-                ((Small_Key_Fire_Temple, 8) or (not keysanity)) and can_use(Megaton_Hammer)",
+                ((Small_Key_Fire_Temple, 8) or not keysanity) and can_use(Megaton_Hammer)",
             "Farores Wind Warp": "can_use(Farores_Wind)"
         }
     },
@@ -25,24 +29,44 @@
             "Fairy Pot": "is_adult and has_bottle and (Hover_Boots or Hookshot)"
         },
         "exits": {
-            "Fire Temple Before Boss": "is_adult and (fire_temple_shortcuts or logic_fire_boss_door_jump or Hover_Boots)"
-        }
-    },
-    {
-        "region_name": "Fire Temple Before Boss",
-        "dungeon": "Fire Temple",
-        "savewarp": "DMC Fire Temple Entrance -> Fire Temple Lower",
-        "exits": {
-            "Volvagia Boss Room": "Boss_Key_Fire_Temple"
+            "Fire Temple Before Boss": "
+                is_adult and (fire_temple_shortcuts or logic_fire_boss_door_jump or Hover_Boots)"
         }
     },
     {
         "region_name": "Fire Temple Lower Locked Door",
         "dungeon": "Fire Temple",
         "locations": {
+            "Fire Temple Before Lower Flare Dancer Keese 1": "has_soul(Keese)",
+            "Fire Temple Before Lower Flare Dancer Keese 2": "has_soul(Keese)",
+            "Fire Temple Before Lower Flare Dancer Keese 3": "has_soul(Keese)",
+            "Fire Temple Before Lower Flare Dancer Torch Slug 1": "has_soul(Torch_Slug)",
+            "Fire Temple Before Lower Flare Dancer Torch Slug 2": "has_soul(Torch_Slug)",
+            "Fire Temple Before Lower Flare Dancer Torch Slug 3": "has_soul(Torch_Slug)",
+            "Fire Temple Before Lower Flare Dancer Torch Slug 4": "has_soul(Torch_Slug)"
+        },
+        "exits": {
+            "Fire Temple Lower Spinning Tiles": "has_soul(Keese) and has_soul(Torch_Slug)"
+        }
+    },
+    {
+        "region_name": "Fire Temple Lower Spinning Tiles",
+        "dungeon": "Fire Temple",
+        "locations": {
+            "Fire Temple Before Lower Flare Dancer Like Like": "has_soul(Like_Like)",
+            "Fire Temple GS Boss Key Loop": "True"
+        },
+        "exits": {
+            "Fire Temple Lower Flare Dancer Room": "has_soul(Flare_Dancer)"
+        }
+    },
+    {
+        "region_name": "Fire Temple Lower Flare Dancer Room",
+        "dungeon": "Fire Temple",
+        "locations": {
             "Fire Temple Flare Dancer Chest": "True",
             "Fire Temple Boss Key Chest": "True",
-            "Fire Temple GS Boss Key Loop": "True"
+            "Fire Temple Lower Flare Dancer": "True"
         }
     },
     {
@@ -54,12 +78,34 @@
             "Fire Temple Big Lava Room Pot 1": "True",
             "Fire Temple Big Lava Room Pot 2": "True",
             "Fire Temple Big Lava Room Pot 3": "True",
-            "Fire Temple GS Song of Time Room": "
-                is_adult and (can_play(Song_of_Time) or logic_fire_song_of_time)"
+            "Fire Temple Big Lava Room Keese 1": "can_use(Goron_Tunic) and has_soul(Keese)",
+            "Fire Temple Big Lava Room Keese 2": "can_use(Goron_Tunic) and has_soul(Keese)",
+            "Fire Temple Big Lava Room Keese 3": "can_use(Goron_Tunic) and has_soul(Keese)",
+            "Fire Temple Big Lava Room Keese 4": "can_use(Goron_Tunic) and has_soul(Keese)",
+            "Fire Temple Big Lava Room Red Bubble 1": "can_kill_red_bubble and can_use(Goron_Tunic)",
+            "Fire Temple Big Lava Room Red Bubble 2": "
+                can_use(Goron_Tunic) and has_soul(Bubble) and Magic_Meter",
+            "Fire Temple Big Lava Room Red Bubble 3": "can_kill_red_bubble and can_use(Goron_Tunic)",
+            "Fire Temple Big Lava Room Red Bubble 4": "can_kill_red_bubble and can_use(Goron_Tunic)",
+            "Fire Temple Big Lava Room Red Bubble 5": "can_kill_red_bubble and can_use(Goron_Tunic)",
+            "Fire Temple Big Lava Room Red Bubble 6": "can_kill_red_bubble and can_use(Goron_Tunic)",
+            "Fire Temple Big Lava Room Red Bubble 7": "can_kill_red_bubble and can_use(Goron_Tunic)",
+            "Fire Temple Big Lava Room Red Bubble 8": "can_kill_red_bubble and can_use(Goron_Tunic)",
+            "Fire Temple Big Lava Room Red Bubble 9": "can_kill_red_bubble and can_use(Goron_Tunic)"
         },
         "exits": {
             "Fire Temple Elevator Room": "
-                is_adult and Goron_Tunic and (Small_Key_Fire_Temple, 3)"
+                is_adult and Goron_Tunic and (Small_Key_Fire_Temple, 3)",
+            "Fire Temple Song of Time Room": "
+                is_adult and (can_play(Song_of_Time) or logic_fire_song_of_time)"
+        }
+    },
+    {
+        "region_name": "Fire Temple Song of Time Room",
+        "dungeon": "Fire Temple",
+        "locations" : {
+            "Fire Temple Song of Time Room Like Like": "has_soul(Like_Like)",
+            "Fire Temple GS Song of Time Room": "True"
         }
     },
     {
@@ -68,11 +114,25 @@
         "locations": {
             "Fire Temple Elevator Room Recovery Heart 1": "True",
             "Fire Temple Elevator Room Recovery Heart 2": "True",
-            "Fire Temple Elevator Room Recovery Heart 3": "True"
+            "Fire Temple Elevator Room Recovery Heart 3": "True",
+            "Fire Temple Elevator Room Keese 1": "has_soul(Keese)",
+            "Fire Temple Elevator Room Keese 2": "has_soul(Keese)",
+            "Fire Temple Elevator Room Keese 3": "has_soul(Keese)",
+            "Fire Temple Elevator Room Keese 4": "has_soul(Keese)"
         },
         "exits": {
-            "Fire Temple Boulder Maze Lower": "
-                (Small_Key_Fire_Temple, 4) and
+            "Fire Temple Shortcut Room": "(Small_Key_Fire_Temple, 4)"
+        }
+    },
+    {
+        "region_name": "Fire Temple Shortcut Room",
+        "dungeon": "Fire Temple",
+        "locations": {
+            "Fire Temple Shortcut Room Lower Torch Slug": "has_soul(Torch_Slug)",
+            "Fire Temple Shortcut Room Upper Torch Slug": "has_soul(Torch_Slug)"
+        },
+        "exits": {
+            "Fire Temple Boulder Maze Lower" :"
                 (Progressive_Strength_Upgrade or logic_fire_strength) and
                 (has_explosives or Bow or Hookshot)"
         }
@@ -108,18 +168,30 @@
         "locations": {
             "Fire Temple Boulder Maze Upper Chest": "True",
             "Fire Temple Boulder Maze Shortcut Chest": "has_explosives",
-            "Fire Temple Scarecrow Chest": "
-                can_use(Scarecrow) or (logic_fire_scarecrow and Longshot)",
-            "Fire Temple Moving Fire Room Recovery Heart 1": "True",
-            "Fire Temple Moving Fire Room Recovery Heart 2": "True",
-            "Fire Temple Moving Fire Room Recovery Heart 3": "True",
-            "Fire Temple GS Scarecrow Climb": "
-                can_use(Scarecrow) or (logic_fire_scarecrow and Longshot)",
-            "Fire Temple GS Scarecrow Top": "
-                can_use(Scarecrow) or (logic_fire_scarecrow and Longshot)"
+            "Fire Temple Moving Fire Room Recovery Heart 1" : "True",
+            "Fire Temple Moving Fire Room Recovery Heart 2" : "True",
+            "Fire Temple Moving Fire Room Recovery Heart 3" : "True",
+            "Fire Temple Upper Boulder Maze Torch Slug 1": "has_soul(Torch_Slug)",
+            "Fire Temple Upper Boulder Maze Torch Slug 2": "has_soul(Torch_Slug)",
+            "Fire Temple Upper Boulder Maze Torch Slug 3": "has_soul(Torch_Slug)",
+            "Fire Temple Moving Fire Room Red Bubble 1": "has_soul(Bubble) and Magic_Meter",
+            "Fire Temple Moving Fire Room Red Bubble 2": "has_soul(Bubble) and Magic_Meter",
+            "Fire Temple Moving Fire Room Red Bubble 3": "has_soul(Bubble) and Magic_Meter",
+            "Fire Temple Moving Fire Room Red Bubble 4": "has_soul(Bubble) and Magic_Meter",
+            "Fire Temple Moving Fire Room Red Bubble 5": "has_soul(Bubble) and Magic_Meter"
         },
         "exits": {
+            "Fire Temple Above Boulder Maze": "can_use(Scarecrow) or (logic_fire_scarecrow and Longshot)",
             "Fire Temple Flame Maze": "(Small_Key_Fire_Temple, 7)"
+        }
+    },
+    {
+        "region_name": "Fire Temple Above Boulder Maze",
+        "dungeon": "Fire Temple",
+        "locations": {
+            "Fire Temple Scarecrow Chest": "True",
+            "Fire Temple GS Scarecrow Climb": "True",
+            "Fire Temple GS Scarecrow Top": "True"
         }
     },
     {
@@ -130,34 +202,78 @@
             "Fire Temple Flame Maze Left Side Pot 1": "True",
             "Fire Temple Flame Maze Left Side Pot 2": "True",
             "Fire Temple Flame Maze Left Side Pot 3": "True",
-            "Fire Temple Flame Maze Left Side Pot 4": "True"
+            "Fire Temple Flame Maze Left Side Pot 4": "True",
+            "Fire Temple Flame Maze Right Side Keese 1": "has_soul(Keese)",
+            "Fire Temple Flame Maze Right Side Keese 2": "has_soul(Keese)",
+            "Fire Temple Flame Maze Left Side Keese": "has_soul(Keese)"
         },
         "exits": {
-            "Fire Temple Upper": "
-                (Small_Key_Fire_Temple, 8) or
-                (Hover_Boots and Megaton_Hammer) or logic_fire_flame_maze"
+            "Fire Temple Before Upper Flare Dancer": "
+                (Small_Key_Fire_Temple, 8) or logic_fire_flame_maze",
+            "Fire Temple Highest Goron": "Hover_Boots and Megaton_Hammer"
+        }
+    },
+    {
+        "region_name": "Fire Temple Before Upper Flare Dancer",
+        "dungeon": "Fire Temple",
+        "locations": {
+            "Fire Temple Flame Maze Right Side Pot 1": "True",
+            "Fire Temple Flame Maze Right Side Pot 2": "True",
+            "Fire Temple Flame Maze Right Side Pot 3": "True",
+            "Fire Temple Flame Maze Right Side Pot 4": "True"
+        },
+        "exits": {
+            "Fire Temple Upper": "has_explosives and has_soul(Flare_Dancer)",
+            "Fire Temple Highest Goron": "can_play(Song_of_Time)"
         }
     },
     {
         "region_name": "Fire Temple Upper",
         "dungeon": "Fire Temple",
         "locations": {
-            "Fire Temple Highest Goron Chest": "
-                Megaton_Hammer and
-                (can_play(Song_of_Time) or
-                    (logic_rusted_switches and (Hover_Boots or has_explosives)))",
-            "Fire Temple Megaton Hammer Chest": "has_explosives",
-            "Fire Temple Flame Maze Right Side Pot 1": "True",
-            "Fire Temple Flame Maze Right Side Pot 2": "True",
-            "Fire Temple Flame Maze Right Side Pot 3": "True",
-            "Fire Temple Flame Maze Right Side Pot 4": "True",
-            "Fire Temple Hammer Staircase Small Wooden Crate 1": "Megaton_Hammer",
-            "Fire Temple Hammer Staircase Small Wooden Crate 2": "Megaton_Hammer"
-
+            "Fire Temple Megaton Hammer Chest": "True",
+            "Fire Temple Hammer Chest Keese 1": "has_soul(Keese)",
+            "Fire Temple Hammer Chest Keese 2": "has_soul(Keese)",
+            "Fire Temple Hammer Chest Keese 3": "has_soul(Keese)",
+            "Fire Temple Upper Flare Dancer": "True"
         },
         "exits": {
-            "Fire Temple Before Boss": "
-                Megaton_Hammer and (can_play(Song_of_Time) or has_explosives)"
+            "Fire Temple Hammer Steps": "Megaton_Hammer"
+        }
+    },
+    {
+        "region_name": "Fire Temple Hammer Steps",
+        "dungeon": "Fire Temple",
+        "locations": {
+            "Fire Temple Hammer Staircase Small Wooden Crate 1": "True",
+            "Fire Temple Hammer Staircase Small Wooden Crate 2": "True",
+            "Fire Temple Hammer Staircase Keese 1": "has_soul(Keese)",
+            "Fire Temple Hammer Staircase Keese 2": "has_soul(Keese)",
+            "Fire Temple Hammer Staircase Keese 3": "has_soul(Keese)",
+            "Fire Temple Hammer Staircase Keese 4": "has_soul(Keese)"
+        },
+        "exits": {
+            "Fire Temple Highest Goron": "True"
+        }
+    },
+    {
+        "region_name": "Fire Temple Highest Goron",
+        "dungeon": "Fire Temple",
+        "locations": {
+            "Fire Temple Highest Goron Chest": "
+                Megaton_Hammer and (can_play(Song_of_Time) or logic_rusted_switches)"
+        },
+        "exits": {
+            "Fire Temple Before Upper Flare Dancer": "True",
+            "Fire Temple Before Boss": "Megaton_Hammer"
+        }
+    },
+    {
+        "region_name": "Fire Temple Before Boss",
+        "dungeon": "Fire Temple",
+        "savewarp": "DMC Fire Temple Entrance -> Fire Temple Lower",
+        "exits": {
+            "Volvagia Boss Room": "Boss_Key_Fire_Temple"
         }
     }
 ]

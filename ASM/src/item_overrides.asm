@@ -237,6 +237,31 @@ EnItem00_DropCollectibleFallAction_Hack:
     jr      ra
     nop
 
+drop_collectible_random_hook:
+    addiu   sp, sp, -0x40
+    sw      ra, 0x3C(sp)
+    sw      a0, 0x20(sp)
+    sw      a1, 0x24(sp)
+    sw      a2, 0x28(sp)
+    sw      a3, 0x2C(sp)
+
+    jal Item_DropCollectible_Random_Before
+    nop
+
+
+    lw      a0, 0x20(sp)
+    lw      a1, 0x24(sp)
+    lw      a2, 0x28(sp)
+    lw      a3, 0x2C(sp)
+    lw      ra, 0x3C(sp)
+    addiu   sp, sp, 0x40
+
+    sw     s6, 0x0044(sp)
+    sw     s7, 0x0048(sp)
+    sll    s6, a3, 16
+    jr     ra
+    nop
+
 item_give_hook:
     addiu sp, sp, -0x80
     sw      ra, 0x10(sp)

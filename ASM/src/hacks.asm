@@ -692,6 +692,38 @@ SRAM_SLOTS:
     j       ObjTsubo_SpawnCollectible_Hack
     nop
 
+;Hack Item_DropCollectibleRandom to add the enemy drop flag and extended flag
+.orga 0xA899E4 ; in memory 0x80013A84
+;Replaces:
+;addiu  sp, sp, -0x60
+;sw     s6, 0x0044(sp)
+;sll    s6, a3, 16
+;sw     s7, 0x0048(sp)
+addiu   sp, sp, -0x60
+sw      ra, 0x004C(sp)
+jal drop_collectible_random_hook
+nop
+.skip 24
+nop  ; Replaces the sw ra, 0x004C(sp) later on so we dont screw up our return address because we already saved it.
+
+; Hack Actor_Spawn when it checks if the room is clear to still spawn the enemies
+.orga 0xA9B1CC ; in memory 0x8002526C
+jal actor_spawn_clear_check_hook
+nop
+nop
+nop
+nop
+nop
+nop
+nop
+
+; Hack Dark Link room En_Blkobj for enemy soul shuffle
+; At call to Actor_Find
+.orga 0xE1156C ; VRAM 0x80A8EC2C
+; Replaced code:
+;   jal Actor_Find
+    jal En_Blkobj_Actor_Find_Hook
+
 ; Hack ObjKibako2_SpawnCollectible (Large crates) to call our overridden spawn function
 ;
 .orga 0xEC8264
@@ -746,6 +778,79 @@ SRAM_SLOTS:
     jal     Actor_Spawn_Malloc_Hack
     sw      v1, 0x004C(sp)
 
+; Hack baby dodongo to pass its actor pointer into Item_DropCollectibleRandom
+.orga 0xC596E0 ; In memory: 0x801F8AF0
+;replaces
+; or a1, r0, r0
+or a1, r0, s0
+
+; Hack skullwalltula to pass its actor pointer into Item_DropCollectibleRandom
+.orga 0xCE4DC0
+;replaces
+; or a1, r0, r0
+or a1, r0, s0
+
+; Hack Gohma larva to pass its actor pointer into Item_DropCollectibleRandom
+.orga 0xC527F0
+;replaces
+;   or a1, r0, r0
+or  a1, r0, s0
+
+; Hack big skulltulas to pass its actor pointer in Item_DropCollectibleRandom
+.orga 0xC63CB4
+;replaces
+;   or a1, r0, r0
+or a1, r0, s0
+
+; Hack shaboms to pass its actor pointer in Item_DropCollectibleRandom
+.orga 0xC54B68
+;replaces
+;   or a1, r0, r0
+or a1, r0, s6
+
+; Hack flare dancer core to pass its parent actor pointer into Item_DropCollectibleRandom
+.orga 0xD15E34
+;replaces
+;   or a1, r0, r0
+or a1, r0, v0 ;parent is stored in v0
+
+; Hack redead/gibdo to pass its actor pointer into Item_DropCollectibleRandom
+.orga 0xCD908C
+;replaces
+;   or a1, r0, r0
+or a1, r0, s0 ;parent is stored in v0
+
+; Hack skull kids (en_skj) to spawn an overridden collectible
+.orga 0xDF1928
+;replaces
+;   jal     Item_DropCollectible
+;   swcl    f8, 0x44(sp)
+    jal       en_skj_drop_collectible_hook
+    nop
+
+; Hack Bubble (en_bb) to spawn sparkles for fire bubbles
+.orga 0xCB2F28
+;replaces
+;   jal 0x800214AC
+;   sh  v0, 0x004E(sp)
+jal bb_red_wait_hook
+sh  v0, 0x004E(sp)
+
+; Hack Guays (en_crow) to not respawn in enemy drop shuffle
+.orga 0xEEE834 ; Beginning of EnCrow_SetupRespawn
+; replaces
+;   addiu   sp, sp, -0x18
+;   lui     v0, 0x801E      ; this code needs to be skipped because it is relocated
+;   addiu   v0, v0, 0x6E98  ; this code needs to be skipped because it is relocated
+;   sw      ra, 0x0014(sp)
+;   or      a2, a0, r0
+;   lw      t6, 0x0000(v0)
+; Store caller's return address
+    addiu   sp, sp, -0x30
+    .skip   8   ; Skip relocated code
+    sw      ra, 0x10(sp)
+    jal     en_crow_respawn_hack
+    nop
 
 ; Hack in Actor_Spawn after the null check to offset the pointer by the amount that we added to the actor, so the new data is at the start
 .org 0x800252CC
@@ -771,6 +876,15 @@ Actor_Spawn_Continue_Jump_Point:
 ;   or      a0, s0, r0
 .skip 4
     addiu   a0, s0, -0x10
+
+; Hack for enemy drop shuffle to display enemy markers on the minimap
+.headersize (0x800110A0 - 0xA87000)
+; Hack at call to Minimap_Draw in Interface_Draw
+.org 0x80075D48
+; Replaces
+;   jal     0x8006CA64
+    jal     MiniMap_Draw_Hook
+
 
 ; Hook Actor_UpdateAll when each actor is being initialized. At the call to Actor_SpawnEntry
 ; Used to set the flag (z-rotation) of the actor to its position in the actor table.
@@ -851,6 +965,29 @@ Actor_Spawn_Continue_Jump_Point:
 .orga 0xDE8C94
     j       EnWonderItem_DropCollectible_Hack
     nop
+; Hack Actor_RemoveFromCategory to prevent setting the room clear flag if the room has unspawned enemies from enemy spawn shuffle
+.orga 0xA9AFEC ; In memory: 0x8002508C
+; Replaces:
+;   jal     0x800206AC Flags_SetTempClear
+    jal     Actor_RemoveFromCategory_SetTempClear_Hack
+
+; Hack in Scene_CommandActorEntryList to reset the flag used to check if the room has unspawned enemies from enemy spawn shuffle
+.orga 0xAF786C ; In memory: 0x8008190C
+; Replaces:
+;   sb      t6, 0x1DEB(at)
+;   lw      v0, 0x0004(a1)
+;   lui     t0, 0x8012
+;   lui     at, 0x00FF
+;   sll     t7, v0, 4
+;   srl     t8, t7, 28
+
+;   Need to set up the stack because this function doesn't store it's RA
+    addiu   sp, sp, -0x20
+    sw      ra, 0x10(sp)
+    jal     Actor_UpdateAll_ClearRoomEnemyInhibit
+    sb      t6, 0x1DEB(at) ; some replaced code
+    lw      ra, 0x10(sp)
+    addiu   sp, sp, 0x20
 
 ; Runs when storing an incoming item to the player instance
 ; Replaces:
@@ -4170,3 +4307,8 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/z_en_sa.asm"
 .include "hacks/en_box.asm"
 .include "hacks/z_scene.asm"
+.include "hacks/ovl/ovl_kaleido_scope.asm"
+.include "hacks/ovl_bg_mori_bigst.asm"
+.include "hacks/code.asm"
+.include "hacks/ovl_en_anubice_tag.asm"
+.include "hacks/ovl_en_karebaba.asm"

@@ -52,7 +52,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     '''},
     'Beehives with Bombchus' : {
         'name'    : 'logic_beehives_bombchus',
-        'tags'    : ("General", "Beehives", "Overworld", "Zora's Fountain", "Child", "Adult",),
+        'tags'    : ("General", "Beehives", "Overworld", "Zora's Domain", "Child", "Adult",),
         'tooltip' : '''\
                     Puts breaking beehives with bombchus into logic.
                     Using bombs is already expected on beehives that
@@ -393,6 +393,13 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     To kill it, the logic normally guarantees one of
                     Hookshot, Bow, or Magic.
                     '''},
+    'Zora\'s Fountain Invisible Skulltulas without Lens of Truth': {
+        'name'    : 'logic_lens_overworld',
+        'tags'    : ("Lens of Truth", "Zora's Fountain", "Enemies", "Overworld", "Adult",),
+        'tooltip' : '''\
+                    Removes the requirements for the Lens of Truth
+                    in Zora's Fountain.
+                    '''},
     'Lake Hylia Lab Wall GS with Jump Slash': {
         'name'    : 'logic_lab_wall_gs',
         'tags'    : ("Lake Hylia", "Gold Skulltulas", "Overworld", "Child",),
@@ -416,6 +423,13 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     able to hit the switch and open the gate. But, by
                     standing in a particular spot, the switch can be hit
                     with only the reach of the Hookshot.
+                    '''},
+    'Gerudo Valley Adult Wonderitems without Bean': {
+        'name'    : 'logic_valley_wonderitems',
+        'tags'    : ("Gerudo Valley", "Overworld", "Adult", "Wonderitems",),
+        'tooltip' : '''\
+                    Riding the bean makes it a lot easier to
+                    reach the exact positions of the items.
                     '''},
     'Gerudo Valley Crate PoH as Adult with Hover Boots': {
         'name'    : 'logic_valley_crate_hovers',
@@ -591,15 +605,12 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     The Bow can be used to knock down the stairs
                     with two well-timed shots.
                     '''},
-    'Dodongo\'s Cavern Child Slingshot Skips': {
-        'name'    : 'logic_dc_slingshot_skip',
-        'tags'    : ("Dodongo's Cavern", "Vanilla Dungeons", "Child",),
+    'Dodongo\'s Cavern Flame Circle Skips': {
+        'name'    : 'logic_dc_flame_circle_skip',
+        'tags'    : ("Dodongo's Cavern", "Vanilla Dungeons", "Child", "Adult",),
         'tooltip' : '''\
-                    With precise platforming, child can cross the
+                    With precise platforming, you can cross the
                     platforms while the flame circles are there.
-                    When enabling this trick, it's recommended that
-                    you also enable the Adult variant: "Dodongo's
-                    Cavern Spike Trap Room Jump without Hover Boots".
                     '''},
     'Dodongo\'s Cavern Two Scrub Room with Strength': {
         'name'    : 'logic_dc_scrub_room',
@@ -758,6 +769,13 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     strength by doing a jump slash with a lit
                     stick to access the bomb flowers.
                     '''},
+    'Bottom of the Well MQ without Lens of Truth': {
+        'name'    : 'logic_lens_botw_mq',
+        'tags'    : ("Lens of Truth", "Bottom of the Well MQ", "Master Quest", "Child", "Enemies",),
+        'tooltip' : '''\
+                    Removes the requirements for the Lens of Truth
+                    in Bottom of the Well MQ.
+                    '''},
     'Bottom of the Well MQ Jump Over the Pits': {
         'name'    : 'logic_botw_mq_pits',
         'tags'    : ("Bottom of the Well MQ", "Master Quest", "Child",),
@@ -846,15 +864,15 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     can sometimes apply in MQ as well. This trick
                     can be performed as both ages.
                     '''},
-    'Swim Through Forest Temple MQ Well with Hookshot': {
+    'Swim Through Forest Temple Well with Hookshot': {
         'name'    : 'logic_forest_well_swim',
-        'tags'    : ("Forest Temple MQ", "Master Quest", "Adult",),
+        'tags'    : ("Forest Temple", "Forest Temple MQ", "Vanilla Dungeons", "Master Quest", "Adult", "Souls",),
         'tooltip' : '''\
                     Shoot the vines in the well as low and as far to
                     the right as possible, and then immediately swim
                     under the ceiling to the right. This can only be
                     required if Forest Temple is in its Master Quest
-                    form.
+                    form, or if enemy souls are shuffled.
                     '''},
     'Skip Forest Temple MQ Block Puzzle with Bombchu': {
         'name'    : 'logic_forest_mq_block_puzzle',
@@ -897,10 +915,10 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
         'name'    : 'logic_fire_boss_door_jump',
         'tags'    : ("Fire Temple", "Fire Temple MQ", "Master Quest", "Vanilla Dungeons", "Adult",),
         'tooltip' : '''\
-                    The Fire Temple Boss Door can be reached as adult with a precise
-                    jump. You must be touching the side wall of the room so
-                    that Link will grab the ledge from farther away than
-                    is normally possible.
+                    The Fire Temple Boss Door can be reached as adult with a
+                    precise jump. You must be touching the side wall of the
+                    room so that Link will grab the ledge from farther away
+                    than is normally possible.
                     '''},
     'Fire Temple Song of Time Room GS without Song of Time': {
         'name'    : 'logic_fire_song_of_time',
@@ -1141,9 +1159,9 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
         'name'    : 'logic_water_falling_platform_gs_boomerang',
         'tags'    : ("Water Temple", "Gold Skulltulas", "Entrance Shuffle", "Vanilla Dungeons", "Child",),
         'tooltip' : '''\
-                    If you stand on the very edge of the platform, this
-                    Gold Skulltula can be obtained with only the Boomerang.
-                    This trick is only relevant if dungeon entrances are randomized.
+                    If you stand on the very edge of the platform, this Gold
+                    Skulltula can be obtained with only the Boomerang. This
+                    trick is only relevant if dungeon entrances are randomized.
                     '''},
     'Water Temple River GS without Iron Boots': {
         'name'    : 'logic_water_river_gs',
@@ -1594,7 +1612,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     Hover Boots can again be used to obtain the Token,
                     all without Hookshot or Boomerang.
                     '''},
-    'Ice Cavern MQ Red Ice GS without Song of Time': {
+    'Ice Cavern MQ Red Ice GS without Song of Time or Blue Fire Arrows': {
         'name'    : 'logic_ice_mq_red_ice_gs',
         'tags'    : ("Ice Cavern MQ", "Gold Skulltulas", "Master Quest", "Adult",),
         'tooltip' : '''\
@@ -1626,7 +1644,7 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     '''},
     'Gerudo Training Ground Left Side Ceiling Silver Rupee without Hookshot': {
         'name'    : 'logic_gtg_without_hookshot',
-        'tags'    : ("Gerudo Training Ground", "Gerudo Training Ground MQ", "Silver Rupees", "Master Quest", "Vanilla Dungeons", "Child", "Adult",),
+        'tags'    : ("Gerudo Training Ground", "Gerudo Training Ground MQ", "Master Quest", "Vanilla Dungeons", "Child", "Adult",),
         'tooltip' : '''\
                     The Silver Rupee on the ceiling can be reached by being pulled
                     up into it by the Wallmaster. If Silver Rupees are not shuffled,
@@ -1634,10 +1652,10 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     room. In MQ, this trick is a bit more difficult since the
                     Wallmaster will not track you to directly beneath the rupee, so
                     you must inch forward after it begins its attempt to grab you.
-                    This trick is relevant if Silver Rupees are shuffled, or if GTG
-                    is in its MQ form, or if "Gerudo Training Ground Boulder Room
-                    Flame Wall Skip" is also enabled. This trick supersedes "Gerudo
-                    Training Ground MQ Left Side Ceiling Silver Rupee with Hookshot".
+                    This trick is relevant if GTG is in its Master Quest form, or if
+                    "Gerudo Training Ground Boulder Room Flame Wall Skip" is enabled.
+                    This trick is not relevant if Silver Rupees are shuffled, since
+                    the Wallmaster no longer spawns after the rupees are collected.
                     '''},
     'Gerudo Training Ground Boulder Room Flame Wall Skip': {
         'name'    : 'logic_gtg_flame_wall',
@@ -1712,15 +1730,15 @@ logic_tricks: dict[str, dict[str, str | tuple[str, ...]]] = {
                     Removes the requirements for the Lens of Truth
                     in Ganon's Castle.
                     '''},
-    'Fire Trial Torch Slug Silver Rupee as Child': {
+    'Fire Trial Torch Slug as Child': {
         'name'    : 'logic_fire_trial_slug_rupee',
-        'tags'    : ("Ganon's Castle", "Entrance Shuffle", "Vanilla Dungeons", "Silver Rupees", "Child"),
+        'tags'    : ("Ganon's Castle", "Entrance Shuffle", "Vanilla Dungeons", "Silver Rupees", "Child", "Enemies",),
         'tooltip' : '''\
                     To jump to the platform with the Torch Slug as child requires
                     that the sinking platform be almost as high as possible. This
-                    trick is only relevant if Silver Rupees and the Ganon's Castle
-                    entrance are both shuffled, and the Fewer Tunic Requirements
-                    trick is also enabled.
+                    trick is only relevant if the Ganon's Castle entrance is
+                    shuffled, the Fewer Tunic Requirements trick is enabled, and
+                    either Enemy Drops or Silver Rupees are shuffled.
                     '''},
     'Spirit Trial Ceiling Silver Rupee without Hookshot': {
         'name'    : 'logic_spirit_trial_hookshot',

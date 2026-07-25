@@ -3,18 +3,17 @@
         "region_name": "Fire Temple Lower",
         "dungeon": "Fire Temple",
         "locations": {
-            "Fire Temple MQ Map Room Side Chest": "
-                is_adult or Kokiri_Sword or Sticks or Slingshot or Bombs or can_use(Dins_Fire)",
+            "Fire Temple MQ Map Room Side Chest": "can_kill_like_like",
             "Fire Temple MQ First Room Pot 1": "True",
-            "Fire Temple MQ First Room Pot 2": "True"
+            "Fire Temple MQ First Room Pot 2": "True",
+            "Fire Temple MQ Map Chest Like Like": "can_kill_like_like"
         },
         "exits": {
             "DMC Fire Temple Entrance": "True",
             "Fire Temple Near Boss": "
                 (is_adult or logic_fire_mq_child_flame) and has_fire_source and
                 (logic_fewer_tunic_requirements or Goron_Tunic)",
-            "Fire Temple Lower Locked Door": "
-                (Small_Key_Fire_Temple, 5) and (is_adult or Kokiri_Sword)",
+            "Fire Temple Lower Locked Door": "(Small_Key_Fire_Temple, 5)",
             "Fire Temple Big Lava Room": "
                 is_adult and Megaton_Hammer and (logic_fewer_tunic_requirements or Goron_Tunic)",
             "Farores Wind Warp": "can_use(Farores_Wind)"
@@ -63,9 +62,18 @@
         "region_name": "Fire Temple Lower Locked Door",
         "dungeon": "Fire Temple",
         "locations": {
-            "Fire Temple MQ Megaton Hammer Chest": "
-                is_adult and (has_explosives or Megaton_Hammer or Hookshot)",
-            "Fire Temple MQ Map Chest": "can_use(Megaton_Hammer)",
+            "Fire Temple MQ Before Lower Flare Dancer Keese": "can_kill_keese",
+            "Fire Temple MQ Before Lower Flare Dancer Stalfos 1": "can_kill_stalfos",
+            "Fire Temple MQ Before Lower Flare Dancer Stalfos 2": "can_kill_stalfos"
+        },
+        "exits": {
+            "Fire Temple Lower Locked Door After Stalfos": "has_soul(Keese) and can_kill_stalfos"
+        }
+    },
+    {
+        "region_name": "Fire Temple Lower Locked Door After Stalfos",
+        "dungeon": "Fire Temple",
+        "locations": {
             "Fire Temple MQ Iron Knuckle Room Pot 1": "True",
             "Fire Temple MQ Iron Knuckle Room Pot 2": "True",
             "Fire Temple MQ Iron Knuckle Room Pot 3": "True",
@@ -74,7 +82,20 @@
             "Fire Temple MQ Iron Knuckle Room Pot 6": "True",
             "Fire Temple MQ Iron Knuckle Room Pot 7": "True",
             "Fire Temple MQ Iron Knuckle Room Pot 8": "True",
+            "Fire Temple MQ Iron Knuckle": "has_soul(Iron_Knuckle)",
             "Fairy Pot": "has_bottle"
+        },
+        "exits": {
+            "Fire Temple Lower Flare Dancer Room": "has_soul(Iron_Knuckle)"
+        }
+    },
+    {
+        "region_name": "Fire Temple Lower Flare Dancer Room",
+        "dungeon": "Fire Temple",
+        "locations": {
+            "Fire Temple MQ Map Chest": "has_soul(Flare_Dancer) and can_use(Megaton_Hammer)",
+            "Fire Temple MQ Megaton Hammer Chest": "is_adult and can_kill_flare_dancer",
+            "Fire Temple MQ Lower Flare Dancer": "can_kill_flare_dancer"
         }
     },
     {
@@ -92,13 +113,13 @@
                 has_fire_source and (Bow or logic_fire_mq_bk_chest) and Hookshot",
             "Fire Temple MQ Boss Key Chest Room Pot 2": "
                 has_fire_source and (Bow or logic_fire_mq_bk_chest) and Hookshot",
-            "Fire Temple MQ GS Big Lava Room Open Door": "True",
-            "Fire Temple MQ Boss Key Hookshot Wonderitem": "has_fire_source and (Bow or logic_fire_mq_bk_chest) and Hookshot",
+            "Fire Temple MQ Boss Key Hookshot Wonderitem": "
+                has_fire_source and (Bow or logic_fire_mq_bk_chest) and Hookshot",
             "Fire Temple MQ Boss Key Arrow Wonderitem": "has_fire_source and Hookshot and Bow",
+            "Fire Temple MQ GS Big Lava Room Open Door": "True",
             "Fairy Pot": "
                 has_bottle and has_fire_source and (Bow or logic_fire_mq_bk_chest) and
-                (Hookshot or logic_fire_song_of_time)"
-
+                (Hookshot or (logic_fire_song_of_time and shuffle_pots != 'all' and shuffle_pots != 'dungeons'))"
         },
         "exits": {
             "Fire Temple Elevator Room": "Goron_Tunic and (Small_Key_Fire_Temple, 2)"
@@ -130,7 +151,14 @@
             "Fire Temple MQ Lower Lizalfos Maze Crate 1": "True",
             "Fire Temple MQ Lower Lizalfos Maze Crate 2": "True",
             "Fire Temple MQ Lower Lizalfos Maze Crate 3": "True",
-            "Fire Temple MQ Maze Face On Wall Hookshot Wonderitem": "can_use(Hookshot)"
+            "Fire Temple MQ Maze Face On Wall Hookshot Wonderitem": "Hookshot",
+            "Fire Temple MQ Shortcut Room Lizalfos": "has_soul(Lizalfos_and_Dinalfos)",
+            "Fire Temple MQ Lizalfos Maze Lizalfos 1": "has_soul(Lizalfos_and_Dinalfos)",
+            "Fire Temple MQ Lizalfos Maze Lizalfos 2": "has_soul(Lizalfos_and_Dinalfos)",
+            "Fire Temple MQ Lizalfos Maze Lizalfos 3": "has_soul(Lizalfos_and_Dinalfos)",
+            "Fire Temple MQ Lizalfos Maze Lizalfos 4": "has_soul(Lizalfos_and_Dinalfos)",
+            "Fire Temple MQ Lizalfos Maze Skullwalltula": "
+                has_soul(Skullwalltula) and (has_explosives or Megaton_Hammer or can_use(Dins_Fire))"
         },
         "exits": {
             "Fire Temple Upper Lizalfos Maze": "
@@ -174,17 +202,19 @@
         "region_name": "Fire Temple Block On Fire Room",
         "dungeon": "Fire Temple",
         "locations": {
-            "Fire Temple MQ GS Skull On Fire": "True",
-            "Wall Fairy": "has_bottle",
             "Fire Temple MQ Elevator Above Maze Hookshot Wonderitem 1": "True",
             "Fire Temple MQ Elevator Above Maze Hookshot Wonderitem 2": "True",
             "Fire Temple MQ Elevator Above Maze Hookshot Wonderitem 3": "True",
-            "Fire Temple MQ Elevator Above Maze Hookshot Wonderitem 4": "True"
+            "Fire Temple MQ Elevator Above Maze Hookshot Wonderitem 4": "True",
+            "Fire Temple MQ Elevator Above Maze Torch Slug 1": "has_soul(Torch_Slug)",
+            "Fire Temple MQ Elevator Above Maze Torch Slug 2": "has_soul(Torch_Slug)",
+            "Fire Temple MQ GS Skull On Fire": "True",
+            "Wall Fairy": "has_bottle"
         },
         "exits": {
             "Fire Temple Narrow Path Room": "
                 (damage_multiplier != 'ohko' and damage_multiplier != 'quadruple') or
-                    Fairy or can_use(Nayrus_Love)"
+                Fairy or can_use(Nayrus_Love)"
         }
     },
     {
@@ -213,11 +243,11 @@
             "Fire Temple MQ Shoot Torch On Wall Room Small Wooden Crate 3": "True",
             "Fire Temple MQ Shoot Torch On Wall Room Small Wooden Crate 4": "True",
             "Fire Temple MQ Shoot Torch On Wall Room Small Wooden Crate 5": "True",
-            "Fire Temple MQ Shoot Torch on Wall Room Hookshot Wonderitem": "can_use(Hookshot)"
+            "Fire Temple MQ Shoot Torch On Wall Room Hookshot Wonderitem": "Hookshot"
         },
         "exits": {
             "Fire Temple Narrow Path Room": "True",
-            "Fire Temple Flame Maze": "(can_use(Bow) and can_use(Hookshot)) or can_use(Fire_Arrows)"
+            "Fire Temple Flame Maze": "(Bow and Hookshot) or can_use(Fire_Arrows)"
         }
     },
     {
@@ -228,14 +258,13 @@
             "Fire Temple MQ Flame Maze Left Pot 2": "True",
             "Fire Temple MQ GS Flame Maze Center": "has_explosives",
             "Fire Temple MQ GS Above Flame Maze": "
-                (Hookshot and (Small_Key_Fire_Temple, 5)) or
-                (logic_fire_mq_above_maze_gs and Longshot)"
+                (logic_fire_mq_above_maze_gs and Longshot) or
+                at('Fire Temple Hammer Steps', Hookshot)"
         },
         "exits": {
-            "Fire Temple Near Boss": "True",
             "Fire Temple Flame Maze Side Room": "
                 can_play(Song_of_Time) or Hover_Boots or logic_fire_mq_flame_maze",
-            "Fire Temple Upper": "Hookshot or logic_fire_mq_flame_maze",
+            "Fire Temple Before Upper Flare Dancer": "Hookshot or logic_fire_mq_flame_maze",
             "Fire Temple Before Boss": "True"
         }
     },
@@ -245,7 +274,20 @@
         "locations": {
             "Fire Temple MQ Flame Maze Right Pot 1": "True",
             "Fire Temple MQ Flame Maze Right Pot 2": "True",
+            "Fire Temple MQ Flame Maze Side Room Lizalfos": "has_soul(Lizalfos_and_Dinalfos)",
             "Fire Temple MQ GS Flame Maze Side Room": "True"
+        }
+    },
+    {
+        "region_name": "Fire Temple Before Upper Flare Dancer",
+        "dungeon": "Fire Temple",
+        "locations": {
+            "Fire Temple MQ Flame Maze Right Upper Pot 1": "True",
+            "Fire Temple MQ Flame Maze Right Upper Pot 2": "True",
+            "Fire Temple MQ Flame Maze Hookshot Wonderitem": "Hookshot"
+        },
+        "exits": {
+            "Fire Temple Upper": "has_soul(Flare_Dancer)"
         }
     },
     {
@@ -254,11 +296,20 @@
         "locations": {
             "Fire Temple MQ Freestanding Key": "True",
             "Fire Temple MQ Chest On Fire": "(Small_Key_Fire_Temple, 4)",
-            "Fire Temple MQ Flame Maze Right Upper Pot 1": "True",
-            "Fire Temple MQ Flame Maze Right Upper Pot 2": "True",
-            "Fire Temple MQ Flame Maze Hookshot Wonderitem": "can_use(Hookshot)",
-            "Fire Temple MQ After Upper Flare Dancer Hookshot Wonderitem": "can_use(Hookshot)",
-            "Fire Temple MQ Hammer Steps Hookshot Wonderitem": "(Small_Key_Fire_Temple, 5) and can_use(Hookshot)"
+            "Fire Temple MQ After Upper Flare Dancer Hookshot Wonderitem": "Hookshot",
+            "Fire Temple MQ Upper Flare Dancer": "True"
+        },
+        "exits": {
+            "Fire Temple Hammer Steps": "(Small_Key_Fire_Temple, 5)"
+        }
+    },
+    {
+        "region_name": "Fire Temple Hammer Steps",
+        "dungeon": "Fire Temple",
+        "locations": {
+            "Fire Temple MQ Hammer Steps Hookshot Wonderitem": "Hookshot",
+            "Fire Temple MQ Hammer Steps Stalfos 1": "has_soul(Stalfos)",
+            "Fire Temple MQ Hammer Steps Stalfos 2": "has_soul(Stalfos)"
         }
     }
 ]

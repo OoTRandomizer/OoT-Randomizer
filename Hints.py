@@ -423,10 +423,8 @@ def color_text(gossip_text: GossipText, lang: Language) -> str:
             text = ''.join(split_text)
     return text
 
-
 class HintAreaNotFound(RuntimeError):
     pass
-
 
 class HintArea(Enum):
     # internal name          ID      color         internal dungeon name
@@ -611,6 +609,7 @@ class CheckedKind(Enum):
     ALWAYS = auto()
     OTHER = auto()
 
+#def get_woth_hint(spoiler: Spoiler, world: World, checked: set[str]) -> HintReturn:
 def get_woth_hint(spoiler: Spoiler, world: World, checked: dict[HintArea | str, set[CheckedKind]]) -> HintReturn:
     locations = spoiler.required_locations[world.id]
     locations = list(filter(lambda location:
@@ -1341,8 +1340,6 @@ def get_important_check_hint(spoiler: Spoiler, world: World, checked: dict[HintA
                 # exclude triforce pieces as it defeats the idea of a triforce hunt
                 and not location.item.name == 'Triforce Piece'
                 and not (location.name == 'Song from Impa' and 'Zeldas Letter' in world.settings.starting_items and 'Zeldas Letter' not in world.settings.shuffle_child_trade)
-                # Special cases where the item is only considered major for important checks hints
-                or location.item.name == 'Double Defense'
                 # Handle make keys not in own dungeon major items
                 or (location.item.type in ('SmallKey', 'SmallKeyRing') and not (world.settings.shuffle_smallkeys == 'dungeon' or world.settings.shuffle_smallkeys == 'vanilla'))
                 or (location.item.type in ('HideoutSmallKey', 'HideoutSmallKeyRing') and not world.settings.shuffle_hideoutkeys == 'vanilla')

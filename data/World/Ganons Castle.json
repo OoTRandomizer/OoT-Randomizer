@@ -2,6 +2,10 @@
     {
         "region_name": "Ganons Castle Lobby",
         "dungeon": "Ganons Castle",
+        "locations": {
+            "Ganons Castle Entry Hallway Beamos Left": "can_kill_beamos",
+            "Ganons Castle Entry Hallway Beamos Right": "can_kill_beamos"
+        },
         "exits": {
             "Castle Grounds From Ganons Castle": "True",
             "Ganons Castle Main": "True",
@@ -33,8 +37,8 @@
         "region_name": "Ganons Castle Forest Trial",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Castle Forest Trial Chest": "
-                is_adult or Slingshot or Sticks or Kokiri_Sword or can_use(Dins_Fire)"
+            "Ganons Castle Forest Trial Chest": "can_kill_wolfos",
+            "Ganons Castle Forest Trial Wolfos": "can_kill_wolfos"
         },
         "exits": {
             "Ganons Castle Forest Trial Wind Room": "
@@ -49,7 +53,8 @@
             "Ganons Castle Forest Trial Silver Rupee Front Left": "True",
             "Ganons Castle Forest Trial Silver Rupee Back Right": "True",
             "Ganons Castle Forest Trial Silver Rupee Back Center": "True",
-            "Ganons Castle Forest Trial Silver Rupee Center Left": "True"
+            "Ganons Castle Forest Trial Silver Rupee Center Left": "True",
+            "Ganons Castle Forest Trial Beamos": "can_kill_beamos"
         },
         "exits": {
             "Ganons Castle Forest Trial Ending": "(Silver_Rupee_Ganons_Castle_Forest_Trial, 5)"
@@ -72,12 +77,23 @@
         "locations": {
             "Ganons Castle Water Trial Left Chest": "True",
             "Ganons Castle Water Trial Right Chest": "True",
-            "Blue Fire": "has_bottle and (is_adult or Sticks or Kokiri_Sword or has_explosives)",
-            "Ganons Castle Water Trial Fairy Pot Drop": " Blue_Fire and (is_adult or has_explosives or can_use(Dins_Fire))",
-            "Fairy Pot": "Blue_Fire and (is_adult or has_explosives or can_use(Dins_Fire))"
+            "Ganons Castle Water Trial Freezard 1": "can_kill_freezard",
+            "Ganons Castle Water Trial Freezard 2": "can_kill_freezard",
+            "Blue Fire": "has_bottle and (is_adult or Sticks or Kokiri_Sword or has_explosives)"
         },
         "exits": {
-            "Ganons Castle Water Trial Ending": "Blue_Fire and can_use(Megaton_Hammer)"
+            "Ganons Castle Water Trial Block Push": "Blue_Fire and can_kill_freezard"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Water Trial Block Push",
+        "dungeon": "Ganons Castle",
+        "locations": {
+            "Ganons Castle Water Trial Fairy Pot": "True",
+            "Fairy Pot": "has_bottle"
+        },
+        "exits": {
+            "Ganons Castle Water Trial Ending": "can_use(Megaton_Hammer)"
         }
     },
     {
@@ -96,10 +112,17 @@
         "dungeon": "Ganons Castle",
         "locations": {
             "Ganons Castle Shadow Trial Front Chest": "
-                is_child or can_use(Fire_Arrows) or Hookshot or Hover_Boots or can_play(Song_of_Time)"
+                is_child or can_use(Fire_Arrows) or Hookshot or Hover_Boots or can_play(Song_of_Time)",
+            "Ganons Castle Shadow Trial Green Bubble": "
+                has_soul(Bubble) and (can_use(Bow) or can_use(Slingshot) or
+                    (can_use(Longshot) and can_use(Dins_Fire) and Nuts))",
+            "Ganons Castle Shadow Trial Like Like": "
+                has_soul(Like_Like) and (can_use(Longshot) or can_use(Bow) or can_use(Slingshot))"
         },
         "exits": {
-            "Ganons Castle Shadow Trial First Gap": "can_use(Longshot) or can_use(Fire_Arrows)"
+            "Ganons Castle Shadow Trial First Gap": "
+                (can_use(Longshot) and (can_use(Dins_Fire) or has_soul(Like_Like))) or
+                can_use(Fire_Arrows)"
         }
     },
     {
@@ -110,7 +133,8 @@
             "Ganons Castle Shadow Trial Like Like Pot 2": "True"
         },
         "exits": {
-            "Ganons Castle Shadow Trial Second Gap": "Hover_Boots or has_fire_source"
+            "Ganons Castle Shadow Trial Second Gap": "
+                can_use(Fire_Arrows) or Hover_Boots or (has_soul(Like_Like) and can_use(Dins_Fire))"
         }
     },
     {
@@ -152,7 +176,19 @@
             "Ganons Castle Fire Trial Silver Rupee Right Center": "
                 can_use(Golden_Gauntlets) and can_use(Goron_Tunic)",
             "Ganons Castle Fire Trial Silver Rupee Right Front": "True",
-            "Ganons Castle Fire Trial Silver Rupee Inside Pillar": "can_use(Golden_Gauntlets)"
+            "Ganons Castle Fire Trial Silver Rupee Inside Pillar": "can_use(Golden_Gauntlets)",
+            "Ganons Castle Fire Trial Torch Slug": "
+                has_soul(Torch_Slug) and
+                (is_adult or (logic_fire_trial_slug_rupee and (Sticks or Kokiri_Sword)))",
+            "Ganons Castle Fire Trial Red Bubble 1": "
+                can_kill_red_bubble and can_use(Goron_Tunic) and Hover_Boots",
+            "Ganons Castle Fire Trial Red Bubble 2": "
+                can_kill_red_bubble and can_use(Goron_Tunic) and Hover_Boots",
+            "Ganons Castle Fire Trial Red Bubble 3": "
+                can_kill_red_bubble and can_use(Goron_Tunic) and Hover_Boots",
+            "Ganons Castle Fire Trial Deepest Red Bubble": "
+                has_soul(Bubble) and can_use(Goron_Tunic) and Hover_Boots and
+                (Magic_Meter or Bombs or Biggoron_Sword)"
         },
         "exits": {
             "Ganons Castle Fire Trial Ending": "
@@ -182,9 +218,18 @@
             "Ganons Castle Light Trial Second Right Chest": "True",
             "Ganons Castle Light Trial Third Right Chest": "True",
             "Ganons Castle Light Trial Invisible Enemies Chest": "
-                logic_lens_castle or can_use(Lens_of_Truth)",
+                has_soul(Keese) and has_soul(Skulltula) and
+                (logic_lens_castle or can_use(Lens_of_Truth))",
             "Ganons Castle Light Trial Lullaby Chest": "
-                (Small_Key_Ganons_Castle, 1) and can_play(Zeldas_Lullaby)"
+                (Small_Key_Ganons_Castle, 1) and can_play(Zeldas_Lullaby)",
+            "Ganons Castle Light Trial Invisible Keese 1": "
+                has_soul(Keese) and (logic_lens_castle or can_use(Lens_of_Truth))",
+            "Ganons Castle Light Trial Invisible Keese 2": "
+                has_soul(Keese) and (logic_lens_castle or can_use(Lens_of_Truth))",
+            "Ganons Castle Light Trial Invisible Keese 3": "
+                has_soul(Keese) and (logic_lens_castle or can_use(Lens_of_Truth))",
+            "Ganons Castle Light Trial Invisible Skulltula": "
+                has_soul(Skulltula) and (logic_lens_castle or can_use(Lens_of_Truth))"
         },
         "exits": {
             "Ganons Castle Light Trial Boulder Room": "(Small_Key_Ganons_Castle, 2)"
@@ -202,9 +247,17 @@
             "Ganons Castle Light Trial Silver Rupee Center Left": "True"
         },
         "exits": {
-            "Ganons Castle Light Trial Ending": "
-                (Silver_Rupee_Ganons_Castle_Light_Trial, 5) and
-                (logic_lens_castle or can_use(Lens_of_Truth))"
+            "Ganons Castle Light Trial Fake Ending": "(Silver_Rupee_Ganons_Castle_Light_Trial, 5)"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Light Trial Fake Ending",
+        "dungeon": "Ganons Castle",
+        "locations": {
+            "Ganons Castle Light Trial Wallmaster": "has_soul(Wallmaster)"
+        },
+        "exits": {
+            "Ganons Castle Light Trial Ending": "logic_lens_castle or can_use(Lens_of_Truth)"
         }
     },
     {
@@ -228,7 +281,8 @@
             "Ganons Castle Spirit Trial Silver Rupee Front Right": "True",
             "Ganons Castle Spirit Trial Silver Rupee Center": "True",
             "Ganons Castle Spirit Trial Silver Rupee Back Left": "True",
-            "Ganons Castle Spirit Trial Silver Rupee Back Right": "True"
+            "Ganons Castle Spirit Trial Silver Rupee Back Right": "True",
+            "Ganons Castle Spirit Trial Beamos": "can_kill_beamos"
         },
         "exits": {
             "Ganons Castle Spirit Trial Second Room Front": "(Silver_Rupee_Ganons_Castle_Spirit_Trial, 5)"
@@ -238,7 +292,9 @@
         "region_name": "Ganons Castle Spirit Trial Second Room Front",
         "dungeon": "Ganons Castle",
         "locations": {
-            "Ganons Castle Spirit Trial Crystal Switch Chest": "can_jumpslash or has_explosives"
+            "Ganons Castle Spirit Trial Crystal Switch Chest": "can_jumpslash or has_explosives",
+            "Ganons Castle Spirit Trial Torch Slug 1": "can_kill_torch_slug",
+            "Ganons Castle Spirit Trial Torch Slug 2": "can_kill_torch_slug"
         },
         "exits": {
             "Ganons Castle Spirit Trial Second Room Back": "has_bombchus"
@@ -263,6 +319,9 @@
         "locations": {
             "Ganons Castle Spirit Trial Pot 1": "True",
             "Ganons Castle Spirit Trial Pot 2": "True",
+            "Ganons Castle Spirit Trial Wrong Sun Wallmaster 1": "has_soul(Wallmaster)",
+            "Ganons Castle Spirit Trial Wrong Sun Wallmaster 2": "has_soul(Wallmaster)",
+            "Ganons Castle Spirit Trial Wrong Sun Wallmaster 3": "has_soul(Wallmaster)",
             "Nut Pot": "True"
         }
     },

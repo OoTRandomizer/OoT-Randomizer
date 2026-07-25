@@ -29,3 +29,6 @@ SECTIONS
         *(.reginfo)
     }
 }
+z64_ActorFind = 0x80025B0C;
+KaleidoManager_GetRamAddr =  0x80099DBC;
+DmaMgr_RequestSync = 0x80000df0;

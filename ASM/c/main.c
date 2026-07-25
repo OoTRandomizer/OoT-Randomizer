@@ -24,6 +24,8 @@
 #include "debug.h"
 #include "inputviewer.h"
 #include "message.h"
+#include "enemy_spawn_shuffle.h"
+#include "ovl_kaleidoscope.h"
 
 void Gameplay_InitSkybox(z64_game_t* globalCtx, int16_t skyboxId);
 
@@ -37,6 +39,7 @@ void c_init() {
 #if DEBUG_MODE
     SKIP_N64_LOGO = 1;
 #endif
+    init_new_menus();
 }
 
 void before_game_state_update() {

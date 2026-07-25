@@ -653,6 +653,283 @@ ITEM_MESSAGES = [
         "id": 0x90B5,
         "text": "\x08You found \x05\x43literally nothing\x05\x40!",
     },
+    # Enemy souls
+    {
+        "id": 0x9300, 
+        "text": "\x08You found the \x05\x41Stalfos Souls\x05\x40!"
+    },
+    {
+        "id": 0x9301, 
+        "text": "\x08You found the \x05\x41Octorok Souls\x05\x40!"
+    },
+    {
+        "id": 0x9302, 
+        "text": "\x08You found the \x05\x41Wallmaster Souls\x05\x40!"
+    },
+    {
+        "id": 0x9303, 
+        "text": "\x08You found the \x05\x41Dodongo Souls\x05\x40!"
+    },
+    {
+        "id": 0x9304, 
+        "text": "\x08You found the \x05\x41Keese Souls\x05\x40!"
+    },
+    {
+        "id": 0x9305, 
+        "text": "\x08You found the \x05\x41Tektite Souls\x05\x40!"
+    },
+    {
+        "id": 0x9306, 
+        "text": "\x08You found the \x05\x41Peahat Souls\x05\x40!"
+    },
+    {
+        "id": 0x9307, 
+        "text": "\x08You found the \x05\x41Lizalfos and Dinalfos Souls\x05\x40!"
+    },
+    {
+        "id": 0x9308, 
+        "text": "\x08You found the \x05\x41Gohma Larvae Souls\x05\x40!"
+    },
+    {
+        "id": 0x9309, 
+        "text": "\x08You found the \x05\x41Shabom Souls\x05\x40!"
+    },
+    {
+        "id": 0x930A, 
+        "text": "\x08You found the \x05\x41Baby Dodongo Souls\x05\x40!"
+    },
+    {
+        "id": 0x930B, 
+        "text": "\x08You found the \x05\x41Biri and Bari Souls\x05\x40!"
+    },
+    {
+        "id": 0x930C, 
+        "text": "\x08You found the \x05\x41Tailpasaran Souls\x05\x40!"
+    },
+    {
+        "id": 0x930D, 
+        "text": "\x08You found the \x05\x41Skulltula Souls\x05\x40!"
+    },
+    {
+        "id": 0x930E, 
+        "text": "\x08You found the \x05\x41Torch Slug Souls\x05\x40!"
+    },
+    {
+        "id": 0x930F, 
+        "text": "\x08You found the \x05\x41Moblin Souls\x05\x40!"
+    },
+    {
+        "id": 0x9310, 
+        "text": "\x08You found the \x05\x41Armos Souls\x05\x40!"
+    },
+    {
+        "id": 0x9311, 
+        "text": "\x08You found the \x05\x41Deku Baba Souls\x05\x40!"
+    },
+    {
+        "id": 0x9312, 
+        "text": "\x08You found the \x05\x41Deku Scrub Souls\x05\x40!"
+    },
+    {
+        "id": 0x9313, 
+        "text": "\x08You found the \x05\x41Bubble Souls\x05\x40!"
+    },
+    {
+        "id": 0x9314, 
+        "text": "\x08You found the \x05\x41Beamos Souls\x05\x40!"
+    },
+    {
+        "id": 0x9315, 
+        "text": "\x08You found the \x05\x41Floormaster Souls\x05\x40!"
+    },
+    {
+        "id": 0x9316, 
+        "text": "\x08You found the \x05\x41Redead and Gibdo Souls\x05\x40!"
+    },
+    {
+        "id": 0x9317, 
+        "text": "\x08You found the \x05\x41Skullwalltula Souls\x05\x40!"
+    },
+    {
+        "id": 0x9318, 
+        "text": "\x08You found the \x05\x41Flare Dancer Souls\x05\x40!"
+    },
+    {
+        "id": 0x9319, 
+        "text": "\x08You found the \x05\x41Dead hand Souls\x05\x40!"
+    },
+    {
+        "id": 0x931A, 
+        "text": "\x08You found the \x05\x41Shell Blade Souls\x05\x40!"
+    },
+    {
+        "id": 0x931B, 
+        "text": "\x08You found the \x05\x41Like-like Souls\x05\x40!"
+    },
+    {
+        "id": 0x931C, 
+        "text": "\x08You found the \x05\x41Spike Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x931D, 
+        "text": "\x08You found the \x05\x41Anubis Souls\x05\x40!"
+    },
+    {
+        "id": 0x931E, 
+        "text": "\x08You found the \x05\x41Iron Knuckle Souls\x05\x40!"
+    },
+    {
+        "id": 0x931F, 
+        "text": "\x08You found the \x05\x41Skull Kid Souls\x05\x40!"
+    },
+    {
+        "id": 0x9320, 
+        "text": "\x08You found the \x05\x41Flying Pot Souls\x05\x40!"
+    },
+    {
+        "id": 0x9321, 
+        "text": "\x08You found the \x05\x41Freezard Souls\x05\x40!"
+    },
+    {
+        "id": 0x9322, 
+        "text": "\x08You found the \x05\x41Stinger Souls\x05\x40!"
+    },
+    {
+        "id": 0x9323, 
+        "text": "\x08You found the \x05\x41Wolfos Souls\x05\x40!"
+    },
+    {
+        "id": 0x9324, 
+        "text": "\x08You found the \x05\x41Guay Souls\x05\x40!"
+    },
+    {
+        "id": 0x9325, 
+        "text": "\x08You found the \x05\x41Soul of Queen Gohma\x05\x40!"
+    },
+    {
+        "id": 0x9326, 
+        "text": "\x08You found the \x05\x41Soul of King Dodongo\x05\x40!"
+    },
+    {
+        "id": 0x9327, 
+        "text": "\x08You found the \x05\x41Soul of Barinade\x05\x40!"
+    },
+    {
+        "id": 0x9328, 
+        "text": "\x08You found the \x05\x41Soul of Phantom Ganon\x05\x40!"
+    },
+    {
+        "id": 0x9329, 
+        "text": "\x08You found the \x05\x41Soul of Volvagia\x05\x40!"
+    },
+    {
+        "id": 0x932A, 
+        "text": "\x08You found the \x05\x41Soul of Morpha\x05\x40!"
+    },
+    {
+        "id": 0x932B, 
+        "text": "\x08You found the \x05\x41Soul of Bongo Bongo\x05\x40!"
+    },
+    {
+        "id": 0x932C, 
+        "text": "\x08You found the \x05\x41Soul of Twinrova\x05\x40!"
+    },
+    {
+        "id": 0x932D, 
+        "text": "\x08You found the \x05\x41Jabu Jabu Tentacle Souls\x05\x40!"
+    },
+    {
+        "id": 0x932E, 
+        "text": "\x08You found \x05\x41Dark Link's Soul\x05\x40!"
+    },
+    {
+        "id": 0x932F, 
+        "text": "\x08You found the \x05\x41Deku Tree Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9330, 
+        "text": "\x08You found the \x05\x41Dodongos Cavern Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9331, 
+        "text": "\x08You found the \x05\x41Jabu Jabu's Belly Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9332, 
+        "text": "\x08You found the \x05\x41Forest Temple Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9333, 
+        "text": "\x08You found the \x05\x41Fire Temple Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9334, 
+        "text": "\x08You found the \x05\x41Water Temple Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9335, 
+        "text": "\x08You found the \x05\x41Shadow Temple Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9336, 
+        "text": "\x08You found the \x05\x41Spirit Temple Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9337, 
+        "text": "\x08You found the \x05\x41Bottom of the Well Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9338, 
+        "text": "\x08You found the \x05\x41Ice Cavern Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9339, 
+        "text": "\x08You found the \x05\x41Gerudo Training Ground Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x933A, 
+        "text": "\x08You found the \x05\x41Ganons Castle Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x933B, 
+        "text": "\x08You found the \x05\x41Forest Region Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x933C, 
+        "text": "\x08You found the \x05\x41Hyrule Field Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x933D, 
+        "text": "\x08You found the \x05\x41Lake Hylia Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x933E, 
+        "text": "\x08You found the \x05\x41Gerudo Region Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x933F, 
+        "text": "\x08You found the \x05\x41Market Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9340, 
+        "text": "\x08You found the \x05\x41Kakariko Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9341, 
+        "text": "\x08You found the \x05\x41Goron Region Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9342, 
+        "text": "\x08You found the \x05\x41Zora Region Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9343, 
+        "text": "\x08You found the \x05\x41Lon Lon Ranch Enemy Souls\x05\x40!"
+    },
+    {
+        "id": 0x9344, 
+        "text": "\x08You found the \x05\x41Grotto Enemy Souls\x05\x40!"
+    },
 ]
 
 # Item texts when you use keysanity
@@ -1936,6 +2213,77 @@ hintTable = {
     'Fairy Drop':                                               (["an annoying companion", "Navi's cousin"], "a Stray Fairy", "no_gender"),
     'Nothing':                                                  (["emptiness", "loneliness"], "Nothing", "no_gender"),
 
+    'Stalfos Soul':                                             (["the souls of the Stalfos"], None, 'no_gender'),
+    'Octorok Soul':                                             (["the souls of the Octorok"], None, 'no_gender'),
+    'Wallmaster Soul':                                          (["the souls of the Wallmaster"], None, 'no_gender'),
+    'Dodongo Soul':                                             (["the souls of the Dodongo"], None, 'no_gender'),
+    'Keese Soul':                                               (["the souls of the Keese"], None, 'no_gender'),
+    'Tektite Soul':                                             (["the souls of the Tektite"], None, 'no_gender'),
+    'Peahat Soul':                                              (["the souls of the Peahat"], None, 'no_gender'),
+    'Lizalfos and Dinalfos Soul':                               (["the souls of the Lizalfos and Dinalfos"], None, 'no_gender'),
+    'Gohma Larvae Soul':                                        (["the souls of the Gohma Larvae"], None, 'no_gender'),
+    'Shabom Soul':                                              (["the souls of the Shabom"], None, 'no_gender'),
+    'Baby Dodongo Soul':                                        (["the souls of the Baby Dodongo"], None, 'no_gender'),
+    'Biri and Bari Soul':                                       (["the souls of the Biri and Bari"], None, 'no_gender'),
+    'Tailpasaran Soul':                                         (["the souls of the Tailpasaran"], None, 'no_gender'),
+    'Skulltula Soul':                                           (["the souls of the Skulltula"], None, 'no_gender'),
+    'Torch Slug Soul':                                          (["the souls of the Torch Slug"], None, 'no_gender'),
+    'Moblin Soul':                                              (["the souls of the Moblin"], None, 'no_gender'),
+    'Armos Soul':                                               (["the souls of the Armos"], None, 'no_gender'),
+    'Deku Baba Soul':                                           (["the souls of the Deku Baba"], None, 'no_gender'),
+    'Deku Scrub Soul':                                          (["the souls of the Deku Scrub"], None, 'no_gender'),
+    'Bubble Soul':                                              (["the souls of the Bubble"], None, 'no_gender'),
+    'Beamos Soul':                                              (["the souls of the Beamos"], None, 'no_gender'),
+    'Floormaster Soul':                                         (["the souls of the Floormaster"], None, 'no_gender'),
+    'Redead and Gibdo Soul':                                    (["the souls of the Redead and Gibdo"], None, 'no_gender'),
+    'Skullwalltula Soul':                                       (["the souls of the Skullwalltula"], None, 'no_gender'),
+    'Flare Dancer Soul':                                        (["the souls of the Flare Dancer"], None, 'no_gender'),
+    'Dead hand Soul':                                           (["the souls of the Dead hand"], None, 'no_gender'),
+    'Shell Blade Soul':                                         (["the souls of the Shell blade"], None, 'no_gender'),
+    'Like Like Soul':                                           (["the souls of the Like Like"], None, 'no_gender'),
+    'Spike Enemy Soul':                                         (["the souls of the Spike Enemy"], None, 'no_gender'),
+    'Anubis Soul':                                              (["the souls of the Anubis"], None, 'no_gender'),
+    'Iron Knuckle Soul':                                        (["the souls of the Iron Knuckle"], None, 'no_gender'),
+    'Skull Kid Soul':                                           (["the souls of the Skull Kid"], None, 'no_gender'),
+    'Flying Pot Soul':                                          (["the souls of the Flying Pot"], None, 'no_gender'),
+    'Freezard Soul':                                            (["the souls of the Freezard"], None, 'no_gender'),
+    'Stinger Soul':                                             (["the souls of the Stinger"], None, 'no_gender'),
+    'Wolfos Soul':                                              (["the souls of the Wolfos"], None, 'no_gender'),
+    'Guay Soul':                                                (["the souls of the Guay"], None, 'no_gender'),
+    'Queen Gohma Soul':                                         (["the soul of Queen Gohma"], None, 'no_gender'),
+    'King Dodongo Soul':                                        (["the soul of King Dodongo"], None, 'no_gender'),
+    'Barinade Soul':                                            (["the soul of Barinade"], None, 'no_gender'),
+    'Phantom Ganon Soul':                                       (["the soul of Phantom Ganon"], None, 'no_gender'),
+    'Volvagia Soul':                                            (["the soul of Volvagia"], None, 'no_gender'),
+    'Morpha Soul':                                              (["the soul of  Morpha"], None, 'no_gender'),
+    'Bongo Bongo Soul':                                         (["the soul of Bongo Bongo"], None, 'no_gender'),
+    'Twinrova Soul':                                            (["the souls of Twinrova"], None, 'no_gender'),
+    'Jabu Jabu Tentacle Soul':                                  (["the souls of the Jabu Jabu Tentacles"], None, 'no_gender'),
+    'Ganondorf Soul':                                           (["the soul of Ganondorf"], None, 'no_gender'),
+    'Dark Link Soul':                                           (["the soul of the Dark Link"], None, 'no_gender'),
+    'Deku Tree Souls':                                          (["the enemy souls of Deku Tree"], None, 'no_gender'),
+    'Dodongos Cavern Souls':                                    (["the enemy souls of Dodongos Cavern"], None, 'no_gender'),
+    'Jabu Jabus Belly Souls':                                   (["the enemy souls of Jabu Jabu's Belly"], None, 'no_gender'),
+    'Forest Temple Souls':                                      (["the enemy souls of Forest Temple"], None, 'no_gender'),
+    'Fire Temple Souls':                                        (["the enemy souls of Fire Temple"], None, 'no_gender'),
+    'Water Temple Souls':                                       (["the enemy souls of Water Temple"], None, 'no_gender'),
+    'Shadow Temple Souls':                                      (["the enemy souls of Shadow Temple"], None, 'no_gender'),
+    'Spirit Temple Souls':                                      (["the enemy souls of Spirit Temple"], None, 'no_gender'),
+    'Bottom of the Well Souls':                                 (["the enemy souls of Bottom of the Well"], None, 'no_gender'),
+    'Ice Cavern Souls':                                         (["the enemy souls of Ice Cavern"], None, 'no_gender'),
+    'Gerudo Training Ground Souls':                             (["the enemy souls of Gerudo Training Ground"], None, 'no_gender'),
+    'Ganons Castle Souls':                                      (["the enemy souls of Ganon's Castle"], None, 'no_gender'),
+    'Forest Area Souls':                                        (["the enemy souls of the Forest region"], None, 'no_gender'),
+    'Hyrule Field Souls':                                       (["the enemy souls of Hyrule Field"], None, 'no_gender'),
+    'Lake Hylia Souls':                                         (["the enemy souls of Lake Hylia"], None, 'no_gender'),
+    'Gerudo Area Souls':                                        (["the enemy souls of the Gerudo region"], None, 'no_gender'),
+    'Market Area Souls':                                        (["the enemy souls of Market"], None, 'no_gender'),
+    'Kakariko Area Souls':                                      (["the enemy souls of Kakariko Village"], None, 'no_gender'),
+    'Goron Area Souls':                                         (["the enemy souls of the Goron region"], None, 'no_gender'),
+    'Zora Area Souls':                                          (["the enemy souls of the Zora region"], None, 'no_gender'),
+    'Lon Lon Ranch Souls':                                      (["the enemy souls of Lon Lon Ranch"], None, 'no_gender'),
+    'Grottos Souls':                                            (["the enemy souls of the Grottos"], None, 'no_gender'),
+
     'ZR Frogs Ocarina Game':                                       (["an #amphibian feast# yields", "the #croaking choir's magnum opus# awards", "the #froggy finale# yields"], "the final reward from the #Frogs of Zora's River# is", None),
     'KF Links House Cow':                                          ("the #bovine bounty of a horseback hustle# gifts", "#Malon's obstacle course# leads to", None),
 
@@ -2091,7 +2439,7 @@ hintTable = {
     'ZD Chest':                                                    ("fire #beyond a waterfall# reveals", None, None),
     'Graveyard Dampe Race Hookshot Chest':                         ("a chest hidden by a #speedy spectre# holds", "#dead Dampé's first prize# is", None),
     'GF Chest':                                                    ("on a #rooftop in the desert# lies", None, None),
-    'Kak Redead Grotto Chest':                                     ("#zombies beneath the earth# guard", None, None),
+    'Kak ReDead Grotto Chest':                                     ("#zombies beneath the earth# guard", None, None),
     'SFM Wolfos Grotto Chest':                                     ("#wolves beneath the earth# guard", None, None),
     'HF Near Market Grotto Chest':                                 ("a #hole in a field near a drawbridge# holds", None, None),
     'HF Southeast Grotto Chest':                                   ("a #hole amongst trees in a field# holds", None, None),
@@ -2237,7 +2585,7 @@ hintTable = {
     'Forest Temple MQ Compass Chest':                              ("#Beth# guards", "a #blue ghost# guards", None),
     'Forest Temple MQ Falling Ceiling Room Chest':                 ("beneath a #checkerboard falling ceiling# lies", None, None),
     'Forest Temple MQ Basement Chest':                             ("#revolving walls# in the Forest Temple conceal", None, None),
-    'Forest Temple MQ Redead Chest':                               ("deep in the forest #undead guard a chest# containing", None, None),
+    'Forest Temple MQ ReDead Chest':                               ("deep in the forest #undead guard a chest# containing", None, None),
 
     'Fire Temple Near Boss Chest':                                 ("#near a dragon# is", None, None),
     'Fire Temple Flare Dancer Chest':                              ("the #Flare Dancer behind a totem# guards", None, None),
@@ -2841,7 +3189,7 @@ hintTable = {
     'HF Tektite Grotto':                                        ("a pool guarded by a #Tektite#", None, "no_gender"),
     'HF Near Kak Grotto':                                       ("a #Big Skulltula# guarding a Gold one", None, "no_gender"),
     'HF Cow Grotto':                                            ("a grotto full of #spider webs#", None, "no_gender"),
-    'Kak Redead Grotto':                                        ("#ReDeads# guarding a chest", None, "no_gender"),
+    'Kak ReDead Grotto':                                        ("#ReDeads# guarding a chest", None, "no_gender"),
     'SFM Wolfos Grotto':                                        ("#Wolfos# guarding a chest", None, "no_gender"),
     'GV Octorok Grotto':                                        ("an #Octorok# guarding a rich pool", None, "no_gender"),
     'Deku Theater':                                             ("the #Lost Woods Stage#", None, "no_gender"),

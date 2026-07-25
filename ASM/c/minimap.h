@@ -1,0 +1,13 @@
+#ifndef MINIMAP_H
+#define MINIMAP_H
+
+#define MINIMAP_FLAGS_DRAW      0b00000001
+#define MINIMAP_FLAGS_ENEMY     0b00000010
+#define MINIMAP_FLAGS_NONE      0b00000000
+#define R_MINIMAP_DISABLED      WREG(31)
+#define R_COMPASS_SCALE_X       VREG(14)
+#define R_COMPASS_SCALE_Y       VREG(15)
+#define R_COMPASS_OFFSET_X      VREG(16)
+#define R_COMPASS_OFFSET_Y      VREG(17)
+
+#endif

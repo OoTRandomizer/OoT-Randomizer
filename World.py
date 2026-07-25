@@ -29,7 +29,6 @@ from State import State
 from Utils import data_path, read_logic_file
 from Language import Language
 
-
 class World:
     def __init__(self, world_id: int, settings: Settings, resolve_randomized_settings: bool = True) -> None:
         self.id: int = world_id
@@ -71,6 +70,7 @@ class World:
         # rename a few attributes...
         self.keysanity: bool = settings.shuffle_smallkeys in ('keysanity', 'remove', 'any_dungeon', 'overworld', 'regional')
         self.shuffle_silver_rupees = settings.shuffle_silver_rupees != 'vanilla'
+        self.shuffle_enemy_spawns = settings.shuffle_enemy_spawns != 'off'
         self.check_beatable_only: bool = settings.reachable_locations != 'all'
 
         self.shuffle_special_interior_entrances: bool = settings.shuffle_interior_entrances == 'all'
@@ -1370,17 +1370,19 @@ class World:
             # Serenade and Prelude are never required unless one of those settings is enabled
             exclude_item_list.append('Serenade of Water')
             exclude_item_list.append('Prelude of Light')
-        if self.settings.logic_rules == 'glitchless':
-            # Both two-handed swords can be required in glitch logic, so only consider them foolish in glitchless
+        if self.settings.logic_rules == 'glitchless' and not self.settings.shuffle_enemy_drops:
+            # Biggoron Sword can only be required in glitched logic or shuffled enemy drops
             exclude_item_list.append('Biggoron Sword')
+        if self.settings.logic_rules == 'glitchless':
+            # Giant's Knife cannot currently be required in any logic, but it was requested that it not be foolish in glitched or no logic.
             exclude_item_list.append('Giants Knife')
         if self.settings.plant_beans:
             # Magic Beans are useless if beans are already planted
             exclude_item_list.append('Magic Bean')
             exclude_item_list.append('Buy Magic Bean')
             exclude_item_list.append('Magic Bean Pack')
-        if not self.settings.blue_fire_arrows:
-            # Ice Arrows can only be required when the Blue Fire Arrows setting is enabled
+        if not (self.settings.blue_fire_arrows or self.settings.shuffle_enemy_drops):
+            # Ice Arrows can only be required when the Blue Fire Arrows setting is enabled or Enemy Drops are shuffled.
             exclude_item_list.append('Ice Arrows')
         if 'logic_lens_botw' in self.settings.allowed_tricks or self.settings.shuffle_pots in ('off', 'overworld'):
             # These silver rupees unlock a door to an area that's also reachable with lens

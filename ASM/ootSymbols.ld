@@ -1,6 +1,5 @@
 /* Addresses should be listed in order */
 z64_EquippedItemOutlineTex = 0x2000E00;
-DmaMgr_RequestSync = 0x80000df0;
 Flags_GetSwitch = 0x8002049C;
 Flags_SetSwitch = 0x800204D0;
 Flags_UnsetSwitch = 0x80020510;
@@ -19,6 +18,11 @@ Flags_GetCollectible = 0x800206E8;
 Flags_SetCollectible = 0x8002071C;
 Actor_SetColorFilter = 0x80027090;
 CutsceneFlags_Get = 0x8005991C;
+Item_DropCollectible = 0x80013678;
+Item_DropCollectible2 = 0x800138B0;
+Item_DropCollectibleRandom = 0x80013A84;
+OnePointCutscene_Init = 0x8006b6fc;
+Player_InCsMode = 0x8007943c;
 z64_Gfx_SetupDL_42Opa = 0x8007E868;
 func_800982FC = 0x80081740;
 Matrix_Push = 0x800aa6ec;
@@ -49,3 +53,7 @@ sSetupDL = 0x800f7d50;
 Player_UseItem = 0x8038c9a0; /* 0x80834000 */
 OVL_EnOkarinaTag_Action2 = 0x80a872d0;
 OVL_EnOkarinaTag_Action1 = 0x80a87088;
+OVL_BgMoriBigst_SetupFall = 0x809273d4;
+OVL_BgMoriBigst_SetupDone = 0x809276c0;
+
+OVL_EnKarebaba_SetupDeadItemDrop = 0x809ba560;

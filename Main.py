@@ -38,10 +38,10 @@ def main(settings: Settings, max_attempts: int = 10) -> Spoiler:
     start = time.process_time()
 
     rom = resolve_settings(settings)
-
     max_attempts = max(max_attempts, 1)
     spoiler = None
     for attempt in range(1, max_attempts + 1):
+        settings.reset_distribution()
         try:
             spoiler = generate(settings)
             break
@@ -51,7 +51,6 @@ def main(settings: Settings, max_attempts: int = 10) -> Spoiler:
                 raise
             else:
                 logger.info('Retrying...\n\n')
-            settings.reset_distribution()
     if spoiler is None:
         raise RuntimeError("Generation failed.")
     patch_and_output(settings, spoiler, rom)

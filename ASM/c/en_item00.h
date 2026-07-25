@@ -28,7 +28,8 @@ typedef struct EnItem00 {
 void EnItem00_OutgoingAction(EnItem00* this, z64_game_t* globalCtx);
 
 typedef void (*z64_EnItem00ActionFunc)(struct EnItem00*, z64_game_t*);
-typedef EnItem00*(*z64_Item_DropCollectible_proc)(z64_game_t* globalCtx, z64_xyzf_t* spawnPos, int16_t params);
-typedef EnItem00*(*z64_Item_DropCollectibleRandom_proc)(z64_game_t* globalCtx, z64_actor_t* fromActor, z64_xyzf_t* spawnPos, int16_t params);
+extern EnItem00* Item_DropCollectible(z64_game_t* globalCtx, z64_xyzf_t* spawnPos, int16_t params);
+extern EnItem00* Item_DropCollectible2(z64_game_t* globalCtx, z64_xyzf_t* spawnPos, int16_t params);
+extern EnItem00* Item_DropCollectibleRandom(z64_game_t* globalCtx, z64_actor_t* fromActor, z64_xyzf_t* spawnPos, int16_t params);
 
 #endif

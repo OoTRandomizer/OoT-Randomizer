@@ -220,7 +220,7 @@ def check_code_style(fix_errors: bool = False) -> None:
 
 # Check the sizes of the xflag, alt_override, and cfg_item_override tables, using hopefully the worst case
 def check_table_sizes() -> None:
-    from SceneFlags import build_xflag_tables, build_xflags_from_world, get_alt_list_bytes, get_collectible_flag_table_bytes
+    from SceneFlags import build_xflag_tables, build_xflags_from_world, get_alt_list_bytes
     from World import World
     from Settings import Settings
     filename = 'plando-table-tests'

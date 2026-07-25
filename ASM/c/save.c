@@ -282,6 +282,18 @@ void Save_Init_Write_Hook(uint32_t addr, void* dramAddr, size_t size, uint32_t d
     uint16_t slot_offset = SRAM_SLOTS[z64_file.file_index];
     z64_bzero(dramAddr + slot_offset + SRAM_ORIGINAL_SLOT_SIZE, SLOT_SIZE - SRAM_ORIGINAL_SLOT_SIZE);
 
+    // Configure initial extended save context
+    // Zeroize extended_savectx
+    z64_bzero(&extended_savectx, sizeof(extended_savecontext_static_t));
+
+    // Set all souls to enabled
+    for(int i = 0; i < 8; i++) {
+        extended_savectx.enemy_spawn_flags[i] = 0;
+        extended_savectx.soul_enable_flags[i] = 0xFF;
+    }
+    // Copy extended savectx to the buffer
+    z64_memcopy(dramAddr + slot_offset + SRAM_ORIGINAL_SLOT_SIZE, &extended_savectx, sizeof(extended_savectx));
+
     // write initial extended save data.
     uint8_t* extended_slot = dramAddr + slot_offset + SRAM_ORIGINAL_SLOT_SIZE;
     extended_initial_save_entry* entry = &EXTENDED_INITIAL_SAVE_DATA;

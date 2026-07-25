@@ -1,0 +1,45 @@
+Enemy actor's that don't pass themselves into Item_DropCollectibleRandom:
+
+Actor overlay table: 800E8530
+z64_ctxt_addr       801C84A0
+current scene:      801C8544
+
+Baby Dodongo - VROM start: 00C57E90 RAM start: 801F72A0
+Skulltula (en_sw) - VROM start: 00CE2E80 RAM start: 801F69C0  Discovered address: 801F8900. But see issues
+Big skulltula - VROM start: C61A00 RAM start: 801E61A0  Discovered address 801E8454
+gohma larva (En_Goma) - VROM start: 00C51860 RAM start: 802003C0  Discovered address: 80201350
+Shabom (en_bubble) - VROM start: 00C547F0, RAM start: 801EEB10 Discovered address: 801EEE88
+Flare dancer core - VROM start: 00D15510, RAM start: 801E2710 Discovered address: 801E3034
+Redead/gibdo (en_rd) - VROM start: 00CD71B0, RAM start: 801E4CF0 Discovered address: 801E6BCC
+Anubis (en_anubice) 0xE0 - VROM start: 00D79240, RAM start: 801E8650 Dsicovered address: 801E917C
+
+Enemies that don't call Item_DropCollectibleRandom at all:
+Deku baba (En_Dekubaba) - only calls in certain conditions. When dropping sticks it actually uses get_item instead of dropping an item
+Withered deku baba (En_Karebaba)
+Hint scrubs: En_hintnuts
+Flare Dancer (En_Fd): The main flare dancer actor doesn't drop anything. The core does (en_fw). Core stores a reference to the parent so can probably pass the parent into dropcollectible
+Flying floor tile (En_Yukabyun): doesn't normally drop anything?
+Nabooru knuckle
+Poes
+Skullkid (only drops the big rupee).
+
+Other potential issues:
+Killing things w/ Light Arrows - Seems to be OK
+Like Likes (en_RR) - Actually should be OK
+Shellblade (en_sb) - Only call Item_DropCollectibleRandom aif "BodyBreak_SpawnParts returns true. Probably not a problem just a function that keeps getting called when it dies and eventually returns true?
+Spike enemy (en_Ny) - Only calls DropCollectibleRandom if unk_1D0 == 0. Which is all the time unless hit by wind arrows so think we're good
+Big Octo in Jabu - Spawned by the bg_bdan_objects thing in the room. 
+Stalfos in upper forest temple. They get spawned by the falling floor. They do get spawned as children so could hard code them w/ flags to make it work?
+Anubis (en_anubice) - Are spawned by en_anubice_tag. Can probably use reference to parent. Parent actor isn't an enemy category though. Maybe just explicitly check for 0x00F6 actor.
+Bottom of the well enemies in coffins are spawned by the coffin lids.
+Kokiri Forest as Adult - Scene setup coded to change if you've beaten forest temple. 
+    Maybe change this if the setting is enabled to always use the setup with the enemies? 
+    8009AB08 is the address of the code that sets it to setup 3. instead just use setup 2.
+    Write 0x02 to 8009AB0B
+
+Rooms with clear flags if you don't actually get the item from an enemy before clearing the room.
+    This can be fixed by writing a hack in the actorspawn function to override the check for the room clear flag. Currently the function does the following:
+    If the actor is an enemy and the room clear flag is set, remove the actor's overlay and return null.
+    This process starts at 0x8002526C of the actor spawn function.
+    actorInit pointer in v1
+    

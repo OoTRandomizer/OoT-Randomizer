@@ -54,7 +54,7 @@ const uint8_t REQUIRED_PENDING_FRAMES = 6;
 // xlflag_room_blob contains a compressed table of actor bit assignments for each scene/room/setup.
 // Call get_xflag_bit_offset to retrieve the desired offset for a flag.
 uint16_t xflag_scene_table[101];
-uint8_t xflag_room_table[700];
+uint8_t xflag_room_table[1000];
 uint8_t xflag_room_blob[3000];
 alt_override_t alt_overrides[200];
 
@@ -591,7 +591,7 @@ uint8_t room_flags[256]; // Stores the bit offset for each actor in the currentl
 // Determine the bit offset into the collectible_override_flags for a flag
 // Caches the bit offets for every actor in the current scene/room/setup into room_flags so that we don't have to search the table over and over.
 uint16_t get_xflag_bit_offset(xflag_t* flag) {
-    uint8_t i = 0;
+    int i = 0;
     uint8_t room_id_temp = 0;
     uint8_t room_id = 0;
     uint8_t setup_id_temp;
@@ -901,9 +901,50 @@ void dispatch_item(uint16_t resolved_item_id, uint8_t player, override_t* overri
     }
 }
 
-// Override hack for freestanding collectibles (rupees, recovery hearts, sticks, nuts, seeds, bombs, arrows, magic jars. Pieces of heart, heart containers, small keys handled by the regular get_item function)
-uint8_t item_give_collectible(uint8_t item, z64_link_t* link, z64_actor_t* from_actor) {
-    EnItem00* pItem = (EnItem00*)from_actor;
+void Item_DropCollectible_Random_Before(z64_game_t* globalCtx, z64_actor_t* fromActor, z64_xyzf_t* spawnPos, uint16_t params)
+{
+    if(fromActor)
+    {
+        xflag_t flag = Actor_GetAdditionalData(fromActor)->flag;;
+        //Handle certain actors separately individually
+        switch(fromActor->actor_id)
+        {
+            case 0x0033: //Dark Link
+            {
+                flag.all = 0;
+                flag.flag = 1;
+                flag.room = fromActor->room_index;
+                flag.scene = globalCtx->scene_index;
+                flag.setup = curr_scene_setup;
+                flag.subflag = 0;
+                break;
+            }
+            default:
+            {
+                break;
+            }
+        }
+        if(flag.all)
+        {
+            params = 0;
+            flag = resolve_alternative_flag(&flag);
+            override_t override = lookup_override_by_newflag(&flag);
+            if(override.key.all && !(Get_NewFlag(&flag)))
+            {
+                drop_collectible_override_flag = flag;
+                z64_SpawnActor(&globalCtx->actor_ctxt, globalCtx, 21, z64_link.common.pos_world.x, z64_link.common.pos_world.y, z64_link.common.pos_world.z, 0, 0, 0, 0);
+                z64_bzero(&drop_collectible_override_flag, sizeof(drop_collectible_override_flag));
+            }
+
+        }
+
+    }
+
+}
+
+// Override hack for freestanding collectibles (green, blue, red rupees, recovery hearts)
+uint8_t item_give_collectible(uint8_t item, z64_link_t *link, z64_actor_t *from_actor) {
+    EnItem00 *pItem = (EnItem00 *)from_actor;
 
     override_t override = pItem->override;
     xflag_t flag = Actor_GetAdditionalData(from_actor)->flag;

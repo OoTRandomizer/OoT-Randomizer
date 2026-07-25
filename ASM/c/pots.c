@@ -122,14 +122,14 @@ void ObjTsubo_SpawnCollectible_Hack(z64_actor_t* this, z64_game_t* game) {
     xflag_t* flag = &(Actor_GetAdditionalData(this)->flag);
     if (flag->all && !Get_NewFlag(flag)) {
         drop_collectible_override_flag = *flag;
-        EnItem00* spawned = z64_Item_DropCollectible(game, &this->pos_world, ((((this->variable >> 9) & 0x3F) << 8)));
+        EnItem00* spawned = Item_DropCollectible(game, &this->pos_world, ((((this->variable >> 9) & 0x3F) << 8)));
         z64_bzero(&drop_collectible_override_flag, sizeof(drop_collectible_override_flag));
         return;
     }
 
     int16_t dropParams = this->variable & 0x1F;
     if ((dropParams >= ITEM00_RUPEE_GREEN) && (dropParams <= ITEM00_BOMBS_SPECIAL)) {
-        EnItem00* spawned = z64_Item_DropCollectible(game, &this->pos_world, (dropParams | (((this->variable >> 9) & 0x3F) << 8)));
+        EnItem00* spawned = Item_DropCollectible(game, &this->pos_world, (dropParams | (((this->variable >> 9) & 0x3F) << 8)));
     }
 }
 
@@ -140,12 +140,12 @@ void EnTuboTrap_DropCollectible_Hack(z64_actor_t* this, z64_game_t* game) {
     xflag_t* flag = &(Actor_GetAdditionalData(this)->flag);
     if (flag->all && !Get_NewFlag(flag)) {
         drop_collectible_override_flag = *flag;
-        EnItem00* spawned = z64_Item_DropCollectible(game, &this->pos_world, (params & 0x3F) << 8);
+        EnItem00* spawned = Item_DropCollectible(game, &this->pos_world, (params & 0x3F) << 8);
         z64_bzero(&drop_collectible_override_flag, sizeof(drop_collectible_override_flag));
         return;
     }
 
     if (param3FF >= 0 && param3FF < 0x1A) {
-        EnItem00* spawned = z64_Item_DropCollectible(game, &this->pos_world, param3FF | ((params & 0x3F) << 8));
+        EnItem00* spawned = Item_DropCollectible(game, &this->pos_world, param3FF | ((params & 0x3F) << 8));
     }
 }

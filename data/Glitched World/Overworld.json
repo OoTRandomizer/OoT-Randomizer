@@ -1984,7 +1984,7 @@
                     )
                 )",
             "Kak Potion Shop Front": "is_child or at_day",
-            "Kak Redead Grotto": "can_open_bomb_grotto",
+            "Kak ReDead Grotto": "can_open_bomb_grotto",
             "Kak Impas Ledge": "is_adult or (is_child and (at_day or can_mega))",
             "Kak Impas Rooftop": "can_use(Hookshot) or (logic_kakariko_rooftop_gs and can_use(Hover_Boots))
                 or can_megajump
@@ -3457,10 +3457,10 @@
         }
     },
     {
-        "region_name": "Kak Redead Grotto",
-        "scene": "Kak Redead Grotto",
+        "region_name": "Kak ReDead Grotto",
+        "scene": "Kak ReDead Grotto",
         "locations": {
-            "Kak Redead Grotto Chest": "can_kill_redead"
+            "Kak ReDead Grotto Chest": "can_kill_redead"
         },
         "exits": {
             "Kakariko Village": "True"
