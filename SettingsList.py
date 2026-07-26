@@ -3972,12 +3972,12 @@ class SettingInfos:
             'textures_unchecked': 'Texture (Unchecked)',
         },
         gui_tooltip    = '''\
-            If enabled, pot/crate textures, beehive wiggling, and tree leaf colors
+            If enabled, pot/crate textures, beehive wiggling, and tree leaf colors/trunk emblems
             will reflect its contents.
 
             Off - Pots, crates, beehives, and trees will appear as vanilla.
 
-            Texture (Match Content) - Pot and crate textures and tree leaf colors
+            Texture (Match Content) - Pot and crate textures and tree leaf colors/trunk emblems
             will reflect the contents.
             Golden Pots/crates will contain major items.
             Pots/crates with keys on them will contain small keys.
@@ -3986,13 +3986,14 @@ class SettingInfos:
             All other items will use the original texture.
             The texture will revert to the original texture once the item is collected.
             Beehives containing non-junk items will wiggle until collected.
-            Trees use blue leaves for major items, light-blue leaves for small
-            keys, yellow leaves for boss keys, purple leaves for Gold Skulltula
-            Tokens, pink leaves for heart items and green leaves for others.
+            Trees use matching leaf colors and trunk emblems for major items,
+            small keys, boss keys, Gold Skulltula Tokens, heart items, and
+            other/default contents.
 
             Texture (Unchecked) - All pots/crates containing shuffled items
-            will appear with a golden texture, and shuffled trees will use gold
-            leaves. The texture will revert to the original texture once the
+            will appear with a golden texture, and shuffled trees will use
+            blue leaf and gilded trunk emblem. The texture will revert to the
+            original texture once the
             item is collected. Beehives will wiggle until their item is collected.
         ''',
         shared         = True,

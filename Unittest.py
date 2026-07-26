@@ -350,13 +350,17 @@ class TestPlandomizer(unittest.TestCase):
         child_field = {name for name in tree_locations if name.startswith('HF Child Tree ')}
         adult_field = {name for name in tree_locations if name.startswith('HF Adult Tree ')}
 
-        self.assertEqual(99, len(tree_locations))
+        self.assertEqual(103, len(tree_locations))
         self.assertEqual(47, len(child_field))
         self.assertEqual(41, len(adult_field))
         self.assertIn('Market Child Tree', tree_locations)
         self.assertIn('Kak Child Tree', tree_locations)
         self.assertIn('Kak Adult Tree', tree_locations)
         self.assertEqual(8, sum(name.startswith('HC Child Tree ') for name in tree_locations))
+        self.assertIn('HC Malon Tree', tree_locations)
+        self.assertIn('LLR Child Tree', tree_locations)
+        self.assertIn('ZR Child Tree', tree_locations)
+        self.assertIn('ZF Child Tree', tree_locations)
 
         # Tree Shuffle never shares an actor flag through subflags
         identity_owners = {}
@@ -390,6 +394,17 @@ class TestPlandomizer(unittest.TestCase):
 
         self.assertEqual([(0, 0, 46, 0), (0, 1, 40, 0)], tree_locations['Kak Child Tree'][2])
         self.assertEqual([(0, 2, 33, 0), (0, 3, 31, 0)], tree_locations['Kak Adult Tree'][2])
+        self.assertEqual((0, 0, 49, 0), tree_locations['HC Malon Tree'][2])
+        self.assertEqual([(0, 0, 16, 0), (0, 1, 29, 0)], tree_locations['LLR Child Tree'][2])
+        self.assertEqual((0, 0, 55, 0), tree_locations['ZR Child Tree'][2])
+        self.assertEqual([(0, 0, 14, 0), (0, 1, 14, 0)], tree_locations['ZF Child Tree'][2])
+
+        # The original Gold Skulltula checks remain separate locations.
+        for gs_location in ('HC GS Tree', 'LLR GS Tree', 'ZR GS Tree', 'ZF GS Tree'):
+            self.assertEqual('GS Token', location_table[gs_location][0])
+
+        # The guard-protected Hyrule Castle tree remains intentionally excluded.
+        self.assertNotIn((0x5F, 0, 0, 21, 0), identity_owners)
 
         # Verify that every primary tree identity resolves to a distinct bit
         from SceneFlags import build_room_xflags

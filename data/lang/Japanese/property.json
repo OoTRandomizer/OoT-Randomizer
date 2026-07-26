@@ -9136,6 +9136,521 @@
             "vague_hint": "#塔の中#に隠されている",
             "clear_hint": null,
             "gender": null
+        },
+        "HF Child Tree 1": {
+            "vague_hint": "#子供時代の東のピーハット地帯の木#は",
+            "clear_hint": "#子供時代のコキリの森へ続く道の木#は",
+            "gender": null
+        },
+        "HF Child Tree 2": {
+            "vague_hint": "#子供時代の東のピーハット地帯の木#は",
+            "clear_hint": "#子供時代のコキリの森へ続く道の木#は",
+            "gender": null
+        },
+        "HF Child Tree 3": {
+            "vague_hint": "#子供時代の東のピーハット地帯の木#は",
+            "clear_hint": "#子供時代のコキリの森へ続く道の木#は",
+            "gender": null
+        },
+        "HF Child Tree 4": {
+            "vague_hint": "#子供時代の東のピーハット地帯の木#は",
+            "clear_hint": "#子供時代のコキリの森へ続く道の木#は",
+            "gender": null
+        },
+        "HF Child Tree 5": {
+            "vague_hint": "#子供時代の東のピーハット地帯の木#は",
+            "clear_hint": "#子供時代のコキリの森へ続く道の木#は",
+            "gender": null
+        },
+        "HF Child Tree 6": {
+            "vague_hint": "#子供時代の東のピーハット地帯の木#は",
+            "clear_hint": "#子供時代のコキリの森へ続く道の木#は",
+            "gender": null
+        },
+        "HF Child Tree 7": {
+            "vague_hint": "#子供時代の西の平原に立つ木#は",
+            "clear_hint": "#子供時代のロンロン牧場より西にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 8": {
+            "vague_hint": "#子供時代の城下町への道の下にある木#は",
+            "clear_hint": "#子供時代の城下町入口近くの木#は",
+            "gender": null
+        },
+        "HF Child Tree 9": {
+            "vague_hint": "#子供時代の南のピーハット地帯の木#は",
+            "clear_hint": "#子供時代のコキリの森入口より北西にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 10": {
+            "vague_hint": "#子供時代の南のピーハット地帯の木#は",
+            "clear_hint": "#子供時代のコキリの森入口より北西にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 11": {
+            "vague_hint": "#子供時代の南のピーハット地帯の木#は",
+            "clear_hint": "#子供時代のコキリの森入口より北西にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 12": {
+            "vague_hint": "#子供時代の南のピーハット地帯の木#は",
+            "clear_hint": "#子供時代のコキリの森入口より北西にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 13": {
+            "vague_hint": "#子供時代の南のピーハット地帯の木#は",
+            "clear_hint": "#子供時代のコキリの森入口より北西にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 14": {
+            "vague_hint": "#子供時代の南のピーハット地帯の木#は",
+            "clear_hint": "#子供時代のコキリの森入口より北西にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 15": {
+            "vague_hint": "#子供時代の平原南東端の木#は",
+            "clear_hint": "#子供時代のコキリの森入口そばの木#は",
+            "gender": null
+        },
+        "HF Child Tree 16": {
+            "vague_hint": "#子供時代の平原南東端の木#は",
+            "clear_hint": "#子供時代のコキリの森入口そばの木#は",
+            "gender": null
+        },
+        "HF Child Tree 17": {
+            "vague_hint": "#子供時代の平原南東端の木#は",
+            "clear_hint": "#子供時代のコキリの森入口そばの木#は",
+            "gender": null
+        },
+        "HF Child Tree 18": {
+            "vague_hint": "#子供時代の平原南東端の木#は",
+            "clear_hint": "#子供時代のコキリの森入口そばの木#は",
+            "gender": null
+        },
+        "HF Child Tree 19": {
+            "vague_hint": "#子供時代の平原南東端の木#は",
+            "clear_hint": "#子供時代のコキリの森入口そばの木#は",
+            "gender": null
+        },
+        "HF Child Tree 20": {
+            "vague_hint": "#子供時代の平原南東端の木#は",
+            "clear_hint": "#子供時代のコキリの森入口そばの木#は",
+            "gender": null
+        },
+        "HF Child Tree 21": {
+            "vague_hint": "#子供時代の東の道が分かれる場所の木#は",
+            "clear_hint": "#子供時代のゾーラ川とコキリの森の間にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 22": {
+            "vague_hint": "#子供時代の東の道が分かれる場所の木#は",
+            "clear_hint": "#子供時代のゾーラ川とコキリの森の間にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 23": {
+            "vague_hint": "#子供時代の東の道が分かれる場所の木#は",
+            "clear_hint": "#子供時代のゾーラ川とコキリの森の間にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 24": {
+            "vague_hint": "#子供時代の東の道が分かれる場所の木#は",
+            "clear_hint": "#子供時代のゾーラ川とコキリの森の間にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 25": {
+            "vague_hint": "#子供時代の東の道が分かれる場所の木#は",
+            "clear_hint": "#子供時代のゾーラ川とコキリの森の間にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 26": {
+            "vague_hint": "#子供時代の東の道が分かれる場所の木#は",
+            "clear_hint": "#子供時代のゾーラ川とコキリの森の間にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 27": {
+            "vague_hint": "#子供時代の西の崖下にある木#は",
+            "clear_hint": "#子供時代のロンロン牧場より北西にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 28": {
+            "vague_hint": "#子供時代の西の崖下にある木#は",
+            "clear_hint": "#子供時代のロンロン牧場より北西にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 29": {
+            "vague_hint": "#子供時代の西の崖下にある木#は",
+            "clear_hint": "#子供時代のロンロン牧場より北西にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 30": {
+            "vague_hint": "#子供時代の西の崖下にある木#は",
+            "clear_hint": "#子供時代のロンロン牧場より北西にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 31": {
+            "vague_hint": "#子供時代の西の崖下にある木#は",
+            "clear_hint": "#子供時代のロンロン牧場より北西にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 32": {
+            "vague_hint": "#子供時代の西の崖下にある木#は",
+            "clear_hint": "#子供時代のロンロン牧場より北西にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 33": {
+            "vague_hint": "#子供時代の南奥の林にある木#は",
+            "clear_hint": "#子供時代のロンロン牧場より南にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 34": {
+            "vague_hint": "#子供時代の南奥の林にある木#は",
+            "clear_hint": "#子供時代のロンロン牧場より南にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 35": {
+            "vague_hint": "#子供時代の南奥の林にある木#は",
+            "clear_hint": "#子供時代のロンロン牧場より南にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 36": {
+            "vague_hint": "#子供時代の南奥の林にある木#は",
+            "clear_hint": "#子供時代のロンロン牧場より南にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 37": {
+            "vague_hint": "#子供時代の南奥の林にある木#は",
+            "clear_hint": "#子供時代のロンロン牧場より南にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 38": {
+            "vague_hint": "#子供時代の南奥の林にある木#は",
+            "clear_hint": "#子供時代のロンロン牧場より南にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 39": {
+            "vague_hint": "#子供時代の城下町へ続く道の木#は",
+            "clear_hint": "#子供時代の城下町への道近くの木#は",
+            "gender": null
+        },
+        "HF Child Tree 40": {
+            "vague_hint": "#子供時代の城下町へ続く道の木#は",
+            "clear_hint": "#子供時代の城下町への道近くの木#は",
+            "gender": null
+        },
+        "HF Child Tree 41": {
+            "vague_hint": "#子供時代の村へ続く坂の下にある木#は",
+            "clear_hint": "#子供時代のカカリコ村より南西にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 42": {
+            "vague_hint": "#子供時代の牧場を見渡す木#は",
+            "clear_hint": "#子供時代のロンロン牧場より東にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 43": {
+            "vague_hint": "#子供時代の盗賊の谷へ続く道の木#は",
+            "clear_hint": "#子供時代のゲルドの谷方面にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 44": {
+            "vague_hint": "#子供時代の湖へ続く道を見下ろす木#は",
+            "clear_hint": "#子供時代のハイリア湖近くの木#は",
+            "gender": null
+        },
+        "HF Child Tree 45": {
+            "vague_hint": "#子供時代の牧場の壁そばにある木#は",
+            "clear_hint": "#子供時代のロンロン牧場近くの木#は",
+            "gender": null
+        },
+        "HF Child Tree 46": {
+            "vague_hint": "#子供時代の南の開けた平原にある木#は",
+            "clear_hint": "#子供時代のロンロン牧場とハイリア湖の間にある木#は",
+            "gender": null
+        },
+        "HF Child Tree 47": {
+            "vague_hint": "#子供時代のデスマウンテンへ続く道の下にある木#は",
+            "clear_hint": "#子供時代のカカリコ村入口近くの木#は",
+            "gender": null
+        },
+        "HF Adult Tree 1": {
+            "vague_hint": "#大人時代の南東のピーハット地帯の木#は",
+            "clear_hint": "#大人時代のコキリの森へ続く道の木#は",
+            "gender": null
+        },
+        "HF Adult Tree 2": {
+            "vague_hint": "#大人時代の南東のピーハット地帯の木#は",
+            "clear_hint": "#大人時代のコキリの森へ続く道の木#は",
+            "gender": null
+        },
+        "HF Adult Tree 3": {
+            "vague_hint": "#大人時代の南東のピーハット地帯の木#は",
+            "clear_hint": "#大人時代のコキリの森へ続く道の木#は",
+            "gender": null
+        },
+        "HF Adult Tree 4": {
+            "vague_hint": "#大人時代の南東のピーハット地帯の木#は",
+            "clear_hint": "#大人時代のコキリの森へ続く道の木#は",
+            "gender": null
+        },
+        "HF Adult Tree 5": {
+            "vague_hint": "#大人時代の南東のピーハット地帯の木#は",
+            "clear_hint": "#大人時代のコキリの森へ続く道の木#は",
+            "gender": null
+        },
+        "HF Adult Tree 6": {
+            "vague_hint": "#大人時代の南東のピーハット地帯の木#は",
+            "clear_hint": "#大人時代のコキリの森へ続く道の木#は",
+            "gender": null
+        },
+        "HF Adult Tree 7": {
+            "vague_hint": "#大人時代の平原南端の木#は",
+            "clear_hint": "#大人時代のコキリの森入口そばの木#は",
+            "gender": null
+        },
+        "HF Adult Tree 8": {
+            "vague_hint": "#大人時代の平原南端の木#は",
+            "clear_hint": "#大人時代のコキリの森入口そばの木#は",
+            "gender": null
+        },
+        "HF Adult Tree 9": {
+            "vague_hint": "#大人時代の平原南端の木#は",
+            "clear_hint": "#大人時代のコキリの森入口そばの木#は",
+            "gender": null
+        },
+        "HF Adult Tree 10": {
+            "vague_hint": "#大人時代の平原南端の木#は",
+            "clear_hint": "#大人時代のコキリの森入口そばの木#は",
+            "gender": null
+        },
+        "HF Adult Tree 11": {
+            "vague_hint": "#大人時代の平原南端の木#は",
+            "clear_hint": "#大人時代のコキリの森入口そばの木#は",
+            "gender": null
+        },
+        "HF Adult Tree 12": {
+            "vague_hint": "#大人時代の平原南端の木#は",
+            "clear_hint": "#大人時代のコキリの森入口そばの木#は",
+            "gender": null
+        },
+        "HF Adult Tree 13": {
+            "vague_hint": "#大人時代の東の道が分かれる場所の木#は",
+            "clear_hint": "#大人時代のゾーラ川とコキリの森の間にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 14": {
+            "vague_hint": "#大人時代の東の道が分かれる場所の木#は",
+            "clear_hint": "#大人時代のゾーラ川とコキリの森の間にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 15": {
+            "vague_hint": "#大人時代の東の道が分かれる場所の木#は",
+            "clear_hint": "#大人時代のゾーラ川とコキリの森の間にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 16": {
+            "vague_hint": "#大人時代の東の道が分かれる場所の木#は",
+            "clear_hint": "#大人時代のゾーラ川とコキリの森の間にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 17": {
+            "vague_hint": "#大人時代の東の道が分かれる場所の木#は",
+            "clear_hint": "#大人時代のゾーラ川とコキリの森の間にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 18": {
+            "vague_hint": "#大人時代の東の道が分かれる場所の木#は",
+            "clear_hint": "#大人時代のゾーラ川とコキリの森の間にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 19": {
+            "vague_hint": "#大人時代の南のピーハット地帯の木#は",
+            "clear_hint": "#大人時代のロンロン牧場より南にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 20": {
+            "vague_hint": "#大人時代の南のピーハット地帯の木#は",
+            "clear_hint": "#大人時代のロンロン牧場より南にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 21": {
+            "vague_hint": "#大人時代の南のピーハット地帯の木#は",
+            "clear_hint": "#大人時代のロンロン牧場より南にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 22": {
+            "vague_hint": "#大人時代の南のピーハット地帯の木#は",
+            "clear_hint": "#大人時代のロンロン牧場より南にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 23": {
+            "vague_hint": "#大人時代の南のピーハット地帯の木#は",
+            "clear_hint": "#大人時代のロンロン牧場より南にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 24": {
+            "vague_hint": "#大人時代の南のピーハット地帯の木#は",
+            "clear_hint": "#大人時代のロンロン牧場より南にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 25": {
+            "vague_hint": "#大人時代の西の崖下にある木#は",
+            "clear_hint": "#大人時代のロンロン牧場より北西にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 26": {
+            "vague_hint": "#大人時代の西の崖下にある木#は",
+            "clear_hint": "#大人時代のロンロン牧場より北西にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 27": {
+            "vague_hint": "#大人時代の西の崖下にある木#は",
+            "clear_hint": "#大人時代のロンロン牧場より北西にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 28": {
+            "vague_hint": "#大人時代の西の崖下にある木#は",
+            "clear_hint": "#大人時代のロンロン牧場より北西にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 29": {
+            "vague_hint": "#大人時代の西の崖下にある木#は",
+            "clear_hint": "#大人時代のロンロン牧場より北西にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 30": {
+            "vague_hint": "#大人時代の西の崖下にある木#は",
+            "clear_hint": "#大人時代のロンロン牧場より北西にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 31": {
+            "vague_hint": "#大人時代の西の平原に立つ木#は",
+            "clear_hint": "#大人時代のロンロン牧場より西にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 32": {
+            "vague_hint": "#大人時代の城下町へ続く道の木#は",
+            "clear_hint": "#大人時代の城下町への道近くの木#は",
+            "gender": null
+        },
+        "HF Adult Tree 33": {
+            "vague_hint": "#大人時代の城下町へ続く道の木#は",
+            "clear_hint": "#大人時代の城下町への道近くの木#は",
+            "gender": null
+        },
+        "HF Adult Tree 34": {
+            "vague_hint": "#大人時代の村へ続く坂の下にある木#は",
+            "clear_hint": "#大人時代のカカリコ村より南西にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 35": {
+            "vague_hint": "#大人時代の跳ね橋へ続く道の下にある木#は",
+            "clear_hint": "#大人時代の城下町入口近くの木#は",
+            "gender": null
+        },
+        "HF Adult Tree 36": {
+            "vague_hint": "#大人時代の牧場の壁そばにある木#は",
+            "clear_hint": "#大人時代のロンロン牧場近くの木#は",
+            "gender": null
+        },
+        "HF Adult Tree 37": {
+            "vague_hint": "#大人時代の南の開けた平原にある木#は",
+            "clear_hint": "#大人時代のロンロン牧場とハイリア湖の間にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 38": {
+            "vague_hint": "#大人時代の牧場を見渡す木#は",
+            "clear_hint": "#大人時代のロンロン牧場より東にある木#は",
+            "gender": null
+        },
+        "HF Adult Tree 39": {
+            "vague_hint": "#大人時代のデスマウンテンへ続く道の下にある木#は",
+            "clear_hint": "#大人時代のカカリコ村入口近くの木#は",
+            "gender": null
+        },
+        "HF Adult Tree 40": {
+            "vague_hint": "#大人時代の湖へ続く道を見下ろす木#は",
+            "clear_hint": "#大人時代のハイリア湖近くの木#は",
+            "gender": null
+        },
+        "HF Adult Tree 41": {
+            "vague_hint": "#大人時代の盗賊の谷へ続く道の木#は",
+            "clear_hint": "#大人時代のゲルドの谷方面にある木#は",
+            "gender": null
+        },
+        "Market Child Tree": {
+            "vague_hint": "#城下町に一本だけ立つ木#は",
+            "clear_hint": "#子供時代の城下町にある木#は",
+            "gender": null
+        },
+        "HC Malon Tree": {
+            "vague_hint": "#牧場の少女のそばにあるクモの潜む木#は",
+            "clear_hint": "#ハイラル城外のマロンのそばにある木#は",
+            "gender": null
+        },
+        "HC Child Tree 1": {
+            "vague_hint": "#王城への道に並ぶ木#は",
+            "clear_hint": "#ハイラル城下側の道沿いにある木#は",
+            "gender": null
+        },
+        "HC Child Tree 2": {
+            "vague_hint": "#王城への道に並ぶ木#は",
+            "clear_hint": "#ハイラル城下側の道沿いにある木#は",
+            "gender": null
+        },
+        "HC Child Tree 3": {
+            "vague_hint": "#王城への道に並ぶ木#は",
+            "clear_hint": "#ハイラル城下側の道沿いにある木#は",
+            "gender": null
+        },
+        "HC Child Tree 4": {
+            "vague_hint": "#王城への道に並ぶ木#は",
+            "clear_hint": "#ハイラル城下側の道沿いにある木#は",
+            "gender": null
+        },
+        "HC Child Tree 5": {
+            "vague_hint": "#王城の堀手前にある木#は",
+            "clear_hint": "#ハイラル城の下側の堀そばにある木#は",
+            "gender": null
+        },
+        "HC Child Tree 6": {
+            "vague_hint": "#王城の堀の奥にある木#は",
+            "clear_hint": "#ハイラル城の上側の堀そばにある木#は",
+            "gender": null
+        },
+        "HC Child Tree 7": {
+            "vague_hint": "#王城の門を見守る木#は",
+            "clear_hint": "#ハイラル城敷地の入口近くにある木#は",
+            "gender": null
+        },
+        "HC Child Tree 8": {
+            "vague_hint": "#王城の堀を越えた先の木#は",
+            "clear_hint": "#ハイラル城敷地の奥にある木#は",
+            "gender": null
+        },
+        "LLR Child Tree": {
+            "vague_hint": "#クモの潜む牧場の木#は",
+            "clear_hint": "#ロンロン牧場の外周にある木#は",
+            "gender": null
+        },
+        "Kak Child Tree": {
+            "vague_hint": "#子供時代のクモの潜む村の木#は",
+            "clear_hint": "#子供時代のカカリコ村にある木#は",
+            "gender": null
+        },
+        "Kak Adult Tree": {
+            "vague_hint": "#大人時代の年老いた村の木#は",
+            "clear_hint": "#大人時代のカカリコ村にある木#は",
+            "gender": null
+        },
+        "ZR Child Tree": {
+            "vague_hint": "#クモの潜む川辺の木#は",
+            "clear_hint": "#ゾーラ川のそばにある木#は",
+            "gender": null
+        },
+        "ZF Child Tree": {
+            "vague_hint": "#クモの潜む泉辺の木#は",
+            "clear_hint": "#ゾーラの泉のそばにある木#は",
+            "gender": null
         }
     },
     "hint_area_enum": {

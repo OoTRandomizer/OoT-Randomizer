@@ -1335,7 +1335,9 @@
             "Market Day Crate 4": "
                 is_child and at_day and
                 (deadly_bonks != 'ohko' or Fairy or (can_use(Nayrus_Love) and shuffle_overworld_entrances == 'off'))",
-            "Market Child Tree": "is_child and can_bonk",
+            "Market Child Tree": "
+                is_child and
+                (deadly_bonks != 'ohko' or Fairy or (can_use(Nayrus_Love) and shuffle_overworld_entrances == 'off'))",
             "Market Daytime Balcony Wonderitem 1": "is_child and at_day",
             "Market Daytime Balcony Wonderitem 2": "is_child and at_day",
             "Market Daytime Balcony Wonderitem 3": "is_child and at_day",
@@ -1455,6 +1457,7 @@
             "HC Castle Moat Wonderitem 9": "True",
             "HC Castle Moat Wonderitem 10": "True",
             "HC GS Tree": "can_child_attack and can_bonk",
+            "HC Malon Tree": "is_child and can_bonk",
             "HC Child Tree 1": "is_child and can_bonk",
             "HC Child Tree 2": "is_child and can_bonk",
             "HC Child Tree 3": "is_child and can_bonk",
@@ -2595,7 +2598,8 @@
             "ZR Child Front River Wonderitem 2": "is_child",
             "ZR Child Front River Wonderitem 3": "is_child",
             "ZR Child Front River Wonderitem 4": "is_child",
-            "ZR GS Tree": "is_child and can_child_attack and can_bonk"
+            "ZR GS Tree": "is_child and can_child_attack and can_bonk",
+            "ZR Child Tree": "is_child and can_bonk"
 
         },
         "exits": {
@@ -2774,6 +2778,7 @@
             "ZF Near Jabu Pot 3": "is_child",
             "ZF Near Jabu Pot 4": "is_child",
             "ZF GS Tree": "is_child and can_bonk",
+            "ZF Child Tree": "is_child and can_bonk",
             "ZF GS Above the Log": "can_use(Boomerang) and at_night",
             "ZF Fairy Gossip Stone": "True",
             "ZF Jabu Gossip Stone": "True",
@@ -2886,6 +2891,7 @@
             "LLR Epona Hurdle Wonderitem 1": "can_ride_epona",
             "LLR Epona Hurdle Wonderitem 2": "can_ride_epona",
             "LLR GS Tree": "is_child and can_bonk",
+            "LLR Child Tree": "is_child and can_bonk",
             "LLR GS Rain Shed": "is_child and at_night",
             "LLR GS House Window": "can_use(Boomerang) and at_night",
             "LLR GS Back Wall": "can_use(Boomerang) and at_night"

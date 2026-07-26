@@ -9,13 +9,8 @@
 // Make sure the size of this struct is equal to the amount of space added added in Actor_Spawn_Malloc_Hack from actor.asm
 typedef struct {
     /* 0x00 */ uint16_t actor_id;
-    /* 0x02 */ uint8_t chest_type;
-    /* 0x04 */ uint8_t pad;
-    /* 0x06 */ xflag_t flag;
-    /* 0x0E */ void* original_update;
+    /* 0x02 */ xflag_t flag;
 } ActorAdditionalData;
-
-typedef char ActorAdditionalDataSizeCheck[(sizeof(ActorAdditionalData) == 0x10) ? 1 : -1];
 
 void Actor_After_UpdateAll_Hack(z64_actor_t* actor, z64_game_t* game);
 void Actor_StoreFlagByIndex(z64_actor_t* actor, z64_game_t* game, uint16_t actor_index);

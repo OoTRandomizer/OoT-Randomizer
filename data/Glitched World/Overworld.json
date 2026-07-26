@@ -1503,7 +1503,9 @@
             "Market Day Crate 4": "
                 is_child and at_day and
                 (deadly_bonks != 'ohko' or Fairy or (can_use(Nayrus_Love) and shuffle_overworld_entrances == 'off'))",
-            "Market Child Tree": "is_child and can_bonk",
+            "Market Child Tree": "
+                is_child and
+                (deadly_bonks != 'ohko' or Fairy or (can_use(Nayrus_Love) and shuffle_overworld_entrances == 'off'))",
             "Market Daytime Balcony Wonderitem 1": "is_child and at_day",
             "Market Daytime Balcony Wonderitem 2": "is_child and at_day",
             "Market Daytime Balcony Wonderitem 3": "is_child and at_day",
@@ -1643,6 +1645,7 @@
             "HC Castle Moat Wonderitem 9": "True",
             "HC Castle Moat Wonderitem 10": "True",
             "HC GS Tree": "can_child_attack and can_bonk",
+            "HC Malon Tree": "is_child and can_bonk",
             "HC Child Tree 1": "is_child and can_bonk",
             "HC Child Tree 2": "is_child and can_bonk",
             "HC Child Tree 3": "is_child and can_bonk",
@@ -2915,7 +2918,8 @@
             "ZR Child Front River Wonderitem 2": "is_child",
             "ZR Child Front River Wonderitem 3": "is_child",
             "ZR Child Front River Wonderitem 4": "is_child",
-            "ZR GS Tree": "is_child and can_child_attack and can_bonk"
+            "ZR GS Tree": "is_child and can_child_attack and can_bonk",
+            "ZR Child Tree": "is_child and can_bonk"
         },
         "exits": {
             "Zora River": "is_adult or can_blast_or_smash",
@@ -3116,6 +3120,7 @@
             "ZF Near Jabu Pot 4": "is_child",
 #           "ZF Scarecrow Wonderitem": "can_use(Scarecrow)", # Only exists in version 1.2
             "ZF GS Tree": "is_child and can_bonk",
+            "ZF Child Tree": "is_child and can_bonk",
             "ZF GS Above the Log": "is_child and at_night and (can_use(Boomerang) or
                 (glitch_zf_child_gs_hover and can_shield and Sticks)
                 )",
@@ -3244,6 +3249,7 @@
             "LLR Epona Hurdle Wonderitem 1": "can_ride_epona",
             "LLR Epona Hurdle Wonderitem 2": "can_ride_epona",
             "LLR GS Tree": "is_child and can_bonk",
+            "LLR Child Tree": "is_child and can_bonk",
             "LLR GS Rain Shed": "is_child and at_night",
             "LLR GS House Window": "is_child and (can_use(Boomerang) or can_hover) and at_night",
             "LLR GS Back Wall": "is_child and (can_use(Boomerang) or can_hover) and at_night"

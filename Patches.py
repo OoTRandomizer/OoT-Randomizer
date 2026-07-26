@@ -266,6 +266,13 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         (27, 'texture_pot_top_heart',       0x01739000,    None,            256,    rgba16_patch,               'textures/pot/pot_top_heart_rgba16_patch.bin'),
         (28, 'texture_crate_heart',         0x18B6020,     0x018B6000,      4096,   ci4_rgba16patch_to_ci8,     'textures/crate/crate_heart_rgba16_patch.bin'),
         (29, 'texture_smallcrate_heart',    0xF7ECA0,      None,            2048,   rgba16_patch,               'textures/crate/smallcrate_heart_rgba16_patch.bin'),
+
+        (31, 'texture_tree_default',        0x012E1F90,    None,            1024,   rgba16_patch,               'textures/tree/tree_default_rgba16_patch.bin'),
+        (32, 'texture_tree_gilded',         0x012E1F90,    None,            1024,   rgba16_patch,               'textures/tree/tree_gilded_rgba16_patch.bin'),
+        (33, 'texture_tree_silver',         0x012E1F90,    None,            1024,   rgba16_patch,               'textures/tree/tree_silver_rgba16_patch.bin'),
+        (34, 'texture_tree_gold',           0x012E1F90,    None,            1024,   rgba16_patch,               'textures/tree/tree_gold_rgba16_patch.bin'),
+        (35, 'texture_tree_skull',          0x012E1F90,    None,            1024,   rgba16_patch,               'textures/tree/tree_skull_rgba16_patch.bin'),
+        (36, 'texture_tree_heart',          0x012E1F90,    None,            1024,   rgba16_patch,               'textures/tree/tree_heart_rgba16_patch.bin'),
     ]
 
     # Loop through the textures and apply the patch. Add the new textures as a new file in rom.

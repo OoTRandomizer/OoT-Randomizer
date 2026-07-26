@@ -61,6 +61,14 @@ Actor_Spawn_Malloc_Hack:
     lh      s0, 0x00(v1) ; Get the ID from the entry
     beqz    s0, @spawn
     nop
+; All non-player actors keep the generic 0x10-byte prefix. En_Wood02 also
+; stores its randomizer-only state directly after the vanilla actor instance.
+    addiu   t0, r0, 0x0077 ; EN_WOOD02
+    bne     s0, t0, @generic_actor
+    nop
+    b       @spawn
+    addiu   a0, a0, 0x20
+@generic_actor:
     addiu   a0, a0, 0x10 ; Increase the size of the actor
 @spawn:
     jal     0x80066C10 ; (ZeldaArena_Malloc)

@@ -9210,6 +9210,521 @@
             "clear_hint": null,
             "gender": null,
             "vague_hint": "kept in a big chest #inside its tower#"
+        },
+        "HF Child Tree 1": {
+            "clear_hint": "a #child tree near the Kokiri Forest road# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid eastern Peahats in child# drops"
+        },
+        "HF Child Tree 2": {
+            "clear_hint": "a #child tree near the Kokiri Forest road# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid eastern Peahats in child# drops"
+        },
+        "HF Child Tree 3": {
+            "clear_hint": "a #child tree near the Kokiri Forest road# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid eastern Peahats in child# drops"
+        },
+        "HF Child Tree 4": {
+            "clear_hint": "a #child tree near the Kokiri Forest road# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid eastern Peahats in child# drops"
+        },
+        "HF Child Tree 5": {
+            "clear_hint": "a #child tree near the Kokiri Forest road# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid eastern Peahats in child# drops"
+        },
+        "HF Child Tree 6": {
+            "clear_hint": "a #child tree near the Kokiri Forest road# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid eastern Peahats in child# drops"
+        },
+        "HF Child Tree 7": {
+            "clear_hint": "a #child tree west of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree on the western plain in child# drops"
+        },
+        "HF Child Tree 8": {
+            "clear_hint": "a #child tree near the Market approach# drops",
+            "gender": null,
+            "vague_hint": "a #tree beneath the castle road in child# drops"
+        },
+        "HF Child Tree 9": {
+            "clear_hint": "a #child tree northwest of the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid southern Peahats in child# drops"
+        },
+        "HF Child Tree 10": {
+            "clear_hint": "a #child tree northwest of the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid southern Peahats in child# drops"
+        },
+        "HF Child Tree 11": {
+            "clear_hint": "a #child tree northwest of the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid southern Peahats in child# drops"
+        },
+        "HF Child Tree 12": {
+            "clear_hint": "a #child tree northwest of the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid southern Peahats in child# drops"
+        },
+        "HF Child Tree 13": {
+            "clear_hint": "a #child tree northwest of the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid southern Peahats in child# drops"
+        },
+        "HF Child Tree 14": {
+            "clear_hint": "a #child tree northwest of the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid southern Peahats in child# drops"
+        },
+        "HF Child Tree 15": {
+            "clear_hint": "a #child tree beside the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree at the field's southeastern edge in child# drops"
+        },
+        "HF Child Tree 16": {
+            "clear_hint": "a #child tree beside the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree at the field's southeastern edge in child# drops"
+        },
+        "HF Child Tree 17": {
+            "clear_hint": "a #child tree beside the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree at the field's southeastern edge in child# drops"
+        },
+        "HF Child Tree 18": {
+            "clear_hint": "a #child tree beside the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree at the field's southeastern edge in child# drops"
+        },
+        "HF Child Tree 19": {
+            "clear_hint": "a #child tree beside the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree at the field's southeastern edge in child# drops"
+        },
+        "HF Child Tree 20": {
+            "clear_hint": "a #child tree beside the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree at the field's southeastern edge in child# drops"
+        },
+        "HF Child Tree 21": {
+            "clear_hint": "a #child tree between Zora's River and Kokiri Forest# drops",
+            "gender": null,
+            "vague_hint": "a #tree where the eastern roads divide in child# drops"
+        },
+        "HF Child Tree 22": {
+            "clear_hint": "a #child tree between Zora's River and Kokiri Forest# drops",
+            "gender": null,
+            "vague_hint": "a #tree where the eastern roads divide in child# drops"
+        },
+        "HF Child Tree 23": {
+            "clear_hint": "a #child tree between Zora's River and Kokiri Forest# drops",
+            "gender": null,
+            "vague_hint": "a #tree where the eastern roads divide in child# drops"
+        },
+        "HF Child Tree 24": {
+            "clear_hint": "a #child tree between Zora's River and Kokiri Forest# drops",
+            "gender": null,
+            "vague_hint": "a #tree where the eastern roads divide in child# drops"
+        },
+        "HF Child Tree 25": {
+            "clear_hint": "a #child tree between Zora's River and Kokiri Forest# drops",
+            "gender": null,
+            "vague_hint": "a #tree where the eastern roads divide in child# drops"
+        },
+        "HF Child Tree 26": {
+            "clear_hint": "a #child tree between Zora's River and Kokiri Forest# drops",
+            "gender": null,
+            "vague_hint": "a #tree where the eastern roads divide in child# drops"
+        },
+        "HF Child Tree 27": {
+            "clear_hint": "a #child tree northwest of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree below the western cliffs in child# drops"
+        },
+        "HF Child Tree 28": {
+            "clear_hint": "a #child tree northwest of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree below the western cliffs in child# drops"
+        },
+        "HF Child Tree 29": {
+            "clear_hint": "a #child tree northwest of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree below the western cliffs in child# drops"
+        },
+        "HF Child Tree 30": {
+            "clear_hint": "a #child tree northwest of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree below the western cliffs in child# drops"
+        },
+        "HF Child Tree 31": {
+            "clear_hint": "a #child tree northwest of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree below the western cliffs in child# drops"
+        },
+        "HF Child Tree 32": {
+            "clear_hint": "a #child tree northwest of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree below the western cliffs in child# drops"
+        },
+        "HF Child Tree 33": {
+            "clear_hint": "a #child tree south of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree in the deepest southern grove in child# drops"
+        },
+        "HF Child Tree 34": {
+            "clear_hint": "a #child tree south of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree in the deepest southern grove in child# drops"
+        },
+        "HF Child Tree 35": {
+            "clear_hint": "a #child tree south of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree in the deepest southern grove in child# drops"
+        },
+        "HF Child Tree 36": {
+            "clear_hint": "a #child tree south of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree in the deepest southern grove in child# drops"
+        },
+        "HF Child Tree 37": {
+            "clear_hint": "a #child tree south of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree in the deepest southern grove in child# drops"
+        },
+        "HF Child Tree 38": {
+            "clear_hint": "a #child tree south of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree in the deepest southern grove in child# drops"
+        },
+        "HF Child Tree 39": {
+            "clear_hint": "a #child tree near the Market road# drops",
+            "gender": null,
+            "vague_hint": "a #tree on the castle road in child# drops"
+        },
+        "HF Child Tree 40": {
+            "clear_hint": "a #child tree near the Market road# drops",
+            "gender": null,
+            "vague_hint": "a #tree on the castle road in child# drops"
+        },
+        "HF Child Tree 41": {
+            "clear_hint": "a #child tree southwest of Kakariko Village# drops",
+            "gender": null,
+            "vague_hint": "a #tree below the village trail in child# drops"
+        },
+        "HF Child Tree 42": {
+            "clear_hint": "a #child tree east of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree overlooking the ranch in child# drops"
+        },
+        "HF Child Tree 43": {
+            "clear_hint": "a #child tree toward Gerudo Valley# drops",
+            "gender": null,
+            "vague_hint": "a #tree along the thieves' road in child# drops"
+        },
+        "HF Child Tree 44": {
+            "clear_hint": "a #child tree near Lake Hylia# drops",
+            "gender": null,
+            "vague_hint": "a #tree above the lakeside road in child# drops"
+        },
+        "HF Child Tree 45": {
+            "clear_hint": "a #child tree near Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree beside the ranch walls in child# drops"
+        },
+        "HF Child Tree 46": {
+            "clear_hint": "a #child tree between Lon Lon Ranch and Lake Hylia# drops",
+            "gender": null,
+            "vague_hint": "a #tree on the open southern plain in child# drops"
+        },
+        "HF Child Tree 47": {
+            "clear_hint": "a #child tree near the Kakariko Village entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree beneath Death Mountain's road in child# drops"
+        },
+        "HF Adult Tree 1": {
+            "clear_hint": "an #adult tree near the Kokiri Forest road# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid southeastern Peahats in adult# drops"
+        },
+        "HF Adult Tree 2": {
+            "clear_hint": "an #adult tree near the Kokiri Forest road# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid southeastern Peahats in adult# drops"
+        },
+        "HF Adult Tree 3": {
+            "clear_hint": "an #adult tree near the Kokiri Forest road# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid southeastern Peahats in adult# drops"
+        },
+        "HF Adult Tree 4": {
+            "clear_hint": "an #adult tree near the Kokiri Forest road# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid southeastern Peahats in adult# drops"
+        },
+        "HF Adult Tree 5": {
+            "clear_hint": "an #adult tree near the Kokiri Forest road# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid southeastern Peahats in adult# drops"
+        },
+        "HF Adult Tree 6": {
+            "clear_hint": "an #adult tree near the Kokiri Forest road# drops",
+            "gender": null,
+            "vague_hint": "a #tree amid southeastern Peahats in adult# drops"
+        },
+        "HF Adult Tree 7": {
+            "clear_hint": "an #adult tree beside the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree at the field's southern edge in adult# drops"
+        },
+        "HF Adult Tree 8": {
+            "clear_hint": "an #adult tree beside the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree at the field's southern edge in adult# drops"
+        },
+        "HF Adult Tree 9": {
+            "clear_hint": "an #adult tree beside the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree at the field's southern edge in adult# drops"
+        },
+        "HF Adult Tree 10": {
+            "clear_hint": "an #adult tree beside the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree at the field's southern edge in adult# drops"
+        },
+        "HF Adult Tree 11": {
+            "clear_hint": "an #adult tree beside the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree at the field's southern edge in adult# drops"
+        },
+        "HF Adult Tree 12": {
+            "clear_hint": "an #adult tree beside the Kokiri Forest entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree at the field's southern edge in adult# drops"
+        },
+        "HF Adult Tree 13": {
+            "clear_hint": "an #adult tree between Zora's River and Kokiri Forest# drops",
+            "gender": null,
+            "vague_hint": "a #tree where the eastern roads divide in adult# drops"
+        },
+        "HF Adult Tree 14": {
+            "clear_hint": "an #adult tree between Zora's River and Kokiri Forest# drops",
+            "gender": null,
+            "vague_hint": "a #tree where the eastern roads divide in adult# drops"
+        },
+        "HF Adult Tree 15": {
+            "clear_hint": "an #adult tree between Zora's River and Kokiri Forest# drops",
+            "gender": null,
+            "vague_hint": "a #tree where the eastern roads divide in adult# drops"
+        },
+        "HF Adult Tree 16": {
+            "clear_hint": "an #adult tree between Zora's River and Kokiri Forest# drops",
+            "gender": null,
+            "vague_hint": "a #tree where the eastern roads divide in adult# drops"
+        },
+        "HF Adult Tree 17": {
+            "clear_hint": "an #adult tree between Zora's River and Kokiri Forest# drops",
+            "gender": null,
+            "vague_hint": "a #tree where the eastern roads divide in adult# drops"
+        },
+        "HF Adult Tree 18": {
+            "clear_hint": "an #adult tree between Zora's River and Kokiri Forest# drops",
+            "gender": null,
+            "vague_hint": "a #tree where the eastern roads divide in adult# drops"
+        },
+        "HF Adult Tree 19": {
+            "clear_hint": "an #adult tree south of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree in the southern Peahat grove in adult# drops"
+        },
+        "HF Adult Tree 20": {
+            "clear_hint": "an #adult tree south of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree in the southern Peahat grove in adult# drops"
+        },
+        "HF Adult Tree 21": {
+            "clear_hint": "an #adult tree south of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree in the southern Peahat grove in adult# drops"
+        },
+        "HF Adult Tree 22": {
+            "clear_hint": "an #adult tree south of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree in the southern Peahat grove in adult# drops"
+        },
+        "HF Adult Tree 23": {
+            "clear_hint": "an #adult tree south of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree in the southern Peahat grove in adult# drops"
+        },
+        "HF Adult Tree 24": {
+            "clear_hint": "an #adult tree south of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree in the southern Peahat grove in adult# drops"
+        },
+        "HF Adult Tree 25": {
+            "clear_hint": "an #adult tree northwest of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree below the western cliffs in adult# drops"
+        },
+        "HF Adult Tree 26": {
+            "clear_hint": "an #adult tree northwest of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree below the western cliffs in adult# drops"
+        },
+        "HF Adult Tree 27": {
+            "clear_hint": "an #adult tree northwest of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree below the western cliffs in adult# drops"
+        },
+        "HF Adult Tree 28": {
+            "clear_hint": "an #adult tree northwest of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree below the western cliffs in adult# drops"
+        },
+        "HF Adult Tree 29": {
+            "clear_hint": "an #adult tree northwest of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree below the western cliffs in adult# drops"
+        },
+        "HF Adult Tree 30": {
+            "clear_hint": "an #adult tree northwest of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree below the western cliffs in adult# drops"
+        },
+        "HF Adult Tree 31": {
+            "clear_hint": "an #adult tree west of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree on the western plain in adult# drops"
+        },
+        "HF Adult Tree 32": {
+            "clear_hint": "an #adult tree near the Market road# drops",
+            "gender": null,
+            "vague_hint": "a #tree on the castle road in adult# drops"
+        },
+        "HF Adult Tree 33": {
+            "clear_hint": "an #adult tree near the Market road# drops",
+            "gender": null,
+            "vague_hint": "a #tree on the castle road in adult# drops"
+        },
+        "HF Adult Tree 34": {
+            "clear_hint": "an #adult tree southwest of Kakariko Village# drops",
+            "gender": null,
+            "vague_hint": "a #tree below the village trail in adult# drops"
+        },
+        "HF Adult Tree 35": {
+            "clear_hint": "an #adult tree near the Market approach# drops",
+            "gender": null,
+            "vague_hint": "a #tree beneath the drawbridge road in adult# drops"
+        },
+        "HF Adult Tree 36": {
+            "clear_hint": "an #adult tree near Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree beside the ranch walls in adult# drops"
+        },
+        "HF Adult Tree 37": {
+            "clear_hint": "an #adult tree between Lon Lon Ranch and Lake Hylia# drops",
+            "gender": null,
+            "vague_hint": "a #tree on the open southern plain in adult# drops"
+        },
+        "HF Adult Tree 38": {
+            "clear_hint": "an #adult tree east of Lon Lon Ranch# drops",
+            "gender": null,
+            "vague_hint": "a #tree overlooking the ranch in adult# drops"
+        },
+        "HF Adult Tree 39": {
+            "clear_hint": "an #adult tree near the Kakariko Village entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree beneath Death Mountain's road in adult# drops"
+        },
+        "HF Adult Tree 40": {
+            "clear_hint": "an #adult tree near Lake Hylia# drops",
+            "gender": null,
+            "vague_hint": "a #tree above the lakeside road in adult# drops"
+        },
+        "HF Adult Tree 41": {
+            "clear_hint": "an #adult tree toward Gerudo Valley# drops",
+            "gender": null,
+            "vague_hint": "a #tree along the thieves' road in adult# drops"
+        },
+        "Market Child Tree": {
+            "clear_hint": "the #tree in the child Market# drops",
+            "gender": null,
+            "vague_hint": "the #market's lone tree# drops"
+        },
+        "HC Malon Tree": {
+            "clear_hint": "the #tree beside Malon outside Hyrule Castle# drops",
+            "gender": null,
+            "vague_hint": "the #spider-haunted tree beside a ranch girl# drops"
+        },
+        "HC Child Tree 1": {
+            "clear_hint": "a #tree along the lower Hyrule Castle path# drops",
+            "gender": null,
+            "vague_hint": "a #tree lining the royal approach# drops"
+        },
+        "HC Child Tree 2": {
+            "clear_hint": "a #tree along the lower Hyrule Castle path# drops",
+            "gender": null,
+            "vague_hint": "a #tree lining the royal approach# drops"
+        },
+        "HC Child Tree 3": {
+            "clear_hint": "a #tree along the lower Hyrule Castle path# drops",
+            "gender": null,
+            "vague_hint": "a #tree lining the royal approach# drops"
+        },
+        "HC Child Tree 4": {
+            "clear_hint": "a #tree along the lower Hyrule Castle path# drops",
+            "gender": null,
+            "vague_hint": "a #tree lining the royal approach# drops"
+        },
+        "HC Child Tree 5": {
+            "clear_hint": "a #tree beside the lower Hyrule Castle moat# drops",
+            "gender": null,
+            "vague_hint": "a #tree on the near side of the royal moat# drops"
+        },
+        "HC Child Tree 6": {
+            "clear_hint": "a #tree beside the upper Hyrule Castle moat# drops",
+            "gender": null,
+            "vague_hint": "a #tree on the far side of the royal moat# drops"
+        },
+        "HC Child Tree 7": {
+            "clear_hint": "a #tree near the Hyrule Castle grounds entrance# drops",
+            "gender": null,
+            "vague_hint": "a #tree watching the castle gate# drops"
+        },
+        "HC Child Tree 8": {
+            "clear_hint": "a #tree deep in the Hyrule Castle grounds# drops",
+            "gender": null,
+            "vague_hint": "a #tree beyond the royal moat# drops"
+        },
+        "LLR Child Tree": {
+            "clear_hint": "the #tree beside Lon Lon Ranch's outer field# drops",
+            "gender": null,
+            "vague_hint": "the #spider-haunted ranch tree# drops"
+        },
+        "Kak Child Tree": {
+            "clear_hint": "the #child tree in Kakariko Village# drops",
+            "gender": null,
+            "vague_hint": "the #spider-haunted village tree in child# drops"
+        },
+        "Kak Adult Tree": {
+            "clear_hint": "the #adult tree in Kakariko Village# drops",
+            "gender": null,
+            "vague_hint": "the #weathered village tree in adult# drops"
+        },
+        "ZR Child Tree": {
+            "clear_hint": "the #tree beside Zora's River# drops",
+            "gender": null,
+            "vague_hint": "the #spider-haunted riverside tree# drops"
+        },
+        "ZF Child Tree": {
+            "clear_hint": "the #tree beside Zora's Fountain# drops",
+            "gender": null,
+            "vague_hint": "the #spider-haunted fountain tree# drops"
         }
     },
     "language_specific_replace_table": [],

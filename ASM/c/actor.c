@@ -153,7 +153,7 @@ void Actor_StoreChestType(z64_actor_t* actor, z64_game_t* game) {
         pChestType = &(((ObjComb*)actor)->chest_type);
     } else if (actor->actor_id == EN_WOOD02) { // Bonkable Trees
         override = get_newflag_override(flag);
-        pChestType = &(Actor_GetAdditionalData(actor)->chest_type);
+        pChestType = &(((EnWood02*)actor)->chest_type);
     }
     if (override.key.all != 0 && pChestType != NULL) { // If we don't have an override key, then either this item doesn't have an override entry, or it has already been collected.
         if (POTCRATE_TEXTURES_MATCH_CONTENTS == PTMC_UNCHECKED && override.key.all > 0) { // For "unchecked" PTMC setting: Check if we have an override which means it wasn't collected.
