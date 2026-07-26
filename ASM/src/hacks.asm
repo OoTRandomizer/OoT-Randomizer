@@ -2360,6 +2360,31 @@ skip_bombchu_bowling_prize_switch:
 ;.word   0xDE000000, 0x09000000 ; jump to the custom dlist at segment 09
 
 ;==================================================================================================
+; Draw Tree Trunk Textures and Foliage Colors
+;==================================================================================================
+
+; object_wood02 starts at ROM 0x012DF000
+; Replace the trunk gDPSetTextureImage commands with calls to the dynamic
+; texture-setting display list supplied in segment 09 by EnWood02_DrawHook
+.orga 0x012DF000 + 0x0078D0 + 0x18 ; conical trunk, texture 06000790
+.word 0xDE000000, 0x09000000
+
+.orga 0x012DF000 + 0x007CA0 + 0x18 ; oval trunk, texture 06002F90
+.word 0xDE000000, 0x09000000
+
+.orga 0x012DF000 + 0x0080D0 + 0x18 ; Kakariko adult trunk, texture 06000790
+.word 0xDE000000, 0x09000000
+
+; The conical and Kakariko foliage dlists use an internal primitive color
+; Replace those gDPSetPrimColor commands with calls to segment 0A
+; Oval foliage uses the environment color set directly by EnWood02_DrawHook
+.orga 0x012DF000 + 0x007968 + 0x70 ; conical foliage primitive color
+.word 0xDE000000, 0x0A000000
+
+.orga 0x012DF000 + 0x0081A8 + 0x70 ; Kakariko adult foliage primitive color
+.word 0xDE000000, 0x0A000000
+
+;==================================================================================================
 ; Cast Fishing Rod without B Item
 ;==================================================================================================
 

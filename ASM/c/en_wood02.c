@@ -1,33 +1,43 @@
 #include "en_wood02.h"
+#include "n64.h"
+#include "gfx.h"
+#include "sys_matrix.h"
 #include "get_items.h"
 #include "item_table.h"
 #include "textures.h"
 
-#define MARKET_CHILD_DAY   0x20
-#define MARKET_CHILD_NIGHT 0x21
-#define WOOD_TREE_LAST_TYPE 0x0A
-#define G_DL_OPCODE 0xDE
-#define G_ENDDL_OPCODE 0xDF
-#define G_SETPRIMCOLOR_OPCODE 0xFA
-#define G_SETENVCOLOR_OPCODE 0xFB
-#define G_SETTIMG_OPCODE 0xFD
-#define TREE_DLIST_MAX_COMMANDS 64
-#define TREE_DLIST_ALIGNMENT 16
-#define K0_BASE 0x80000000
-#define WOOD_TRUNK_TEXTURE_0790 0x06000790
-#define WOOD_TRUNK_TEXTURE_2F90 0x06002F90
-#define WOOD_SPAWN_SPAWNER 2
+#define MARKET_CHILD_DAY     0x20
+#define MARKET_CHILD_NIGHT   0x21
+#define WOOD_TREE_LAST_TYPE  0x0A
+#define WOOD_SPAWN_SPAWNER   2
 #define TREE_GROUP_CHILD_COUNT 5
 
+#define WOOD_DRAW_TREE_CONICAL         0
+#define WOOD_DRAW_TREE_OVAL            1
+#define WOOD_DRAW_TREE_KAKARIKO_ADULT  2
+#define WOOD_DRAW_TREE_COUNT           3
+
+#define WOOD_TYPE_OVAL_GREEN           0x05
+#define WOOD_TYPE_OVAL_YELLOW_SPAWNER  0x06
+#define WOOD_TYPE_OVAL_YELLOW_SPAWNED  0x07
+#define WOOD_TYPE_OVAL_GREEN_SPAWNER   0x08
+#define WOOD_TYPE_OVAL_GREEN_SPAWNED   0x09
+
+#define WOOD_TRUNK_TEXTURE_CONICAL ((uint8_t*)0x06000790)
+#define WOOD_TRUNK_TEXTURE_OVAL    ((uint8_t*)0x06002F90)
+
+#define WOOD_TRUNK_DLIST_CONICAL        ((z64_gfx_t*)0x060078D0)
+#define WOOD_TRUNK_DLIST_OVAL           ((z64_gfx_t*)0x06007CA0)
+#define WOOD_TRUNK_DLIST_KAKARIKO_ADULT ((z64_gfx_t*)0x060080D0)
+
+#define WOOD_FOLIAGE_DLIST_CONICAL        ((Gfx*)0x06007968)
+#define WOOD_FOLIAGE_DLIST_OVAL           ((Gfx*)0x06007D38)
+#define WOOD_FOLIAGE_DLIST_KAKARIKO_ADULT ((Gfx*)0x060081A8)
+
 typedef void (*EnWood02UpdateFunc)(z64_actor_t*, z64_game_t*);
-typedef void (*EnWood02DrawFunc)(z64_actor_t*, z64_game_t*);
+typedef void (*append_setup_dl_25_to_xlu_fn)(z64_gfx_t*);
 
-typedef struct {
-    uint32_t w0;
-    uint32_t w1;
-} EnWood02GfxCommand;
-
-static EnWood02DrawFunc sOriginalDraw;
+#define append_setup_dl_25_to_xlu ((append_setup_dl_25_to_xlu_fn)0x8007E2C0)
 
 typedef struct {
     colorRGB8_t foliage_color;
@@ -142,10 +152,6 @@ static bool EnWood02_GetContentAppearance(z64_actor_t* actor, EnWood02Appearance
     }
 
     switch (tree->chest_type) {
-        case BROWN_CHEST:
-            appearance->foliage_color = (colorRGB8_t) { 20, 205, 50 };
-            appearance->trunk_texture = TEXTURE_ID_TREE_DEFAULT;
-            return true;
         case GILDED_CHEST:
             if (!POTCRATE_GILDED_TEXTURE) {
                 return false;
@@ -188,179 +194,90 @@ static bool EnWood02_GetContentAppearance(z64_actor_t* actor, EnWood02Appearance
     }
 }
 
-static uint32_t EnWood02_PackColor(colorRGB8_t color, uint8_t alpha) {
-    return ((uint32_t)color.r << 24) |
-           ((uint32_t)color.g << 16) |
-           ((uint32_t)color.b << 8) |
-           alpha;
+static const z64_gfx_t* sTreeTrunkDLists[WOOD_DRAW_TREE_COUNT] = {
+    WOOD_TRUNK_DLIST_CONICAL,
+    WOOD_TRUNK_DLIST_OVAL,
+    WOOD_TRUNK_DLIST_KAKARIKO_ADULT,
+};
+
+static const Gfx* sTreeFoliageDLists[WOOD_DRAW_TREE_COUNT] = {
+    WOOD_FOLIAGE_DLIST_CONICAL,
+    WOOD_FOLIAGE_DLIST_OVAL,
+    WOOD_FOLIAGE_DLIST_KAKARIKO_ADULT,
+};
+
+static uint8_t* EnWood02_GetVanillaTrunkTexture(uint8_t draw_type) {
+    return draw_type == WOOD_DRAW_TREE_OVAL ? WOOD_TRUNK_TEXTURE_OVAL : WOOD_TRUNK_TEXTURE_CONICAL;
 }
 
-static EnWood02GfxCommand* EnWood02_SegmentedToVirtual(uint32_t address) {
-    uint8_t segment = address >> 24;
-    if (segment >= 16 || z64_stab.seg[segment] == 0) {
-        return NULL;
+static colorRGB8_t EnWood02_GetVanillaFoliageColor(const EnWood02* tree) {
+    uint8_t type = tree->actor.variable & 0xFF;
+
+    if (type == WOOD_TYPE_OVAL_GREEN ||
+        type == WOOD_TYPE_OVAL_GREEN_SPAWNER ||
+        type == WOOD_TYPE_OVAL_GREEN_SPAWNED) {
+        return (colorRGB8_t) { 50, 170, 70 };
     }
 
-    return (EnWood02GfxCommand*)(K0_BASE + z64_stab.seg[segment] + (address & 0x00FFFFFF));
+    if (type == WOOD_TYPE_OVAL_YELLOW_SPAWNER ||
+        type == WOOD_TYPE_OVAL_YELLOW_SPAWNED) {
+        return (colorRGB8_t) { 180, 155, 0 };
+    }
+
+    if ((tree->draw_type & 0x0F) == WOOD_DRAW_TREE_KAKARIKO_ADULT) {
+        return (colorRGB8_t) { 57, 197, 86 };
+    }
+
+    return (colorRGB8_t) { 28, 88, 13 };
 }
 
-static EnWood02GfxCommand* EnWood02_AllocXluCommands(z64_gfx_t* gfx, uint32_t command_count) {
-    uint32_t size = command_count * sizeof(EnWood02GfxCommand);
-    uint32_t aligned_size = (size + (TREE_DLIST_ALIGNMENT - 1)) & ~(TREE_DLIST_ALIGNMENT - 1);
-    uint8_t* allocation = (uint8_t*)gfx->poly_xlu.d - aligned_size;
-
-    if (allocation <= (uint8_t*)gfx->poly_xlu.p) {
-        return NULL;
-    }
-
-    gfx->poly_xlu.d = (Gfx*)allocation;
-    return (EnWood02GfxCommand*)allocation;
+static void EnWood02_SetTrunkTextureSegment(z64_gfx_t* gfx, uint8_t* texture) {
+    gfx->poly_opa.d -= 2;
+    gDPSetTextureImage(gfx->poly_opa.d, G_IM_FMT_RGBA, G_IM_SIZ_16b, 1, texture);
+    gSPEndDisplayList(gfx->poly_opa.d + 1);
+    gSPSegment(gfx->poly_opa.p++, 0x09, gfx->poly_opa.d);
 }
 
-static EnWood02GfxCommand* EnWood02_AllocOpaCommands(z64_gfx_t* gfx, uint32_t command_count) {
-    uint32_t size = command_count * sizeof(EnWood02GfxCommand);
-    uint32_t aligned_size = (size + (TREE_DLIST_ALIGNMENT - 1)) & ~(TREE_DLIST_ALIGNMENT - 1);
-    uint8_t* allocation = (uint8_t*)gfx->poly_opa.d - aligned_size;
-
-    if (allocation <= (uint8_t*)gfx->poly_opa.p) {
-        return NULL;
-    }
-
-    gfx->poly_opa.d = (Gfx*)allocation;
-    return (EnWood02GfxCommand*)allocation;
+static void EnWood02_SetFoliageColorSegment(z64_gfx_t* gfx, colorRGB8_t color) {
+    gfx->poly_xlu.d -= 2;
+    gDPSetPrimColor(gfx->poly_xlu.d, 0, 0, color.r, color.g, color.b, 0xFF);
+    gSPEndDisplayList(gfx->poly_xlu.d + 1);
+    gSPSegment(gfx->poly_xlu.p++, 0x0A, gfx->poly_xlu.d);
 }
 
-static void EnWood02_PatchFoliageEnvColor(
-    z64_game_t* game,
-    EnWood02GfxCommand* xlu_start,
-    colorRGB8_t color
-) {
-    EnWood02GfxCommand* command = (EnWood02GfxCommand*)game->common.gfx->poly_xlu.p;
-    while (command > xlu_start) {
-        command--;
-        if ((command->w0 >> 24) == G_SETENVCOLOR_OPCODE) {
-            command->w1 = EnWood02_PackColor(color, 0);
-            return;
-        }
-    }
-}
+static void EnWood02_DrawTree(EnWood02* tree, z64_game_t* game) {
+    z64_gfx_t* gfx = game->common.gfx;
+    uint8_t draw_type = tree->draw_type & 0x0F;
+    colorRGB8_t foliage_color;
+    uint8_t* trunk_texture;
+    EnWood02Appearance appearance;
 
-static void EnWood02_PatchFoliagePrimColor(
-    z64_game_t* game,
-    EnWood02GfxCommand* xlu_start,
-    colorRGB8_t color
-) {
-    EnWood02GfxCommand* display_list_call = (EnWood02GfxCommand*)game->common.gfx->poly_xlu.p;
-    while (display_list_call > xlu_start) {
-        display_list_call--;
-        if ((display_list_call->w0 >> 24) == G_DL_OPCODE) {
-            break;
-        }
-    }
-
-    if (display_list_call <= xlu_start || (display_list_call->w0 >> 24) != G_DL_OPCODE) {
+    if (draw_type >= WOOD_DRAW_TREE_COUNT) {
         return;
     }
 
-    EnWood02GfxCommand* source = EnWood02_SegmentedToVirtual(display_list_call->w1);
-    if (source == NULL) {
-        return;
-    }
+    foliage_color = EnWood02_GetVanillaFoliageColor(tree);
+    trunk_texture = EnWood02_GetVanillaTrunkTexture(draw_type);
 
-    uint32_t command_count = 0;
-    int32_t prim_color_index = -1;
-    while (command_count < TREE_DLIST_MAX_COMMANDS) {
-        if ((source[command_count].w0 >> 24) == G_SETPRIMCOLOR_OPCODE) {
-            prim_color_index = command_count;
-        }
+    if (EnWood02_GetContentAppearance(&tree->actor, &appearance)) {
+        uint8_t* override_texture;
 
-        command_count++;
-        if ((source[command_count - 1].w0 >> 24) == G_ENDDL_OPCODE) {
-            break;
+        foliage_color = appearance.foliage_color;
+        override_texture = get_texture(appearance.trunk_texture);
+        if (override_texture != NULL) {
+            trunk_texture = override_texture;
         }
     }
 
-    if ((command_count == TREE_DLIST_MAX_COMMANDS &&
-         (source[command_count - 1].w0 >> 24) != G_ENDDL_OPCODE) ||
-        prim_color_index < 0) {
-        return;
-    }
+    EnWood02_SetTrunkTextureSegment(gfx, trunk_texture);
+    z64_Gfx_DrawDListOpa(game, (z64_gfx_t*)sTreeTrunkDLists[draw_type]);
 
-    EnWood02GfxCommand* clone = EnWood02_AllocXluCommands(game->common.gfx, command_count);
-    if (clone == NULL) {
-        return;
-    }
-
-    for (uint32_t i = 0; i < command_count; i++) {
-        clone[i] = source[i];
-    }
-    clone[prim_color_index].w1 = EnWood02_PackColor(color, 0xFF);
-
-    display_list_call->w1 = ((uint32_t)clone) & 0x1FFFFFFF;
-}
-
-static bool EnWood02_FindTrunkTextureCommand(
-    EnWood02GfxCommand* source,
-    uint32_t* command_count,
-    uint32_t* texture_command_index
-) {
-    for (uint32_t i = 0; i < TREE_DLIST_MAX_COMMANDS; i++) {
-        uint8_t opcode = source[i].w0 >> 24;
-
-        if (opcode == G_SETTIMG_OPCODE &&
-            (source[i].w1 == WOOD_TRUNK_TEXTURE_0790 ||
-             source[i].w1 == WOOD_TRUNK_TEXTURE_2F90)) {
-            *texture_command_index = i;
-        }
-
-        if (opcode == G_ENDDL_OPCODE) {
-            *command_count = i + 1;
-            return *texture_command_index < *command_count;
-        }
-    }
-
-    return false;
-}
-
-static void EnWood02_PatchTrunkTexture(
-    z64_game_t* game,
-    EnWood02GfxCommand* opa_start,
-    uint8_t* texture
-) {
-    EnWood02GfxCommand* display_list_call = (EnWood02GfxCommand*)game->common.gfx->poly_opa.p;
-
-    // Search only commands emitted by this actor
-    while (display_list_call > opa_start) {
-        display_list_call--;
-        if ((display_list_call->w0 >> 24) != G_DL_OPCODE) {
-            continue;
-        }
-
-        EnWood02GfxCommand* source = EnWood02_SegmentedToVirtual(display_list_call->w1);
-        if (source == NULL) {
-            continue;
-        }
-
-        uint32_t command_count = 0;
-        uint32_t texture_command_index = TREE_DLIST_MAX_COMMANDS;
-        if (!EnWood02_FindTrunkTextureCommand(source, &command_count, &texture_command_index)) {
-            continue;
-        }
-
-        EnWood02GfxCommand* clone = EnWood02_AllocOpaCommands(game->common.gfx, command_count);
-        if (clone == NULL) {
-            return;
-        }
-
-        for (uint32_t i = 0; i < command_count; i++) {
-            clone[i] = source[i];
-        }
-
-        // All tree textures are reconstructed from the 002F90 base
-        clone[texture_command_index].w1 = ((uint32_t)texture) & 0x1FFFFFFF;
-        display_list_call->w1 = ((uint32_t)clone) & 0x1FFFFFFF;
-        return;
-    }
+    append_setup_dl_25_to_xlu(gfx);
+    EnWood02_SetFoliageColorSegment(gfx, foliage_color);
+    gDPSetEnvColor(gfx->poly_xlu.p++, foliage_color.r, foliage_color.g, foliage_color.b, 0);
+    gSPMatrix(gfx->poly_xlu.p++, append_sys_matrix(gfx),
+              G_MTX_MODELVIEW | G_MTX_LOAD | G_MTX_NOPUSH);
+    gSPDisplayList(gfx->poly_xlu.p++, sTreeFoliageDLists[draw_type]);
 }
 
 static void EnWood02_InstallHooks(z64_actor_t* actor) {
@@ -372,7 +289,6 @@ static void EnWood02_InstallHooks(z64_actor_t* actor) {
     }
 
     if (actor->draw_proc != NULL && actor->draw_proc != (void*)EnWood02_DrawHook) {
-        sOriginalDraw = (EnWood02DrawFunc)actor->draw_proc;
         actor->draw_proc = (void*)EnWood02_DrawHook;
     }
 }
@@ -395,27 +311,7 @@ static void EnWood02_RefreshChildren(EnWood02* parent, z64_game_t* game) {
 }
 
 static void EnWood02_DrawHook(z64_actor_t* actor, z64_game_t* game) {
-    if (sOriginalDraw == NULL) {
-        return;
-    }
-
-    EnWood02GfxCommand* opa_start = (EnWood02GfxCommand*)game->common.gfx->poly_opa.p;
-    EnWood02GfxCommand* xlu_start = (EnWood02GfxCommand*)game->common.gfx->poly_xlu.p;
-    sOriginalDraw(actor, game);
-
-    EnWood02Appearance appearance;
-    if (!EnWood02_GetContentAppearance(actor, &appearance)) {
-        return;
-    }
-
-    // Preserve the leaf-color cue and add a color-independent trunk emblem
-    EnWood02_PatchFoliageEnvColor(game, xlu_start, appearance.foliage_color);
-    EnWood02_PatchFoliagePrimColor(game, xlu_start, appearance.foliage_color);
-
-    uint8_t* trunk_texture = get_texture(appearance.trunk_texture);
-    if (trunk_texture != NULL) {
-        EnWood02_PatchTrunkTexture(game, opa_start, trunk_texture);
-    }
+    EnWood02_DrawTree((EnWood02*)actor, game);
 }
 
 static void EnWood02_UpdateHook(z64_actor_t* actor, z64_game_t* game) {
