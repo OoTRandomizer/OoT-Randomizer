@@ -15,6 +15,7 @@
 * Fix a logic bug where the `Equip Swap` glitch didn't check if the slingshot was available.
 * Fix silver rupee counter not displaying in Ganon's castle.
 * Fix silver rupee counter overlapping D-pad dungeon info menus.
+* Fix blowing up a specific bombable wall in MQ Dodongo's Cavern opening the door controlled by the silver rupees.
 
 # 9.1
 
