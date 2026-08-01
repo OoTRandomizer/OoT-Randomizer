@@ -211,6 +211,22 @@ def make_spoiler(settings: Settings, worlds: list[World]) -> Spoiler:
     return spoiler
 
 
+def patch_rspboot_antipiracy(rom: Rom) -> None:
+    # During boot, there is an anti-piracy check that tests PI DMA timings.
+    # This trips when run on a Summercart with menu versions after 0.2.0.
+    # The code runs only once during game boot/reset. The changes here nop
+    # the branch points in the anti-piracy function, as passing the test
+    # will not take any of them. See the snippet at:
+    # https://github.com/Thar0/oot/blob/c1fdebe4612ff2db6721cab90e74ad16a139d2ea/rsp/rspboot_ap.s#L56-L68
+    # The change is applied unconditionally in new seeds and existing patch
+    # files for Summercart compatibility.
+    rom.write_int32(0x6CFC, 0)
+    rom.write_int32(0x6D0C, 0)
+    rom.write_int32(0x6D18, 0)
+    rom.write_int32(0x6D24, 0)
+    rom.write_int32(0x6D2C, 0)
+
+
 def prepare_rom(spoiler: Spoiler, world: World, rom: Rom, rng_state: Optional[tuple] = None) -> None:
     if rng_state:
         random.setstate(rng_state)
@@ -229,6 +245,7 @@ def finalize_rom(rom: Rom, settings: Settings, separate_cosmetics: bool = False)
     if separate_cosmetics:
         final_rom = rom.copy()
     cosmetics_log = patch_cosmetics(settings, final_rom)
+    patch_rspboot_antipiracy(rom)
     if not settings.generating_patch_file:
         if settings.model_adult != "Default" or len(settings.model_adult_filepicker) > 0:
             patch_model_adult(final_rom, settings, cosmetics_log)
@@ -538,6 +555,8 @@ def from_patch_file(settings: Settings) -> None:
             patch_model_adult(rom, settings, cosmetics_log)
         if settings.model_child != "Default" or len(settings.model_child_filepicker) > 0:
             patch_model_child(rom, settings, cosmetics_log)
+    # No need to update header. This is done in rom.write_to_file().
+    patch_rspboot_antipiracy(rom)
 
     logger.info('Saving Uncompressed ROM')
     uncompressed_path = output_path + '_uncompressed.z64'
