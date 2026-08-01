@@ -894,6 +894,10 @@ class SaveContext:
                 'eye_drops'              : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00100000),
                 'claim_check'            : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00200000),
             },
+            'cycleItemsFlags' : {
+                'nayru' : Address(0x0E8C, size=1, mask=0x01),
+                'navi' : Address(0x0E8C, size=1, mask=0x02),
+            },
 
             # begin extended save data items
             'silver_rupee_counts' : {
@@ -1046,6 +1050,7 @@ class SaveContext:
         'compass'             : 0x65,
         'dungeon_map'         : 0x66,
         'small_key'           : 0x67,
+        'navi_bell'           : 0x9c,
     }
 
     slot_id_map: dict[str, int] = {
@@ -1154,7 +1159,14 @@ class SaveContext:
         "Light Arrows"   : {'item_slot.light_arrow'     : 'light_arrow'},
         "Dins Fire"      : {'item_slot.dins_fire'       : 'dins_fire'},
         "Farores Wind"   : {'item_slot.farores_wind'    : 'farores_wind'},
-        "Nayrus Love"    : {'item_slot.nayrus_love'     : 'nayrus_love'},
+        "Nayrus Love"    : {
+            'item_slot.nayrus_love'     : 'nayrus_love',
+            'cycleItemsFlags.nayru'     : True,
+        },
+        "Navi Bell"     : {
+            'item_slot.nayrus_love'               : 'navi_bell',
+            'cycleItemsFlags.navi'     : True,
+        },
         "Ocarina"        : {'item_slot.ocarina'         : ['fairy_ocarina', 'ocarina_of_time']},
         "Progressive Hookshot" : {'item_slot.hookshot'  : ['hookshot', 'longshot']},
         "Boomerang"      : {'item_slot.boomerang'       : 'boomerang'},

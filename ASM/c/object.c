@@ -4,7 +4,6 @@
 // Function that adds an object to an object slot and sets up data for the object
 // to be loaded by Object_UpdateEntries() (which is run every frame).
 extern void* func_800982FC(z64_obj_ctxt_t* objectCtx, int32_t slot, int16_t objectId);
-extern int32_t DmaMgr_RequestSync(void* ram, uintptr_t vrom, size_t size);
 
 /**
  * Loads an extra object that no previously loaded actor has a dependency on.

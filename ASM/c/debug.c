@@ -645,6 +645,10 @@ void draw_debug_menu(z64_disp_buf_t* db) {
                                     z64_GiveItem(&z64_game, d->item_index);
                                 }
                                 break;
+                            case Z64_ITEM_NAYRUS_LOVE:
+                                z64_file.cycleItemsFlags |= (1 << 0); // CYCLE_ITEM_NAYRU
+                                z64_GiveItem(&z64_game, d->item_index);
+                                break;
                             case Z64_ITEM_GORONS_BRACELET:
                             case Z64_ITEM_SILVER_GAUNTLETS:
                             case Z64_ITEM_GOLDEN_GAUNTLETS:
