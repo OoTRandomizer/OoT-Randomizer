@@ -3622,6 +3622,17 @@ class SettingInfos:
         shared         = True,
     )
 
+    daytime_gold_skulltulas = Checkbutton(
+        gui_text       = 'Daytime Gold Skulltulas',
+        gui_tooltip    = '''\
+            Gold Skulltulas that normally appear only at night
+            will also remain visible and collectible during the day.
+            They will still be available at night.
+        ''',
+        default        = False,
+        shared         = True,
+    )
+
     chicken_count_random = Checkbutton(
         gui_text       = 'Random Cucco Count',
         gui_tooltip    = '''\

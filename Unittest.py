@@ -11,6 +11,7 @@ import random
 import re
 import unittest
 from collections import Counter, defaultdict
+from types import SimpleNamespace
 from typing import Literal, Optional, Any, overload
 from unittest.mock import patch
 
@@ -20,12 +21,16 @@ from Hints import HintArea, build_misc_item_hints
 from Item import ItemInfo
 from ItemPool import remove_junk_items, remove_junk_ludicrous_items, ludicrous_items_base, ludicrous_items_extended, trade_items, ludicrous_exclusions
 from LocationList import location_is_viewable
+from Location import Location
 from Main import main, resolve_settings, build_world_graphs
 from Messages import Message, read_messages, shuffle_messages
+from Patches import add_daytime_gold_skulltulas
 from Settings import Settings, get_preset_files
 from SettingsList import logic_tricks, advanced_logic_tricks
 from Spoiler import Spoiler
 from Rom import Rom
+from RuleParser import Rule_AST_Transformer
+from Region import TimeOfDay
 from Audiobank import *
 from Language import Language
 import data.lang.property_build
@@ -154,6 +159,134 @@ def get_actual_pool(spoiler: dict[str, Any]) -> dict[str, int]:
         except KeyError:
             actual_pool[test_item] = 1
     return actual_pool
+
+
+class TestRuleParser(unittest.TestCase):
+    def test_daytime_gold_skulltulas_ignore_night_only_for_tokens(self):
+        settings = Settings({'daytime_gold_skulltulas': True})
+        world = SimpleNamespace(settings=settings, ensure_tod_access=True)
+        parser = Rule_AST_Transformer(world)
+
+        skulltula = Location('Nighttime Gold Skulltula', location_type='GS Token')
+        regular_location = Location('Regular Nighttime Location')
+
+        skulltula_rule = parser.parse_rule('at_night', skulltula)
+        regular_rule = parser.parse_rule('at_night', regular_location)
+
+        self.assertTrue(skulltula_rule(None, tod=TimeOfDay.DAY))
+        self.assertFalse(regular_rule(None, tod=TimeOfDay.DAY))
+
+        settings.daytime_gold_skulltulas = False
+        skulltula_rule = parser.parse_rule('at_night', skulltula)
+        self.assertFalse(skulltula_rule(None, tod=TimeOfDay.DAY))
+
+
+class TestPatches(unittest.TestCase):
+    def test_daytime_gold_skulltulas_preserve_age_setups(self):
+        rom = Rom()
+        rom.buffer = bytearray(0xD00000)
+        scene_start = 0x10000
+        scene_end = 0x10400
+        empty_scene_start = 0x10800
+        empty_scene_end = 0x10810
+        child_only_scene_start = 0x10900
+        child_only_scene_end = 0x10980
+        room_start = 0x20000
+        room_end = 0x20400
+
+        rom.write_int32s(0x7430, [0x0000, 0x7430, 0x0000, 0x0000])
+        rom.write_int32s(0x7440, [0x7430, 0x7470, 0x7430, 0x0000])
+        rom.write_int32s(0x7450, [scene_start, scene_end, scene_start, 0x0000])
+        rom.write_int32s(0x7460, [room_start, room_end, room_start, 0x0000])
+
+        for scene in range(0x65):
+            rom.write_int32s(0xB71440 + scene * 0x14, [0x00000000, 0x00000000])
+        for scene in range(0x51, 0x65):
+            rom.write_int32s(0xB71440 + scene * 0x14, [empty_scene_start, empty_scene_end])
+        rom.write_int32s(0xB71440 + 0x52 * 0x14, [scene_start, scene_end])
+        rom.write_int32s(0xB71440 + 0x53 * 0x14, [child_only_scene_start, child_only_scene_end])
+
+        rom.write_int32s(empty_scene_start, [0x14000000, 0x00000000])
+        rom.write_int32s(child_only_scene_start, [0x18000000, 0x02000020])
+        rom.write_int32s(child_only_scene_start + 0x08, [0x14000000, 0x00000000])
+        rom.write_int32s(child_only_scene_start + 0x20, [0x00000000, 0x02000040, 0x00000000])
+        rom.write_int32s(scene_start, [0x18000000, 0x02000040])
+        rom.write_int32s(scene_start + 0x08, [0x04010000, 0x02000060])
+        rom.write_int32s(scene_start + 0x10, [0x14000000, 0x00000000])
+        rom.write_int32s(scene_start + 0x40, [0x02000080, 0x020000A0, 0x020000C0])
+        rom.write_int32s(scene_start + 0x60, [room_start, room_end])
+        rom.write_int32s(scene_start + 0xE0, [room_start, room_end])
+        for header_offset in (0x80, 0xA0, 0xC0):
+            rom.write_int32s(scene_start + header_offset, [0x04010000, 0x02000060])
+            rom.write_int32s(scene_start + header_offset + 0x08, [0x14000000, 0x00000000])
+
+        rom.write_int32s(room_start, [0x18000000, 0x03000040])
+        rom.write_int32s(room_start + 0x08, [0x01010000, 0x03000100])
+        rom.write_int32s(room_start + 0x10, [0x0B010000, 0x03000180])
+        rom.write_int32s(room_start + 0x18, [0x14000000, 0x00000000])
+        rom.write_int32s(room_start + 0x40, [0x03000060, 0x03000080, 0x030000A0])
+        for header_offset, actor_count, actor_offset, object_offset in (
+            (0x60, 2, 0x120, 0x182),
+            (0x80, 0, 0x150, 0x184),
+            (0xA0, 1, 0x160, 0x186),
+        ):
+            rom.write_int32s(
+                room_start + header_offset,
+                [0x01000000 | actor_count << 16, 0x03000000 | actor_offset],
+            )
+            rom.write_int32s(room_start + header_offset + 0x08, [0x0B010000, 0x03000000 | object_offset])
+            rom.write_int32s(room_start + header_offset + 0x10, [0x14000000, 0x00000000])
+
+        rom.write_int16(room_start + 0x180, 0x0013)
+        rom.write_int16(room_start + 0x182, 0x0024)
+        rom.write_int16(room_start + 0x184, 0x0013)
+        rom.write_int16(room_start + 0x186, 0x0024)
+
+        def actor_data(actor_id: int, z_rotation: int, params: int) -> bytes:
+            values = (actor_id, 1, 2, 3, 4, 5, z_rotation, params)
+            return b''.join(value.to_bytes(2, 'big') for value in values)
+
+        day_tree = actor_data(0x0077, 0x0000, 0x0201)
+        night_tree = actor_data(0x0077, 0x0071, 0x2001)
+        child_skulltula = actor_data(0x0095, 0x0000, 0xB102)
+        adult_skulltula = actor_data(0x0095, 0x0000, 0xB140)
+        rom.write_bytes(room_start + 0x100, day_tree)
+        rom.write_bytes(room_start + 0x120, night_tree + child_skulltula)
+        rom.write_bytes(room_start + 0x160, adult_skulltula)
+
+        rom.changed_address = {}
+        rom.changed_dma = {}
+        rom.original = rom.copy()
+        add_daytime_gold_skulltulas(rom)
+
+        new_room_start = rom.read_int32(scene_start + 0x60)
+        self.assertNotEqual(new_room_start, room_start)
+        self.assertEqual(rom.read_int32(scene_start + 0xE0), new_room_start)
+        self.assertEqual(rom.read_int32(scene_start + 0xE4), new_room_start + 0x440)
+
+        def read_actors(command_offset: int) -> list[bytes]:
+            command = new_room_start + command_offset
+            actor_count = rom.read_byte(command + 1)
+            actor_list = new_room_start + (rom.read_int32(command + 4) & 0x00FFFFFF)
+            return [bytes(rom.read_bytes(actor_list + actor * 0x10, 0x10)) for actor in range(actor_count)]
+
+        def read_objects(command_offset: int) -> list[int]:
+            command = new_room_start + command_offset
+            object_count = rom.read_byte(command + 1)
+            object_list = new_room_start + (rom.read_int32(command + 4) & 0x00FFFFFF)
+            return [rom.read_int16(object_list + object * 2) for object in range(object_count)]
+
+        child_day_actors = read_actors(0x08)
+        adult_day_actors = read_actors(0x80)
+        self.assertIn(child_skulltula, child_day_actors)
+        self.assertNotIn(adult_skulltula, child_day_actors)
+        self.assertIn(adult_skulltula, adult_day_actors)
+        self.assertNotIn(child_skulltula, adult_day_actors)
+        self.assertIn(night_tree, child_day_actors)
+        self.assertIn(0x0024, read_objects(0x10))
+        self.assertIn(0x0024, read_objects(0x88))
+        self.assertEqual(rom.read_int32(0xCE4718), 0x240D0001)
+        rom.verify_dmadata()
 
 
 class TestPlandomizer(unittest.TestCase):

@@ -1904,6 +1904,9 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         symbol = rom.sym('FAST_BUNNY_HOOD_ENABLED')
         rom.write_byte(symbol, 0x01)
 
+    if world.settings.daytime_gold_skulltulas:
+        add_daytime_gold_skulltulas(rom)
+
     # Automatically re-equip the current mask on scene change
     if world.settings.auto_equip_masks:
         rom.write_byte(rom.sym('CFG_MASK_AUTOEQUIP'), 0x01)
@@ -2265,6 +2268,251 @@ def scene_get_actors(rom: Rom, actor_func: Callable[[Rom, int, int, int], Any], 
 
         scene_data = scene_data + 8
     return actors
+
+
+def add_daytime_gold_skulltulas(rom: Rom) -> None:
+    scene_table = 0x00B71440
+    en_sw = 0x0095
+    en_wood02 = 0x0077
+    object_st = 0x0024
+    child_day_night = (0, 1)
+    adult_day_night = (2, 3)
+    nighttime_gold_skulltula_setups = {
+        0x52: (child_day_night, adult_day_night),  # Kakariko Village
+        0x53: (child_day_night,),                  # Graveyard
+        0x54: (child_day_night, adult_day_night),  # Zora's River
+        0x55: (child_day_night, adult_day_night),  # Kokiri Forest
+        0x56: (adult_day_night,),                  # Sacred Forest Meadow
+        0x57: (child_day_night, adult_day_night),  # Lake Hylia
+        0x58: (adult_day_night,),                  # Zora's Domain
+        0x59: (child_day_night, adult_day_night),  # Zora's Fountain
+        0x5A: (child_day_night, adult_day_night),  # Gerudo Valley
+        0x5B: (adult_day_night,),                  # Lost Woods
+        0x5C: (adult_day_night,),                  # Desert Colossus
+        0x5D: (adult_day_night,),                  # Gerudo's Fortress
+        0x60: (adult_day_night,),                  # Death Mountain Trail
+        0x63: (child_day_night,),                  # Lon Lon Ranch
+    }
+
+    def get_header_commands(header: int) -> list[tuple[int, int, int, int]]:
+        commands = []
+        for _ in range(0x20):
+            command = rom.read_byte(header)
+            commands.append((header, command, rom.read_byte(header + 1), rom.read_int32(header + 4)))
+            header += 8
+            if command == 0x14:
+                return commands
+        raise RuntimeError('Scene or room header is missing its end command')
+
+    def get_alternate_headers(file_start: int) -> list[Optional[int]]:
+        headers: list[Optional[int]] = [file_start, None, None, None]
+        for _, command, _, data in get_header_commands(file_start):
+            if command == 0x18:
+                header_list = file_start + (data & 0x00FFFFFF)
+                for setup in range(1, 4):
+                    header_offset = rom.read_int32(header_list + (setup - 1) * 4) & 0x00FFFFFF
+                    if header_offset != 0:
+                        headers[setup] = file_start + header_offset
+                break
+        return headers
+
+    def get_setup_header(file_start: int, setup: int) -> int:
+        headers = get_alternate_headers(file_start)
+        header = headers[setup]
+        # Vanilla falls back from adult night to adult day before using the base header.
+        if header is None and setup == 3:
+            header = headers[2]
+        return header or file_start
+
+    def get_room_list(scene_start: int, setup: int) -> list[tuple[int, int, int]]:
+        scene_header = get_setup_header(scene_start, setup)
+        for _, command, room_count, data in get_header_commands(scene_header):
+            if command == 0x04:
+                room_list = scene_start + (data & 0x00FFFFFF)
+                return [
+                    (
+                        rom.read_int32(room_list + room * 8),
+                        rom.read_int32(room_list + room * 8 + 4),
+                        room_list + room * 8,
+                    )
+                    for room in range(room_count)
+                ]
+        return []
+
+    def get_actor_list(room_start: int, setup: int) -> tuple[int, Optional[int], list[tuple[int, bytes]]]:
+        room_header = get_setup_header(room_start, setup)
+        for command_address, command, actor_count, data in get_header_commands(room_header):
+            if command == 0x01:
+                actor_list = room_start + (data & 0x00FFFFFF)
+                return room_header, command_address, [
+                    (actor_list + actor * 0x10, bytes(rom.read_bytes(actor_list + actor * 0x10, 0x10)))
+                    for actor in range(actor_count)
+                ]
+        return room_header, None, []
+
+    def get_object_list(room_start: int, setup: int) -> tuple[Optional[int], list[int]]:
+        room_header = get_setup_header(room_start, setup)
+        for command_address, command, object_count, data in get_header_commands(room_header):
+            if command == 0x0B:
+                object_list = room_start + (data & 0x00FFFFFF)
+                return command_address, [
+                    rom.read_int16(object_list + object * 2)
+                    for object in range(object_count)
+                ]
+        return None, []
+
+    def get_en_sw_type(actor: bytes) -> int:
+        params = int.from_bytes(actor[0x0E:0x10], 'big')
+        if params & 0x8000:
+            return ((((params - 0x8000) & 0xFFFF) >> 13) + 1)
+        return params >> 13
+
+    actor_lists: dict[tuple[int, int], list[bytes]] = {}
+    object_lists: dict[tuple[int, int], list[int]] = {}
+    tree_updates: dict[tuple[int, int], bytes] = {}
+
+    def add_required_object(room_start: int, setup: int) -> None:
+        object_command, objects = get_object_list(room_start, setup)
+        if object_st in objects:
+            return
+        if object_command is None:
+            raise RuntimeError('Cannot add daytime Gold Skulltulas to a room without an object list')
+        object_list_key = (room_start, object_command - room_start)
+        merged_objects = object_lists.setdefault(object_list_key, objects.copy())
+        if object_st not in merged_objects:
+            merged_objects.append(object_st)
+
+    for scene, setup_pairs in nighttime_gold_skulltula_setups.items():
+        scene_start = rom.read_int32(scene_table + scene * 0x14)
+        for day_setup, night_setup in setup_pairs:
+            day_rooms = get_room_list(scene_start, day_setup)
+            night_rooms = get_room_list(scene_start, night_setup)
+            for room_index, (night_room, _, _) in enumerate(night_rooms):
+                if room_index >= len(day_rooms):
+                    continue
+
+                day_room = day_rooms[room_index][0]
+                day_header, day_command, day_actors = get_actor_list(day_room, day_setup)
+                night_header, _, night_actors = get_actor_list(night_room, night_setup)
+                if day_header == night_header:
+                    continue
+
+                day_actor_data = [actor for _, actor in day_actors]
+                missing_skulltulas = [
+                    actor
+                    for _, actor in night_actors
+                    if int.from_bytes(actor[0:2], 'big') == en_sw
+                    and get_en_sw_type(actor) in (1, 2)
+                    and actor not in day_actor_data
+                ]
+                if missing_skulltulas:
+                    if day_command is None:
+                        raise RuntimeError('Cannot add daytime Gold Skulltulas to a room without an actor list')
+                    actor_list_key = (day_room, day_command - day_room)
+                    merged_actors = actor_lists.setdefault(actor_list_key, day_actor_data.copy())
+                    for actor in missing_skulltulas:
+                        if actor not in merged_actors:
+                            merged_actors.append(actor)
+                    add_required_object(day_room, day_setup)
+
+                # The Kakariko tree Gold Skulltula is spawned by En_Wood02 rather than placed as En_Sw.
+                # Copy only its Skulltula payload onto the matching daytime tree, without duplicating the tree.
+                for _, night_actor in night_actors:
+                    if (int.from_bytes(night_actor[0:2], 'big') != en_wood02
+                            or int.from_bytes(night_actor[0x0C:0x0E], 'big') == 0):
+                        continue
+                    for day_actor_index, (day_actor_address, day_actor) in enumerate(day_actors):
+                        if (int.from_bytes(day_actor[0:2], 'big') == en_wood02
+                                and day_actor[2:0x0C] == night_actor[2:0x0C]
+                                and day_actor[0x0F] == night_actor[0x0F]
+                                and day_actor[0x0C:0x10] != night_actor[0x0C:0x10]):
+                            tree_updates[(day_room, day_actor_address - day_room)] = night_actor[0x0C:0x10]
+                            add_required_object(day_room, day_setup)
+                            if day_command is not None:
+                                actor_list_key = (day_room, day_command - day_room)
+                                if actor_list_key in actor_lists:
+                                    actor_lists[actor_list_key][day_actor_index] = (
+                                        day_actor[0:0x0C] + night_actor[0x0C:0x10]
+                                    )
+                            break
+
+    actor_lists_by_room: dict[int, list[tuple[int, list[bytes]]]] = {}
+    for (room_start, command_offset), actors in actor_lists.items():
+        actor_lists_by_room.setdefault(room_start, []).append((command_offset, actors))
+
+    object_lists_by_room: dict[int, list[tuple[int, list[int]]]] = {}
+    for (room_start, command_offset), objects in object_lists.items():
+        object_lists_by_room.setdefault(room_start, []).append((command_offset, objects))
+
+    updated_rooms = sorted(set(actor_lists_by_room) | set(object_lists_by_room))
+    room_ends = {
+        room_start: rom.dma.get_dmadata_record_by_key(room_start).end
+        for room_start in updated_rooms
+    }
+    room_references: dict[int, set[int]] = {room_start: set() for room_start in updated_rooms}
+    scene_files = {
+        (
+            rom.read_int32(scene_table + scene * 0x14),
+            rom.read_int32(scene_table + scene * 0x14 + 4),
+        )
+        for scene in nighttime_gold_skulltula_setups
+    }
+    # Alternate scene headers may contain cutscene setups beyond child/adult day/night. Search every
+    # scene file for exact room VROM pairs so those setups also follow rooms relocated below.
+    for scene_start, scene_end in scene_files:
+        for address in range(scene_start, scene_end - 7, 4):
+            room_start = rom.read_int32(address)
+            if (room_start in room_references
+                    and rom.read_int32(address + 4) == room_ends[room_start]):
+                room_references[room_start].add(address)
+
+    relocated_rooms: dict[int, int] = {}
+    for old_start in updated_rooms:
+        room_actor_lists = actor_lists_by_room.get(old_start, [])
+        room_object_lists = object_lists_by_room.get(old_start, [])
+        old_end = room_ends[old_start]
+        old_size = old_end - old_start
+        new_size = old_size + sum(len(actors) * 0x10 for _, actors in room_actor_lists)
+        new_size += sum(len(objects) * 2 for _, objects in room_object_lists)
+        new_size = (new_size + 0x0F) & ~0x0F
+        new_start = rom.dma.free_space(new_size)
+
+        room_file = File('daytime_gold_skulltulas', old_start, old_end, new_start)
+        room_file.relocate(rom)
+        relocated_rooms[old_start] = new_start
+
+        data_offset = old_size
+        for command_offset, actors in sorted(room_actor_lists):
+            if len(actors) > 0xFF:
+                raise RuntimeError('Too many actors in room after adding daytime Gold Skulltulas')
+            actor_data = b''.join(actors)
+            rom.write_bytes(new_start + data_offset, actor_data)
+            rom.write_byte(new_start + command_offset + 1, len(actors))
+            rom.write_int32(new_start + command_offset + 4, 0x03000000 | data_offset)
+            data_offset += len(actor_data)
+
+        for command_offset, objects in sorted(room_object_lists):
+            if len(objects) > 0xFF:
+                raise RuntimeError('Too many objects in room after adding daytime Gold Skulltulas')
+            rom.write_int16s(new_start + data_offset, objects)
+            rom.write_byte(new_start + command_offset + 1, len(objects))
+            rom.write_int32(new_start + command_offset + 4, 0x03000000 | data_offset)
+            data_offset += len(objects) * 2
+
+        room_file.end = new_start + new_size
+        update_dmadata(rom, room_file)
+        if not room_references[old_start]:
+            raise RuntimeError('Cannot find scene references for room containing daytime Gold Skulltulas')
+        for room_reference in room_references[old_start]:
+            rom.write_int32s(room_reference, [new_start, room_file.end])
+
+    for (room_start, actor_offset), tree_data in tree_updates.items():
+        patched_room_start = relocated_rooms.get(room_start, room_start)
+        rom.write_bytes(patched_room_start + actor_offset + 0x0C, tree_data)
+
+    # En_Sw type 2 normally reads the day/night flag before choosing its target scale.
+    # Force that local check to see night so existing and copied actors remain active during the day.
+    rom.write_int32(0xCE4718, 0x240D0001)  # addiu t5, r0, 1
 
 
 def get_actor_list(rom: Rom, actor_func: Callable[[Rom, int, int, int], Any]) -> dict[int, Any]:
