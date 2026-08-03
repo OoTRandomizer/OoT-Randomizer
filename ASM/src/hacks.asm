@@ -3827,13 +3827,13 @@ DemoEffect_DrawJewel_AfterHook:
 ; Load current mask on scene change
 ;==================================================================================================
 ; Player_Init (0x80844DE8)
-; Replaces:
-;jal     func_80834000
-.orga 0xBE28EC
+; Also sets display name timer for grottos/GFF
+; Replaces: jal     Player_UseItem
+.orga 0xBE28EC  ; 0x80844f3c
     jal     player_restore_mask
 
 ; Dumb hack to not relocate the function call to player_restore_mask
-.orga 0xBF2C14
+.orga 0xBF2C14  ; 0x80855264 in reloc?
     nop
 
 ; Save the current mask on file save
@@ -3841,7 +3841,7 @@ DemoEffect_DrawJewel_AfterHook:
 ;lh      t8, 0xA4(s1)
 ;lui     t1, 0x8012
 ; SaveContext->save.info.playerData.savedSceneId = play->sceneId;
-.orga 0xBC5120
+.orga 0xBC5120  ; 0x80827728 in kaleidoscope_update?
     jal     player_save_mask
     nop
 

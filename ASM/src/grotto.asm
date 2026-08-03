@@ -60,6 +60,8 @@ scene_exit_hook:
     addiu   sp, sp, 0x10
 
 @@return:
+    la      t0,DISPLAY_GROTTO_TIMER ; zero in case insta-exiting grotto/GFF (set on player init)
+    sb      zero,(t0)
     jr      ra
     sh      t6, 0x1E1A(at)          ; set the entrance index to load in the context
 
@@ -104,8 +106,10 @@ handle_grotto_load:
     bgez    t0, @@return            ; dynamic exits (entrance indexes > 0x7FF9) shouldn't be translated
     li      t0, 0x1000
     sub     t0, a0, t0
-    bltz    t0, @@return            ; normal exits (entrance indexes < 0x1000) shouldn't be translated either
+    bltzl   t0, @@return         ; normal exits (entrance indexes < 0x1000) shouldn't be translated either
+    nop
 
+@@GrottoFix:
     ; Translate to grotto load
     la      t1, SAVE_CONTEXT
     la      t2, GROTTO_LOAD_TABLE

@@ -1575,6 +1575,9 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         # Update grotto actors based on their new entrance
         set_grotto_shuffle_data(rom, world)
 
+    if world.settings.display_grotto_names:
+        rom.write_byte(rom.sym('CFG_DISPLAY_GROTTO_NAMES'), 0x01)
+
     if world.settings.shuffle_cows:
         rom.write_byte(rom.sym('SHUFFLE_COWS'), 0x01)
         # Move some cows because they are too close from each other in vanilla

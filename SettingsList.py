@@ -1778,9 +1778,22 @@ class SettingInfos:
         ''',
         default        = False,
         shared         = True,
+        disable        = {
+            False: {'settings': ['display_grotto_names']},
+        },
         gui_params     = {
             'randomize_key': 'randomize_settings',
         },
+    )
+
+    display_grotto_names = Checkbutton(
+        gui_text       = 'Display Grotto and GF Names',
+        gui_tooltip    = '''\
+            Displays the name of a grotto (as well as Great Fairy
+            Fountains) when entering it and on the pause screen.
+        ''',
+        default        = False,
+        shared         = True,
     )
 
     shuffle_dungeon_entrances = Combobox(
