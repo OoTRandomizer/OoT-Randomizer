@@ -96,11 +96,14 @@ void DisplayGrottoName(z64_disp_buf_t* db) {
             }
         }
 
+        uint8_t left = 33;
+        uint8_t top = 196;
+
         gSPDisplayList(db->p++, &setup_db);
         gDPSetCombineMode(db->p++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
         gDPSetPrimColor(db->p++, 0, 0, 0, 0, 0, alpha);
-        text_print_size(db, text, 11, 226, 10, 10);
+        text_print_size(db, text, left + 1, top + 1, 10, 10);
         gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, alpha);
-        text_print_size(db, text, 10, 225, 10, 10);
+        text_print_size(db, text, left, top, 10, 10);
     }
 }
