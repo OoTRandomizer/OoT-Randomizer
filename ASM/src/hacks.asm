@@ -1276,20 +1276,13 @@ nop
 nop
 
 ; Remove "to Equip" text if the cursor is on an empty slot
+; See KaleidoScope_PreventEmptyUnequipSword for prevent empty equip
 ; Replaces:
 ;   lbu     v1, 0x0000 (t4)
 ;   addiu   at, r0, 0x0009
 .orga 0xBB6688 ; In memory: 0x8038E008
     jal     equipment_menu_prevent_empty_equip
     nop
-
-; Prevent empty slots from being equipped
-; Replaces:
-;   addu    t8, t4, v0
-;   lbu     v1, 0x0000 (t8)
-.orga 0xBB67C4 ; In memory: 0x8038E144
-    jal     equipment_menu_prevent_empty_equip
-    addu    t4, t4, v0
 
 ;==================================================================================================
 ; Item menu
@@ -4170,3 +4163,4 @@ DemoEffect_DrawJewel_AfterHook:
 .include "hacks/z_en_sa.asm"
 .include "hacks/en_box.asm"
 .include "hacks/z_scene.asm"
+.include "hacks/ovl_kaleido_scope.asm"
