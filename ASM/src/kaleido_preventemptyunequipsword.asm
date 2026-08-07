@@ -2,7 +2,7 @@ KaleidoScope_PreventEmptyUnequipSword:  ; t1 savectx t8 age req table s6 pausect
     addiu   sp,sp,-24
     sw      ra,24(sp)
     sw      v0,28(sp)
-    
+
     jal     equipment_menu_slot_filled  ; prevent empty slots from being equipped
     nop
     bnezl   v0,@@CheckUse
