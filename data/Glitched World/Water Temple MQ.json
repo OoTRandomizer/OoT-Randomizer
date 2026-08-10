@@ -55,7 +55,7 @@
                 (Hookshot or adv_water_hop)",
             "Water Temple Before Boss Lower": "can_use(Longshot) or
                 (adv_hovers_recoil and can_use(Hover_Boots) and Megaton_Hammer) or
-                (adv_water_hop and can_use(Iron_Boots) and Raise_Water_Level) or
+                (adv_water_hop and can_use(Iron_Boots) and Reset_Water_Level) or
                 ((can_mega or can_hess or can_superslide) and can_use(Hover_Boots)) or
                 can_hover",
             "Water Temple After Waterfall Room": "
