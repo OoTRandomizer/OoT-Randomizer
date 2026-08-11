@@ -4109,6 +4109,21 @@ class SettingInfos:
         shared         = True,
     )
 
+    no_age_limits = Checkbutton(
+        gui_text       = 'Disable Item Age Checks',
+        gui_tooltip    = '''\
+            Make most items usable as both ages.
+            Exceptions are the bow and magic arrows
+            as child, hookshot as child, and magic
+            beans as adult.
+
+            Not considered by logic. It may be possible
+            to softlock yourself if you are not careful.
+        ''',
+        default        = False,
+        shared         = True,
+    )
+
     starting_tod = Combobox(
         gui_text       = 'Starting Time of Day',
         default        = 'default',
