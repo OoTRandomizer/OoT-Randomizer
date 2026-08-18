@@ -26,7 +26,7 @@ RESOURCES = $(patsubst $(RESOURCEDIR)/%.bin,$(OBJDIR)/%_bin.o,$(sort $(wildcard 
 
 .PHONY: all clean bundle symbols
 
-all: clean bundle symbols
+all: bundle symbols
 
 $(OBJDIR)/%.o: %.c 
 	$(CC) -o $@ -c $< $(CFLAGS) $(CPPFLAGS)

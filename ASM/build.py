@@ -48,6 +48,8 @@ if base_rom_size != 0x400_0000:
 
 if compile_c:
     clist = ['make']
+    if os.path.isdir(os.path.join(run_dir, 'build', 'bin')):
+        call([*clist, 'clean'])
     clist.append(f'MIPS_BINUTILS_PREFIX={mips_binutils_prefix}')
     if debug_c:
         clist.append(f'DEBUG_MODE=1')
