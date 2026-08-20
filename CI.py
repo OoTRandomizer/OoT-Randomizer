@@ -20,7 +20,7 @@ import Unittest as Tests
 from Language import Language, ItemMessage
 from SettingsList import SettingInfos, logic_tricks, validate_settings
 import Unittest as Tests
-from Utils import data_path
+from Utils import data_path, ensure_venv
 
 
 def error(msg: str, can_fix: bool) -> None:
@@ -254,7 +254,7 @@ def run_ci_checks() -> NoReturn:
     parser.add_argument('--only_unit_tests', help="Only run unit tests", action='store_true')
     parser.add_argument('--release', help="Include checks for release branch", action='store_true')
     parser.add_argument('--fix', help='Automatically apply fixes where possible', action='store_true')
-    args = parser.parse_args()
+    args, unknown = parser.parse_known_args()
 
     if not args.no_unit_tests:
         run_unit_tests()
@@ -297,4 +297,5 @@ def exit_ci(fix_errors: bool = False) -> NoReturn:
 
 
 if __name__ == '__main__':
+    ensure_venv()
     run_ci_checks()

@@ -5,6 +5,11 @@ import zipfile
 import zlib
 from typing import TYPE_CHECKING, Optional
 
+try:
+    import numpy
+except ImportError:
+    pass
+
 from Rom import Rom
 from ntype import BigStream
 
@@ -108,7 +113,10 @@ def create_patch_file(rom: Rom, file: str, xor_range: tuple[int, int] = (0x00B8A
     xor_address = random.Random().randint(*xor_range)
     patch_data.append_int32(xor_address)
 
-    new_buffer = copy.copy(rom.original.buffer)
+    new_buffer = numpy.empty(134217728, dtype=numpy.uint16)
+    rom_buffer = copy.copy(rom.original.buffer)
+    new_buffer[:len(rom_buffer)] = numpy.frombuffer(rom_buffer, dtype=numpy.uint8)
+    new_buffer[len(rom_buffer):] = 1000
 
     # write every changed DMA entry
     for dma_index, (from_file, start, size) in rom.changed_dma.items():
@@ -120,14 +128,13 @@ def create_patch_file(rom: Rom, file: str, xor_range: tuple[int, int] = (0x00B8A
         # We don't trust files that have modified DMA to have their
         # changed addresses tracked correctly, so we invalidate the
         # entire file
-        for address in range(start, start + size):
-            rom.changed_address[address] = rom.buffer[address]
+        rom.changed_address[start:start+size] = numpy.frombuffer(rom.buffer[start:start+size], dtype=numpy.uint8)
 
         # Simulate moving the files to know which addresses have changed
         if from_file >= 0:
             old_dma_start, old_dma_end, old_size = rom.original.dma.get_dmadata_record_by_key(from_file).as_tuple()
             copy_size = min(size, old_size)
-            new_buffer[start:start+copy_size] = rom.original.read_bytes(from_file, copy_size)
+            new_buffer[start:start+copy_size] = numpy.frombuffer(rom.original.read_bytes(from_file, copy_size), dtype=numpy.uint8)
             new_buffer[start+copy_size:start+size] = [0] * (size - copy_size)
         else:
             # this is a new file, so we just fill with null data
@@ -138,9 +145,19 @@ def create_patch_file(rom: Rom, file: str, xor_range: tuple[int, int] = (0x00B8A
 
     # filter down the addresses that will actually need to change.
     # Make sure to not include any of the DMA table addresses
-    changed_addresses = [address for address, value in rom.changed_address.items()
-                         if (address >= dma_end or address < dma_start) and
-                         (address in rom.force_patch or new_buffer[address] != value)]
+    n = len(rom.changed_address)
+    outside_mask = numpy.ones(n, dtype=bool)
+    outside_mask[dma_start:dma_end] = False
+    # Check for bytes that actually changed, accounting for DMA moves.
+    # 1000 is a pre-filled padding value in the changed buffer that
+    # is safe to exclude as all the changed bytes are uint8 (<255).
+    diff_mask = (rom.changed_address != new_buffer) & (rom.changed_address != 1000)
+    # Bytes that must always change (usually just the ROM header)
+    force_mask = numpy.zeros(n, dtype=bool)
+    force_mask[rom.force_patch] = True
+    # Determine final changed bytes to keep
+    mask = outside_mask & (force_mask | diff_mask)
+    changed_addresses = numpy.nonzero(mask)[0]
     changed_addresses.sort()
 
     # Write the address changes. We'll store the data with XOR so that
@@ -237,7 +254,7 @@ def apply_patch_file(rom: Rom, settings: Settings, sub_file: Optional[str] = Non
             # If a source file is listed, copy from there
             old_dma_start, old_dma_end, old_size = rom.original.dma.get_dmadata_record_by_key(from_file).as_tuple()
             copy_size = min(size, old_size)
-            rom.write_bytes(start, rom.original.read_bytes(from_file, copy_size))
+            rom.write_bytes(start, rom.original.read_bytes(from_file, copy_size), True)
             rom.buffer[start+copy_size:start+size] = [0] * (size - copy_size)
         else:
             # if it's a new file, fill with 0s
@@ -273,8 +290,5 @@ def apply_patch_file(rom: Rom, settings: Settings, sub_file: Optional[str] = Non
                 data += [b ^ key]
 
         # Save the new data to rom
-        if settings.repatch_cosmetics:
-            rom.write_bytes_restrictive(block_start, block_size, data)
-        else:
-            rom.write_bytes(block_start, data)
+        rom.write_bytes(block_start, data, True)
         block_start = block_start+block_size

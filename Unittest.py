@@ -1099,3 +1099,23 @@ class TestLanguageFile(unittest.TestCase):
                 diff_texts = "\n".join(diff_keys)
                 self.assertTrue(not diff_keys, msg = "\n{}: some properties are wrong in property.json\n\n{}".format(lang, diff_texts))
                 self.assertEqual(bin_full, [], msg = "\n{}: some non-wanted bin files are included".format(lang))
+
+class TestSceneFiles(unittest.TestCase):
+    # Compares byte-for-byte between parsed output
+    # read from the rom and the original unparsed data.
+    @unittest.skipUnless(os.path.isfile('ZOOTDEC.z64'), "requires the vanilla ROM to compare to")
+    def test_vanilla_scene_file_parsing(self):
+        from Scene import compare_parsed_data_to_rom
+        uncompressed_rom = Rom('ZOOTDEC.z64')
+        compare_parsed_data_to_rom(uncompressed_rom)
+
+    # Verifies the hard-coded addresses defined for pointers
+    # located outside scene files that reference scene file
+    # assets are correct. Bytes at the address are read and
+    # compared to the corresponding segment address produced
+    # by the parsed scene asset.
+    @unittest.skipUnless(os.path.isfile('ZOOTDEC.z64'), "requires the vanilla ROM to compare to")
+    def test_vanilla_scene_file_pointers(self):
+        from Scene import check_external_reference_locations
+        uncompressed_rom = Rom('ZOOTDEC.z64')
+        check_external_reference_locations(uncompressed_rom)

@@ -15,10 +15,14 @@ import subprocess
 import webbrowser
 
 from SettingsToJson import create_settings_list_json
-from Utils import local_path, data_path, compare_version, VersionError
+from Utils import local_path, data_path, compare_version, ensure_venv, VersionError
 
 
 def gui_main() -> None:
+    # Make sure we're running in a virtual environment with
+    # required dependencies. Install and relaunch if we are not.
+    ensure_venv()
+
     try:
         version_check("Node", "14.15.0", "https://nodejs.org/en/download/")
         version_check("NPM", "6.12.0", "https://nodejs.org/en/download/")

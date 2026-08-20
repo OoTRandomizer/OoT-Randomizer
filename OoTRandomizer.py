@@ -9,8 +9,10 @@ import logging
 import os
 import time
 
+from Utils import ensure_venv
 
 def start() -> None:
+    ensure_venv()
     from Main import main, from_patch_file, cosmetic_patch, diff_roms
     from Settings import get_settings_from_command_line_args
     from Utils import check_version, VersionError, local_path

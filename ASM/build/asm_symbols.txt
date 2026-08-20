@@ -160,7 +160,6 @@
 018B6A38 .dbl:0008
 018B6A48 .dbl:0008
 02000E00 z64_EquippedItemOutlineTex
-026C10E3 .byt:0001
 7FE288A0 .byt:0400
 80000DF0 DmaMgr_RequestSync
 80011B54 EnItem00_Init_Continue

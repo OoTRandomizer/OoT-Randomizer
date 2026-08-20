@@ -2,6 +2,7 @@
 
 ## New features
 * Can now generate roms that use the Japanese language for all text, including text added by the randomizer.
+* New setting `Nighttime Skulltulas in Daytime` that makes Gold Skulltulas that normally appear only at night available any time of day.
 
 ## Bug fixes
 * Fix a crash that could occur on Wii VC when starting a cutscene while climbing a ladder.
