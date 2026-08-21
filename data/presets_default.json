@@ -681,12 +681,12 @@
         "bridge": "dungeons",
         "bridge_medallions": 6,
         "bridge_stones": 3,
-        "bridge_rewards": 9,
+        "bridge_rewards": 7,
         "bridge_tokens": 100,
         "bridge_hearts": 20,
         "trials_random": false,
         "trials": 0,
-        "shuffle_ganon_bosskey": "remove",
+        "shuffle_ganon_bosskey": "dungeons",
         "ganon_bosskey_medallions": 6,
         "ganon_bosskey_stones": 3,
         "ganon_bosskey_rewards": 9,
@@ -775,15 +775,7 @@
             "Deku Theater Mask of Truth",
             "Kak 40 Gold Skulltula Reward",
             "Kak 50 Gold Skulltula Reward",
-            "GF HBA 1500 Points",
-            "Ganons Castle Light Trial First Left Chest",
-            "Ganons Castle Light Trial Second Left Chest",
-            "Ganons Castle Light Trial Third Left Chest",
-            "Ganons Castle Light Trial First Right Chest",
-            "Ganons Castle Light Trial Second Right Chest",
-            "Ganons Castle Light Trial Third Right Chest",
-            "Ganons Castle Light Trial Invisible Enemies Chest",
-            "Ganons Castle Light Trial Lullaby Chest"
+            "GF HBA 1500 Points"
         ],
         "allowed_tricks": [
             "logic_fewer_tunic_requirements",
@@ -816,9 +808,16 @@
         "starting_songs": [
             "prelude"
         ],
-        "add_random_starting_items": false,
-        "random_starting_items_exclude": [],
-        "random_starting_items_count": 0,
+        "add_random_starting_items": true,
+        "random_starting_items_exclude": [
+            "songs",
+            "bombchus",
+            "shields",
+            "deku_upgrades",
+            "health_upgrades",
+            "junk"
+        ],
+        "random_starting_items_count": 1,
         "start_with_consumables": true,
         "start_with_rupees": false,
         "starting_hearts": 3,
