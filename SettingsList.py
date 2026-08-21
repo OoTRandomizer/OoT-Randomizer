@@ -1347,6 +1347,7 @@ class SettingInfos:
         default        = 'closed',
         choices        = {
             'closed': 'Default Behavior (Closed)',
+            'fast':   'Opens automatically with Letter',
             'adult':  'Open For Adult',
             'open':   'Always Open',
         },
@@ -1354,6 +1355,10 @@ class SettingInfos:
             'Default Behavior': King Zora obstructs the way to
             Zora's Fountain. Ruto's Letter must be shown as
             child in order to move him for both eras.
+
+            'Opens automatically with Letter': King Zora will move 
+            automatically when Ruto's Letter is found. If it is 
+            obtained in Zora's Domain, you need to reload the area.
 
             'Open For Adult': King Zora is always moved in
             the adult era. This means Ruto's Letter is only

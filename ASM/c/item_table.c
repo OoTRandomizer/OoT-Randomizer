@@ -347,6 +347,8 @@ item_row_t item_table[GI_RANDO_MAX] = {
     [GI_WATER_MEDALLION]                                        = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x003D, 0x01B1, 0x98, no_upgrade, give_quest_item,  2, -1, NULL), // Water Medallion
     [GI_SHADOW_MEDALLION]                                       = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x0041, 0x01B2, 0x99, no_upgrade, give_quest_item,  4, -1, NULL), // Shadow Medallion
     [GI_SPIRIT_MEDALLION]                                       = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x003F, 0x01B3, 0x9A, no_upgrade, give_quest_item,  3, -1, NULL), // Spirit Medallion
+
+    [GI_FAST_LETTER_BOTTLE]                                     = ITEM_ROW(0x53,      GILDED_CHEST, 0x14, -1, 0x90B6, 0x010B, 0x45, no_upgrade, handle_rutos_letter, -1, -1, NULL), // Letter Bottle with fast fountain enabled
 };
 
 /*  Determine which message to display based on the number of silver rupees collected.

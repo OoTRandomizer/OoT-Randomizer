@@ -264,6 +264,14 @@ void trade_quest_upgrade(z64_file_t* save, int16_t item_id, int16_t arg2) {
     SaveFile_SetTradeItemAsOwned(item_id);
 }
 
+extern uint8_t FAST_FOUNTAIN;
+void handle_rutos_letter(z64_file_t* save, int16_t item_id, int16_t arg2) {
+    if (!FAST_FOUNTAIN) {
+        return;
+    }
+
+    save->event_chk_inf[3] = save->event_chk_inf[3] | 0x0008; // "King Zora Moved Aside"
+}
 void unlock_ocarina_note(z64_file_t* save, int16_t arg1, int16_t arg2) {
     switch(arg1) {
         case 0:

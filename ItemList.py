@@ -320,7 +320,8 @@ class GetItemId(IntEnum):
     GI_SHADOW_MEDALLION = 0x012E
     GI_SPIRIT_MEDALLION = 0x012F
 
-    GI_RANDO_MAX = 0x0130
+    GI_FAST_LETTER_BOTTLE = 0x00C8
+    GI_RANDO_MAX = 0x0131
 
 # Progressive: True  -> Advancement
 #              False -> Priority

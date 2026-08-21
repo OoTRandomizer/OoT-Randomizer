@@ -2613,7 +2613,8 @@
             "ZD Diving Minigame": "is_child",
             "ZD Chest": "can_use(Sticks)",
             "Deliver Rutos Letter": "
-                is_child and Rutos_Letter and zora_fountain != 'open'",
+                (is_child and Rutos_Letter and zora_fountain == 'closed') or
+                (Rutos_Letter and zora_fountain == 'fast')",
             "ZD King Zora Thawed": "'King Zora Thawed'",
             "ZD Pot 1": "True",
             "ZD Pot 2": "True",
