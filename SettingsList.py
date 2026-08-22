@@ -1357,8 +1357,7 @@ class SettingInfos:
             child in order to move him for both eras.
 
             'Opens automatically with Letter': King Zora will move 
-            automatically when Ruto's Letter is found. If it is 
-            obtained in Zora's Domain, you need to reload the area.
+            automatically when Ruto's Letter is found.
 
             'Open For Adult': King Zora is always moved in
             the adult era. This means Ruto's Letter is only

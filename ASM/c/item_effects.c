@@ -3,6 +3,7 @@
 #include "trade_quests.h"
 #include "bg_gate_shutter.h"
 #include "save.h"
+#include "en_kz.h"
 
 #define rupee_cap ((uint16_t*)0x800F8CEC)
 volatile uint8_t MAX_RUPEES = 0;
@@ -265,12 +266,32 @@ void trade_quest_upgrade(z64_file_t* save, int16_t item_id, int16_t arg2) {
 }
 
 extern uint8_t FAST_FOUNTAIN;
+extern EnKzActionFunc OVL_EnKz_SetMovedPos;
 void handle_rutos_letter(z64_file_t* save, int16_t item_id, int16_t arg2) {
     if (!FAST_FOUNTAIN) {
         return;
     }
 
+    bool kz_already_moved = save->event_chk_inf[3] & 0x0008;
+    if (kz_already_moved) {
+        return;
+    }
     save->event_chk_inf[3] = save->event_chk_inf[3] | 0x0008; // "King Zora Moved Aside"
+
+    // If we're in Zora's Domain, move King Zora directly to avoid a reload of the area.
+    if (z64_game.scene_index == 0x58) {
+        // Loop through the actors looking for King Zora.
+        z64_actor_t* curr = z64_game.actorLists[ACTORCAT_NPC].head;
+        while (curr != NULL) {
+            if (curr->actor_id == 0x0164) { // Check for EN_KZ
+                EnKz* KZ = (EnKz*)curr;                
+                EnKzActionFunc EnKz_SetMovedPos = resolve_overlay_addr(&OVL_EnKz_SetMovedPos, 0x0164);
+                EnKz_SetMovedPos(KZ, &z64_game);
+                break;
+            }
+            curr = curr->next;
+        }
+    }
 }
 void unlock_ocarina_note(z64_file_t* save, int16_t arg1, int16_t arg2) {
     switch(arg1) {

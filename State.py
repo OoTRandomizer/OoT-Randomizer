@@ -87,8 +87,7 @@ class State:
 
     def has_bottle(self, **kwargs) -> bool:
         # Extra Ruto's Letter are automatically emptied
-        return self.has_any_of(ItemInfo.bottle_ids) or self.has(Rutos_Letter, 2) or 
-        (self.has(Rutos_Letter, 1) and self.world.settings.zora_fountain == 'fast')
+        return self.has_any_of(ItemInfo.bottle_ids) or self.has(Rutos_Letter, 2) or (self.has(Rutos_Letter, 1) and self.world.settings.zora_fountain == 'fast')
 
     def has_hearts(self, count: int) -> bool:
         # Warning: This is limited by World.max_progressions so it currently only works if hearts are required for LACS, bridge, or Ganon bk
