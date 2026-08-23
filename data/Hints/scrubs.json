@@ -28,7 +28,7 @@
         { "location": "Shadow Temple Spike Walls Room", "types": ["dual"] },
         { "location": "Ganons Castle Spirit Trial Chests", "types": ["dual"] },
         { "location": "GF Horseback Archery Rewards", "types": ["dual_always", "dual"] },
-        { "location": "Graveyard Dampe Race Reward", "types": ["dual"] }
+        { "location": "Graveyard Dampe Race Rewards", "types": ["dual"] }
     ],
     "add_items":             [],
     "remove_items":          [
