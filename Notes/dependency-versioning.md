@@ -29,3 +29,4 @@ This document describes how to manage dependency versions in a project.
 * The version is decided per https://scientific-python.org/specs/spec-0000/
   * The latest version of numpy supported at the time of the change is the version that gets pinned.
 
+* There are no references to numpy versioning in the codebase itself.
