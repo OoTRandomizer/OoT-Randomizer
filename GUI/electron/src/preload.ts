@@ -71,9 +71,9 @@ function displayPythonErrorAndExit(notPython3: boolean = false) {
   setTimeout(() => {
 
     if (notPython3)
-      alert("The Python version used to run the GUI is not supported! Please ensure you have Python 3.8 or higher installed. You can specify the path to python using the 'python <path>' command line switch!");
+      alert("The Python version used to run the GUI is not supported! Please ensure you have Python 3.13 or higher installed. You can specify the path to python using the 'python <path>' command line switch!");
     else
-      alert("Please ensure you have Python 3.8 or higher installed before running the GUI. You can specify the path to python using the 'python <path>' command line switch!");
+      alert("Please ensure you have Python 3.13 or higher installed before running the GUI. You can specify the path to python using the 'python <path>' command line switch!");
 
     remote.app.quit();
   }, 500);
@@ -274,7 +274,7 @@ post.on('updateDynamicSetting', function (event) {
   }).catch((err) => {
 
       if (os.platform() == "win32")
-        alert("The Python version used to run the GUI is not supported! If you have python 3.8+ installed, make sure app execution aliases for python are disabled.");
+        alert("The Python version used to run the GUI is not supported! If you have python 3.13+ installed, make sure app execution aliases for python are disabled.");
 
       post.send(window, 'updateDynamicSettingError', err);
   })
