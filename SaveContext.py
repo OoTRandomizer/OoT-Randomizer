@@ -467,7 +467,7 @@ class SaveContext:
         c_buttons = list(self.addresses[age]['button_slots'].keys())
         for item_slot in SaveContext.equipable_items[age]['items']:
             item = self.addresses['item_slot'][item_slot].get_value('none')
-            if item != 'none':
+            if item != 'none' and item != 'navi_bell':
                 c_button = c_buttons.pop()
                 self.addresses[equip_type]['button_slots'][c_button].value = item_slot
                 self.addresses[equip_type]['button_items'][c_button].value = item
