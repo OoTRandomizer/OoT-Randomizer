@@ -76,26 +76,14 @@
     b       0x8006fc90  ; to before osRecvMesg
     nop
 
-.org 0x800e1dc8 ; Interface_Init
-    b       0x800e1df8          ; branch to earlier instruction
-
-.org 0x800e1dd4 ; Interface_Init
-    beq     v1,at,0x800e1df8    ; branch to earlier instruction
-
-; Replaces: addiu   t0,t0,-23088
-;           lbu     v0,105(t0)
-.org 0x800e1df8 ; Interface_Init
-    jal     Interface_GetCustomIconId
-    li      a0,1
-
-; Replaces: addiu   t0,t0,-23088
-;           lbu     v0,106(t0)
-.org 0x800e1e2c ; Interface_Init
-    jal     Interface_GetCustomIconId
-    li      a0,2
-
-; Replaces: addiu   t0,t0,-23088
-;           lbu     v0,107(t0)
-.org 0x800e1e60 ; Interface_Init
-    jal     Interface_GetCustomIconId
-    li      a0,3
+; Replace every Interface_Init button icon load
+; Probably possible to improve
+; Replaces: lui     t5,0x7c
+;           slti    at,v1,240
+;           beqz    at,800e1dd0
+;           sll     t4,v1,0xc
+.org 0x800e1da4     ; Interface_Init
+    jal     Interface_LoadInitCustomItemIcon
+    lw      a0,80(sp)       ; play
+    b       0x800e1e90      ; jump beyond icon loading
+    nop

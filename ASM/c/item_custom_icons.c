@@ -37,10 +37,16 @@ void* Interface_GetCustomEquipIcon(uint16_t equipTargetItem) {
 }
 
 // z_construct Interface_Init
-void Interface_LoadInitCustomItemIcon(z64_game_t* play, uint16_t button) {
-    uint16_t itemIconId = Interface_GetCustomIconId(button);
-    DmaMgr_RequestSync(play->iconItemSegment + (button * ITEM_ICON_SIZE),
-                        GET_ITEM_ICON_VROM(itemIconId), ITEM_ICON_SIZE);
+// Replaces all button icon loads
+void Interface_LoadInitCustomItemIcon(z64_game_t* play) {
+    uint8_t button;
+    for (button = 0; button < 4; button++) {
+        if (z64_file.button_items[button] < 0xF0 || (button == 0 && z64_file.button_items[0] != 0xFF)) {
+            uint16_t itemIconId = Interface_GetCustomIconId(button);
+            DmaMgr_RequestSync(play->iconItemSegment + (button * ITEM_ICON_SIZE),
+                                GET_ITEM_ICON_VROM(itemIconId), ITEM_ICON_SIZE);
+        }
+    }
 }
 
 // z_parameter Interface_LoadItemIcon1
