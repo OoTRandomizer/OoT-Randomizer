@@ -19,7 +19,7 @@ This document describes how to manage dependency versions in a project.
 # Node and npm
 
 * Node and npm are soft-requirements necessary for running the GUI from the Gui.py script directly.
-* ???
+* Currently everything has continued to work on the latest stable versions of node and npm so maintenance is not necessary.
 
 # numpy
 
