@@ -10,10 +10,11 @@ This document describes how to manage dependency versions in a project.
   * The earliest version of python supported at the time of the change is the minimum.
 
 * References that need to be updated when bumping the minimum version:
-* README.md: Paragraph under link to website.
-* Gui.py: lines 3 and 4
-* OoTRandomizer.py: lines 3 and 4
-* GUI/electron/src/preload.ts: in the `post.on('updateDynamicSetting', function (event)` handler.
+  * `.github/workflows/python.yml`: `Unit Tests - Python ${{ matrix.python-version }}` "python-version"
+  * `README.md`: Paragraph under link to website.
+  * `Gui.py`: lines 3 and 4
+  * `OoTRandomizer.py`: lines 3 and 4
+  * `GUI/electron/src/preload.ts`: in the `post.on('updateDynamicSetting', function (event)` handler.
 
 # Node and npm
 
