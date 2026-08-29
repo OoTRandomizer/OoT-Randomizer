@@ -9,11 +9,9 @@
         { "location": "Deku Theater Skull Mask", "types": ["always"] }
     ],
     "remove_locations":      [
-        { "location": "the Haunted Wasteland", "types": ["barren"] },
-        { "location": "Hyrule Castle", "types": ["barren"] },
-        { "location": "Gerudo's Fortress", "types": ["barren"] },
-        { "location": "the Temple of Time", "types": ["barren"] },
-        { "location": "Ganons Castle", "types": ["barren"] },
+        { "location": "HAUNTED_WASTELAND", "types": ["barren"] },
+        { "location": "HYRULE_CASTLE", "types": ["barren"] },
+        { "location": "TEMPLE_OF_TIME", "types": ["barren"] },
         { "location": "ZR Frogs Ocarina Game", "types": ["always"] },
         { "location": "Gerudo Training Ground Maze Path Final Chest", "types": ["sometimes"] },
         { "location": "Ganons Castle Shadow Trial Golden Gauntlets Chest", "types": ["sometimes"] },
