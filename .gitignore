@@ -12,7 +12,7 @@ __pycache__
 ARCHIVE.bin
 property.json
 /.venv
-/.pytest*
+/.pytest_cache
 
 **/.DS_Store
 
