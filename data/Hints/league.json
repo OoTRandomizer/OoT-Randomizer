@@ -1,10 +1,11 @@
 {
     "name":                  "league",
     "gui_name":              "League",
-    "description":           "Hint Distribution for the S9 of League. 6 Always, 5 Path, 3 Important Checks, 3 Sometimes, 2 Dual Hints, 30/40/50 skull hints in house of skulltula",
+    "description":           "Hint Distribution for the S10 of League. 6 Always, 5 Path, 3 Important Checks, 3 Sometimes, 2 Dual Hints, 30/40/50 skull hints in house of skulltula",
     "add_locations":         [
         { "location": "Deku Theater Skull Mask", "types": ["always"] },
-        { "location": "Sheik in Kakariko", "types": ["always"] }
+        { "location": "Sheik in Kakariko", "types": ["always"] },
+        { "location": "Deku Tree GS Basement Back Room", "types": ["always"] }
     ],
     "remove_locations":      [
         { "location": "Sheik in Crater", "types": ["sometimes"] },
