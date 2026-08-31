@@ -6,6 +6,8 @@
         { "location": "Deku Theater Skull Mask", "types": ["always"] },
         { "location": "Sheik in Kakariko", "types": ["always"] },
         { "location": "Deku Tree GS Basement Back Room", "types": ["always"] }
+        { "location": "Water Temple River Checks", "types": ["dual"] }
+        { "location": "Water Temple North Basement Checks", "types": ["dual"] }
     ],
     "remove_locations":      [
         { "location": "Sheik in Crater", "types": ["sometimes"] },
@@ -45,6 +47,7 @@
         { "location": "Shadow Temple Spike Walls Room", "types": ["dual"] },
         { "location": "Ganons Castle Spirit Trial Chests", "types": ["dual"] },
         { "location": "Dodongos Cavern Upper Business Scrubs", "types": ["dual"] }
+        { "location": "Water Temple River Loop Chests", "types": ["dual"] }
     ],
     "add_items":             [],
     "remove_items":          [
