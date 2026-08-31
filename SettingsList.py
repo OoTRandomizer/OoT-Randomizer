@@ -5841,9 +5841,9 @@ for info in SettingInfos.setting_infos.values():
 
     if info.disable is not None:
         for option, disabling in info.disable.items():
-            negative = False
+            negative = False # If this option is enabled, the "disabling" settings will be disabled
             if isinstance(option, str) and option[0] == '!':
-                negative = True
+                negative = True # If this option is NOT enabled, the "disabling" settings will be disabled
                 option = option[1:]
             for setting_name in disabling.get('settings', []):
                 SettingInfos.setting_infos[setting_name].create_dependency(info, option, negative)
