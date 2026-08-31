@@ -46,7 +46,7 @@
         { "location": "Shadow Temple Invisible Blades Chests", "types": ["dual"] },
         { "location": "Shadow Temple Spike Walls Room", "types": ["dual"] },
         { "location": "Ganons Castle Spirit Trial Chests", "types": ["dual"] },
-        { "location": "Dodongos Cavern Upper Business Scrubs", "types": ["dual"] }
+        { "location": "Dodongos Cavern Upper Business Scrubs", "types": ["dual"] },
         { "location": "Water Temple River Loop Chests", "types": ["dual"] }
     ],
     "add_items":             [],
