@@ -49,7 +49,7 @@
         "dungeon": "Ice Cavern",
         "locations": {
             "Ice Cavern MQ Iron Boots Chest": "is_adult",
-            "Sheik in Ice Cavern": "is_adult",
+            "Sheik in Ice Cavern": "is_adult and can_see_chests",
             "Ice Cavern MQ Near End Pot 1": "is_adult",
             "Ice Cavern MQ Near End Pot 2": "is_adult",
             "Ice Cavern MQ GS Ice Block": "is_adult or can_child_attack",

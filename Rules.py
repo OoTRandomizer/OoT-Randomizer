@@ -23,6 +23,7 @@ def set_rules(world: World) -> None:
 
     guarantee_hint = world.parser.parse_rule('guarantee_hint')
     is_child = world.parser.parse_rule('is_child')
+    can_see_chests = world.parser.parse_rule('logic_lens_invis or can_use(Lens_of_Truth)')
 
     for location in world.get_locations():
         if world.settings.shuffle_song_items == 'song':
@@ -35,7 +36,10 @@ def set_rules(world: World) -> None:
             else:
                 add_item_rule(location, lambda location, item: item.type != 'Song')
 
-        if location.type == 'Shop':
+        if location.type == 'Chest':
+            if world.settings.invisible_chests:
+                location.add_rule(can_see_chests) #TODO select trick based on region
+        elif location.type == 'Shop':
             if location.name in world.shop_prices:
                 add_item_rule(location, lambda location, item: item.type != 'Shop')
                 location.price = world.shop_prices[location.name]
