@@ -771,11 +771,16 @@ class World:
             boss_count -= 1
             random.shuffle(prizepool)
             random.shuffle(prize_locs)
-            loc = prize_locs.pop()
+            if self.settings.empty_dungeons_mode == 'rewards':
+                # Avoid placing a precompleted reward on Rauru so the number of precompleted dungeons matches the setting when possible.
+                # Python's `list.sort` is stable so rewards will still be shuffled properly other than that.
+                prizepool.sort(key=lambda reward: reward.name in self.settings.empty_dungeons_rewards, reverse=True) # precompleted rewards first
+                prize_locs.sort(key=lambda loc: loc.name == 'ToT Reward from Rauru') # reward from Rauru last
+            loc = prize_locs.pop(0)
             if self.settings.shuffle_dungeon_rewards == 'vanilla':
                 item = next(item for item in prizepool if item.name == location_table[loc.name][4])
             elif self.settings.shuffle_dungeon_rewards == 'reward':
-                item = prizepool.pop()
+                item = prizepool.pop(0)
             self.push_item(loc, item)
 
     def set_empty_dungeon_rewards(self, empty_rewards: list[str] = []) -> None:
