@@ -5,7 +5,7 @@
     "add_locations":         [
         { "location": "Deku Theater Skull Mask", "types": ["always"] },
         { "location": "Sheik in Kakariko", "types": ["always"] },
-        { "location": "Deku Tree GS Basement Back Room", "types": ["always"] }
+        { "location": "Deku Tree GS Basement Back Room", "types": ["always"] },
         { "location": "Water Temple River Checks", "types": ["dual"] }
         { "location": "Water Temple North Basement Checks", "types": ["dual"] }
     ],
