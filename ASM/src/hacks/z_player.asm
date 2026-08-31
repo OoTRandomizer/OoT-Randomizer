@@ -49,3 +49,15 @@
 .org 0x808319d4         ; in Player_InitHookshotIA (0x8038a374)
      jal     Player_HookshotCheckActorSpawn
      lw      a1,60(sp)       ; displaced (loads player)
+
+;================================================================================
+; Allow use of button items that don't run normal UseItems pathway
+;================================================================================
+; Replaces: jal     Player_UseItem
+;           lw      a0,44(sp)
+.org 0x8083212c     ; Player_ProcessItemButtons
+    jal     Player_UseItemCustom
+    lw      a0,44(sp)
+
+.org 0x80853520
+    nop     ; reloc, nop Player_UseItem in Player_ProcessItemButtons

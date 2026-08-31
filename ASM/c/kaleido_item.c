@@ -2,6 +2,20 @@
 #include "gfx.h"
 #include "kaleido_item.h"
 
+#define CYCLE_ITEM_NAYRU (1 << 0)
+#define CYCLE_ITEM_NAVI (1 << 1)
+
+// Cycle between items on item screen
+void KaleidoScope_Cycle(z64_game_t* play) {
+    play->pause_ctxt.name_color_set = false; // Item is usable, don't grey name
+
+    if (z64_file.cycleItemsFlags & CYCLE_ITEM_NAVI && z64_file.items[SLOT_NAYRUS_LOVE] == ITEM_NAYRUS_LOVE) {
+        z64_file.items[SLOT_NAYRUS_LOVE] = ITEM_NAVI_BELL;
+    } else if (z64_file.cycleItemsFlags & CYCLE_ITEM_NAYRU && z64_file.items[SLOT_NAYRUS_LOVE] == ITEM_NAVI_BELL) {
+        z64_file.items[SLOT_NAYRUS_LOVE] = ITEM_NAYRUS_LOVE;
+    }
+}
+
 void KaleidoScope_DrawItemSelect(z64_game_t* play) {
     z64_file_t* save_ctxt = &z64_file;
     z64_input_t* input = &play->common.input[0];
@@ -290,7 +304,10 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
 
                 if ((pause_ctxt->debugState == 0) && (pause_ctxt->state == PAUSE_STATE_MAIN) &&
                     (pause_ctxt->changing == PAUSE_MAIN_STATE_IDLE)) {
-                    if (input->pad_pressed.cl || input->pad_pressed.cd || input->pad_pressed.cr) {
+                    if (cursor_slot == SLOT_NAYRUS_LOVE && input->pad_pressed.l) {
+                        KaleidoScope_Cycle(play);
+                    }
+                    else if (input->pad_pressed.cl || input->pad_pressed.cd || input->pad_pressed.cr) {
                         if (CHECK_AGE_REQ_SLOT(cursor_slot) && (cursor_item != ITEM_SOLD_OUT)
                             && cursor_item != ITEM_NONE) {
                             if (input->pad_pressed.cl) {
@@ -381,7 +398,7 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
         if (save_ctxt->items[i] != ITEM_NONE) { // Only if you've obtained it
             if ((pause_ctxt->changing == PAUSE_MAIN_STATE_IDLE) && (pause_ctxt->screen_idx == PAUSE_ITEM) &&
                 (pause_ctxt->cursor_special_pos == 0)) { // Cursor is over an item
-                if (CHECK_AGE_REQ_SLOT(i)) { // Item can be equipped as current age
+                if (CHECK_AGE_REQ_SLOT(i) || save_ctxt->items[i] == ITEM_NAVI_BELL) { // Item can be equipped as current age
                     // In vanilla there is code here that is supposed to tint the bow icon when equipping magic arrows
                     // however it either doesn't work, or is only visible for a frame so has been removed from here.
                     if (i == cursor_slot) { // Draw the item the cursor is over slightly larger
@@ -401,9 +418,14 @@ void KaleidoScope_DrawItemSelect(z64_game_t* play) {
             }
 
             gSPVertex(POLY_OPA_DISP++, &pause_ctxt->item_vtx[j + 0], 4, 0);
-            KaleidoScope_DrawQuadTextureRGBA32(play->common.gfx,
-                                               z64_ItemIcons[save_ctxt->items[i]], ITEM_ICON_WIDTH,
-                                               ITEM_ICON_HEIGHT, 0);
+            if (save_ctxt->items[i] != ITEM_NAVI_BELL) {
+                KaleidoScope_DrawQuadTextureRGBA32(play->common.gfx,
+                                                z64_ItemIcons[save_ctxt->items[i]], ITEM_ICON_WIDTH,
+                                                ITEM_ICON_HEIGHT, 0);
+            } else {
+                KaleidoScope_DrawQuadTextureRGBA32(play->common.gfx, z64_ItemIcons[ITEM_SOLD_OUT], ITEM_ICON_WIDTH,
+                                                ITEM_ICON_HEIGHT, 0);
+            }
         }
     }
 

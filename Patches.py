@@ -935,6 +935,9 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     elif world.settings.zora_fountain == 'adult':
         rom.write_byte(rom.sym('MOVED_ADULT_KING_ZORA'), 1)
 
+    # Enable Navi bell functions
+    rom.write_byte(rom.sym('CFG_ENABLE_NAVI_BELL'), int(world.settings.enable_navi_bell))
+
     # Make all chest opening animations fast
     rom.write_byte(rom.sym('FAST_CHESTS'), int(world.settings.fast_chests))
 
