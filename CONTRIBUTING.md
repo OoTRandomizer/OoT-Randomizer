@@ -53,16 +53,13 @@ These labels are used to keep track of what still needs to be done for an issue 
 * **Racing Impact:** An issue/PR that's expected to affect the balance of competitive racing is given this label for the benefit of racing community members following along with development. This is especially the case for any changes to hints that aren't configurable or change defaults. Note that many dev team members aren't racers, so things may be missed here. It is recommended to keep an eye on the #dev-repo-updates Discord channel or watch the repository if you want to make sure you don't miss anything potentially relevant.
 * **Trivial:** This PR doesn't actually change the semantics of the code, only its formatting or comments or the contents of text strings, and as such it does not need testing.
 
-# Python
+# Language & Dependency Versioning
 
-We support all versions of Python that are marked as “stable” or “security-fixes” in [the Python docs](https://docs.python.org/)' sidebar, and contributions will have to work on all of them. Unit tests are automatically run on the oldest and newest of them.
+See [dependency-versioning.md](Notes/dependency-versioning.md) for the current policy.
 
-Additionally, we continue to support Python versions marked as “EOL” until there is a reason to drop support, no matter how minor. If your pull request doesn't work on an “EOL” version (but does work on all “stable” and “security-fixes” versions), you can raise the minimum supported version by editing the references to it in the randomizer codebase, including:
+The policy document is flexible and you can propose changes if you are adding, removing, or changing dependencies by simply editing the file as part of your PR.
 
-* `.github/workflows/python.yml`
-* `Gui.py`
-* `OoTRandomizer.py`
-* `README.md`
+The document must be kept up to date so that a working development state can be maintained on Windows and macOS as dependencies update or fall out of support. Maintenance plans should be specified, forward-thinking, and consistent to follow. It is desired that we are always using supported versions of dependencies, but not required so long as it does not increase the maintenance burden when using an updated version of a language with the older dependency versions.
 
 # Updating old PRs
 

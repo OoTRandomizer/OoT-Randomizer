@@ -16,7 +16,7 @@ It is strongly suggested users use the web generator from here:
 <https://ootrandomizer.com/>
 
 If you wish to run the script raw, clone this repository and either run ```Gui.py``` for a
-graphical interface or ```OoTRandomizer.py``` for the command line version. They both require Python 3.9+.
+graphical interface or ```OoTRandomizer.py``` for the command line version. They both require Python 3.13+.
 To use the GUI, [NodeJS](https://nodejs.org/download/release/v20.17.0/) (v20 LTS, with npm) will additionally need to be installed. NodeJS v14.14.0 and earlier are no longer supported.
 The first time ```Gui.py``` is run it will need to install necessary components, which could take a few minutes. Subsequent instances will run much quicker.
 Supported output formats are .z64 (N64/Emulator), .wad (Wii VC, channel IDs NICE/NRKE recommended), Uncompressed ROM (for developmental purposes, offline build only)
