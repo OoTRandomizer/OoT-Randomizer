@@ -10,7 +10,7 @@ typedef void (*EnKzActionFunc)(struct EnKz*, z64_game_t*);
 typedef struct EnKz {
     /* 0x0000 */ z64_actor_t actor;
     /* 0x013C */ uint8_t skelanime[0x44];
-    /* 0x0180 */ EnKzActionFunc actionFunc;  
+    /* 0x0180 */ EnKzActionFunc actionFunc;
     /* 0x0184 */ ColliderCylinder collider;
     /* 0x01D0 */ NpcInteractInfo interactInfo;
     /* 0x01F8 */ uint8_t sfxPlayed;

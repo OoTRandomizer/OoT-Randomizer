@@ -933,7 +933,11 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     if world.settings.zora_fountain == 'open':
         save_context.write_bits(0x0EDB, 0x08)  # "Moved King Zora"
     elif world.settings.zora_fountain == 'fast':
-        rom.write_byte(rom.sym('FAST_FOUNTAIN'), 1)
+        # If letter is already in inventory, just open the fountain.
+        if 'Rutos Letter' in world.settings.starting_items:
+            save_context.write_bits(0x0EDB, 0x08)  # "Moved King Zora"
+        else:
+            rom.write_byte(rom.sym('FAST_FOUNTAIN'), 1)
     elif world.settings.zora_fountain == 'adult':
         rom.write_byte(rom.sym('MOVED_ADULT_KING_ZORA'), 1)
 

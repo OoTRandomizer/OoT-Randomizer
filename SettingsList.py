@@ -1356,7 +1356,7 @@ class SettingInfos:
             Zora's Fountain. Ruto's Letter must be shown as
             child in order to move him for both eras.
 
-            'Opens automatically with Letter': King Zora will move 
+            'Opens automatically with Letter': King Zora will move
             automatically when Ruto's Letter is found.
 
             'Open For Adult': King Zora is always moved in

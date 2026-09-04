@@ -284,7 +284,7 @@ void handle_rutos_letter(z64_file_t* save, int16_t item_id, int16_t arg2) {
         z64_actor_t* curr = z64_game.actorLists[ACTORCAT_NPC].head;
         while (curr != NULL) {
             if (curr->actor_id == 0x0164) { // Check for EN_KZ
-                EnKz* KZ = (EnKz*)curr;                
+                EnKz* KZ = (EnKz*)curr;
                 EnKzActionFunc EnKz_SetMovedPos = resolve_overlay_addr(&OVL_EnKz_SetMovedPos, 0x0164);
                 EnKz_SetMovedPos(KZ, &z64_game);
                 break;
