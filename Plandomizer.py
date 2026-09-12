@@ -1292,6 +1292,8 @@ class Distribution:
                 # removing an extra 4 pieces in case of an odd number since there's 9*4 of them but only 8 containers
                 data['Piece of Heart'].count += 4 * math.ceil(num_hearts_to_collect / 2)
                 data['Heart Container'].count += math.floor(num_hearts_to_collect / 2)
+        if self.settings.enable_navi_bell:
+            data['Navi Bell'].count = 1
         self.settings.starting_items = data
 
     def to_json(self, include_output: bool = True, spoiler: bool = True) -> dict[str, Any]:

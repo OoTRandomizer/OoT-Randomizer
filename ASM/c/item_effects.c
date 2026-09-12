@@ -283,3 +283,7 @@ void unlock_ocarina_note(z64_file_t* save, int16_t arg1, int16_t arg2) {
             break;
     }
 }
+
+void Item_SetCycleFlag(z64_file_t* save, int16_t itemFlag, int16_t arg2) {
+    z64_file.cycleItemsFlags |= (1 << itemFlag);
+}

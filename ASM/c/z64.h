@@ -6,6 +6,7 @@
 #include "color.h"
 #include "z64collision_check.h"
 #include "save.h"
+#include <assert.h>
 
 #define Z64_OOT10             0x00
 #define Z64_OOT11             0x01
@@ -744,13 +745,15 @@ typedef struct {
     uint32_t      rooms_2;
   }               scene_flags[101];         /* 0x00D4 */
   char            unk_0A_[0x0284];          /* 0x0BE0 */
-  z64_xyzf_t      fw_pos;                   /* 0x0E64 */
+  z64_xyzf_t      fw_pos;                   /* 0x0E64 */  //FaroresWindData
   z64_angle_t     fw_yaw;                   /* 0x0E70 */
   char            unk_0B_[0x0008];          /* 0x0E72 */
   uint16_t        fw_scene_index;           /* 0x0E7A */
   uint32_t        fw_room_index;            /* 0x0E7C */
   int32_t         fw_set;                   /* 0x0E80 */
-  char            unk_0C_[0x0018];          /* 0x0E84 */
+  char            unk_0C_[0x008];           /* 0x0E84 */
+  uint8_t         cycleItemsFlags;          /* 0x0E8C */
+  char            unk_E8D[0xF];             /* 0x0E8D */
   uint8_t         gs_flags[56];             /* 0x0E9C */
   uint16_t        event_chk_inf[14];        /* 0x0ED4 */
   uint16_t        item_get_inf[4];          /* 0x0EF0 */
@@ -804,6 +807,7 @@ typedef struct {
   char            unk_1F_[0x001C];          /* 0x1434 */
                                             /* 0x1450 */
 } z64_file_t;
+static_assert(sizeof(z64_file_t) == 0x1450, "Size of z64_file_t has changed");
 
 typedef struct {
   uint8_t* readBuff;  /* 0x00 */
@@ -1034,6 +1038,12 @@ typedef struct {
     /* 0x0E */ uint16_t   params;
 } ActorEntry; // size = 0x10
 
+typedef struct WeaponInfo {
+    /* 0x00 */ int32_t active;
+    /* 0x04 */ z64_xyzf_t posA; // For melee weapons, this is the tip (furthest from the player hand)
+    /* 0x10 */ z64_xyzf_t posB; // For melee weapons, this is the base (near the player hand)
+} WeaponInfo; // size = 0x1C
+
 typedef struct {
   z64_actor_t  common;               /* 0x0000 */
   char         unk_00_[0x0013];      /* 0x013C */
@@ -1044,7 +1054,12 @@ typedef struct {
   z64_actor_t* incoming_item_actor;  /* 0x0428 */
   char         unk_03_[0x0008];      /* 0x042C */
   uint8_t      action;               /* 0x0434 */
-  char         unk_04_[0x0237];      /* 0x0435 */
+  char         unk_04_[0x021F];      /* 0x0435 */
+  z64_actor_t* focusActor;           /* 0x0654 */ // Actor that Player and the camera are looking at; Used for lock-on, talking, and more
+  char         unk_04b_[0x0008];     /* 0x0658 */
+  int32_t      meleeWeaponEffectIndex; /* 0x0660 */
+  void*        actionFunc;           /* 0x0664 */
+  void*        ageProperties;        /* 0x0668 */
   uint32_t     state_flags_1;        /* 0x066C */
   uint32_t     state_flags_2;        /* 0x0670 */
   char         unk_05_[0x0004];      /* 0x0674 */
@@ -1062,8 +1077,12 @@ typedef struct {
   char         unk_09_[0x0050];      /* 0x0834 */
   int16_t      drop_y;               /* 0x0884 */
   int16_t      drop_distance;        /* 0x0886 */
-                                     /* 0x0888 */
+  char         known_a[0x1c];        /* 0x0888 */
+  WeaponInfo   meleeWeaponInfo[3];   /* 0x08A4 */
+                                     /* 0x08F8 */
 } z64_link_t;
+
+static_assert(sizeof(z64_link_t) == 0x08F8, "Size of z64_link_t has changed");
 
 typedef struct DynaPolyActor {
   z64_actor_t  actor;    /* 0x000 */
@@ -1438,7 +1457,18 @@ typedef struct {
   int8_t           cutscene_state;         /* 0x01D6C */
   char             unk_0F_[0x036B];        /* 0x01D6D */
   MessageContext   msgContext;             /* 0x020D8 */
-  char             unk_12_[0x0246];        /* 0x104EC */
+  char             unk_11_[0x4];           /* 0x104EC */
+  char             unk_12_[0x0130];        /* 0x104F0 */  // interfaceCtx
+  uint8_t*         parameterSegment;       /* 0x10620 */
+  uint8_t*         doActionSegment;        /* 0x10624 */
+  uint8_t*         iconItemSegment;        /* 0x10628 */
+  uint8_t*         mapSegment;             /* 0x1062C */
+  char             unk_12b_[0x0020];       /* 0x10630 */
+  z64_getfile_t    dmaRequest_160;         /* 0x10650 */
+  z64_getfile_t    dmaRequest_180;         /* 0x10670 */
+  char             unk_12c_[0x0020];       /* 0x10690 */
+  OSMesgQueue      loadQueue;              /* 0x106B0 */
+  char             unk_12d_[0x006A];       /* 0x106C8 */
   struct {
     uint16_t       unk_00_;
     uint16_t       fadeout;
@@ -1500,6 +1530,7 @@ typedef struct {
   char             unk_26_[0x00FC];        /* 0x1241C */
 } z64_game_t; // 0x12518
 
+static_assert(sizeof(z64_game_t) == 0x12518, "Size of z64_game_t has changed");
 
 typedef struct {
   char              unk_00_[0x01D8];          /* 0x00000 */
@@ -1851,6 +1882,7 @@ typedef enum {
     /* 0x99 */ ITEM_STICK_UPGRADE_30,
     /* 0x9A */ ITEM_NUT_UPGRADE_30,
     /* 0x9B */ ITEM_NUT_UPGRADE_40,
+    /* 0x9C */ ITEM_NAVI_BELL,
     /* 0xFC */ ITEM_LAST_USED = 0xFC,
     /* 0xFE */ ITEM_NONE_FE = 0xFE,
     /* 0xFF */ ITEM_NONE = 0xFF
@@ -2485,5 +2517,8 @@ extern void Fault_AddHungupAndCrashImpl(const char* msg1, const char* msg2);
 extern int32_t sprintf(char* dst, char* fmt, ...);
 extern int32_t CutsceneFlags_Get(void* play, int16_t flag);
 extern int32_t DemoKankyo_CutsceneFlags_Get_Hook(void* play, int16_t flag);
+extern int32_t DmaMgr_RequestSync(void* ram, uintptr_t vrom, size_t size);
+extern int32_t DmaMgr_RequestAsync(z64_getfile_t* req, void* ram, uintptr_t vrom, size_t size, uint32_t unk, OSMesgQueue* queue,
+                        OSMesg msg);
 
 #endif

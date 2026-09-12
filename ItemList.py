@@ -690,6 +690,8 @@ item_table: dict[str, tuple[str, Optional[bool], Optional[int], Optional[dict[st
     'Water Medallion':                  ('DungeonReward',    True,  GetItemId.GI_WATER_MEDALLION, {'medallion': True, 'item_id': 0x68}),
     'Shadow Medallion':                 ('DungeonReward',    True,  GetItemId.GI_SHADOW_MEDALLION, {'medallion': True, 'item_id': 0x6A}),
     'Spirit Medallion':                 ('DungeonReward',    True,  GetItemId.GI_SPIRIT_MEDALLION, {'medallion': True, 'item_id': 0x69}),
+
+    'Navi Bell':                                       ('Item',     None,  None, {'item_id': 0x9c}),
 }
 
 REWARD_COLORS: dict[str, str] = {

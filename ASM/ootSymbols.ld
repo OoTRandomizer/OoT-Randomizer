@@ -1,5 +1,8 @@
 /* Addresses should be listed in order */
+_icon_item_staticSegmentRomStart = 0x007bd000;
+_item_name_staticSegmentRomStart = 0x00880000;
 z64_EquippedItemOutlineTex = 0x2000E00;
+DmaMgr_RequestAsync = 0x80000d28;
 DmaMgr_RequestSync = 0x80000df0;
 Flags_GetSwitch = 0x8002049C;
 Flags_SetSwitch = 0x800204D0;
@@ -18,6 +21,7 @@ Flags_UnsetTempClear = 0x800206C8;
 Flags_GetCollectible = 0x800206E8;
 Flags_SetCollectible = 0x8002071C;
 Actor_SetColorFilter = 0x80027090;
+QuestHint_GetNaviTextId = 0x8005977c;
 CutsceneFlags_Get = 0x8005991C;
 z64_Gfx_SetupDL_42Opa = 0x8007E868;
 func_800982FC = 0x80081740;

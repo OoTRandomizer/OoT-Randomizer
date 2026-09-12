@@ -350,6 +350,7 @@
             "skip_some_minigame_phases",
             "complete_mask_quest",
             "useful_cutscenes",
+            "enable_navi_bell",
             "fast_chests",
             "scarecrow_behavior",
             "fast_bunny_hood",
