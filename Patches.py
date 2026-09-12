@@ -67,9 +67,14 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     scenes[SceneIDs.GROTTOS].rooms[0].headers[0].actor_list.actors[9].params = 0x38FF
 
     # Binary patches of certain assets.
+    with open(data_path("bin_patch.json"), mode="r", encoding="utf-8") as stream:
+        bin_patch_data = json.load(stream)
+
     bin_patches = [
-        (os.path.join(lang.path, x), int(y[0], base=16)) for x, y in json.load(open(data_path("bin_patch.json"))).items() if x in lang.data.keys()
-        ]
+        (os.path.join(lang.path, x), int(y[0], base=16))
+        for x, y in bin_patch_data.items()
+        if x in lang.data.keys()
+    ]
 
     for (bin_path, write_address) in bin_patches:
         with open(bin_path, 'rb') as stream:
