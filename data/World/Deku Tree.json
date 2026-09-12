@@ -67,7 +67,7 @@
             "Deku Tree Basement Back Room": "is_child",
             "Deku Tree Before Boss": "
                 deku_tree_shortcuts or
-                here(has_fire_source_with_torch or (logic_deku_b1_webs_with_bow and can_use(Bow)))"
+                here(has_fire_source_with_torch or (logic_deku_b1_webs_with_bow and can_see_chests and can_use(Bow)))"
         }
     },
     {

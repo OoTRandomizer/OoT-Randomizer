@@ -78,7 +78,7 @@
             "Ice Cavern Iron Boots Chest": "
                 is_adult or Slingshot or Sticks or Kokiri_Sword or can_use(Dins_Fire)",
             "Sheik in Ice Cavern": "
-                is_adult or Slingshot or Sticks or Kokiri_Sword or can_use(Dins_Fire)",
+                can_see_chests and (is_adult or Slingshot or Sticks or Kokiri_Sword or can_use(Dins_Fire))",
             "Ice Cavern Near End Pot 1": "True",
             "Ice Cavern Near End Pot 2": "True"
         }

@@ -84,7 +84,7 @@
                 (logic_forest_outdoors_ledge and can_use(Hover_Boots) and
                     at('Forest Temple Outdoors High Balconies', True))",
             "Forest Temple GS Raised Island Courtyard": "
-                can_use(Hookshot) or (logic_forest_outdoor_east_gs and can_use(Boomerang)) or
+                (can_see_chests and can_use(Hookshot)) or (logic_forest_outdoor_east_gs and can_use(Boomerang)) or
                 at('Forest Temple Falling Room', can_use(Bow) or can_use(Dins_Fire) or has_explosives)",
             "Deku Baba Sticks": "is_adult or Kokiri_Sword or Boomerang",
             "Deku Baba Nuts": "
