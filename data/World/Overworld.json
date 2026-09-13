@@ -12,6 +12,7 @@
             "Root Exits": "is_starting_age or Time_Travel",
             "HC Garden Skippable Locations": "skip_child_zelda",
             "Beyond Door of Time Skippable Locations": "skip_reward_from_rauru != 'not_free'",
+            "Deliver Rutos Letter": "Rutos_Letter and zora_fountain == 'fast'",
             # Hack to make ALR work if hideout entrances are unshuffled
             "GF Above Jail Child Locations": "shuffle_gerudo_fortress_heart_piece == 'remove' or not shuffle_hideout_entrances"
         }
@@ -2612,9 +2613,6 @@
         "locations": {
             "ZD Diving Minigame": "is_child",
             "ZD Chest": "can_use(Sticks)",
-            "Deliver Rutos Letter": "
-                (is_child and Rutos_Letter and zora_fountain == 'closed') or
-                (Rutos_Letter and zora_fountain == 'fast')",
             "ZD King Zora Thawed": "'King Zora Thawed'",
             "ZD Pot 1": "True",
             "ZD Pot 2": "True",
@@ -2636,11 +2634,20 @@
         "exits": {
             "ZR Behind Waterfall": "True",
             "Lake Hylia": "is_child and can_dive",
+            "Deliver Rutos Letter": "is_child and Rutos_Letter and (zora_fountain == 'closed' or zora_fountain == 'adult')",
             "ZD Behind King Zora": "
                 Deliver_Letter or zora_fountain == 'open' or
                 (is_adult and (zora_fountain == 'adult' or logic_king_zora_skip))",
             "ZD Shop": "is_child or Blue_Fire",
             "ZD Storms Grotto": "can_open_storm_grotto"
+        }
+    },
+    {
+        "region_name": "Deliver Rutos Letter",
+        "scene": "Zoras Domain",
+        "hint": "ZORAS_DOMAIN",
+        "locations": {
+            "Deliver Rutos Letter": "True"
         }
     },
     {
