@@ -2058,6 +2058,7 @@ def build_ganon_boss_key_string(world: World) -> str:
             if world.settings.lacs_condition == 'vanilla':
                 item_req_string = world.language.format_from_id("hint_text.ganon_req_vanilla")
                 count = 2
+                _, _, verb_singular, verb_plural = world.language.hint_text["ganon_medallions"]
             else:
                 count, singular, plural, verb_singular, verb_plural = {
                     'stones':     [world.settings.lacs_stones]+world.language.hint_text["ganon_stones"],

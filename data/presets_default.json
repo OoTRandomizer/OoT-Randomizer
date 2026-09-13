@@ -1129,7 +1129,7 @@
         "password_lock": false,
         "randomize_settings": false,
         "logic_rules": "glitchless",
-        "reachable_locations": "beatable",
+        "reachable_locations": "all",
         "triforce_hunt": false,
         "triforce_count_per_world": 28,
         "triforce_goal_per_world": 24,

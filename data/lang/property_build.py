@@ -3202,7 +3202,7 @@ hint_text = {
     "ganon_dungeons": ("#Spiritual Stone or Medallion#", "#Spiritual Stones and Medallions#", "is", "are"),
     "ganon_tokens": ("#Gold Skulltula Token#", "#Gold Skulltula Tokens#", "is", "are"),
     "ganon_hearts": ("#heart#", "#hearts#", "is", "are"),
-    "ganon_lacs_bk": "provided by Zelda once {item_req_string} {verb} retrieved",
+    "ganon_lacs_bk": "provided by Zelda once {item_req} {verb} retrieved",
     "ganon_grant_bk": "automatically granted once {item_req} {verb} retrieved",
     "ganon_base": "And the \x05\x41evil one\x05\x40's key will be {bk_location_string}"
 }

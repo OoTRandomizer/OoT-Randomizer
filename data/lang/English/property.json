@@ -9552,7 +9552,7 @@
             "is",
             "are"
         ],
-        "ganon_lacs_bk": "provided by Zelda once {item_req_string} {verb} retrieved",
+        "ganon_lacs_bk": "provided by Zelda once {item_req} {verb} retrieved",
         "ganon_medallions": [
             "#Medallion#",
             "#Medallions#",

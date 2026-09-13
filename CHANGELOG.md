@@ -18,6 +18,7 @@
 * Fix silver rupee counter overlapping D-pad dungeon info menus.
 * Fix blowing up a specific bombable wall in MQ Dodongo's Cavern opening the door controlled by the silver rupees.
 * Fix a generator failure when Water Temple is MQ and `Logic Rules` are `Advanced`.
+* Fix an error in the language system when Ganon's Boss Key is on LACS, LACS condition is vanilla, and altar misc hints are enabled.
 
 ## Other changes
 * Python 3.9 through 3.12 are no longer supported.
