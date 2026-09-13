@@ -267,7 +267,7 @@ void trade_quest_upgrade(z64_file_t* save, int16_t item_id, int16_t arg2) {
 
 extern uint8_t FAST_FOUNTAIN;
 extern EnKzActionFunc OVL_EnKz_SetMovedPos;
-void handle_rutos_letter(z64_file_t* save, int16_t item_id, int16_t arg2) {
+void handle_fast_rutos_letter(z64_file_t* save, int16_t arg1, int16_t arg2) {
     if (!FAST_FOUNTAIN) {
         return;
     }
