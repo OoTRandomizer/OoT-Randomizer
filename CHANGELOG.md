@@ -20,6 +20,7 @@
 * Fix a generator failure when Water Temple is MQ and `Logic Rules` are `Advanced`.
 * Fix an error in the language system when Ganon's Boss Key is on LACS, LACS condition is vanilla, and altar misc hints are enabled.
 * When pre-completed dungeons are set to specific rewards, those rewards will no longer be placed on Rauru.
+* Fix advanced logic not requiring megaton hammer for a switch in GTG.
 
 ## Other changes
 * Python 3.9 through 3.12 are no longer supported.

@@ -189,7 +189,7 @@
         "dungeon": "Gerudo Training Ground",
         "locations": {
             "Gerudo Training Ground Hammer Room Clear Chest": "can_kill_keese and can_kill_torch_slug",
-            "Gerudo Training Ground Hammer Room Switch Chest": "can_live_dmg(0.25) and adv_gtg_burning_chest_without_hammer",
+            "Gerudo Training Ground Hammer Room Switch Chest": "can_use(Megaton_Hammer) or (can_live_dmg(0.25) and adv_gtg_burning_chest_without_hammer)",
             "Gerudo Training Ground Hammer Room Wonderitem": "can_use(Bow)"
         },
         "exits": {
