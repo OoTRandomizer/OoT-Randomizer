@@ -22,6 +22,7 @@
 
 ## Other changes
 * Python 3.9 through 3.12 are no longer supported.
+* Changed the order of items hinted in a dual hint to match the order of locations mentioned.
 
 # 9.1
 

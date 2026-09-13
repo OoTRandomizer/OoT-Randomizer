@@ -1770,7 +1770,7 @@ hintTable: dict[str, tuple[list[str] | str, Optional[str], str | list[str]]] = {
 multiTable: dict[str, list[str]] = {
     'Deku Theater Rewards':                                     ['Deku Theater Skull Mask', 'Deku Theater Mask of Truth'],
     'HF Ocarina of Time Retrieval':                             ['HF Ocarina of Time Item', 'Song from Ocarina of Time'],
-    'HF Valley Grotto':                                         ['HF Cow Grotto Cow', 'HF GS Cow Grotto'],
+    'HF Valley Grotto':                                         ['HF GS Cow Grotto', 'HF Cow Grotto Cow'],
     'Market Bombchu Bowling Rewards':                           ['Market Bombchu Bowling First Prize', 'Market Bombchu Bowling Second Prize'],
     'ZR Frogs Rewards':                                         ['ZR Frogs in the Rain', 'ZR Frogs Ocarina Game'],
     'ZD Child Checks':                                          ['ZD Diving Minigame', 'ZD Chest'],
