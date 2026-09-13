@@ -1935,6 +1935,17 @@ typedef struct SkelAnime {
     /* 0x1C */ char known_2_[0x28];
 } SkelAnime; // size = 0x44
 
+typedef struct NpcInteractInfo {
+    /* 0x00 */ int16_t talkState;
+    /* 0x02 */ int16_t trackingMode;
+    /* 0x04 */ int16_t autoTurnTimer;
+    /* 0x06 */ int16_t autoTurnState;
+    /* 0x08 */ z64_xyz_t headRot;
+    /* 0x0E */ z64_xyz_t torsoRot;
+    /* 0x14 */ float yOffset; // Y position offset to add to actor position when calculating angle to target
+    /* 0x18 */ z64_xyzf_t trackPos;
+    /* 0x24 */ char unk_24[0x4];
+} NpcInteractInfo; // size = 0x28
 /* helper macros */
 #define LINK_IS_ADULT (z64_file.link_age == 0)
 #define SLOT(item) gItemSlots[item]

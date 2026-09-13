@@ -49,3 +49,4 @@ sSetupDL = 0x800f7d50;
 Player_UseItem = 0x8038c9a0; /* 0x80834000 */
 OVL_EnOkarinaTag_Action2 = 0x80a872d0;
 OVL_EnOkarinaTag_Action1 = 0x80a87088;
+OVL_EnKz_SetMovedPos = 0x80AD65EC;

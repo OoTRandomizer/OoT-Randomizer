@@ -1363,6 +1363,10 @@
         {
             "id": 37045,
             "text": "\bYou found \u0005Cliterally nothing\u0005@!"
+        },
+        {
+            "id": 37046,
+            "text": "\b\u0013\u001bYou found \u0005\u0041a letter in a bottle\u0005\u0040!\u0001Somehow the letter flies out of\u0001the bottle, directly to King Zora."
         }
     ],
     "MISC_MESSAGES": [

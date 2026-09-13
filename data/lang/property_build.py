@@ -653,6 +653,10 @@ ITEM_MESSAGES = [
         "id": 0x90B5,
         "text": "\x08You found \x05\x43literally nothing\x05\x40!",
     },
+    {
+        "id": 0x90B6,
+        "text": "\x08\x13\x1BYou found \x05\x41a letter in a bottle\x05\x40!\x01Somehow the letter flies out of\x01the bottle, directly to King Zora.",
+    },
 ]
 
 # Item texts when you use keysanity
