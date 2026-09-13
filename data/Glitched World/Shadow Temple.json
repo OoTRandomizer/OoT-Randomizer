@@ -168,10 +168,21 @@
         },
         "exits": {
             "Shadow Temple Single Giant Pot Room": "(Silver_Rupee_Shadow_Temple_Invisible_Spikes, 5)",
-            "Shadow Temple Wind Tunnel": "((is_adult and (Hover_Boots or can_isg) and can_groundjump)
+            "Shadow Temple Wind Tunnel": "(
+                (is_adult and can_kill_redead and can_groundjump
+                    and
+                    (
+                    (Hover_Boots and (Goron_Tunic or can_live_dmg(0.25,False,True)))
+                    or
+                    (can_isg and glitch_clipping)
+                    )
+                )
                 or
-                ((can_kill_redead and can_use(Hookshot)) or can_use(Longshot))
-                or (can_use(Hover_Boots) and can_use(Hookshot) and (can_use(Lens_of_Truth) or logic_lens_shadow))
+                (can_kill_redead and can_use(Hookshot))
+                or
+                can_use(Longshot)
+                or
+                (can_use(Hover_Boots) and can_use(Hookshot))
                 )
                 and (Small_Key_Shadow_Temple, 3)",
             "Shadow Temple Huge Pit": "logic_lens_shadow_platform or can_use(Lens_of_Truth)"
