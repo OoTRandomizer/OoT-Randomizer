@@ -49,6 +49,12 @@ utils/settings_list.json contains every single setting of the GUI as an array of
   4. controls-visibility-tab: What tab(s) to disable when this option is selected. Multiple tabs can be separated by comma and are addressed by their internal name (see mapping.json structure)
   5. controls-visibility-section: What section(s) to disable when this option is selected
   6. controls-visibility-setting: What specific setting(s) to disable when this option is selected
+* conditional-controls &rarr; An object of "conditions" that can alter this setting's visibility, enabled state, and value based on the state of other settings. This object can contain multiple items that each define their own conditions and target state for the setting. The first condition that passes will take priority in altering the setting and the other conditions will not be evaluated. If this setting would be disabled by some other logic (eg. 'controls_visibility_setting'), that will take priority over ALL condition-based logic. When this happens, the setting state will not be changed even if a passing condition would normally do so. The format of a condition object is as follows:
+  * "key" -> {object}: "key" has no functional purpose and is purely for human readability and debugging purposes. "object" contains key/value pairs that define the behavior of the condition.
+    * value: If the condition passes, the setting will be changed to this value.
+    * enabled: If the condition passes, `True` will enable the setting and `False` will disable it.
+    * conditions: A list of "partial condition" objects that determine if this condition passes or not. All "partial conditions" must pass for the full condition to also pass. (This provides `AND` logic)
+      * Each partial condition contains "key" -> "value" pairs in the format of "setting_name" -> "setting_value". If at least one of these pairs matches the current state of the settings, the partial condition will pass. Otherwise it will fail. (This provides `OR` logic)
 
 ### The settings_mapping.json structure
 
@@ -81,6 +87,7 @@ The settings array follows that defines the settings that should appear in this 
 * controls-visibility-tab &rarr; What tab(s) to disable when this setting is enabled, used for Checkbuttons. Multiple tabs can be separated by comma and are addressed by their internal name
 * controls-visibility-section &rarr; What section(s) to disable when this setting is enabled
 * controls-visibility-setting &rarr; What specific setting(s) to disable when this setting is enabled
+* conditional-controls &rarr; List of setting/value pairs this setting may be dependent on to determine what its current state should be (eg. disabled, specific value, etc.)
 * hide-when-disabled &rarr; If this setting should be completely hidden when it gets disabled, not just greyed out. Used on the website to make the difference between generator and patcher more distinct
 * min &rarr; The minimum numeric value allowed. Used for Scales and Numberinputs
 * max &rarr; The maximum numeric value allowed. Used for Scales and Numberinputs. Can differ between Electron and website (e.g. multi world limit)

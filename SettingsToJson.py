@@ -15,6 +15,7 @@ section_keys: list[str] = ['text', 'app_type', 'is_colors', 'is_sfx', 'col_span'
 setting_keys: list[str] = ['hide_when_disabled', 'min', 'max', 'size', 'max_length', 'file_types', 'no_line_break', 'function', 'option_remove', 'dynamic']
 types_with_options: list[str] = ['Checkbutton', 'Radiobutton', 'Combobox', 'SearchBox', 'MultipleSelect']
 
+conditional_control_dependencies: dict[str, dict] = {}
 
 def remove_trailing_lines(text: str) -> str:
     while text.endswith('<br>'):
@@ -53,6 +54,11 @@ def add_disable_option_to_json(disable_option: dict[str, Any], option_json: dict
             option_json['controls_visibility_tab'] += ',' + ','.join(disable_option['tabs'])
 
 
+def mark_conditional_control_option_for_setting(setting_name: str, conditional_settings: dict[str, Any]) -> None:
+    if setting_name not in conditional_control_dependencies:
+        conditional_control_dependencies[setting_name] = conditional_settings
+
+
 def get_setting_json(setting: str, web_version: bool, as_array: bool = False) -> Optional[dict[str, Any]]:
     try:
         setting_info = SettingInfos.setting_infos[setting]
@@ -82,6 +88,11 @@ def get_setting_json(setting: str, web_version: bool, as_array: bool = False) ->
     setting_disable = {}
     if setting_info.disable is not None:
         setting_disable = copy.deepcopy(setting_info.disable)
+
+    # If this setting can be conditionally enabled, we will need to revisit it once the full JSON has been built
+    if setting_info.conditional_controls is not None:
+        mark_conditional_control_option_for_setting(setting_info.name, setting_info.conditional_controls)
+        setting_json['conditional_controls'] = setting_info.conditional_controls
 
     version_specific_keys = []
 
@@ -260,6 +271,9 @@ def create_settings_list_json(path: str, web_version: bool = False) -> None:
             output_json['cosmeticsObj'][tab['name']] = tab_json_object
             output_json['cosmeticsArray'].append(tab_json_array)
 
+    # Resolve conditional visibility settings now that the full json is available
+    resolve_conditional_control_dependencies(output_json)
+
     for d in hint_dist_files():
         with open(d, 'r') as dist_file:
             dist = json.load(dist_file)
@@ -271,6 +285,51 @@ def create_settings_list_json(path: str, web_version: bool = False) -> None:
 
     with open(path, 'w') as f:
         json.dump(output_json, f)
+
+
+def resolve_conditional_control_dependencies(output_json: dict) -> None:
+    for dependent_setting_name, dependent_conditions in conditional_control_dependencies.items():
+        for condition_name, condition_details in dependent_conditions.items():
+            for conditional_settings in condition_details['conditions']:
+                for setting_name, setting_value in conditional_settings.items():
+                    # Handle the setting in the "object" portion of the json
+                    setting_obj_json = find_setting_obj_json_in_output(setting_name, output_json)
+                    if setting_obj_json is not None:
+                        setting_obj_option_json = setting_obj_json['options'][setting_value]
+                        if setting_obj_option_json is not None:
+                            if 'conditionally_controls_setting' not in setting_obj_option_json:
+                                setting_obj_option_json['conditionally_controls_setting'] = [dependent_setting_name]
+                            elif dependent_setting_name not in setting_obj_option_json['conditionally_controls_setting']:
+                                setting_obj_option_json['conditionally_controls_setting'].append(dependent_setting_name)
+
+                    # Handle the setting in the "array" portion of the json
+                    setting_array_json = find_setting_array_json_in_output(setting_name, output_json)
+                    if setting_array_json is not None:
+                        for setting_array_option_json in setting_array_json['options']:
+                            if setting_array_option_json['name'] is setting_value:
+                                if 'conditionally_controls_setting' not in setting_array_option_json:
+                                    setting_array_option_json['conditionally_controls_setting'] = [dependent_setting_name]
+                                elif dependent_setting_name not in setting_array_option_json['conditionally_controls_setting']:
+                                    setting_array_option_json['conditionally_controls_setting'].append(dependent_setting_name)
+                                break # bail early(...bad idea?)
+
+
+def find_setting_obj_json_in_output(setting_name: str, output_json: dict[str, dict[str, dict]]) -> dict:
+    for setting_tab_name, setting_tab_json in output_json['settingsObj'].items():
+        for setting_section_name, setting_section_json in setting_tab_json['sections'].items():
+            setting_json = setting_section_json['settings'].get(setting_name)
+            if setting_json is not None:
+                return setting_json
+    return None
+
+
+def find_setting_array_json_in_output(setting_name: str, output_json: dict[str, dict[str, dict]]) -> dict:
+    for setting_tab_json in output_json['settingsArray']:
+        for setting_section_json in setting_tab_json['sections']:
+            for setting_json in setting_section_json['settings']:
+                if setting_name == setting_json['name']:
+                    return setting_json
+    return None
 
 
 def get_setting_details(setting_key: str, web_version: bool) -> None:
