@@ -1,4 +1,5 @@
 from __future__ import annotations
+import argparse
 import io
 import json
 import logging
@@ -7,6 +8,7 @@ import platform
 import re
 import subprocess
 import sys
+import textwrap
 import urllib.request
 import venv
 from collections.abc import Sequence
@@ -241,6 +243,38 @@ def powerset(iterable):
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
 
 
+class ArgumentDefaultsHelpFormatter(argparse.RawTextHelpFormatter):
+
+    def _get_help_string(self, action) -> Optional[str]:
+        if  action.help is not None:
+            return textwrap.dedent(action.help)
+
+
+def parse_command_line_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
+
+    parser.add_argument('--gui', help='Launch the GUI', action='store_true')
+    parser.add_argument('--loglevel', default='info', const='info', nargs='?', choices=['error', 'info', 'warning', 'debug'], help='Select level of logging for output.')
+    parser.add_argument('--settings_string', help='Provide sharable settings using a settings string. This will override all flags that it specifies.')
+    parser.add_argument('--convert_settings', help='Only convert the specified settings to a settings string. If a settings string is specified output the used settings instead.', action='store_true')
+    parser.add_argument('--settings', help='Use the specified settings file to use for generation')
+    parser.add_argument('--settings_preset', help="Use the given preset for base settings. Anything defined in the --settings file or the --settings_string will override the preset.")
+    parser.add_argument('--seed', help='Generate the specified seed.')
+    parser.add_argument('--no_log', help='Suppresses the generation of a log file.', action='store_true')
+    parser.add_argument('--output_settings', help='Always outputs a settings.json file even when spoiler is enabled.', action='store_true')
+    parser.add_argument('--diff_rom', help='Generates a ZPF patch from the specified ROM file.')
+
+    args, _ = parser.parse_known_args()
+    return args
+
+
+def initialize_logger(args_loglevel: str):
+    # Python default log level is WARNING.
+    # Command line argument default is INFO.
+    loglevel = {'error': logging.ERROR, 'info': logging.INFO, 'warning': logging.WARNING, 'debug': logging.DEBUG}[args_loglevel]
+    logging.basicConfig(format='%(message)s', level=loglevel)
+
+
 def ensure_venv():
     if '--no-venv' in sys.argv:
         return
@@ -250,6 +284,10 @@ def ensure_venv():
     if platform.system() == 'Windows':
         PYTHON_BIN = os.path.abspath(os.path.join(VENV_DIR, "Scripts", "python.exe"))
     REQUIREMENTS = local_path("requirements.txt")
+
+    # Set up logger
+    args = parse_command_line_args()
+    initialize_logger(args.loglevel)
     logger = logging.getLogger('')
 
     # If venv doesn’t exist, create it

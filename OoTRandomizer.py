@@ -9,18 +9,15 @@ import logging
 import os
 import time
 
-from Utils import ensure_venv
+from Utils import ensure_venv, initialize_logger
 
 def start() -> None:
+    # Logging settings are also initialized with the venv!
     ensure_venv()
     from Main import main, from_patch_file, cosmetic_patch, diff_roms
     from Settings import get_settings_from_command_line_args
     from Utils import check_version, VersionError, local_path
-    settings, gui, args_loglevel, no_log_file, diff_rom = get_settings_from_command_line_args()
-
-    # set up logger
-    loglevel = {'error': logging.ERROR, 'info': logging.INFO, 'warning': logging.WARNING, 'debug': logging.DEBUG}[args_loglevel]
-    logging.basicConfig(format='%(message)s', level=loglevel)
+    settings, gui, no_log_file, diff_rom = get_settings_from_command_line_args()
 
     logger = logging.getLogger('')
 
