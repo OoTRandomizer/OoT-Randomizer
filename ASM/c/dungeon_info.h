@@ -34,6 +34,7 @@ void draw_silver_rupee_count(z64_game_t* globalCtx, z64_disp_buf_t* db);
 void draw_boss_key(z64_game_t* globalCtx, z64_disp_buf_t* db);
 extern uint8_t bk_display;
 int dungeon_info_is_drawn();
+void manage_dpad_on_file_select(z64_disp_buf_t* db);
 
 extern unsigned char CFG_DUNGEON_IS_MQ[14];
 extern uint32_t CFG_DUNGEON_INFO_ENABLE;
@@ -55,5 +56,8 @@ static int show_dungeon_info = 0;
         z64_game.pause_ctxt.screen_idx == 1 && \
         (!z64_game.pause_ctxt.changing || \
         z64_game.pause_ctxt.changing == 3))
+
+// The info will be inaccurate if a file is not loaded yet, so check if file index has a real file value (initialization is 0xFF in title screen).
+#define CAN_DRAW_INFO_ON_FILE_SELECT (CFG_DUNGEON_INFO_ENABLE != 0 && z64_file.game_mode == GAMEMODE_FILE_SELECT && z64_file.file_index < 3)
 
 #endif

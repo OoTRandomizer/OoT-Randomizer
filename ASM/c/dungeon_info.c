@@ -62,6 +62,7 @@ uint8_t reward_rows[] = { 0, 1, 2, 8, 3, 4, 5, 7, 6 };
 uint8_t bk_display = 0;
 bool world_display = false;
 bool boss_display = false;
+bool reward_display = false;
 
 extern uint32_t CFG_DUNGEON_INFO_MQ_ENABLE;
 extern uint32_t CFG_DUNGEON_INFO_MQ_NEED_MAP;
@@ -186,7 +187,7 @@ void draw_boss_key(z64_game_t* globalCtx, z64_disp_buf_t* db) {
 }
 
 void draw_world_info(z64_disp_buf_t* db) {
-    if (!CAN_DRAW_WORLD_INFO) {
+    if (!CAN_DRAW_WORLD_INFO && !CAN_DRAW_INFO_ON_FILE_SELECT) {
         return;
     }
     show_dungeon_info = 0;
@@ -201,20 +202,24 @@ void draw_world_info(z64_disp_buf_t* db) {
     bool mixed_bosses = CFG_DUNGEON_BOSS_INFO[1] > 1;
     bool mixed = mixed_dungeons || mixed_bosses;
 
-    db->p = db->buf;
-
-    // Call setup display list
-    gSPDisplayList(db->p++, &setup_db);
+    // On file select we're not using the rando setup display list.
+    if (!CAN_DRAW_INFO_ON_FILE_SELECT) {
+        db->p = db->buf;
+        // Call setup display list
+        gSPDisplayList(db->p++, &setup_db);
+    }
 
     if (!mixed) {
 
-        if ((z64_ctxt.input[0].pad_pressed.dl || z64_ctxt.input[0].pad_pressed.a) && show_dungeons) {
+        if ((z64_ctxt.input[0].pad_pressed.dl || (z64_ctxt.input[0].pad_pressed.a && !CAN_DRAW_INFO_ON_FILE_SELECT)) && show_dungeons) {
             world_display = world_display ? false : true;
             boss_display = false;
+            reward_display = false;
         }
         if (z64_ctxt.input[0].pad_pressed.dr && show_bosses) {
             boss_display = boss_display ? false : true;
             world_display = false;
+            reward_display = false;
         }
 
         if (world_display) {
@@ -379,10 +384,12 @@ void draw_world_info(z64_disp_buf_t* db) {
         if (z64_ctxt.input[0].pad_pressed.dl) {
             world_display = world_display ? false : true;
             boss_display = false;
+            reward_display = false;
         }
         if (z64_ctxt.input[0].pad_pressed.dr) {
             boss_display = boss_display ? false : true;
             world_display = false;
+            reward_display = false;
         }
 
         if (world_display) {
@@ -513,6 +520,160 @@ void draw_world_info(z64_disp_buf_t* db) {
                 }
                 uint16_t top = start_top + ((font_height + padding) * (i + 1));
                 text_print_size(db, CFG_BOSSES[i], left_area, top, font_width, font_height);
+            }
+        }
+    }
+}
+
+void manage_dpad_on_file_select(z64_disp_buf_t* db) {
+
+    if (!CAN_DRAW_INFO_ON_FILE_SELECT) {
+        return;
+    }
+    draw_dpad_on_file_select(db);
+    draw_world_info(db);
+    if (z64_ctxt.input[0].pad_pressed.dd) {
+        reward_display = reward_display ? false : true;
+        world_display = false;
+        boss_display = false;
+    }
+    if (reward_display) {
+        reward_display = 1;
+        uint16_t altar_flags = z64_file.inf_table[27];
+        int show_medals = CFG_DUNGEON_INFO_REWARD_ENABLE && (!CFG_DUNGEON_INFO_REWARD_NEED_ALTAR || (altar_flags & 1));
+        int show_stones = CFG_DUNGEON_INFO_REWARD_ENABLE && (!CFG_DUNGEON_INFO_REWARD_NEED_ALTAR || (altar_flags & 2));
+
+        // Set up dimensions
+
+        int icon_size = 16;
+        int padding = 1;
+        int rows = 9;
+        int bg_width =
+            (1 * icon_size) +
+            (0x16 * font_sprite.tile_w) +
+            (3 * padding);
+        if (CFG_DUNGEON_INFO_REWARD_WORLDS_ENABLE) {
+            bg_width += 5 * font_sprite.tile_w;
+        }
+        int bg_height = (rows * icon_size) + ((rows + 1) * padding);
+        int bg_left = (Z64_SCREEN_WIDTH - bg_width) / 2;
+        int bg_top = (Z64_SCREEN_HEIGHT - bg_height) / 2;
+
+        int left = bg_left + padding;
+        int start_top = bg_top + padding;
+
+        draw_background(db, bg_left, bg_top, bg_width, bg_height);
+
+        // Draw medals
+
+        sprite_load(db, &medals_sprite, 0, medals_sprite.tile_count);
+
+        for (int i = 3; i < 9; i++) {
+            medal_t* medal = &(medals[i - 3]);
+            gDPSetPrimColor(db->p++, 0, 0, medal->r, medal->g, medal->b, 0xFF);
+
+            int top = start_top + ((icon_size + padding) * i);
+            sprite_draw(db, &medals_sprite, medal->idx,
+                    left, top, icon_size, icon_size);
+        }
+
+        gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
+
+        // Draw stones
+
+        sprite_load(db, &stones_sprite, 0, stones_sprite.tile_count);
+
+        for (int i = 0; i < 3; i++) {
+            int top = start_top + ((icon_size + padding) * i);
+            sprite_draw(db, &stones_sprite, i,
+                    left, top, icon_size, icon_size);
+        }
+
+        left += icon_size + padding;
+
+        // Draw reward world numbers
+
+        if (CFG_DUNGEON_INFO_REWARD_WORLDS_ENABLE) {
+            for (int i = 0; i < 9; i++) {
+                uint8_t reward = reward_rows[i];
+                bool display_area = true;
+                switch (CFG_DUNGEON_INFO_REWARD_NEED_COMPASS) {
+                    case 1:
+                        for (int j = 0; j < 8; j++) {
+                            uint8_t dungeon_idx = dungeons[j].index;
+                            if (CFG_DUNGEON_REWARDS[dungeon_idx] == reward) {
+                                if (!z64_file.dungeon_items[dungeon_idx].compass) {
+                                    display_area = false;
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    case 2:
+                        if (i != 3) { // always display Light Medallion
+                            dungeon_entry_t* d = &(dungeons[i - (i < 3 ? 0 : 1)]); // vanilla location of the reward
+                            display_area = z64_file.dungeon_items[d->index].compass;
+                        }
+                        break;
+                }
+                if (!display_area) {
+                    continue;
+                }
+                uint8_t world = CFG_DUNGEON_REWARD_WORLDS[i];
+                char world_text[5] = "WOOO"; // we use O instead of 0 because it's easier to distinguish from 8
+                if (world < 100) {
+                    world_text[0] = ' ';
+                    world_text[1] = 'W';
+                }
+                if (world < 10) {
+                    world_text[1] = ' ';
+                    world_text[2] = 'W';
+                }
+                if (world / 100) {
+                    world_text[1] = world / 100 + '0';
+                }
+                if ((world % 100) / 10) {
+                    world_text[2] = (world % 100) / 10 + '0';
+                }
+                if (world % 10) {
+                    world_text[3] = world % 10 + '0';
+                }
+                int top = start_top + ((icon_size + padding) * i) + 1;
+                text_print(db, world_text, left, top);
+            }
+            left += 5 * font_sprite.tile_w;
+        }
+
+        // Draw reward locations
+
+        for (int i = 0; i < 9; i++) {
+            if (i < 3 ? show_stones : show_medals) {
+                uint8_t reward = reward_rows[i];
+                bool display_area = true;
+                switch (CFG_DUNGEON_INFO_REWARD_NEED_COMPASS) {
+                    case 1:
+                        for (int j = 0; j < 8; j++) {
+                            uint8_t dungeon_idx = dungeons[j].index;
+                            if (CFG_DUNGEON_REWARDS[dungeon_idx] == reward) {
+                                if (!z64_file.dungeon_items[dungeon_idx].compass) {
+                                    display_area = false;
+                                }
+                                break;
+                            }
+                        }
+                        break;
+                    case 2:
+                        if (i != 3) { // always display Light Medallion
+                            dungeon_entry_t* d = &(dungeons[i - (i < 3 ? 0 : 1)]); // vanilla location of the reward
+                            display_area = z64_file.dungeon_items[d->index].compass;
+                        }
+                        break;
+                }
+                if (!display_area) {
+                    continue;
+                }
+                int top = start_top + ((icon_size + padding) * i) + 1;
+                text_print(db, CFG_DUNGEON_REWARD_AREAS[i], left, top);
             }
         }
     }

@@ -27,7 +27,7 @@ void give_sage_gifts() {
     // ToT Reward from Rauru
 
     if (
-        z64_file.game_mode == 0 // normal gameplay
+        z64_file.game_mode == GAMEMODE_NORMAL // normal gameplay
         && z64_game.scene_index == 0x0043 // current scene: Temple of Time
         && z64_game.room_index == 0x00 // current room: Master Sword chamber
         && !(z64_file.event_chk_inf[4] & 0x0020) // flag not already set
@@ -38,7 +38,7 @@ void give_sage_gifts() {
 
     // Gift from Sages
 
-    if (z64_file.game_mode == 0 && GANON_BOSS_KEY_CONDITION && !z64_file.dungeon_items[10].boss_key) {
+    if (z64_file.game_mode == GAMEMODE_NORMAL && GANON_BOSS_KEY_CONDITION && !z64_file.dungeon_items[10].boss_key) {
         bool give_boss_key = false;
         switch (GANON_BOSS_KEY_CONDITION) {
             case 1: // Medallions

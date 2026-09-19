@@ -55,7 +55,7 @@ extern uint8_t CFG_CHILD_TRADE_SHUFFLE;
 
 #define CAN_USE_DPAD        (((z64_link.state_flags_1 & BLOCK_DPAD) == 0) && \
                             ((uint32_t)z64_ctxt.state_dtor==z64_state_ovl_tab[3].vram_dtor) && \
-                            (z64_file.game_mode == 0) && \
+                            (z64_file.game_mode == GAMEMODE_NORMAL) && \
                             ((z64_event_state_1 & 0x20) == 0) && \
                             (!CAN_DRAW_DUNGEON_INFO || !CFG_DPAD_DUNGEON_INFO_ENABLE) && \
                             (!CAN_DRAW_WORLD_INFO || !CFG_DPAD_DUNGEON_INFO_ENABLE) && \
@@ -79,5 +79,6 @@ extern uint8_t CFG_CHILD_TRADE_SHUFFLE;
 
 void handle_dpad();
 void draw_dpad_and_menu_utilities();
+void draw_dpad_on_file_select(z64_disp_buf_t* db);
 
 #endif

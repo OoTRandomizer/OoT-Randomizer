@@ -1925,6 +1925,13 @@ typedef enum {
     /* 4 */ PAUSE_BG_PRERENDER_MAX,
 } PauseBgPreRenderState;
 
+typedef enum {
+    /* 0 */ GAMEMODE_NORMAL,
+    /* 1 */ GAMEMODE_TITLE_SCREEN,
+    /* 2 */ GAMEMODE_FILE_SELECT, // Note: only instance type transitions swap to file select
+    /* 3 */ GAMEMODE_END_CREDITS
+} GameMode;
+
 typedef struct SkelAnime {
     /* 0x00 */ char known_1_[0x08];
     /* 0x08 */ void* animation; // Can be an AnimationHeader or LinkAnimationHeader.
