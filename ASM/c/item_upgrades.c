@@ -142,12 +142,15 @@ uint16_t seeds_to_rupee(z64_file_t* save, override_t override) {
     return ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->bullet_bag : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].slingshot) ? override.value.base.item_id : GI_RUPEE_BLUE; // Blue Rupee
 }
 
+extern uint8_t FAST_FOUNTAIN;
 uint16_t letter_to_bottle(z64_file_t* save, override_t override) {
     if (save->event_chk_inf[3] & 0x0008) // "King Zora Moved Aside"
         return GI_REDUNDANT_LETTER_BOTTLE; // Redundant Letter Bottle
     if (save->items[Z64_SLOT_BOTTLE_1] == 0x1B || save->items[Z64_SLOT_BOTTLE_2] == 0x1B
      || save->items[Z64_SLOT_BOTTLE_3] == 0x1B || save->items[Z64_SLOT_BOTTLE_4] == 0x1B)
         return GI_REDUNDANT_LETTER_BOTTLE; // Redundant Letter Bottle
+    if (FAST_FOUNTAIN)
+        return GI_FAST_LETTER_BOTTLE;
     return override.value.base.item_id;
 }
 
