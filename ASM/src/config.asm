@@ -262,6 +262,8 @@ DOT_CONDITION:
 .byte 0x01
 FAST_FOUNTAIN:
 .byte 0x00
+FAST_FOREST:
+.byte 0x00
 .align 4
 
 ; These configuration values are given fixed addresses to aid auto-trackers.

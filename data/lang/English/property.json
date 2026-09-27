@@ -1562,6 +1562,16 @@
         },
         {
             "box_type": 0,
+            "id": 1118,
+            "text": "\u0008\u0013\u003BYou got the \u0005\u0042Kokiri Sword\u0005\u0040!\u0001Mido can sense you are ready and\u0001opens the path to \u0005\u0042Deku Tree\u0005\u0044."
+        },
+        {
+            "box_type": 0,
+            "id": 1119,
+            "text": "\u0008\u0013\u003EYou got a \u0005\u0042Deku Shield\u0005\u0040!\u0001Mido can sense you are ready and\u0001opens the path to \u0005\u0042Deku Tree\u0005\u0044."
+        },
+        {
+            "box_type": 0,
             "id": 24595,
             "text": "Hey, newcomer!\u0004Want me to throw you in jail?\u0001\u0001\u001b\u0005BNo\u0001Yes\u0005@"
         }

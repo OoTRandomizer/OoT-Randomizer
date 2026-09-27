@@ -1946,11 +1946,16 @@ typedef struct NpcInteractInfo {
     /* 0x18 */ z64_xyzf_t trackPos;
     /* 0x24 */ char unk_24[0x4];
 } NpcInteractInfo; // size = 0x28
+
+// Bit Flag array in which gBitFlags[n] is literally (1 << n)
+extern uint32_t gBitFlags[32];
+
 /* helper macros */
 #define LINK_IS_ADULT (z64_file.link_age == 0)
 #define SLOT(item) gItemSlots[item]
 #define INV_CONTENT(item) z64_file.items[SLOT(item)]
 #define ABS(x) ((x) >= 0 ? (x) : -(x))
+#define CHECK_OWNED_EQUIP_ALT(equip, value) (z64_file.equipment & gBitFlags[(value) + (equip) * 4])
 
 /* dram addresses */
 #define z64_EnItem00Action_addr                 0x800127E0

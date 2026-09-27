@@ -5,6 +5,8 @@
 #include "save.h"
 #include "en_kz.h"
 #include "bg_ice_shelter.h"
+#include "en_md.h"
+#include "bg_treemouth.h"
 
 #define rupee_cap ((uint16_t*)0x800F8CEC)
 volatile uint8_t MAX_RUPEES = 0;
@@ -304,6 +306,85 @@ void handle_fast_rutos_letter(z64_file_t* save, int16_t arg1, int16_t arg2) {
             curr = curr->next;
         }
     }
+}
+
+extern uint8_t FAST_FOREST;
+extern uint8_t DUNGEONS_SHUFFLED;
+extern BgTreemouthActionFunc OVL_BgTreemouth_func_808BC6F8;
+extern EnMdActionFunc OVL_EnMd_Idle;
+extern EnMdActionFunc OVL_EnMd_SetMovedPos;
+// If we're in Kokiri Forest, either move Mido or open Deku Tree mouth according to age.
+void move_mido_or_open_mouth() {
+    if (z64_game.scene_index == 0x55) {
+        if (LINK_IS_ADULT && DUNGEONS_SHUFFLED) {
+            // Loop through the actors looking for Deku tree mouth.
+            z64_actor_t* curr = z64_game.actorLists[ACTORCAT_BG].head;
+            while (curr != NULL) {
+                if (curr->actor_id == 0x003E) { // Check for Bg_Treemouth
+                    BgTreemouth* DekuTreeMouth = (BgTreemouth*)curr;
+                    // Not named yet in decomp but this is the function that opens the mouth in the early game cutscene.
+                    BgTreemouthActionFunc func_808BC6F8 = resolve_overlay_addr(&OVL_BgTreemouth_func_808BC6F8, 0x003E);
+                    func_808BC6F8(DekuTreeMouth, &z64_game);
+                    break;
+                }
+                curr = curr->next;
+            }
+        }
+        else {
+            // Loop through the actors looking for Mido.
+            z64_actor_t* curr = z64_game.actorLists[ACTORCAT_NPC].head;
+            while (curr != NULL) {
+                if (curr->actor_id == 0x016D) { // Check for EN_Md
+                    EnMd* Mido = (EnMd*)curr;
+                    // First put his current action to Idle, else his Block action will still take effect.
+                    Mido->actionFunc = resolve_overlay_addr(&OVL_EnMd_Idle, 0x016D);
+                    // Then move him out.
+                    EnMdActionFunc EnMd_SetMovedPos = resolve_overlay_addr(&OVL_EnMd_SetMovedPos, 0x016D);
+                    EnMd_SetMovedPos(Mido, &z64_game);
+                    break;
+                }
+                curr = curr->next;
+            }
+        }
+    }
+}
+
+void handle_kokiri_sword(z64_file_t* save, int16_t item_id, int16_t arg2) {
+
+    if (!FAST_FOREST) {
+        return;
+    }
+    bool mido_already_moved = save->event_chk_inf[0] & 0x10;
+    if (mido_already_moved) {
+        return;
+    }
+    // If no deku shield in inventory.
+    if (!CHECK_OWNED_EQUIP_ALT(1, 0)) {
+        return;
+    }
+
+    save->event_chk_inf[0] |= 0x10; // "Showed Mido Sword & Shield"
+
+    move_mido_or_open_mouth();
+}
+
+void handle_deku_shield(z64_file_t* save, int16_t item_id, int16_t arg2) {
+
+    if (!FAST_FOREST) {
+        return;
+    }
+    bool mido_already_moved = save->event_chk_inf[0] & 0x10;
+    if (mido_already_moved) {
+        return;
+    }
+    // If no kokiri sword in inventory.
+    if (!CHECK_OWNED_EQUIP_ALT(0, 0)) {
+        return;
+    }
+
+    save->event_chk_inf[0] |= 0x10; // "Showed Mido Sword & Shield"
+
+    move_mido_or_open_mouth();
 }
 void unlock_ocarina_note(z64_file_t* save, int16_t arg1, int16_t arg2) {
     switch(arg1) {

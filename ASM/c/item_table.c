@@ -68,9 +68,9 @@ item_row_t item_table[GI_RANDO_MAX] = {
     [GI_EYE_DROPS]                                              = ITEM_ROW(0x53,      GILDED_CHEST, 0x36, -1, 0x000E, 0x013F, 0x52, no_upgrade, trade_quest_upgrade, 0x36, -1, NULL), // Eye Drops
     [GI_CLAIM_CHECK]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x37, -1, 0x000A, 0x0142, 0x55, no_upgrade, trade_quest_upgrade, 0x37, -1, NULL), // Claim Check
 
-    [GI_SWORD_KOKIRI]                                           = ITEM_ROW(0x53,      GILDED_CHEST, 0x3B, -1, 0x00A4, 0x018D, 0x74, no_upgrade, no_effect, -1, -1, NULL), // Kokiri Sword
+    [GI_SWORD_KOKIRI]                                           = ITEM_ROW(0x53,      GILDED_CHEST, 0x3B, -1, 0x00A4, 0x018D, 0x74, no_upgrade, handle_kokiri_sword, -1, -1, resolve_text_kokiri_sword), // Kokiri Sword
     [GI_SWORD_KNIFE]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x3D, -1, 0x004B, 0x00F8, 0x43, no_upgrade, no_effect, -1, -1, NULL), // Giant's Knife
-    [GI_SHIELD_DEKU]                                            = ITEM_ROW(0x53,       BROWN_CHEST, 0x3E, -1, 0x90AD, 0x00CB, 0x1D, no_upgrade, no_effect, -1, -1, NULL), // Deku Shield
+    [GI_SHIELD_DEKU]                                            = ITEM_ROW(0x53,       BROWN_CHEST, 0x3E, -1, 0x90AD, 0x00CB, 0x1D, no_upgrade, handle_deku_shield, -1, -1, resolve_text_deku_shield), // Deku Shield
     [GI_SHIELD_HYLIAN]                                          = ITEM_ROW(0x53,       BROWN_CHEST, 0x3F, -1, 0x90AE, 0x00DC, 0x2C, no_upgrade, no_effect, -1, -1, NULL), // Hylian Shield
     [GI_SHIELD_MIRROR]                                          = ITEM_ROW(0x53,      GILDED_CHEST, 0x40, -1, 0x004E, 0x00EE, 0x3A, no_upgrade, no_effect, -1, -1, NULL), // Mirror Shield
     [GI_TUNIC_GORON]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x42, -1, 0x90AF, 0x00F2, 0x3C, no_upgrade, no_effect, -1, -1, NULL), // Goron Tunic
@@ -470,4 +470,35 @@ uint16_t resolve_upgrades(override_t override) {
 
 void call_effect_function(item_row_t* item_row) {
     item_row->effect(&z64_file, item_row->effect_arg1, item_row->effect_arg2);
+}
+
+extern uint8_t FAST_FOREST;
+uint16_t resolve_text_kokiri_sword(item_row_t* item_row, bool is_outgoing) {
+    if (!FAST_FOREST) {
+        return item_row->text_id;
+    }
+    bool mido_already_moved = z64_file.event_chk_inf[0] & 0x10;
+    if (mido_already_moved) {
+        return item_row->text_id;
+    }
+    // If Deku shield is in inventory, return alternate textbox to inform player that deku tree was opened automatically.
+    if (CHECK_OWNED_EQUIP_ALT(1, 0)) {
+        return 0x045E;
+    }
+    return item_row->text_id;
+}
+
+uint16_t resolve_text_deku_shield(item_row_t* item_row, bool is_outgoing) {
+    if (!FAST_FOREST) {
+        return item_row->text_id;
+    }
+    bool mido_already_moved = z64_file.event_chk_inf[0] & 0x10;
+    if (mido_already_moved) {
+        return item_row->text_id;
+    }
+    // If Kokiri sword is in inventory, return alternate textbox to inform player that deku tree was opened automatically.
+    if (CHECK_OWNED_EQUIP_ALT(0, 0)) {
+        return 0x045F;
+    }
+    return item_row->text_id;
 }

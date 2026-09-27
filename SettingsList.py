@@ -1230,6 +1230,7 @@ class SettingInfos:
         default        = 'closed',
         choices        = {
             'open':        'Open Forest',
+            'fast':        'Deku opens automatically',
             'closed_deku': 'Closed Deku',
             'closed':      'Closed Forest',
             },
@@ -1237,6 +1238,10 @@ class SettingInfos:
             'Open Forest': Mido no longer blocks the path to the
             Deku Tree, and the Kokiri boy no longer blocks the path
             out of the forest.
+
+            'Deku opens automatically': Same as Closed Deku, but when
+            both Kokiri Sword and Deku Shield are found, Mido moves automatically,
+            and Deku Tree opens his mouth for adult in Dungeon Entrance rando.
 
             'Closed Deku': The Kokiri boy no longer blocks the path
             out of the forest, but Mido still blocks the path to the

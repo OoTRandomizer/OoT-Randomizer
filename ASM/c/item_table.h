@@ -398,5 +398,7 @@ uint16_t resolve_text_silver_rupee_pouches(item_row_t* item_row, bool is_outgoin
 uint16_t resolve_text_small_keys(item_row_t* item_row, bool is_outgoing);
 uint16_t resolve_text_small_keys_cmg(item_row_t* item_row, bool is_outgoing);
 uint16_t resolve_text_keyrings(item_row_t* item_row, bool is_outgoing);
+uint16_t resolve_text_kokiri_sword(item_row_t* item_row, bool is_outgoing);
+uint16_t resolve_text_deku_shield(item_row_t* item_row, bool is_outgoing);
 
 #endif

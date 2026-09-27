@@ -3,7 +3,8 @@
         "region_name": "Root",
         "hint": "ROOT",
         "events": {
-            "Kakariko Village Gate Open": "open_kakariko == 'open' or (open_kakariko == 'zelda' and Zeldas_Letter)"
+            "Kakariko Village Gate Open": "open_kakariko == 'open' or (open_kakariko == 'zelda' and Zeldas_Letter)",
+            "Showed Mido Sword & Shield": "open_forest == 'fast' and Kokiri_Sword and Deku_Shield"
         },
         "locations": {
             "Gift from Sages": "can_receive_ganon_bosskey"

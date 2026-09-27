@@ -945,6 +945,18 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     elif world.settings.zora_fountain == 'adult':
         rom.write_byte(rom.sym('MOVED_ADULT_KING_ZORA'), 1)
 
+    if world.settings.open_forest == 'fast':
+        # If shield and sword already in inventory, just open Deku.
+        if 'Deku Shield' in world.settings.starting_items and 'Kokiri Sword' in world.settings.starting_items:
+            count_shield = world.settings.starting_items['Deku Shield']
+            count_sword = world.settings.starting_items['Kokiri Sword']
+            if count_shield.count > 0 and count_sword.count > 0:
+                save_context.write_bits(0xED5, 0x10)  # "Showed Mido Sword & Shield"
+            else:
+                rom.write_byte(rom.sym('FAST_FOREST'), 1)
+        else:
+            rom.write_byte(rom.sym('FAST_FOREST'), 1)
+
     # Make all chest opening animations fast
     rom.write_byte(rom.sym('FAST_CHESTS'), int(world.settings.fast_chests))
 

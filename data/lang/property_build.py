@@ -1539,6 +1539,16 @@ MISC_MESSAGES = [
         "box_type": 0x00
     },
     {
+        "id": 0x045E,
+        "text": "\x08\x13\x3BYou got the \x05\x42Kokiri Sword\x05\x40!\x01Mido can sense you are ready and\x01opens the path to \x05\x42Deku Tree\x05\x44.",
+        "box_type": 0x00
+    },    
+    {
+        "id": 0x045F,
+        "text": "\x08\x13\x3EYou got a \x05\x44Deku Shield\x05\x40!\x01Mido can sense you are ready and\x01opens the path to \x05\x42Deku Tree\x05\x44.",
+        "box_type": 0x00
+    },
+    {
         "id": 0x6013,
         "text": "Hey, newcomer!\x04Want me to throw you in jail?\x01\x01\x1B\x05\x42No\x01Yes\x05\x40",
         "box_type": 0x00

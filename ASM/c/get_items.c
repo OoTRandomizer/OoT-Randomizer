@@ -11,6 +11,7 @@
 #include "actor.h"
 #include "save.h"
 #include "models.h"
+#include "item_effects.h"
 
 extern uint8_t SHUFFLE_CHEST_GAME;
 extern uint8_t FAST_CHESTS;
@@ -473,6 +474,11 @@ void get_item(z64_actor_t* from_actor, z64_link_t* link, int8_t incoming_item_id
             }
         }
         override = lookup_override(from_actor, z64_game.scene_index, item_id);
+    }
+
+    // Notify deku shield buy in shops.
+    if (from_actor->actor_id == 0x3D && incoming_item_id == GI_SHIELD_DEKU) {
+        handle_deku_shield(&z64_file, 0, 0);
     }
 
     if (override.key.all == 0) {
