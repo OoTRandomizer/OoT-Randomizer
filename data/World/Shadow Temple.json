@@ -89,7 +89,7 @@
             "Shadow Temple Falling Spikes Lower Pot 2": "True",
             "Shadow Temple Falling Spikes Upper Pot 1": "logic_shadow_umbrella or Progressive_Strength_Upgrade",
             "Shadow Temple Falling Spikes Upper Pot 2": "logic_shadow_umbrella or Progressive_Strength_Upgrade",
-            "Shadow Temple GS Falling Spikes Room": "logic_shadow_umbrella_gs or Hookshot"
+            "Shadow Temple GS Falling Spikes Room": "(logic_shadow_umbrella_gs and can_see_chests) or Hookshot"
         }
     },
     {
@@ -109,7 +109,7 @@
             "Shadow Temple GS Single Giant Pot": "(Silver_Rupee_Shadow_Temple_Invisible_Spikes, 5)"
         },
         "exits": {
-            "Shadow Temple Wind Tunnel": "Hookshot and (Small_Key_Shadow_Temple, 3)",
+            "Shadow Temple Wind Tunnel": "((can_see_chests and Hookshot) or Longshot) and (Small_Key_Shadow_Temple, 3)",
             "Shadow Temple Huge Pit": "logic_lens_shadow_platform or can_use(Lens_of_Truth)"
         }
     },
