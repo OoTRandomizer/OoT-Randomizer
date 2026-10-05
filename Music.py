@@ -60,7 +60,6 @@ bgm_sequence_ids: tuple[tuple[str, int], ...] = (
     ("Shop", 0x55),
     ("Chamber of the Sages", 0x56),
     ("Ice Cavern", 0x58),
-    ("Kaepora Gaebora", 0x5A),
     ("Shadow Temple", 0x5B),
     ("Water Temple", 0x5C),
     ("Gerudo Valley", 0x5F),
@@ -90,6 +89,7 @@ fanfare_sequence_ids: tuple[tuple[str, int], ...] = (
     ("Zelda Turns Around", 0x51),
     ("Master Sword", 0x53),
     ("Door of Time", 0x59),
+    ("Kaepora Gaebora", 0x5A),
     ("Ganons Rainbow Bridge", 0x5D),
 )
 
