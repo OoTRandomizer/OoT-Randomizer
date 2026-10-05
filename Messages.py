@@ -226,7 +226,8 @@ except Exception:
     for code, token in SCJP.items():
         if code < 0x10000:
             REVERSE_MAP_JP[code] = token
-    json.dump([CHARACTER_MAP_JP, REVERSE_MAP_JP], open(data_path('generated/jp_char_map.otrx'), mode="w"))
+    with open(data_path('generated/jp_char_map.otrx'), mode="w", encoding="utf-8") as stream:
+        json.dump([CHARACTER_MAP_JP, REVERSE_MAP_JP], stream)
 
 for code, token in SCJP.items():
     if code < len(REVERSE_MAP_JP):
