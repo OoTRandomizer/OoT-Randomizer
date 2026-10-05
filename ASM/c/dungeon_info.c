@@ -530,15 +530,43 @@ void manage_dpad_on_file_select(z64_disp_buf_t* db) {
     if (!CAN_DRAW_INFO_ON_FILE_SELECT) {
         return;
     }
-    draw_dpad_on_file_select(db);
     draw_world_info(db);
+    // Draw d-pad sprite
+    {
+        gDPPipeSync(db->p++);
+        gDPSetCombineMode(db->p++, G_CC_MODULATEIA_PRIM, G_CC_MODULATEIA_PRIM);
+        gDPSetPrimColor(db->p++, 0, 0, 0xFF, 0xFF, 0xFF, 0xFF);
+        sprite_load(db, &dpad_sprite, 0, 1);
+        int left_main_dpad = CFG_DPAD_ON_THE_LEFT ? 32 : 271;
+        int top_main_dpad = CFG_DPAD_ON_THE_LEFT ? 51 : 64;
+        if (CFG_DPAD_DUNGEON_INFO_ENABLE) {
+            sprite_draw(db, &dpad_sprite, 0, left_main_dpad, top_main_dpad, 16, 16);
+            bool shuffle_dungeons = CFG_DUNGEON_BOSS_INFO[0] > 0;
+            bool shuffle_bosses = CFG_DUNGEON_BOSS_INFO[1] > 0;
+            // map on D-left
+            if (shuffle_dungeons) {
+                sprite_load(db, &quest_items_sprite, 16, 1);
+                sprite_draw(db, &quest_items_sprite, 0, left_main_dpad - 11, top_main_dpad + 2, 12, 12);
+            }
+            // boss key on D-right
+            if (shuffle_bosses) {
+                sprite_load(db, &quest_items_sprite, 14, 1);
+                sprite_draw(db, &quest_items_sprite, 0, left_main_dpad + 14, top_main_dpad + 2, 12, 12);
+            }
+            if (CFG_DUNGEON_INFO_ENABLE != 0) {
+                // Zora sapphire on D-down
+                sprite_load(db, &stones_sprite, 2, 1);
+                sprite_draw(db, &stones_sprite, 0, left_main_dpad + 2, top_main_dpad + 13, 12, 12);
+            }
+        }
+        gDPPipeSync(db->p++);
+    }
     if (z64_ctxt.input[0].pad_pressed.dd) {
         reward_display = reward_display ? false : true;
         world_display = false;
         boss_display = false;
     }
     if (reward_display) {
-        reward_display = 1;
         uint16_t altar_flags = z64_file.inf_table[27];
         int show_medals = CFG_DUNGEON_INFO_REWARD_ENABLE && (!CFG_DUNGEON_INFO_REWARD_NEED_ALTAR || (altar_flags & 1));
         int show_stones = CFG_DUNGEON_INFO_REWARD_ENABLE && (!CFG_DUNGEON_INFO_REWARD_NEED_ALTAR || (altar_flags & 2));

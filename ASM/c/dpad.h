@@ -79,6 +79,5 @@ extern uint8_t CFG_CHILD_TRADE_SHUFFLE;
 
 void handle_dpad();
 void draw_dpad_and_menu_utilities();
-void draw_dpad_on_file_select(z64_disp_buf_t* db);
 
 #endif
