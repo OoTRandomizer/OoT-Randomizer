@@ -186,8 +186,8 @@ void draw_boss_key(z64_game_t* globalCtx, z64_disp_buf_t* db) {
     }
 }
 
-void draw_world_info(z64_disp_buf_t* db) {
-    if (!CAN_DRAW_WORLD_INFO && !CAN_DRAW_INFO_ON_FILE_SELECT) {
+void draw_world_info(z64_disp_buf_t* db, z64_file_t* file) {
+    if (!CAN_DRAW_WORLD_INFO && file == NULL) {
         return;
     }
     show_dungeon_info = 0;
@@ -203,15 +203,20 @@ void draw_world_info(z64_disp_buf_t* db) {
     bool mixed = mixed_dungeons || mixed_bosses;
 
     // On file select we're not using the rando setup display list.
-    if (!CAN_DRAW_INFO_ON_FILE_SELECT) {
+    if (file == NULL) {
         db->p = db->buf;
         // Call setup display list
         gSPDisplayList(db->p++, &setup_db);
     }
+    z64_file_t* current_file = &z64_file;
+    // This is for file select because we need to look at the sram buffer and not the general file pointer for accurate data.
+    if (file != NULL) {
+         current_file = file;
+    }
 
     if (!mixed) {
 
-        if ((z64_ctxt.input[0].pad_pressed.dl || (z64_ctxt.input[0].pad_pressed.a && !CAN_DRAW_INFO_ON_FILE_SELECT)) && show_dungeons) {
+        if ((z64_ctxt.input[0].pad_pressed.dl || (z64_ctxt.input[0].pad_pressed.a && file == NULL)) && show_dungeons) {
             world_display = world_display ? false : true;
             boss_display = false;
             reward_display = false;
@@ -297,12 +302,12 @@ void draw_world_info(z64_disp_buf_t* db) {
             if (show_dungeons) {
                 for (uint8_t i = 0; i < rows - 1; i++) {
                     uint16_t top = start_top + ((font_height + padding) * (i + 1)) + 1;
-                    if (CFG_DUNGEON_BOSS_INFO[i + 2] > 10 || z64_file.dungeon_items[CFG_DUNGEON_BOSS_INFO[i + 2]].map) {
+                    if (CFG_DUNGEON_BOSS_INFO[i + 2] > 10 || current_file->dungeon_items[CFG_DUNGEON_BOSS_INFO[i + 2]].map) {
                         gDPPipeSync(db->p++);
                         text_print_size(db, CFG_DUNGEON_ENTRANCES[i], left_dungeon, top, font_width, font_height);
                         // If boss ER is also on, display the boss on the same line as the actual dungeon.
                         if (show_bosses) {
-                            if (CFG_DUNGEON_BOSS_INFO[i + 2] > 10 || z64_file.dungeon_items[CFG_DUNGEON_BOSS_INFO[i + 2]].compass) {
+                            if (CFG_DUNGEON_BOSS_INFO[i + 2] > 10 || current_file->dungeon_items[CFG_DUNGEON_BOSS_INFO[i + 2]].compass) {
                                 gDPPipeSync(db->p++);
                                 text_print_size(db, CFG_BOSSES[i], left_boss, top, font_width, font_height);
                             }
@@ -370,7 +375,7 @@ void draw_world_info(z64_disp_buf_t* db) {
             // List of bosses, located in CFG_BOSSES after the first list of 12 for the dpad left menu.
             for (uint8_t i = 0; i < rows - 1; i++) {
                 boss_entry_t boss = bosses[i];
-                if (boss.has_map && !z64_file.dungeon_items[boss.index].compass) {
+                if (boss.has_map && !current_file->dungeon_items[boss.index].compass) {
                     continue;
                 }
                 gDPPipeSync(db->p++);
@@ -452,7 +457,7 @@ void draw_world_info(z64_disp_buf_t* db) {
             for (uint8_t i = 0; i < rows - 1; i++) {
                 gDPPipeSync(db->p++);
                 dungeon_entry_t dungeon = dungeons[i];
-                if (dungeon.has_map && !z64_file.dungeon_items[dungeon.index].map) {
+                if (dungeon.has_map && !current_file->dungeon_items[dungeon.index].map) {
                     continue;
                 }
                 uint16_t top = start_top + ((font_height + padding) * (i + 1)) + 1;
@@ -515,7 +520,7 @@ void draw_world_info(z64_disp_buf_t* db) {
             for (uint8_t i = 0; i < rows - 1; i++) {
                 gDPPipeSync(db->p++);
                 boss_entry_t boss = bosses[i];
-                if (boss.has_map && !z64_file.dungeon_items[boss.index].compass) {
+                if (boss.has_map && !current_file->dungeon_items[boss.index].compass) {
                     continue;
                 }
                 uint16_t top = start_top + ((font_height + padding) * (i + 1));
@@ -525,12 +530,13 @@ void draw_world_info(z64_disp_buf_t* db) {
     }
 }
 
-void manage_dpad_on_file_select(z64_disp_buf_t* db) {
+void manage_dpad_on_file_select(z64_disp_buf_t* db, z64_menudata_t* menu_data) {
 
-    if (!CAN_DRAW_INFO_ON_FILE_SELECT) {
+    if (!CFG_DUNGEON_INFO_ENABLE) {
         return;
     }
-    draw_world_info(db);
+    z64_file_t* file = &menu_data->sram_buffer->primary_saves[menu_data->selected_file].original_save;
+    draw_world_info(db, file);
     // Draw d-pad sprite
     {
         gDPPipeSync(db->p++);
@@ -567,7 +573,7 @@ void manage_dpad_on_file_select(z64_disp_buf_t* db) {
         boss_display = false;
     }
     if (reward_display) {
-        uint16_t altar_flags = z64_file.inf_table[27];
+        uint16_t altar_flags = file->inf_table[27];
         int show_medals = CFG_DUNGEON_INFO_REWARD_ENABLE && (!CFG_DUNGEON_INFO_REWARD_NEED_ALTAR || (altar_flags & 1));
         int show_stones = CFG_DUNGEON_INFO_REWARD_ENABLE && (!CFG_DUNGEON_INFO_REWARD_NEED_ALTAR || (altar_flags & 2));
 
@@ -630,7 +636,7 @@ void manage_dpad_on_file_select(z64_disp_buf_t* db) {
                         for (int j = 0; j < 8; j++) {
                             uint8_t dungeon_idx = dungeons[j].index;
                             if (CFG_DUNGEON_REWARDS[dungeon_idx] == reward) {
-                                if (!z64_file.dungeon_items[dungeon_idx].compass) {
+                                if (!file->dungeon_items[dungeon_idx].compass) {
                                     display_area = false;
                                 }
                                 break;
@@ -640,7 +646,7 @@ void manage_dpad_on_file_select(z64_disp_buf_t* db) {
                     case 2:
                         if (i != 3) { // always display Light Medallion
                             dungeon_entry_t* d = &(dungeons[i - (i < 3 ? 0 : 1)]); // vanilla location of the reward
-                            display_area = z64_file.dungeon_items[d->index].compass;
+                            display_area = file->dungeon_items[d->index].compass;
                         }
                         break;
                 }
@@ -683,7 +689,7 @@ void manage_dpad_on_file_select(z64_disp_buf_t* db) {
                         for (int j = 0; j < 8; j++) {
                             uint8_t dungeon_idx = dungeons[j].index;
                             if (CFG_DUNGEON_REWARDS[dungeon_idx] == reward) {
-                                if (!z64_file.dungeon_items[dungeon_idx].compass) {
+                                if (!file->dungeon_items[dungeon_idx].compass) {
                                     display_area = false;
                                 }
                                 break;
@@ -693,7 +699,7 @@ void manage_dpad_on_file_select(z64_disp_buf_t* db) {
                     case 2:
                         if (i != 3) { // always display Light Medallion
                             dungeon_entry_t* d = &(dungeons[i - (i < 3 ? 0 : 1)]); // vanilla location of the reward
-                            display_area = z64_file.dungeon_items[d->index].compass;
+                            display_area = file->dungeon_items[d->index].compass;
                         }
                         break;
                 }

@@ -59,7 +59,7 @@ void after_game_state_update() {
     // Else this will cause graphical and/or lag issues on some emulators when pausing.
     if (R_PAUSE_BG_PRERENDER_STATE != PAUSE_BG_PRERENDER_PROCESS) {
         draw_dungeon_info(&rando_overlay_db);
-        draw_world_info(&rando_overlay_db);
+        draw_world_info(&rando_overlay_db, NULL);
         draw_triforce_count(&rando_overlay_db);
         draw_boss_key(&z64_game, &rando_overlay_db);
         draw_silver_rupee_count(&z64_game, &rando_overlay_db);
