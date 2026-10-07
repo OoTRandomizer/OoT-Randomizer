@@ -568,7 +568,7 @@ void manage_dpad_on_file_select(z64_disp_buf_t* db, z64_menudata_t* menu_data) {
         gDPPipeSync(db->p++);
     }
     if (z64_ctxt.input[0].pad_pressed.dd) {
-        reward_display = reward_display ? false : true;
+        reward_display = !reward_display;
         world_display = false;
         boss_display = false;
     }
