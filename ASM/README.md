@@ -1,4 +1,4 @@
-Advanced modifications to the Randomzier source require a bit more software than what is needed for running it.
+Advanced modifications to the Randomizer source require a bit more software than what is needed for running it.
 
 ## Assembly: armips
 ### Windows Prerequisite
@@ -8,8 +8,13 @@ Advanced modifications to the Randomzier source require a bit more software than
 ### Running
 - Download the armips assembler: <https://github.com/Kingcom/armips>
   - [Windows automated builds](https://buildbot.orphis.net/armips/)
-  - On other platforms you'll need either `clang` or `gcc`, `cmake`, and either `ninja` or `make` installed. All of these should be available in the package repositories of every major Linux distribution and Homebrew on macOS. After, follow the [building from source instructions](https://github.com/Kingcom/armips#22-building-from-source).
-- Put the armips executable in the `tools` directory, or somewhere in your PATH.
+  - On macOS or Linux with Homebrew, the OoTRandomizer tap can install it with:
+
+        brew tap ootrandomizer/tap
+        brew install --HEAD ootrandomizer/tap/armips
+
+  - To compile armips yourself, install either `clang` or `gcc`, `cmake`, and either `ninja` or `make`, then follow the [building from source instructions](https://github.com/Kingcom/armips#22-building-from-source).
+- Put the armips executable directly in `tools`, or install it somewhere already in your `PATH`.
 - Put the ROM you want to patch at `roms/base.z64`. This needs to be an uncompressed ROM; OoTRandomizer will produce one at ZOOTDEC.z64 when you run it with a compressed ROM.
 - Run `python build.py --no-compile-c`, which will:
   - create `roms/patched.z64`
@@ -37,15 +42,39 @@ Recompiling the C code for randomizer requires the N64 development tools to be i
   - **Using WSL**: Install the latest Debian Linux from the Windows Store and follow the below instructions for Debian.
 - **Debian**: [Follow this how-to](https://practicerom.com/public/packages/debian/howto.txt) on adding the toolchain's package repository and installing the pre-built binaries.
   - You will also need to run `apt install build-essential` or `apt install make` if `make` is not installed.
-- **Any platform with a gcc compiler**: Build from source from the [glankk/n64](https://github.com/glankk/n64) repository. Simply follow the readme.
+- **macOS (Intel or Apple Silicon)**:
+  - The simplest system-wide installation is the OoTRandomizer Homebrew tap:
+
+        brew tap ootrandomizer/tap
+        brew install --HEAD ootrandomizer/tap/n64
+
+  - To keep the toolchain inside this checkout, build the patched n64 source with `ASM/tools` as its installation prefix. On macOS, `./install_deps` installs GNU Make as `gmake`:
+
+        cd /path/to/n64
+        ./install_deps
+        ./configure --prefix="/absolute/path/to/OoT-Randomizer/ASM/tools"
+        gmake toolchain-all
+        gmake toolchain-install
+
+    This installs `mips64-gcc`, `mips64-ld`, `mips64-objdump`, and `mips64-objcopy` in `ASM/tools/bin`, where `build.py` finds them automatically. Using `ASM/tools/n64` as the prefix is also supported.
+  - The patched n64 build detects Homebrew under both `/opt/homebrew` and `/usr/local`, including the GMP, MPFR, MPC, zlib, Lua, libusb, GNU sed, and texinfo paths needed by native Apple Silicon builds. No permanent shell PATH change is required.
+- **Any platform with a C/C++ compiler**: Build from the n64 source after applying the macOS compatibility patch, then follow the included readme. The upstream project is [glankk/n64](https://github.com/glankk/n64).
   - The dependency install script may not install all the necessary libraries depending on your OS version. Take a look at the output from the configure step to see if anything is missing.
-  - It is easiest if you use `--prefix=/the/path/to/OoT-Randomizer/ASM/tools` for the `./configure` step. This will install all the toolchain in a way the build script can use, however this is inconvenient if you plan to use the toolchain for other projects as well.
+  - It is easiest if you use `--prefix=/the/path/to/OoT-Randomizer/ASM/tools` for the `./configure` step. This installs the toolchain in a location used directly by the build script, although a system-wide prefix may be more convenient when sharing the toolchain with other projects.
+  - Keep any explicitly selected `BINUTILS_VERSION`, `GCC_VERSION`, `NEWLIB_VERSION`, and `GDB_VERSION` archive stems unchanged. The patched n64 build still supports its automatic version selection and conditional newlib patches.
   - If you are trying to update the toolchain this way, it is easiest to just delete your local copy of the repository and clone it again to ensure all the packages get updated and are compatible.
 
 
-You can substitute using the `tools` folder with adding the `n64/bin` folder to your environment PATH if you need an advanced setup.
+`build.py` searches `ASM/tools`, `ASM/tools/bin`, and `ASM/tools/n64/bin` before the existing environment `PATH`. This supports a single executable copied into `tools`, a toolchain installed with `ASM/tools` as its prefix, a complete prefix copied to `ASM/tools/n64`, and normal system-wide installations without platform-specific build logic.
+On POSIX hosts, `build.py` uses the platform-neutral `ASM/tools/toolchain` directory for compiler launchers so GCC and its assembler are selected from the same prefix. Apple Silicon uses the same layout and only adds an isolated environment for `as`, preventing MacPorts or Conda entries from replacing the assembler selected by GCC. Windows continues to use the discovered executables directly. Set `OOTR_N64_PREFIX=/absolute/path/to/n64-prefix` to select a local installation explicitly.
 ### Running
-To recompile the C modules, use `python build.py` in this directory, or adjust the path to `build.py` relative to your terminal's working directory.
+Before building, verify the ROM, project files, armips, make, and every required MIPS executable:
+
+    python3 build.py --check-toolchains
+
+The check prints every required project file separately with its expected absolute path and actual location. For each executable it prints the project-local candidate paths, whether each candidate exists, the command selected from `PATH`, its resolved target and version, and the assembler selected internally by GCC. Missing or invalid entries produce `Result: FAILED` and exit status 1.
+
+To recompile the C modules, run `python build.py` in this directory, or run `python ASM/build.py` from the repository root (`python3` may be required on macOS and Linux). The default `mips64-` prefix matches a toolchain built from the n64 source; use `--mips-binutils-prefix` only for packages that intentionally use another target prefix.
 
 ## Debugging Symbols for Project64
 To generate symbols for the Project64 debugger, use the `--pj64sym` option:
