@@ -1119,3 +1119,172 @@ class TestSceneFiles(unittest.TestCase):
         from Scene import check_external_reference_locations
         uncompressed_rom = Rom('ZOOTDEC.z64')
         check_external_reference_locations(uncompressed_rom)
+
+def force_random_starting_items(*preferred: str):
+    import ItemPool
+    real_pool = ItemPool.configure_random_starting_items_pool
+
+    def pick_preferred(world, pool):
+        candidates = real_pool(world, pool)
+        chosen = [name for name in preferred if name in candidates]
+        return chosen[:1] or candidates
+
+    return patch('ItemPool.configure_random_starting_items_pool', pick_preferred)
+
+def rsi_settings(extra: dict[str, Any], count: int, seed: str, outfilename: str, rom: bool = False) -> Settings:
+    settings_dict = {
+        'add_random_starting_items': count > 0,
+        'random_starting_items_count': count,
+        'random_starting_items_exclude': [],
+    }
+    settings_dict.update(extra)
+    if rom:
+        settings_dict.update({'patch_without_output': True, 'create_cosmetics_log': False})
+    return make_settings_for_test(settings_dict, seed=seed, outfilename=outfilename)
+
+def generate_rsi(extra: dict[str, Any], count: int, preferred: tuple[str, ...] = (), seed: str = 'TESTTESTTEST', outfilename: str = 'rsi') -> Spoiler:
+    with force_random_starting_items(*preferred):
+        return main(rsi_settings(extra, count, seed, outfilename))
+
+def generate_rsi_rom(extra: dict[str, Any], count: int, preferred: tuple[str, ...] = (), seed: str = 'TESTTESTTEST', outfilename: str = 'rsi-rom') -> tuple[Spoiler, Rom]:
+    import Main
+    captured = {}
+    real_prepare_rom = Main.prepare_rom
+
+    def capture_prepare_rom(spoiler, world, rom, rng_state=None):
+        real_prepare_rom(spoiler, world, rom, rng_state)
+        captured['rom'] = rom
+
+    with force_random_starting_items(*preferred), patch('Main.prepare_rom', capture_prepare_rom):
+        spoiler = main(rsi_settings(extra, count, seed, outfilename, rom=True))
+    return spoiler, captured['rom']
+
+def read_initial_save_table(rom: Rom) -> dict[int, int]:
+    # Decodes SaveContext.write_save_table's format: [addr_hi, addr_lo, kind, value] * n, then 4 zero bytes.
+    # kind 0 = bits OR'd into the new-file default, kind 1 = byte written as-is.
+    table = rom.read_bytes(rom.sym('INITIAL_SAVE_DATA'), 0x400)
+    save: dict[int, int] = {}
+    for i in range(0, len(table), 4):
+        hi, lo, kind, value = table[i:i + 4]
+        if (hi, lo, kind, value) == (0, 0, 0, 0):
+            break
+        address = (hi << 8) | lo
+        save[address] = (save.get(address, 0) | value) if kind == 0 else value
+    return save
+
+GRANNY_LOCATION = 'Kak Granny Buy Blue Potion'
+GRANNY_SEEDS = ('GRANNY-A', 'GRANNY-B')
+
+def granny_trade_settings(start_item: str, seed: str, outfilename: str, extra: Optional[dict[str, Any]] = None) -> Settings:
+    settings_dict = {
+        'adult_trade_shuffle': False,
+        'adult_trade_start': list(trade_items),
+        'starting_items': {start_item: 1},
+    }
+
+    settings_dict.update(extra or {})
+    return make_settings_for_test(settings_dict, seed=seed, outfilename=outfilename)
+
+class TestAdultTradeGranny(unittest.TestCase):
+    # Generation
+    def test_manual_starting_trade_item_drives_selected_trade_item(self):
+        # Logic (Kak Granny Buy Blue Potion) reads selected_adult_trade_item while the patcher's traded flags
+        # read the starting trade item; they must be the same item or Granny can refuse an in-logic sale.
+        for seed in (f'GRANNY{i}' for i in range(8)):
+            with self.subTest(seed=seed):
+                spoiler = generate_rsi({
+                    'adult_trade_shuffle': False,
+                    'adult_trade_start': list(trade_items),
+                    'starting_items': {'Odd Mushroom': 1}
+                }, count=0, seed=seed, outfilename='rsi-granny')
+                world = spoiler.worlds[0]
+                self.assertEqual(world.selected_adult_trade_item, 'Odd Mushroom')
+                self.assertEqual(world.adult_trade_starting_inventory, 'Odd Mushroom')
+
+    def test_granny_logic_without_trade_chain_matches_game(self):
+        # Rule level: adult, holding only a wallet and the starting trade item, no trade-chain events.
+        # Logic must allow the purchase exactly when the game would sell.
+        from Item import ItemFactory
+        from State import State
+        for start_item in trade_items:
+            for seed in GRANNY_SEEDS:
+                with self.subTest(start_item=start_item, seed=seed):
+                    settings = granny_trade_settings(start_item, seed, 'granny-rule')
+                    resolve_settings(settings)
+                    world = build_world_graphs(settings)[0]
+                    granny = world.get_location(GRANNY_LOCATION)
+                    state = State(world)
+                    for item_name in ('Progressive Wallet', start_item):
+                        state.collect(ItemFactory(item_name, world))
+                    logic_sells = bool(granny.access_rule(state, spot=granny, age='adult'))
+                    self.assertEqual(logic_sells, trade_items.index(start_item) > trade_items.index('Odd Mushroom'),
+                                     f'selected_adult_trade_item={world.selected_adult_trade_item}')
+
+    def test_trade_sequence_entrances_in_entrance_playthrough(self):
+        # With a required item on Granny's Blue Potion and entrance randomizer on, getting the
+        # trade item to Granny must be reflected in the playthrough
+        trade_steps = (
+            ('Wake Up Adult Talon from Kak Carpenter Boss House', 'Pocket Cucco'),
+            ('Cojiro Access from Kakariko Village', 'Pocket Cucco'),
+            ('LW Trade Cojiro', 'Cojiro'),
+            ('Odd Potion Access from Kak Odd Medicine Building', 'Odd Mushroom'),
+        )
+
+        plando = os.path.join(test_dir, 'plando', 'granny-light-arrows.json')
+        for start_item in trade_items:
+            for seed in GRANNY_SEEDS:
+                with self.subTest(start_item=start_item, seed=seed):
+                    spoiler = main(granny_trade_settings(start_item, seed, 'granny-playthrough', extra={
+                        'shuffle_expensive_merchants': True,
+                        'shuffle_interior_entrances': 'simple',
+                        'enable_distribution_file': True,
+                        'distribution_file': plando,
+                    }))
+
+                    world = spoiler.worlds[0]
+                    playthrough_locations = {location.name for sphere in spoiler.playthrough.values() for location in sphere}
+                    self.assertIn(GRANNY_LOCATION, playthrough_locations, 'Light Arrows on the potion should make it required')
+
+                    playthrough_entrances = {entrance.name for sphere in spoiler.entrance_playthrough.values() for entrance in sphere}
+                    for step_name, consumed in trade_steps:
+                        if trade_items.index(start_item) > trade_items.index(consumed):
+                            continue
+                        region = world.get_location(step_name).parent_region
+                        into_region = [e.name for e in world.get_shuffled_entrances() if e.connected_region == region]
+
+                        if (len(into_region)) == 1:
+                            self.assertIn(into_region[0], playthrough_entrances,
+                                          f'{step_name}: no entrance into {region.name} in the entrance playthrough '
+                                          f'(selected_adult_trade_item={world.selected_adult_trade_item})')
+
+    # Patch
+    def setUp(self):
+        if self._testMethodName.startswith('test_rom_') and not os.path.isfile('./ZOOTDEC.z64'):
+            self.skipTest('Base ROM file not available.')
+
+    def test_rom_granny_sells_exactly_when_logic_says_so(self):
+        # Evaluates the C check Granny's shop runs (SaveFile_TradeItemIsTraded(Odd Mushroom), trade shuffle off)
+        # on the patched initial save, for every possible manual starting trade item.
+        from SaveContext import SaveContext, SceneIDs, FlagType
+        addresses = SaveContext().addresses
+        adult_slot = addresses['item_slot']['adult_trade'].address
+        empty_slot = SaveContext.item_id_map['none']
+        odd_mushroom_id = SaveContext.item_id_map['odd_mushroom']
+        traded_word = 0x00D4 + SceneIDs.GORON_CITY * 0x1C + FlagType.UNK00 * 0x04
+        odd_mushroom_bit = addresses['owned_trade_items']['odd_mushroom'].mask
+        logic_sells_without_trade = trade_items[trade_items.index('Odd Mushroom') + 1:]
+
+        for start_item in trade_items:
+            with self.subTest(start_item=start_item):
+                spoiler, rom = generate_rsi_rom({
+                    'adult_trade_shuffle': False,
+                    'adult_trade_start': list(trade_items),
+                    'starting_items': {start_item: 1}
+                }, count=0, outfilename='rsi-granny-rom')
+                world = spoiler.worlds[0]
+                save = read_initial_save_table(rom)
+                slot = save.get(adult_slot, empty_slot)
+                traded = int.from_bytes(bytes(save.get(traded_word + i, 0) for i in range(4)), 'big')
+                c_sells = (slot != empty_slot and odd_mushroom_id < slot) or bool(traded & odd_mushroom_bit)
+                logic_sells = world.selected_adult_trade_item in logic_sells_without_trade
+                self.assertEqual(c_sells, logic_sells, f'selected={world.selected_adult_trade_item} slot={slot:#x} traded={traded:#x}')
