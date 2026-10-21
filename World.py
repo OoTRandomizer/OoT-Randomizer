@@ -15,7 +15,7 @@ from HintList import get_required_hints, misc_item_hint_table, misc_location_hin
 from Hints import HintArea, hint_dist_keys, hint_dist_files, HintArea
 from Item import Item, ItemFactory, ItemInfo, make_event_item
 from ItemList import REWARD_COLORS
-from ItemPool import reward_list
+from ItemPool import reward_list, trade_items
 from Location import Location, LocationFactory
 from LocationList import business_scrubs, location_groups, location_table
 from OcarinaSongs import generate_song_list, Song
@@ -102,6 +102,13 @@ class World:
             plando_adult_trade = list(filter(lambda location_record_pair: adult_trade_matcher(location_record_pair[1].item), self.distribution.pattern_dict_items(self.distribution.locations)))
             if plando_adult_trade:
                 self.selected_adult_trade_item = plando_adult_trade[0][1].item # ugly but functional, see the loop in Plandomizer.WorldDistribution.fill for how this is indexed
+            # Starting items also needs to handle adult trade like plando does
+            manual_adult_trade = [
+                item_name for item_name, record in self.distribution.starting_items.items()
+                if item_name in trade_items and record.count > 0 and item_name in settings.adult_trade_start
+            ]
+            if manual_adult_trade:
+                self.selected_adult_trade_item = max(manual_adult_trade, key=trade_items.index)
         self.adult_trade_starting_inventory: str = ''
 
         if (settings.open_forest == 'closed'
