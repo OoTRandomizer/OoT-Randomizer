@@ -1,0 +1,32 @@
+name: Offline Build
+
+on:
+  push:
+    branches: [ "release" ]
+  pull_request: #TODO remove, included to test this workflow
+    branches: [ "Dev" ]
+
+jobs:
+  build_windows:
+    name: Offline Build - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ windows-latest, macos-latest, ubuntu-latest ]
+    steps:
+      - uses: actions/checkout@v5
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: 3.x
+      - name: Build Offline Release
+        run: |
+          python SettingsToJson.py
+          mkdir GUI/python
+          cp *.py GUI/python
+          cd GUI
+          mv package_release.json package.json
+          npm i
+          npm run ng-prod
+          npm run dist
+        shell: bash
