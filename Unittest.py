@@ -1119,3 +1119,77 @@ class TestSceneFiles(unittest.TestCase):
         from Scene import check_external_reference_locations
         uncompressed_rom = Rom('ZOOTDEC.z64')
         check_external_reference_locations(uncompressed_rom)
+
+def force_random_starting_items(*preferred: str):
+    import ItemPool
+    real_pool = ItemPool.configure_random_starting_items_pool
+
+    def pick_preferred(world, pool):
+        candidates = real_pool(world, pool)
+        chosen = [name for name in preferred if name in candidates]
+        return chosen[:1] or candidates
+
+    return patch('ItemPool.configure_random_starting_items_pool', pick_preferred)
+
+def rsi_settings(extra: dict[str, Any], count: int, seed: str, outfilename: str, rom: bool = False) -> Settings:
+    settings_dict = {
+        'add_random_starting_items': count > 0,
+        'random_starting_items_count': count,
+        'random_starting_items_exclude': [],
+    }
+    settings_dict.update(extra)
+    if rom:
+        settings_dict.update({'patch_without_output': True, 'create_cosmetics_log': False})
+    return make_settings_for_test(settings_dict, seed=seed, outfilename=outfilename)
+
+def generate_rsi(extra: dict[str, Any], count: int, preferred: tuple[str, ...] = (), seed: str = 'TESTTESTTEST', outfilename: str = 'rsi') -> Spoiler:
+    with force_random_starting_items(*preferred):
+        return main(rsi_settings(extra, count, seed, outfilename))
+
+def generate_rsi_rom(extra: dict[str, Any], count: int, preferred: tuple[str, ...] = (), seed: str = 'TESTTESTTEST', outfilename: str = 'rsi-rom') -> tuple[Spoiler, Rom]:
+    import Main
+    captured = {}
+    real_prepare_rom = Main.prepare_rom
+
+    def capture_prepare_rom(spoiler, world, rom, rng_state=None):
+        real_prepare_rom(spoiler, world, rom, rng_state)
+        captured['rom'] = rom
+
+    with force_random_starting_items(*preferred), patch('Main.prepare_rom', capture_prepare_rom):
+        spoiler = main(rsi_settings(extra, count, seed, outfilename, rom=True))
+    return spoiler, captured['rom']
+
+def read_initial_save_table(rom: Rom) -> dict[int, int]:
+    # Decodes SaveContext.write_save_table's format: [addr_hi, addr_lo, kind, value] * n, then 4 zero bytes.
+    # kind 0 = bits OR'd into the new-file default, kind 1 = byte written as-is.
+    table = rom.read_bytes(rom.sym('INITIAL_SAVE_DATA'), 0x400)
+    save: dict[int, int] = {}
+    for i in range(0, len(table), 4):
+        hi, lo, kind, value = table[i:i + 4]
+        if (hi, lo, kind, value) == (0, 0, 0, 0):
+            break
+        address = (hi << 8) | lo
+        save[address] = (save.get(address, 0) | value) if kind == 0 else value
+    return save
+
+class TestRandomStartingItems(unittest.TestCase):
+    def setUp(self):
+        if self._testMethodName.startswith('test_rom_') and not os.path.isfile('./ZOOTDEC.z64'):
+            self.skipTest('Base ROM file not available.')
+
+    def test_rom_random_rutos_letter_with_fast_fountain(self):
+        spoiler, rom = generate_rsi_rom({'zora_fountain': 'fast'}, count=1, preferred=('Rutos Letter',))
+        self.assertIn('Rutos Letter', spoiler.worlds[0].randomized_starting_items)
+        save = read_initial_save_table(rom)
+        self.assertTrue(save.get(0x0EDB, 0) & 0x08, 'King Zora should start moved')
+        self.assertEqual(rom.read_byte(rom.sym('FAST_FOUNTAIN')), 0)
+
+    def test_rom_random_sword_and_shield_with_fast_forest(self):
+        spoiler, rom = generate_rsi_rom({'open_forest': 'fast', 'shuffle_kokiri_sword': True},
+                                        count=2, preferred=('Kokiri Sword', 'Deku Shield'))
+        picked = spoiler.worlds[0].randomized_starting_items
+        self.assertIn('Kokiri Sword', picked)
+        self.assertIn('Deku Shield', picked)
+        save = read_initial_save_table(rom)
+        self.assertTrue(save.get(0x0ED5, 0) & 0x10, 'Mido should start with moved')
+        self.assertEqual(rom.read_byte(rom.sym('FAST_FOREST')), 0)
