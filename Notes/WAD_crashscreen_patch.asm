@@ -84,9 +84,15 @@
 .set cpuExecuteUpdate, 0x00032BB4
 .set cpuExecuteCall, 0x00039DC0
 .set cpuFindFunction, 0x0003DC68
+.set cpuDMAUpdateFunction, 0x0003E620
+
+.set fn_80042C98, 0x00042CB4  #rom loading func
+
+.set frameEnd, 0x000525C0
 
 .set updateControllerInput, 0x00062484 #(*controllerheap)
 
+.set ErrorDisplayDrawSetupMiddle, 0x00063490 + 0x1B4   #0x00063644
 .set errorDisplayPrintMessage, 0x00063A64  #(**startUpStr string, int Y 78, ldarg, RGBA8* colour)
 .set errorDisplayPrint, 0x00063B8C
 .set errorDisplayShow, 0x00063E08
@@ -101,6 +107,9 @@
 .set OSGetTick, 0x0009368C
 .set GXAbortFrame, 0x0009FAC8
 .set GXSetCullMode, 0x000A0614
+.set GXCopyDisp, 0x000A0D78
+
+.set DEMOSetupScrnSpc, 0x000AAFAC       #(GC_FRAME_WIDTH, GC_FRAME_HEIGHT, 100.0f) (s32 width, s32 height, f32 depth)
 
 .set __save_gpr, 0x000152E30   #(r14)-0x48
 .set __restore_gpr, 0x00152E7C #(r14)-0x48
@@ -135,9 +144,15 @@
 #.set cpuExecuteUpdate, 0x00032B98
 #.set cpuExecuteCall, 0x00039DA4
 #.set cpuFindFunction, 0x0003DC4C
+#.set cpuDMAUpdateFunction, 0x0003E604
+#
+#.set fn_80042C98, 0x00042C98
+#
+#.set frameEnd, 0x000525A4
 #
 #.set updateControllerInput, 0x000623F4 #(*controllerheap)
 #
+#.set ErrorDisplayDrawSetupMiddle, 0x00063400 + 0x1B4
 #.set errorDisplayPrintMessage, 0x000639D4  #(**startUpStr string, int Y 78, ldarg, RGBA8* colour)
 #.set errorDisplayPrint, 0x00063AFC
 #.set errorDisplayShow, 0x00063D78
@@ -152,6 +167,9 @@
 #.set OSGetTick, 0x00093680
 #.set GXAbortFrame, 0x0009FABC
 #.set GXSetCullMode, 0x000A0608
+#.set GXCopyDisp, 0x000A0D6C
+#
+#.set DEMOSetupScrnSpc, 0x000AAFA0       #(GC_FRAME_WIDTH, GC_FRAME_HEIGHT, 100.0f) (s32 width, s32 height, f32 depth)
 #
 #.set __save_gpr, 0x00152E24   #(r14)-0x48
 #.set __restore_gpr, 0x00152E70 #(r14)-0x48
@@ -222,8 +240,26 @@ CrashPage5Status: .byte 0x00 #signed
 AcceptInput: .byte 0x00
 CtxtEnd: .byte 0xFF
 StartupTimer: .long 0x00
-#.align 2
+ErrorCount: .long 0x00
 
+.align 4
+
+DebugEDMessage:
+.long 0x80000000 + chunk0offset + DebugEDStringInfo    #/* 0x00 */ EDStringInfo* pStringInfo;
+.short 0x0002                                          #/* 0x04 */ s16 nFlags; // bitfield
+.short 0x000F                                          #/* 0x06 */ s16 nFadeInTimer;
+.long 28                                               #/* 0x08 */ s32 nShiftY; // Y position relative to nStartY
+#0x0C
+
+DebugEDStringInfo:
+.long 0x00000000                                #/* 0x00 */ StringID eStringID;
+.long 1                                         #/* 0x04 */ s32 nLines;
+.long 0x80000000 + chunk0offset + strDebugIG    #/* 0x08 */ char* szString;
+.long 0                                         #/* 0x0C */ s32 unk0C;
+.long 0x1C                                      #/* 0x10 */ s32 unk10;
+
+Float100:
+.float 100.0
 #=======================================
 .org 0x45C8 - chunk0offset     #0x06C8
 crashReport:
@@ -864,6 +900,58 @@ mtlr r0
 addi sp, sp, 0x30
 blr
 
+#====================================
+InGameTextDisplay:
+stwu sp, -0x20(sp)
+mflr r0
+stw r0, 0x24(sp)
+
+lis r4, 0x8000
+lwz r3, chunk0offset + ErrorCount@l(r4)
+cmpi 0, r3, 0
+beq ignoreTextPrint
+
+li r3, 640
+li r4, 480
+lfs f1, -0x7DC0(rtoc) #r2
+bl DEMOSetupScrnSpc - chunk0offset - $
+
+bl RuntimePrintSetup
+
+lis r3, 0x8000
+li r7, -32767  #yellow
+li r4, 78
+lwz r5, chunk0offset + ErrorCount@l(r3)
+addi r6, sp, 0x08
+stw r7, 0x08(sp)
+addi r3, r3, chunk0offset + DebugEDMessage@l
+
+bl errorDisplayPrintMessage - chunk0offset - $ #(**startUpStr string, int Y 78, ldarg, RGBA8* colour)
+
+ignoreTextPrint:
+lwz r3, -0x6E4C(r13)
+li r4, 1
+bl GXCopyDisp - chunk0offset - $
+
+lwz r0, 0x24(sp)
+mtlr r0
+addi sp, sp, 0x20
+blr
+
+#=====================================
+RuntimePrintSetup:
+stwu sp, -0x20(sp)
+mflr r0
+stw r0, 0x24(sp)
+stw r31, 0x1C(sp) #for drawSetup
+
+li r3, -1  #white
+li r4, 7
+stw r3, 0x14(sp)  #GXColor for drawSetup
+li r5, 1
+li r3, 1
+b ErrorDisplayDrawSetupMiddle  - chunk0offset - $ #80063644
+nop
 
 #====================================
 .org 0x50F8 - chunk0offset #0x11F8
@@ -1583,13 +1671,15 @@ Right node start:%x"
 
 strMiscInfoBroke: .string "VC Misc info unavailable"
 
-strLoadInROM: .string "Loading: %ld %"
+strDebugIG: .string "TreeClean resume trashed! %d"
+
+strLoadInROM: .string "Loading: %d%"
 
 strPatchDate: .string "
-OoTR US VC Rev 1"
+OoTR US VC Rev 2"
 
 #strPatchDate: .string "
-#OoTR JP VC Rev 1"
+#OoTR JP VC Rev 2"
 
 .align 2
 #=====================================
@@ -1655,6 +1745,17 @@ li r4, 0
 lwz r3, 0x0C(sp)
 b cpuEChookend - chunk0offset + chunk1offset - $
 nop
+#=======================================
+cpuDMAUpdateFunctionPatch:
+bge cpuDUFend
+lis r3, 0x8000
+lwz r4, chunk0offset + ErrorCount@l(r3)
+addi r4, r4, 1
+stw r4, chunk0offset + ErrorCount@l(r3)
+cpuDUFend:
+b cpuDMAUpdateFunctionPatchEnd - chunk0offset + chunk1offset - $
+nop
+
 #============================
 .org 0x62F8 - chunk0offset     #0x23F8
 FindFuncFailHook:
@@ -1669,28 +1770,23 @@ sth r3, chunk0offset + ExceptionID@l(r25)
 lis r31, 0x8017
 b OSUEhookend - chunk0offset - $
 #=======================================
-RomLoadProgressHook:
-lis r7, 0x80000000 + WVCLoadLogoStrVAarg@h
+romLoadInPercent:
+lis r4, 0x8000
+lis r3, 0x80000000 + WVCLoadLogoStrVAarg@h
 
-srwi r5, r6, 20
-addi r4, r5, 1
-mulli r4, r4, 100       #multiply progress by 100 then devide by 32 (MB)
-li    r5, 32           
-divwu r4, r4, r5 
-cmpwi r4, 100           #cap at 100%
-ble updateProgress
-li r4, 100
-
-updateProgress:
-stw r4, WVCLoadLogoStrVAarg@l(r7)
-
-lis r5, 0x8000
-addi r4, r5, chunk0offset + strLoadInROM@l
-stw r4, WVCLoadLogoStrPointer@l(r7)
+addi r5, r4, chunk0offset + strLoadInROM@l
+stw r5, WVCLoadLogoStrPointer@l(r3)
 li r5, 0x02
-stw r5, WVCLoadLogoStrCount@l(r7)
+stw r5, WVCLoadLogoStrCount@l(r3)
 
-mr r4, r30
+lfs 3, chunk0offset + Float100@l(r4)
+fmul 2, 1, 3
+fctiwz 4, 2
+stfd 4, -0x10(sp)
+lwz r4, -0x10+4(sp)
+
+stw r4, WVCLoadLogoStrVAarg@l(r3)
+
 blr
 #=======================================
 startupProgress:
@@ -1791,18 +1887,42 @@ bl FindFuncFailHook + chunk0offset - chunk1offset
 bl FindFuncFailHook + chunk0offset - chunk1offset
 
 
+# cpuDMAUpdateFunction patch
+# cpuDMAUpdateFunction has an erroneous condition check for
+# cancelling a TreeCleanNodes restore node which can lead to crashes.
+# This patch watches for that condition and changes it.
+#
+# if the debug display for this patch isn't needed anymore, 
+# a NOP will do the job in place of the branch.
+
+# replaces
+# 41800014
+
+.org cpuDMAUpdateFunction + 0xA4 - chunk1offset
+b cpuDMAUpdateFunctionPatch + chunk0offset - chunk1offset
+cpuDMAUpdateFunctionPatchEnd:
+
+
+# catch load-in percentage for rom
+# replaces
+# 4bfc435d
+.org fn_80042C98 + 0xCC - chunk1offset
+bl romLoadInPercent + chunk0offset - chunk1offset
+
+
+# display text for ingame
+# replaces
+# 4804e03d
+.org frameEnd + 0x77C - chunk1offset
+bl InGameTextDisplay + chunk0offset - chunk1offset
+
+
 # switch in displaying load-in progress at start-up
 # replaces:
 # 4BFFFC49
 .org errorDisplayShow + 0x13C - chunk1offset #0x05F504
 bl startupProgress + chunk0offset - chunk1offset
 
-
-# hook into rom loading to grab offset value for progress
-# replaces:
-# 7FC4F378
-.org xlFileGet + 0x110 - chunk1offset  #0x07B8C4
-bl RomLoadProgressHook + chunk0offset - chunk1offset
 
 # patch OSDumpContext from scanning the back chain due to chain not ending with 0xFFFFFFFF
 # replaces:
