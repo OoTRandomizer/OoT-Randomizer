@@ -934,8 +934,8 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
         save_context.write_bits(0x0EDB, 0x08)  # "Moved King Zora"
     elif world.settings.zora_fountain == 'fast':
         # If letter is already in inventory, just open the fountain.
-        if 'Rutos Letter' in world.settings.starting_items:
-            count = world.settings.starting_items['Rutos Letter']
+        if 'Rutos Letter' in world.distribution.effective_starting_items:
+            count = world.distribution.effective_starting_items['Rutos Letter']
             if count.count > 0:
                 save_context.write_bits(0x0EDB, 0x08)  # "Moved King Zora"
             else:
@@ -947,9 +947,9 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     if world.settings.open_forest == 'fast':
         # If shield and sword already in inventory, just open Deku.
-        if 'Deku Shield' in world.settings.starting_items and 'Kokiri Sword' in world.settings.starting_items:
-            count_shield = world.settings.starting_items['Deku Shield']
-            count_sword = world.settings.starting_items['Kokiri Sword']
+        if 'Deku Shield' in world.distribution.effective_starting_items and 'Kokiri Sword' in world.distribution.effective_starting_items:
+            count_shield = world.distribution.effective_starting_items['Deku Shield']
+            count_sword = world.distribution.effective_starting_items['Kokiri Sword']
             if count_shield.count > 0 and count_sword.count > 0:
                 save_context.write_bits(0xED5, 0x10)  # "Showed Mido Sword & Shield"
             else:
