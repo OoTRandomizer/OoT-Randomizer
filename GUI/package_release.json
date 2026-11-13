@@ -75,7 +75,14 @@
       "executableName": "oot-randomizer-gui"
     },
     "mac": {
-      "target": "dmg",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        }
+      ],
       "category": "public.app-category.utilities"
     }
   },
