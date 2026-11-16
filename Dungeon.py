@@ -17,7 +17,8 @@ class Dungeon:
         self.regions: list[Region] = regions if regions is not None else []
         self.boss_key: list[Item] = []
         self.small_keys: list[Item] = []
-        self.dungeon_items: list[Item] = []
+        self.maps: list[Item] = []
+        self.compasses: list[Item] = []
         self.silver_rupees: list[Item] = []
         self.reward: list[Item] = []
 
@@ -34,7 +35,8 @@ class Dungeon:
         new_dungeon.regions = [region for region in self.regions]
         new_dungeon.boss_key = [item for item in self.boss_key]
         new_dungeon.small_keys = [item for item in self.small_keys]
-        new_dungeon.dungeon_items = [item for item in self.dungeon_items]
+        new_dungeon.maps = [item for item in self.maps]
+        new_dungeon.compasses = [item for item in self.compasses]
         new_dungeon.silver_rupees = [item for item in self.silver_rupees]
         new_dungeon.reward = [item for item in self.reward]
 
@@ -47,8 +49,12 @@ class Dungeon:
             return dungeons[0]
 
     @property
-    def shuffle_mapcompass(self) -> str:
-        return self.world.settings.shuffle_mapcompass
+    def shuffle_map(self) -> str:
+        return self.world.settings.shuffle_map
+
+    @property
+    def shuffle_compass(self) -> str:
+        return self.world.settings.shuffle_compass
 
     @property
     def shuffle_smallkeys(self) -> str:
@@ -67,8 +73,8 @@ class Dungeon:
         return self.world.settings.shuffle_dungeon_rewards
 
     @property
-    def empty(self) -> bool:
-        return self.world.empty_dungeons[self.name].empty
+    def precompleted(self) -> bool:
+        return self.world.precompleted_dungeons.get(self.name, False)
 
     @property
     def keys(self) -> list[Item]:
@@ -76,7 +82,7 @@ class Dungeon:
 
     @property
     def all_items(self) -> list[Item]:
-        return self.dungeon_items + self.keys + self.silver_rupees + self.reward
+        return self.maps + self.compasses + self.keys + self.silver_rupees + self.reward
 
     @property
     def vanilla_boss_name(self) -> Optional[str]:
@@ -112,28 +118,32 @@ class Dungeon:
         return item.name in [dungeon_item.name for dungeon_item in self.all_items]
 
     def get_restricted_dungeon_items(self) -> Iterator[Item]:
-        if self.shuffle_mapcompass == 'dungeon' or (self.empty and self.shuffle_mapcompass in ['any_dungeon', 'overworld', 'keysanity', 'regional']):
-            yield from self.dungeon_items
-        if self.shuffle_smallkeys == 'dungeon' or (self.empty and self.shuffle_smallkeys in ['any_dungeon', 'overworld', 'keysanity', 'regional']):
+        if self.shuffle_map == 'dungeon' or (self.precompleted and self.shuffle_map in ('any_dungeon', 'overworld', 'keysanity', 'regional')):
+            yield from self.maps
+        if self.shuffle_compass == 'dungeon' or (self.precompleted and self.shuffle_compass in ('any_dungeon', 'overworld', 'keysanity', 'regional')):
+            yield from self.compasses
+        if self.shuffle_smallkeys == 'dungeon' or (self.precompleted and self.shuffle_smallkeys in ('any_dungeon', 'overworld', 'keysanity', 'regional')):
             yield from self.small_keys
-        if self.shuffle_bosskeys == 'dungeon' or (self.empty and self.shuffle_bosskeys in ['any_dungeon', 'overworld', 'keysanity', 'regional']):
+        if self.shuffle_bosskeys == 'dungeon' or (self.precompleted and self.shuffle_bosskeys in ('any_dungeon', 'overworld', 'keysanity', 'regional')):
             yield from self.boss_key
-        if self.shuffle_silver_rupees == 'dungeon' or (self.empty and self.shuffle_silver_rupees in ['any_dungeon', 'overworld', 'anywhere', 'regional']):
+        if self.shuffle_silver_rupees == 'dungeon' or (self.precompleted and self.shuffle_silver_rupees in ('any_dungeon', 'overworld', 'anywhere', 'regional')):
             yield from self.silver_rupees
         if self.shuffle_dungeon_rewards in ('vanilla', 'dungeon'): # we don't lock rewards inside pre-completed dungeons since they're still useful outside
             yield from self.reward
 
     # get a list of items that don't have to be in their proper dungeon
     def get_unrestricted_dungeon_items(self) -> Iterator[Item]:
-        if self.empty:
+        if self.precompleted:
             return
-        if self.shuffle_mapcompass in ['any_dungeon', 'overworld', 'keysanity', 'regional']:
-            yield from self.dungeon_items
-        if self.shuffle_smallkeys in ['any_dungeon', 'overworld', 'keysanity', 'regional']:
+        if self.shuffle_map in ('any_dungeon', 'overworld', 'keysanity', 'regional'):
+            yield from self.maps
+        if self.shuffle_compass in ('any_dungeon', 'overworld', 'keysanity', 'regional'):
+            yield from self.compasses
+        if self.shuffle_smallkeys in ('any_dungeon', 'overworld', 'keysanity', 'regional'):
             yield from self.small_keys
-        if self.shuffle_bosskeys in ['any_dungeon', 'overworld', 'keysanity', 'regional']:
+        if self.shuffle_bosskeys in ('any_dungeon', 'overworld', 'keysanity', 'regional'):
             yield from self.boss_key
-        if self.shuffle_silver_rupees in ['any_dungeon', 'overworld', 'anywhere', 'regional']:
+        if self.shuffle_silver_rupees in ('any_dungeon', 'overworld', 'anywhere', 'regional'):
             yield from self.silver_rupees
         if self.shuffle_dungeon_rewards in ('any_dungeon', 'overworld', 'anywhere', 'regional'):
             yield from self.reward

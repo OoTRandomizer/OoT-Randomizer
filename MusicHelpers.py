@@ -84,7 +84,7 @@ def process_sequence_mmrs(filepath: str, file_name: str, seq_type: str, include_
                 instrument_set = '-'
             else:
                 instrument_set = int(seq_file.split(".zseq")[0], 16) # Get the instrument set from the .zseq file name
-            cosmetic_name = filepath
+            cosmetic_name, _ext = os.path.splitext(file_name)
             # Create new sequence
             seq = Sequence(filepath, cosmetic_name, seq_type=seq_type, seq_file = seq_file, instrument_set = instrument_set)
             if zbank_file:
@@ -122,6 +122,8 @@ def process_sequence_ootrs(filepath: str, file_name: str, seq_type: str, include
         zbank_file = None
         bankmeta_file = None
         for f in zip.namelist():
+            if '/' in f: # Only read files in the root of the archive
+                continue
             if f.endswith(".meta"):
                 meta_file = f
                 continue

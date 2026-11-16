@@ -1,3 +1,300 @@
-{
-    # This is a placeholder until Glitch 2.0 logic happens and boss shuffle is supported by it.
-}
+[
+    # Boss and boss door logic.
+    # This is separated from individual dungeons because region names must match between normal/MQ
+    # And there are no differences in boss rooms between normal/MQ as they are separate areas.
+    {
+        "region_name": "Queen Gohma Boss Room",
+        "scene": "Deku Tree Boss",
+        "is_boss_room": true,
+        "events": {
+            # You don't have to hit her for her to climb, just maneouvre to the other
+            # side of a pillar
+            "Defeat Queen Gohma": "has_soul(Queen_Gohma) and
+                (Nuts or can_use(Slingshot) or can_use(Hookshot) or can_use(Boomerang) or
+                    can_use(Bow))
+                and can_jumpslash"
+        },
+        "locations": {
+            "Deku Tree Queen Gohma Heart": "'Defeat Queen Gohma'",
+            "Queen Gohma": "'Defeat Queen Gohma'"
+        },
+        "exits": {
+            "Deku Tree Before Boss": "True",
+            "Queen Gohma Blue Warp": "'Defeat Queen Gohma'"
+        }
+    },
+    {
+        "region_name": "Queen Gohma Blue Warp",
+        "scene": "Deku Tree Boss",
+        "provides_time": "DAY",
+        "exits": {
+            "KF Outside Deku Tree": "at_day"
+        }
+    },
+    {
+        "region_name": "King Dodongo Boss Room",
+        "scene": "Dodongos Cavern Boss",
+        "is_boss_room": true,
+        "events": {
+            "Defeat King Dodongo": "
+                has_soul(King_Dodongo) and
+                ( (can_use(Megaton_Hammer) and logic_dc_hammer_floor) or
+                    has_explosives or king_dodongo_shortcuts
+                    or can_gdv)
+                    and
+                (((Bombs or Progressive_Strength_Upgrade or (adv_kd_chus and is_adult and has_bombchus)) and can_jumpslash) or deadly_bonks == 'ohko')"
+        },
+        "locations": {
+            "Dodongos Cavern Boss Room Chest": "True",
+            "Dodongos Cavern King Dodongo Heart": "'Defeat King Dodongo'",
+            "King Dodongo": "'Defeat King Dodongo'"
+        },
+        "exits": {
+            "Dodongos Cavern Mouth": "True",
+            "King Dodongo Blue Warp": "'Defeat King Dodongo'"
+        }
+    },
+    {
+        "region_name": "King Dodongo Blue Warp",
+        "scene": "Dodongos Cavern Boss",
+        "provides_time": "DAY",
+        "exits": {
+            "Death Mountain": "at_day"
+        }
+    },
+    {
+        "region_name": "Barinade Boss Room",
+        "scene": "Jabu Jabus Belly Boss",
+        "is_boss_room": true,
+        "events": {
+            "Defeat Barinade": "has_soul(Barinade) and can_use(Boomerang) and (Sticks or Kokiri_Sword or is_adult)"
+        },
+        "locations": {
+            "Jabu Jabus Belly Barinade Heart": "'Defeat Barinade'",
+            "Barinade": "'Defeat Barinade'",
+            "Jabu Jabus Belly Barinade Pot 1": "True",
+            "Jabu Jabus Belly Barinade Pot 2": "True",
+            "Jabu Jabus Belly Barinade Pot 3": "True",
+            "Jabu Jabus Belly Barinade Pot 4": "True",
+            "Jabu Jabus Belly Barinade Pot 5": "True",
+            "Jabu Jabus Belly Barinade Pot 6": "True"
+        },
+        "exits": {
+            "Jabu Jabus Belly Before Boss": "False",
+            "Barinade Blue Warp": "'Defeat Barinade'"
+        }
+    },
+    {
+        "region_name": "Barinade Blue Warp",
+        "scene": "Jabu Jabus Belly Boss",
+        "provides_time": "DAY",
+        "exits": {
+            "Zoras Fountain": "at_day"
+        }
+    },
+    {
+        "region_name": "Phantom Ganon Boss Room",
+        "scene": "Forest Temple Boss",
+        "is_boss_room": true,
+        "events": {
+            "Defeat Phantom Ganon": "
+                has_soul(Phantom_Ganon) and
+                (can_use(Hookshot) or can_use(Bow) or (can_use(Slingshot) and Kokiri_Sword))"
+        },
+        "locations": {
+            "Forest Temple Phantom Ganon Heart": "'Defeat Phantom Ganon'",
+            "Phantom Ganon": "'Defeat Phantom Ganon'"
+        },
+        "exits": {
+            "Forest Temple Before Boss": "False",
+            "Phantom Ganon Blue Warp": "'Defeat Phantom Ganon'"
+        }
+    },
+    {
+        "region_name": "Phantom Ganon Blue Warp",
+        "scene": "Forest Temple Boss",
+        "provides_time": "DAY",
+        "exits": {
+            "Sacred Forest Meadow": "at_day"
+        }
+    },
+    {
+        "region_name": "Volvagia Boss Room",
+        "scene": "Fire Temple Boss",
+        "is_boss_room": true,
+        "events": {
+            "Defeat Volvagia": "
+                has_soul(Volvagia) and can_use(Goron_Tunic) and can_use(Megaton_Hammer)"
+        },
+        "locations": {
+            "Fire Temple Volvagia Heart": "'Defeat Volvagia'",
+            "Volvagia": "'Defeat Volvagia'"
+        },
+        "exits": {
+            "Fire Temple Before Boss": "False",
+            "Volvagia Blue Warp": "'Defeat Volvagia'"
+        }
+    },
+    {
+        "region_name": "Volvagia Blue Warp",
+        "scene": "Fire Temple Boss",
+        "provides_time": "DAY",
+        "exits": {
+            "DMC Central Local": "at_day"
+        }
+    },
+    {
+        "region_name": "Morpha Boss Room",
+        "scene": "Water Temple Boss",
+        "is_boss_room": true,
+        "events": {
+            "Defeat Morpha": "
+                has_soul(Morpha) and
+                (can_use(Hookshot) or (logic_water_morpha and (is_adult or Kokiri_Sword or can_use(Megaton_Hammer))))",
+            "Water Temple Clear": "'Defeat Morpha'"
+        },
+        "locations": {
+            "Morpha": "'Defeat Morpha'",
+            "Water Temple Morpha Heart": "'Defeat Morpha'"
+        },
+        "exits": {
+            "Water Temple Before Boss": "False",
+            "Morpha Blue Warp": "'Defeat Morpha'"
+        }
+    },
+    {
+        "region_name": "Morpha Blue Warp",
+        "scene": "Water Temple Boss",
+        "provides_time": "DAY",
+        "exits": {
+            "Lake Hylia": "at_day"
+        }
+    },
+    {
+        "region_name": "Bongo Bongo Boss Room",
+        "scene": "Shadow Temple Boss",
+        "is_boss_room": true,
+        "events": {
+            "Defeat Bongo Bongo": "
+                has_soul(Bongo_Bongo) and (Kokiri_Sword or can_use(Megaton_Hammer) or is_adult) and
+                (can_use(Hookshot) or can_use(Bow) or can_use(Slingshot) or logic_shadow_bongo) and
+                (can_use(Lens_of_Truth) or logic_lens_bongo)"
+        },
+        "locations": {
+            "Shadow Temple Bongo Bongo Heart": "'Defeat Bongo Bongo'",
+            "Bongo Bongo": "'Defeat Bongo Bongo'"
+        },
+        "exits": {
+            "Shadow Temple Before Boss": "False",
+            "Bongo Bongo Blue Warp": "'Defeat Bongo Bongo'"
+        }
+    },
+    {
+        "region_name": "Bongo Bongo Blue Warp",
+        "scene": "Shadow Temple Boss",
+        "provides_time": "DAY",
+        "exits": {
+            "Graveyard Warp Pad Region": "at_day"
+        }
+    },
+    {
+        "region_name": "Twinrova Boss Room",
+        "scene": "Spirit Temple Boss",
+        "is_boss_room": true,
+        "events": {
+            "Defeat Twinrova": "has_soul(Twinrova) and has_soul(Iron_Knuckle) and can_use(Mirror_Shield)"
+        },
+        "locations": {
+            "Spirit Temple Twinrova Heart": "'Defeat Twinrova'",
+            "Twinrova": "'Defeat Twinrova'"
+        },
+        "exits": {
+            "Spirit Temple Before Boss": "False",
+            "Twinrova Blue Warp": "'Defeat Twinrova'"
+        }
+    },
+    {
+        "region_name": "Twinrova Blue Warp",
+        "scene": "Spirit Temple Boss",
+        "provides_time": "DAY",
+        "exits": {
+            "Desert Colossus": "at_day"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Tower",
+        "scene": "Ganons Castle Tower",
+        "is_boss_room": true,
+        "events": {
+            # Used for the "path to the tower" goal
+            "Ganons Tower Access": "is_adult"
+        },
+        "exits": {
+            "Ganons Castle Main": "True",
+            "Ganons Castle Dinolfos": "can_kill_dinolfos",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Dinolfos",
+        "dungeon": "Ganons Castle",
+        "exits": {
+            "Ganons Castle Stalfos": "can_kill_stalfos"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Stalfos",
+        "dungeon": "Ganons Castle",
+        "locations": {
+            "Ganons Tower Boss Key Chest": "True"
+        },
+        "exits": {
+            "Ganons Castle Iron Knuckles": "can_kill_iron_knuckle"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Iron Knuckles",
+        "dungeon": "Ganons Castle",
+        "exits": {
+            "Ganons Castle Tower Below Boss": "Boss_Key_Ganons_Castle or (shuffle_pots != 'off')"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Tower Below Boss",
+        "scene": "Ganons Castle Tower",
+        "is_boss_room": true,
+        "alt_hint": "GANONDORFS_CHAMBER",
+        "locations": {
+            "Ganons Tower Pot 1": "True",
+            "Ganons Tower Pot 2": "True",
+            "Ganons Tower Pot 3": "True",
+            "Ganons Tower Pot 4": "True",
+            "Ganons Tower Pot 5": "True",
+            "Ganons Tower Pot 6": "True",
+            "Ganons Tower Pot 7": "True",
+            "Ganons Tower Pot 8": "True",
+            "Ganons Tower Pot 9": "True",
+            "Ganons Tower Pot 10": "True",
+            "Ganons Tower Pot 11": "True",
+            "Ganons Tower Pot 12": "True",
+            "Ganons Tower Pot 13": "True",
+            "Ganons Tower Pot 14": "True",
+            "Ganons Tower Pot 15": "True",
+            "Ganons Tower Pot 16": "True",
+            "Ganons Tower Pot 17": "True",
+            "Ganons Tower Pot 18": "True"
+        },
+        "exits": {
+            "Ganondorf Boss Room": "Boss_Key_Ganons_Castle"
+        }
+    },
+    {
+        "region_name": "Ganondorf Boss Room",
+        "scene": "Ganons Castle Tower",
+        "is_boss_room": true,
+        "locations": {
+            "Ganondorf Hint": "True",
+            "Ganon": "can_use(Light_Arrows)"
+        }
+    }
+]

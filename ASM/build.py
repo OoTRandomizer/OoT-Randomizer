@@ -6,7 +6,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.realpath(__file__)), '..'))
 import argparse
 import json
 import re
-from subprocess import check_call as call
+from subprocess import check_call as call, CalledProcessError
 from rom_diff import create_diff
 from ntype import BigStream
 from crc import calculate_crc
@@ -17,12 +17,16 @@ parser.add_argument('--compile-c', action='store_true', help="Recompile C module
 parser.add_argument('--no-compile-c', action='store_true', help="Do not recompile C modules")
 parser.add_argument('--dump-obj', action='store_true', help="Dumps extra object info for debugging purposes. Does nothing with --no-compile-c")
 parser.add_argument('--diff-only', action='store_true', help="Creates diff output without running armips")
+parser.add_argument('--mips-binutils-prefix', type=str, default="mips64-", help="Use a different prefix for N64 toolchain")
+parser.add_argument('--debug-c', action='store_true', help="Define DEBUG_MODE 1 for C modules")
 
 args = parser.parse_args()
 pj64_sym_path = args.pj64sym
 compile_c = not args.no_compile_c
 dump_obj = args.dump_obj
 diff_only = args.diff_only
+mips_binutils_prefix = args.mips_binutils_prefix
+debug_c = args.debug_c
 
 root_dir = os.path.dirname(os.path.realpath(__file__))
 tools_dir = os.path.join(root_dir, 'tools')
@@ -44,9 +48,18 @@ if base_rom_size != 0x400_0000:
 
 if compile_c:
     clist = ['make']
+    if os.path.isdir(os.path.join(run_dir, 'build', 'bin')):
+        call([*clist, 'clean'])
+    clist.append(f'MIPS_BINUTILS_PREFIX={mips_binutils_prefix}')
+    if debug_c:
+        clist.append(f'DEBUG_MODE=1')
     if dump_obj:
         clist.append('RUN_OBJDUMP=1')
-    call(clist)
+    try:
+        call(clist)
+    except CalledProcessError as e:
+        print(e.output)
+        exit(e.returncode)
 
 if not diff_only:
     os.chdir(run_dir + '/src')
@@ -124,19 +137,24 @@ os.chdir(run_dir)
 PAYLOAD_START = int(symbols['PAYLOAD_START']['address'], 16)
 PAYLOAD_END = int(symbols['PAYLOAD_END']['address'], 16)
 data_symbols = {}
+patch_symbols = {}
 for (name, sym) in symbols.items():
     if sym['type'] == 'data':
         addr = int(sym['address'], 16)
         if PAYLOAD_START <= addr < PAYLOAD_END:
             addr = addr - 0x80400000 + 0x03480000
+            data_symbols[name] = {
+                'address': f'{addr:08X}',
+                'length': sym.get('length', 0),
+            }
         else:
-            continue
-        data_symbols[name] = {
-            'address': f'{addr:08X}',
-            'length': sym.get('length', 0),
-        }
-with open('../data/generated/symbols.json', 'w') as f:
+            patch_symbols[name] = addr
+
+with open('../data/generated/symbols.json', 'w', newline='\n') as f:
     json.dump(data_symbols, f, indent=4, sort_keys=True)
+
+with open('../data/generated/patch_symbols.json', 'w', newline='\n') as f:
+    json.dump(patch_symbols, f, indent=4, sort_keys=True)
 
 if pj64_sym_path:
     pj64_sym_path = os.path.realpath(pj64_sym_path)

@@ -59,7 +59,7 @@ You can create a `.vscode/c_cpp_properties.json` file with `C/C++: Edit Configur
 
 ## Unit Tests
 
-VS Code has a panel to run and debug Python unit tests. `pytest` is recommended for running the tests. It can be installed using `pip install pytest` or through your OS's package management system. You can then enable VS Code's testing panel by creating a `.vscode/settings.json` file with the following:
+VS Code has a panel to run and debug Python unit tests. `pytest-xdist` is recommended for running the tests. It can be installed using `pip install pytest-xdist` or through your OS's package management system. You can then enable VS Code's testing panel by creating a `.vscode/settings.json` file with the following:
 
 ```jsonc
 {

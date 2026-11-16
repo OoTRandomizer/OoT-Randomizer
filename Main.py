@@ -10,6 +10,10 @@ import time
 import zipfile
 from typing import Optional
 
+try:
+    import numpy
+except ImportError:
+    pass
 
 from Cosmetics import CosmeticsLog, patch_cosmetics
 from EntranceShuffle import set_entrances
@@ -19,13 +23,13 @@ from Hints import build_gossip_hints
 from HintList import clear_hint_exclusion_cache, misc_item_hint_table, misc_location_hint_table
 from ItemPool import generate_itempool
 from MBSDIFFPatch import apply_ootr_3_web_patch
-from Models import patch_model_adult, patch_model_child
+from Models import patch_model_adult, patch_model_child, reset_player_model_to_vanilla
 from N64Patch import create_patch_file, apply_patch_file
 from Patches import patch_rom
 from Rom import Rom
 from Rules import set_rules, set_shop_rules
 from Settings import Settings
-from SettingsList import logic_tricks
+from SettingsList import logic_tricks, advanced_logic_tricks
 from Spoiler import Spoiler
 from Utils import default_output_path, is_bundled, run_process, data_path
 from World import World
@@ -63,15 +67,27 @@ def resolve_settings(settings: Settings) -> Optional[Rom]:
     logger = logging.getLogger('')
 
     old_tricks = settings.allowed_tricks
+    old_advanced_tricks = settings.advanced_allowed_tricks
     settings.load_distribution()
 
     # compare pointers to lists rather than contents, so even if the two are identical
     # we'll still log the error and note the dist file overrides completely.
-    if old_tricks and old_tricks is not settings.allowed_tricks:
+    if (old_tricks and old_tricks is not settings.allowed_tricks) or (old_advanced_tricks and old_advanced_tricks is not settings.advanced_allowed_tricks):
         logger.error('Tricks are set in two places! Using only the tricks from the distribution file.')
 
+    # flag tricks based on settings
+    # special case advanced so that if another logic is selected, all tricks are set to False
+    # this is a failsafe for disabled_default
     for trick in logic_tricks.values():
         settings.settings_dict[trick['name']] = trick['name'] in settings.allowed_tricks
+
+    if settings.logic_rules == 'advanced':
+        for trick in advanced_logic_tricks.values():
+            settings.settings_dict[trick['name']] = trick['name'] in settings.advanced_allowed_tricks
+    else:
+        for trick in advanced_logic_tricks.values():
+            settings.settings_dict[trick['name']] = False
+
 
     # we load the rom before creating the seed so that errors get caught early
     outputting_specific_world = settings.create_uncompressed_rom or settings.create_compressed_rom or settings.create_wad_file
@@ -132,7 +148,7 @@ def build_world_graphs(settings: Settings) -> list[World]:
         logger.info('Creating Overworld')
 
         # Load common json rule files (those used regardless of MQ status)
-        if settings.logic_rules == 'glitched':
+        if settings.logic_rules == 'advanced':
             path = 'Glitched World'
         else:
             path = 'World'
@@ -159,14 +175,16 @@ def build_world_graphs(settings: Settings) -> list[World]:
         if world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward'):
             world.fill_bosses()
 
-        if settings.empty_dungeons_mode == 'rewards':
-            world.set_empty_dungeon_rewards(settings.empty_dungeons_rewards)
-
     if settings.triforce_hunt:
         settings.distribution.configure_triforce_hunt(worlds)
 
     logger.info('Setting Entrances.')
     set_entrances(worlds, savewarps_to_connect)
+
+    for world in worlds:
+        if world.settings.empty_dungeons_mode == 'rewards':
+            world.set_empty_dungeon_rewards(world.settings.empty_dungeons_rewards)
+
     return worlds
 
 
@@ -193,7 +211,23 @@ def make_spoiler(settings: Settings, worlds: list[World]) -> Spoiler:
     return spoiler
 
 
-def prepare_rom(spoiler: Spoiler, world: World, rom: Rom, settings: Settings, rng_state: Optional[tuple] = None, restore: bool = True) -> CosmeticsLog:
+def patch_rspboot_antipiracy(rom: Rom) -> None:
+    # During boot, there is an anti-piracy check that tests PI DMA timings.
+    # This trips when run on a Summercart with menu versions after 0.2.0.
+    # The code runs only once during game boot/reset. The changes here nop
+    # the branch points in the anti-piracy function, as passing the test
+    # will not take any of them. See the snippet at:
+    # https://github.com/Thar0/oot/blob/c1fdebe4612ff2db6721cab90e74ad16a139d2ea/rsp/rspboot_ap.s#L56-L68
+    # The change is applied unconditionally in new seeds and existing patch
+    # files for Summercart compatibility.
+    rom.write_int32(0x6CFC, 0)
+    rom.write_int32(0x6D0C, 0)
+    rom.write_int32(0x6D18, 0)
+    rom.write_int32(0x6D24, 0)
+    rom.write_int32(0x6D2C, 0)
+
+
+def prepare_rom(spoiler: Spoiler, world: World, rom: Rom, rng_state: Optional[tuple] = None) -> None:
     if rng_state:
         random.setstate(rng_state)
         # Use different seeds for each world when patching.
@@ -202,17 +236,23 @@ def prepare_rom(spoiler: Spoiler, world: World, rom: Rom, settings: Settings, rn
             seed = int(random.getrandbits(256))
         random.seed(seed)
 
-    if restore:
-        rom.restore()
     patch_rom(spoiler, world, rom)
-    cosmetics_log = patch_cosmetics(settings, rom)
+
+
+def finalize_rom(rom: Rom, settings: Settings, separate_cosmetics: bool = False) -> tuple[CosmeticsLog, Rom]:
+    final_rom = rom
+    # Copy the rom if separate cosmetics are applied to the patch file and rom output.
+    if separate_cosmetics:
+        final_rom = rom.copy()
+    cosmetics_log = patch_cosmetics(settings, final_rom)
+    patch_rspboot_antipiracy(rom)
     if not settings.generating_patch_file:
         if settings.model_adult != "Default" or len(settings.model_adult_filepicker) > 0:
-            patch_model_adult(rom, settings, cosmetics_log)
+            patch_model_adult(final_rom, settings, cosmetics_log)
         if settings.model_child != "Default" or len(settings.model_child_filepicker) > 0:
-            patch_model_child(rom, settings, cosmetics_log)
-    rom.update_header()
-    return cosmetics_log
+            patch_model_child(final_rom, settings, cosmetics_log)
+    final_rom.update_header()
+    return (cosmetics_log, final_rom)
 
 
 def compress_rom(input_file: str, output_file: str, delete_input: bool = False) -> None:
@@ -233,15 +273,12 @@ def compress_rom(input_file: str, output_file: str, delete_input: bool = False) 
         else:
             compressor_path += "Compress"
     elif platform.system() == 'Darwin':
-        if platform.machine() == 'arm64':
-            compressor_path += "Compress_ARM64.out"
-        else:
-            compressor_path += "Compress.out"
+        compressor_path += "Compress.out"
     else:
         logger.info("OS not supported for ROM compression.")
         raise Exception("This operating system does not support ROM compression. You may only output patch files or uncompressed ROMs.")
 
-    run_process(logger, [compressor_path, input_file, output_file])
+    run_process(logger, [compressor_path, input_file, output_file], check=True)
     if delete_input:
         os.remove(input_file)
 
@@ -253,8 +290,49 @@ def generate_wad(wad_file: str, rom_file: str, output_file: str, channel_title: 
     if not os.path.isfile(wad_file):
         raise Exception("Cannot open base WAD file.")
 
+    try:
+        with open(wad_file, 'rb') as wad_stream:
+            wad_buffer = bytearray(wad_stream.read(0xFC0))
+    except FileNotFoundError as ex:
+        raise FileNotFoundError(f'Invalid path to Base WAD: "{wad_file}"')
+
+    wad_app1_sha1_usa = [
+        [0x76, 0x3D, 0x4D, 0x3D, 0x07, 0x13, 0xE4, 0xD1, 0x0E, 0x44, 0x54, 0x0C, 0xCF, 0xA3, 0x25, 0x5E, 0x19, 0xF2, 0x8A, 0xF7], # US Wad App1
+    ]
+
+    wad_app1_sha1_jpn = [
+        [0x47, 0x54, 0x6E, 0x48, 0x46, 0x7A, 0xE1, 0x4D, 0x71, 0x2B, 0x8C, 0x20, 0x7E, 0x91, 0x18, 0x21, 0x58, 0x6D, 0x10, 0x43], # JP Wad App1
+    ]
+
+    wad_app5_sha1_usa = [
+        [0x7C, 0x94, 0x77, 0x69, 0x68, 0xA7, 0xE1, 0xF5, 0xFD, 0x5D, 0xC5, 0xE2, 0xB6, 0xF8, 0x32, 0xEE, 0xF4, 0x55, 0x35, 0xA0], # US Wad App5
+    ]
+
+    wad_app5_sha1_jpn = [
+        [0xD1, 0x4D, 0xEF, 0x1E, 0xCE, 0xB0, 0x6D, 0xE2, 0x05, 0xA3, 0x53, 0xC4, 0xB5, 0x66, 0xFD, 0x55, 0x9C, 0x25, 0x4F, 0x1F], # JP Wad App5
+    ]
+
+    wad_patch_name = ""
+    wad_app1_sha1 = list(wad_buffer[0xF18:0xF2C])
+    wad_app5_sha1 = list(wad_buffer[0xFA8:0xFBC])
+
+    is_usa_app1 = wad_app1_sha1 in wad_app1_sha1_usa
+    is_usa_app5 = wad_app5_sha1 in wad_app5_sha1_usa
+    is_jpn_app1 = wad_app1_sha1 in wad_app1_sha1_jpn
+    is_jpn_app5 = wad_app5_sha1 in wad_app5_sha1_jpn
+
+    is_usa_wad = is_usa_app1 and is_usa_app5
+    is_jpn_wad = is_jpn_app1 and is_jpn_app5
+
+    if is_usa_wad:
+        wad_patch_name = "ootr_usa.gzi"
+    elif is_jpn_wad:
+        wad_patch_name = "ootr_jpn.gzi"
+    else:
+        raise RuntimeError('Base WAD file is not a valid OoT USA or JPN wad.')
+
     gzinject_path = "./" if is_bundled() else "bin/gzinject/"
-    gzinject_patch_path = gzinject_path + "ootr.gzi"
+    gzinject_patch_path = gzinject_path + wad_patch_name
     if platform.system() == 'Windows':
         if platform.machine() == 'AMD64':
             gzinject_path += "gzinject.exe"
@@ -323,8 +401,12 @@ def patch_and_output(settings: Settings, spoiler: Spoiler, rom: Optional[Rom]) -
                 logger.info('Patching ROM')
                 player_filename_suffix = ""
 
+            # Reset rom to vanilla prior to patching new worlds
+            if restore_rom:
+                rom.restore()
             settings.generating_patch_file = settings.create_patch_file
-            patch_cosmetics_log = prepare_rom(spoiler, world, rom, settings, rng_state, restore_rom)
+            prepare_rom(spoiler, world, rom, rng_state)
+            patch_cosmetics_log, final_rom = finalize_rom(rom, settings, separate_cosmetics)
             restore_rom = True
 
             if settings.create_patch_file:
@@ -332,7 +414,7 @@ def patch_and_output(settings: Settings, spoiler: Spoiler, rom: Optional[Rom]) -
                 logger.info(f"Creating Patch File: {patch_filename}")
                 output_path = os.path.join(output_dir, patch_filename)
                 file_list.append(patch_filename)
-                create_patch_file(rom, output_path)
+                create_patch_file(final_rom, output_path)
 
                 # Cosmetics Log for patch file only.
                 if settings.create_cosmetics_log and patch_cosmetics_log:
@@ -353,10 +435,10 @@ def patch_and_output(settings: Settings, spoiler: Spoiler, rom: Optional[Rom]) -
             logger.info(f"Saving Uncompressed ROM: {uncompressed_filename}")
             if separate_cosmetics:
                 settings.generating_patch_file = False
-                cosmetics_log = prepare_rom(spoiler, world, rom, settings, rng_state, restore_rom)
+                cosmetics_log, final_rom = finalize_rom(rom, settings)
             else:
                 cosmetics_log = patch_cosmetics_log
-            rom.write_to_file(uncompressed_path)
+            final_rom.write_to_file(uncompressed_path)
             logger.info("Created uncompressed ROM at: %s" % uncompressed_path)
 
             # If we aren't compressing the ROM, we're done with this world.
@@ -467,11 +549,14 @@ def from_patch_file(settings: Settings) -> None:
         apply_patch_file(rom, settings, subfile)
     cosmetics_log = None
     if settings.repatch_cosmetics:
+        reset_player_model_to_vanilla(rom)
         cosmetics_log = patch_cosmetics(settings, rom)
         if settings.model_adult != "Default" or len(settings.model_adult_filepicker) > 0:
             patch_model_adult(rom, settings, cosmetics_log)
         if settings.model_child != "Default" or len(settings.model_child_filepicker) > 0:
             patch_model_child(rom, settings, cosmetics_log)
+    # No need to update header. This is done in rom.write_to_file().
+    patch_rspboot_antipiracy(rom)
 
     logger.info('Saving Uncompressed ROM')
     uncompressed_path = output_path + '_uncompressed.z64'
@@ -541,7 +626,7 @@ def cosmetic_patch(settings: Settings) -> None:
 
     # clear changes from the base patch file
     patched_base_rom = copy.copy(rom.buffer)
-    rom.changed_address = {}
+    rom.changed_address = numpy.full(134217728, 1000, numpy.uint16)
     rom.changed_dma = {}
     rom.force_patch = []
 

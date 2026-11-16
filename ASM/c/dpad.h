@@ -32,8 +32,8 @@ extern uint8_t CFG_DPAD_ON_THE_LEFT;
                      0x00200000 | \
                      0x08000000)
 
-extern uint16_t CFG_ADULT_TRADE_SHUFFLE;
-extern uint16_t CFG_CHILD_TRADE_SHUFFLE;
+extern uint8_t CFG_ADULT_TRADE_SHUFFLE;
+extern uint8_t CFG_CHILD_TRADE_SHUFFLE;
 
 #define CAN_DRAW_TRADE_DPAD (z64_game.pause_ctxt.state == PAUSE_STATE_MAIN && \
                             z64_game.pause_ctxt.screen_idx == 0 && \
@@ -58,6 +58,7 @@ extern uint16_t CFG_CHILD_TRADE_SHUFFLE;
                             (z64_file.game_mode == 0) && \
                             ((z64_event_state_1 & 0x20) == 0) && \
                             (!CAN_DRAW_DUNGEON_INFO || !CFG_DPAD_DUNGEON_INFO_ENABLE) && \
+                            (!CAN_DRAW_WORLD_INFO || !CFG_DPAD_DUNGEON_INFO_ENABLE) && \
                             !(debug_menu_is_drawn()))
 // Not in pause menu
 // Ocarina in inventory

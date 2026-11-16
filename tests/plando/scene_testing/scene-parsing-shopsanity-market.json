@@ -1,0 +1,54 @@
+{
+  "settings": {
+    "shopsanity":                              "4",
+    "shopsanity_prices":                       "affordable",
+    "shuffle_song_items":                      "any",
+    "complete_mask_quest":                     true,
+    "shuffle_child_trade":                     [
+      "Keaton Mask",
+      "Skull Mask",
+      "Spooky Mask",
+      "Bunny Hood",
+      "Goron Mask",
+      "Zora Mask",
+      "Gerudo Mask",
+      "Mask of Truth"
+    ],
+    "spawn_positions":                         ["child", "adult"],
+    "starting_age":                            "child",
+    "starting_hearts":                         20,
+    "start_with_rupees":                       true,
+    "starting_items":                          {
+        "Ocarina":                      2,
+        "Progressive Wallet":           2,
+        "Suns Song":                    1,
+        "Zeldas Letter":                1
+    }
+  },
+  "entrances": {
+    "Adult Spawn -> Temple of Time": {"region": "Kakariko Village", "from": "Kak Bazaar"},
+    "Child Spawn -> KF Links House": {"region": "Market", "from": "Market Bazaar"}
+  },
+  "locations": {
+    "Market Bazaar Item 5": "Progressive Strength Upgrade",
+    "Market Bazaar Item 6": "Bomb Bag",
+    "Market Bazaar Item 7": "Slingshot",
+    "Market Bazaar Item 8": "Bow",
+    "Market Potion Shop Item 5": "Progressive Strength Upgrade",
+    "Market Potion Shop Item 6": "Bomb Bag",
+    "Market Potion Shop Item 7": "Slingshot",
+    "Market Potion Shop Item 8": "Bow",
+    "Market Bombchu Shop Item 5": "Progressive Strength Upgrade",
+    "Market Bombchu Shop Item 6": "Bomb Bag",
+    "Market Bombchu Shop Item 7": "Slingshot",
+    "Market Bombchu Shop Item 8": "Bow",
+    "Market Mask Shop Item 1": "Progressive Wallet",
+    "Market Mask Shop Item 2": "Fire Arrows",
+    "Market Mask Shop Item 3": "Dins Fire",
+    "Market Mask Shop Item 4": "Ocarina",
+    "Market Mask Shop Item 5": "Magic Meter",
+    "Market Mask Shop Item 6": "Boomerang",
+    "Market Mask Shop Item 7": "Progressive Scale",
+    "Market Mask Shop Item 8": "Zeldas Lullaby"
+  }
+}

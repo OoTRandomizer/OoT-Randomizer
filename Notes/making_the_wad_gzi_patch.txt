@@ -1,0 +1,11 @@
+Making the .gzi patch:
+
+1: Get yourself python, asout2gzi.py and WAD_crashscreen_patch.asm from the OoTR's Notes folder, and the powerpc-gekko-as.exe from https://github.com/TheGag96/CodeWrite (This is an old version of DevKitPro's powerpc-eabi-as, and I can't find eqivalent linux/macos versions, so this is windows only for now. Sorry.)
+2: You should stick the py script, the asm file and the powerpc-gekko-as.exe together somewhere. Probably not in the OoTR folders if you push changes.
+3: Get a terminal/commandline/shell/whatever in the folder with the powerpc-gekko-as.exe and run "powerpc-gekko-as.exe -a32 -mbig -mregnames -mgekko -o WAD_crashscreen_patch.out WAD_crashscreen_patch.asm" (without quotes). It'll spit a bunch of warnings, but a WAD_crashscreen_patch.out should show up in the folder.
+4: Run asout2gzi.py from the same folder. It should make a "wadpatch.gzi".
+5: Open the wadpatch.gzi in your favourite text editor. There's your gzi lines! Rename to ootr_usa.gzi, add comments or adjust lines to your liking. :)
+
+Note:
+
+- In the ASM are .sets for both usa and jpn wads. Just comment out the one region's .sets and uncomment the other. Don't forget there's the region specific strings (for the start-up load display) in the string section to uncomment and comment out too.

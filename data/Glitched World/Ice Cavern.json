@@ -1,31 +1,134 @@
 [
-    {   ##Child must be able to hover to get in here so can_hover is always true as child
+    {
         "region_name": "Ice Cavern Beginning",
         "dungeon": "Ice Cavern",
+        "locations":{
+            "Ice Cavern Frozen Blue Rupee": "
+                (Blue_Fire or (logic_ice_frozen_rupee and can_jumpslash)) or
+                (logic_boomerang_boulders and can_use(Boomerang))"
+        },
         "exits": {
-            "Ice Cavern": "is_adult or Sticks or can_use(Dins_Fire)"
+            "ZF Ice Ledge": "True",
+            # Freezards are immune to Kokiri Sword. It would take a lot of sticks.
+            "Ice Cavern Spinning Scythe Room": "
+                has_soul(Freezard) and here(is_adult or has_explosives or can_use(Dins_Fire)
+                    or can_use(Megaton_Hammer))",
+            "Farores Wind Warp": "can_use(Farores_Wind)",
+            "Ice Cavern End Room": "can_use(Iron_Boots) and glitch_reverse_ice"
         }
     },
     {
-        "region_name": "Ice Cavern",
+        "region_name": "Ice Cavern Spinning Scythe Room",
         "dungeon": "Ice Cavern",
         "locations": {
-            # because child can always hover here, access to this chest is ageless and True
-            "Ice Cavern Map Chest": "Blue_Fire or (has_explosives and (can_live_dmg(0.5) or can_use(Nayrus_Love)))",
-            "Ice Cavern Compass Chest": "(is_adult or (is_child and (can_live_dmg(0.5) or can_use(Nayrus_Love)) )) and
-                (Blue_Fire or (has_explosives and (can_live_dmg(0.5) or can_use(Nayrus_Love)) ))",
-            "Ice Cavern Freestanding PoH": "(is_adult or (is_child and (can_live_dmg(0.5) or can_use(Nayrus_Love)))) and
-                (Blue_Fire or (is_adult and Bombs and can_shield and (can_live_dmg(0.5) or can_use(Nayrus_Love)))
-                or can_use(Boomerang))",
-            "Ice Cavern Iron Boots Chest": "(can_jumpslash or can_use(Slingshot) or can_use(Dins_Fire)) and (Blue_Fire or (can_use(Hover_Boots) and can_shield) or can_mega)",
-            "Sheik in Ice Cavern": "(can_jumpslash or can_use(Slingshot) or can_use(Dins_Fire)) and (Blue_Fire or (can_use(Hover_Boots) and can_shield) or can_mega)",
-            "Ice Cavern GS Spinning Scythe Room": "can_use(Hookshot) or can_use(Boomerang) or
-                (can_use(Hover_Boots) and can_mega)",
-            "Ice Cavern GS Heart Piece Room": "(is_adult or (is_child and (can_live_dmg(0.5) or can_use(Nayrus_Love)) )) and
-                (can_use(Boomerang) or can_use(Hookshot))",
-            "Ice Cavern GS Push Block Room": "(Blue_Fire or (can_use(Hover_Boots) and can_shield) or (is_adult and can_mega) or (is_child and can_live_dmg(0.5) and has_explosives))
-                and (can_use(Hookshot) or can_use(Boomerang) or can_hover)",
+            "Ice Cavern Hall Pot 1": "True",
+            "Ice Cavern Hall Pot 2": "True",
+            "Ice Cavern Spinning Scythe Pot 1": "True",
+            "Ice Cavern Spinning Scythe Pot 2": "True",
+            "Ice Cavern Spinning Scythe Pot 3": "True",
+            "Ice Cavern Spinning Scythe Flying Pot": "has_soul(Flying_Pot)",
+            "Ice Cavern Spinning Scythe Silver Rupee Icicles": "True",
+            "Ice Cavern Spinning Scythe Silver Rupee Center Left": "True",
+            "Ice Cavern Spinning Scythe Silver Rupee Center Back": "True",
+            "Ice Cavern Spinning Scythe Silver Rupee Center Right": "True",
+            "Ice Cavern Spinning Scythe Silver Rupee Ledge": "is_adult or
+                (glitch_ice_ledges_child and can_groundjump)",
+            "Ice Cavern GS Spinning Scythe Room": "can_use(Hookshot) or can_use(Boomerang) or can_hover
+                or ((can_superslide or can_hess) and can_use(Hover_Boots))"
+        },
+        "exits": {
+            "Ice Cavern Map Room": "((is_adult or (glitch_ice_ledges_child and can_groundjump)) and (Silver_Rupee_Ice_Cavern_Spinning_Scythe, 5))
+                or (is_adult and can_lunge_storage)",
+            "Ice Cavern Compass Room": "Blue_Fire or
+                (is_adult and glitch_ledge_clip) or
+                can_lunge_storage",
+            "Ice Cavern Push Block Room": "Blue_Fire or
+                can_lunge_storage or
+                (is_adult and
+                    (can_tsc or
+                    (glitch_clipping and
+                        (Bombs or (adv_hovers_recoil and can_shield and can_use(Hover_Boots)))
+                    )
+                    )
+                )"
+        }
+    },
+    {
+        "region_name": "Ice Cavern Map Room",
+        "dungeon": "Ice Cavern",
+        "locations": {
+            "Ice Cavern Map Chest": "Blue_Fire or
+                (has_explosives and can_live_dmg(0.5,False))",
+            "Ice Cavern Map Room Recovery Heart 1": "True",
+            "Ice Cavern Map Room Recovery Heart 2": "True",
+            "Ice Cavern Map Room Recovery Heart 3": "True",
+            "Ice Cavern Frozen Pot": "Blue_Fire or logic_ice_frozen_pot",
             "Blue Fire": "has_bottle"
+        }
+    },
+    {
+        "region_name": "Ice Cavern Compass Room",
+        "dungeon": "Ice Cavern",
+        "locations": {
+            "Ice Cavern Compass Chest": "Blue_Fire or
+                (has_explosives and can_live_dmg(0.5,False))",
+            "Ice Cavern Freestanding PoH": "Blue_Fire or (adv_ice_hp_no_bottle and
+                    Bombs and can_shield and can_live_dmg(0.5,False) and is_adult)
+                    or (logic_boomerang_boulders and can_use(Boomerang))",
+            "Ice Cavern GS Heart Piece Room": "can_use(Hookshot) or can_use(Boomerang)",
+            "Blue Fire": "has_bottle"
+        }
+    },
+    {
+        "region_name": "Ice Cavern Push Block Room",
+        "dungeon": "Ice Cavern",
+        "locations": {
+            "Ice Cavern Push Block Room Red Rupee 1": "
+                (can_play(Song_of_Time) and is_adult) or can_use(Boomerang) or can_hover",
+            "Ice Cavern Push Block Room Red Rupee 2": "(can_play(Song_of_Time) and is_adult) or can_use(Boomerang) or can_hover",
+            "Ice Cavern Push Block Room Red Rupee 3": "(can_play(Song_of_Time) and is_adult) or can_use(Boomerang) or can_hover",
+            "Ice Cavern Push Block Silver Rupee Back Left": "True",
+            "Ice Cavern Push Block Silver Rupee Back Center": "True",
+            "Ice Cavern Push Block Silver Rupee Front Center": "True",
+            "Ice Cavern Push Block Silver Rupee Red Ice": "Blue_Fire or
+                (can_jumpslash and adv_ice_push_block_silver)",
+            "Ice Cavern Push Block Silver Rupee Front Left": "True",
+            "Ice Cavern GS Push Block Room": "
+                can_use(Hookshot) or can_use(Boomerang) or
+                (logic_ice_block_gs and can_use(Hover_Boots)) or can_hover"
+        },
+        "exits": {
+            "Ice Cavern End Hallway": "(Silver_Rupee_Ice_Cavern_Push_Block, 5)",
+            "Ice Cavern Spinning Scythe Room": "True"
+        }
+    },
+    {
+        "region_name": "Ice Cavern End Hallway",
+        "dungeon": "Ice Cavern",
+        "locations": {
+            "Ice Cavern Near End Pot 1": "can_jumpslash or at('Ice Cavern End Room',True)",
+            "Ice Cavern Near End Pot 2": "can_jumpslash or at('Ice Cavern End Room',True)"
+        },
+        "exits": {
+            "Ice Cavern End Room": "Blue_Fire or
+                    (glitch_clipping and adv_hovers_recoil and can_use(Hover_Boots)) or
+                    can_mega or can_hess or can_superslide
+                ",
+            "Ice Cavern Push Block Room": "True"
+        }
+    },
+    {
+        "region_name": "Ice Cavern End Room",
+        "dungeon": "Ice Cavern",
+        "locations": {
+            "Ice Cavern Iron Boots Chest": "can_kill_wolfos",
+            "Sheik in Ice Cavern": "can_kill_wolfos"
+        },
+        "exits": {
+            "Ice Cavern End Hallway": "can_kill_wolfos and (
+                can_mega or can_hess or (glitch_clipping and adv_hovers_recoil and can_use(Hover_Boots))
+                or (has_soul(Freezard) and can_use(Hookshot))
+                )"
         }
     }
 ]

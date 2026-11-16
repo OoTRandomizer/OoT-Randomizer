@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from Location import Location
     from Search import Search
     from World import World
+    from RulesCommon import AccessRule
 
 Triforce_Piece: int = ItemInfo.solver_ids['Triforce_Piece']
 Triforce: int = ItemInfo.solver_ids['Triforce']
@@ -22,11 +23,21 @@ Ocarina_C_up_Button: int = ItemInfo.solver_ids['Ocarina_C_up_Button']
 Ocarina_C_down_Button: int = ItemInfo.solver_ids['Ocarina_C_down_Button']
 Ocarina_C_right_Button: int = ItemInfo.solver_ids['Ocarina_C_right_Button']
 
+Megaton_Hammer: int = ItemInfo.solver_ids['Megaton_Hammer']
+Progressive_Strength_Upgrade: int = ItemInfo.solver_ids['Progressive_Strength_Upgrade']
+Bomb_Bag: int = ItemInfo.solver_ids['Bomb_Bag']
+Nayrus_Love: int = ItemInfo.solver_ids['Nayrus_Love']
+Magic_Meter: int = ItemInfo.solver_ids['Magic_Meter']
+
 class State:
     def __init__(self, parent: World) -> None:
         self.solv_items: list[int] = [0] * len(ItemInfo.solver_ids)
         self.world: World = parent
         self.search: Optional[Search] = None
+
+        self.can_blast_or_smash: AccessRule = self.world.parser.parse_rule("can_blast_or_smash")
+        self.Blue_Fire: AccessRule = self.world.parser.parse_rule("Blue_Fire")
+        self.Fairy: AccessRule = self.world.parser.parse_rule("Fairy")
 
     def copy(self, new_world: Optional[World] = None) -> State:
         new_world = new_world if new_world else self.world
@@ -65,11 +76,8 @@ class State:
                 return False
         return True
 
-    def count_of(self, items: Iterable[int]) -> int:
-        s = 0
-        for i in items:
-            s += self.solv_items[i]
-        return s
+    def count_distinct(self, items: Iterable[int]) -> int:
+        return sum(1 for i in items if self.solv_items[i] > 0)
 
     def item_count(self, item: int) -> int:
         return self.solv_items[item]
@@ -93,17 +101,17 @@ class State:
         )
 
     def has_medallions(self, count: int) -> bool:
-        return self.count_of(ItemInfo.medallion_ids) >= count
+        return self.count_distinct(ItemInfo.medallion_ids) >= count
 
     def has_stones(self, count: int) -> bool:
-        return self.count_of(ItemInfo.stone_ids) >= count
+        return self.count_distinct(ItemInfo.stone_ids) >= count
 
 
     def has_dungeon_rewards(self, count: int) -> bool:
-        return (self.count_of(ItemInfo.medallion_ids) + self.count_of(ItemInfo.stone_ids)) >= count
+        return self.count_distinct(ItemInfo.medallion_ids) + self.count_distinct(ItemInfo.stone_ids) >= count
 
     def has_ocarina_buttons(self, count: int) -> bool:
-        return (self.count_of(ItemInfo.ocarina_buttons_ids)) >= count
+        return self.count_distinct(ItemInfo.ocarina_buttons_ids) >= count
 
     # TODO: Store the item's solver id in the goal
     def has_item_goal(self, item_goal: dict[str, Any]) -> bool:
@@ -133,14 +141,23 @@ class State:
             return False
 
     # Used for fall damage and other situations where damage is unavoidable
-    def can_live_dmg(self, hearts: int) -> bool:
+    def can_live_dmg(self, hearts: float, allow_revive: bool = True, allow_nayrus: bool = True, **kwargs) -> bool:
         mult = self.world.settings.damage_multiplier
-        if hearts*4 >= 3:
-            return mult != 'ohko' and mult != 'quadruple'
-        elif hearts*4 < 3:
-            return mult != 'ohko'
+        nl = self.has(Nayrus_Love) and self.has(Magic_Meter) and allow_nayrus
+        fairy = self.Fairy(self) and allow_revive
+        if mult == 'ohko':
+            return fairy or nl
+        elif mult == 'quad':
+            return (hearts < 0.75) or fairy or nl
+        elif mult == 'double':
+            return (hearts < 1.5) or fairy or nl
+        elif mult == 'normal':
+            return (hearts < 3) or fairy or nl
+        elif mult == 'half':
+            return (hearts < 6) or fairy or nl
         else:
-            return True
+            return False
+
 
     # Use the guarantee_hint rule defined in json.
     def guarantee_hint(self) -> bool:
@@ -180,10 +197,15 @@ class State:
     def region_has_shortcuts(self, region_name: str) -> bool:
         return self.world.region_has_shortcuts(region_name)
 
+    # Glitch logic makes liberal use of this function as it was built with enemy souls in mind
+    # To avoid having to change logic, insert this pass function to be implemented properly later
+    def has_soul(self, enemy: str, **kwargs) -> bool:
+        return True
+
     def has_all_notes_for_song(self, song: str) -> bool:
         # Scarecrow needs 2 different notes
         if song == 'Scarecrow Song':
-            return self.has_ocarina_buttons(2)
+            return self.world.settings.scarecrow_behavior == 'free' or self.has_ocarina_buttons(2)
 
         notes = str(self.world.song_notes[song])
         if 'A' in notes:

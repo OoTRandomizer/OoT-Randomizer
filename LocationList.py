@@ -470,6 +470,7 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Kak 30 Gold Skulltula Reward",                                 ("NPC",          0x50,  0x46, None,                            'Progressive Wallet',                    ("Kakariko Village", "Skulltula House", "NPCs",))),
     ("Kak 40 Gold Skulltula Reward",                                 ("NPC",          0x50,  0x03, None,                            'Bombchus (10)',                         ("Kakariko Village", "Skulltula House", "NPCs",))),
     ("Kak 50 Gold Skulltula Reward",                                 ("NPC",          0x50,  0x3E, None,                            'Piece of Heart',                        ("Kakariko Village", "Skulltula House", "NPCs",))),
+    ("Kak 100 Gold Skulltula Reward",                                ("NPC",          0x50,  0x56, None,                           'Rupees (200)',                          ("Kakariko Village", "Skulltula House", "NPCs",))),
     ("Kak Impas House Cow",                                          ("NPC",          0x37,  0x15, None,                            'Milk',                                  ("Kakariko Village", "Cows",))),
     ("Kak GS Tree",                                                  ("GS Token",     0x10,  0x20, None,                            'Gold Skulltula Token',                  ("Kakariko Village", "Gold Skulltulas",))),
     ("Kak GS Near Gate Guard",                                       ("GS Token",     0x10,  0x02, None,                            'Gold Skulltula Token',                  ("Kakariko Village", "Gold Skulltulas",))),
@@ -872,6 +873,7 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
 
     # Gerudo's Fortress
     ("GF Chest",                                                     ("Chest",        0x5D,  0x00, None,                            'Piece of Heart',                        ("Gerudo's Fortress", "Chests",))),
+    ("GF Freestanding PoH",                                          ("Collectable",  0x5D,  0x01, None,                            'Piece of Heart (Out of Logic)',         ("Gerudo's Fortress", "Freestandings",))),
     ("GF HBA 1000 Points",                                           ("NPC",          0x5D,  0x3E, None,                            'Piece of Heart',                        ("Gerudo's Fortress", "Minigames",))),
     ("GF HBA 1500 Points",                                           ("NPC",          0x5D,  0x30, None,                            'Bow',                                   ("Gerudo's Fortress", "Minigames",))),
     ("GF GS Top Floor",                                              ("GS Token",     0x14,  0x02, None,                            'Gold Skulltula Token',                  ("Gerudo's Fortress", "Gold Skulltulas",))),
@@ -2501,6 +2503,9 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Ganons Castle MQ Water Trial Silver Rupee Red Ice",            ("SilverRupee", 0x0D, (3,0,10), None,                       'Silver Rupee (Ganons Castle Water Trial)', ("Ganon's Castle MQ", "Master Quest", "Silver Rupees",))),
     ("Ganons Castle MQ Water Trial Silver Rupee Above Void",         ("SilverRupee", 0x0D, (3,0,11), None,                       'Silver Rupee (Ganons Castle Water Trial)', ("Ganon's Castle MQ", "Master Quest", "Silver Rupees",))),
 
+    # Ganon's Castle MQ Wonderitems
+    ("Ganons Castle MQ Shadow Trial Explosives Wonderitem",            ("Wonderitem",   0x0D,  (12,0,13), None,                   'Deku Nuts (5)',                         ("Ganon's Castle MQ", "Master Quest", "Wonderitems",))),
+
     # Ganon's Castle Shared
     ("Ganons Tower Boss Key Chest",                                  ("Chest",        0x0A,  0x0B, None,                            'Boss Key (Ganons Castle)',              ("Ganon's Tower", "Vanilla Dungeons", "Master Quest", "Chests",))),
 
@@ -2543,6 +2548,7 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("Fairy Pot",                                                    ("Drop",         None,  None, None,                            'Fairy',                                 None)),
     ("Free Fairies",                                                 ("Drop",         None,  None, None,                            'Fairy',                                 None)),
     ("Wall Fairy",                                                   ("Drop",         None,  None, None,                            'Fairy',                                 None)),
+    ("Bombable Fairy",                                               ("Drop",         None,  None, None,                            'Fairy',                                 None)),
     ("Butterfly Fairy",                                              ("Drop",         None,  None, None,                            'Fairy',                                 None)),
     ("Gossip Stone Fairy",                                           ("Drop",         None,  None, None,                            'Fairy',                                 None)),
     ("Bean Plant Fairy",                                             ("Drop",         None,  None, None,                            'Fairy',                                 None)),
@@ -2603,7 +2609,11 @@ location_table: dict[str, tuple[str, Optional[int], LocationDefault, LocationAdd
     ("30 Skulltulas Reward Hint",                                    ("Hint",         None,  None, None,                            None,                                    None)),
     ("40 Skulltulas Reward Hint",                                    ("Hint",         None,  None, None,                            None,                                    None)),
     ("50 Skulltulas Reward Hint",                                    ("Hint",         None,  None, None,                            None,                                    None)),
+    ("100 Skulltulas Reward Hint",                                   ("Hint",         None,  None, None,                            None,                                    None)),
     ("ZR Frogs Ocarina Minigame Hint",                               ("Hint",         None,  None, None,                            None,                                    None)),
+    ("Market 10 Big Poes Hint",                                      ("Hint",         None,  None, None,                            None,                                    None)),
+    ("Deku Theater Skull Mask Hint",                                 ("Hint",         None,  None, None,                            None,                                    None)),
+    ("Deku Theater Mask of Truth Hint",                              ("Hint",         None,  None, None,                            None,                                    None)),
     ("Ganondorf Hint",                                               ("Hint",         None,  None, None,                            None,                                    None)),
 ])
 

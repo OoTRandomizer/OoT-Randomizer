@@ -11,6 +11,7 @@
 #include "actor.h"
 #include "save.h"
 #include "models.h"
+#include "item_effects.h"
 
 extern uint8_t SHUFFLE_CHEST_GAME;
 extern uint8_t FAST_CHESTS;
@@ -134,7 +135,7 @@ override_key_t get_override_search_key(z64_actor_t *actor, uint8_t scene, uint8_
         };
     } else if (scene == 0x3E && actor->actor_id == 0x011A) {
         return (override_key_t){
-            .scene = z64_file.grotto_id,
+            .scene = z64_file.respawn[RESPAWN_MODE_RETURN].data,
             .type = OVR_GROTTO_SCRUB,
             .pad = 0,
             .flag = item_id,
@@ -413,11 +414,7 @@ void try_pending_item() {
         call_effect_function(item_row);
         pop_pending_item();
         after_key_received(override.key);
-        clear_override();
-        return;
-    }
-
-    if (item_row->collectible >= 0 && override.key.flag == 0xFF) {
+    } else if (item_row->collectible >= 0 && override.key.flag == 0xFF) {
         // This is an incoming collectible junk item so speed it up by spawning a give immediate collectible
         EnItem00* collectible = (EnItem00*)z64_SpawnActor(&z64_game.actor_ctxt, &z64_game, 0x0015, z64_link.common.pos_world.x, z64_link.common.pos_world.y, z64_link.common.pos_world.z, 0, 0, 0, 0x8000 | item_row->collectible);
         collectible->override = override;
@@ -477,6 +474,11 @@ void get_item(z64_actor_t* from_actor, z64_link_t* link, int8_t incoming_item_id
             }
         }
         override = lookup_override(from_actor, z64_game.scene_index, item_id);
+    }
+
+    // Notify deku shield buy in shops.
+    if (from_actor->actor_id == 0x3D && incoming_item_id == GI_SHIELD_DEKU) {
+        handle_deku_shield(&z64_file, 0, 0);
     }
 
     if (override.key.all == 0) {
@@ -763,7 +765,7 @@ bool Item00_KillActorIfFlagIsSet(z64_actor_t* actor) {
         flag.scene = z64_game.scene_index;
         if (z64_game.scene_index == 0x3E) {
             flag.grotto.room = actor->room_index;
-            flag.grotto.grotto_id = z64_file.grotto_id & 0x1F;
+            flag.grotto.grotto_id = z64_file.respawn[RESPAWN_MODE_RETURN].data & 0x1F;
             flag.grotto.flag = CURR_ACTOR_SPAWN_INDEX;
             flag.grotto.subflag = 0;
         } else {
@@ -925,6 +927,11 @@ uint8_t item_give_collectible(uint8_t item, z64_link_t* link, z64_actor_t* from_
         uint16_t item_id = collectible_override.value.base.item_id;
         uint16_t resolved_item_id = resolve_upgrades(collectible_override);
         item_row_t* item_row = get_item_row(resolved_item_id);
+
+        // If we picked an ice trap, show the ice model instead of the fake item model.
+        if (item_id == GI_ICE_TRAP) {
+            pItem->model.graphic_id = 0xA4;
+        }
 
         // Set the collectible flag
         Set_NewFlag(&flag);

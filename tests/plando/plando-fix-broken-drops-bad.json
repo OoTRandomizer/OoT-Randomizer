@@ -1,7 +1,7 @@
 {
   "settings": {
     "fix_broken_drops": true,
-    "open_door_of_time": false,
+    "open_door_of_time": "sot",
     "open_forest": "open",
     "shuffle_interior_entrances": "simple",
     "shuffle_scrubs": "low",

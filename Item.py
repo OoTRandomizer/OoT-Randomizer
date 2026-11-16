@@ -48,6 +48,8 @@ class ItemInfo:
         self.junk: Optional[int] = self.special.get('junk', None)
         self.trade: bool = self.special.get('trade', False)
         self.ocarina_button: bool = self.special.get('ocarina_button', False)
+        self.market_price: Optional[int] = self.special.get('market_price', None)
+        self.market_price_non_chu_drops_only: bool = self.special.get('market_price_non_chu_drops_only', False)
 
         self.solver_id: Optional[int] = None
         if name and self.junk is None:
@@ -114,7 +116,7 @@ class Item:
 
     @property
     def smallkey(self) -> bool:
-        return self.type == 'SmallKey' or self.type == 'HideoutSmallKey' or  self.type == 'TCGSmallKey'
+        return self.type in ('SmallKey', 'HideoutSmallKey', 'TCGSmallKey', 'SmallKeyRing', 'HideoutSmallKeyRing','TCGSmallKeyRing')
 
     @property
     def bosskey(self) -> bool:
@@ -136,12 +138,13 @@ class Item:
     def unshuffled_dungeon_item(self) -> bool:
         if self.world is None:
             return False
-        return ((self.type == 'SmallKey' and self.world.settings.shuffle_smallkeys in ('remove', 'vanilla', 'dungeon')) or
-                (self.type == 'HideoutSmallKey' and self.world.settings.shuffle_hideoutkeys == 'vanilla') or
-                (self.type == 'TCGSmallKey' and self.world.settings.shuffle_tcgkeys in ('remove', 'vanilla')) or
+        return ((self.type in ('SmallKey', 'SmallKeyRing') and self.world.settings.shuffle_smallkeys in ('remove', 'vanilla', 'dungeon')) or
+                (self.type in ('HideoutSmallKey', 'HideoutSmallKeyRing') and self.world.settings.shuffle_hideoutkeys == 'vanilla') or
+                (self.type in ('TCGSmallKey', 'TCGSmallKeyRing') and self.world.settings.shuffle_tcgkeys in ('remove', 'vanilla')) or
                 (self.type == 'BossKey' and self.world.settings.shuffle_bosskeys in ('remove', 'vanilla', 'dungeon')) or
                 (self.type == 'GanonBossKey' and self.world.settings.shuffle_ganon_bosskey in ('remove', 'vanilla', 'dungeon')) or
-                ((self.map or self.compass) and (self.world.settings.shuffle_mapcompass in ('remove', 'startwith', 'vanilla', 'dungeon'))) or
+                (self.map and (self.world.settings.shuffle_map in ('remove', 'startwith', 'vanilla', 'dungeon'))) or
+                (self.compass and (self.world.settings.shuffle_compass in ('remove', 'startwith', 'vanilla', 'dungeon'))) or
                 (self.type == 'SilverRupee' and self.world.settings.shuffle_silver_rupees in ('remove','vanilla','dungeon')) or
                 (self.type == 'DungeonReward' and self.world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward', 'dungeon')))
 
@@ -167,11 +170,11 @@ class Item:
             return False
         if self.type == 'DungeonReward' and self.world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward', 'dungeon'):
             return False
-        if self.type == 'SmallKey' and self.world.settings.shuffle_smallkeys in ('dungeon', 'vanilla'):
+        if self.type in ('SmallKey', 'SmallKeyRing') and self.world.settings.shuffle_smallkeys in ('dungeon', 'vanilla'):
             return False
-        if self.type == 'HideoutSmallKey' and self.world.settings.shuffle_hideoutkeys == 'vanilla':
+        if self.type in ('HideoutSmallKey', 'HideoutSmallKeyRing') and self.world.settings.shuffle_hideoutkeys == 'vanilla':
             return False
-        if self.type == 'TCGSmallKey' and self.world.settings.shuffle_tcgkeys == 'vanilla':
+        if self.type in ('TCGSmallKey','TCGSmallKeyRing') and self.world.settings.shuffle_tcgkeys == 'vanilla':
             return False
         if self.type == 'BossKey' and self.world.settings.shuffle_bosskeys in ('dungeon', 'vanilla'):
             return False

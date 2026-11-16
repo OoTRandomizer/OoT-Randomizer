@@ -84,10 +84,12 @@ class Search:
         self.state_list[item.world.id].collect(item)
 
     @classmethod
-    def max_explore(cls, state_list: Iterable[State], itempool: Optional[Iterable[Item]] = None) -> Search:
+    def max_explore(cls, state_list: Iterable[State], itempool: Optional[Iterable[Item]] = None, *, collect_pseudo_starting_items: bool = False) -> Search:
         p = cls(state_list)
         if itempool:
             p.collect_all(itempool)
+        if collect_pseudo_starting_items:
+            p.collect_pseudo_starting_items()
         p.collect_locations()
         return p
 

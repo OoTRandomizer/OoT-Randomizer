@@ -3,7 +3,8 @@
         "region_name": "Root",
         "hint": "ROOT",
         "events": {
-            "Kakariko Village Gate Open": "open_kakariko == 'open' or (open_kakariko == 'zelda' and Zeldas_Letter)"
+            "Kakariko Village Gate Open": "open_kakariko == 'open' or (open_kakariko == 'zelda' and Zeldas_Letter)",
+            "Showed Mido Sword & Shield": "open_forest == 'fast' and Kokiri_Sword and Deku_Shield"
         },
         "locations": {
             "Gift from Sages": "can_receive_ganon_bosskey"
@@ -11,7 +12,10 @@
         "exits": {
             "Root Exits": "is_starting_age or Time_Travel",
             "HC Garden Skippable Locations": "skip_child_zelda",
-            "Beyond Door of Time Skippable Locations": "skip_reward_from_rauru"
+            "Beyond Door of Time Skippable Locations": "skip_reward_from_rauru != 'not_free'",
+            "Deliver Rutos Letter Region": "Rutos_Letter and zora_fountain == 'fast'",
+            # Hack to make ALR work if hideout entrances are unshuffled
+            "GF Above Jail Child Locations": "shuffle_gerudo_fortress_heart_piece == 'remove' or not shuffle_hideout_entrances"
         }
     },
     {
@@ -108,6 +112,12 @@
             "Ganons Castle Lobby": "
                 (is_child and at('Ganons Castle Lobby', is_child)) or
                 (is_adult and at('Ganons Castle Lobby', is_adult))",
+            "Ganons Castle Main": "
+                (is_child and at('Ganons Castle Main', is_child)) or
+                (is_adult and at('Ganons Castle Main', is_adult))",
+            "Ganons Castle Tower": "
+                (is_child and at('Ganons Castle Tower', is_child)) or
+                (is_adult and at('Ganons Castle Tower', is_adult))",
             "Gerudo Training Ground Lobby": "
                 (is_child and at('Gerudo Training Ground Lobby', is_child)) or
                 (is_adult and at('Gerudo Training Ground Lobby', is_adult))",
@@ -176,12 +186,12 @@
             "KF Bean Platform Green Rupee 6": "is_adult and (here(can_plant_bean) or Hover_Boots)",
             "KF Bean Platform Red Rupee": "is_adult and (here(can_plant_bean) or Hover_Boots)",
             "KF GS Know It All House": "
-                is_child and can_child_attack and at_night and
-                (had_night_start or can_leave_forest or can_play(Suns_Song))",
+                is_child and can_child_attack and (at_night or gold_skulls_ignore_daytime) and
+                (had_night_start or can_leave_forest or can_play(Suns_Song) or gold_skulls_ignore_daytime)",
             "KF GS Bean Patch": "
                 can_plant_bugs and can_child_attack",
             "KF GS House of Twins": "
-                is_adult and at_night and
+                is_adult and (at_night or gold_skulls_ignore_daytime) and
                 (Hookshot or (logic_adult_kokiri_gs_hovers and Hover_Boots) or logic_adult_kokiri_gs_nothing)",
             "KF Gossip Stone": "True",
             "Gossip Stone Fairy": "can_summon_gossip_fairy_without_suns and has_bottle",
@@ -357,7 +367,7 @@
             "LW Under Boulder Blue Rupee": "
                 can_blast_or_smash or (logic_boomerang_boulders and can_use(Boomerang))",
             "LW GS Above Theater": "
-                is_adult and at_night and
+                is_adult and (at_night or gold_skulls_ignore_daytime) and
                 (here(can_plant_bean) or
                     (logic_lost_woods_gs_bean and Hookshot and
                         (Longshot or Bow or has_bombchus or can_use(Dins_Fire))))",
@@ -429,7 +439,7 @@
             "SFM Maze Wonderitem 3": "True",
             "SFM Maze Wonderitem 4": "True",
             "SFM Maze Wonderitem 5": "True",
-            "SFM GS": "can_use(Hookshot) and at_night",
+            "SFM GS": "can_use(Hookshot) and (at_night or gold_skulls_ignore_daytime)",
             "SFM Maze Gossip Stone (Lower)": "True",
             "SFM Maze Gossip Stone (Upper)": "True",
             "SFM Saria Gossip Stone": "True",
@@ -513,7 +523,7 @@
             "Bonooru": "is_child and Ocarina and has_all_notes_for_song(Scarecrow_Song)"
         },
         "locations": {
-            "Pierre": "is_adult and Bonooru and not free_scarecrow",
+            "Pierre": "is_adult and Bonooru and scarecrow_behavior != 'free'",
             "LH Sun": "(can_use(Distant_Scarecrow) or 'Water Temple Clear') and can_use(Bow)",
             "LH Freestanding PoH": "
                 is_adult and (can_use(Scarecrow) or here(can_plant_bean))",
@@ -523,10 +533,10 @@
             "LH Underwater Green Rupee 2": "is_child and can_dive",
             "LH GS Bean Patch": "can_plant_bugs and can_child_attack",
             "LH GS Lab Wall": "
-                is_child and at_night and
+                is_child and (at_night or gold_skulls_ignore_daytime) and
                 (Boomerang or (logic_lab_wall_gs and (Sticks or Kokiri_Sword)))",
-            "LH GS Small Island": "is_child and can_child_attack and at_night",
-            "LH GS Tree": "can_use(Longshot) and at_night",
+            "LH GS Small Island": "is_child and can_child_attack and (at_night or gold_skulls_ignore_daytime)",
+            "LH GS Tree": "can_use(Longshot) and (at_night or gold_skulls_ignore_daytime)",
             "LH Lab Gossip Stone": "True",
             "LH Gossip Stone (Southeast)": "True",
             "LH Gossip Stone (Southwest)": "True",
@@ -611,7 +621,7 @@
         "locations": {
             "GV Adult Upper Waterfall Wonderitem": "is_adult",
             "GV Adult Lower Waterfall Wonderitem": "is_adult",
-            "GV GS Small Bridge": "can_use(Boomerang) and at_night",
+            "GV GS Small Bridge": "can_use(Boomerang) and (at_night or gold_skulls_ignore_daytime)",
             "Bug Rock": "is_child and has_bottle"
         },
         "exits": {
@@ -686,8 +696,8 @@
         "locations": {
             "GV Chest": "can_use(Megaton_Hammer)",
             "GV Trade Poachers Saw": "'Broken Sword Access'",
-            "GV GS Behind Tent": "can_use(Hookshot) and at_night",
-            "GV GS Pillar": "can_use(Hookshot) and at_night"
+            "GV GS Behind Tent": "can_use(Hookshot) and (at_night or gold_skulls_ignore_daytime)",
+            "GV GS Pillar": "can_use(Hookshot) and (at_night or gold_skulls_ignore_daytime)"
         },
         "exits": {
             "Gerudo Fortress": "True",
@@ -744,7 +754,7 @@
             "GF HBA Crate 12": "((is_adult and Gerudo_Membership_Card) or is_child) and can_break_crate",
             "GF HBA Crate 13": "((is_adult and Gerudo_Membership_Card) or is_child) and can_break_crate",
             "GF GS Archery Range": "
-                can_use(Hookshot) and Gerudo_Membership_Card and at_night"
+                can_use(Hookshot) and Gerudo_Membership_Card and (at_night or gold_skulls_ignore_daytime)"
         },
         "exits": {
             "GV Fortress Side": "True",
@@ -825,7 +835,7 @@
         "scene": "Gerudo Fortress",
         "hint": "GERUDO_FORTRESS",
         "locations": {
-            "GF GS Top Floor": "is_adult and at_night"
+            "GF GS Top Floor": "is_adult and (at_night or gold_skulls_ignore_daytime)"
         }
     },
     {
@@ -848,7 +858,16 @@
             "Hideout Hall to Balcony": "True",
             "Gerudo Fortress": "True",
             "GF Chest Roof": "can_use(Longshot)",
-            "GF Break Room Entrance": "damage_multiplier != 'ohko' or can_use(Nayrus_Love)"
+            "GF Break Room Entrance": "damage_multiplier != 'ohko' or can_use(Nayrus_Love)",
+            "GF Above Jail Child Locations": "is_child"
+        }
+    },
+    {
+        "region_name": "GF Above Jail Child Locations",
+        "scene": "Gerudo Fortress",
+        "hint": "GERUDO_FORTRESS",
+        "locations": {
+            "GF Freestanding PoH": "True"
         }
     },
     {
@@ -1145,9 +1164,9 @@
             "Colossus Tree Wonderitem 4": "can_use(Slingshot) or can_use(Bow)",
             "Colossus Tree Wonderitem 5": "can_use(Slingshot) or can_use(Bow)",
             "Colossus GS Bean Patch": "can_plant_bugs and can_child_attack",
-            "Colossus GS Tree": "can_use(Hookshot) and at_night",
+            "Colossus GS Tree": "can_use(Hookshot) and (at_night or gold_skulls_ignore_daytime)",
             "Colossus GS Hill": "
-                is_adult and at_night and
+                is_adult and (at_night or gold_skulls_ignore_daytime) and
                 (here(can_plant_bean) or Longshot or (logic_colossus_gs and Hookshot))",
             "Colossus Gossip Stone": "True",
             "Gossip Stone Fairy": "can_summon_gossip_fairy and has_bottle",
@@ -1295,7 +1314,7 @@
         },
         "exits": {
             "ToT Entrance": "True",
-            "Beyond Door of Time": "can_play(Song_of_Time) or open_door_of_time"
+            "Beyond Door of Time": "can_open_door_of_time"
         }
     },
     {
@@ -1400,7 +1419,7 @@
         "hint": "OUTSIDE_GANONS_CASTLE",
         "exits": {
             # The rainbow bridge cutscene trigger doesn't extend to the castle entrance
-            "Ganons Castle Grounds": "is_adult and bridge == 'open'"
+            "Ganons Castle Ledge": "is_adult"
             # No exit back into the castle because the entrance places Link in midair if the bridge isn't spawned
         }
     },
@@ -1408,13 +1427,23 @@
         "region_name": "Ganons Castle Grounds",
         "scene": "Castle Grounds",
         "hint": "OUTSIDE_GANONS_CASTLE",
+        "provides_time": "DAMPE",
         "locations": {
             "OGC GS": "True"
         },
         "exits": {
             "Castle Grounds": "True",
             "OGC Great Fairy Fountain": "can_use(Golden_Gauntlets) and at_dampe_time",
-            "Ganons Castle Lobby": "can_build_rainbow_bridge and at_dampe_time"
+            "Ganons Castle Ledge": "can_build_rainbow_bridge"
+        }
+    },
+    {
+        "region_name": "Ganons Castle Ledge",
+        "scene": "Castle Grounds",
+        "hint": "OUTSIDE_GANONS_CASTLE",
+        "exits": {
+            "Ganons Castle Grounds": "can_build_rainbow_bridge",
+            "Ganons Castle Lobby": "at_dampe_time"
         }
     },
     {
@@ -1436,6 +1465,7 @@
         "locations": {
             "Market 10 Big Poes": "
                 is_adult and (Big_Poe or (Bottle_with_Big_Poe, big_poe_count))",
+            "Market 10 Big Poes Hint": "is_adult",
             "Market Guard House Child Crate 1": "is_child and can_break_crate",
             "Market Guard House Child Crate 2": "is_child and can_break_crate",
             "Market Guard House Child Crate 3": "is_child and can_break_crate",
@@ -1707,12 +1737,12 @@
             "Kak Child Crate 4": "is_child and can_break_crate",
             "Kak Child Crate 5": "is_child and can_break_crate",
             "Kak Child Construction Wonderitem": "is_child",
-            "Kak GS House Under Construction": "is_child and at_night",
-            "Kak GS Skulltula House": "is_child and at_night",
-            "Kak GS Near Gate Guard": "is_child and at_night",
-            "Kak GS Tree": "is_child and at_night and can_bonk",
+            "Kak GS House Under Construction": "is_child and (at_night or gold_skulls_ignore_daytime)",
+            "Kak GS Skulltula House": "is_child and (at_night or gold_skulls_ignore_daytime)",
+            "Kak GS Near Gate Guard": "is_child and (at_night or gold_skulls_ignore_daytime)",
+            "Kak GS Tree": "is_child and (at_night or gold_skulls_ignore_daytime) and can_bonk",
             "Kak GS Watchtower": "
-                is_child and at_night and
+                is_child and (at_night or gold_skulls_ignore_daytime) and
                 (Slingshot or has_bombchus or (logic_kakariko_tower_gs and (Sticks or Kokiri_Sword)))",
             "Bug Rock": "has_bottle"
         },
@@ -1733,7 +1763,7 @@
             "Kak Odd Medicine Rooftop": "
                 can_use(Hookshot) or
                 (logic_man_on_roof and
-                    (is_adult or at_day or Slingshot or has_bombchus or
+                    (is_adult or (at_day and not gold_skulls_ignore_daytime) or Slingshot or has_bombchus or
                         (logic_kakariko_tower_gs and (Sticks or Kokiri_Sword))))",
             "Kak Backyard": "is_adult or at_day",
             "Graveyard": "True",
@@ -1755,7 +1785,7 @@
         "scene": "Kakariko Village",
         "hint": "KAKARIKO_VILLAGE",
         "locations": {
-            "Kak GS Above Impas House": "is_adult and at_night"
+            "Kak GS Above Impas House": "is_adult and (at_night or gold_skulls_ignore_daytime)"
         },
         "exits": {
             "Kak Impas Ledge": "True",
@@ -1812,11 +1842,13 @@
             "Kak 30 Gold Skulltula Reward": "(Gold_Skulltula_Token, 30)",
             "Kak 40 Gold Skulltula Reward": "(Gold_Skulltula_Token, 40)",
             "Kak 50 Gold Skulltula Reward": "(Gold_Skulltula_Token, 50)",
+            "Kak 100 Gold Skulltula Reward": "(Gold_Skulltula_Token, 100)",
             "10 Skulltulas Reward Hint": "True",
             "20 Skulltulas Reward Hint": "True",
             "30 Skulltulas Reward Hint": "True",
             "40 Skulltulas Reward Hint": "True",
-            "50 Skulltulas Reward Hint": "True"
+            "50 Skulltulas Reward Hint": "True",
+            "100 Skulltulas Reward Hint": "True"
         },
         "exits": {
             "Kakariko Village": "True"
@@ -1951,7 +1983,7 @@
                 (logic_graveyard_poh and can_use(Boomerang))",
             "Graveyard Freestanding PoH Crate": "(is_adult and can_break_crate and (here(can_plant_bean) or Longshot))",
             "Graveyard Dampe Gravedigging Tour": "is_child and at_dampe_time",
-            "Graveyard GS Wall": "can_use(Boomerang) and at_night",
+            "Graveyard GS Wall": "can_use(Boomerang) and (at_night or gold_skulls_ignore_daytime)",
             "Graveyard GS Bean Patch": "can_plant_bugs and can_child_attack",
             "Butterfly Fairy": "can_use(Sticks) and at_day and has_bottle",
             "Bean Plant Fairy": "is_child and can_plant_bean and can_play(Song_of_Storms) and has_bottle",
@@ -2099,7 +2131,7 @@
                 can_plant_bugs and can_child_attack and
                 (has_explosives or Progressive_Strength_Upgrade or (logic_dmt_soil_gs and can_use(Boomerang)))",
             "DMT GS Near Kak": "can_blast_or_smash",
-            "DMT GS Above Dodongos Cavern": "is_adult and at_night and (Megaton_Hammer or logic_trail_gs_lower)",
+            "DMT GS Above Dodongos Cavern": "is_adult and (at_night or gold_skulls_ignore_daytime) and (Megaton_Hammer or logic_trail_gs_lower)",
             "Bean Plant Fairy": "
                 is_child and can_plant_bean and can_play(Song_of_Storms) and has_bottle and
                 (has_explosives or Progressive_Strength_Upgrade)"
@@ -2130,7 +2162,7 @@
             "DMT Trade Eyedrops": "
                 is_adult and (guarantee_trade_path or adult_trade_shuffle) and
                 (('Eyedrops Access' and not adult_trade_shuffle) or (Eyedrops and disable_trade_revert))",
-            "DMT GS Falling Rocks Path": "is_adult and at_night and (Megaton_Hammer or logic_trail_gs_upper)",
+            "DMT GS Falling Rocks Path": "is_adult and (at_night or gold_skulls_ignore_daytime) and (Megaton_Hammer or logic_trail_gs_upper)",
             "DMT Gossip Stone": "True",
             "Gossip Stone Fairy": "can_summon_gossip_fairy and has_bottle",
             "Bug Rock": "is_child and has_bottle"
@@ -2423,9 +2455,7 @@
             "DMC Lower Nearby": "
                 is_adult and (Hover_Boots or Hookshot or here(can_plant_bean) or plant_beans)",
             "DMC Upper Nearby": "is_adult and (here(can_plant_bean) or plant_beans)",
-            "DMC Fire Temple Entrance": "
-                (is_child and shuffle_dungeon_entrances) or
-                (is_adult and (logic_fewer_tunic_requirements or Goron_Tunic))",
+            "DMC Fire Temple Entrance": "is_adult or shuffle_dungeon_entrances",
             "DMC Pierre Platform": "can_use(Distant_Scarecrow)"
         }
     },
@@ -2484,9 +2514,10 @@
         "locations": {
             "ZR Magic Bean Salesman": "is_child",
             "ZR Frogs Ocarina Game": "
-                is_child and can_play(Zeldas_Lullaby) and can_play(Eponas_Song) and
-                can_play(Sarias_Song) and can_play(Suns_Song) and can_play(Song_of_Time) and can_play(Song_of_Storms) and
-                Ocarina_A_Button and Ocarina_C_left_Button and Ocarina_C_right_Button and Ocarina_C_down_Button",
+                is_child and
+                can_play(Zeldas_Lullaby) and can_play(Eponas_Song) and can_play(Sarias_Song) and
+                can_play(Suns_Song) and can_play(Song_of_Time) and can_play(Song_of_Storms) and
+                has_all_notes_for_song('ZR Frogs Ocarina Game')",
             "ZR Frogs Zeldas Lullaby": "is_child and can_play(Zeldas_Lullaby)",
             "ZR Frogs Eponas Song": "is_child and can_play(Eponas_Song)",
             "ZR Frogs Sarias Song": "is_child and can_play(Sarias_Song)",
@@ -2527,9 +2558,9 @@
             "ZR Child River Wonderitem 25": "is_child",
             "ZR Child River Wonderitem 26": "is_child",
             "ZR Child River Wonderitem 27": "is_child",
-            "ZR GS Ladder": "is_child and at_night and can_child_attack",
-            "ZR GS Near Raised Grottos": "can_use(Hookshot) and at_night",
-            "ZR GS Above Bridge": "can_use(Hookshot) and at_night",
+            "ZR GS Ladder": "is_child and (at_night or gold_skulls_ignore_daytime) and can_child_attack",
+            "ZR GS Near Raised Grottos": "can_use(Hookshot) and (at_night or gold_skulls_ignore_daytime)",
+            "ZR GS Above Bridge": "can_use(Hookshot) and (at_night or gold_skulls_ignore_daytime)",
             "ZR Near Grottos Gossip Stone": "True",
             "ZR Near Domain Gossip Stone": "True",
             "Gossip Stone Fairy": "can_summon_gossip_fairy and has_bottle",
@@ -2538,7 +2569,7 @@
             "Bug Shrub": "
                 (is_child or here(can_plant_bean) or Hover_Boots or logic_zora_river_lower) and
                 can_cut_shrubs and has_bottle",
-            "ZR Frogs Ocarina Minigame Hint": "True"
+            "ZR Frogs Ocarina Minigame Hint": "is_child"
         },
         "exits": {
             "ZR Front": "True",
@@ -2583,8 +2614,6 @@
         "locations": {
             "ZD Diving Minigame": "is_child",
             "ZD Chest": "can_use(Sticks)",
-            "Deliver Rutos Letter": "
-                is_child and Rutos_Letter and zora_fountain != 'open'",
             "ZD King Zora Thawed": "'King Zora Thawed'",
             "ZD Pot 1": "True",
             "ZD Pot 2": "True",
@@ -2595,7 +2624,7 @@
             "ZD In Front of King Zora Beehive 2": "is_child and can_break_upper_beehive",
             "ZD Trade Prescription": "'Eyeball Frog Access'",
             "ZD GS Frozen Waterfall": "
-                is_adult and at_night and
+                is_adult and (at_night or gold_skulls_ignore_daytime) and
                 (Hookshot or Bow or Magic_Meter or logic_domain_gs)",
             "ZD Gossip Stone": "True",
             "Gossip Stone Fairy": "can_summon_gossip_fairy_without_suns and has_bottle",
@@ -2606,11 +2635,20 @@
         "exits": {
             "ZR Behind Waterfall": "True",
             "Lake Hylia": "is_child and can_dive",
+            "Deliver Rutos Letter Region": "is_child and Rutos_Letter and (zora_fountain == 'closed' or zora_fountain == 'adult')",
             "ZD Behind King Zora": "
                 Deliver_Letter or zora_fountain == 'open' or
                 (is_adult and (zora_fountain == 'adult' or logic_king_zora_skip))",
             "ZD Shop": "is_child or Blue_Fire",
             "ZD Storms Grotto": "can_open_storm_grotto"
+        }
+    },
+    {
+        "region_name": "Deliver Rutos Letter Region",
+        "scene": "Zoras Domain",
+        "hint": "ZORAS_DOMAIN",
+        "locations": {
+            "Deliver Rutos Letter": "True"
         }
     },
     {
@@ -2646,7 +2684,7 @@
             "ZF Near Jabu Pot 3": "is_child",
             "ZF Near Jabu Pot 4": "is_child",
             "ZF GS Tree": "is_child and can_bonk",
-            "ZF GS Above the Log": "can_use(Boomerang) and at_night",
+            "ZF GS Above the Log": "can_use(Boomerang) and (at_night or gold_skulls_ignore_daytime)",
             "ZF Fairy Gossip Stone": "True",
             "ZF Jabu Gossip Stone": "True",
             "Gossip Stone Fairy": "can_summon_gossip_fairy_without_suns and has_bottle",
@@ -2695,7 +2733,7 @@
             "ZF Hidden Cave Pot 1": "True",
             "ZF Hidden Cave Pot 2": "True",
             "ZF Hidden Cave Pot 3": "True",
-            "ZF GS Hidden Cave": "Hookshot and at_night"
+            "ZF GS Hidden Cave": "Hookshot and (at_night or gold_skulls_ignore_daytime)"
         }
     },
     {
@@ -2758,9 +2796,9 @@
             "LLR Epona Hurdle Wonderitem 1": "can_ride_epona",
             "LLR Epona Hurdle Wonderitem 2": "can_ride_epona",
             "LLR GS Tree": "is_child and can_bonk",
-            "LLR GS Rain Shed": "is_child and at_night",
-            "LLR GS House Window": "can_use(Boomerang) and at_night",
-            "LLR GS Back Wall": "can_use(Boomerang) and at_night"
+            "LLR GS Rain Shed": "is_child and (at_night or gold_skulls_ignore_daytime)",
+            "LLR GS House Window": "can_use(Boomerang) and (at_night or gold_skulls_ignore_daytime)",
+            "LLR GS Back Wall": "can_use(Boomerang) and (at_night or gold_skulls_ignore_daytime)"
         },
         "exits": {
             "Hyrule Field": "True",
@@ -2867,7 +2905,9 @@
         "scene": "Deku Theater",
         "locations": {
             "Deku Theater Skull Mask": "is_child and Skull_Mask",
-            "Deku Theater Mask of Truth": "is_child and Mask_of_Truth"
+            "Deku Theater Mask of Truth": "is_child and Mask_of_Truth",
+            "Deku Theater Skull Mask Hint": "True",
+            "Deku Theater Mask of Truth Hint": "True"
         },
         "exits": {
             "LW Beyond Mido": "True"

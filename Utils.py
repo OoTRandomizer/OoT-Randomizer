@@ -3,10 +3,12 @@ import io
 import json
 import logging
 import os
+import platform
 import re
 import subprocess
 import sys
 import urllib.request
+import venv
 from collections.abc import Sequence
 from itertools import chain, combinations
 from typing import AnyStr, Optional, Any
@@ -35,7 +37,6 @@ def local_path(path: str = '') -> str:
 
     return os.path.join(local_path.cached_path, path)
 
-
 def data_path(path: str = '') -> str:
     if not hasattr(data_path, "cached_path"):
         data_path.cached_path = None
@@ -49,6 +50,9 @@ def data_path(path: str = '') -> str:
     data_path.cached_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "data")
 
     return os.path.join(data_path.cached_path, path)
+
+def lang_path(path: str = '') -> str:
+    return data_path(os.path.join('lang', path))
 
 
 def default_output_path(path: str) -> str:
@@ -199,23 +203,20 @@ def subprocess_args(include_stdout: bool = True) -> dict[str, Any]:
     return ret
 
 
-def run_process(logger: logging.Logger, args: Sequence[str], stdin: Optional[AnyStr] = None) -> None:
+def run_process(logger: logging.Logger, args: Sequence[str], stdin: Optional[AnyStr] = None, *, check: bool = False) -> None:
     process = subprocess.Popen(args, bufsize=1, stdout=subprocess.PIPE, stdin=subprocess.PIPE)
-    filecount = None
     if stdin is not None:
         process.communicate(input=stdin)
     else:
         while True:
             line = process.stdout.readline()
             if line != b'':
-                find_index = line.find(b'files remaining')
-                if find_index > -1:
-                    files = int(line[:find_index].strip())
-                    if filecount is None:
-                        filecount = files
                 logger.info(line.decode('utf-8').strip('\n'))
             else:
                 break
+        process.communicate()
+    if check and process.returncode != 0:
+        raise subprocess.CalledProcessError(process.returncode, args)
 
 
 # https://stackoverflow.com/a/23146126
@@ -238,3 +239,41 @@ def powerset(iterable):
     "powerset([1,2,3]) --> () (1,) (2,) (3,) (1,2) (1,3) (2,3) (1,2,3)"
     s = list(iterable)
     return chain.from_iterable(combinations(s, r) for r in range(len(s)+1))
+
+
+def ensure_venv():
+    if '--no-venv' in sys.argv:
+        return
+
+    VENV_DIR = local_path(".venv")
+    PYTHON_BIN = os.path.abspath(os.path.join(VENV_DIR, "bin", "python3"))
+    if platform.system() == 'Windows':
+        PYTHON_BIN = os.path.abspath(os.path.join(VENV_DIR, "Scripts", "python.exe"))
+    REQUIREMENTS = local_path("requirements.txt")
+    logger = logging.getLogger('')
+
+    # If venv doesn’t exist, create it
+    if not os.path.exists(PYTHON_BIN):
+        logger.info("Creating virtual environment...")
+        venv.create(VENV_DIR, with_pip=True)
+    requirements_not_met = False
+    if '--no-pip' not in sys.argv:
+        # Running pip twice lets us both capture output cleanly to see if
+        # we need to reload the venv and send output live to the user on
+        # actual install.
+        logger.info("Checking for required python dependencies")
+        req_check = subprocess.run([PYTHON_BIN, "-m", "pip", "install", "-r", REQUIREMENTS, "--dry-run"], capture_output=True, text=True)
+        if req_check.returncode != 0:
+            raise ImportError(f"pip failed to verify required dependencies:\n{req_check.stderr}")
+        requirements_not_met = "collecting " in req_check.stdout.lower()
+        if requirements_not_met:
+            logger.info("Installing missing python dependencies")
+            req_check = subprocess.run([PYTHON_BIN, "-m", "pip", "install", "-r", REQUIREMENTS], capture_output=True, text=True)
+            if req_check.returncode != 0:
+                raise ImportError(f"pip failed to install required dependencies:\n{req_check.stderr}")
+
+    # If we're not already running inside the venv, restart with it
+    if sys.executable != PYTHON_BIN or requirements_not_met:
+        logger.info('Re-launching in virtual environment')
+        subprocess.check_call([PYTHON_BIN] + sys.argv + ['--no-pip'])
+        sys.exit(0)

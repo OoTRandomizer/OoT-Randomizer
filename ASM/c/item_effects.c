@@ -3,6 +3,10 @@
 #include "trade_quests.h"
 #include "bg_gate_shutter.h"
 #include "save.h"
+#include "en_kz.h"
+#include "bg_ice_shelter.h"
+#include "en_md.h"
+#include "bg_treemouth.h"
 
 #define rupee_cap ((uint16_t*)0x800F8CEC)
 volatile uint8_t MAX_RUPEES = 0;
@@ -109,7 +113,7 @@ void give_small_key_ring(z64_file_t* save, int16_t dungeon_id, int16_t arg2) {
 
 silver_rupee_data_t silver_rupee_vars[0x16][2] = {
     //Vanilla,                         Master Quest
-    {{-1, 0xFF, 0x00, 0x00, 0x00,  2}, { 5, 0x1F, 0xFF, 0xFF, 0xFF,  2}}, // Dodongos Cavern Staircase. Patched to use switch flag 0x1F
+    {{-1, 0xFF, 0x00, 0x00, 0x00,  2}, { 5, 0x1C, 0xFF, 0xFF, 0xFF,  2}}, // Dodongos Cavern Staircase. Patched to use switch flag 0x1C
     {{ 5, 0x08, 0x00, 0xFF, 0xFF,  3}, {-1, 0xFF, 0x00, 0x00, 0x00,  3}}, // Ice Cavern Spinning Scythe
     {{ 5, 0x09, 0x00, 0x64, 0xFF,  5}, {-1, 0xFF, 0x00, 0x00, 0x00,  5}}, // Ice Cavern Push Block
     {{ 5, 0x1F, 0xFF, 0xFF, 0xFF,  1}, {-1, 0xFF, 0x00, 0x00, 0x00,  1}}, // Bottom of the Well Basement
@@ -234,13 +238,13 @@ void open_gate_and_mask_shop(z64_file_t* save, int16_t arg1, int16_t arg2) {
         // Check if we're in kak and actually open the gate
         if (z64_game.scene_index == 82) {
             // Loop through the actors looking for the gate
-            z64_actor_t* curr = z64_game.actor_list[7].first;
+            z64_actor_t* curr = z64_game.actorLists[7].head;
             while (curr != NULL) {
                 if (curr->actor_id == 0x100) { // Check for BG_GATE_SHUTTER
                     // Set the openingState so it starts to open
                     BgGateShutter* gate = (BgGateShutter*)curr;
                     gate->openingState = 2;
-                    return;
+                    break;
                 }
                 curr = curr->next;
             }
@@ -264,6 +268,124 @@ void trade_quest_upgrade(z64_file_t* save, int16_t item_id, int16_t arg2) {
     SaveFile_SetTradeItemAsOwned(item_id);
 }
 
+extern uint8_t FAST_FOUNTAIN;
+extern EnKzActionFunc OVL_EnKz_SetMovedPos;
+void handle_fast_rutos_letter(z64_file_t* save, int16_t arg1, int16_t arg2) {
+    if (!FAST_FOUNTAIN) {
+        return;
+    }
+
+    bool kz_already_moved = save->event_chk_inf[3] & 0x0008;
+    if (kz_already_moved) {
+        return;
+    }
+    save->event_chk_inf[3] = save->event_chk_inf[3] | 0x0008; // "King Zora Moved Aside"
+
+    // If we're in Zora's Domain, move King Zora directly to avoid a reload of the area.
+    if (z64_game.scene_index == 0x58) {
+        // Loop through the actors looking for King Zora.
+        z64_actor_t* curr = z64_game.actorLists[ACTORCAT_NPC].head;
+        while (curr != NULL) {
+            if (curr->actor_id == 0x0164) { // Check for EN_KZ
+                EnKz* KZ = (EnKz*)curr;
+                EnKzActionFunc EnKz_SetMovedPos = resolve_overlay_addr(&OVL_EnKz_SetMovedPos, 0x0164);
+                EnKz_SetMovedPos(KZ, &z64_game);
+
+                // If we're adult, also move the red ice with him.
+                // The ice should be the only child from the main actor.
+                if (LINK_IS_ADULT && KZ->actor.child != NULL) {
+                    BgIceShelter* red_ice = (BgIceShelter*)KZ->actor.child;
+                    // This is the only difference between the beginning and end placement of King Zora.
+                    red_ice->dyna.actor.pos_world.x -= 97;
+                    // The red ice actor doesn't update its collision on the fly, so update it manually.
+                    Collider_UpdateCylinder(&red_ice->dyna.actor, &red_ice->cylinder1);
+                    Collider_UpdateCylinder(&red_ice->dyna.actor, &red_ice->cylinder2);
+                }
+                break;
+            }
+            curr = curr->next;
+        }
+    }
+}
+
+extern uint8_t FAST_FOREST;
+extern uint8_t DUNGEONS_SHUFFLED;
+extern BgTreemouthActionFunc OVL_BgTreemouth_func_808BC6F8;
+extern EnMdActionFunc OVL_EnMd_Idle;
+extern EnMdActionFunc OVL_EnMd_SetMovedPos;
+// If we're in Kokiri Forest, either move Mido or open Deku Tree mouth according to age.
+void move_mido_or_open_mouth() {
+    if (z64_game.scene_index == 0x55) {
+        if (LINK_IS_ADULT && DUNGEONS_SHUFFLED) {
+            // Loop through the actors looking for Deku tree mouth.
+            z64_actor_t* curr = z64_game.actorLists[ACTORCAT_BG].head;
+            while (curr != NULL) {
+                if (curr->actor_id == 0x003E) { // Check for Bg_Treemouth
+                    BgTreemouth* DekuTreeMouth = (BgTreemouth*)curr;
+                    // Not named yet in decomp but this is the function that opens the mouth in the early game cutscene.
+                    BgTreemouthActionFunc func_808BC6F8 = resolve_overlay_addr(&OVL_BgTreemouth_func_808BC6F8, 0x003E);
+                    func_808BC6F8(DekuTreeMouth, &z64_game);
+                    break;
+                }
+                curr = curr->next;
+            }
+        }
+        else {
+            // Loop through the actors looking for Mido.
+            z64_actor_t* curr = z64_game.actorLists[ACTORCAT_NPC].head;
+            while (curr != NULL) {
+                if (curr->actor_id == 0x016D) { // Check for EN_Md
+                    EnMd* Mido = (EnMd*)curr;
+                    // First put his current action to Idle, else his Block action will still take effect.
+                    Mido->actionFunc = resolve_overlay_addr(&OVL_EnMd_Idle, 0x016D);
+                    // Then move him out.
+                    EnMdActionFunc EnMd_SetMovedPos = resolve_overlay_addr(&OVL_EnMd_SetMovedPos, 0x016D);
+                    EnMd_SetMovedPos(Mido, &z64_game);
+                    break;
+                }
+                curr = curr->next;
+            }
+        }
+    }
+}
+
+void handle_kokiri_sword(z64_file_t* save, int16_t item_id, int16_t arg2) {
+
+    if (!FAST_FOREST) {
+        return;
+    }
+    bool mido_already_moved = save->event_chk_inf[0] & 0x10;
+    if (mido_already_moved) {
+        return;
+    }
+    // If no deku shield in inventory.
+    if (!CHECK_OWNED_EQUIP_ALT(1, 0)) {
+        return;
+    }
+
+    save->event_chk_inf[0] |= 0x10; // "Showed Mido Sword & Shield"
+
+    move_mido_or_open_mouth();
+}
+
+void handle_deku_shield(z64_file_t* save, int16_t item_id, int16_t arg2) {
+
+    if (!FAST_FOREST) {
+        return;
+    }
+    bool mido_already_moved = save->event_chk_inf[0] & 0x10;
+    if (mido_already_moved) {
+        return;
+    }
+    // If no kokiri sword in inventory.
+    if (!CHECK_OWNED_EQUIP_ALT(0, 0)) {
+        return;
+    }
+
+    save->event_chk_inf[0] |= 0x10; // "Showed Mido Sword & Shield"
+
+    move_mido_or_open_mouth();
+}
 void unlock_ocarina_note(z64_file_t* save, int16_t arg1, int16_t arg2) {
     switch(arg1) {
         case 0:

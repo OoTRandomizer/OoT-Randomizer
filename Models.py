@@ -603,6 +603,13 @@ def LoadModel(rom: Rom, model: str, age: int) -> int:
     return scan(zobj, dfBytes) - 8
 
 
+# Reset restricted bytes associated with child/adult models to vanilla
+def reset_player_model_to_vanilla(rom: Rom) -> None:
+    for zone_start, zone_length in restrictiveBytes:
+        original_bytes = rom.original.read_bytes(zone_start, zone_length)
+        rom.write_bytes(zone_start, original_bytes)
+
+
 # Write in the adult model and repoint references to it
 def patch_model_adult(rom: Rom, settings: Settings, log: CosmeticsLog) -> None:
     # Get model filepath

@@ -10,6 +10,9 @@
 #define PAUSE_CURSOR_PAGE_LEFT 10
 #define PAUSE_CURSOR_PAGE_RIGHT 11
 
+#define ITEM_GRID_ROWS 4
+#define ITEM_GRID_COLS 6
+
 extern uint8_t z64_AmmoItems[16];
 extern void* z64_EquippedItemOutlineTex[0x400];
 

@@ -1,7 +1,7 @@
 {
     "name":                  "tournament",
     "gui_name":              "Tournament",
-    "description":           "Hint Distribution for the S8 Tournament: 5 Always, 5 Goal, 3 Barren (ToT), 1 Song (ToT), 2 Dual, 6 Sometimes; House of Skulltula (30/40/50).",
+    "description":           "Hint Distribution for the S9 Tournament: 5 Always, 5 Goal, 2 Barren, 2 Important Check, 1 Song, 2 Dual, 3 Sometimes; House of Skulltula (30/40/50), Light Arrows at Dampe Diary.",
     "add_locations":         [
         { "location": "Sheik in Kakariko", "types": ["always"] },
         { "location": "Deku Theater Skull Mask", "types": ["always"] }
@@ -14,14 +14,6 @@
         { "location": "Sheik in Ice Cavern", "types": ["sometimes"] },
         { "location": "Sheik at Colossus", "types": ["sometimes"] },
         { "location": "GF HBA 1500 Points", "types": ["sometimes"] },
-        { "location": "GC Maze Left Chest", "types": ["sometimes"] },
-        { "location": "GV Chest", "types": ["sometimes"] },
-        { "location": "HC Great Fairy Reward", "types": ["sometimes"] },
-        { "location": "OGC Great Fairy Reward", "types": ["sometimes"] },
-        { "location": "Water Temple River Chest", "types": ["sometimes"] },
-        { "location": "Gerudo Training Ground Maze Path Final Chest", "types": ["sometimes"] },
-        { "location": "Spirit Temple Silver Gauntlets Chest", "types": ["sometimes"] },
-        { "location": "Spirit Temple Mirror Shield Chest", "types": ["sometimes"] },
         { "location": "Graveyard Dampe Race Rewards", "types": ["dual"] },
         { "location": "Graveyard Royal Family Tomb Contents", "types": ["dual"] },
         { "location": "Ice Cavern Final Room", "types": ["dual"] }
@@ -30,40 +22,23 @@
     "remove_items":          [
         { "item": "Zeldas Lullaby", "types": ["goal"] }
     ],
+    "misc_hint_items": {
+        "dampe_diary": "Light Arrows"
+    },
     "dungeons_barren_limit": 1,
     "one_hint_per_goal":     true,
     "named_items_required":  true,
     "vague_named_items":     false,
     "use_default_goals":     true,
     "distribution":          {
-        "trial":           {"order": 1, "weight": 0.0, "fixed": 0, "copies": 0, "remove_stones": [
-            "ToT (Left)",
-            "ToT (Left-Center)",
-            "ToT (Right-Center)",
-            "ToT (Right)"
-        ]},
-        "always":          {"order": 2, "weight": 0.0, "fixed": 5, "copies": 2, "remove_stones": [
-            "ToT (Left)",
-            "ToT (Left-Center)",
-            "ToT (Right-Center)",
-            "ToT (Right)"
-        ]},
-        "goal":            {"order": 3, "weight": 0.0, "fixed": 5, "copies": 2, "remove_stones": [
-            "ToT (Left)",
-            "ToT (Left-Center)",
-            "ToT (Right-Center)",
-            "ToT (Right)"
-        ]},
-        "barren":          {"order": 4, "weight": 0.0, "fixed": 3, "copies": 1, "priority_stones": [
-            "ToT (Left)",
-            "ToT (Left-Center)",
-            "ToT (Right-Center)"
-        ]},
-        "song":            {"order": 5, "weight": 0.0, "fixed": 1, "copies": 1, "priority_stones": [
-            "ToT (Right)"
-        ]},
-        "dual":            {"order": 6, "weight": 0.0, "fixed": 2, "copies": 2},
-        "sometimes":       {"order": 7, "weight": 0.0, "fixed": 6, "copies": 2},
-        "junk":            {"order": 8, "weight": 1.0, "fixed": 0, "copies": 1}
+        "trial":           {"order": 1, "weight": 0.0, "fixed": 0, "copies": 0},
+        "always":          {"order": 2, "weight": 0.0, "fixed": 5, "copies": 2},
+        "goal":            {"order": 3, "weight": 0.0, "fixed": 5, "copies": 2},
+        "barren":          {"order": 4, "weight": 0.0, "fixed": 2, "copies": 2},
+        "important_check": {"order": 5, "weight": 0.0, "fixed": 2, "copies": 2},
+        "song":            {"order": 6, "weight": 0.0, "fixed": 1, "copies": 2},
+        "dual":            {"order": 7, "weight": 0.0, "fixed": 2, "copies": 2},
+        "sometimes":       {"order": 8, "weight": 0.0, "fixed": 3, "copies": 2},
+        "junk":            {"order": 9, "weight": 1.0, "fixed": 0, "copies": 1}
     }
 }

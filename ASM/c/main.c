@@ -34,6 +34,9 @@ void c_init() {
     override_flags_init();
     models_init();
     init_textures();
+#if DEBUG_MODE
+    SKIP_N64_LOGO = 1;
+#endif
 }
 
 void before_game_state_update() {
@@ -46,6 +49,9 @@ void before_game_state_update() {
     manage_music_changes();
     manage_uninvert_yaxis();
     display_misc_messages();
+#if DEBUG_MODE
+    manage_debug_inputs();
+#endif
 }
 
 void after_game_state_update() {
@@ -53,6 +59,7 @@ void after_game_state_update() {
     // Else this will cause graphical and/or lag issues on some emulators when pausing.
     if (R_PAUSE_BG_PRERENDER_STATE != PAUSE_BG_PRERENDER_PROCESS) {
         draw_dungeon_info(&rando_overlay_db);
+        draw_world_info(&rando_overlay_db);
         draw_triforce_count(&rando_overlay_db);
         draw_boss_key(&z64_game, &rando_overlay_db);
         draw_silver_rupee_count(&z64_game, &rando_overlay_db);

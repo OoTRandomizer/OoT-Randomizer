@@ -4,7 +4,7 @@ from collections import defaultdict
 from collections.abc import Iterable, Collection
 from typing import TYPE_CHECKING, Optional, Any
 
-from HintList import BOSS_GOAL_TABLE, REWARD_GOAL_TABLE, get_hint_group, hint_exclusions
+from HintList import BOSS_GOAL_COLOR, get_hint_group, hint_exclusions
 from ItemList import item_table
 from RulesCommon import AccessRule
 from Search import Search, ValidGoals
@@ -148,19 +148,21 @@ class GoalCategory:
 
 def replace_goal_names(worlds: list[World]) -> None:
     for world in worlds:
-        if world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward'):
+        if world.hint_dist_user['boss_goal_names'] and world.settings.shuffle_dungeon_rewards in ('vanilla', 'reward'):
             bosses = [
                 location
                 for location in world.get_filled_locations()
                 if location.type == 'Boss'
-                and (location.name != 'ToT Reward from Rauru' or not world.settings.skip_reward_from_rauru)
+                and (location.name != 'ToT Reward from Rauru' or world.settings.skip_reward_from_rauru == 'not_free')
             ]
             for category in world.goal_categories.values():
                 for goal in category.goals:
                     if isinstance(goal.hint_text, dict):
                         for boss in bosses:
                             if boss.item.name == goal.hint_text['replace']:
-                                flavor_text, clear_text, color = BOSS_GOAL_TABLE[boss.name]
+                                boss_table = world.language.BOSS_GOAL_TABLE[boss.name]
+                                flavor_text, clear_text = boss_table["vague"], boss_table["clear"]
+                                color = BOSS_GOAL_COLOR[boss.name]
                                 if world.settings.clearer_hints:
                                     goal.hint_text = clear_text
                                 else:
@@ -171,7 +173,8 @@ def replace_goal_names(worlds: list[World]) -> None:
             for category in world.goal_categories.values():
                 for goal in category.goals:
                     if isinstance(goal.hint_text, dict):
-                        flavor_text, clear_text = REWARD_GOAL_TABLE[goal.hint_text['replace']]
+                        reward_table = world.language.REWARD_GOAL_TABLE[goal.hint_text['replace']]
+                        flavor_text, clear_text = reward_table["vague"], reward_table["clear"]
                         if world.settings.clearer_hints:
                             goal.hint_text = clear_text
                         else:
@@ -247,6 +250,13 @@ def update_goal_items(spoiler: Spoiler) -> None:
     required_locations.update(identified_locations)
     woth_locations = list(required_locations['way of the hero'])
     del required_locations['way of the hero']
+
+    # Update category and goal weights that have required locations
+    for category_name, goals in required_locations.items():
+        for goal_name, goal_worlds in goals.items():
+            for world_id, locations in goal_worlds.items():
+                worlds[world_id].goal_categories[category_name].weight = 1
+                worlds[world_id].goal_categories[category_name].get_goal(goal_name).weight = 1
 
     # Update WOTH items
     woth_locations_dict = {}
@@ -362,8 +372,7 @@ def search_goals(categories: dict[str, GoalCategory], reachable_goals: ValidGoal
                                     else:
                                         location_weights = (location, 1, 1)
                                     required_locations[category.name][goal.name][world_id].append(location_weights)
-                                goal.weight = 1
-                                category.weight = 1
+
                                 # Locations added to goal exclusion for future categories
                                 # Main use is to split goals between before/after rainbow bridge
                                 # Requires goal categories to be sorted by priority!

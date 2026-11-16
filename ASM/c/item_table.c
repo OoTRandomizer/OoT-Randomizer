@@ -53,7 +53,7 @@ item_row_t item_table[GI_RANDO_MAX] = {
     [GI_MAGIC_BEAN]                                             = ITEM_ROW(0x53,       BROWN_CHEST, 0x10, -1, 0x0048, 0x00F3, 0x3E, no_upgrade, no_effect, -1, -1, NULL), // Magic Bean
     [GI_MASK_SKULL]                                             = ITEM_ROW(0x53,      GILDED_CHEST, 0x25, -1, 0x0010, 0x0136, 0x4F, no_upgrade, trade_quest_upgrade, 0x25, -1, NULL), // Skull Mask
     [GI_MASK_SPOOKY]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x26, -1, 0x0011, 0x0135, 0x32, no_upgrade, trade_quest_upgrade, 0x26, -1, NULL), // Spooky Mask
-    [GI_CHICKEN]                                                = ITEM_ROW(0x53,      GILDED_CHEST, 0x22, -1, 0x000B, 0x0109, 0x44, no_upgrade, trade_quest_upgrade, 0x22, -1, NULL), // Chicken
+    [GI_CHICKEN]                                                = ITEM_ROW(0x53,      GILDED_CHEST, 0x22, -1, 0x9097, 0x0109, 0x44, no_upgrade, trade_quest_upgrade, 0x22, -1, NULL), // Chicken
     [GI_MASK_KEATON]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x24, -1, 0x0012, 0x0134, 0x31, no_upgrade, trade_quest_upgrade, 0x24, -1, NULL), // Keaton Mask
     [GI_MASK_BUNNY_HOOD]                                        = ITEM_ROW(0x53,      GILDED_CHEST, 0x27, -1, 0x0013, 0x0137, 0x50, no_upgrade, trade_quest_upgrade, 0x27, -1, NULL), // Bunny Hood
     [GI_MASK_TRUTH]                                             = ITEM_ROW(0x53,      GILDED_CHEST, 0x2B, -1, 0x0017, 0x0138, 0x51, no_upgrade, trade_quest_upgrade, 0x2B, -1, NULL), // Mask of Truth
@@ -68,9 +68,9 @@ item_row_t item_table[GI_RANDO_MAX] = {
     [GI_EYE_DROPS]                                              = ITEM_ROW(0x53,      GILDED_CHEST, 0x36, -1, 0x000E, 0x013F, 0x52, no_upgrade, trade_quest_upgrade, 0x36, -1, NULL), // Eye Drops
     [GI_CLAIM_CHECK]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x37, -1, 0x000A, 0x0142, 0x55, no_upgrade, trade_quest_upgrade, 0x37, -1, NULL), // Claim Check
 
-    [GI_SWORD_KOKIRI]                                           = ITEM_ROW(0x53,      GILDED_CHEST, 0x3B, -1, 0x00A4, 0x018D, 0x74, no_upgrade, no_effect, -1, -1, NULL), // Kokiri Sword
+    [GI_SWORD_KOKIRI]                                           = ITEM_ROW(0x53,      GILDED_CHEST, 0x3B, -1, 0x00A4, 0x018D, 0x74, no_upgrade, handle_kokiri_sword, -1, -1, resolve_text_kokiri_sword), // Kokiri Sword
     [GI_SWORD_KNIFE]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x3D, -1, 0x004B, 0x00F8, 0x43, no_upgrade, no_effect, -1, -1, NULL), // Giant's Knife
-    [GI_SHIELD_DEKU]                                            = ITEM_ROW(0x53,       BROWN_CHEST, 0x3E, -1, 0x90AD, 0x00CB, 0x1D, no_upgrade, no_effect, -1, -1, NULL), // Deku Shield
+    [GI_SHIELD_DEKU]                                            = ITEM_ROW(0x53,       BROWN_CHEST, 0x3E, -1, 0x90AD, 0x00CB, 0x1D, no_upgrade, handle_deku_shield, -1, -1, resolve_text_deku_shield), // Deku Shield
     [GI_SHIELD_HYLIAN]                                          = ITEM_ROW(0x53,       BROWN_CHEST, 0x3F, -1, 0x90AE, 0x00DC, 0x2C, no_upgrade, no_effect, -1, -1, NULL), // Hylian Shield
     [GI_SHIELD_MIRROR]                                          = ITEM_ROW(0x53,      GILDED_CHEST, 0x40, -1, 0x004E, 0x00EE, 0x3A, no_upgrade, no_effect, -1, -1, NULL), // Mirror Shield
     [GI_TUNIC_GORON]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x42, -1, 0x90AF, 0x00F2, 0x3C, no_upgrade, no_effect, -1, -1, NULL), // Goron Tunic
@@ -149,12 +149,12 @@ item_row_t item_table[GI_RANDO_MAX] = {
     [GI_RUPEE_RED_LOSE]                                         = ITEM_ROW(0x4D,       BROWN_CHEST, 0x86, -1, 0x00F6, 0x017F, 0x6F, no_upgrade, no_effect, -1, -1, NULL), // Red Rupee (Chest Game)
     [GI_RUPEE_PURPLE_LOSE]                                      = ITEM_ROW(0x4D,       BROWN_CHEST, 0x87, -1, 0x00F7, 0x017F, 0x71, no_upgrade, no_effect, -1, -1, NULL), // Purple Rupee (Chest Game)
     [GI_HEART_PIECE_WIN]                                        = ITEM_ROW(0x53, HEART_CHEST_SMALL, 0x7A, -1, 0x00FA, 0x00BD, 0x14, health_upgrade_cap, full_heal, -1, -1, NULL), // Piece of Heart (Chest Game)
-    [GI_DEKU_STICK_UPGRADE_20]                                  = ITEM_ROW(0x53,       BROWN_CHEST, 0x98, -1, 0x0090, 0x00C7, 0x1B, no_upgrade, no_effect, -1, -1, NULL), // Deku Stick Upgrade (20)
-    [GI_DEKU_STICK_UPGRADE_30]                                  = ITEM_ROW(0x53,       BROWN_CHEST, 0x99, -1, 0x0091, 0x00C7, 0x1B, no_upgrade, no_effect, -1, -1, NULL), // Deku Stick Upgrade (30)
-    [GI_DEKU_NUT_UPGRADE_30]                                    = ITEM_ROW(0x53,       BROWN_CHEST, 0x9A, -1, 0x00A7, 0x00BB, 0x12, no_upgrade, no_effect, -1, -1, NULL), // Deku Nut Upgrade (30)
-    [GI_DEKU_NUT_UPGRADE_40]                                    = ITEM_ROW(0x53,       BROWN_CHEST, 0x9B, -1, 0x00A8, 0x00BB, 0x12, no_upgrade, no_effect, -1, -1, NULL), // Deku Nut Upgrade (40)
+    [GI_DEKU_STICK_UPGRADE_20]                                  = ITEM_ROW(0x53,       BROWN_CHEST, 0x98, -1, 0x0090, 0x00C7, 0xA1, no_upgrade, no_effect, -1, -1, NULL), // Deku Stick Upgrade (20)
+    [GI_DEKU_STICK_UPGRADE_30]                                  = ITEM_ROW(0x53,       BROWN_CHEST, 0x99, -1, 0x0091, 0x00C7, 0xA1, no_upgrade, no_effect, -1, -1, NULL), // Deku Stick Upgrade (30)
+    [GI_DEKU_NUT_UPGRADE_30]                                    = ITEM_ROW(0x53,       BROWN_CHEST, 0x9A, -1, 0x00A7, 0x00BB, 0xA2, no_upgrade, no_effect, -1, -1, NULL), // Deku Nut Upgrade (30)
+    [GI_DEKU_NUT_UPGRADE_40]                                    = ITEM_ROW(0x53,       BROWN_CHEST, 0x9B, -1, 0x00A8, 0x00BB, 0xA2, no_upgrade, no_effect, -1, -1, NULL), // Deku Nut Upgrade (40)
     [GI_BULLET_BAG_50]                                          = ITEM_ROW(0x53,      GILDED_CHEST, 0x49, -1, 0x006C, 0x017B, 0x73, no_upgrade, no_effect, -1, -1, NULL), // Bullet Bag (50)
-    [GI_ICE_TRAP]                                               = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9002, 0x0000, 0x00, no_upgrade, ice_trap_effect, -1, -1, NULL), // Ice Trap
+    [GI_ICE_TRAP]                                               = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9002, 0x0000, 0xA4, no_upgrade, ice_trap_effect, -1, -1, NULL), // Ice Trap
 
     [GI_CAPPED_PIECE_OF_HEART]                                  = ITEM_ROW(0x3E, HEART_CHEST_SMALL, 0x41, -1, 0x90C2, 0x00BD, 0x14, no_upgrade, full_heal, -1, -1, NULL), // Capped Piece of Heart
     [GI_CAPPED_HEART_CONTAINER]                                 = ITEM_ROW(0x3E, HEART_CHEST_SMALL, 0x41, -1, 0x90C6, 0x00BD, 0x13, no_upgrade, full_heal, -1, -1, NULL), // Capped Heart Container
@@ -167,8 +167,8 @@ item_row_t item_table[GI_RANDO_MAX] = {
     [GI_PROGRESSIVE_SLINGSHOT]                                  = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x00E7, 0x33, slingshot_upgrade, no_effect, -1, -1, NULL), // Progressive Slingshot
     [GI_PROGRESSIVE_WALLET]                                     = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x00D1, 0x22, wallet_upgrade,    no_effect, -1, -1, NULL), // Progressive Wallet
     [GI_PROGRESSIVE_SCALE]                                      = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x00DB, 0x2A, scale_upgrade,     no_effect, -1, -1, NULL), // Progressive Scale
-    [GI_PROGRESSIVE_NUT_CAPACITY]                               = ITEM_ROW(  -1,       BROWN_CHEST,   -1, -1,     -1, 0x00BB, 0x12, nut_upgrade,       no_effect, -1, -1, NULL), // Progressive Nut Capacity
-    [GI_PROGRESSIVE_STICK_CAPACITY]                             = ITEM_ROW(  -1,       BROWN_CHEST,   -1, -1,     -1, 0x00C7, 0x1B, stick_upgrade,     no_effect, -1, -1, NULL), // Progressive Stick Capacity
+    [GI_PROGRESSIVE_NUT_CAPACITY]                               = ITEM_ROW(  -1,       BROWN_CHEST,   -1, -1,     -1, 0x00BB, 0xA2, nut_upgrade,       no_effect, -1, -1, NULL), // Progressive Nut Capacity
+    [GI_PROGRESSIVE_STICK_CAPACITY]                             = ITEM_ROW(  -1,       BROWN_CHEST,   -1, -1,     -1, 0x00C7, 0xA1, stick_upgrade,     no_effect, -1, -1, NULL), // Progressive Stick Capacity
     [GI_PROGRESSIVE_BOMBCHUS]                                   = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x00D9, 0x28, bombchu_upgrade,   no_effect, -1, -1, NULL), // Progressive Bombchus
     [GI_PROGRESSIVE_MAGIC_METER]                                = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x00CD, 0x1E, magic_upgrade,     no_effect, -1, -1, NULL), // Progressive Magic Meter
     [GI_PROGRESSIVE_OCARINA]                                    = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x010E, 0x46, ocarina_upgrade,   no_effect, -1, -1, NULL), // Progressive Ocarina
@@ -224,7 +224,7 @@ item_row_t item_table[GI_RANDO_MAX] = {
 
     [GI_DOUBLE_DEFENSE]                                         = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00E9, 0x0194, 0x13, no_upgrade, give_defense,      -1, -1, NULL), // Double Defense
     [GI_MAGIC_METER]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00E4, 0x01B4, 0xA0, no_upgrade, give_magic,        -1, -1, NULL), // Magic Meter
-    [GI_DOUBLE_MAGIC]                                           = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00E8, 0x01B4, 0xA0, no_upgrade, give_double_magic, -1, -1, NULL), // Double Magic
+    [GI_DOUBLE_MAGIC]                                           = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00E8, 0x01B5, 0xA3, no_upgrade, give_double_magic, -1, -1, NULL), // Double Magic
 
     [GI_MINUET_OF_FOREST]                                       = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9091, 0x0196, 0x78, no_upgrade, give_quest_item,  6, -1, NULL), // Minuet of Forest
     [GI_BOLERO_OF_FIRE]                                         = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9092, 0x0196, 0x79, no_upgrade, give_quest_item,  7, -1, NULL), // Bolero of Fire
@@ -358,6 +358,8 @@ item_row_t item_table[GI_RANDO_MAX] = {
     [GI_WATER_MEDALLION]                                        = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x003D, 0x01B1, 0x98, no_upgrade, give_quest_item,  2, -1, NULL), // Water Medallion
     [GI_SHADOW_MEDALLION]                                       = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x0041, 0x01B2, 0x99, no_upgrade, give_quest_item,  4, -1, NULL), // Shadow Medallion
     [GI_SPIRIT_MEDALLION]                                       = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x003F, 0x01B3, 0x9A, no_upgrade, give_quest_item,  3, -1, NULL), // Spirit Medallion
+
+    [GI_FAST_LETTER_BOTTLE]                                     = ITEM_ROW(0x53,      GILDED_CHEST, 0x14, -1, 0x90B6, 0x010B, 0x45, no_upgrade, handle_fast_rutos_letter, -1, -1, NULL), // Letter Bottle with fast fountain enabled
 };
 
 /*  Determine which message to display based on the number of silver rupees collected.
@@ -479,4 +481,35 @@ uint16_t resolve_upgrades(override_t override) {
 
 void call_effect_function(item_row_t* item_row) {
     item_row->effect(&z64_file, item_row->effect_arg1, item_row->effect_arg2);
+}
+
+extern uint8_t FAST_FOREST;
+uint16_t resolve_text_kokiri_sword(item_row_t* item_row, bool is_outgoing) {
+    if (!FAST_FOREST) {
+        return item_row->text_id;
+    }
+    bool mido_already_moved = z64_file.event_chk_inf[0] & 0x10;
+    if (mido_already_moved) {
+        return item_row->text_id;
+    }
+    // If Deku shield is in inventory, return alternate textbox to inform player that deku tree was opened automatically.
+    if (CHECK_OWNED_EQUIP_ALT(1, 0)) {
+        return 0x045E;
+    }
+    return item_row->text_id;
+}
+
+uint16_t resolve_text_deku_shield(item_row_t* item_row, bool is_outgoing) {
+    if (!FAST_FOREST) {
+        return item_row->text_id;
+    }
+    bool mido_already_moved = z64_file.event_chk_inf[0] & 0x10;
+    if (mido_already_moved) {
+        return item_row->text_id;
+    }
+    // If Kokiri sword is in inventory, return alternate textbox to inform player that deku tree was opened automatically.
+    if (CHECK_OWNED_EQUIP_ALT(0, 0)) {
+        return 0x045F;
+    }
+    return item_row->text_id;
 }

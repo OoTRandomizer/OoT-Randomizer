@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # This script is called by GitHub Actions, see .github/workflows/python.yml
 # To fix code style errors, run: python3 ./CI.py --fix --no_unit_tests
 
@@ -15,10 +17,10 @@ from Main import resolve_settings
 from Patches import get_override_table, get_override_table_bytes
 from Rom import Rom
 import Unittest as Tests
-from Messages import ITEM_MESSAGES, KEYSANITY_MESSAGES, MISC_MESSAGES
+from Language import Language, ItemMessage
 from SettingsList import SettingInfos, logic_tricks, validate_settings
 import Unittest as Tests
-from Utils import data_path
+from Utils import data_path, ensure_venv
 
 
 def error(msg: str, can_fix: bool) -> None:
@@ -95,6 +97,7 @@ def check_presets_formatting(fix_errors: bool = False) -> None:
 
 def check_hell_mode_tricks(fix_errors: bool = False) -> None:
     # Check for tricks missing from Hell Mode preset.
+    # Not checking for advanced logic tricks since hellmode is still glitchless logic
     with open(data_path('presets_default.json'), encoding='utf-8') as f:
         presets = json.load(f)
 
@@ -113,12 +116,15 @@ def check_hell_mode_tricks(fix_errors: bool = False) -> None:
             print(file=file)
 
 
-def check_preset_spoilers(fix_errors: bool = False) -> None:
-    # Check to make sure spoiler logs are enabled for all presets.
+def check_preset_settings(fix_errors: bool = False) -> None:
+    # Check to make sure password lock is disabled and spoiler logs are enabled for all presets.
     with open(data_path('presets_default.json'), encoding='utf-8') as f:
         presets = json.load(f)
 
     for preset_name, preset in presets.items():
+        if preset['password_lock']:
+            error(f'{preset_name} preset is password-locked', True)
+            preset['password_lock'] = False
         if not preset['create_spoiler']:
             error(f'{preset_name} preset does not create spoiler logs', True)
             preset['create_spoiler'] = True
@@ -133,16 +139,16 @@ def check_preset_spoilers(fix_errors: bool = False) -> None:
 # This is not a perfect check because it doesn't account for everything that gets manually done in Patches.py
 # For that, we perform additional checking at patch time
 def check_message_duplicates() -> None:
-    def check_for_duplicates(new_item_messages: list[tuple[int, str]]) -> None:
+    def check_for_duplicates(new_item_messages: list[ItemMessage]) -> None:
         for i in range(0, len(new_item_messages)):
             for j in range(i, len(new_item_messages)):
                 if i != j:
-                    message_id1, message1 = new_item_messages[i]
-                    message_id2, message2 = new_item_messages[j]
+                    message_id1, message1 = new_item_messages[i]["id"], new_item_messages[i]["text"]
+                    message_id2, message2 = new_item_messages[j]["id"], new_item_messages[j]["text"]
                     if message_id1 == message_id2:
                         error(f'Duplicate MessageID found: {hex(message_id1)}, {message1}, {message2}', False)
-
-    messages = ITEM_MESSAGES + KEYSANITY_MESSAGES + MISC_MESSAGES
+    lang = Language("English")
+    messages = lang.ITEM_MESSAGES + lang.IMPORTANT_ITEM_MESSAGES + lang.MISC_MESSAGES
     check_for_duplicates(messages)
 
 
@@ -248,7 +254,7 @@ def run_ci_checks() -> NoReturn:
     parser.add_argument('--only_unit_tests', help="Only run unit tests", action='store_true')
     parser.add_argument('--release', help="Include checks for release branch", action='store_true')
     parser.add_argument('--fix', help='Automatically apply fixes where possible', action='store_true')
-    args = parser.parse_args()
+    args, unknown = parser.parse_known_args()
 
     if not args.no_unit_tests:
         run_unit_tests()
@@ -258,7 +264,7 @@ def run_ci_checks() -> NoReturn:
         check_code_style(args.fix)
         check_presets_formatting(args.fix)
         check_table_sizes()
-        check_preset_spoilers(args.fix)
+        check_preset_settings(args.fix)
         check_message_duplicates()
 
     exit_ci(args.fix)
@@ -283,7 +289,7 @@ def exit_ci(fix_errors: bool = False) -> NoReturn:
                     which_errors = 'some of these errors'
                 else:
                     which_errors = 'these errors'
-                print(f'Run `CI.py --fix --no_unit_tests{release_arg}` to automatically fix {which_errors}.', file=sys.stderr)
+                print(f'Run `./CI.py --fix --no_unit_tests{release_arg}` to automatically fix {which_errors}.', file=sys.stderr)
             sys.exit(1)
     else:
         print(f'CI checks successful.')
@@ -291,4 +297,5 @@ def exit_ci(fix_errors: bool = False) -> NoReturn:
 
 
 if __name__ == '__main__':
+    ensure_venv()
     run_ci_checks()

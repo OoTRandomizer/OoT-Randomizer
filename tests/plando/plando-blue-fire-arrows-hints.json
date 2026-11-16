@@ -1,6 +1,7 @@
 {
     "settings": {
-        "shuffle_mapcompass": "startwith",
+        "shuffle_map":        "startwith",
+        "shuffle_compass":    "startwith",
         "blue_fire_arrows":   true,
         "zora_fountain":      "open",
         "hint_dist":          "tournament"

@@ -2,28 +2,95 @@
     {
         "region_name": "Bottom of the Well",
         "dungeon": "Bottom of the Well",
+        "exits": {
+            "Kakariko Village": "True",
+            "Bottom of the Well Perimeter": "is_child or can_weirdshot",
+            "Farores Wind Warp": "can_use(Farores_Wind)"
+        }
+    },
+    # Going forward, adult will be assumed to have a hookshot and the ability to weirdshot
+    {
+        "region_name": "Bottom of the Well Perimeter",
+        "dungeon": "Bottom of the Well",
         "locations": {
             "Bottom of the Well MQ Compass Chest": "
-                Kokiri_Sword or (Sticks and logic_child_deadhand)",
-            "Bottom of the Well MQ Map Chest": "
-                can_play(Zeldas_Lullaby) or has_explosives",
-            "Bottom of the Well MQ Lens of Truth Chest": "
-                has_explosives and
-                (Small_Key_Bottom_of_the_Well, 2)",
+                has_soul(Dead_hand) and (is_adult or Kokiri_Sword or (Sticks and logic_child_deadhand) or can_use(Megaton_Hammer))",
             "Bottom of the Well MQ Dead Hand Freestanding Key": "
-                has_explosives or (logic_botw_mq_dead_hand_key and Boomerang)",
-            "Bottom of the Well MQ East Inner Room Freestanding Key": "
-                can_play(Zeldas_Lullaby) or has_explosives",
-            "Bottom of the Well MQ GS Basement": "can_child_attack",
-            "Bottom of the Well MQ GS West Inner Room": "
-                can_child_attack and
-                (can_play(Zeldas_Lullaby) or has_explosives)",
+                has_explosives or (logic_botw_mq_dead_hand_key and can_use(Boomerang))",
+            "Bottom of the Well MQ Bombable Recovery Heart 1": "has_explosives",
+            "Bottom of the Well MQ Bombable Recovery Heart 2": "has_explosives",
+            "Bottom of the Well MQ Basement Recovery Heart 1": "True",
+            "Bottom of the Well MQ Basement Recovery Heart 2": "True",
+            "Bottom of the Well MQ Basement Recovery Heart 3": "True",
+            # You can touch these recovery hearts without opening the coffin by just walking on top of the coffin
+            "Bottom of the Well MQ Coffin Recovery Heart 1": "(Small_Key_Bottom_of_the_Well, 2)",
+            "Bottom of the Well MQ Coffin Recovery Heart 2": "(Small_Key_Bottom_of_the_Well, 2)",
+            "Bottom of the Well MQ Main Area Left Slingshot Wonderitem 1": "can_use(Slingshot)",
+            "Bottom of the Well MQ Main Area Left Slingshot Wonderitem 2": "can_use(Slingshot)",
+            "Bottom of the Well MQ Main Area Left Slingshot Wonderitem 3": "can_use(Slingshot)",
+            "Bottom of the Well MQ Main Area Left Slingshot Wonderitem 4": "can_use(Slingshot)",
+            "Bottom of the Well MQ Main Area Right Slingshot Wonderitem 1": "can_use(Slingshot)",
+            "Bottom of the Well MQ Main Area Right Slingshot Wonderitem 2": "can_use(Slingshot)",
+            "Bottom of the Well MQ Main Area Right Slingshot Wonderitem 3": "can_use(Slingshot)",
+            "Bottom of the Well MQ Main Area Right Slingshot Wonderitem 4": "can_use(Slingshot)",
+            # gdv gets this but it's dumb
+            "Bottom of the Well MQ Perimeter Behind Gate Pot": "
+                (can_blast_or_smash and
+                    (can_use(Slingshot) or can_use(Bow)
+                        or (can_gdv and can_isg))
+                )
+                or can_use(Boomerang)",
+            "Bottom of the Well MQ GS Basement": "can_child_attack or is_adult",
             "Bottom of the Well MQ GS Coffin Room": "
-                can_child_attack and
-                (Small_Key_Bottom_of_the_Well, 2)"
+                (Small_Key_Bottom_of_the_Well, 2) and (can_child_attack or is_adult)",
+            "Wall Fairy": "has_bottle and can_use(Slingshot)",
+            # This is no longer redundant because Adult has access, and you can use a boomerang or just hit it through the wall
+            "Fairy Pot": "has_bottle and (
+                (can_blast_or_smash and
+                    (can_use(Slingshot) or can_use(Bow)
+                        or (can_gdv and can_isg))
+                )
+                or can_use(Boomerang)
+                or Kokiri_Sword or Sticks or is_adult
+                )"
         },
         "exits": {
-            "Kakariko Village": "True"
+            "Bottom of the Well Middle": "
+                can_play(Zeldas_Lullaby) or can_blast_or_smash or is_adult"
+        },
+        "events": {
+            "Bottom of the Well West Switch Pressed": "(can_blast_or_smash) or can_play(Zeldas_Lullaby) or is_adult"
+        }
+    },
+    {
+        "region_name": "Bottom of the Well Middle",
+        "dungeon": "Bottom of the Well",
+        "locations": {
+            "Bottom of the Well MQ Map Chest": "True",
+            "Bottom of the Well MQ East Inner Room Freestanding Key": "True",
+            "Bottom of the Well MQ Lens of Truth Chest": "
+                ((Small_Key_Bottom_of_the_Well, 2) and has_explosives and is_child)
+                or (is_adult and can_mega)",
+            "Bottom of the Well MQ Center Room Right Pot 1": "True",
+            "Bottom of the Well MQ Center Room Right Pot 2": "True",
+            "Bottom of the Well MQ Center Room Right Pot 3": "True",
+            "Bottom of the Well MQ East Inner Room Pot 1": "True",
+            "Bottom of the Well MQ East Inner Room Pot 2": "True",
+            "Bottom of the Well MQ East Inner Room Pot 3": "True",
+            "Bottom of the Well MQ East Inner Room Slingshot Wonderitem 1": "can_use(Slingshot)",
+            "Bottom of the Well MQ East Inner Room Slingshot Wonderitem 2": "can_use(Slingshot)",
+            "Bottom of the Well MQ East Inner Room Slingshot Wonderitem 3": "can_use(Slingshot)",
+            "Bottom of the Well MQ East Inner Room Slingshot Wonderitem 4": "can_use(Slingshot)"
+        },
+        "exits": {
+            "Bottom of the Well West Inner Room": "Bottom_of_the_Well_West_Switch_Pressed"
+        }
+    },
+    {
+        "region_name": "Bottom of the Well West Inner Room",
+        "dungeon": "Bottom of the Well",
+        "locations": {
+            "Bottom of the Well MQ GS West Inner Room": "can_child_attack or is_adult"
         }
     }
 ]

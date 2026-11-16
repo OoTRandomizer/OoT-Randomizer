@@ -352,10 +352,11 @@ typedef enum GetItemID {
     /* 0x012E */ GI_SHADOW_MEDALLION,
     /* 0x012F */ GI_SPIRIT_MEDALLION,
 
-    /* 0x0130 */ GI_RANDO_MAX
+    /* 0x0130 */ GI_FAST_LETTER_BOTTLE, // Letter Bottle with fast fountain enabled
+    /* 0x0131 */ GI_RANDO_MAX
 } GetItemId;
 
-_Static_assert(GI_RANDO_MAX == 0x0130, "Remember to update the comment and the assert for the value of GI_RANDO_MAX when adding new items");
+_Static_assert(GI_RANDO_MAX == 0x0131, "Remember to update the comment and the assert for the value of GI_RANDO_MAX when adding new items");
 
 typedef enum {
     /*  0 */ BROWN_CHEST,            // big default chest
@@ -408,5 +409,7 @@ uint16_t resolve_text_silver_rupee_pouches(item_row_t* item_row, bool is_outgoin
 uint16_t resolve_text_small_keys(item_row_t* item_row, bool is_outgoing);
 uint16_t resolve_text_small_keys_cmg(item_row_t* item_row, bool is_outgoing);
 uint16_t resolve_text_keyrings(item_row_t* item_row, bool is_outgoing);
+uint16_t resolve_text_kokiri_sword(item_row_t* item_row, bool is_outgoing);
+uint16_t resolve_text_deku_shield(item_row_t* item_row, bool is_outgoing);
 
 #endif

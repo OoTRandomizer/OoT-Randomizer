@@ -6,7 +6,8 @@
 #include "shop.h"
 
 extern uint32_t FREE_BOMBCHU_DROPS;
-
+extern uint8_t SHUFFLE_CHEST_GAME;
+extern uint8_t TCG_REQUIRES_LENS;
 
 // The layout of this struct is part of the definition of the co-op context.
 // If you change it, bump the co-op context version in coop_state.asm and update Notes/coop-ctx.md
@@ -149,12 +150,15 @@ uint16_t seeds_to_rupee(z64_file_t* save, override_t override) {
     return ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->bullet_bag : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].slingshot) ? override.value.base.item_id : GI_RUPEE_BLUE; // Blue Rupee
 }
 
+extern uint8_t FAST_FOUNTAIN;
 uint16_t letter_to_bottle(z64_file_t* save, override_t override) {
     if (save->event_chk_inf[3] & 0x0008) // "King Zora Moved Aside"
         return GI_REDUNDANT_LETTER_BOTTLE; // Redundant Letter Bottle
     if (save->items[Z64_SLOT_BOTTLE_1] == 0x1B || save->items[Z64_SLOT_BOTTLE_2] == 0x1B
      || save->items[Z64_SLOT_BOTTLE_3] == 0x1B || save->items[Z64_SLOT_BOTTLE_4] == 0x1B)
         return GI_REDUNDANT_LETTER_BOTTLE; // Redundant Letter Bottle
+    if (FAST_FOUNTAIN)
+        return GI_FAST_LETTER_BOTTLE;
     return override.value.base.item_id;
 }
 
@@ -189,6 +193,15 @@ uint16_t bombchus_to_bag(z64_file_t* save, override_t override) {
 
 uint16_t upgrade_key_model(z64_file_t* save, override_t override) {
     uint16_t item_id = override.value.base.item_id;
+    // Force treasure chest game loss if the setting to require Lens of Truth
+    // is enabled. Room index is checked to avoid overriding the salesman's item.
+    if (item_id == GI_DOOR_KEY && !SHUFFLE_CHEST_GAME && TCG_REQUIRES_LENS
+        && override.value.base.player == PLAYER_ID
+        && (save->items[Z64_SLOT_LENS] != Z64_ITEM_LENS || !save->magic_acquired)
+        && z64_game.room_index != 0
+    ) {
+        return GI_RUPEE_GREEN_LOSE; // Green Rupee (Chest Game)
+    }
     if (CUSTOM_KEY_MODELS) {
         if (item_id == GI_DOOR_KEY) {
             // Treasure Chest Game Key

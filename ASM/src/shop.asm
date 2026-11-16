@@ -277,7 +277,7 @@ set_mask_text_hook:
     sw      v1, 0x14(sp)
     sw      ra, 0x18(sp)
 
-    lh      v0, CFG_CHILD_TRADE_SHUFFLE
+    lbu     v0, CFG_CHILD_TRADE_SHUFFLE
     beqz    v0, @@return_mask_text
     nop
     jal     SaveFile_TradeItemIsOwned
@@ -300,7 +300,7 @@ set_mask_sold_out:
     sw      a1, 0x14(sp)
     sw      ra, 0x1C(sp)
 
-    lh      v0, CFG_CHILD_TRADE_SHUFFLE
+    lbu     v0, CFG_CHILD_TRADE_SHUFFLE
     beqz    v0, @@return_mask_so
     nop
 

@@ -1,11 +1,16 @@
-CC = mips64-gcc
-LD = mips64-ld
-OBJDUMP = mips64-objdump
-OBJCOPY = mips64-objcopy
+MIPS_BINUTILS_PREFIX ?= mips64-
+CC = $(MIPS_BINUTILS_PREFIX)gcc
+LD = $(MIPS_BINUTILS_PREFIX)ld
+OBJDUMP = $(MIPS_BINUTILS_PREFIX)objdump
+OBJCOPY = $(MIPS_BINUTILS_PREFIX)objcopy
 
 CFLAGS = -O1 -G0 -fno-reorder-blocks -march=vr4300 -mtune=vr4300 -mabi=32 -mno-gpopt -mdivide-breaks \
 	-mexplicit-relocs
 CPPFLAGS = -DF3DEX_GBI_2
+
+ifdef DEBUG_MODE
+  CFLAGS += -DDEBUG_MODE=1
+endif
 
 OUTDIR := build
 OBJDIR := build/bin
@@ -21,7 +26,7 @@ RESOURCES = $(patsubst $(RESOURCEDIR)/%.bin,$(OBJDIR)/%_bin.o,$(sort $(wildcard 
 
 .PHONY: all clean bundle symbols
 
-all: clean bundle symbols
+all: bundle symbols
 
 $(OBJDIR)/%.o: %.c 
 	$(CC) -o $@ -c $< $(CFLAGS) $(CPPFLAGS)
@@ -34,7 +39,7 @@ $(OBJDIR):
 	mkdir -p $@
 
 $(OBJDIR)/%_bin.o: $(RESOURCEDIR)/%.bin
-	$(OBJCOPY) -I binary -O elf32-bigmips --rename-section .data=.rodata,alloc,load,readonly,data,contents $< $@
+	$(OBJCOPY) -I binary -O elf32-bigmips --set-section-alignment .data=8 --rename-section .data=.rodata,alloc,load,readonly,data,contents $< $@
 	$(OBJCOPY) --redefine-sym _binary_resources_$*_bin_start=$(call UC,$*)_RESOURCE $@
 	$(OBJCOPY) --redefine-sym _binary_resources_$*_bin_end=$(call UC,$*)_RESOURCE_END $@
 	$(OBJCOPY) --redefine-sym _binary_resources_$*_bin_size=$(call UC,$*)_RESOURCE_SIZE $@

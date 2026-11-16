@@ -469,6 +469,15 @@ export class GUIGlobal implements OnDestroy {
 
   async parseGeneratorGUISettings(guiSettings, userSettings) {
     const isRGBHex = /[0-9A-Fa-f]{6}/;
+    /*
+      !! DEBUGGING ONLY !!
+      This value can be accessed via the browser console as simply 'SettingsListZOOTR_Angular'
+      and is only intended for debugging. The current list of settings as they appear in the UI
+      will be accessible via this variable. Their values will be objects representing their current
+      state and metadata as is relevant, including a direct JSON-decoded object of that settings'
+      data from the generated settings list JSON file.
+    */
+    globalThis.SettingsListZOOTR_Angular = {};
 
     //Intialize settings maps
     for (let tabIndex = 0; tabIndex < guiSettings.settingsArray.length; tabIndex++) {
@@ -527,6 +536,20 @@ export class GUIGlobal implements OnDestroy {
           let setting = section.settings[settingIndex];
 
           this.generator_settingsVisibilityMap[setting.name] = true;
+
+          // Bind a property as a function that returns an object representing this setting for easy debugging
+          // By using the setting name as the property name, it allows for auto-complete and fuzzy searching/suggestions
+          // This works by binding a property to a getter function that has the current 'this' value bound to the function context
+          Object.defineProperty(globalThis.SettingsListZOOTR_Angular, setting.name, {
+            get: () => {
+              return {
+                // Object representing the current state of this setting. Add more values as you see fit.
+                enabled: this.generator_settingsVisibilityMap[setting.name],
+                value: this.generator_settingsMap[setting.name],
+                _json: this.findSettingByName(setting.name),
+              }; 
+            },
+          });
 
           if (setting.type == "SearchBox" && userSettings && setting.name in userSettings) { //Special parsing for SearchBox data
 
@@ -721,7 +744,7 @@ export class GUIGlobal implements OnDestroy {
         result.latestVersion = remote.fullVersion;
 
         //Compare versions
-        result.hasUpdate = this.isVersionNewer(remote.baseVersion, local.baseVersion, remote.supplementaryVersion, local.supplementaryVersion);
+        result.hasUpdate = this.isVersionNewer(`${remote.baseVersion}-${remote.supplementaryVersion}`, `${local.baseVersion}-${local.supplementaryVersion}`);
 
         return result;
       }
@@ -735,47 +758,119 @@ export class GUIGlobal implements OnDestroy {
     }
   }
 
-  isVersionNewer(newVersion: string, oldVersion: string, newSubVersion: number = 0, oldSubVersion: number = 0) {
+  //Split up a string version into distinct chunks
+  getVersionParts(versionText) {
 
-    //Strip away dev strings
-    if (oldVersion.startsWith("dev") && oldVersion.includes("_"))
-      oldVersion = oldVersion.split("_")[1];
+    let data = { branch: null, master: null, minor: null, revision: null, supplemental: null, supplementalFound: false, parts: [], rawInput: versionText, rawParts: [] };
 
-    if (newVersion.startsWith("dev") && newVersion.includes("_"))
-      newVersion = newVersion.split("_")[1];
+    if (versionText.startsWith("dev") && versionText.includes("_")) { //Handle dev versions
 
-    let oldSplit = oldVersion.replace('v', '').replace(' ', '.').split('.');
-    let newSplit = newVersion.replace('v', '').replace(' ', '.').split('.');
+      //Extract dev branch name and version
+      let branchParts = versionText.split("_");
+      data.branch = branchParts[0];
 
-    //Version is not newer if the new version doesn't satisfy the format
-    if (newSplit.length < 3)
-      return false;
-    else if (newSplit.length == 4)
-      newSubVersion = newSubVersion == 0 ? Number(newSplit[3]) : 0;
-
-    //Version is newer if the old version doesn't satisfy the format
-    if (oldSplit.length < 3)
-      return true;
-    else if (oldSplit.length == 4)
-      oldSubVersion = oldSubVersion == 0 ? Number(oldSplit[3]) : 0;
-
-    //Compare major.minor.revision
-    if (Number(newSplit[0]) > Number(oldSplit[0])) {
-      return true;
+      versionText = branchParts[1];
     }
-    else if (Number(newSplit[0]) == Number(oldSplit[0])) {
-      if (Number(newSplit[1]) > Number(oldSplit[1])) {
-        return true;
+
+    //Extract version major.minor.rev section
+    let versionSections = versionText.split("-");
+    let versionParts = versionSections[0].split(".");
+
+    switch (versionParts.length) {
+
+      case 3: { //Rev
+        data.revision = Number.parseInt(versionParts[2]);
+
+        //Not a number protection
+        if (data.revision !== Number(versionParts[2])) {
+          data.revision = null;
+          data.parts = [];
+        }
+        else {
+          data.parts.push(data.revision);
+        }
+
+        //falls through
       }
-      else if (Number(newSplit[1]) == Number(oldSplit[1])) {
-        if (Number(newSplit[2]) > Number(oldSplit[2])) {
-          return true;
+      case 2: { //Minor
+        data.minor = Number.parseInt(versionParts[1]);
+
+        if (data.minor !== Number(versionParts[1])) {
+          data.minor = data.revision = null;
+          data.parts = [];
         }
-        else if (Number(newSplit[2]) == Number(oldSplit[2])) {
-          if (newSubVersion > oldSubVersion) {
-            return true;
-          }
+        else {
+          data.parts.push(data.minor);
         }
+
+        //falls through
+      }
+      case 1: { //Master
+        data.master = Number.parseInt(versionParts[0]);
+
+        if (data.master !== Number(versionParts[0])) {
+          data.master = data.minor = data.revision = null;
+          data.parts = [];
+        }
+        else {
+          data.parts.push(data.master);
+        }
+
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+
+    //Reverse for proper order
+    data.parts.reverse();
+    data.rawParts = [...data.parts];
+
+    //Check for supplemental version (only if valid semver version is available first)
+    if (data.parts.length == 3) {
+
+      if (versionSections.length == 2) {
+
+        data.supplemental = Number.parseInt(versionSections[1]);
+
+        if (data.supplemental !== Number(versionSections[1])) {
+          data.supplemental = null;
+        }
+        else {
+          data.parts.push(data.supplemental);
+          data.rawParts.push(data.supplemental);
+          data.supplementalFound = true;
+        }
+      }
+      else {
+        //For backwards compatibility reasons, assume supplemental version of 0 when only a semver version is specified
+        data.supplemental = 0;
+        data.parts.push(0);
+        data.supplementalFound = false;
+      }
+    }
+
+    return data;
+  }
+
+  isVersionNewer(newVersion: string, oldVersion: string) { //version raw text or getVersionParts object
+
+    let versionSplit = typeof (newVersion) == "string" ? this.getVersionParts(newVersion) : newVersion;
+    let oldVersionSplit = typeof (oldVersion) == "string" ? this.getVersionParts(oldVersion) : oldVersion;
+
+    //Compare every version part against each other
+    for (let versionPartIndex = 0; versionPartIndex < versionSplit.parts.length; versionPartIndex++) {
+
+      //The tested version has more parts than the old version while everything else matched, this version is newer!
+      if (versionPartIndex >= oldVersionSplit.parts.length)
+        return true;
+
+      if (oldVersionSplit.parts[versionPartIndex] > versionSplit.parts[versionPartIndex]) {
+        return false;
+      }
+      else if (oldVersionSplit.parts[versionPartIndex] < versionSplit.parts[versionPartIndex]) {
+        return true;
       }
     }
 

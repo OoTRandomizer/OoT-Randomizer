@@ -5,6 +5,8 @@
 #include "override.h"
 #include <stdint.h>
 
+extern uint8_t CUSTOM_KEY_MODELS;
+
 typedef struct model_t {
     uint16_t object_id;
     uint8_t graphic_id;

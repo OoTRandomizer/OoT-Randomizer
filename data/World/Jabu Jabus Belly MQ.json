@@ -100,7 +100,8 @@
             "Jabu Jabus Belly MQ Falling Like-Like Room Explosives Wonderitem 2": "has_explosives",
             "Jabu Jabus Belly MQ Falling Like-Like Room Explosives Wonderitem 3": "has_explosives",
             "Jabu Jabus Belly MQ Hallway Small Crate 1": "True",
-            "Jabu Jabus Belly MQ Hallway Small Crate 2": "True"
+            "Jabu Jabus Belly MQ Hallway Small Crate 2": "True",
+            "Bombable Fairy": "has_bottle"
         },
         "exits": {
             "Jabu Jabus Belly Past Big Octo": "Sticks or (can_use(Dins_Fire) and Kokiri_Sword)"

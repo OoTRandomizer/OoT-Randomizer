@@ -1,5 +1,7 @@
 SHUFFLE_CHEST_GAME:
 .byte 0x00
+TCG_REQUIRES_LENS:
+.byte 0x00
 .align 4
 
 chestgame_buy_item_hook:
@@ -66,25 +68,86 @@ chestgame_remove_chest_rng:
     jr      ra
     nop
 
-chestgame_open_chests_separately:
-    lb      t0, SHUFFLE_CHEST_GAME
-    beqz    t0, @@return        ; skip if the chest game isn't randomized
+; Show a key in the unopened chest regardless of chest
+; contents if the tcg_requires_lens setting is enabled
+chestgame_force_game_loss_left:
+    ; displaced code
+    lwc1    $f0, 0x0024($v1)
+    lwc1    $f2, 0x0028($v1)
+    ; check setting
+    lb      $t7, TCG_REQUIRES_LENS
+    beqz    $t7, @@return
     nop
-    lw      ra, 0x14(sp)        ; set original return addresss
-    jr ra                       ; jump out of function (skip it)
+    ; safety check to prevent simulated loss if keys are shuffled
+    lb      $t7, SHUFFLE_CHEST_GAME
+    bnez    $t7, @@return
     nop
-
+    ; check if player has lens of truth
+    lui     $t1, hi(SAVE_CONTEXT + 0x81)
+    lb      $t2, lo(SAVE_CONTEXT + 0x81)($t1) ; lens item slot
+    li      $t3, 15 ; lens item ID
+    bne     $t2, $t3, @@force_loss
+    nop
+    ; check if player has magic
+    lb      $t2, SAVE_CONTEXT + 0x3A ; magic_acquired
+    beqz    $t2, @@force_loss
+    nop
 @@return:
-    jr      ra
-    or      a3, a1, $zero       ; displaced code
-
-chestgame_delayed_chest_open:
-    lb      t1, SHUFFLE_CHEST_GAME
-    beqz    t3, @@return        ; skip if the chest game isn't randomized
+    jr      $ra
     nop
-    or      t9, $zero, $zero    ; set t9 to 0 so conditional always fails
-    lw      a0, 0x004C($sp)     ; displaced code
 
+@@force_loss:
+    ; simulate lost game
+    addiu   $t0, $zero, 0x0071
+    j       chestgame_warn_player_of_rigged_game
+    nop
+
+chestgame_force_game_loss_right:
+    ; displaced code
+    lwc1    $f0, 0x0024($v0)
+    lwc1    $f2, 0x0028($v0)
+    ; check setting
+    lb      $t7, TCG_REQUIRES_LENS
+    beqz    $t7, @@return
+    nop
+    ; safety check to prevent simulated loss if keys are shuffled
+    lb      $t7, SHUFFLE_CHEST_GAME
+    bnez    $t7, @@return
+    nop
+    ; check if player has lens of truth
+    lui     $t1, hi(SAVE_CONTEXT + 0x81)
+    lb      $t2, lo(SAVE_CONTEXT + 0x81)($t1) ; lens item slot
+    li      $t3, 15 ; lens item ID
+    bne     $t2, $t3, @@force_loss
+    nop
+    ; check if player has magic
+    lb      $t2, SAVE_CONTEXT + 0x3A ; magic_acquired
+    beqz    $t2, @@force_loss
+    nop
 @@return:
-    jr      ra
-    lw      a0, 0x004C($sp)     ; displaced code
+    jr      $ra
+    nop
+
+@@force_loss:
+    ; simulate lost game
+    addiu   $v1, $zero, 0x0071
+    j       chestgame_warn_player_of_rigged_game
+    nop
+
+; Add a helper message if the tcg_requires_lens
+; setting is enabled and the player still attempts
+; the game.
+chestgame_warn_player_of_rigged_game:
+    addiu   $sp, $sp, -0x20
+    sw      $ra, 0x14($sp)
+    sw      $v0, 0x18($sp)
+    sw      $v1, 0x1C($sp)
+
+    jal     treasure_chest_game_message
+    nop
+
+    lw      $ra, 0x14($sp)
+    lw      $v0, 0x18($sp)
+    lw      $v1, 0x1C($sp)
+    jr      $ra
+    addiu   $sp, $sp, 0x20

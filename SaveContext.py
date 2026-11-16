@@ -16,17 +16,92 @@ if TYPE_CHECKING:
 AddressesDict: TypeAlias = "dict[str, Address | dict[str, Address | dict[str, Address]]]"
 
 
-class Scenes(IntEnum):
+class SceneIDs(IntEnum):
     # Dungeons
     DEKU_TREE = 0x00
     DODONGOS_CAVERN = 0x01
-    KING_DODONGO_LOBBY = 0x12
     JABU_JABU = 0x02
     FOREST_TEMPLE = 0x03
     FIRE_TEMPLE = 0x04
     WATER_TEMPLE = 0x05
     SPIRIT_TEMPLE = 0x06
     SHADOW_TEMPLE = 0x07
+    BOTTOM_OF_THE_WELL = 0x08
+    ICE_CAVERN = 0x09
+    GANONS_TOWER = 0x0A
+    GERUDO_TRAINING_GROUND = 0x0B
+    THIEVES_HIDEOUT = 0x0C
+    INSIDE_GANONS_CASTLE = 0x0D
+    # Other scenes
+    COLLAPSING_GANONS_TOWER = 0x0E
+    COLLAPSING_GANONS_CASTLE = 0x0F
+    TREASURE_BOX_SHOP = 0x10
+    GOHMA_BOSS_ROOM = 0x11
+    KING_DODONGO_LOBBY = 0x12
+    BARINADE_BOSS_ROOM = 0x13
+    PHANTOM_GANON_BOSS_ROOM = 0x14
+    VOLVAGIA_BOSS_ROOM = 0x15
+    MORPHA_BOSS_ROOM = 0x16
+    TWINROVA_BOSS_ROOM = 0x17
+    BONGO_BOSS_ROOM = 0x18
+    GANONDORF_BOSS_ROOM = 0x19
+    GANON_BOSS_ROOM = 0x1A
+    MARKET_ENTRANCE_CHILD_DAY = 0x1B
+    MARKET_ENTRANCE_CHILD_NIGHT = 0x1C
+    MARKET_ENTRANCE_ADULT = 0x1D
+    MARKET_BACK_ALLEY_DAY = 0x1E
+    MARKET_BACK_ALLEY_NIGHT = 0x1F
+    MARKET_CHILD_DAY = 0x20
+    MARKET_CHILD_NIGHT = 0x21
+    MARKET_ADULT = 0x22
+    TEMPLE_OF_TIME_EXTERIOR_CHILD_DAY = 0x23
+    TEMPLE_OF_TIME_EXTERIOR_CHILD_NIGHT = 0x24
+    TEMPLE_OF_TIME_EXTERIOR_ADULT = 0x25
+    KOKIRI_KNOW_IT_ALL_HOUSE = 0x26
+    KOKIRI_HOUSE_OF_TWINS = 0x27
+    KOKIRI_MIDOS_HOUSE = 0x28
+    KOKIRI_SARIAS_HOUSE = 0x29
+    KAKARIKO_CARPENTER_HOUSE = 0x2A
+    MARKET_BACK_ALLEY_HOUSE = 0x2B
+    MARKET_BAZAAR = 0x2C
+    KOKIRI_SHOP = 0x2D
+    GORON_SHOP = 0x2E
+    ZORA_SHOP = 0x2F
+    KAKARIKO_POTION_SHOP = 0x30
+    MARKET_POTION_SHOP = 0x31
+    MARKET_BOMBCHU_SHOP = 0x32
+    MARKET_MASK_SHOP = 0x33
+    KOKIRI_LINKS_HOUSE = 0x34
+    MARKET_DOG_LADY_HOUSE = 0x35
+    LON_LON_RANCH_STABLE = 0x36
+    KAKARIKO_IMPAS_HOUSE = 0x37
+    LAKE_HYLIA_LAB = 0x38
+    GERUDO_VALLEY_TENT = 0x39
+    GRAVEYARD_DAMPES_HUT = 0x3A
+    FAIRY_FOUNTAIN_UPGRADES = 0x3B
+    FAIRY_FOUNTAIN_HEALTH = 0x3C
+    FAIRY_FOUNTAIN_SPELLS = 0x3D
+    GROTTOS = 0x3E
+    GRAVEYARD_REDEAD_GRAVE = 0x3F
+    GRAVEYARD_SHIELD_GRAVE = 0x40
+    GRAVEYARD_ROYAL_FAMILY_TOMB = 0x41
+    SHOOTING_GALLERY = 0x42
+    TEMPLE_OF_TIME = 0x43
+    CHAMBER_OF_SAGES = 0x44
+    HYRULE_CASTLE_HEDGE_MAZE_DAY = 0x45
+    HYRULE_CASTLE_HEDGE_MAZE_NIGHT = 0x46
+    CUTSCENE_MAP = 0x47
+    WINDMILL_AND_DAMPES_GRAVE = 0x48
+    LAKE_HYLIA_FISHING_HOLE = 0x49
+    HYRULE_CASTLE_COURTYARD = 0x4A
+    MARKET_BOMBCHU_BOWLING_ALLEY = 0x4B
+    LON_LON_RANCH_TOWER_AND_TALON_HOUSE = 0x4C
+    MARKET_ENTRANCE_GUARD_HOUSE = 0x4D
+    KAKARIKO_GRANNY_POTION_SHOP = 0x4E
+    GANONS_TOWER_COLLAPSE_AND_ARENA = 0x4F
+    KAKARIKO_HOUSE_OF_SKULLTULA = 0x50
+    HYRULE_FIELD = 0x51
+    KAKARIKO_VILLAGE = 0x52
     # Bean patch scenes
     GRAVEYARD = 0x53
     ZORAS_RIVER = 0x54
@@ -37,7 +112,16 @@ class Scenes(IntEnum):
     DESERT_COLOSSUS = 0x5C
     DEATH_MOUNTAIN_TRAIL = 0x60
     DEATH_MOUNTAIN_CRATER = 0x61
+    # Remaining overworld scenes
+    SACRED_FOREST_MEADOW = 0x56
+    ZORAS_DOMAIN = 0x58
+    ZORAS_FOUNTAIN = 0x59
+    GERUDO_FORTRESS = 0x5D
+    HAUNTED_WASTELAND = 0x5E
+    HYRULE_CASTLE = 0x5F
     GORON_CITY = 0x62
+    LON_LON_RANCH = 0x63
+    OUTSIDE_GANONS_CASTLE = 0x64
 
 
 class FlagType(IntEnum):
@@ -206,7 +290,7 @@ class SaveContext:
         self.write_bits(0x00D4 + scene * 0x1C + type * 0x04 + byte_offset, bit_values)
 
     # write all flags (int32) of a given type at once
-    def write_permanent_flags(self, scene: Scenes, flag_type: FlagType, value: int) -> None:
+    def write_permanent_flags(self, scene: SceneIDs, flag_type: FlagType, value: int) -> None:
         byte_value = value.to_bytes(4, byteorder='big', signed=False)
         self.write_bytes(0x00D4 + scene * 0x1C + flag_type * 0x04, byte_value)
 
@@ -282,7 +366,7 @@ class SaveContext:
 
         self.addresses['health_capacity'].value       = int(health) * 0x10
         self.addresses['health'].value                = int(health) * 0x10
-        self.addresses['quest']['heart_pieces'].value = int((health % 1) * 4) * 0x10
+        self.addresses['quest']['heart_pieces'].value = int((health % 1) * 4)
 
     def give_item(self, world: World, item: str, count: int = 1) -> None:
         if item.endswith(')'):
@@ -683,7 +767,7 @@ class SaveContext:
                 'stone_of_agony'         : Address(0x00A4, mask=0x00200000),
                 'gerudos_card'           : Address(0x00A4, mask=0x00400000),
                 'gold_skulltula'         : Address(0x00A4, mask=0x00800000),
-                'heart_pieces'           : Address(0x00A4, mask=0xFF000000),
+                'heart_pieces'           : Address(0x00A4, mask=0xF0000000),
             },
 
             # Dungeon Items
@@ -857,11 +941,37 @@ class SaveContext:
             },
             'triforce_pieces'            : Address(0xD4 + 0x1C * 0x48 + 0x10, size=4), # Unused word in scene x48
             'pending_freezes'            : Address(0xD4 + 0x1C * 0x49 + 0x10, size=4), # Unused word in scene x49
-            'Ocarina_A_Button'           : Address(0xD4 + 0x1C * 0x50 + 0x10, mask=0x01), # Unused word in scene x50
-            'Ocarina_C_up_Button'        : Address(0xD4 + 0x1C * 0x50 + 0x10, mask=0x02), # Unused word in scene x50
-            'Ocarina_C_down_Button'      : Address(0xD4 + 0x1C * 0x50 + 0x10, mask=0x04), # Unused word in scene x50
-            'Ocarina_C_left_Button'      : Address(0xD4 + 0x1C * 0x50 + 0x10, mask=0x08), # Unused word in scene x50
-            'Ocarina_C_right_Button'     : Address(0xD4 + 0x1C * 0x50 + 0x10, mask=0x10), # Unused word in scene x50
+            'ocarina_buttons' : { # Unused word in scene x50
+                'a'                      : Address(0xD4 + 0x1C * 0x50 + 0x10, size=4, mask=0x00000001),
+                'c_up'                   : Address(0xD4 + 0x1C * 0x50 + 0x10, size=4, mask=0x00000002),
+                'c_down'                 : Address(0xD4 + 0x1C * 0x50 + 0x10, size=4, mask=0x00000004),
+                'c_left'                 : Address(0xD4 + 0x1C * 0x50 + 0x10, size=4, mask=0x00000008),
+                'c_right'                : Address(0xD4 + 0x1C * 0x50 + 0x10, size=4, mask=0x00000010),
+            },
+            'owned_trade_items' : { # Unused word in scene x60
+                'weird_egg'              : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00000001),
+                'chicken'                : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00000002),
+                'zeldas_letter'          : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00000004),
+                'keaton_mask'            : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00000008),
+                'skull_mask'             : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00000010),
+                'spooky_mask'            : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00000020),
+                'bunny_hood'             : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00000040),
+                'goron_mask'             : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00000080),
+                'zora_mask'              : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00000100),
+                'gerudo_mask'            : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00000200),
+                'mask_of_truth'          : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00000400),
+                'pocket_egg'             : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00000800),
+                'pocket_cucco'           : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00001000),
+                'cojiro'                 : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00002000),
+                'odd_mushroom'           : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00004000),
+                'odd_potion'             : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00008000),
+                'poachers_saw'           : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00010000),
+                'broken_sword'           : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00020000),
+                'prescription'           : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00040000),
+                'eyeball_frog'           : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00080000),
+                'eye_drops'              : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00100000),
+                'claim_check'            : Address(0xD4 + 0x1C * 0x60 + 0x10, size=4, mask=0x00200000),
+            },
 
             # begin extended save data items
             'silver_rupee_counts' : {
@@ -1128,28 +1238,94 @@ class SaveContext:
         "Boomerang"      : {'item_slot.boomerang'       : 'boomerang'},
         "Lens of Truth"  : {'item_slot.lens'            : 'lens'},
         "Megaton Hammer"         : {'item_slot.hammer'          : 'hammer'},
-        "Pocket Egg"     : {'item_slot.adult_trade'     : 'pocket_egg'},
-        "Pocket Cucco"   : {'item_slot.adult_trade'     : 'pocket_cucco'},
-        "Cojiro"         : {'item_slot.adult_trade'     : 'cojiro'},
-        "Odd Mushroom"   : {'item_slot.adult_trade'     : 'odd_mushroom'},
-        "Odd Potion"     : {'item_slot.adult_trade'     : 'odd_potion'},
-        "Poachers Saw"   : {'item_slot.adult_trade'     : 'poachers_saw'},
-        "Broken Sword"   : {'item_slot.adult_trade'     : 'broken_sword'},
-        "Prescription"   : {'item_slot.adult_trade'     : 'prescription'},
-        "Eyeball Frog"   : {'item_slot.adult_trade'     : 'eyeball_frog'},
-        "Eyedrops"       : {'item_slot.adult_trade'     : 'eye_drops'},
-        "Claim Check"    : {'item_slot.adult_trade'     : 'claim_check'},
-        "Weird Egg"      : {'item_slot.child_trade'     : 'weird_egg'},
-        "Chicken"        : {'item_slot.child_trade'     : 'chicken'},
-        "Zeldas Letter"  : {'item_slot.child_trade'     : 'zeldas_letter'},
-        "Keaton Mask"    : {'item_slot.child_trade'     : 'keaton_mask'},
-        "Skull Mask"     : {'item_slot.child_trade'     : 'skull_mask'},
-        "Spooky Mask"    : {'item_slot.child_trade'     : 'spooky_mask'},
-        "Bunny Hood"     : {'item_slot.child_trade'     : 'bunny_hood'},
-        "Goron Mask"     : {'item_slot.child_trade'     : 'goron_mask'},
-        "Zora Mask"      : {'item_slot.child_trade'     : 'zora_mask'},
-        "Gerudo Mask"    : {'item_slot.child_trade'     : 'gerudo_mask'},
-        "Mask of Truth"  : {'item_slot.child_trade'     : 'mask_of_truth'},
+        "Pocket Egg"     : {
+            'item_slot.adult_trade'               : 'pocket_egg',
+            'owned_trade_items.pocket_egg'        : True,
+        },
+        "Pocket Cucco"   : {
+            'item_slot.adult_trade'               : 'pocket_cucco',
+            'owned_trade_items.pocket_cucco'      : True,
+        },
+        "Cojiro"         : {
+            'item_slot.adult_trade'               : 'cojiro',
+            'owned_trade_items.cojiro'            : True,
+        },
+        "Odd Mushroom"   : {
+            'item_slot.adult_trade'               : 'odd_mushroom',
+            'owned_trade_items.odd_mushroom'      : True,
+        },
+        "Odd Potion"     : {
+            'item_slot.adult_trade'               : 'odd_potion',
+            'owned_trade_items.odd_potion'        : True,
+        },
+        "Poachers Saw"   : {
+            'item_slot.adult_trade'               : 'poachers_saw',
+            'owned_trade_items.poachers_saw'      : True,
+        },
+        "Broken Sword"   : {
+            'item_slot.adult_trade'               : 'broken_sword',
+            'owned_trade_items.broken_sword'      : True,
+        },
+        "Prescription"   : {
+            'item_slot.adult_trade'               : 'prescription',
+            'owned_trade_items.prescription'      : True,
+        },
+        "Eyeball Frog"   : {
+            'item_slot.adult_trade'               : 'eyeball_frog',
+            'owned_trade_items.eyeball_frog'      : True,
+        },
+        "Eyedrops"       : {
+            'item_slot.adult_trade'               : 'eye_drops',
+            'owned_trade_items.eye_drops'         : True,
+        },
+        "Claim Check"    : {
+            'item_slot.adult_trade'               : 'claim_check',
+            'owned_trade_items.claim_check'       : True,
+        },
+        "Weird Egg"      : {
+            'item_slot.child_trade'               : 'weird_egg',
+            'owned_trade_items.weird_egg'         : True,
+        },
+        "Chicken"        : {
+            'item_slot.child_trade'               : 'chicken',
+            'owned_trade_items.chicken'           : True,
+        },
+        "Zeldas Letter"  : {
+            'item_slot.child_trade'               : 'zeldas_letter',
+            'owned_trade_items.zeldas_letter'     : True,
+        },
+        "Keaton Mask"    : {
+            'item_slot.child_trade'               : 'keaton_mask',
+            'owned_trade_items.keaton_mask'       : True,
+        },
+        "Skull Mask"     : {
+            'item_slot.child_trade'               : 'skull_mask',
+            'owned_trade_items.skull_mask'        : True,
+        },
+        "Spooky Mask"    : {
+            'item_slot.child_trade'               : 'spooky_mask',
+            'owned_trade_items.spooky_mask'       : True,
+        },
+        "Bunny Hood"     : {
+            'item_slot.child_trade'               : 'bunny_hood',
+            'owned_trade_items.bunny_hood'        : True,
+        },
+        "Goron Mask"     : {
+            'item_slot.child_trade'               : 'goron_mask',
+            'owned_trade_items.goron_mask'        : True,
+        },
+        "Zora Mask"      : {
+            'item_slot.child_trade'               : 'zora_mask',
+            'owned_trade_items.zora_mask'         : True,
+        },
+        "Gerudo Mask"    : {
+            'item_slot.child_trade'               : 'gerudo_mask',
+            'owned_trade_items.gerudo_mask'       : True,
+        },
+        "Mask of Truth"  : {
+            'item_slot.child_trade'               : 'mask_of_truth',
+            'owned_trade_items.mask_of_truth'     : True,
+        },
         "Goron Tunic"    : {'equip_items.goron_tunic'   : True},
         "Zora Tunic"     : {'equip_items.zora_tunic'    : True},
         "Iron Boots"     : {'equip_items.iron_boots'    : True},
@@ -1218,11 +1394,11 @@ class SaveContext:
         },
         "Ice Trap"                  : {'pending_freezes': None},
         "Triforce Piece"            : {'triforce_pieces': None},
-        "Ocarina A Button"          : {'Ocarina_A_Button': True},
-        "Ocarina C up Button"       : {'Ocarina_C_up_Button': True},
-        "Ocarina C down Button"     : {'Ocarina_C_down_Button': True},
-        "Ocarina C left Button"     : {'Ocarina_C_left_Button': True},
-        "Ocarina C right Button"    : {'Ocarina_C_right_Button': True},
+        "Ocarina A Button"          : {'ocarina_buttons.a': True},
+        "Ocarina C up Button"       : {'ocarina_buttons.c_up': True},
+        "Ocarina C down Button"     : {'ocarina_buttons.c_down': True},
+        "Ocarina C left Button"     : {'ocarina_buttons.c_left': True},
+        "Ocarina C right Button"    : {'ocarina_buttons.c_right': True},
         "Boss Key (Forest Temple)"                : {'dungeon_items.forest.boss_key': True},
         "Boss Key (Fire Temple)"                  : {'dungeon_items.fire.boss_key': True},
         "Boss Key (Water Temple)"                 : {'dungeon_items.water.boss_key': True},
@@ -1446,3 +1622,210 @@ class SaveContext:
             ],
         }
     }
+
+    def write_qol_save_context_flags(self) -> None:
+        self.write_permanent_flag(SceneIDs.WATER_TEMPLE, FlagType.SWITCH, 0x1, 0x01) # Water temple switch flag (Ruto)
+        self.write_permanent_flag(SceneIDs.HYRULE_FIELD, FlagType.SWITCH, 0x2, 0x08) # Hyrule Field switch flag (Owl)
+        self.write_permanent_flag(SceneIDs.KOKIRI_FOREST, FlagType.SWITCH, 0x0, 0x80) # Kokiri Forest switch flag (Owl)
+        self.write_permanent_flag(SceneIDs.SACRED_FOREST_MEADOW, FlagType.SWITCH, 0x2, 0x40) # Sacred Forest Meadow switch flag (Owl)
+        self.write_permanent_flag(SceneIDs.LOST_WOODS, FlagType.SWITCH, 0x2, 0x01) # Lost Woodsswitch flag (Owl)
+        self.write_permanent_flag(SceneIDs.LOST_WOODS, FlagType.SWITCH, 0x3, 0x80) # Lost Woods switch flag (Owl)
+        self.write_permanent_flag(SceneIDs.DESERT_COLOSSUS, FlagType.SWITCH, 0x0, 0x80) # Desert Colossus switch flag (Owl)
+        self.write_permanent_flag(SceneIDs.HYRULE_CASTLE, FlagType.SWITCH, 0x3, 0x20) # Hyrule Castle switch flag (Owl)
+        self.write_bits(0x0F2B, 0x20) # Spoke to Lake Hylia Owl once
+
+        self.write_bits(0x0ED4, 0x10)  # "Met Deku Tree"
+        self.write_bits(0x0ED5, 0x20)  # "Deku Tree Opened Mouth"
+        self.write_bits(0x0ED6, 0x08)  # "Rented Horse From Ingo"
+        self.write_bits(0x0ED6, 0x10)  # "Spoke to Mido After Deku Tree's Death"
+        self.write_bits(0x0EDA, 0x08)  # "Began Nabooru Battle"
+        self.write_bits(0x0EDC, 0x80)  # "Entered the Master Sword Chamber"
+        self.write_bits(0x0EE0, 0x80)  # "Spoke to Kaepora Gaebora by Lost Woods"
+        self.write_bits(0x0EE7, 0x20)  # "Nabooru Captured by Twinrova"
+        self.write_bits(0x0EE7, 0x10)  # "Spoke to Nabooru in Spirit Temple"
+        self.write_bits(0x0EED, 0x20)  # "Sheik, Spawned at Master Sword Pedestal as Adult"
+        self.write_bits(0x0EED, 0x01)  # "Nabooru Ordered to Fight by Twinrova"
+        self.write_bits(0x0EED, 0x80)  # "Watched Ganon's Tower Collapse / Caught by Gerudo"
+        self.write_bits(0x0EF9, 0x01)  # "Greeted by Saria"
+        self.write_bits(0x0F0A, 0x04)  # "Spoke to Ingo Once as Adult"
+        self.write_bits(0x0F0F, 0x40)  # "Met Poe Collector in Ruined Market"
+
+        self.write_bits(0x0ED7, 0x01)  # "Spoke to Child Malon at Castle or Market"
+        self.write_bits(0x0ED7, 0x20)  # "Spoke to Child Malon at Ranch"
+        self.write_bits(0x0ED7, 0x40)  # "Invited to Sing With Child Malon"
+        self.write_bits(0x0F09, 0x10)  # "Met Child Malon at Castle or Market"
+        self.write_bits(0x0F09, 0x20)  # "Child Malon Said Epona Was Scared of You"
+
+        self.write_bits(0x0F21, 0x04) # "Ruto in JJ (M3) Talk First Time"
+        self.write_bits(0x0F21, 0x02) # "Ruto in JJ (M2) Meet Ruto"
+
+        self.write_bits(0x0EE2, 0x01)  # "Began Ganondorf Battle"
+        self.write_bits(0x0EE3, 0x80)  # "Began Bongo Bongo Battle"
+        self.write_bits(0x0EE3, 0x40)  # "Began Barinade Battle"
+        self.write_bits(0x0EE3, 0x20)  # "Began Twinrova Battle"
+        self.write_bits(0x0EE3, 0x10)  # "Began Morpha Battle"
+        self.write_bits(0x0EE3, 0x08)  # "Began Volvagia Battle"
+        self.write_bits(0x0EE3, 0x04)  # "Began Phantom Ganon Battle"
+        self.write_bits(0x0EE3, 0x02)  # "Began King Dodongo Battle"
+        self.write_bits(0x0EE3, 0x01)  # "Began Gohma Battle"
+
+        self.write_bits(0x0EE8, 0x01)  # "Entered Deku Tree"
+        self.write_bits(0x0EE9, 0x80)  # "Entered Temple of Time"
+        self.write_bits(0x0EE9, 0x40)  # "Entered Goron City"
+        self.write_bits(0x0EE9, 0x20)  # "Entered Hyrule Castle"
+        self.write_bits(0x0EE9, 0x10)  # "Entered Zora's Domain"
+        self.write_bits(0x0EE9, 0x08)  # "Entered Kakariko Village"
+        self.write_bits(0x0EE9, 0x02)  # "Entered Death Mountain Trail"
+        self.write_bits(0x0EE9, 0x01)  # "Entered Hyrule Field"
+        self.write_bits(0x0EEA, 0x04)  # "Entered Ganon's Castle (Exterior)"
+        self.write_bits(0x0EEA, 0x02)  # "Entered Death Mountain Crater"
+        self.write_bits(0x0EEA, 0x01)  # "Entered Desert Colossus"
+        self.write_bits(0x0EEB, 0x80)  # "Entered Zora's Fountain"
+        self.write_bits(0x0EEB, 0x40)  # "Entered Graveyard"
+        self.write_bits(0x0EEB, 0x20)  # "Entered Jabu-Jabu's Belly"
+        self.write_bits(0x0EEB, 0x10)  # "Entered Lon Lon Ranch"
+        self.write_bits(0x0EEB, 0x08)  # "Entered Gerudo's Fortress"
+        self.write_bits(0x0EEB, 0x04)  # "Entered Gerudo Valley"
+        self.write_bits(0x0EEB, 0x02)  # "Entered Lake Hylia"
+        self.write_bits(0x0EEB, 0x01)  # "Entered Dodongo's Cavern"
+        self.write_bits(0x0F08, 0x08)  # "Entered Hyrule Castle"
+
+def write_settings_dependent_save_context_flags(save_context: SaveContext, world: World) -> None:
+    if not world.settings.useful_cutscenes:
+        save_context.write_bits(0x0F1A, 0x04)  # "Met Darunia in Fire Temple"
+        if 'Forest Temple' not in world.settings.dungeon_shortcuts:
+            save_context.write_permanent_flag(SceneIDs.FOREST_TEMPLE, FlagType.SWITCH, 0x0, 0x08)
+
+    if 'Deku Tree' in world.settings.dungeon_shortcuts:
+        # Deku Tree, flags are the same between vanilla/MQ
+        save_context.write_permanent_flag(SceneIDs.DEKU_TREE, FlagType.SWITCH, 0x1, 0x01)  # Deku Block down
+        save_context.write_permanent_flag(SceneIDs.DEKU_TREE, FlagType.CLEAR,  0x2, 0x02)  # Deku 231/312
+        save_context.write_permanent_flag(SceneIDs.DEKU_TREE, FlagType.SWITCH, 0x3, 0x20)  # Deku 1st Web
+        save_context.write_permanent_flag(SceneIDs.DEKU_TREE, FlagType.SWITCH, 0x3, 0x40)  # Deku 2nd Web
+
+    if 'Dodongos Cavern' in world.settings.dungeon_shortcuts:
+        # Dodongo's Cavern, flags are the same between vanilla/MQ
+        save_context.write_permanent_flag(SceneIDs.DODONGOS_CAVERN, FlagType.SWITCH, 0x3, 0x80)  # DC Entrance Mud Wall
+        save_context.write_permanent_flag(SceneIDs.DODONGOS_CAVERN, FlagType.SWITCH, 0x0, 0x04)  # DC Mouth
+        # Extra permanent flag in MQ for the child route
+        if world.dungeon_mq['Dodongos Cavern']:
+            save_context.write_permanent_flag(SceneIDs.DODONGOS_CAVERN, FlagType.SWITCH, 0x0, 0x02)  # Armos wall switch
+
+    if 'Jabu Jabus Belly' in world.settings.dungeon_shortcuts:
+        # Jabu
+        if not world.dungeon_mq['Jabu Jabus Belly']:
+            save_context.write_permanent_flag(SceneIDs.JABU_JABU, FlagType.SWITCH, 0x0, 0x20)  # Jabu Pathway down
+        else:
+            save_context.write_permanent_flag(SceneIDs.JABU_JABU, FlagType.SWITCH, 0x1, 0x20)  # Jabu Lobby Slingshot Door open
+            save_context.write_permanent_flag(SceneIDs.JABU_JABU, FlagType.SWITCH, 0x0, 0x20)  # Jabu Pathway down
+            save_context.write_permanent_flag(SceneIDs.JABU_JABU, FlagType.CLEAR,  0x2, 0x01)  # Jabu Red Slimy Thing defeated
+            save_context.write_permanent_flag(SceneIDs.JABU_JABU, FlagType.SWITCH, 0x2, 0x08)  # Jabu Red Slimy Thing not in front of boss lobby
+            save_context.write_permanent_flag(SceneIDs.JABU_JABU, FlagType.SWITCH, 0x1, 0x10)  # Jabu Boss Door Switch Activated
+
+    if 'Forest Temple' in world.settings.dungeon_shortcuts:
+        # Forest, flags are the same between vanilla/MQ
+        save_context.write_permanent_flag(SceneIDs.FOREST_TEMPLE, FlagType.SWITCH, 0x0, 0x10)  # Forest Elevator up
+        save_context.write_permanent_flag(SceneIDs.FOREST_TEMPLE, FlagType.SWITCH, 0x1, 0x01 + 0x02 + 0x04)  # Forest Basement Puzzle Done
+
+    if 'Fire Temple' in world.settings.dungeon_shortcuts:
+        # Fire, flags are the same between vanilla/MQ
+        save_context.write_permanent_flag(SceneIDs.FIRE_TEMPLE, FlagType.SWITCH, 0x2, 0x40)  # Fire Pillar down
+
+    if 'Spirit Temple' in world.settings.dungeon_shortcuts:
+        # Spirit
+        if not world.dungeon_mq['Spirit Temple']:
+            save_context.write_permanent_flag(SceneIDs.SPIRIT_TEMPLE, FlagType.SWITCH, 0x1, 0x80)  # Spirit Chains
+            save_context.write_permanent_flag(SceneIDs.SPIRIT_TEMPLE, FlagType.SWITCH, 0x2, 0x02 + 0x08 + 0x10)  # Spirit main room elevator (N block, Rusted Switch, E block)
+            save_context.write_permanent_flag(SceneIDs.SPIRIT_TEMPLE, FlagType.SWITCH, 0x3, 0x10)  # Spirit Face
+        else:
+            save_context.write_permanent_flag(SceneIDs.SPIRIT_TEMPLE, FlagType.SWITCH, 0x2, 0x10)  # Spirit Bombchu Boulder
+            save_context.write_permanent_flag(SceneIDs.SPIRIT_TEMPLE, FlagType.SWITCH, 0x2, 0x02)  # Spirit Silver Block
+            save_context.write_permanent_flag(SceneIDs.SPIRIT_TEMPLE, FlagType.SWITCH, 0x1, 0x80)  # Spirit Chains
+            save_context.write_permanent_flag(SceneIDs.SPIRIT_TEMPLE, FlagType.SWITCH, 0x3, 0x10)  # Spirit Face
+
+    if 'Shadow Temple' in world.settings.dungeon_shortcuts:
+        # Shadow
+        if not world.dungeon_mq['Shadow Temple']:
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.SWITCH, 0x0, 0x08)  # Shadow Truthspinner
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.SWITCH, 0x0, 0x20)  # Shadow Boat Block
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.SWITCH, 0x1, 0x01)  # Shadow Bird Bridge
+        else:
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.SWITCH, 0x2, 0x08)  # Shadow Truthspinner
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.SWITCH, 0x3, 0x20)  # Shadow Fire Arrow Platform
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.SWITCH, 0x3, 0x80)  # Shadow Spinning Blades room Skulltulas defeated
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.CLEAR,  0x3, 0x40)  # Shadow Spinning Blades room Skulltulas defeated
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.SWITCH, 0x0, 0x20)  # Shadow Boat Block
+            save_context.write_permanent_flag(SceneIDs.SHADOW_TEMPLE, FlagType.SWITCH, 0x1, 0x01)  # Shadow Bird Bridge
+
+    if world.region_has_shortcuts('King Dodongo Boss Room'):
+        save_context.write_permanent_flag(SceneIDs.KING_DODONGO_LOBBY, FlagType.SWITCH, 0x3, 0x02)  # DC Boss Floor
+
+    if world.settings.plant_beans:
+        save_context.write_permanent_flag(SceneIDs.GRAVEYARD, FlagType.SWITCH, 0x3, 0x08)  # Plant Graveyard bean
+        save_context.write_permanent_flag(SceneIDs.ZORAS_RIVER, FlagType.SWITCH, 0x3, 0x08)  # Plant Zora's River bean
+        save_context.write_permanent_flag(SceneIDs.KOKIRI_FOREST, FlagType.SWITCH, 0x2, 0x02)  # Plant Kokiri Forest bean
+        save_context.write_permanent_flag(SceneIDs.LAKE_HYLIA, FlagType.SWITCH, 0x3, 0x02)  # Plant Lake Hylia bean
+        save_context.write_permanent_flag(SceneIDs.GERUDO_VALLEY, FlagType.SWITCH, 0x3, 0x08)  # Plant Gerudo Valley bean
+        save_context.write_permanent_flag(SceneIDs.LOST_WOODS, FlagType.SWITCH, 0x3, 0x10)  # Plant Lost Woods bridge bean
+        save_context.write_permanent_flag(SceneIDs.LOST_WOODS, FlagType.SWITCH, 0x1, 0x04)  # Plant Lost Woods theater bean
+        save_context.write_permanent_flag(SceneIDs.DESERT_COLOSSUS, FlagType.SWITCH, 0x0, 0x1)  # Plant Desert Colossus bean
+        save_context.write_permanent_flag(SceneIDs.DEATH_MOUNTAIN_TRAIL, FlagType.SWITCH, 0x3, 0x40)  # Plant Death Mountain Trail bean
+        save_context.write_permanent_flag(SceneIDs.DEATH_MOUNTAIN_CRATER, FlagType.SWITCH, 0x3, 0x08)  # Plant Death Mountain Crater bean
+
+    if world.settings.skip_reward_from_rauru in ('free', 'free_forced'):
+        save_context.write_bits(0x0EDD, 0x20)  # "Pulled Master Sword from Pedestal"
+
+    if world.settings.ruto_already_f1_jabu and not world.dungeon_mq['Jabu Jabus Belly']:
+        save_context.write_bits(0x0F21, 0x80) # Ruto in JJ, Spawns on F1 instead of B1
+
+    if world.dungeon_mq['Shadow Temple']:
+        save_context.write_bits(0x019F, 0x80)  # "Turn On Clear Wall Blocking Hover Boots Room"
+
+    if world.skip_child_zelda:
+        if all(trade_item not in world.settings.shuffle_child_trade for trade_item in ('Weird Egg', 'Chicken')):
+            save_context.write_bits(0x0ED7, 0x04) # "Obtained Malon's Item"
+        save_context.write_bits(0x0ED7, 0x08) # "Woke Talon in castle"
+        save_context.write_bits(0x0ED7, 0x10) # "Talon has fled castle"
+        save_context.write_bits(0x0EDD, 0x01) # "Obtained Zelda's Letter"
+        save_context.write_bits(0x0EDE, 0x02) # "Learned Zelda's Lullaby"
+        save_context.write_permanent_flag(SceneIDs.HYRULE_CASTLE, FlagType.SWITCH, 0x3, 0x10) # "Moved crates to access the courtyard"
+    if 'Zeldas Letter' in world.distribution.starting_items:
+        if world.settings.open_kakariko != 'closed':
+            save_context.write_bits(0x0F07, 0x40)  # "Spoke to Gate Guard About Mask Shop"
+        if world.settings.complete_mask_quest:
+            save_context.write_bits(0x0F07, 0x80)  # "Soldier Wears Keaton Mask"
+            save_context.write_bits(0x0EF6, 0x8F)  # "Sold Masks & Unlocked Masks" / "Obtained Mask of Truth"
+            save_context.write_bits(0x0EE4, 0xF0)  # "Paid Back Mask Fees"
+
+    if world.skipped_trials['Forest']:
+        save_context.write_bits(0x0EEA, 0x08)  # "Completed Forest Trial"
+    if world.skipped_trials['Fire']:
+        save_context.write_bits(0x0EEA, 0x40)  # "Completed Fire Trial"
+    if world.skipped_trials['Water']:
+        save_context.write_bits(0x0EEA, 0x10)  # "Completed Water Trial"
+    if world.skipped_trials['Spirit']:
+        save_context.write_bits(0x0EE8, 0x20)  # "Completed Spirit Trial"
+    if world.skipped_trials['Shadow']:
+        save_context.write_bits(0x0EEA, 0x20)  # "Completed Shadow Trial"
+    if world.skipped_trials['Light']:
+        save_context.write_bits(0x0EEA, 0x80)  # "Completed Light Trial"
+    if world.settings.trials == 0:
+        save_context.write_bits(0x0EED, 0x08)  # "Dispelled Ganon's Tower Barrier"
+
+    if world.settings.gerudo_fortress == 'open':
+        if not world.settings.shuffle_gerudo_card:
+            save_context.write_bits(0x00A5, 0x40)  # Give Gerudo Card
+        save_context.write_bits(0x0EE7, 0x0F)  # Free all 4 carpenters
+        save_context.write_permanent_flag(SceneIDs.THIEVES_HIDEOUT, FlagType.SWITCH, 0x1, 0x0F)
+        save_context.write_permanent_flag(SceneIDs.THIEVES_HIDEOUT, FlagType.SWITCH, 0x2, 0x01)
+        save_context.write_permanent_flag(SceneIDs.THIEVES_HIDEOUT, FlagType.SWITCH, 0x3, 0xFE)
+        save_context.write_permanent_flag(SceneIDs.THIEVES_HIDEOUT, FlagType.COLLECT, 0x2, 0xD4)
+    elif world.settings.gerudo_fortress == 'fast':
+        save_context.write_bits(0x0EE7, 0x0E)  # Free 3 carpenters
+        save_context.write_permanent_flag(SceneIDs.THIEVES_HIDEOUT, FlagType.SWITCH, 0x1, 0x0D)
+        save_context.write_permanent_flag(SceneIDs.THIEVES_HIDEOUT, FlagType.SWITCH, 0x2, 0x01)
+        save_context.write_permanent_flag(SceneIDs.THIEVES_HIDEOUT, FlagType.SWITCH, 0x3, 0xDC)
+        save_context.write_permanent_flag(SceneIDs.THIEVES_HIDEOUT, FlagType.COLLECT, 0x2, 0xC4)
+
+    if world.settings.open_forest == 'open':
+        save_context.write_bits(0xED5, 0x10)  # "Showed Mido Sword & Shield"

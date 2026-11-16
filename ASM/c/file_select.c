@@ -179,6 +179,8 @@ void manage_password(z64_disp_buf_t* db, z64_menudata_t* menu_data) {
                     extended->password[i] = buffer_password[i];
                 }
                 Sram_WriteSave(NULL, file);
+                // Go back to main file select to avoid starting the game by error.
+                menu_data->menu_transition++;
                 return;
             } else {
                 if (z64_game.common.input[0].pad_pressed.a) {

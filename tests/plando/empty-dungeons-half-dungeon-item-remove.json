@@ -9,7 +9,8 @@
         "shuffle_song_items":                      "song",
         "empty_dungeons_mode":                     "count",
         "empty_dungeons_count":                    4,
-        "shuffle_mapcompass":                      "remove",
+        "shuffle_map":                             "remove",
+        "shuffle_compass":                         "remove",
         "shuffle_smallkeys":                       "remove",
         "shuffle_bosskeys":                        "remove"
     }

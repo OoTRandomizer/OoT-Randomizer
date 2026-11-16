@@ -11,4 +11,6 @@ extern colorRGB16_t CFG_C_BUTTON_COLOR;
 
 void draw_input_viewer(z64_disp_buf_t* db);
 
+uint8_t is_hook_static();
+
 #endif

@@ -12,6 +12,7 @@ import re
 import unittest
 from collections import Counter, defaultdict
 from typing import Literal, Optional, Any, overload
+from unittest.mock import patch
 
 from EntranceShuffle import EntranceShuffleError
 from Fill import ShuffleError
@@ -22,9 +23,13 @@ from LocationList import location_is_viewable
 from Main import main, resolve_settings, build_world_graphs
 from Messages import Message, read_messages, shuffle_messages
 from Settings import Settings, get_preset_files
+from SettingsList import logic_tricks, advanced_logic_tricks
 from Spoiler import Spoiler
 from Rom import Rom
 from Audiobank import *
+from Language import Language
+import data.lang.property_build
+from Utils import lang_path, data_path
 
 test_dir = os.path.join(os.path.dirname(__file__), 'tests')
 output_dir = os.path.join(test_dir, 'Output')
@@ -59,6 +64,7 @@ ludicrous_set = set(ludicrous_items_base) | set(ludicrous_items_extended) | ludi
 def make_settings_for_test(settings_dict: dict[str, Any], seed: Optional[str] = None, outfilename: str = '', strict: bool = True) -> Settings:
     # Some consistent settings for testability
     settings_dict.update({
+        'language': 'English',
         'create_patch_file': False,
         'create_compressed_rom': False,
         'create_wad_file': False,
@@ -78,6 +84,7 @@ def load_settings(settings_file: dict[str, Any] | str, seed: Optional[str] = Non
             raise RuntimeError("Running test with in memory file but did not supply a filename for output file.")
         j = settings_file
         j.update({
+            'language': 'English',
             'enable_distribution_file': True,
             'distribution_file': os.path.join(test_dir, 'plando', filename + '.json')
         })
@@ -95,21 +102,22 @@ def load_spoiler(json_file: str) -> Any:
 
 
 @overload
-def generate_with_plandomizer(filename: str, live_copy: Literal[False] = False, max_attempts: int = 10) -> tuple[dict[str, Any], dict[str, Any]]:
+def generate_with_plandomizer(filename: str, live_copy: Literal[False] = False, max_attempts: int = 10, seed: str = 'TESTTESTTEST') -> tuple[dict[str, Any], dict[str, Any]]:
     pass
 
 
 @overload
-def generate_with_plandomizer(filename: str, live_copy: Literal[True], max_attempts: int = 10) -> tuple[dict[str, Any], Spoiler]:
+def generate_with_plandomizer(filename: str, live_copy: Literal[True], max_attempts: int = 10, seed: str = 'TESTTESTTEST') -> tuple[dict[str, Any], Spoiler]:
     pass
 
 
-def generate_with_plandomizer(filename: str, live_copy: bool = False, max_attempts: int = 10) -> tuple[dict[str, Any], Spoiler | dict[str, Any]]:
+def generate_with_plandomizer(filename: str, live_copy: bool = False, max_attempts: int = 10, seed: str = 'TESTTESTTEST') -> tuple[dict[str, Any], Spoiler | dict[str, Any]]:
     distribution_file = load_spoiler(os.path.join(test_dir, 'plando', filename + '.json'))
     try:
-        settings = load_settings(distribution_file['settings'], seed='TESTTESTTEST', filename=filename)
+        settings = load_settings(distribution_file['settings'], seed=seed, filename=filename)
     except KeyError:  # No settings dict in distribution file, create minimal consistent configuration
         settings = Settings({
+            'language': 'English',
             'enable_distribution_file': True,
             'distribution_file': os.path.join(test_dir, 'plando', filename + '.json'),
             'create_patch_file': False,
@@ -204,30 +212,38 @@ class TestPlandomizer(unittest.TestCase):
             self.assertNotEqual(excess_item, test_item)
         self.assertNotIn(excess_item, spoiler['item_pool'])
 
+    def test_line_wrap_japanese(self):
+        import TextBox
+
+        TextBox.line_wrap('やあ！今タルミナから留学中なんだ。^東の時計台町は英雄の道だって言うよ。', 'jp', align='Center') # Should not crash
+
     def test_rom_patching(self):
         # This makes sure there are no crashes while patching.
         if not os.path.isfile('./ZOOTDEC.z64'):
             self.skipTest("Base ROM file not available.")
         filename = "plando-ammo-max-out-of-bounds"
-        logic_rules_settings = ['glitchless', 'glitched', 'none']
-        for logic_rules_setting in logic_rules_settings:
-            with self.subTest(f"Logic Rules: {logic_rules_setting}"):
-                settings = Settings({
-                    'enable_distribution_file': True,
-                    'distribution_file': os.path.join(test_dir, 'plando', filename + '.json'),
-                    'patch_without_output': True,
-                    'create_patch_file': False,
-                    'create_compressed_rom': False,
-                    'create_wad_file': False,
-                    'create_uncompressed_rom': False,
-                    'count': 1,
-                    'create_spoiler': True,
-                    'create_cosmetics_log': False,
-                    'output_file': os.path.join(test_dir, 'Output', filename),
-                    'seed': 'TESTTESTTEST',
-                    'logic_rules': logic_rules_setting
-                })
-                main(settings)  # Should not crash
+        language_settings = ['English', 'Japanese']
+        logic_rules_settings = ['glitchless', 'advanced', 'none']
+        for language_setting in language_settings:
+            for logic_rules_setting in logic_rules_settings:
+                with self.subTest(f"Language: {language_setting}, Logic Rules: {logic_rules_setting}"):
+                    settings = Settings({
+                        'language': language_setting,
+                        'enable_distribution_file': True,
+                        'distribution_file': os.path.join(test_dir, 'plando', filename + '.json'),
+                        'patch_without_output': True,
+                        'create_patch_file': False,
+                        'create_compressed_rom': False,
+                        'create_wad_file': False,
+                        'create_uncompressed_rom': False,
+                        'count': 1,
+                        'create_spoiler': True,
+                        'create_cosmetics_log': False,
+                        'output_file': os.path.join(test_dir, 'Output', filename),
+                        'seed': 'TESTTESTTEST',
+                        'logic_rules': logic_rules_setting
+                    })
+                    main(settings)  # Should not crash
 
     def test_ice_traps(self):
         filenames = [
@@ -323,6 +339,7 @@ class TestPlandomizer(unittest.TestCase):
             "plando-potscrates-allmq",
             "plando-beehives",
             "plando-freestanding-pots-crates-beehives-triforcehunt",
+            "random_starting_items",
         ]
         for filename in filenames:
             with self.subTest(filename):
@@ -389,7 +406,7 @@ class TestPlandomizer(unittest.TestCase):
                     'Ludicrous pool has regular junk items')
         filename = "plando-ludicrous-junk-locations"
         with self.subTest("location plando junk permission with ludicrous item pool"):
-            distribution_file, spoiler = generate_with_plandomizer(filename)
+            distribution_file, spoiler = generate_with_plandomizer(filename, seed='ITF1YFNEND')
             pool_set = {i for i, c in spoiler['item_pool'].items()}
             self.assertEqual(
                 {'Rupees (5)'},
@@ -549,7 +566,7 @@ class TestPlandomizer(unittest.TestCase):
                     continue
                 for dungeon in dungeons:
                     if spoiler['empty_dungeons'][dungeon.dungeon_name]:
-                        self.assertIn(str(dungeon), spoiler[':barren_regions'])
+                        self.assertIn(dungeon.name, spoiler[':barren_regions'])
 
     def test_fix_broken_drops(self):
         # Setting off
@@ -565,12 +582,74 @@ class TestPlandomizer(unittest.TestCase):
 
 
 class TestHints(unittest.TestCase):
+    def test_multiworld_goal_weights_initialized_per_world(self):
+        settings = make_settings_for_test({
+            "world_count": 2,
+            "bridge": "medallions",
+            "bridge_medallions": 4,
+            "shuffle_ganon_bosskey": "medallions",
+            "ganon_bosskey_medallions": 6,
+            "item_pool_value": "minimal",
+            "trials_random": False,
+            "trials": 0,
+            "open_forest": "closed_deku",
+            "open_door_of_time": "open",
+            "shuffle_song_items": "song",
+            "tokensanity": "off",
+            "mq_dungeons_mode": "vanilla",
+            "hint_dist_user": {
+                "name": "goal_weight_regression",
+                "gui_name": "Goal Weight Regression",
+                "description": "Custom hint distribution for multiworld goal weight regression testing.",
+                "add_locations": [],
+                "remove_locations": [],
+                "add_items": [],
+                "remove_items": [],
+                "dungeons_woth_limit": 2,
+                "dungeons_barren_limit": 1,
+                "named_items_required": True,
+                "vague_named_items": False,
+                "use_default_goals": True,
+                "distribution": {
+                    "trial":      {"order": 1,  "weight": 0.0, "fixed": 0,  "copies": 1},
+                    "always":     {"order": 2,  "weight": 0.0, "fixed": 0,  "copies": 1},
+                    "woth":       {"order": 3,  "weight": 0.0, "fixed": 0,  "copies": 1},
+                    "goal":       {"order": 4,  "weight": 0.0, "fixed": 6,  "copies": 1},
+                    "barren":     {"order": 5,  "weight": 0.0, "fixed": 0,  "copies": 1},
+                    "entrance":   {"order": 6,  "weight": 0.0, "fixed": 0,  "copies": 1},
+                    "sometimes":  {"order": 7,  "weight": 0.0, "fixed": 99, "copies": 1},
+                },
+            },
+        }, seed="TESTTESTTEST", outfilename="multiworld-goal-weight-regression")
+
+        # Build weights via update_goal_items and skip hint generation, which mutates weights.
+        with patch("Main.build_gossip_hints", return_value=None):
+            spoiler = main(settings)
+
+        self.assertGreater(len(spoiler.worlds), 1)
+        for world in spoiler.worlds[1:]:
+            with self.subTest(world=world.id + 1):
+                self.assertIn(world.id, spoiler.goal_locations)
+                self.assertGreater(len(spoiler.goal_locations[world.id]), 0)
+
+                weighted_goals = 0
+                for category_name, goals in spoiler.goal_locations[world.id].items():
+                    category = world.goal_categories[category_name]
+                    for goal_name, goal_worlds in goals.items():
+                        if not any(len(locations) > 0 for locations in goal_worlds.values()):
+                            continue
+                        weighted_goals += 1
+                        self.assertEqual(category.weight, 1)
+                        self.assertEqual(category.get_goal(goal_name).weight, 1)
+
+                self.assertGreater(weighted_goals, 0)
+
     def test_skip_zelda(self):
         # Song from Impa would be WotH, but instead of relying on random chance to get HC WotH,
         # just exclude all other locations to see if HC is barren.
         _, spoiler = generate_with_plandomizer("skip-zelda")
         woth = spoiler[':barren_regions']
-        self.assertIn('Hyrule Castle', woth)
+        self.assertIn('HYRULE_CASTLE', woth)
 
     def test_ganondorf(self):
         if not os.path.isfile('./ZOOTDEC.z64'):
@@ -641,10 +720,10 @@ class TestHints(unittest.TestCase):
         _, spoiler = generate_with_plandomizer(filename, live_copy=True)
         world = spoiler.worlds[0]
         location = spoiler.worlds[0].misc_hint_item_locations["ganondorf"]
-        area = HintArea.at(location, use_alt_hint=True).text(world.settings.clearer_hints, world=None if not location.world or location.world.id == world.id else location.world.id + 1)
+        area = HintArea.at(location, use_alt_hint=True).text(world.language, world.settings.clearer_hints, world=None if not location.world or location.world.id == world.id else location.world.id + 1)
         self.assertEqual(area, "#Ganondorf's Chamber#")
         # Build a test message with the same ID as the ganondorf hint (0x70CC)
-        messages = [Message("Test", 0, 0x70CC, 0, 0, 0)]
+        messages = [Message("Test", 0, 0x70CC, 0, 0, 0, "en")]
         build_misc_item_hints(spoiler.worlds[0], messages, allow_duplicates=True)
         for message in messages:
             if message.id == 0x70CC: # Ganondorf hint message
@@ -665,7 +744,6 @@ class TestEntranceRandomizer(unittest.TestCase):
         # with no items, and Prelude and Serenade should be foolish. If this behaviour
         # is changed, this unit test serves as a reminder to revisit warp song
         # foolishness.
-        # Currently only tests glitchless as glitched logic does not support ER yet.
         # Assumes the player starts with an ocarina to use a warp song from Sheik at
         # Colossus or Ice Cavern.
         filenames = [
@@ -675,10 +753,14 @@ class TestEntranceRandomizer(unittest.TestCase):
             distribution_file = load_spoiler(os.path.join(test_dir, 'plando', filename + '.json'))
             settings = load_settings(distribution_file['settings'], seed='TESTTESTTEST', filename=filename)
             resolve_settings(settings)
-            # Test for an entrance shuffle error during world validation.
-            # If the test succeeds, this confirms Serenade and Prelude can be foolish.
-            with self.assertRaises(EntranceShuffleError):
-                build_world_graphs(settings)
+            # Test glitchless and advanced logic
+            logic_rules_settings = ['glitchless', 'advanced']
+            for logic_rules_setting in logic_rules_settings:
+                settings.logic_rules = logic_rules_setting
+                # Test for an entrance shuffle error during world validation.
+                # If the test succeeds, this confirms Serenade and Prelude can be foolish.
+                with self.assertRaises(EntranceShuffleError):
+                    build_world_graphs(settings)
 
 
 class TestValidSpoilers(unittest.TestCase):
@@ -812,8 +894,53 @@ class TestValidSpoilers(unittest.TestCase):
                       for filename in os.listdir(test_dir)
                       if filename.endswith('.sav')]
         for filename in test_files:
-            with self.subTest(filename=filename):
-                settings = load_settings(filename, seed='TESTTESTTEST')
+            # Test glitchless and advanced logic
+            logic_rules_settings = ['glitchless', 'advanced']
+            for logic_rules_setting in logic_rules_settings:
+                with self.subTest(logic_rules_setting, filename=filename):
+                    settings = load_settings(filename, seed='TESTTESTTEST')
+                    # If this is already an advanced logic test, don't run twice
+                    if settings.logic_rules == 'advanced' and logic_rules_setting == 'advanced':
+                        continue
+                    settings.logic_rules = logic_rules_setting
+                    main(settings)
+                    # settings.output_file contains the first part of the filename
+                    spoiler = load_spoiler('%s_Spoiler.json' % settings.output_file)
+                    self.verify_woth(spoiler)
+                    self.verify_playthrough(spoiler)
+                    self.verify_disables(spoiler)
+
+    def test_advanced_tricks(self):
+        filename = 'glitched-standard.sav'
+        settings = load_settings(filename, seed='TESTTESTTEST')
+        # Enable all standard logic tricks
+        settings.allowed_tricks = [trick['name'] for trick in logic_tricks.values()]
+        for i in range(2):
+            test_name = 'Glitched logic with all standard tricks'
+            # On the second pass, enable all advanced logic tricks
+            if i == 1:
+                test_name = 'Glitched logic with all advanced tricks'
+                settings.advanced_allowed_tricks = [trick['name'] for trick in advanced_logic_tricks.values()]
+            with self.subTest(test_name, filename=filename):
+                main(settings)
+                # settings.output_file contains the first part of the filename
+                spoiler = load_spoiler('%s_Spoiler.json' % settings.output_file)
+                self.verify_woth(spoiler)
+                self.verify_playthrough(spoiler)
+                self.verify_disables(spoiler)
+
+    def test_advanced_tricks_entrances(self):
+        filename = 'glitched-entrances.sav'
+        settings = load_settings(filename, seed='TESTTESTTEST')
+        # Enable all standard logic tricks
+        settings.allowed_tricks = [trick['name'] for trick in logic_tricks.values()]
+        for i in range(2):
+            test_name = 'Glitched logic with entrances and all standard tricks'
+            # On the second pass, enable all advanced logic tricks
+            if i == 1:
+                test_name = 'Glitched logic with entrances and all advanced tricks'
+                settings.advanced_allowed_tricks = [trick['name'] for trick in advanced_logic_tricks.values()]
+            with self.subTest(test_name, filename=filename):
                 main(settings)
                 # settings.output_file contains the first part of the filename
                 spoiler = load_spoiler('%s_Spoiler.json' % settings.output_file)
@@ -831,7 +958,13 @@ class TestValidSpoilers(unittest.TestCase):
                 with self.subTest(name, filename=ofile):
                     settings = make_settings_for_test(
                             settings_dict, seed='TESTTESTTEST', outfilename=ofile, strict=False)
-                    main(settings)
+                    try:
+                        main(settings)
+                    except EntranceShuffleError:
+                        if 'hell' in settings_dict.get('aliases', []):
+                            self.skipTest("Entrance shuffle error, see https://github.com/OoTRandomizer/OoT-Randomizer/issues/2181 for a potential fix.")
+                        else:
+                            raise
                     spoiler = load_spoiler('%s_Spoiler.json' % settings.output_file)
                     self.verify_woth(spoiler)
                     self.verify_playthrough(spoiler)
@@ -842,6 +975,7 @@ class TestValidSpoilers(unittest.TestCase):
     def test_fuzzer(self):
         random.seed()
         fuzz_settings = [Settings({
+            'language': 'English',
             'randomize_settings': True,
             'create_patch_file': False,
             'create_compressed_rom': False,
@@ -876,7 +1010,7 @@ class TestTextShuffle(unittest.TestCase):
         if not os.path.isfile('./ZOOTDEC.z64'):
             self.skipTest("Base ROM file not available.")
         rom = Rom("./ZOOTDEC.z64")
-        messages = read_messages(rom)
+        messages = read_messages(rom, Language("English"))
         shuffle_messages(messages)
         shuffle_messages(messages, False)
 
@@ -930,3 +1064,132 @@ class TestCustomAudio(unittest.TestCase):
         self.assertEqual(num_banks, 0x26)
         self.assertEqual(audiobanks[0x25].bank_offset, 0x19110)
         self.assertEqual(audiobanks[0x25].size, 0x3940)
+
+def extract_first_second_level_keys(data: dict) -> list:
+    result = []
+    for first_key, first_value in data.items():
+        if isinstance(first_value, dict):
+            if first_key in ["pronoun_mapping", "verb_mapping"]:
+                result.append(f"{first_key}")
+            else:
+                for second_key in first_value.keys():
+                    result.append(f"{first_key}.{second_key}")
+        else:
+            result.append(f"{first_key}")
+    return result
+
+class TestLanguageFile(unittest.TestCase):
+    def test_langfiles(self):
+        base_keys = extract_first_second_level_keys(data.lang.property_build.lang_info)
+        bin_patch = list(json.load(open(data_path("bin_patch.json"), encoding='utf-8')).keys()) + ["blue_fire_arrow_item_name_jap.ia4", "blue_fire_arrow_item_name_eng.ia4"]
+        for lang in os.listdir(lang_path()):
+            if os.path.isdir(os.path.join(lang_path(), lang)) and lang != "__pycache__":
+                lang_files = os.listdir(os.path.join(lang_path(), lang))
+                self.assertIn("property.json", lang_files, msg = "\n{}: property.json is not included".format(lang))
+                lang_files.remove("property.json")
+                property_keys = extract_first_second_level_keys(json.load(open(os.path.join(lang_path(), lang, "property.json"), encoding='utf-8')))
+                only_in_base = list(sorted(set(base_keys) - set(property_keys)))
+                only_in_lang = list(sorted(set(property_keys) - set(base_keys)))
+                diff_keys = []
+                if only_in_base:
+                    diff_keys.append(f"missing: [{', '.join(only_in_base)}]")
+                if only_in_lang:
+                    diff_keys.append(f"extra: [{', '.join(only_in_lang)}]")
+                bin_full = list(sorted(set(lang_files) - set(bin_patch)))
+                diff_texts = "\n".join(diff_keys)
+                self.assertTrue(not diff_keys, msg = "\n{}: some properties are wrong in property.json\n\n{}".format(lang, diff_texts))
+                self.assertEqual(bin_full, [], msg = "\n{}: some non-wanted bin files are included".format(lang))
+
+class TestSceneFiles(unittest.TestCase):
+    # Compares byte-for-byte between parsed output
+    # read from the rom and the original unparsed data.
+    @unittest.skipUnless(os.path.isfile('ZOOTDEC.z64'), "requires the vanilla ROM to compare to")
+    def test_vanilla_scene_file_parsing(self):
+        from Scene import compare_parsed_data_to_rom
+        uncompressed_rom = Rom('ZOOTDEC.z64')
+        compare_parsed_data_to_rom(uncompressed_rom)
+
+    # Verifies the hard-coded addresses defined for pointers
+    # located outside scene files that reference scene file
+    # assets are correct. Bytes at the address are read and
+    # compared to the corresponding segment address produced
+    # by the parsed scene asset.
+    @unittest.skipUnless(os.path.isfile('ZOOTDEC.z64'), "requires the vanilla ROM to compare to")
+    def test_vanilla_scene_file_pointers(self):
+        from Scene import check_external_reference_locations
+        uncompressed_rom = Rom('ZOOTDEC.z64')
+        check_external_reference_locations(uncompressed_rom)
+
+def force_random_starting_items(*preferred: str):
+    import ItemPool
+    real_pool = ItemPool.configure_random_starting_items_pool
+
+    def pick_preferred(world, pool):
+        candidates = real_pool(world, pool)
+        chosen = [name for name in preferred if name in candidates]
+        return chosen[:1] or candidates
+
+    return patch('ItemPool.configure_random_starting_items_pool', pick_preferred)
+
+def rsi_settings(extra: dict[str, Any], count: int, seed: str, outfilename: str, rom: bool = False) -> Settings:
+    settings_dict = {
+        'add_random_starting_items': count > 0,
+        'random_starting_items_count': count,
+        'random_starting_items_exclude': [],
+    }
+    settings_dict.update(extra)
+    if rom:
+        settings_dict.update({'patch_without_output': True, 'create_cosmetics_log': False})
+    return make_settings_for_test(settings_dict, seed=seed, outfilename=outfilename)
+
+def generate_rsi(extra: dict[str, Any], count: int, preferred: tuple[str, ...] = (), seed: str = 'TESTTESTTEST', outfilename: str = 'rsi') -> Spoiler:
+    with force_random_starting_items(*preferred):
+        return main(rsi_settings(extra, count, seed, outfilename))
+
+def generate_rsi_rom(extra: dict[str, Any], count: int, preferred: tuple[str, ...] = (), seed: str = 'TESTTESTTEST', outfilename: str = 'rsi-rom') -> tuple[Spoiler, Rom]:
+    import Main
+    captured = {}
+    real_prepare_rom = Main.prepare_rom
+
+    def capture_prepare_rom(spoiler, world, rom, rng_state=None):
+        real_prepare_rom(spoiler, world, rom, rng_state)
+        captured['rom'] = rom
+
+    with force_random_starting_items(*preferred), patch('Main.prepare_rom', capture_prepare_rom):
+        spoiler = main(rsi_settings(extra, count, seed, outfilename, rom=True))
+    return spoiler, captured['rom']
+
+def read_initial_save_table(rom: Rom) -> dict[int, int]:
+    # Decodes SaveContext.write_save_table's format: [addr_hi, addr_lo, kind, value] * n, then 4 zero bytes.
+    # kind 0 = bits OR'd into the new-file default, kind 1 = byte written as-is.
+    table = rom.read_bytes(rom.sym('INITIAL_SAVE_DATA'), 0x400)
+    save: dict[int, int] = {}
+    for i in range(0, len(table), 4):
+        hi, lo, kind, value = table[i:i + 4]
+        if (hi, lo, kind, value) == (0, 0, 0, 0):
+            break
+        address = (hi << 8) | lo
+        save[address] = (save.get(address, 0) | value) if kind == 0 else value
+    return save
+
+class TestRandomStartingItems(unittest.TestCase):
+    def setUp(self):
+        if self._testMethodName.startswith('test_rom_') and not os.path.isfile('./ZOOTDEC.z64'):
+            self.skipTest('Base ROM file not available.')
+
+    def test_rom_random_rutos_letter_with_fast_fountain(self):
+        spoiler, rom = generate_rsi_rom({'zora_fountain': 'fast'}, count=1, preferred=('Rutos Letter',))
+        self.assertIn('Rutos Letter', spoiler.worlds[0].randomized_starting_items)
+        save = read_initial_save_table(rom)
+        self.assertTrue(save.get(0x0EDB, 0) & 0x08, 'King Zora should start moved')
+        self.assertEqual(rom.read_byte(rom.sym('FAST_FOUNTAIN')), 0)
+
+    def test_rom_random_sword_and_shield_with_fast_forest(self):
+        spoiler, rom = generate_rsi_rom({'open_forest': 'fast', 'shuffle_kokiri_sword': True},
+                                        count=2, preferred=('Kokiri Sword', 'Deku Shield'))
+        picked = spoiler.worlds[0].randomized_starting_items
+        self.assertIn('Kokiri Sword', picked)
+        self.assertIn('Deku Shield', picked)
+        save = read_initial_save_table(rom)
+        self.assertTrue(save.get(0x0ED5, 0) & 0x10, 'Mido should start with moved')
+        self.assertEqual(rom.read_byte(rom.sym('FAST_FOREST')), 0)

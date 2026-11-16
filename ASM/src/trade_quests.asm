@@ -1,7 +1,3 @@
-CFG_ADULT_TRADE_SHUFFLE:
-    .halfword 0x0000
-CFG_CHILD_TRADE_SHUFFLE:
-    .halfword 0x0000
 ADULT_ANJU_ITEM_DIALOG:
     .word 0x00000000
 
@@ -11,25 +7,40 @@ check_fado_spawn_flags:
     addiu   sp, sp, -0x18
     sw      ra, 0x14(sp)
 
-    ; displaced code
-    lbu     t5, 0x0074(t4)
-    addiu   $at, $zero, 0x0031
+    ; Only change behavior for Fado actor
+    ; Vanilla EnKo_CanSpawn behavior checks if
+    ; the scene is Lost Woods and does not
+    ; check the EnKo type. No reason not to be
+    ; more specific since we have the option.
+    lh      t0, 0x1C(s0)    ; s0 = EnKo* this pointer, 0x1C = Actor.params
+    andi    t1, t0, 0xFF    ; filter actor params to those used for ENKO_TYPE macro
+    li      $at, 0xC        ; 0xC = ENKO_TYPE_CHILD_FADO
+    bne     t1, $at, @@return_fado
+    nop
+    la      t0, GLOBAL_CONTEXT
+    lh      t1, 0xA4(t0)    ; play->sceneId
+    li      $at, 0x5B       ; 0x5B = Lost Woods scene ID
+    bne     t1, $at, @@return_fado
+    nop
 
     ; Spawns if Odd Potion owned but not turned in
     jal     SaveFile_TradeItemIsOwned
     ori     a0, $zero, 0x31
-    beqz    v0, @@return_fado
-    ori     t5, $zero, 0x0000          ; don't spawn
+    beqz    v0, @@kill_fado
+    nop
 
     jal     SaveFile_TradeItemIsTraded
     ori     a0, $zero, 0x31
-    bnez    v0, @@return_fado
-    ori     t5, $zero, 0x0000          ; don't spawn
-    ori     t5, $zero, 0x0031          ; spawn
+    bnez    v0, @@kill_fado
+    nop
+    b       @@return_fado
+    nop
 
+@@kill_fado:      ; you monster D:
+    ; Actor_Kill
+    jal     0x80020EB4
+    or      a0, s0, $zero
 @@return_fado:
-    ; reset v1 in case it was modified
-    or      v1, $zero, $zero
     lw      ra, 0x14(sp)
     jr      ra
     addiu   sp, sp, 0x18
@@ -89,7 +100,7 @@ check_skull_kid_spawn_flags:
 check_if_biggoron_should_cry_eye_hook:
     addiu   sp, sp, -0x18
     sw      ra, 0x14(sp)
-    lh      v0, CFG_ADULT_TRADE_SHUFFLE
+    lbu     v0, CFG_ADULT_TRADE_SHUFFLE
     beqz    v0, @@vanilla_eye_hook
     nop
     jal     check_if_biggoron_should_cry
@@ -108,7 +119,7 @@ check_if_biggoron_should_cry_eye_hook:
 check_if_biggoron_should_cry_anim_hook:
     addiu   sp, sp, -0x18
     sw      ra, 0x14(sp)
-    lh      v0, CFG_ADULT_TRADE_SHUFFLE
+    lbu     v0, CFG_ADULT_TRADE_SHUFFLE
     beqz    v0, @@vanilla_anim_hook
     nop
     jal     check_if_biggoron_should_cry
@@ -130,7 +141,7 @@ check_if_biggoron_should_cry_sfx_hook:
     addiu   sp, sp, -0x18
     sw      a3, 0x10(sp)
     sw      ra, 0x14(sp)
-    lh      v0, CFG_ADULT_TRADE_SHUFFLE
+    lbu     v0, CFG_ADULT_TRADE_SHUFFLE
     beqz    v0, @@vanilla_sfx_hook
     nop
     jal     check_if_biggoron_should_cry
@@ -159,7 +170,7 @@ check_if_biggoron_should_cry:
     sw      ra, 0x1C(sp)
 
     ; Don't change behavior if trade shuffle is off
-    lh      at, CFG_ADULT_TRADE_SHUFFLE
+    lbu     at, CFG_ADULT_TRADE_SHUFFLE
     beqz    at, @@return_crybaby
     nop
 
@@ -234,9 +245,9 @@ check_trade_item_traded:
 
     ; Default behavior if Adult and Child
     ; Trade Quest Shuffles Off
-    lh      t3, CFG_ADULT_TRADE_SHUFFLE
+    lbu     t3, CFG_ADULT_TRADE_SHUFFLE
     bnez    t3, @@check_trade_flags
-    lh      t3, CFG_CHILD_TRADE_SHUFFLE
+    lbu     t3, CFG_CHILD_TRADE_SHUFFLE
     beqz    t3, @@return_traded
     nop
 
@@ -275,6 +286,47 @@ update_shiftable_trade_item_egg_hook:
 
 ;==================================================================================================
 
+update_shiftable_trade_item_save_hook:
+    addiu   sp, sp, -0x40
+    sw      ra, 0x10(sp)
+    sw      a0, 0x14(sp)
+    sw      a1, 0x18(sp)
+    sw      a2, 0x1C(sp)
+    sw      a3, 0x20(sp)
+    sw      t0, 0x24(sp)
+    sw      t1, 0x28(sp)
+    sw      t2, 0x2C(sp)
+    sw      t3, 0x30(sp)
+    sw      t9, 0x34(sp)
+    sw      s0, 0x38(sp)
+    sw      v1, 0x3C(sp)
+
+    ; a0/a1 conveniently already set to old/new item
+    jal     SaveFile_UpdateShiftableItem
+    nop
+
+    lw      ra, 0x10(sp)
+    lw      a0, 0x14(sp)
+    lw      a1, 0x18(sp)
+    lw      a2, 0x1C(sp)
+    lw      a3, 0x20(sp)
+    lw      t0, 0x24(sp)
+    lw      t1, 0x28(sp)
+    lw      t2, 0x2C(sp)
+    lw      t3, 0x30(sp)
+    lw      t9, 0x34(sp)
+    lw      s0, 0x38(sp)
+    lw      v1, 0x3C(sp)
+
+    ; Displaced code
+    lbu     t4, 0x0000(t9)
+    addu    t5, s0, t4
+
+    jr      ra
+    addiu   sp, sp, 0x40
+
+;==================================================================================================
+
 check_if_mask_sells_out:
 
     ; displaced code
@@ -290,7 +342,7 @@ check_if_mask_sells_out:
     or      v1, $zero, $zero
 
     ; Skip giving item if partial/full mask shuffle enabled
-    lh      v1, CFG_CHILD_TRADE_SHUFFLE
+    lbu     v1, CFG_CHILD_TRADE_SHUFFLE
 
 @@return_sold_out:
     jr      ra
@@ -449,7 +501,7 @@ set_bunny_hood_traded_flag:
 ;==================================================================================================
 
 handle_child_zelda_savewarp:
-    lh      v0, CFG_CHILD_TRADE_SHUFFLE
+    lbu     v0, CFG_CHILD_TRADE_SHUFFLE
     bnez    v0, @@return
     nop
 

@@ -3,7 +3,7 @@ move_key_icon:
     addiu   t8, $zero, 0x00BE
 
     li      s0, bk_display
-    lw      s0, 0x00 (s0)
+    lb      s0, 0x00 (s0)
     beqz    s0, @@return_icon
     nop
 
@@ -18,7 +18,7 @@ move_key_counter:
     addiu   t8, $zero, 0x00BE
 
     li      s0, bk_display
-    lw      s0, 0x00 (s0)
+    lb      s0, 0x00(s0)
     beqz    s0, @@return_counter
     nop
 

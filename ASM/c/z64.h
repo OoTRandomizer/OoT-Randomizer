@@ -41,6 +41,7 @@
 #define NA_SE_SY_SET_FIRE_ARROW 0x483E
 
 #define FONT_CHAR_TEX_SIZE ((16 * 16) / 2) // 16x16 I4 texture
+#define MESSAGE_WIDE_CHAR_ZERO 0x824F // wide character for 0
 
 #define OFFSETOF(structure, member) ((size_t)&(((structure*)0)->member))
 
@@ -564,6 +565,30 @@ typedef struct {
   int16_t   copyDestFileIndex;    /* 0x1CA50 */
 } z64_FileChooseContext_t;
 
+/**
+ * The respawn mode names refer to the perceived player movement when respawning
+ * "down": being on ground
+ * "return": coming from the ground
+ * "top": coming from the air
+ */
+typedef enum {
+    /* 0x00 */ RESPAWN_MODE_DOWN,   /* Normal Void Outs */
+    /* 0x01 */ RESPAWN_MODE_RETURN, /* Grotto Returnpoints */
+    /* 0x02 */ RESPAWN_MODE_TOP,    /* Farore's Wind */
+    /* 0x03 */ RESPAWN_MODE_MAX
+} RespawnMode;
+
+typedef struct {
+    /* 0x00 */ z64_xyzf_t pos;
+    /* 0x0C */ int16_t yaw;
+    /* 0x0E */ int16_t playerParams;
+    /* 0x10 */ int16_t entranceIndex;
+    /* 0x12 */ uint8_t roomIndex;
+    /* 0x13 */ int8_t data;
+    /* 0x14 */ uint32_t tempSwchFlags;
+    /* 0x18 */ uint32_t tempCollectFlags;
+} RespawnData; // size = 0x1C
+
 typedef struct {
   int32_t         entrance_index;           /* 0x0000 */
   int32_t         link_age;                 /* 0x0004 */
@@ -737,18 +762,15 @@ typedef struct {
   char            unk_0F_[0x0004];          /* 0x1358 */
   int32_t         game_mode;                /* 0x135C */
   uint32_t        scene_setup_index;        /* 0x1360 */
-  int32_t         void_flag;                /* 0x1364 */
-  z64_xyzf_t      void_pos;                 /* 0x1368 */
-  z64_angle_t     void_yaw;                 /* 0x1374 */
-  int16_t         void_var;                 /* 0x1376 */
-  int16_t         void_entrance;            /* 0x1378 */
-  int8_t          void_room_index;          /* 0x137A */
-  int8_t          unk_10_;                  /* 0x137B */
-  uint32_t        temp_swch_flags;          /* 0x137C */
-  uint32_t        temp_collect_flags;       /* 0x1380 */
-  char            unk_11_[0x0013];          /* 0x1384 */
-  uint8_t         grotto_id;                /* 0x1397 */
-  char            unk_12_[0x0030];          /* 0x1398 */
+  int32_t         respawn_flag;             /* 0x1364 */
+  RespawnData     respawn[RESPAWN_MODE_MAX];/* 0x1368 */
+  float           entranceSpeed;            /* 0x13BC */
+  uint16_t        entranceSound;            /* 0x13C0 */
+  char            unk_10_[0x0001];          /* 0x13C2 */
+  uint8_t         retainWeatherMode;        /* 0x13C3 */
+  int16_t         dogParams;                /* 0x13C4 */
+  uint8_t         envHazardTextTriggerFlags;/* 0x13C6 */
+  uint8_t         showTitleCard;            /* 0x13C7 */
   uint16_t        nayrus_love_timer;        /* 0x13C8 */
   char            unk_13_[0x0004];          /* 0x13CA */
   int16_t         timer_1_state;            /* 0x13CE */
@@ -1278,7 +1300,10 @@ typedef struct {
     /* 0xE300 */ int32_t      msgLength; // original name : "msg_data"
     /* 0xE304 */ uint8_t      msgMode; // original name: "msg_mode"
     /* 0xE305 */ char         unk_E305[0x1];
-    /* 0xE306 */ uint8_t      msgBufDecoded[200]; // decoded message buffer, may be smaller than this
+    /* 0xE306 */ union {
+        uint8_t      msgBufDecoded[200]; // decoded message buffer, may be smaller than this
+        uint16_t     msgBufDecodedWide[100]; // decoded message buffer, may be smaller than this
+    };
     /* 0xE3CE */ uint16_t     msgBufPos; // original name : "rdp"
     /* 0xE3D0 */ uint16_t     unk_E3D0; // unused, only ever set to 0
     /* 0xE3D2 */ uint16_t     textDrawPos; // draw all decoded characters up to this buffer position
@@ -1343,6 +1368,11 @@ typedef enum {
     /* 0x15 */ CAM_MODE_MAX,
 } CameraModeType;
 
+typedef struct ActorListEntry {
+    /* 0x00 */ int32_t length; // number of actors loaded of this category
+    /* 0x04 */ z64_actor_t* head; // pointer to head of the linked list of this category (most recent actor added)
+} ActorListEntry; // size = 0x08
+
 /* game context */
 typedef struct {
   z64_ctxt_t       common;                 /* 0x00000 */
@@ -1378,10 +1408,7 @@ typedef struct {
   z64_actor_ctxt_t actor_ctxt;             /* 0x01C24 */
   uint8_t          n_actors_loaded;        /* 0x01C2C */
   char             unk_0A_[0x0003];        /* 0x01C2D */
-  struct {
-    uint32_t       length;
-    z64_actor_t   *first;
-  }                actor_list[12];         /* 0x01C30 */
+  ActorListEntry   actorLists[12];         /* 0x01C30 */  // index is actor category
   char             unk_0B_[0x0038];        /* 0x01C90 */
   z64_actor_t     *arrow_actor;            /* 0x01CC8 */
   z64_actor_t     *target_actor;           /* 0x01CCC */
@@ -1447,7 +1474,7 @@ typedef struct {
   char             unk_16_[0x000B];        /* 0x11CBD */
   void            *room_ptr;               /* 0x11CC8 */
   char             unk_17_[0x00D4];        /* 0x11CCC */
-  float            mf_11DA0[4][4];         /* 0x11DA0 */
+  float            billboard_mtx[4][4];    /* 0x11DA0 */
   char             unk_18_[0x0004];        /* 0x11DE0 */
   uint32_t         gameplay_frames;        /* 0x11DE4 */
   uint8_t          link_age;               /* 0x11DE8 */
@@ -1468,8 +1495,10 @@ typedef struct {
   uint8_t          shootingGalleryStatus;  /* 0x11E5C */
   uint8_t          bombchuBowlingStatus;   /* 0x11E5D */
   uint8_t          fadeout_transition;     /* 0x11E5E */
-                                           /* 0x11E5F */
-} z64_game_t;
+  char             unk_25_[0x05BC];        /* 0x11E5F */
+  uint8_t          transitionMode;         /* 0x1241B */
+  char             unk_26_[0x00FC];        /* 0x1241C */
+} z64_game_t; // 0x12518
 
 
 typedef struct {
@@ -1896,6 +1925,30 @@ typedef enum {
     /* 4 */ PAUSE_BG_PRERENDER_MAX,
 } PauseBgPreRenderState;
 
+typedef struct SkelAnime {
+    /* 0x00 */ char known_1_[0x08];
+    /* 0x08 */ void* animation; // Can be an AnimationHeader or LinkAnimationHeader.
+    /* 0x0C */ float startFrame; // In mode ANIMMODE_LOOP_PARTIAL*, start of partial loop.
+    /* 0x10 */ float endFrame; // In mode ANIMMODE_ONCE*, Update returns true when curFrame is equal to this. In mode ANIMMODE_LOOP_PARTIAL*, end of partial loop.
+    /* 0x14 */ float animLength; // Total number of frames in the current animation.
+    /* 0x18 */ float curFrame; // Current frame in the animation
+    /* 0x1C */ char known_2_[0x28];
+} SkelAnime; // size = 0x44
+
+typedef struct NpcInteractInfo {
+    /* 0x00 */ int16_t talkState;
+    /* 0x02 */ int16_t trackingMode;
+    /* 0x04 */ int16_t autoTurnTimer;
+    /* 0x06 */ int16_t autoTurnState;
+    /* 0x08 */ z64_xyz_t headRot;
+    /* 0x0E */ z64_xyz_t torsoRot;
+    /* 0x14 */ float yOffset; // Y position offset to add to actor position when calculating angle to target
+    /* 0x18 */ z64_xyzf_t trackPos;
+    /* 0x24 */ char unk_24[0x4];
+} NpcInteractInfo; // size = 0x28
+
+// Bit Flag array in which gBitFlags[n] is literally (1 << n)
+extern uint32_t gBitFlags[32];
 
 typedef enum UpgradeType {
     /* 0x00 */ UPG_QUIVER,
@@ -1916,6 +1969,7 @@ typedef enum UpgradeType {
 #define AMMO(item) z64_file.ammo[SLOT(item)]
 #define CAPACITY(upg, value) gUpgradeCapacities[upg][value]
 #define ABS(x) ((x) >= 0 ? (x) : -(x))
+#define CHECK_OWNED_EQUIP_ALT(equip, value) (z64_file.equipment & gBitFlags[(value) + (equip) * 4])
 
 /* dram addresses */
 #define z64_EnItem00Action_addr                 0x800127E0
@@ -2002,6 +2056,7 @@ typedef enum UpgradeType {
 #define Message_ContinueTextbox_addr            0x800DCE80
 #define PlaySFX_addr                            0x800646F0
 #define z64_ScalePitchAndTempo_addr             0x800C64A0
+#define Font_LoadCharWide_addr                  0x8005BC90
 #define Font_LoadChar_addr                      0x8005BCE4
 #define GetItem_Draw_addr                       0x800570C0
 #define z64_Audio_GetActiveSeqId_addr           0x800CAB18
@@ -2085,6 +2140,7 @@ typedef int32_t (*z64_ActorOfferGetItem_proc)(z64_actor_t* actor, z64_game_t* ga
 typedef void(*z64_RandSeed_proc) (uint32_t seed);
 typedef float(*z64_Rand_ZeroOne_proc)();
 typedef void(*Font_LoadChar_proc)(void* font, uint8_t character, uint16_t codePointIndex);
+typedef void(*Font_LoadCharWide_proc)(void* font, uint16_t character, uint16_t button);
 
 typedef void(*Interface_LoadItemIcon1_proc) (z64_game_t* game, uint16_t button);
 
@@ -2200,6 +2256,7 @@ typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawn
 
 #define PlaySFX ((PlaySFX_proc)PlaySFX_addr)
 #define Font_LoadChar ((Font_LoadChar_proc)Font_LoadChar_addr)
+#define Font_LoadCharWide ((Font_LoadCharWide_proc)Font_LoadCharWide_addr)
 #define GetItem_Draw            ((GetItem_Draw_proc)GetItem_Draw_addr)
 
 /* macros */
@@ -2468,5 +2525,7 @@ typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawn
 
 extern void Fault_AddHungupAndCrashImpl(const char* msg1, const char* msg2);
 extern int32_t sprintf(char* dst, char* fmt, ...);
+extern int32_t CutsceneFlags_Get(void* play, int16_t flag);
+extern int32_t DemoKankyo_CutsceneFlags_Get_Hook(void* play, int16_t flag);
 
 #endif

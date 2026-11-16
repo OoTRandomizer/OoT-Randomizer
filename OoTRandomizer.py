@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
-if sys.version_info < (3, 8):
-    print("OoT Randomizer requires Python version 3.8 or newer and you are using %s" % '.'.join([str(i) for i in sys.version_info[0:3]]))
+if sys.version_info < (3, 13):
+    print("OoT Randomizer requires Python version 3.13 or newer and you are using %s" % '.'.join([str(i) for i in sys.version_info[0:3]]))
     sys.exit(1)
 
 import datetime
@@ -9,8 +9,10 @@ import logging
 import os
 import time
 
+from Utils import ensure_venv
 
 def start() -> None:
+    ensure_venv()
     from Main import main, from_patch_file, cosmetic_patch, diff_roms
     from Settings import get_settings_from_command_line_args
     from Utils import check_version, VersionError, local_path

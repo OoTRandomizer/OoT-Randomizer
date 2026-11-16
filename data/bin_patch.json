@@ -1,0 +1,106 @@
+{
+    "title.bin": [
+        "0x01795300",
+        "0x017B4440"
+    ],
+    "keaton.bin": [
+        "0x8A7C00",
+        "0x8A7D00"
+    ],
+    "NESFont.bin": [
+        "0x928000",
+        "0x92C580"
+    ],
+    "Kanji.bin": [
+        "0x4D9F40",
+        "0x556240"
+    ],
+    "EXTitleCard.bin": [
+        "0x7BD000",
+        "0x8458A0"
+    ],
+    "Gameover.bin": [
+        "0x860000",
+        "0x863300"
+    ],
+    "TitleCardJP.bin": [
+        "0x864000",
+        "0x871C80"
+    ],
+    "TitleCardEN.bin": [
+        "0x872000",
+        "0x87FC80"
+    ],
+    "ItemNameJP.bin": [
+        "0x880000",
+        "0x89EC00"
+    ],
+    "ItemNameEN.bin": [
+        "0x89EC00",
+        "0x8BD800"
+    ],
+    "MapName.bin": [
+        "0x8BE000",
+        "0x8DF800"
+    ],
+    "ActionJP.bin": [
+        "0x8E0000",
+        "0x8E2B80"
+    ],
+    "ActionEN.bin": [
+        "0x8E2B80",
+        "0x8E5700"
+    ],
+    "PlaceName.bin": [
+        "0x0198A000",
+        "0x019FBB00"
+    ],
+    "FileSelJP.bin": [
+        "0x01A02000",
+        "0x01A2CF00"
+    ],
+    "FileSelEN.bin": [
+        "0x01A2CF00",
+        "0x01A3B5C0"
+    ],
+    "KingDodongo.bin": [
+        "0x01054000",
+        "0x010838E0"
+    ],
+    "Gohma.bin": [
+        "0x010A9000",
+        "0x010C7200"
+    ],
+    "PhantomGanon.bin": [
+        "0x01238000",
+        "0x01248DE0"
+    ],
+    "Barinade.bin": [
+        "0x01340000",
+        "0x0135DDB0"
+    ],
+    "Volvagia.bin": [
+        "0x013C8000",
+        "0x013D8270"
+    ],
+    "Morpha.bin": [
+        "0x014AB000",
+        "0x014B2C70"
+    ],
+    "Twinrova.bin": [
+        "0x0156F000",
+        "0x015A8BB0"
+    ],
+    "Ganondorf.bin": [
+        "0x015C9000",
+        "0x015D9100"
+    ],
+    "Bongo.bin": [
+        "0x015DA000",
+        "0x015F37B0"
+    ],
+    "Ganon.bin": [
+        "0x017EA000",
+        "0x0181E7F0"
+    ]
+}

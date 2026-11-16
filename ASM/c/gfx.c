@@ -8,12 +8,12 @@ extern uint8_t FONT_RESOURCE[];
 extern uint8_t DPAD_RESOURCE[];
 extern uint8_t TRIFORCE_SPRITE_RESOURCE[];
 
-#define RANDO_OVERLAY_DB_SIZE 0xA00 // Size of overlay display buffer, in GFX commands which are 8 bytes
+#define RANDO_OVERLAY_DB_SIZE 0x1000 // Size of overlay display buffer, in GFX commands which are 8 bytes
 
 z64_disp_buf_t rando_overlay_db __attribute__ ((aligned (16)));
 #if DEBUG_MODE
 z64_disp_buf_t debug_db __attribute__ ((aligned (16)));
-#define DEBUG_DB_SIZE 0x400
+#define DEBUG_DB_SIZE 0x1000
 #endif
 
 typedef struct {

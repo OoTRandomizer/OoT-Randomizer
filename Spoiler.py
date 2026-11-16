@@ -118,6 +118,7 @@ class Spoiler:
             "Dungeon": 5,
             "ChildBoss": 6,
             "AdultBoss": 6,
+            "SpecialBoss": 6,
             "Hideout": 7,
             "SpecialInterior": 7,
             "Interior": 7,
@@ -300,7 +301,7 @@ class Spoiler:
         for w, sw in zip(worlds, self.worlds):
             # But the actual location saved here may be in a different world
             for item_name, item_location in w.hinted_dungeon_reward_locations.items():
-                sw.hinted_dungeon_reward_locations[item_name] = self.worlds[item_location.world.id].get_location(item_location.name)
+                sw.hinted_dungeon_reward_locations[item_name] = None if item_location is None else self.worlds[item_location.world.id].get_location(item_location.name)
             for hint_type, item_location in w.misc_hint_item_locations.items():
                 sw.misc_hint_item_locations[hint_type] = self.worlds[item_location.world.id].get_location(item_location.name)
 
@@ -327,7 +328,7 @@ class Copier:
             self.worlds[id(world)] = world.copy()
             for dungeon in world.dungeons:
                 self.dungeons[id(dungeon)] = dungeon.copy()
-                for item in chain(dungeon.boss_key, dungeon.small_keys, dungeon.dungeon_items, dungeon.silver_rupees, dungeon.reward):
+                for item in chain(dungeon.boss_key, dungeon.small_keys, dungeon.maps, dungeon.compasses, dungeon.silver_rupees, dungeon.reward):
                     if id(item) in self.items:
                         continue
                     self.items[id(item)] = item.copy()
@@ -359,7 +360,8 @@ class Copier:
             dungeon.regions = [self.regions.get(id(region), region) for region in dungeon.regions]
             dungeon.boss_key = [self.items.get(id(item), item) for item in dungeon.boss_key]
             dungeon.small_keys = [self.items.get(id(item), item) for item in dungeon.small_keys]
-            dungeon.dungeon_items = [self.items.get(id(item), item) for item in dungeon.dungeon_items]
+            dungeon.maps = [self.items.get(id(item), item) for item in dungeon.maps]
+            dungeon.compasses = [self.items.get(id(item), item) for item in dungeon.compasses]
             dungeon.silver_rupees = [self.items.get(id(item), item) for item in dungeon.silver_rupees]
             dungeon.reward = [self.items.get(id(item), item) for item in dungeon.reward]
 

@@ -10,7 +10,7 @@ from Utils import powerset
 class SettingInfo:
     def __init__(self, setting_type: type, gui_text: Optional[str], gui_type: Optional[str], shared: bool,
                  choices: Optional[dict | list] = None, default: Any = None, disabled_default: Any = None,
-                 disable: Optional[dict] = None, gui_tooltip: Optional[str] = None, gui_params: Optional[dict] = None,
+                 disable: Optional[dict] = None, conditional_controls: Optional[dict] = None, gui_tooltip: Optional[str] = None, gui_params: Optional[dict] = None,
                  cosmetic: bool = False) -> None:
         self.type: type = setting_type  # type of the setting's value, used to properly convert types to setting strings
         self.shared: bool = shared  # whether the setting is one that should be shared, used in converting settings to a string
@@ -19,6 +19,7 @@ class SettingInfo:
         self.gui_type: Optional[str] = gui_type
         self.gui_tooltip: Optional[str] = "" if gui_tooltip is None else gui_tooltip
         self.gui_params: dict[str, Any] = {} if gui_params is None else gui_params  # additional parameters that the randomizer uses for the gui
+        self.conditional_controls: Optional[dict] = conditional_controls  # dictionary of settings and values that can enable this setting
         self.disable: Optional[dict] = disable  # dictionary of settings this setting disabled
         self.dependency = None  # lambda that determines if this is disabled. Generated later
 
@@ -100,10 +101,10 @@ class SettingInfo:
 
 class SettingInfoNone(SettingInfo):
     def __init__(self, gui_text: Optional[str], gui_type: Optional[str], gui_tooltip: Optional[str] = None,
-                 gui_params: Optional[dict] = None) -> None:
+                 gui_params: Optional[dict] = None, conditional_controls: Optional[dict] = None) -> None:
         super().__init__(setting_type=type(None), gui_text=gui_text, gui_type=gui_type, shared=False, choices=None,
-                         default=None, disabled_default=None, disable=None, gui_tooltip=gui_tooltip,
-                         gui_params=gui_params, cosmetic=False)
+                         default=None, disabled_default=None, conditional_controls=conditional_controls,
+                         disable=None, gui_tooltip=gui_tooltip, gui_params=gui_params, cosmetic=False)
 
     def __get__(self, obj, obj_type=None) -> None:
         raise Exception(f"{self.name} is not a setting and cannot be retrieved.")
@@ -114,16 +115,16 @@ class SettingInfoNone(SettingInfo):
 
 class SettingInfoBool(SettingInfo):
     def __init__(self, gui_text: Optional[str], gui_type: Optional[str], shared: bool, default: Optional[bool] = None,
-                 disabled_default: Optional[bool] = None, disable: Optional[dict] = None, gui_tooltip: Optional[str] = None,
-                 gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
+                 disabled_default: Optional[bool] = None, disable: Optional[dict] = None, conditional_controls: Optional[dict] = None,
+                 gui_tooltip: Optional[str] = None, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
         choices = {
             True:  'checked',
             False: 'unchecked',
         }
 
         super().__init__(setting_type=bool, gui_text=gui_text, gui_type=gui_type, shared=shared, choices=choices,
-                         default=default, disabled_default=disabled_default, disable=disable, gui_tooltip=gui_tooltip,
-                         gui_params=gui_params, cosmetic=cosmetic)
+                         default=default, disabled_default=disabled_default, disable=disable, conditional_controls=conditional_controls,
+                         gui_tooltip=gui_tooltip, gui_params=gui_params, cosmetic=cosmetic)
 
     def __get__(self, obj, obj_type=None) -> bool:
         value = super().__get__(obj, obj_type)
@@ -140,11 +141,11 @@ class SettingInfoBool(SettingInfo):
 class SettingInfoStr(SettingInfo):
     def __init__(self, gui_text: Optional[str], gui_type: Optional[str], shared: bool = False,
                  choices: Optional[dict | list] = None, default: Optional[str] = None,
-                 disabled_default: Optional[str] = None, disable: Optional[dict] = None,
+                 disabled_default: Optional[str] = None, disable: Optional[dict] = None, conditional_controls: Optional[dict] = None,
                  gui_tooltip: Optional[str] = None, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
         super().__init__(setting_type=str, gui_text=gui_text, gui_type=gui_type, shared=shared, choices=choices,
-                         default=default, disabled_default=disabled_default, disable=disable, gui_tooltip=gui_tooltip,
-                         gui_params=gui_params, cosmetic=cosmetic)
+                         default=default, disabled_default=disabled_default, disable=disable, conditional_controls=conditional_controls,
+                         gui_tooltip=gui_tooltip, gui_params=gui_params, cosmetic=cosmetic)
 
     def __get__(self, obj, obj_type=None) -> str:
         value = super().__get__(obj, obj_type)
@@ -161,11 +162,11 @@ class SettingInfoStr(SettingInfo):
 class SettingInfoInt(SettingInfo):
     def __init__(self, gui_text: Optional[str], gui_type: Optional[str], shared: bool,
                  choices: Optional[dict | list] = None, default: Optional[int] = None,
-                 disabled_default: Optional[int] = None, disable: Optional[dict] = None,
+                 disabled_default: Optional[int] = None, disable: Optional[dict] = None, conditional_controls: Optional[dict] = None,
                  gui_tooltip: Optional[str] = None, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
         super().__init__(setting_type=int, gui_text=gui_text, gui_type=gui_type, shared=shared, choices=choices,
-                         default=default, disabled_default=disabled_default, disable=disable, gui_tooltip=gui_tooltip,
-                         gui_params=gui_params, cosmetic=cosmetic)
+                         default=default, disabled_default=disabled_default, disable=disable, conditional_controls=conditional_controls,
+                         gui_tooltip=gui_tooltip, gui_params=gui_params, cosmetic=cosmetic)
 
     def __get__(self, obj, obj_type=None) -> int:
         value = super().__get__(obj, obj_type)
@@ -182,11 +183,11 @@ class SettingInfoInt(SettingInfo):
 class SettingInfoList(SettingInfo):
     def __init__(self, gui_text: Optional[str], gui_type: Optional[str], shared: bool,
                  choices: Optional[dict | list] = None, default: Optional[list] = None,
-                 disabled_default: Optional[list] = None, disable: Optional[dict] = None,
+                 disabled_default: Optional[list] = None, disable: Optional[dict] = None, conditional_controls: Optional[dict] = None,
                  gui_tooltip: Optional[str] = None, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
         super().__init__(setting_type=list, gui_text=gui_text, gui_type=gui_type, shared=shared, choices=choices,
-                         default=default, disabled_default=disabled_default, disable=disable, gui_tooltip=gui_tooltip,
-                         gui_params=gui_params, cosmetic=cosmetic)
+                         default=default, disabled_default=disabled_default, disable=disable, conditional_controls=conditional_controls,
+                         gui_tooltip=gui_tooltip, gui_params=gui_params, cosmetic=cosmetic)
 
     def __get__(self, obj, obj_type=None) -> list:
         value = super().__get__(obj, obj_type)
@@ -203,11 +204,11 @@ class SettingInfoList(SettingInfo):
 class SettingInfoDict(SettingInfo):
     def __init__(self, gui_text: Optional[str], gui_type: Optional[str], shared: bool,
                  choices: Optional[dict | list] = None, default: Optional[dict] = None,
-                 disabled_default: Optional[dict] = None, disable: Optional[dict] = None,
+                 disabled_default: Optional[dict] = None, disable: Optional[dict] = None, conditional_controls: Optional[dict] = None,
                  gui_tooltip: Optional[str] = None, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
         super().__init__(setting_type=dict, gui_text=gui_text, gui_type=gui_type, shared=shared, choices=choices,
-                         default=default, disabled_default=disabled_default, disable=disable, gui_tooltip=gui_tooltip,
-                         gui_params=gui_params, cosmetic=cosmetic)
+                         default=default, disabled_default=disabled_default, disable=disable, conditional_controls=conditional_controls,
+                         gui_tooltip=gui_tooltip, gui_params=gui_params, cosmetic=cosmetic)
 
     def __get__(self, obj, obj_type=None) -> dict:
         value = super().__get__(obj, obj_type)
@@ -223,83 +224,83 @@ class SettingInfoDict(SettingInfo):
 
 class Button(SettingInfoNone):
     def __init__(self, gui_text: Optional[str], gui_tooltip: Optional[str] = None,
-                 gui_params: Optional[dict] = None) -> None:
-        super().__init__(gui_text=gui_text, gui_type="Button", gui_tooltip=gui_tooltip, gui_params=gui_params)
+                 gui_params: Optional[dict] = None, conditional_controls: Optional[dict] = None) -> None:
+        super().__init__(gui_text=gui_text, gui_type="Button", gui_tooltip=gui_tooltip, gui_params=gui_params, conditional_controls=conditional_controls)
 
 
 class Textbox(SettingInfoNone):
     def __init__(self, gui_text: Optional[str], gui_tooltip: Optional[str] = None,
-                 gui_params: Optional[dict] = None) -> None:
-        super().__init__(gui_text=gui_text, gui_type="Textbox", gui_tooltip=gui_tooltip, gui_params=gui_params)
+                 gui_params: Optional[dict] = None, conditional_controls: Optional[dict] = None) -> None:
+        super().__init__(gui_text=gui_text, gui_type="Textbox", gui_tooltip=gui_tooltip, gui_params=gui_params, conditional_controls=conditional_controls)
 
 
 class Checkbutton(SettingInfoBool):
     def __init__(self, gui_text: Optional[str], gui_tooltip: Optional[str] = None, disable: Optional[dict] = None,
-                 disabled_default: Optional[bool] = None, default: bool = False, shared: bool = False,
-                 gui_params: Optional[dict] = None, cosmetic: bool = False):
+                 disabled_default: Optional[bool] = None, conditional_controls: Optional[dict] = None, default: bool = False,
+                 shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False):
         super().__init__(gui_text=gui_text, gui_type='Checkbutton', shared=shared, default=default,
-                         disabled_default=disabled_default, disable=disable, gui_tooltip=gui_tooltip,
-                         gui_params=gui_params, cosmetic=cosmetic)
+                         disabled_default=disabled_default, disable=disable, conditional_controls=conditional_controls,
+                         gui_tooltip=gui_tooltip, gui_params=gui_params, cosmetic=cosmetic)
 
 
 class Combobox(SettingInfoStr):
     def __init__(self, gui_text: Optional[str], choices: Optional[dict | list], default: Optional[str],
                  gui_tooltip: Optional[str] = None, disable: Optional[dict] = None, disabled_default: Optional[str] = None,
-                 shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
+                conditional_controls: Optional[dict] = None, shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
         super().__init__(gui_text=gui_text, gui_type='Combobox', shared=shared, choices=choices, default=default,
-                         disabled_default=disabled_default, disable=disable, gui_tooltip=gui_tooltip,
-                         gui_params=gui_params, cosmetic=cosmetic)
+                         disabled_default=disabled_default, disable=disable, conditional_controls=conditional_controls,
+                         gui_tooltip=gui_tooltip, gui_params=gui_params, cosmetic=cosmetic)
 
 
 class Radiobutton(SettingInfoStr):
     def __init__(self, gui_text: Optional[str], choices: Optional[dict | list], default: Optional[str],
                  gui_tooltip: Optional[str] = None, disable: Optional[dict] = None, disabled_default: Optional[str] = None,
-                 shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
+                 conditional_controls: Optional[dict] = None, shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
         super().__init__(gui_text=gui_text, gui_type='Radiobutton', shared=shared, choices=choices, default=default,
-                         disabled_default=disabled_default, disable=disable, gui_tooltip=gui_tooltip,
-                         gui_params=gui_params, cosmetic=cosmetic)
+                         disabled_default=disabled_default, disable=disable, conditional_controls=conditional_controls,
+                         gui_tooltip=gui_tooltip, gui_params=gui_params, cosmetic=cosmetic)
 
 
 class Fileinput(SettingInfoStr):
     def __init__(self, gui_text: Optional[str], choices: Optional[dict | list] = None, default: Optional[str] = None,
                  gui_tooltip: Optional[str] = None, disable: Optional[dict] = None, disabled_default: Optional[str] = None,
-                 shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
+                 conditional_controls: Optional[dict] = None, shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
         super().__init__(gui_text=gui_text, gui_type='Fileinput', shared=shared, choices=choices, default=default,
-                         disabled_default=disabled_default, disable=disable, gui_tooltip=gui_tooltip,
-                         gui_params=gui_params, cosmetic=cosmetic)
+                         disabled_default=disabled_default, disable=disable, conditional_controls=conditional_controls,
+                         gui_tooltip=gui_tooltip, gui_params=gui_params, cosmetic=cosmetic)
 
 
 class Directoryinput(SettingInfoStr):
     def __init__(self, gui_text: Optional[str], choices: Optional[dict | list] = None, default: Optional[str] = None,
                  gui_tooltip: Optional[str] = None, disable: Optional[dict] = None, disabled_default: Optional[str] = None,
-                 shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
+                conditional_controls: Optional[dict] = None, shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
         super().__init__(gui_text=gui_text, gui_type='Directoryinput', shared=shared, choices=choices, default=default,
-                         disabled_default=disabled_default, disable=disable, gui_tooltip=gui_tooltip,
-                         gui_params=gui_params, cosmetic=cosmetic)
+                         disabled_default=disabled_default, disable=disable, conditional_controls=conditional_controls,
+                         gui_tooltip=gui_tooltip, gui_params=gui_params, cosmetic=cosmetic)
 
 
 class Textinput(SettingInfoStr):
     def __init__(self, gui_text: Optional[str], choices: Optional[dict | list] = None, default: Optional[str] = None,
                  gui_tooltip: Optional[str] = None, disable: Optional[dict] = None, disabled_default: Optional[str] = None,
-                 shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
+                 conditional_controls: Optional[dict] = None, shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
         super().__init__(gui_text=gui_text, gui_type='Textinput', shared=shared, choices=choices, default=default,
-                         disabled_default=disabled_default, disable=disable, gui_tooltip=gui_tooltip,
-                         gui_params=gui_params, cosmetic=cosmetic)
+                         disabled_default=disabled_default, disable=disable, conditional_controls=conditional_controls,
+                         gui_tooltip=gui_tooltip, gui_params=gui_params, cosmetic=cosmetic)
 
 
 class ComboboxInt(SettingInfoInt):
     def __init__(self, gui_text: Optional[str], choices: Optional[dict | list], default: Optional[int],
                  gui_tooltip: Optional[str] = None, disable: Optional[dict] = None, disabled_default: Optional[int] = None,
-                 shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
+                conditional_controls: Optional[dict] = None, shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
         super().__init__(gui_text=gui_text, gui_type='Combobox', shared=shared, choices=choices, default=default,
-                         disabled_default=disabled_default, disable=disable, gui_tooltip=gui_tooltip,
-                         gui_params=gui_params, cosmetic=cosmetic)
+                         disabled_default=disabled_default, disable=disable, conditional_controls=conditional_controls,
+                         gui_tooltip=gui_tooltip, gui_params=gui_params, cosmetic=cosmetic)
 
 
 class Scale(SettingInfoInt):
     def __init__(self, gui_text: Optional[str], default: Optional[int], minimum: int, maximum: int, step: int = 1,
                  gui_tooltip: Optional[str] = None, disable: Optional[dict] = None, disabled_default: Optional[int] = None,
-                 shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
+                 conditional_controls: Optional[dict] = None, shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
         choices = {
             i: str(i) for i in range(minimum, maximum+1, step)
         }
@@ -311,15 +312,15 @@ class Scale(SettingInfoInt):
         gui_params['step'] = step
 
         super().__init__(gui_text=gui_text, gui_type='Scale', shared=shared, choices=choices, default=default,
-                         disabled_default=disabled_default, disable=disable, gui_tooltip=gui_tooltip,
-                         gui_params=gui_params, cosmetic=cosmetic)
+                         disabled_default=disabled_default, disable=disable, conditional_controls=conditional_controls,
+                         gui_tooltip=gui_tooltip, gui_params=gui_params, cosmetic=cosmetic)
 
 
 class Numberinput(SettingInfoInt):
     def __init__(self, gui_text: Optional[str], default: Optional[int], minimum: Optional[int] = None,
                  maximum: Optional[int] = None, gui_tooltip: Optional[str] = None, disable: Optional[dict] = None,
-                 disabled_default: Optional[int] = None, shared: bool = False, gui_params: Optional[dict] = None,
-                 cosmetic: bool = False) -> None:
+                 disabled_default: Optional[int] = None, conditional_controls: Optional[dict] = None,
+                 shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
         if gui_params is None:
             gui_params = {}
         if minimum is not None:
@@ -328,23 +329,25 @@ class Numberinput(SettingInfoInt):
             gui_params['max'] = maximum
 
         super().__init__(gui_text=gui_text, gui_type='Numberinput', shared=shared, choices=None, default=default,
-                         disabled_default=disabled_default, disable=disable, gui_tooltip=gui_tooltip,
-                         gui_params=gui_params, cosmetic=cosmetic)
+                         disabled_default=disabled_default, disable=disable, conditional_controls=conditional_controls,
+                         gui_tooltip=gui_tooltip, gui_params=gui_params, cosmetic=cosmetic)
 
 
 class MultipleSelect(SettingInfoList):
     def __init__(self, gui_text: Optional[str], choices: Optional[dict | list], default: Optional[list],
                  gui_tooltip: Optional[str] = None, disable: Optional[dict] = None, disabled_default: Optional[list] = None,
-                 shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
+                 conditional_controls: Optional[dict] = None, shared: bool = False, gui_params: Optional[dict] = None,
+                 cosmetic: bool = False) -> None:
         super().__init__(gui_text=gui_text, gui_type='MultipleSelect', shared=shared, choices=choices, default=default,
-                         disabled_default=disabled_default, disable=disable, gui_tooltip=gui_tooltip,
-                         gui_params=gui_params, cosmetic=cosmetic)
+                         disabled_default=disabled_default, disable=disable, conditional_controls=conditional_controls,
+                         gui_tooltip=gui_tooltip, gui_params=gui_params, cosmetic=cosmetic)
 
 
 class SearchBox(SettingInfoList):
     def __init__(self, gui_text: Optional[str], choices: Optional[dict | list], default: Optional[list],
                  gui_tooltip: Optional[str] = None, disable: Optional[dict] = None, disabled_default: Optional[list] = None,
-                 shared: bool = False, gui_params: Optional[dict] = None, cosmetic: bool = False) -> None:
+                 conditional_controls: Optional[dict] = None, shared: bool = False, gui_params: Optional[dict] = None,
+                 cosmetic: bool = False) -> None:
         super().__init__(gui_text=gui_text, gui_type='SearchBox', shared=shared, choices=choices, default=default,
-                         disabled_default=disabled_default, disable=disable, gui_tooltip=gui_tooltip,
-                         gui_params=gui_params, cosmetic=cosmetic)
+                         disabled_default=disabled_default, disable=disable, conditional_controls=conditional_controls,
+                         gui_tooltip=gui_tooltip, gui_params=gui_params, cosmetic=cosmetic)
