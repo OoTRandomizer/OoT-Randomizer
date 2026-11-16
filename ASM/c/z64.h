@@ -1962,6 +1962,12 @@ typedef enum UpgradeType {
     /* 0x08 */ UPG_MAX
 } UpgradeType;
 
+extern uint32_t ENABLED_MAX_UPGRADE_ITEM;
+
+// upgr is a value from the UpgradeType enum
+#define CHECK_MAX_UPGRADE_ITEM(upgr) (ENABLED_MAX_UPGRADE_ITEM & (1 << (upgr)))
+
+
 /* helper macros */
 #define LINK_IS_ADULT (z64_file.link_age == 0)
 #define SLOT(item) gItemSlots[item]

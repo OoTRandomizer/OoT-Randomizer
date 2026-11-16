@@ -1324,6 +1324,8 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     rom.write_byte(rom.sym("CFG_SHOPSANITY_ENABLED"), world.settings.shopsanity not in ('off', '0'))
 
+    # add
+
     # Make the cursed skulltula people come down instantly when entering if skull hints are on.
     # Change  lui     $at, 0x4320 to  lui     $at, 0x44C8
     if any(hint_type in world.settings.misc_hints for hint_type in ('10_skulltulas', '20_skulltulas', '30_skulltulas', '40_skulltulas', '50_skulltulas', '100_skulltulas')):

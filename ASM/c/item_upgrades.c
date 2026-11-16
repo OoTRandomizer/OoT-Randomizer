@@ -32,6 +32,11 @@ extern uint8_t PLAYER_ID;
 extern uint8_t MW_PROGRESSIVE_ITEMS_ENABLE;
 extern mw_progressive_items_state_t MW_PROGRESSIVE_ITEMS_STATE[256];
 
+// Bitflags containing which items should automatically give the max upgrade
+// available when picked.
+// Use the CHECK_MAX_UPGRADE_ITEM macro to read this
+uint32_t ENABLED_MAX_UPGRADE_ITEM = 0;
+
 
 uint16_t no_upgrade(z64_file_t* save, override_t override) {
     return override.value.base.item_id;
