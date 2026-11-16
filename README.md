@@ -104,4 +104,4 @@ For an overview of settings additions by release, see [the wiki](https://wiki.oo
 
 ## Contributing
 
-Contributions are always welcome! See our [contribution guide](CONTRIBUTING.md) for infomration about our discord and where to start a discussion, our coding style and design philosophy, and guidelines for AI-assisted contributions.
+Contributions are always welcome! See our [contribution guide](CONTRIBUTING.md) for information about our Discord and where to start a discussion, our coding style and design philosophy, and guidelines for AI-assisted contributions.
