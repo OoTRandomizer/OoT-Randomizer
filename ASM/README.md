@@ -35,7 +35,7 @@ Recompiling the C code for randomizer requires the N64 development tools to be i
       12. Click "OK" on all three windows.
       13. You will now be able to compile the randomizer's C code from CMD, PowerShell, and MSYS2's terminal.
   - **Using WSL**: Install the latest Debian Linux from the Windows Store and follow the below instructions for Debian.
-- **Debian**: [Follow this how-to](https://practicerom.com/public/packages/debian/howto.txt) on adding the toolchain's package repository and installing the pre-built binaries.
+- **Debian**: [Follow this how-to](https://github.com/PracticeROM/packages) on adding the toolchain's package repository and installing the pre-built binaries.
   - You will also need to run `apt install build-essential` or `apt install make` if `make` is not installed.
 - **Any platform with a gcc compiler**: Build from source from the [glankk/n64](https://github.com/glankk/n64) repository. Simply follow the readme.
   - The dependency install script may not install all the necessary libraries depending on your OS version. Take a look at the output from the configure step to see if anything is missing.

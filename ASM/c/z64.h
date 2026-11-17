@@ -1950,6 +1950,7 @@ typedef struct NpcInteractInfo {
 // Bit Flag array in which gBitFlags[n] is literally (1 << n)
 extern uint32_t gBitFlags[32];
 
+// Upgrades from vanilla
 typedef enum UpgradeType {
     /* 0x00 */ UPG_QUIVER,
     /* 0x01 */ UPG_BOMB_BAG,
@@ -1959,12 +1960,30 @@ typedef enum UpgradeType {
     /* 0x05 */ UPG_BULLET_BAG,
     /* 0x06 */ UPG_DEKU_STICKS,
     /* 0x07 */ UPG_DEKU_NUTS,
-    /* 0x08 */ UPG_MAX
+    /* 0x08 */ UPG_MAX,
 } UpgradeType;
+
+// This can go up until 31 (inclusive), after that we would need to adjust the
+// bitflag for ENABLED_MAX_UPGRADE_ITEM.
+// Must match with MAX_UPGRADE_ITEMS_INDICES from Patches.py
+typedef enum MaxUpgradeItemType {
+    /*  0 */ MAXUPG_HOOKSHOT,
+    /*  1 */ MAXUPG_STRENGTH,
+    /*  2 */ MAXUPG_BOMB_BAG,
+    /*  3 */ MAXUPG_BOW,
+    /*  4 */ MAXUPG_SLINGSHOT,
+    /*  5 */ MAXUPG_WALLET,
+    /*  6 */ MAXUPG_SCALE,
+    /*  7 */ MAXUPG_DEKU_NUTS,
+    /*  8 */ MAXUPG_DEKU_STICKS,
+    /*  9 */ MAXUPG_BOMBCHUS,
+    /* 10 */ MAXUPG_MAGIC_METER,
+    /* 11 */ MAXUPG_OCARINA,
+} MaxUpgradeItemType;
 
 extern uint32_t ENABLED_MAX_UPGRADE_ITEM;
 
-// upgr is a value from the UpgradeType enum
+// upgr is a value from the MaxUpgradeItemType enum
 #define CHECK_MAX_UPGRADE_ITEM(upgr) (ENABLED_MAX_UPGRADE_ITEM & (1 << (upgr)))
 
 

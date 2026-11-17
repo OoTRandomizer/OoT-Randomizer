@@ -1324,7 +1324,28 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
 
     rom.write_byte(rom.sym("CFG_SHOPSANITY_ENABLED"), world.settings.shopsanity not in ('off', '0'))
 
-    # add
+    # Write configured max upgrades
+    if world.settings.max_upgrade_items:
+        # This must match with MaxUpgradeItemType from z64.h
+        MAX_UPGRADE_ITEMS_INDICES: dict[str, int] = {
+            'Progressive Hookshot':         0,  # MAXUPG_HOOKSHOT,
+            'Progressive Strength Upgrade': 1,  # MAXUPG_STRENGTH,
+            'Bomb Bag':                     2,  # MAXUPG_BOMB_BAG,
+            'Bow':                          3,  # MAXUPG_BOW,
+            'Slingshot':                    4,  # MAXUPG_SLINGSHOT,
+            'Progressive Wallet':           5,  # MAXUPG_WALLET,
+            'Progressive Scale':            6,  # MAXUPG_SCALE,
+            'Deku Nut Capacity':            7,  # MAXUPG_DEKU_NUTS,
+            'Deku Stick Capacity':          8,  # MAXUPG_DEKU_STICKS,
+            'Bombchus':                     9,  # MAXUPG_BOMBCHUS,
+            'Magic Meter':                  10, # MAXUPG_MAGIC_METER,
+            'Ocarina':                      11, # MAXUPG_OCARINA,
+        }
+        max_upgrade_bitflags = 0
+        for item in world.settings.max_upgrade_items:
+            upgr = MAX_UPGRADE_ITEMS_INDICES[item]
+            max_upgrade_bitflags |= 1 << upgr
+        rom.write_int32(rom.sym("ENABLED_MAX_UPGRADE_ITEM"), max_upgrade_bitflags)
 
     # Make the cursed skulltula people come down instantly when entering if skull hints are on.
     # Change  lui     $at, 0x4320 to  lui     $at, 0x44C8
