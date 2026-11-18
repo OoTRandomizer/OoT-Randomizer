@@ -162,9 +162,9 @@ item_row_t item_table[GI_RANDO_MAX] = {
 
     [GI_PROGRESSIVE_HOOKSHOT]                                   = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x00DD, 0x2D, hookshot_upgrade,  no_effect,                  -1, -1, NULL), // Progressive Hookshot
     [GI_PROGRESSIVE_STRENGTH]                                   = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x0147, 0x58, strength_upgrade,  no_effect,                  -1, -1, NULL), // Progressive Strength
-    [GI_PROGRESSIVE_BOMB_BAG]                                   = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x00BF, 0x18, bomb_bag_upgrade,  give_max_upgrade_bomb_bag,  -1, -1, NULL), // Progressive Bomb Bag
-    [GI_PROGRESSIVE_BOW]                                        = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x00E9, 0x35, bow_upgrade,       give_max_upgrade_bow,       -1, -1, NULL), // Progressive Bow
-    [GI_PROGRESSIVE_SLINGSHOT]                                  = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x00E7, 0x33, slingshot_upgrade, give_max_upgrade_slingshot, -1, -1, NULL), // Progressive Slingshot
+    [GI_PROGRESSIVE_BOMB_BAG]                                   = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x00BF, 0x18, bomb_bag_upgrade,  give_max_upgrade_bomb_bag,  -1, -1, resolve_text_progressive_bomb_bag), // Progressive Bomb Bag
+    [GI_PROGRESSIVE_BOW]                                        = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x00E9, 0x35, bow_upgrade,       give_max_upgrade_bow,       -1, -1, resolve_text_progressive_bow), // Progressive Bow
+    [GI_PROGRESSIVE_SLINGSHOT]                                  = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x00E7, 0x33, slingshot_upgrade, give_max_upgrade_slingshot, -1, -1, resolve_text_progressive_slingshot), // Progressive Slingshot
     [GI_PROGRESSIVE_WALLET]                                     = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x00D1, 0x22, wallet_upgrade,    no_effect,                  -1, -1, NULL), // Progressive Wallet
     [GI_PROGRESSIVE_SCALE]                                      = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x00DB, 0x2A, scale_upgrade,     no_effect,                  -1, -1, NULL), // Progressive Scale
     [GI_PROGRESSIVE_NUT_CAPACITY]                               = ITEM_ROW(  -1,       BROWN_CHEST,   -1, -1,     -1, 0x00BB, 0xA2, nut_upgrade,       no_effect,                  -1, -1, NULL), // Progressive Nut Capacity
@@ -336,19 +336,6 @@ item_row_t item_table[GI_RANDO_MAX] = {
     [GI_FAIRY]                                                  = ITEM_ROW(0x53,       BROWN_CHEST, 0x41, -1, 0x90B4, 0x0177, 0x9E, no_upgrade, full_heal, -1, -1, NULL), // Fairy
     [GI_NOTHING]                                                = ITEM_ROW(0x53,       BROWN_CHEST, 0x41, -1, 0x90B5, 0x0177, 0x9F, no_upgrade, no_effect, -1, -1, NULL), // Nothing :)
 
-    [GI_MAX_UPGRADE_HOOKSHOT]                                   = ITEM_ROW(0x53,      GILDED_CHEST, 0x0B, -1, 0x004F, 0x00DD, 0x2E, no_upgrade, no_effect, -1, -1, NULL),
-    [GI_MAX_UPGRADE_STRENGTH]                                   = ITEM_ROW(0x53,      GILDED_CHEST, 0x52, -1, 0x005C, 0x012D, 0x4A, no_upgrade, no_effect, -1, -1, NULL),
-    [GI_MAX_UPGRADE_BOMB_BAG]                                   = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x90B6, 0x00BF, 0x18, no_upgrade, give_max_upgrade_bomb_bag, -1, -1, NULL),
-    [GI_MAX_UPGRADE_BOW]                                        = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x90B7, 0x00E9, 0x35, no_upgrade, give_max_upgrade_bow, -1, -1, NULL),
-    [GI_MAX_UPGRADE_SLINGSHOT]                                  = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x90B8, 0x00E7, 0x33, no_upgrade, give_max_upgrade_slingshot, -1, -1, NULL),
-    [GI_MAX_UPGRADE_WALLET]                                     = ITEM_ROW(  -1,      GILDED_CHEST,   -1, -1,     -1, 0x00D1, 0x22, no_upgrade, no_effect, 3, -1, NULL),
-    [GI_MAX_UPGRADE_SCALE]                                      = ITEM_ROW(0x53,      GILDED_CHEST, 0x54, -1, 0x00CE, 0x00DB, 0x2B, no_upgrade, no_effect, -1, -1, NULL),
-    [GI_MAX_UPGRADE_NUT]                                        = ITEM_ROW(0x53,       BROWN_CHEST, 0x9B, -1, 0x00A8, 0x00BB, 0x12, no_upgrade, no_effect, -1, -1, NULL),
-    [GI_MAX_UPGRADE_STICK]                                      = ITEM_ROW(0x53,       BROWN_CHEST, 0x99, -1, 0x0091, 0x00C7, 0x1B, no_upgrade, no_effect, -1, -1, NULL),
-    [GI_MAX_UPGRADE_BOMBCHU]                                    = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9019, 0x0197, 0x7E, no_upgrade, give_bombchus, 20, -1, NULL),
-    [GI_MAX_UPGRADE_MAGIC]                                      = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x00E8, 0x00CD, 0x1F, no_upgrade, give_double_magic, -1, -1, NULL),
-    [GI_MAX_UPGRADE_OCARINA]                                    = ITEM_ROW(0x53,      GILDED_CHEST, 0x08, -1, 0x003A, 0x00DE, 0x2F, no_upgrade, no_effect, -1, -1, NULL),
-
     [GI_KOKIRI_EMERALD]                                         = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x0080, 0x01AB, 0x9B, no_upgrade, give_quest_item, 18, -1, NULL), // Kokiri Emerald
     [GI_GORON_RUBY]                                             = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x0081, 0x01AC, 0x9C, no_upgrade, give_quest_item, 19, -1, NULL), // Goron Ruby
     [GI_ZORA_SAPPHIRE]                                          = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x0082, 0x01AD, 0x9D, no_upgrade, give_quest_item, 20, -1, NULL), // Zora Sapphire
@@ -510,6 +497,29 @@ uint16_t resolve_text_deku_shield(item_row_t* item_row, bool is_outgoing) {
     // If Kokiri sword is in inventory, return alternate textbox to inform player that deku tree was opened automatically.
     if (CHECK_OWNED_EQUIP_ALT(0, 0)) {
         return 0x045F;
+    }
+    return item_row->text_id;
+}
+
+uint16_t resolve_text_progressive_bomb_bag(item_row_t* item_row, bool is_outgoing) {
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_BOMB_BAG)) {
+        return 0x90B7;
+    }
+    return item_row->text_id;
+}
+
+
+uint16_t resolve_text_progressive_bow(item_row_t* item_row, bool is_outgoing) {
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_BOW)) {
+        return 0x90B8;
+    }
+    return item_row->text_id;
+}
+
+
+uint16_t resolve_text_progressive_slingshot(item_row_t* item_row, bool is_outgoing) {
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_SLINGSHOT)) {
+        return 0x90B9;
     }
     return item_row->text_id;
 }

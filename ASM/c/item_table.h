@@ -328,20 +328,9 @@ typedef enum GetItemID {
     /* 0x0119 */ GI_FAIRY,
     /* 0x011A */ GI_NOTHING,
 
-    /* 0x011B */ GI_MAX_UPGRADE_HOOKSHOT, // Max Upgrade Hookshot
-    /* 0x011C */ GI_MAX_UPGRADE_STRENGTH, // Max Upgrade Strength
-    /* 0x011D */ GI_MAX_UPGRADE_BOMB_BAG, // Max Upgrade Bomb Bag
-    /* 0x011E */ GI_MAX_UPGRADE_BOW, // Max Upgrade Bow
-    /* 0x011F */ GI_MAX_UPGRADE_SLINGSHOT, // Max Upgrade Slingshot
-    /* 0x0120 */ GI_MAX_UPGRADE_WALLET, // Max Upgrade Wallet
-    /* 0x0121 */ GI_MAX_UPGRADE_SCALE, // Max Upgrade Scale
-    /* 0x0122 */ GI_MAX_UPGRADE_NUT, // Max Upgrade Nut
-    /* 0x0123 */ GI_MAX_UPGRADE_STICK, // Max Upgrade Stick
-    /* 0x0124 */ GI_MAX_UPGRADE_BOMBCHU, // Max Upgrade Bombchu
-    /* 0x0125 */ GI_MAX_UPGRADE_MAGIC, // Max Upgrade Magic
-    /* 0x0126 */ GI_MAX_UPGRADE_OCARINA, // Max Upgrade Ocarina
+    // IDs from 0x011B to 0x0126 are free
 
-    // TODO: remove hardcoded value when that PR gets merged
+    // TODO: remove hardcoded value when the ids get used
     /* 0x0127 */ GI_KOKIRI_EMERALD = 0x0127,
     /* 0x0128 */ GI_GORON_RUBY,
     /* 0x0129 */ GI_ZORA_SAPPHIRE,
@@ -411,5 +400,8 @@ uint16_t resolve_text_small_keys_cmg(item_row_t* item_row, bool is_outgoing);
 uint16_t resolve_text_keyrings(item_row_t* item_row, bool is_outgoing);
 uint16_t resolve_text_kokiri_sword(item_row_t* item_row, bool is_outgoing);
 uint16_t resolve_text_deku_shield(item_row_t* item_row, bool is_outgoing);
+uint16_t resolve_text_progressive_bomb_bag(item_row_t* item_row, bool is_outgoing);
+uint16_t resolve_text_progressive_bow(item_row_t* item_row, bool is_outgoing);
+uint16_t resolve_text_progressive_slingshot(item_row_t* item_row, bool is_outgoing);
 
 #endif

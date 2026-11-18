@@ -658,16 +658,15 @@ ITEM_MESSAGES = [
         "text": "\x08\x13\x1BYou found \x05\x41a letter in a bottle\x05\x40!\x01Somehow the letter flies out of\x01the bottle, directly to King Zora.",
     },
     {
-        # uh oh
-        "id": 0x90B6,
+        "id": 0x90B7,
         "text": "\x08\x13\x4DYou found a \x05\x41Bomb Bag\x05\x40!\x01This is the \x05\x43biggest bomb bag\x05\x40,\x01it can carry up to \x05\x4640\x05\x40 Bombs!",
     },
     {
-        "id": 0x90B7,
+        "id": 0x90B8,
         "text": "\x08\x13\x03You found the \x05\x41Fairy Bow\x05\x40 and\x01\x05\x43the biggest quiver\x05\x40!",
     },
     {
-        "id": 0x90B8,
+        "id": 0x90B9,
         "text": "\x08\x13\x06You found the \x05\x41Fairy Slingshot\x05\x40\x01and a \x05\x43Deku Seeds Bullet Bag\x05\x40.\x01This bag can hold up to \x05\x4640\x05\x40\x01slingshot bullets.",
     },
 
