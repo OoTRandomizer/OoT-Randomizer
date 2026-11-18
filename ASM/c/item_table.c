@@ -336,6 +336,8 @@ item_row_t item_table[GI_RANDO_MAX] = {
     [GI_FAIRY]                                                  = ITEM_ROW(0x53,       BROWN_CHEST, 0x41, -1, 0x90B4, 0x0177, 0x9E, no_upgrade, full_heal, -1, -1, NULL), // Fairy
     [GI_NOTHING]                                                = ITEM_ROW(0x53,       BROWN_CHEST, 0x41, -1, 0x90B5, 0x0177, 0x9F, no_upgrade, no_effect, -1, -1, NULL), // Nothing :)
 
+    // 0x011B through 0x0126 are free
+
     [GI_KOKIRI_EMERALD]                                         = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x0080, 0x01AB, 0x9B, no_upgrade, give_quest_item, 18, -1, NULL), // Kokiri Emerald
     [GI_GORON_RUBY]                                             = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x0081, 0x01AC, 0x9C, no_upgrade, give_quest_item, 19, -1, NULL), // Goron Ruby
     [GI_ZORA_SAPPHIRE]                                          = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x0082, 0x01AD, 0x9D, no_upgrade, give_quest_item, 20, -1, NULL), // Zora Sapphire

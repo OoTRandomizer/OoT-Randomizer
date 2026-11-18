@@ -2205,7 +2205,7 @@ typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawn
                                                       z64_state_ovl_tab_addr)
 #define z64_event_state_1       (*(uint32_t*)         z64_event_state_1_addr)
 
-//extern uint8_t gItemSlots[56];
+// extern uint8_t gItemSlots[56];
 #define gItemSlots              ( (uint8_t*) gItemSlots_addr)
 
 // extern uint16_t gUpgradeCapacities[UPG_MAX][4];
