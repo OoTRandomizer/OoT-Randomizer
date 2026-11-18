@@ -1984,7 +1984,7 @@ typedef enum MaxUpgradeItemType {
 extern uint32_t ENABLED_MAX_UPGRADE_ITEM;
 
 // upgr is a value from the MaxUpgradeItemType enum
-#define CHECK_MAX_UPGRADE_ITEM(upgr) (ENABLED_MAX_UPGRADE_ITEM & (1 << (upgr)))
+#define CHECK_MAX_UPGRADE_ENABLED(upgr) (ENABLED_MAX_UPGRADE_ITEM & (1 << (upgr)))
 
 
 /* helper macros */

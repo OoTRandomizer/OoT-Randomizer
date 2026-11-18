@@ -34,7 +34,7 @@ extern mw_progressive_items_state_t MW_PROGRESSIVE_ITEMS_STATE[256];
 
 // Bitflags containing which items should automatically give the max upgrade
 // available when picked.
-// Use the CHECK_MAX_UPGRADE_ITEM macro to read this
+// Use the CHECK_MAX_UPGRADE_ENABLED macro to read this
 uint32_t ENABLED_MAX_UPGRADE_ITEM = 0;
 
 
@@ -43,7 +43,7 @@ uint16_t no_upgrade(z64_file_t* save, override_t override) {
 }
 
 uint16_t hookshot_upgrade(z64_file_t* save, override_t override) {
-    if (CHECK_MAX_UPGRADE_ITEM(MAXUPG_HOOKSHOT)) {
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_HOOKSHOT)) {
         return GI_LONGSHOT;
     }
 
@@ -54,7 +54,7 @@ uint16_t hookshot_upgrade(z64_file_t* save, override_t override) {
 }
 
 uint16_t strength_upgrade(z64_file_t* save, override_t override) {
-    if (CHECK_MAX_UPGRADE_ITEM(MAXUPG_STRENGTH)) {
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_STRENGTH)) {
         return GI_GOLD_GAUNTLETS;
     }
 
@@ -66,7 +66,7 @@ uint16_t strength_upgrade(z64_file_t* save, override_t override) {
 }
 
 uint16_t bomb_bag_upgrade(z64_file_t* save, override_t override) {
-    if (CHECK_MAX_UPGRADE_ITEM(MAXUPG_BOMB_BAG)) {
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_BOMB_BAG)) {
         return GI_BOMB_BAG_40;
     }
 
@@ -78,7 +78,7 @@ uint16_t bomb_bag_upgrade(z64_file_t* save, override_t override) {
 }
 
 uint16_t bow_upgrade(z64_file_t* save, override_t override) {
-    if (CHECK_MAX_UPGRADE_ITEM(MAXUPG_BOW)) {
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_BOW)) {
         return GI_QUIVER_50;
     }
 
@@ -90,7 +90,7 @@ uint16_t bow_upgrade(z64_file_t* save, override_t override) {
 }
 
 uint16_t slingshot_upgrade(z64_file_t* save, override_t override) {
-    if (CHECK_MAX_UPGRADE_ITEM(MAXUPG_SLINGSHOT)) {
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_SLINGSHOT)) {
         return GI_BULLET_BAG_50;
     }
 
@@ -102,8 +102,11 @@ uint16_t slingshot_upgrade(z64_file_t* save, override_t override) {
 }
 
 uint16_t wallet_upgrade(z64_file_t* save, override_t override) {
-    if (CHECK_MAX_UPGRADE_ITEM(MAXUPG_WALLET)) {
-        return max_upgrade_wallet_upgrade(save, override);
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_WALLET)) {
+        if (CFG_SHOPSANITY_ENABLED) {
+            return GI_TYCOONS_WALLET;
+        }
+        return GI_WALLET_GIANT;
     }
 
     switch ((override.value.base.player == PLAYER_ID || !MW_PROGRESSIVE_ITEMS_ENABLE) ? save->wallet : MW_PROGRESSIVE_ITEMS_STATE[override.value.base.player].wallet) {
@@ -114,7 +117,7 @@ uint16_t wallet_upgrade(z64_file_t* save, override_t override) {
 }
 
 uint16_t scale_upgrade(z64_file_t* save, override_t override) {
-    if (CHECK_MAX_UPGRADE_ITEM(MAXUPG_SCALE)) {
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_SCALE)) {
         return GI_SCALE_GOLDEN;
     }
 
@@ -125,7 +128,7 @@ uint16_t scale_upgrade(z64_file_t* save, override_t override) {
 }
 
 uint16_t nut_upgrade(z64_file_t* save, override_t override) {
-    if (CHECK_MAX_UPGRADE_ITEM(MAXUPG_DEKU_NUTS)) {
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_DEKU_NUTS)) {
         return GI_DEKU_NUT_UPGRADE_40;
     }
 
@@ -137,7 +140,7 @@ uint16_t nut_upgrade(z64_file_t* save, override_t override) {
 }
 
 uint16_t stick_upgrade(z64_file_t* save, override_t override) {
-    if (CHECK_MAX_UPGRADE_ITEM(MAXUPG_DEKU_STICKS)) {
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_DEKU_STICKS)) {
         return GI_DEKU_STICK_UPGRADE_30;
     }
 
@@ -149,7 +152,7 @@ uint16_t stick_upgrade(z64_file_t* save, override_t override) {
 }
 
 uint16_t magic_upgrade(z64_file_t* save, override_t override) {
-    if (CHECK_MAX_UPGRADE_ITEM(MAXUPG_MAGIC_METER)) {
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_MAGIC_METER)) {
         return GI_DOUBLE_MAGIC;
     }
 
@@ -160,7 +163,7 @@ uint16_t magic_upgrade(z64_file_t* save, override_t override) {
 }
 
 uint16_t bombchu_upgrade(z64_file_t* save, override_t override) {
-    if (CHECK_MAX_UPGRADE_ITEM(MAXUPG_BOMBCHUS)) {
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_BOMBCHUS)) {
         return GI_BOMBCHUS_20;
     }
 
@@ -174,7 +177,7 @@ uint16_t bombchu_upgrade(z64_file_t* save, override_t override) {
 }
 
 uint16_t ocarina_upgrade(z64_file_t* save, override_t override) {
-    if (CHECK_MAX_UPGRADE_ITEM(MAXUPG_OCARINA)) {
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_OCARINA)) {
         return GI_OCARINA_OF_TIME;
     }
 
@@ -182,13 +185,6 @@ uint16_t ocarina_upgrade(z64_file_t* save, override_t override) {
         case ITEM_NONE: case 0: return GI_OCARINA_FAIRY; // Fairy Ocarina
         default: return GI_OCARINA_OF_TIME; // Ocarina of Time
     }
-}
-
-uint16_t max_upgrade_wallet_upgrade(z64_file_t* save, override_t override) {
-    if (CFG_SHOPSANITY_ENABLED) {
-        return GI_TYCOONS_WALLET;
-    }
-    return GI_WALLET_GIANT;
 }
 
 uint16_t arrows_to_rupee(z64_file_t* save, override_t override) {
