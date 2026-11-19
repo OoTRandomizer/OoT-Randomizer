@@ -405,3 +405,30 @@ void unlock_ocarina_note(z64_file_t* save, int16_t arg1, int16_t arg2) {
             break;
     }
 }
+
+void give_max_upgrade_bomb_bag(z64_file_t *save, int16_t arg1, int16_t arg2) {
+    return;
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_BOMB_BAG)) {
+        z64_Inventory_ChangeUpgrade(UPG_BOMB_BAG, 3);
+        INV_CONTENT(ITEM_BOMB) = ITEM_BOMB;
+        AMMO(ITEM_BOMB) = CAPACITY(UPG_BOMB_BAG, 3);
+    }
+}
+
+void give_max_upgrade_bow(z64_file_t *save, int16_t arg1, int16_t arg2) {
+    return;
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_BOW)) {
+        z64_Inventory_ChangeUpgrade(UPG_QUIVER, 3);
+        INV_CONTENT(ITEM_BOW) = ITEM_BOW;
+        AMMO(ITEM_BOW) = CAPACITY(UPG_QUIVER, 3);
+    }
+}
+
+void give_max_upgrade_slingshot(z64_file_t *save, int16_t arg1, int16_t arg2) {
+    return;
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_SLINGSHOT)) {
+        z64_Inventory_ChangeUpgrade(UPG_BULLET_BAG, 3);
+        INV_CONTENT(ITEM_SLINGSHOT) = ITEM_SLINGSHOT;
+        AMMO(ITEM_SLINGSHOT) = CAPACITY(UPG_BULLET_BAG, 3);
+    }
+}

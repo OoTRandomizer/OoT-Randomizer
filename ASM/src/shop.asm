@@ -1,7 +1,12 @@
 .definelabel Shop_Item_Save_Offset, 0xD4 + (0x2C * 0x1C) + 0x10
 
 CFG_MASK_SHOP_HINT:
-    .word 0x00000000
+    .byte 0
+
+CFG_SHOPSANITY_ENABLED:
+    .byte 0
+
+.align 4
 
 Shop_Check_Sold_Out:
     lhu  t6, 0x1c(a0)
@@ -157,7 +162,7 @@ mask_shop_display:
     beq     a2, at, @@mask_of_truth
     nop
     ; rest of the slots are right side masks
-    lw      at, CFG_MASK_SHOP_HINT
+    lbu     at, CFG_MASK_SHOP_HINT
     bnez    at, @@mask_of_truth
     nop
     b       @@display_func

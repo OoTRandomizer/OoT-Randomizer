@@ -78,10 +78,10 @@ item_row_t item_table[GI_RANDO_MAX] = {
     [GI_BOOTS_IRON]                                             = ITEM_ROW(0x53,      GILDED_CHEST, 0x45, -1, 0x0053, 0x0118, 0x47, no_upgrade, no_effect, -1, -1, NULL), // Iron Boots
     [GI_BOOTS_HOVER]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x46, -1, 0x0054, 0x0157, 0x5F, no_upgrade, no_effect, -1, -1, NULL), // Hover Boots
     [GI_QUIVER_40]                                              = ITEM_ROW(0x53,      GILDED_CHEST, 0x4B, -1, 0x0056, 0x00BE, 0x16, no_upgrade, no_effect, -1, -1, NULL), // Big Quiver
-    [GI_QUIVER_50]                                              = ITEM_ROW(0x53,      GILDED_CHEST, 0x4C, -1, 0x0057, 0x00BE, 0x17, no_upgrade, no_effect, -1, -1, NULL), // Biggest Quiver
+    [GI_QUIVER_50]                                              = ITEM_ROW(0x53,      GILDED_CHEST, 0x4C, -1, 0x0057, 0x00BE, 0x17, no_upgrade, give_max_upgrade_bow, -1, -1, resolve_text_progressive_bow), // Biggest Quiver
     [GI_BOMB_BAG_20]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x4D, -1, 0x0058, 0x00BF, 0x18, no_upgrade, no_effect, -1, -1, NULL), // Bomb Bag
     [GI_BOMB_BAG_30]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x4E, -1, 0x0059, 0x00BF, 0x19, no_upgrade, no_effect, -1, -1, NULL), // Big Bomb Bag
-    [GI_BOMB_BAG_40]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x4F, -1, 0x005A, 0x00BF, 0x1A, no_upgrade, no_effect, -1, -1, NULL), // Biggest Bomb Bag
+    [GI_BOMB_BAG_40]                                            = ITEM_ROW(0x53,      GILDED_CHEST, 0x4F, -1, 0x005A, 0x00BF, 0x1A, no_upgrade, give_max_upgrade_bomb_bag, -1, -1, resolve_text_progressive_bomb_bag), // Biggest Bomb Bag
     [GI_SILVER_GAUNTLETS]                                       = ITEM_ROW(0x53,      GILDED_CHEST, 0x51, -1, 0x005B, 0x012D, 0x49, no_upgrade, no_effect, -1, -1, NULL), // Silver Gauntlets
     [GI_GOLD_GAUNTLETS]                                         = ITEM_ROW(0x53,      GILDED_CHEST, 0x52, -1, 0x005C, 0x012D, 0x4A, no_upgrade, no_effect, -1, -1, NULL), // Golden Gauntlets
     [GI_SCALE_SILVER]                                           = ITEM_ROW(0x53,      GILDED_CHEST, 0x53, -1, 0x00CD, 0x00DB, 0x2A, no_upgrade, no_effect, -1, -1, NULL), // Silver Scale
@@ -153,7 +153,7 @@ item_row_t item_table[GI_RANDO_MAX] = {
     [GI_DEKU_STICK_UPGRADE_30]                                  = ITEM_ROW(0x53,       BROWN_CHEST, 0x99, -1, 0x0091, 0x00C7, 0xA1, no_upgrade, no_effect, -1, -1, NULL), // Deku Stick Upgrade (30)
     [GI_DEKU_NUT_UPGRADE_30]                                    = ITEM_ROW(0x53,       BROWN_CHEST, 0x9A, -1, 0x00A7, 0x00BB, 0xA2, no_upgrade, no_effect, -1, -1, NULL), // Deku Nut Upgrade (30)
     [GI_DEKU_NUT_UPGRADE_40]                                    = ITEM_ROW(0x53,       BROWN_CHEST, 0x9B, -1, 0x00A8, 0x00BB, 0xA2, no_upgrade, no_effect, -1, -1, NULL), // Deku Nut Upgrade (40)
-    [GI_BULLET_BAG_50]                                          = ITEM_ROW(0x53,      GILDED_CHEST, 0x49, -1, 0x006C, 0x017B, 0x73, no_upgrade, no_effect, -1, -1, NULL), // Bullet Bag (50)
+    [GI_BULLET_BAG_50]                                          = ITEM_ROW(0x53,      GILDED_CHEST, 0x49, -1, 0x006C, 0x017B, 0x73, no_upgrade, give_max_upgrade_slingshot, -1, -1, resolve_text_progressive_slingshot), // Bullet Bag (50)
     [GI_ICE_TRAP]                                               = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x9002, 0x0000, 0xA4, no_upgrade, ice_trap_effect, -1, -1, NULL), // Ice Trap
 
     [GI_CAPPED_PIECE_OF_HEART]                                  = ITEM_ROW(0x3E, HEART_CHEST_SMALL, 0x41, -1, 0x90C2, 0x00BD, 0x14, no_upgrade, full_heal, -1, -1, NULL), // Capped Piece of Heart
@@ -336,7 +336,7 @@ item_row_t item_table[GI_RANDO_MAX] = {
     [GI_FAIRY]                                                  = ITEM_ROW(0x53,       BROWN_CHEST, 0x41, -1, 0x90B4, 0x0177, 0x9E, no_upgrade, full_heal, -1, -1, NULL), // Fairy
     [GI_NOTHING]                                                = ITEM_ROW(0x53,       BROWN_CHEST, 0x41, -1, 0x90B5, 0x0177, 0x9F, no_upgrade, no_effect, -1, -1, NULL), // Nothing :)
 
-    // 0x011B through 0x0126 reserved for https://github.com/OoTRandomizer/OoT-Randomizer/pull/2108
+    // 0x011B through 0x0126 are free
 
     [GI_KOKIRI_EMERALD]                                         = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x0080, 0x01AB, 0x9B, no_upgrade, give_quest_item, 18, -1, NULL), // Kokiri Emerald
     [GI_GORON_RUBY]                                             = ITEM_ROW(0x53,      GILDED_CHEST, 0x41, -1, 0x0081, 0x01AC, 0x9C, no_upgrade, give_quest_item, 19, -1, NULL), // Goron Ruby
@@ -499,6 +499,29 @@ uint16_t resolve_text_deku_shield(item_row_t* item_row, bool is_outgoing) {
     // If Kokiri sword is in inventory, return alternate textbox to inform player that deku tree was opened automatically.
     if (CHECK_OWNED_EQUIP_ALT(0, 0)) {
         return 0x045F;
+    }
+    return item_row->text_id;
+}
+
+uint16_t resolve_text_progressive_bomb_bag(item_row_t* item_row, bool is_outgoing) {
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_BOMB_BAG)) {
+        return 0x90B7;
+    }
+    return item_row->text_id;
+}
+
+
+uint16_t resolve_text_progressive_bow(item_row_t* item_row, bool is_outgoing) {
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_BOW)) {
+        return 0x90B8;
+    }
+    return item_row->text_id;
+}
+
+
+uint16_t resolve_text_progressive_slingshot(item_row_t* item_row, bool is_outgoing) {
+    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_SLINGSHOT)) {
+        return 0x90B9;
     }
     return item_row->text_id;
 }
