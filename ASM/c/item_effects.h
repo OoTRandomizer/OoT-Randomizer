@@ -35,9 +35,9 @@ void handle_kokiri_sword(z64_file_t* save, int16_t arg1, int16_t arg2);
 void handle_deku_shield(z64_file_t* save, int16_t arg1, int16_t arg2);
 extern uint8_t KEYRING_BOSSKEY_CONDITION;
 void unlock_ocarina_note(z64_file_t* save, int16_t arg1, int16_t arg2);
-void give_max_upgrade_bomb_bag(z64_file_t* save, int16_t arg1, int16_t arg2);
-void give_max_upgrade_bow(z64_file_t* save, int16_t arg1, int16_t arg2);
-void give_max_upgrade_slingshot(z64_file_t* save, int16_t arg1, int16_t arg2);
+void effect_progressive_bomb_bag(z64_file_t* save, int16_t arg1, int16_t arg2);
+void effect_progressive_bow(z64_file_t* save, int16_t arg1, int16_t arg2);
+void effect_progressive_slingshot(z64_file_t* save, int16_t arg1, int16_t arg2);
 
 typedef enum dungeon {
     DEKU_ID       = 0,

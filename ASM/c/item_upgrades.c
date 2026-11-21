@@ -67,11 +67,6 @@ uint16_t strength_upgrade(z64_file_t* save, override_t override) {
 
 uint16_t bomb_bag_upgrade(z64_file_t* save, override_t override) {
     if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_BOMB_BAG)) {
-        #if 0
-        z64_Inventory_ChangeUpgrade(UPG_BOMB_BAG, 3);
-        INV_CONTENT(ITEM_BOMB) = ITEM_BOMB;
-        AMMO(ITEM_BOMB) = CAPACITY(UPG_BOMB_BAG, 3);
-        #endif
         return GI_BOMB_BAG_40;
     }
 
@@ -84,11 +79,6 @@ uint16_t bomb_bag_upgrade(z64_file_t* save, override_t override) {
 
 uint16_t bow_upgrade(z64_file_t* save, override_t override) {
     if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_BOW)) {
-        #if 0
-        z64_Inventory_ChangeUpgrade(UPG_QUIVER, 3);
-        INV_CONTENT(ITEM_BOW) = ITEM_BOW;
-        AMMO(ITEM_BOW) = CAPACITY(UPG_QUIVER, 3);
-        #endif
         return GI_QUIVER_50;
     }
 
@@ -101,11 +91,6 @@ uint16_t bow_upgrade(z64_file_t* save, override_t override) {
 
 uint16_t slingshot_upgrade(z64_file_t* save, override_t override) {
     if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_SLINGSHOT)) {
-        #if 0
-        z64_Inventory_ChangeUpgrade(UPG_BULLET_BAG, 3);
-        INV_CONTENT(ITEM_SLINGSHOT) = ITEM_SLINGSHOT;
-        AMMO(ITEM_SLINGSHOT) = CAPACITY(UPG_BULLET_BAG, 3);
-        #endif
         return GI_BULLET_BAG_50;
     }
 

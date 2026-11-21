@@ -406,8 +406,7 @@ void unlock_ocarina_note(z64_file_t* save, int16_t arg1, int16_t arg2) {
     }
 }
 
-void give_max_upgrade_bomb_bag(z64_file_t *save, int16_t arg1, int16_t arg2) {
-    return;
+void effect_progressive_bomb_bag(z64_file_t *save, int16_t arg1, int16_t arg2) {
     if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_BOMB_BAG)) {
         z64_Inventory_ChangeUpgrade(UPG_BOMB_BAG, 3);
         INV_CONTENT(ITEM_BOMB) = ITEM_BOMB;
@@ -415,8 +414,7 @@ void give_max_upgrade_bomb_bag(z64_file_t *save, int16_t arg1, int16_t arg2) {
     }
 }
 
-void give_max_upgrade_bow(z64_file_t *save, int16_t arg1, int16_t arg2) {
-    return;
+void effect_progressive_bow(z64_file_t *save, int16_t arg1, int16_t arg2) {
     if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_BOW)) {
         z64_Inventory_ChangeUpgrade(UPG_QUIVER, 3);
         INV_CONTENT(ITEM_BOW) = ITEM_BOW;
@@ -424,8 +422,7 @@ void give_max_upgrade_bow(z64_file_t *save, int16_t arg1, int16_t arg2) {
     }
 }
 
-void give_max_upgrade_slingshot(z64_file_t *save, int16_t arg1, int16_t arg2) {
-    return;
+void effect_progressive_slingshot(z64_file_t *save, int16_t arg1, int16_t arg2) {
     if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_SLINGSHOT)) {
         z64_Inventory_ChangeUpgrade(UPG_BULLET_BAG, 3);
         INV_CONTENT(ITEM_SLINGSHOT) = ITEM_SLINGSHOT;
