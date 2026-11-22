@@ -5,6 +5,7 @@
 * New setting `Nighttime Skulltulas in Daytime` that makes Gold Skulltulas that normally appear only at night available any time of day.
 * New option `Opens automatically with Letter` for the `Zora's Fountain` setting.
 * New option `Deku opens automatically` for the `Forest` setting.
+* New option `Max Upgrade Items` for allowing the selected progressive items to give all its corresponding upgrades at the same time.
 
 ## Bug fixes
 * Fix a crash that could occur on Wii VC when starting a cutscene while climbing a ladder.

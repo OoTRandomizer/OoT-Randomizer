@@ -1965,7 +1965,8 @@ typedef enum UpgradeType {
 
 // This can go up until 31 (inclusive), after that we would need to adjust the
 // bitflag for ENABLED_MAX_UPGRADE_ITEM.
-// Must match with MAX_UPGRADE_ITEMS_INDICES from Patches.py
+// Must match with MAX_UPGRADE_ITEMS_INDICES from Patches.py and
+// MAX_UPGRADE_COUNTS from State.py
 typedef enum MaxUpgradeItemType {
     /*  0 */ MAXUPG_HOOKSHOT,
     /*  1 */ MAXUPG_STRENGTH,
