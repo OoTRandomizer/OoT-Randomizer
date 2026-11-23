@@ -101,3 +101,7 @@ issue. You should always Hard Reset to avoid this issue entirely.
 The changelog has moved to [CHANGELOG.md](CHANGELOG.md).
 
 For an overview of settings additions by release, see [the wiki](https://wiki.ootrandomizer.com/index.php?title=Readme#Generation_Options).
+
+## Contributing
+
+Contributions are always welcome! See our [contribution guide](CONTRIBUTING.md) for information about our Discord and where to start a discussion, our coding style and design philosophy, and guidelines for AI-assisted contributions.
