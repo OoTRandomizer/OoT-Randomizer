@@ -3,7 +3,7 @@
 CFG_MASK_SHOP_HINT:
     .byte 0
 
-CFG_SHOPSANITY_ENABLED:
+CFG_TYCOONS_WALLET_ENABLED:
     .byte 0
 
 .align 4

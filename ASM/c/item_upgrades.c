@@ -104,7 +104,7 @@ uint16_t slingshot_upgrade(z64_file_t* save, override_t override) {
 
 uint16_t wallet_upgrade(z64_file_t* save, override_t override) {
     if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_WALLET)) {
-        if (CFG_SHOPSANITY_ENABLED) {
+        if (CFG_TYCOONS_WALLET_ENABLED) {
             return GI_TYCOONS_WALLET;
         }
         return GI_WALLET_GIANT;

@@ -287,10 +287,6 @@
         "address": "03480C9E",
         "length": 1
     },
-    "CFG_SHOPSANITY_ENABLED": {
-        "address": "03482CE1",
-        "length": 1
-    },
     "CFG_SHOP_CURSOR_COLOR": {
         "address": "03480C6C",
         "length": 6
@@ -322,6 +318,10 @@
     "CFG_TUNIC_COLORS": {
         "address": "03480C9F",
         "length": 9
+    },
+    "CFG_TYCOONS_WALLET_ENABLED": {
+        "address": "03482CE1",
+        "length": 1
     },
     "CFG_UNINVERT_YAXIS_IN_FIRST_PERSON_CAMERA": {
         "address": "03480CAD",

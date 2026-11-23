@@ -3,6 +3,6 @@
 
 #include <stdint.h>
 
-extern uint8_t CFG_SHOPSANITY_ENABLED;
+extern uint8_t CFG_TYCOONS_WALLET_ENABLED;
 
 #endif

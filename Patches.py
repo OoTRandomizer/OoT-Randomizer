@@ -1322,8 +1322,6 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     if 'mask_shop' in world.settings.misc_hints:
         rom.write_byte(rom.sym('CFG_MASK_SHOP_HINT'), 1)
 
-    rom.write_byte(rom.sym("CFG_SHOPSANITY_ENABLED"), world.settings.shopsanity not in ('off', '0'))
-
     # Write configured max upgrades
     if world.settings.max_upgrade_items:
         # This must match with MaxUpgradeItemType from z64.h
@@ -1873,6 +1871,12 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     if world.settings.world_count > 1:
         tycoon_message = make_player_message(tycoon_message, lang)
     update_message_by_id(messages, 0x00F8, tycoon_message, lang, 0x23)
+    # Tycoon's wallet is enabled if any third wallet is added to the item pool,
+    # including shopsanity, plandomizers, and plentiful/ludicrous item pools.
+    # Shopsanity is explicitly checked to still consider this wallet enabled on
+    # scarce item pool.
+    wallet_count = len([item for item in world.itempool if item.name == "Progressive Wallet"])
+    rom.write_byte(rom.sym("CFG_TYCOONS_WALLET_ENABLED"),wallet_count >= 3 or world.settings.shopsanity not in ('off', '0'))
 
     write_shop_items(rom, shop_item_file.start + 0x1DEC, shop_items)
 
