@@ -449,7 +449,7 @@ void get_item(z64_actor_t* from_actor, z64_link_t* link, int8_t incoming_item_id
     override_t override = { 0 };
     int incoming_negative = incoming_item_id < 0;
     int8_t item_id = 0;
-    item_row_t* row;
+    item_row_t* row = NULL;
 
     if (from_actor && incoming_item_id != 0) {
         item_id = incoming_negative ? -incoming_item_id : incoming_item_id;
