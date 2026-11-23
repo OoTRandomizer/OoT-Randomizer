@@ -799,7 +799,6 @@ SYMBOL TABLE:
 80020674 g       *ABS*	00000000 Flags_UnsetClear
 00000670 g     F .text	000000b8 Player_SpawnEntry_Hack
 00025160 g     O .data	00000001 menu_cooldown
-80081294 g       *ABS*	00000000 z64_Inventory_ChangeUpgrade
 0001ab04 g     F .text	00000090 draw_model
 00000000         *UND*	00000000 CFG_DUNGEON_INFO_SILVER_RUPEES
 0001e1fc g     F .text	000000b4 Save_Init_Write_Hook
@@ -853,6 +852,7 @@ SYMBOL TABLE:
 0001591c g     F .text	00000198 draw_ice_trap
 0001161c g     F .text	00000120 draw_gi_compass
 00029800 g     O .data	000001f0 texture_table
+80081294 g       *ABS*	00000000 Inventory_ChangeUpgrade
 00016090 g     F .text	0000002c fill_wallet_upgrade
 0000e930 g     F .text	0000006c Get_NewFlag
 000114b8 g     F .text	000000c0 draw_gi_eggs_and_medallions

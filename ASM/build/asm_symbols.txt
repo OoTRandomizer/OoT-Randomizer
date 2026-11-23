@@ -186,7 +186,7 @@
 80050B00 Collider_UpdateCylinder
 8005991C CutsceneFlags_Get
 8007E868 z64_Gfx_SetupDL_42Opa
-80081294 z64_Inventory_ChangeUpgrade
+80081294 Inventory_ChangeUpgrade
 80081740 func_800982FC
 8009A2D4 @return_check_if_object_loaded
 8009A2E0 @skip_check

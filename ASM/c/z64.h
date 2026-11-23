@@ -2543,7 +2543,7 @@ extern int32_t sprintf(char* dst, char* fmt, ...);
 extern int32_t CutsceneFlags_Get(void* play, int16_t flag);
 extern int32_t DemoKankyo_CutsceneFlags_Get_Hook(void* play, int16_t flag);
 
-void z64_Inventory_ChangeUpgrade(int16_t upgrade, int16_t value);
+void Inventory_ChangeUpgrade(int16_t upgrade, int16_t value);
 
 extern uint16_t gUpgradeCapacities[UPG_MAX][4];
 extern uint8_t gItemSlots[56];

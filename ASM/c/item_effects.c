@@ -408,7 +408,7 @@ void unlock_ocarina_note(z64_file_t* save, int16_t arg1, int16_t arg2) {
 
 void effect_progressive_bomb_bag(z64_file_t *save, int16_t arg1, int16_t arg2) {
     if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_BOMB_BAG)) {
-        z64_Inventory_ChangeUpgrade(UPG_BOMB_BAG, 3);
+        Inventory_ChangeUpgrade(UPG_BOMB_BAG, 3);
         INV_CONTENT(ITEM_BOMB) = ITEM_BOMB;
         AMMO(ITEM_BOMB) = CAPACITY(UPG_BOMB_BAG, 3);
     }
@@ -416,7 +416,7 @@ void effect_progressive_bomb_bag(z64_file_t *save, int16_t arg1, int16_t arg2) {
 
 void effect_progressive_bow(z64_file_t *save, int16_t arg1, int16_t arg2) {
     if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_BOW)) {
-        z64_Inventory_ChangeUpgrade(UPG_QUIVER, 3);
+        Inventory_ChangeUpgrade(UPG_QUIVER, 3);
         INV_CONTENT(ITEM_BOW) = ITEM_BOW;
         AMMO(ITEM_BOW) = CAPACITY(UPG_QUIVER, 3);
     }
@@ -424,7 +424,7 @@ void effect_progressive_bow(z64_file_t *save, int16_t arg1, int16_t arg2) {
 
 void effect_progressive_slingshot(z64_file_t *save, int16_t arg1, int16_t arg2) {
     if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_SLINGSHOT)) {
-        z64_Inventory_ChangeUpgrade(UPG_BULLET_BAG, 3);
+        Inventory_ChangeUpgrade(UPG_BULLET_BAG, 3);
         INV_CONTENT(ITEM_SLINGSHOT) = ITEM_SLINGSHOT;
         AMMO(ITEM_SLINGSHOT) = CAPACITY(UPG_BULLET_BAG, 3);
     }
