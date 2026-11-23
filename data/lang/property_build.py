@@ -663,11 +663,11 @@ ITEM_MESSAGES = [
     },
     {
         "id": 0x90B8,
-        "text": "\x08\x13\x03You found the \x05\x41Fairy Bow\x05\x40 and\x01\x05\x43the biggest quiver\x05\x40!",
+        "text": "\x08\x13\x03You found the \x05\x41Fairy Bow\x05\x40 and\x01\x05\x43the biggest quiver\x05\x40!This quiver can hold up to \x05\x4650\x05\x40\x01arrows.",
     },
     {
         "id": 0x90B9,
-        "text": "\x08\x13\x06You found the \x05\x41Fairy Slingshot\x05\x40\x01and a \x05\x43Deku Seeds Bullet Bag\x05\x40.\x01This bag can hold up to \x05\x4640\x05\x40\x01slingshot bullets.",
+        "text": "\x08\x13\x06You found the \x05\x41Fairy Slingshot\x05\x40\x01and a \x05\x43Deku Seeds Bullet Bag\x05\x40.\x01This bag can hold up to \x05\x4650\x05\x40\x01slingshot bullets.",
     },
 
 ]

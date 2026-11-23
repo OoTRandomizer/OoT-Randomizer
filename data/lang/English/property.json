@@ -1374,11 +1374,11 @@
         },
         {
             "id": 37048,
-            "text": "\b\u0013\u0003You found the \u0005\u0041Fairy Bow\u0005\u0040 and\u0001\u0005\u0043the biggest quiver\u0005\u0040!"
+            "text": "\b\u0013\u0003You found the \u0005\u0041Fairy Bow\u0005\u0040 and\u0001\u0005\u0043the biggest quiver\u0005\u0040!\u0001This quiver can hold up to \u0005\u004650\u0005\u0040\u0001arrows"
         },
         {
             "id": 37049,
-            "text": "\b\u0013\u0006You found the \u0005\u0041Fairy Slingshot\u0005\u0040\u0001and a \u0005\u0043Deku Seeds Bullet Bag\u0005\u0040.\u0001This bag can hold up to \u0005\u004640\u0005\u0040\u0001slingshot bullets."
+            "text": "\b\u0013\u0006You found the \u0005\u0041Fairy Slingshot\u0005\u0040\u0001and a \u0005\u0043Deku Seeds Bullet Bag\u0005\u0040.\u0001This bag can hold up to \u0005\u004650\u0005\u0040\u0001slingshot bullets."
         }
     ],
     "MISC_MESSAGES": [
