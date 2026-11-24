@@ -4298,7 +4298,6 @@ class SettingInfos:
             'Progressive Scale':            'Scale',
             'Deku Nut Capacity':            'Nut Capacity',
             'Deku Stick Capacity':          'Stick Capacity',
-           #'Bombchus':                     'Bombchus', # Bombchus don't have an upgrade system yet
             'Magic Meter':                  'Magic Meter',
             'Ocarina':                      'Ocarina',
         },

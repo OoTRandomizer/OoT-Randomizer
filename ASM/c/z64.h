@@ -1977,10 +1977,12 @@ typedef enum MaxUpgradeItemType {
     /*  6 */ MAXUPG_SCALE,
     /*  7 */ MAXUPG_DEKU_NUTS,
     /*  8 */ MAXUPG_DEKU_STICKS,
-    /*  9 */ MAXUPG_BOMBCHUS,
-    /* 10 */ MAXUPG_MAGIC_METER,
-    /* 11 */ MAXUPG_OCARINA,
+    /*  9 */ MAXUPG_MAGIC_METER,
+    /* 10 */ MAXUPG_OCARINA,
+    /*    */ MAXUPG_MAX,
 } MaxUpgradeItemType;
+
+_Static_assert(MAXUPG_MAX <= 32, "Can't have more than 32 'max upgrade' items without changing how the bitflag is implemented.");
 
 extern uint32_t ENABLED_MAX_UPGRADE_ITEM;
 
@@ -1993,7 +1995,7 @@ extern uint32_t ENABLED_MAX_UPGRADE_ITEM;
 #define SLOT(item) gItemSlots[item]
 #define INV_CONTENT(item) z64_file.items[SLOT(item)]
 #define AMMO(item) z64_file.ammo[SLOT(item)]
-// Note the capacity for Tycoon's wallet from the vanilla table is listead as
+// Note the capacity for Tycoon's wallet from the vanilla table is listed as
 // 500 instead of 999.
 #define CAPACITY(upg, value) gUpgradeCapacities[upg][value]
 #define ABS(x) ((x) >= 0 ? (x) : -(x))

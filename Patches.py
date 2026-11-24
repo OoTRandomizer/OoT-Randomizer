@@ -1335,9 +1335,8 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
             'Progressive Scale':            6,  # MAXUPG_SCALE,
             'Deku Nut Capacity':            7,  # MAXUPG_DEKU_NUTS,
             'Deku Stick Capacity':          8,  # MAXUPG_DEKU_STICKS,
-            'Bombchus':                     9,  # MAXUPG_BOMBCHUS,
-            'Magic Meter':                  10, # MAXUPG_MAGIC_METER,
-            'Ocarina':                      11, # MAXUPG_OCARINA,
+            'Magic Meter':                  9,  # MAXUPG_MAGIC_METER,
+            'Ocarina':                      10, # MAXUPG_OCARINA,
         }
         max_upgrade_bitflags = 0
         for item in world.settings.max_upgrade_items:

@@ -164,10 +164,6 @@ uint16_t magic_upgrade(z64_file_t* save, override_t override) {
 }
 
 uint16_t bombchu_upgrade(z64_file_t* save, override_t override) {
-    if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_BOMBCHUS)) {
-        return GI_BOMBCHUS_20;
-    }
-
     if (save->items[Z64_SLOT_BOMBCHU] == ITEM_NONE) {
         return GI_BOMBCHUS_20; // Bombchu 20 pack
     }

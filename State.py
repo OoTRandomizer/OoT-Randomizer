@@ -187,7 +187,6 @@ class State:
                 'Progressive Scale':            2, # MAXUPG_SCALE,
                 'Deku Nut Capacity':            2, # MAXUPG_DEKU_NUTS,
                 'Deku Stick Capacity':          2, # MAXUPG_DEKU_STICKS,
-                'Bombchus':                     3, # MAXUPG_BOMBCHUS,
                 'Magic Meter':                  2, # MAXUPG_MAGIC_METER,
                 'Ocarina':                      2, # MAXUPG_OCARINA,
             }
