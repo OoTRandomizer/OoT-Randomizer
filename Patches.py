@@ -1875,7 +1875,7 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     # Shopsanity is explicitly checked to still consider this wallet enabled on
     # scarce item pool.
     wallet_count = len([item for item in world.itempool if item.name == "Progressive Wallet"])
-    rom.write_byte(rom.sym("CFG_TYCOONS_WALLET_ENABLED"),wallet_count >= 3 or world.settings.shopsanity not in ('off', '0'))
+    rom.write_byte(rom.sym("CFG_TYCOONS_WALLET_ENABLED"), wallet_count >= 3 or world.settings.shopsanity not in ('off', '0'))
 
     write_shop_items(rom, shop_item_file.start + 0x1DEC, shop_items)
 

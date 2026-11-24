@@ -510,14 +510,12 @@ uint16_t resolve_text_progressive_bomb_bag(item_row_t* item_row, bool is_outgoin
     return item_row->text_id;
 }
 
-
 uint16_t resolve_text_progressive_bow(item_row_t* item_row, bool is_outgoing) {
     if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_BOW)) {
         return 0x90B8;
     }
     return item_row->text_id;
 }
-
 
 uint16_t resolve_text_progressive_slingshot(item_row_t* item_row, bool is_outgoing) {
     if (CHECK_MAX_UPGRADE_ENABLED(MAXUPG_SLINGSHOT)) {
