@@ -328,9 +328,9 @@ typedef enum GetItemID {
     /* 0x0119 */ GI_FAIRY,
     /* 0x011A */ GI_NOTHING,
 
-    // 0x011B through 0x0126 reserved for https://github.com/OoTRandomizer/OoT-Randomizer/pull/2108
+    // IDs from 0x011B to 0x0126 are free
 
-    // TODO: remove hardcoded value when that PR gets merged
+    // TODO: remove hardcoded value when the ids get used
     /* 0x0127 */ GI_KOKIRI_EMERALD = 0x0127,
     /* 0x0128 */ GI_GORON_RUBY,
     /* 0x0129 */ GI_ZORA_SAPPHIRE,
@@ -400,5 +400,8 @@ uint16_t resolve_text_small_keys_cmg(item_row_t* item_row, bool is_outgoing);
 uint16_t resolve_text_keyrings(item_row_t* item_row, bool is_outgoing);
 uint16_t resolve_text_kokiri_sword(item_row_t* item_row, bool is_outgoing);
 uint16_t resolve_text_deku_shield(item_row_t* item_row, bool is_outgoing);
+uint16_t resolve_text_progressive_bomb_bag(item_row_t* item_row, bool is_outgoing);
+uint16_t resolve_text_progressive_bow(item_row_t* item_row, bool is_outgoing);
+uint16_t resolve_text_progressive_slingshot(item_row_t* item_row, bool is_outgoing);
 
 #endif

@@ -173,6 +173,32 @@ class State:
             if self.world.keyring_give_bk(dungeon_name):
                 bk = f'Boss Key ({dungeon_name})'
                 self.solv_items[ItemInfo.solver_ids[escape_name(bk)]] = 1
+
+        if item.name in self.world.settings.max_upgrade_items:
+            # Maps each item to how many upgrades its has
+            # This must match with MaxUpgradeItemType from z64.h
+            MAX_UPGRADE_COUNTS = {
+                'Progressive Hookshot':         2, # MAXUPG_HOOKSHOT,
+                'Progressive Strength Upgrade': 3, # MAXUPG_STRENGTH,
+                'Bomb Bag':                     3, # MAXUPG_BOMB_BAG,
+                'Bow':                          3, # MAXUPG_BOW,
+                'Slingshot':                    3, # MAXUPG_SLINGSHOT,
+                'Progressive Wallet':           3, # MAXUPG_WALLET,
+                'Progressive Scale':            2, # MAXUPG_SCALE,
+                'Deku Nut Capacity':            2, # MAXUPG_DEKU_NUTS,
+                'Deku Stick Capacity':          2, # MAXUPG_DEKU_STICKS,
+                'Magic Meter':                  2, # MAXUPG_MAGIC_METER,
+                'Ocarina':                      2, # MAXUPG_OCARINA,
+            }
+            upgrade_count = MAX_UPGRADE_COUNTS[item.name]
+            if item.name == "Progressive Wallet":
+                # Tycoon wallet is added to the pool on shopsanity only
+                if self.world.settings.shopsanity not in ('off', '0'):
+                    upgrade_count = 3
+                else:
+                    upgrade_count = 2
+            self.solv_items[item.solver_id] = upgrade_count - 1
+
         if item.alias and item.alias_id is not None:
             self.solv_items[item.alias_id] += item.alias[1]
         self.solv_items[item.solver_id] += 1

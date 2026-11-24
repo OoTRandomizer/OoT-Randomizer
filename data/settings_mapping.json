@@ -413,6 +413,7 @@
           "row_span": [1,1,1],
           "settings": [
             "item_pool_value",
+            "max_upgrade_items",
             "junk_ice_traps",
             "custom_ice_trap_percent",
             "custom_ice_trap_count",

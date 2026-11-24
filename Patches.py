@@ -1320,7 +1320,29 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     build_misc_dual_hints(world, messages)
 
     if 'mask_shop' in world.settings.misc_hints:
-        rom.write_int32(rom.sym('CFG_MASK_SHOP_HINT'), 1)
+        rom.write_byte(rom.sym('CFG_MASK_SHOP_HINT'), 1)
+
+    # Write configured max upgrades
+    if world.settings.max_upgrade_items:
+        # This must match with MaxUpgradeItemType from z64.h
+        MAX_UPGRADE_ITEMS_INDICES: dict[str, int] = {
+            'Progressive Hookshot':         0,  # MAXUPG_HOOKSHOT,
+            'Progressive Strength Upgrade': 1,  # MAXUPG_STRENGTH,
+            'Bomb Bag':                     2,  # MAXUPG_BOMB_BAG,
+            'Bow':                          3,  # MAXUPG_BOW,
+            'Slingshot':                    4,  # MAXUPG_SLINGSHOT,
+            'Progressive Wallet':           5,  # MAXUPG_WALLET,
+            'Progressive Scale':            6,  # MAXUPG_SCALE,
+            'Deku Nut Capacity':            7,  # MAXUPG_DEKU_NUTS,
+            'Deku Stick Capacity':          8,  # MAXUPG_DEKU_STICKS,
+            'Magic Meter':                  9,  # MAXUPG_MAGIC_METER,
+            'Ocarina':                      10, # MAXUPG_OCARINA,
+        }
+        max_upgrade_bitflags = 0
+        for item in world.settings.max_upgrade_items:
+            upgr = MAX_UPGRADE_ITEMS_INDICES[item]
+            max_upgrade_bitflags |= 1 << upgr
+        rom.write_int32(rom.sym("ENABLED_MAX_UPGRADE_ITEM"), max_upgrade_bitflags)
 
     # Make the cursed skulltula people come down instantly when entering if skull hints are on.
     # Change  lui     $at, 0x4320 to  lui     $at, 0x44C8
@@ -1848,6 +1870,12 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     if world.settings.world_count > 1:
         tycoon_message = make_player_message(tycoon_message, lang)
     update_message_by_id(messages, 0x00F8, tycoon_message, lang, 0x23)
+    # Tycoon's wallet is enabled if any third wallet is added to the item pool,
+    # including shopsanity, plandomizers, and plentiful/ludicrous item pools.
+    # Shopsanity is explicitly checked to still consider this wallet enabled on
+    # scarce item pool.
+    wallet_count = len([item for item in world.itempool if item.name == "Progressive Wallet"])
+    rom.write_byte(rom.sym("CFG_TYCOONS_WALLET_ENABLED"), wallet_count >= 3 or world.settings.shopsanity not in ('off', '0'))
 
     write_shop_items(rom, shop_item_file.start + 0x1DEC, shop_items)
 

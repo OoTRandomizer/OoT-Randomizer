@@ -1950,10 +1950,54 @@ typedef struct NpcInteractInfo {
 // Bit Flag array in which gBitFlags[n] is literally (1 << n)
 extern uint32_t gBitFlags[32];
 
+// Upgrades from vanilla
+typedef enum UpgradeType {
+    /* 0x00 */ UPG_QUIVER,
+    /* 0x01 */ UPG_BOMB_BAG,
+    /* 0x02 */ UPG_STRENGTH,
+    /* 0x03 */ UPG_SCALE,
+    /* 0x04 */ UPG_WALLET,
+    /* 0x05 */ UPG_BULLET_BAG,
+    /* 0x06 */ UPG_DEKU_STICKS,
+    /* 0x07 */ UPG_DEKU_NUTS,
+    /* 0x08 */ UPG_MAX,
+} UpgradeType;
+
+// This can go up until 31 (inclusive), after that we would need to adjust the
+// bitflag for ENABLED_MAX_UPGRADE_ITEM.
+// Must match with MAX_UPGRADE_ITEMS_INDICES from Patches.py and
+// MAX_UPGRADE_COUNTS from State.py
+typedef enum MaxUpgradeItemType {
+    /*  0 */ MAXUPG_HOOKSHOT,
+    /*  1 */ MAXUPG_STRENGTH,
+    /*  2 */ MAXUPG_BOMB_BAG,
+    /*  3 */ MAXUPG_BOW,
+    /*  4 */ MAXUPG_SLINGSHOT,
+    /*  5 */ MAXUPG_WALLET,
+    /*  6 */ MAXUPG_SCALE,
+    /*  7 */ MAXUPG_DEKU_NUTS,
+    /*  8 */ MAXUPG_DEKU_STICKS,
+    /*  9 */ MAXUPG_MAGIC_METER,
+    /* 10 */ MAXUPG_OCARINA,
+    /*    */ MAXUPG_MAX,
+} MaxUpgradeItemType;
+
+_Static_assert(MAXUPG_MAX <= 32, "Can't have more than 32 'max upgrade' items without changing how the bitflag is implemented.");
+
+extern uint32_t ENABLED_MAX_UPGRADE_ITEM;
+
+// upgr is a value from the MaxUpgradeItemType enum
+#define CHECK_MAX_UPGRADE_ENABLED(upgr) (ENABLED_MAX_UPGRADE_ITEM & (1 << (upgr)))
+
+
 /* helper macros */
 #define LINK_IS_ADULT (z64_file.link_age == 0)
 #define SLOT(item) gItemSlots[item]
 #define INV_CONTENT(item) z64_file.items[SLOT(item)]
+#define AMMO(item) z64_file.ammo[SLOT(item)]
+// Note the capacity for Tycoon's wallet from the vanilla table is listed as
+// 500 instead of 999.
+#define CAPACITY(upg, value) gUpgradeCapacities[upg][value]
 #define ABS(x) ((x) >= 0 ? (x) : -(x))
 #define CHECK_OWNED_EQUIP_ALT(equip, value) (z64_file.equipment & gBitFlags[(value) + (equip) * 4])
 
@@ -2160,7 +2204,6 @@ typedef void(*z64_Play_SetupRespawnPoint_proc)(z64_game_t *game, int32_t respawn
 #define z64_state_ovl_tab       (*(z64_state_ovl_t(*)[6])                     \
                                                       z64_state_ovl_tab_addr)
 #define z64_event_state_1       (*(uint32_t*)         z64_event_state_1_addr)
-
 
 /* functions */
 #define z64_ActorKill               ((z64_ActorKillFunc)    z64_ActorKill_addr)
@@ -2501,5 +2544,10 @@ extern void Fault_AddHungupAndCrashImpl(const char* msg1, const char* msg2);
 extern int32_t sprintf(char* dst, char* fmt, ...);
 extern int32_t CutsceneFlags_Get(void* play, int16_t flag);
 extern int32_t DemoKankyo_CutsceneFlags_Get_Hook(void* play, int16_t flag);
+
+void Inventory_ChangeUpgrade(int16_t upgrade, int16_t value);
+
+extern uint16_t gUpgradeCapacities[UPG_MAX][4];
+extern uint8_t gItemSlots[56];
 
 #endif
