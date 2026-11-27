@@ -1872,9 +1872,11 @@ def patch_rom(spoiler: Spoiler, world: World, rom: Rom) -> Rom:
     update_message_by_id(messages, 0x00F8, tycoon_message, lang, 0x23)
     # Tycoon's wallet is enabled if any third wallet is added to the item pool,
     # including shopsanity, plandomizers, and plentiful/ludicrous item pools.
-    # Shopsanity is explicitly checked to still consider this wallet enabled on
-    # scarce item pool.
-    wallet_count = len([item for item in world.itempool if item.name == "Progressive Wallet"])
+    # Shopsanity is explicitly checked to still consider this wallet enabled in
+    # multiworlds.
+    wallet_count = 2
+    if world.distribution.item_pool is not None:
+        wallet_count = world.distribution.item_pool["Progressive Wallet"].count
     rom.write_byte(rom.sym("CFG_TYCOONS_WALLET_ENABLED"), wallet_count >= 3 or world.settings.shopsanity not in ('off', '0'))
 
     write_shop_items(rom, shop_item_file.start + 0x1DEC, shop_items)
