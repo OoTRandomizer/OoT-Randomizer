@@ -25,6 +25,7 @@
 * Fix advanced logic not requiring megaton hammer for a switch in GTG.
 * Fix advanced logic not accounting for a possible clip in the invisible spikes room of Shadow Temple.
 * Fix Bingo hints failing to generate when every bottle other than Ruto's Letter is a milk bottle.
+* Fix a potential generator failure when running multiple instances of the generator in parallel.
 
 ## Other changes
 * Python 3.9 through 3.12 are no longer supported.
