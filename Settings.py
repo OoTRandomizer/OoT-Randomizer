@@ -1,5 +1,4 @@
 from __future__ import annotations
-import argparse
 import copy
 import hashlib
 import json
@@ -9,13 +8,12 @@ import random
 import re
 import string
 import sys
-import textwrap
 from collections.abc import Iterable
 from typing import Any, Optional
 
 import StartingItems
 from version import __version__
-from Utils import local_path, data_path
+from Utils import local_path, data_path, parse_command_line_args
 from SettingsList import SettingInfos, validate_settings, settings_versioning
 from Plandomizer import Distribution
 
@@ -24,13 +22,6 @@ LEGACY_STARTING_ITEM_SETTINGS: dict[str, dict[str, StartingItems.Entry]] = {
     'starting_inventory': StartingItems.inventory,
     'starting_songs': StartingItems.songs,
 }
-
-
-class ArgumentDefaultsHelpFormatter(argparse.RawTextHelpFormatter):
-
-    def _get_help_string(self, action) -> Optional[str]:
-        if  action.help is not None:
-            return textwrap.dedent(action.help)
 
 
 # 32 characters
@@ -404,21 +395,8 @@ class Settings(SettingInfos):
 
 
 # gets the randomizer settings, whether to open the gui, and the logger level from command line arguments
-def get_settings_from_command_line_args() -> tuple[Settings, bool, str, bool, str]:
-    parser = argparse.ArgumentParser(formatter_class=ArgumentDefaultsHelpFormatter)
-
-    parser.add_argument('--gui', help='Launch the GUI', action='store_true')
-    parser.add_argument('--loglevel', default='info', const='info', nargs='?', choices=['error', 'info', 'warning', 'debug'], help='Select level of logging for output.')
-    parser.add_argument('--settings_string', help='Provide sharable settings using a settings string. This will override all flags that it specifies.')
-    parser.add_argument('--convert_settings', help='Only convert the specified settings to a settings string. If a settings string is specified output the used settings instead.', action='store_true')
-    parser.add_argument('--settings', help='Use the specified settings file to use for generation')
-    parser.add_argument('--settings_preset', help="Use the given preset for base settings. Anything defined in the --settings file or the --settings_string will override the preset.")
-    parser.add_argument('--seed', help='Generate the specified seed.')
-    parser.add_argument('--no_log', help='Suppresses the generation of a log file.', action='store_true')
-    parser.add_argument('--output_settings', help='Always outputs a settings.json file even when spoiler is enabled.', action='store_true')
-    parser.add_argument('--diff_rom', help='Generates a ZPF patch from the specified ROM file.')
-
-    args, _ = parser.parse_known_args()
+def get_settings_from_command_line_args() -> tuple[Settings, bool, bool, str]:
+    args = parse_command_line_args()
     settings_base = {}
     if args.settings_preset:
         presetsFiles = get_preset_files()
@@ -474,4 +452,4 @@ def get_settings_from_command_line_args() -> tuple[Settings, bool, str, bool, st
             print(settings.get_settings_string())
         sys.exit(0)
 
-    return settings, args.gui, args.loglevel, args.no_log, args.diff_rom
+    return settings, args.gui, args.no_log, args.diff_rom
