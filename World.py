@@ -755,9 +755,19 @@ class World:
                     if location.item is not None:
                         location.item.price = price
 
-    def fill_bosses(self, boss_count: int = 9) -> None:
+    def fill_bosses(self) -> None:
+        boss_count = 9
         boss_rewards = ItemFactory(reward_list, self)
         boss_locations = [self.get_location(loc) for loc in location_groups['Boss']]
+
+        if self.settings.open_door_of_time in ('stones', 'stones_sot', 'stones_oot_sot') and self.settings.starting_age == 'child' and self.settings.shuffle_dungeon_rewards == 'reward':
+            # random placement is likely to fail, force stones onto child dungeons
+            stones = boss_rewards[-3:]
+            stone_locations = ['Queen Gohma', 'King Dodongo', 'Barinade']
+            random.shuffle(stone_locations)
+            for location, item in zip(stone_locations, stones):
+                self.push_item(location, item)
+            boss_count -= 3
 
         placed_prizes = [loc.item.name for loc in boss_locations if loc.item is not None]
         unplaced_prizes = [item for item in boss_rewards if item.name not in placed_prizes]
