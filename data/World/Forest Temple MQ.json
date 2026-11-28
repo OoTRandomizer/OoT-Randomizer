@@ -145,7 +145,7 @@
                 can_use(Hookshot) and
                 (can_use(Longshot) or can_use(Hover_Boots) or can_play(Song_of_Time) or
                     logic_forest_vines)",
-            "Forest Temple NE Outdoors Ledge": "can_use(Longshot)"
+            "Forest Temple NE Outdoors Ledge": "can_see_chests and can_use(Longshot)"
         }
     },
     {
